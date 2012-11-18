@@ -297,8 +297,12 @@ summary.adp <- function(object, ...)
                 format(subsampleStart), attr(subsampleStart, "tzone"),
                 format(subsampleEnd),  attr(subsampleEnd, "tzone"),
                 1 / subsampleDeltat))
-    cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
+    if (object@metadata$numberOfCells > 1)
+        cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                    object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
+    else
+        cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
+
     cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
     cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &

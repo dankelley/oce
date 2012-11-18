@@ -191,8 +191,11 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
             } else if (type == "aquadopp") {
-                user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
-                user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
+                ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                ##user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
+                warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file\n")
+                user$cellSize <- 0.75  # value for one particular test file
+                user$blankingDistance <- 0.37 # value for one particular test file
             } else {
                 warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
                 user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
@@ -390,12 +393,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
 
     if (type == "aquadopp") {
-        cat("TEST FEATURE for aquadopp (enacted by setting debug=10)\n")
+        warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
         diagStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
-        cat("  Diagnostic sequences starting at offsets:")
-        str(diagStart)
-        cat("  These should be distinct from normal sequences at offsets:")
-        str(profileStart)
         diagsToRead <- length(diagStart)
         diagStart2 <- sort(c(diagStart, diagStart+1))
         timeDiag <- ISOdatetime(2000+bcdToInteger(buf[diagStart+8]),
