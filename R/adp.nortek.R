@@ -415,6 +415,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         u1Diag <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
         u2Diag <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
         u3Diag <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        a1Diag <- buf[diagStart + 36]
+        a2Diag <- buf[diagStart + 37]
+        a3Diag <- buf[diagStart + 38]
     }
 
     profilesInFile <- length(profileStart)
@@ -563,6 +566,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data$u1Diag <- u1Diag
         data$u2Diag <- u2Diag
         data$u3Diag <- u3Diag
+        data$a1Diag <- a1Diag
+        data$a2Diag <- a2Diag
+        data$a3Diag <- a3Diag
     }
 
     if (missing(orientation)) {
