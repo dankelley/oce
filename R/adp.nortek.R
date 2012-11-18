@@ -412,12 +412,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         pressure.LSW <- readBin(buf[diagStart2 + 26], what="integer", n=diagsToRead, size=2, endian="little", signed=FALSE)
         pressureDiag <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
         temperatureDiag <- 0.01 * readBin(buf[diagStart2 + 28], what="integer", n=diagsToRead, size=2, endian="little")
-        u1Diag <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        u2Diag <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        u3Diag <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        a1Diag <- buf[diagStart + 36]
-        a2Diag <- buf[diagStart + 37]
-        a3Diag <- buf[diagStart + 38]
+        vDiag <- array(double(), dim=c(diagsToRead,  1,  3))
+        vDiag[, , 1] <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        vDiag[, , 2] <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        vDiag[, , 3] <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        aDiag <- array(raw(), dim=c(diagsToRead,  1,  3))
+        aDiag[, , 1] <- buf[diagStart + 36]
+        aDiag[, , 2] <- buf[diagStart + 37]
+        aDiag[, , 3] <- buf[diagStart + 38]
     }
 
     profilesInFile <- length(profileStart)
@@ -563,12 +565,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data$rollDiag <- rollDiag
         data$pressureDiag <- pressureDiag
         data$temperatureDiag <- temperatureDiag
-        data$u1Diag <- u1Diag
-        data$u2Diag <- u2Diag
-        data$u3Diag <- u3Diag
-        data$a1Diag <- a1Diag
-        data$a2Diag <- a2Diag
-        data$a3Diag <- a3Diag
+        data$vDiag <- vDiag
+        data$aDiag <- aDiag
     }
 
     if (missing(orientation)) {
