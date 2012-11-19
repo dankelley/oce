@@ -521,6 +521,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             if (length(grep("time", subsetString))) {
                 oceDebug(debug, "subsetting an adp by time\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
+                names <- names(x@data)
+                haveDia <- "timeDia" %in% names
+                if (haveDia) {
+                    subsetDiaString <- gsub("time", "timeDia", subsetString)
+                    keepDia <- eval(parse(text=subsetDiaString), x@data)
+                }
                 oceDebug(debug, vectorShow(keep, "keeping bins:"))
                 oceDebug(debug, "number of kept bins:", sum(keep), "\n")
                 if (sum(keep) < 2)
@@ -528,18 +534,21 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 rval <- x
                 ## FIXME: are we handling slow timescale data?
                 for (name in names(x@data)) {
-                    browser()
-                    if (name == "time" || is.vector(x@data[[name]])) {
-                        if ("distance" == name)
-                            next
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
-                    } else if (is.matrix(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep,]
-                    } else if (is.array(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep,,,drop=FALSE]
+                    if (length(grep("Dia$", name))) {
+                        x@data[[name]] <- x@data[[name]][keepDia]
+                    } else {
+                        if (name == "time" || is.vector(x@data[[name]])) {
+                            if ("distance" == name)
+                                next
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                        } else if (is.matrix(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keep,]
+                        } else if (is.array(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keep,,,drop=FALSE]
+                        }
                     }
                 }
                 #browser()
