@@ -526,6 +526,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 if (haveDia) {
                     subsetDiaString <- gsub("time", "timeDia", subsetString)
                     keepDia <- eval(parse(text=subsetDiaString), x@data)
+                    oceDebug(debug, "for diagnostics, keeping ", 100*sum(keepDia) / length(keepDia), "% of data\n")
                 }
                 oceDebug(debug, vectorShow(keep, "keeping bins:"))
                 oceDebug(debug, "number of kept bins:", sum(keep), "\n")
@@ -535,7 +536,18 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 ## FIXME: are we handling slow timescale data?
                 for (name in names(x@data)) {
                     if (length(grep("Dia$", name))) {
-                        x@data[[name]] <- x@data[[name]][keepDia]
+                        if ("distance" == name)
+                            next
+                        if (name == "timeDia" || is.vector(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keepDia]
+                        } else if (is.matrix(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keepDia,]
+                        } else if (is.array(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
+                        }
                     } else {
                         if (name == "time" || is.vector(x@data[[name]])) {
                             if ("distance" == name)
@@ -547,7 +559,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                             rval@data[[name]] <- x@data[[name]][keep,]
                         } else if (is.array(x@data[[name]])) {
                             oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keep,,,drop=FALSE]
+                            rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
                         }
                     }
                 }
