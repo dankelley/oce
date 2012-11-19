@@ -391,40 +391,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset+1], " 0x", buf[header$offset+2], '\n', sep="")
     profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
-
-    if (type == "aquadopp") {
-        warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
-        diagStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
-        diagsToRead <- length(diagStart)
-        diagStart2 <- sort(c(diagStart, diagStart+1))
-        timeDiag <- ISOdatetime(2000+bcdToInteger(buf[diagStart+8]),
-                                bcdToInteger(buf[diagStart+9]), # month
-                                bcdToInteger(buf[diagStart+6]), # day
-                                bcdToInteger(buf[diagStart+7]), # hour
-                                bcdToInteger(buf[diagStart+4]), # min
-                                bcdToInteger(buf[diagStart+5]), # sec
-                                tz=tz)
-        headingDiag <- 0.1 * readBin(buf[diagStart2 + 18], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        pitchDiag <- 0.1 * readBin(buf[diagStart2 + 20], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        rollDiag <- 0.1 * readBin(buf[diagStart2 + 22], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        pressure.MSB <- readBin(buf[diagStart + 24], what="integer", n=diagsToRead, size=1, endian="little", signed=FALSE)
-        pressure.LSW <- readBin(buf[diagStart2 + 26], what="integer", n=diagsToRead, size=2, endian="little", signed=FALSE)
-        pressureDiag <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
-        temperatureDiag <- 0.01 * readBin(buf[diagStart2 + 28], what="integer", n=diagsToRead, size=2, endian="little")
-        vDiag <- array(double(), dim=c(diagsToRead,  1,  3))
-        vDiag[, , 1] <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        vDiag[, , 2] <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        vDiag[, , 3] <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
-        aDiag <- array(raw(), dim=c(diagsToRead,  1,  3))
-        aDiag[, , 1] <- buf[diagStart + 36]
-        aDiag[, , 2] <- buf[diagStart + 37]
-        aDiag[, , 3] <- buf[diagStart + 38]
-    }
-
     profilesInFile <- length(profileStart)
     if (is.na(to))
         to <- profilesInFile
     oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
+
     measurementStart <- ISOdatetime(2000+bcdToInteger(buf[profileStart[1]+8]), # year FIXME: have to check if before 1990
                                     bcdToInteger(buf[profileStart[1]+9]), # month
                                     bcdToInteger(buf[profileStart[1]+6]), # day
@@ -549,6 +520,44 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (length(distance) != dim(v)[2])
             stop("the argument distance is of length ", length(distance), ", which does not match the second dimension of the velocity matrix, ", dim(v)[2])
     }
+
+    ## get diagnostic data, if any, and trim them to same index range as conventional data
+    if (type == "aquadopp") {
+        warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
+        diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        cat("diaStart range:", range(diaStart), "\n")
+        diaStart <- subset(diaStart, diaStart >= fromIndex)
+        diaStart <- subset(diaStart, diaStart <= toIndex)
+        cat("LATER diaStart range:", range(diaStart), "\n")
+        diaToRead <- length(diaStart)
+        diaStart2 <- sort(c(diaStart, diaStart+1))
+        timeDia <- ISOdatetime(2000+bcdToInteger(buf[diaStart+8]),
+                               bcdToInteger(buf[diaStart+9]), # month
+                               bcdToInteger(buf[diaStart+6]), # day
+                               bcdToInteger(buf[diaStart+7]), # hour
+                               bcdToInteger(buf[diaStart+4]), # min
+                               bcdToInteger(buf[diaStart+5]), # sec
+                               tz=tz)
+        headingDia <- 0.1 * readBin(buf[diaStart2 + 18], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        pitchDia <- 0.1 * readBin(buf[diaStart2 + 20], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        rollDia <- 0.1 * readBin(buf[diaStart2 + 22], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        pressureMSB <- readBin(buf[diaStart + 24], what="integer", n=diaToRead, size=1, endian="little", signed=FALSE)
+        pressureLSW <- readBin(buf[diaStart2 + 26], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
+        pressureDia <- (as.integer(pressureMSB)*65536 + pressureLSW) * 0.001
+        temperatureDia <- 0.01 * readBin(buf[diaStart2 + 28], what="integer", n=diaToRead, size=2, endian="little")
+        vDia <- array(double(), dim=c(diaToRead,  1,  3))
+        vDia[, , 1] <- 0.001 * readBin(buf[diaStart2 + 30], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        vDia[, , 2] <- 0.001 * readBin(buf[diaStart2 + 32], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        vDia[, , 3] <- 0.001 * readBin(buf[diaStart2 + 34], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        aDia <- array(raw(), dim=c(diaToRead,  1,  3))
+        aDia[, , 1] <- buf[diaStart + 36]
+        aDia[, , 2] <- buf[diaStart + 37]
+        aDia[, , 3] <- buf[diaStart + 38]
+    }
+
+
+
+
     data <- list(v=v, a=a, q=q,
                  distance=distance,
                  time=time,
@@ -557,15 +566,16 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  heading=heading,
                  pitch=pitch,
                  roll=roll)
-    if (type == "aquadopp" && diagsToRead > 0) {
-        data$timeDiag <- timeDiag
-        data$headingDiag <- headingDiag
-        data$pitchDiag <- pitchDiag
-        data$rollDiag <- rollDiag
-        data$pressureDiag <- pressureDiag
-        data$temperatureDiag <- temperatureDiag
-        data$vDiag <- vDiag
-        data$aDiag <- aDiag
+    if (type == "aquadopp" && diaToRead > 0) {
+        ## FIXME: there may be other things here, e.g. does it try to measure salinity?
+        data$timeDia <- timeDia
+        data$headingDia <- headingDia
+        data$pitchDia <- pitchDia
+        data$rollDia <- rollDia
+        data$pressureDia <- pressureDia
+        data$temperatureDia <- temperatureDia
+        data$vDia <- vDia
+        data$aDia <- aDia
     }
 
     if (missing(orientation)) {
