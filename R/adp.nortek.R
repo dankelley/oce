@@ -525,10 +525,10 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "aquadopp") {
         warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
         diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
-        cat("diaStart range:", range(diaStart), "\n")
-        diaStart <- subset(diaStart, diaStart >= fromIndex)
-        diaStart <- subset(diaStart, diaStart <= toIndex)
-        cat("LATER diaStart range:", range(diaStart), "\n")
+        oceDebug(debug, "diaStart range:", range(diaStart), "\n")
+        diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
+        diaStart <- subset(diaStart, diaStart <= profileStart[toIndex])
+        oceDebug(debug, "LATER diaStart range:", range(diaStart), "\n")
         diaToRead <- length(diaStart)
         diaStart2 <- sort(c(diaStart, diaStart+1))
         timeDia <- ISOdatetime(2000+bcdToInteger(buf[diaStart+8]),

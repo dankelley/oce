@@ -528,6 +528,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 rval <- x
                 ## FIXME: are we handling slow timescale data?
                 for (name in names(x@data)) {
+                    browser()
                     if (name == "time" || is.vector(x@data[[name]])) {
                         if ("distance" == name)
                             next
