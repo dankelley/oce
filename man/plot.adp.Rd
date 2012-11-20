@@ -38,7 +38,10 @@
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
-    \code{which}.}
+    \code{which}.  As a special case, the ``diagnostic'' data that can be produced by an 
+    Aquadopp (single-bin) instrument can be produced by adding 0.1 to the numerical
+    value of which, e.g. \code{which=0.1+1:3} produces the three components of diagnostic
+    velocity.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
     the default for images is \code{oceColorsPalette(128,1)}, and for
     lines and points is black.}

@@ -379,6 +379,7 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
+              subtypeMatch <- function(target, current, tolerance=0.01) abs(target-current) < tolerance
               debug <- max(0, min(debug, 4))
               rval <- NULL
               oceDebug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
@@ -418,6 +419,12 @@ setMethod(f="plot",
                   stop("length of 'titles' must equal length of 'which'")
               if (nw > 1)
                   on.exit(par(opar))
+              if (is.numeric(which)) {
+                  whichFraction <- which - floor(which)
+                  which <- floor(which)
+              } else {
+                  whichFraction <- rep(0, length(which))
+              }
               par(mgp=mgp, mar=mar, cex=cex)
               dots <- list(...)
               ytype <- match.arg(ytype)
@@ -549,6 +556,7 @@ setMethod(f="plot",
               }
 
               tt <- x@data$time
+              ttDia <- x@data$timeDia  # may be null
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
               if (!gave.zlim && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][,,which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
@@ -591,25 +599,36 @@ setMethod(f="plot",
                   if (which[w] %in% images) {                   # image types
                       skip <- FALSE
                       if (which[w] %in% 1:(x@metadata$numberOfBeams)) {    #velocity
-                          oceDebug(debug, "a velocity component image\n")
-                          z <- x@data$v[,,which[w]]
-                          y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
-                          zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-                          zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
+                              z <- x@data$vDia[,,which[w]]
+                              zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
+                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$vDia[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                          } else {
+                              oceDebug(debug, "a velocity component image/timeseries\n")
+                              z <- x@data$v[,,which[w]]
+                              zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                          }
                           oceDebug(debug, 'flipy=', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) { # amplitude
-                          z <- as.numeric(x@data$a[,,which[w]-4])
-                          dim(z) <- dim(x@data$a)[1:2]
-                          y.look <- if (gave.ylim)
-                              ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2]
-                          else
-                              rep(TRUE, length(x@data$distance))
-                          #zlim <- range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE)
-                          zlim <- if (gave.zlim)
-                              zlim.given[w,]
-                          else
-                              range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
-                          zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
+                              z <- as.numeric(x@data$aDia[,,which[w]-4])
+                              dim(z) <- dim(x@data$aDia)[1:2]
+                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (gave.zlim) zlim.given[w,] else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
+                              zlab <- c(expression(aDia[1]),expression(a[2]),expression(aDia[3]),expression(aDia[4]))[which[w]-4]
+                          } else {
+                              oceDebug(debug, "an amplitude component image/timeseries\n")
+                              z <- as.numeric(x@data$a[,,which[w]-4])
+                              dim(z) <- dim(x@data$a)[1:2]
+                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (gave.zlim) zlim.given[w,] else range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
+                              zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
+                          }
                       } else if (which[w] %in% 9:(8+x@metadata$numberOfBeams)) { # correlation
                           if ("q" %in% names(x@data)) {
                               z <- as.numeric(x@data$q[,,which[w]-8])
@@ -680,8 +699,13 @@ setMethod(f="plot",
                                   lines(x@data$time, bottom)
                           } else {
                               col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
-                              tlim <- range(x@data$time)
-                              oce.plot.ts(x@data$time, z, ylab=zlab,
+
+                              if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data))
+                                  time <- x@data$timeDia
+                              else
+                                  time <- x@data$time
+                              tlim <- range(time)
+                              oce.plot.ts(time, z, ylab=zlab,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
                                           xaxs="i",
@@ -721,85 +745,171 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       } else if (which[w] == 14) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          oce.plot.ts(x@data$time, x@data$temperature,
-                                      xlim=if(gave.xlim) xlim[w,] else tlim,
-                                      ylim=if(gave.ylim) ylim[w,],
-                                      xaxs="i",
-                                      col=col[w],
-                                      lwd=lwd[w],
-                                      cex=cex*(1 - min(nw / 8, 1/4)),
-                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                      main=main[w],
-                                      ylab=expression(paste("T [ ", degree, "C ]")),
-                                      type=type,
-                                      mgp=mgp,
-                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                      adorn=adorn[w],
-                                      debug=debug-1)
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oce.plot.ts(x@data$timeDia, x@data$temperatureDia,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab=expression(paste("Diagnostic T [ ", degree, "C ]")),
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          adorn=adorn[w],
+                                          debug=debug-1)
+                          } else {
+                              oce.plot.ts(x@data$time, x@data$temperature,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab=expression(paste("T [ ", degree, "C ]")),
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          adorn=adorn[w],
+                                          debug=debug-1)
+                          }
                       } else if (which[w] == 15) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          oce.plot.ts(x@data$time, x@data$pressure,
-                                      xlim=if(gave.xlim) xlim[w,] else tlim,
-                                      ylim=if(gave.ylim) ylim[w,],
-                                      xaxs="i",
-                                      col=col[w],
-                                      lwd=lwd[w],
-                                      cex=cex*(1 - min(nw / 8, 1/4)),
-                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                      main=main[w],
-                                      ylab=resizableLabel("p"),
-                                      type=type,
-                                      mgp=mgp,
-                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                      drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oce.plot.ts(x@data$timeDia, x@data$pressureDia,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab="pDia",
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          } else {
+                              oce.plot.ts(x@data$time, x@data$pressure,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab=resizableLabel("p"),
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          }
                       } else if (which[w] == 16) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          oce.plot.ts(x@data$time, x@data$heading,
-                                      xlim=if(gave.xlim) xlim[w,] else tlim,
-                                      ylim=if(gave.ylim) ylim[w,],
-                                      xaxs="i",
-                                      col=col[w],
-                                      lwd=lwd[w],
-                                      cex=cex*(1 - min(nw / 8, 1/4)),
-                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                      main=main[w],
-                                      ylab=resizableLabel("heading"),
-                                      type=type,
-                                      mgp=mgp,
-                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                      drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oce.plot.ts(x@data$timeDia, x@data$headingDia,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab="headingDia",
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          } else {
+                              oce.plot.ts(x@data$time, x@data$heading,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab=resizableLabel("heading"),
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          }
                       } else if (which[w] == 17) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          oce.plot.ts(x@data$time, x@data$pitch,
-                                      xlim=if(gave.xlim) xlim[w,] else tlim,
-                                      ylim=if(gave.ylim) ylim[w,],
-                                      xaxs="i",
-                                      col=col[w],
-                                      lwd=lwd[w],
-                                      cex=cex*(1 - min(nw / 8, 1/4)),
-                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                      main=main[w],
-                                      ylab=resizableLabel("pitch"),
-                                      type=type,
-                                      mgp=mgp,
-                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                      drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oce.plot.ts(x@data$timeDia, x@data$pitchDia,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab="pitchDia",
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          } else {
+                              oce.plot.ts(x@data$time, x@data$pitch,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab=resizableLabel("pitch"),
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          }
                       } else if (which[w] == 18) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          oce.plot.ts(x@data$time, x@data$roll,
-                                      xlim=if(gave.xlim) xlim[w,] else tlim,
-                                      ylim=if(gave.ylim) ylim[w,],
-                                      xaxs="i",
-                                      col=col[w],
-                                      lwd=lwd[w],
-                                      cex=cex*(1 - min(nw / 8, 1/4)),
-                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                      main=main[w],
-                                      ylab=resizableLabel("roll"),
-                                      type=type,
-                                      mgp=mgp,
-                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                      drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                              oce.plot.ts(x@data$timeDia, x@data$rollDia,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab="rollDia",
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          } else {
+                              oce.plot.ts(x@data$time, x@data$roll,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          ylab=resizableLabel("roll"),
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          drawTimeRange=drawTimeRange, adorn=adorn[w])
+                          }
                       } else if (which[w] == 19) {
                           if (x@metadata$numberOfBeams > 0) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
@@ -1053,8 +1163,13 @@ setMethod(f="plot",
                           u <- x@data$v[,control$bin,1]
                           v <- x@data$v[,control$bin,2]
                       } else {
-                          u <- apply(x@data$v[,,1], 1, mean, na.rm=TRUE)
-                          v <- apply(x@data$v[,,2], 1, mean, na.rm=TRUE)
+                          if (x@metadata$numberOfCells > 1) {
+                              u <- apply(x@data$v[,,1], 1, mean, na.rm=TRUE)
+                              v <- apply(x@data$v[,,2], 1, mean, na.rm=TRUE)
+                          } else {
+                              u <- x@data$v[,1,1]
+                              v <- x@data$v[,1,2]
+                          }
                       }
                       oceDebug(debug, "uv type plot\n")
                       if (n < 5000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
