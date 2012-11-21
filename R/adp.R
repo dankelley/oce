@@ -354,7 +354,7 @@ summary.adp <- function(object, ...)
 
 setMethod(f="plot",
           signature=signature("adp"),
-          definition=function(x, which=1:dim(x@data$v)[3],
+          definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
                               col,
                               zlim,
                               titles,
@@ -379,10 +379,25 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              subtypeMatch <- function(target, current, tolerance=0.01) abs(target-current) < tolerance
               debug <- max(0, min(debug, 4))
               rval <- NULL
-              oceDebug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
+              mode <- match.arg(mode)
+              if (mode == "diagnostic") {
+                  if (x@metadata$instrumentType != "aquadopp") {
+                      warning("This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being ignored")
+                      mode <- 'normal'
+                  }
+                  if (x@metadata$numberOfCells != 1) {
+                      warning("This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, so it must not be; so mode=\"diagnostic\" is being ignored")
+                      mode <- 'normal'
+                  }
+                  if (!("timeDia" %in% names(x@data))) {
+                      warning("This instrument did not record Diagnostic data, so mode=\"diagnostic\" is being ignored")
+                      mode <- 'normal'
+                  }
+              }
+              oceDebug(debug, "\b\bplot.adp(x, which=\"", paste(which, collapse=","),
+                       "\", mode=\"", mode, "\", ...) {\n", sep="")
               oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -517,10 +532,10 @@ setMethod(f="plot",
                       else if (ww == "heading") which2[w] <- 16
                       else if (ww == "pitch") which2[w] <- 17
                       else if (ww == "roll") which2[w] <- 18
-                      ## 19 beam-1 correlation-amplitude diagnostic plot
-                      ## 20 beam-2 correlation-amplitude diagnostic plot
-                      ## 21 beam-3 correlation-amplitude diagnostic plot
-                      ## 22 beam-4 correlation-amplitude diagnostic plot
+                      ## 19 beam-1 correlation-amplitude plot
+                      ## 20 beam-2 correlation-amplitude plot
+                      ## 21 beam-3 correlation-amplitude plot
+                      ## 22 beam-4 correlation-amplitude plot
                       else if (ww == "progressive vector") which2[w] <- 23
                       else if (ww == "uv") which2[w] <- 28
                       else if (ww == "uv+ellipse") which2[w] <- 29
@@ -599,7 +614,7 @@ setMethod(f="plot",
                   if (which[w] %in% images) {                   # image types
                       skip <- FALSE
                       if (which[w] %in% 1:(x@metadata$numberOfBeams)) {    #velocity
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[,,which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
@@ -614,7 +629,7 @@ setMethod(f="plot",
                           }
                           oceDebug(debug, 'flipy=', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) { # amplitude
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic" && "aDia" %in% names(x@data)) {
                               oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
                               z <- as.numeric(x@data$aDia[,,which[w]-4])
                               dim(z) <- dim(x@data$aDia)[1:2]
@@ -699,11 +714,7 @@ setMethod(f="plot",
                                   lines(x@data$time, bottom)
                           } else {
                               col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
-
-                              if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data))
-                                  time <- x@data$timeDia
-                              else
-                                  time <- x@data$time
+                              time  <- if (mode== "diagnostic") x@data$timeDia else x@data$time
                               tlim <- range(time)
                               oce.plot.ts(time, z, ylab=zlab,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -745,7 +756,7 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       } else if (which[w] == 14) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic" && "temperatureDia" %in% names(x@data)) {
                               oce.plot.ts(x@data$timeDia, x@data$temperatureDia,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -780,7 +791,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 15) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic" && "pressureDia" %in% names(x@data)) {
                               oce.plot.ts(x@data$timeDia, x@data$pressureDia,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -813,7 +824,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 16) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic" && "headingDia" %in% names(x@data)) {
                               oce.plot.ts(x@data$timeDia, x@data$headingDia,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -846,7 +857,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 17) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic" && "pitchDia" %in% names(x@data)) {
                               oce.plot.ts(x@data$timeDia, x@data$pitchDia,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -879,7 +890,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 18) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (subtypeMatch(whichFraction[w], 0.1) && "timeDia" %in% names(x@data)) {
+                          if (mode == "diagnostic" && "rollDia" %in% names(x@data)) {
                               oce.plot.ts(x@data$timeDia, x@data$rollDia,
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
