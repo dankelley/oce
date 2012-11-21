@@ -40,11 +40,12 @@
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
-  \item{category}{a string indicating whether to plot the conventional signal
-      or, in the special case of Aquadopp single-bin profilers, possibly the
-      ``diagnostic'' signal.  This argument is ignored except in the case of
-      Aquadopp instruments.  Perhaps a third option will become available in
-      the future, for the ``burst'' mode that some instruments provide.}
+  \item{mode}{a string indicating whether to plot the conventional signal
+      (\code{normal}) or or, in the special case of Aquadopp single-bin
+      profilers, possibly the \code{diagnostic} signal.  This argument is
+      ignored except in the case of Aquadopp instruments.  Perhaps a third
+      option will become available in the future, for the \code{burst} mode
+      that some instruments provide.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
     the default for images is \code{oceColorsPalette(128,1)}, and for
     lines and points is black.}
