@@ -9,7 +9,7 @@
 \description{Plot ADP data}
 
 \usage{\S4method{plot}{adp}(x, which=1:dim(x@data$v)[3],
-     category=c("conventional", "diagnostic"),
+     mode=c("normal", "diagnostic"),
      col,
      zlim,
      titles,
