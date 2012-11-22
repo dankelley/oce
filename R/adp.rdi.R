@@ -109,7 +109,13 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
     sensorSource <- intToBits(readBin(FLD[31], "integer", n=1, size=1))
+    print(sensorSource)
+    sensorSource <- byteToBinary(FLD[31], endian="big")
+    print(sensorSource)
     sensorsAvailable <- intToBits(readBin(FLD[32], "integer", n=1, size=1))
+    print(sensorsAvailable)
+    sensorsAvailable<- byteToBinary(FLD[32], endian="big")
+    print(sensorsAvailable)
     bin1Distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
     ##cat("bin1Distance being inferred from 0x", FLD[33:34], " as ", bin1Distance, "\n", sep="", ...)
     xmitPulseLength <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
