@@ -1404,6 +1404,8 @@ byteToBinary <- function(x, endian=c("little", "big"))
         if (x[i] < 0) {
             rval <- c(rval, "??")
         } else {
+            ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
+            ## makes ANY SENSE at all.  2012-11-22
             byte1 <- as.integer(floor(x[i] / 16))
             byte2 <- x[i] - 16 * byte1
             ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
