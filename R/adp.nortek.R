@@ -523,7 +523,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## get diagnostic data, if any, and trim them to same index range as conventional data
     if (type == "aquadopp") {
-        warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
+        ##warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
         diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
         oceDebug(debug, "diaStart range:", range(diaStart), "\n")
         diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
