@@ -1124,9 +1124,11 @@ setMethod(f="plot",
                           if (mode == 'diagnostic') {
                               U <- x@data$vDia[,1,1]
                               V <- x@data$vDia[,1,2]
+                              ttt <- x@data$timeDia
                           } else {
                               U <- x@data$v[,,1]
                               V <- x@data$v[,,2]
+                              ttt <- x@data$time
                           }
                           if (!missing(control) && !is.null(control$bin)) {
                               if (control$bin < 1)
@@ -1147,9 +1149,11 @@ setMethod(f="plot",
                           }
                           u[is.na(u)] <- 0        # zero out missing
                           v[is.na(v)] <- 0
-                          x.dist <- cumsum(u) * dt / m.per.km
-                          y.dist <- cumsum(v) * dt / m.per.km
-                          plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=if (gave.col) col else "black", ...)
+                          ##xDist <- cumsum(u) * dt / m.per.km
+                          ##yDist <- cumsum(v) * dt / m.per.km
+                          xDist <- integrateTrapezoid(ttt, u, 'cA') / m.per.km
+                          yDist<- integrateTrapezoid(ttt, v, 'cA') / m.per.km
+                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1, col=if (gave.col) col else "black", ...)
                       } else if (which[w] == 24) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,1], 2, mean, na.rm=TRUE)
