@@ -45,6 +45,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                     programVersion=programVersion,
                     haveActualData=haveActualData))
 
+    ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
+    ## FLD[6] = SYSTEM CONFIGURATION MSB
     systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6],endian="big"),sep="-")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
@@ -57,6 +59,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     else if (bits == "011") frequency <-  600
     else if (bits == "100") frequency <- 1200
     else if (bits == "101") frequency <- 2400
+    else stop("unknown freq. bit code:", bits, " (expect 000 for 75kHz, 001 for 150kHz, etc)")
     oceDebug(debug, "bits:", bits, "so frequency=", frequency, "\n")
     bits <- substr(systemConfiguration, 16, 17)
     oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
