@@ -488,6 +488,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         tz=tz)
     class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
     attr(time, "tzone") <- getOption("oceTz") # Q: does file hold the zone?
+    error <- readBin(buf[profileStart2 + 10], what="integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
     heading <- 0.1 * readBin(buf[profileStart2 + 18], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     pitch <- 0.1 * readBin(buf[profileStart2 + 20], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     roll <- 0.1 * readBin(buf[profileStart2 + 22], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
@@ -540,6 +541,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                bcdToInteger(buf[diaStart+4]), # min
                                bcdToInteger(buf[diaStart+5]), # sec
                                tz=tz)
+        errorDia <- readBin(buf[diaStart2 + 10], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
         headingDia <- 0.1 * readBin(buf[diaStart2 + 18], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
         pitchDia <- 0.1 * readBin(buf[diaStart2 + 20], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
         rollDia <- 0.1 * readBin(buf[diaStart2 + 22], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
@@ -557,13 +559,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         aDia[, , 3] <- buf[diaStart + 38]
     }
 
-
-
-
     data <- list(v=v, a=a, q=q,
                  distance=distance,
                  time=time,
                  pressure=pressure,
+                 error=error,
                  temperature=temperature,
                  heading=heading,
                  pitch=pitch,
@@ -571,6 +571,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "aquadopp" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
         data$timeDia <- timeDia
+        data$errorDia <- errorDia
         data$headingDia <- headingDia
         data$pitchDia <- pitchDia
         data$rollDia <- rollDia
