@@ -1116,7 +1116,10 @@ setMethod(f="plot",
                   } else if (which[w] %in% spatial) {                   # various spatial types
                       if (which[w] == 23) {    # progressive vector
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                          dt <- as.numeric(difftime(x@data$time[2], x@data$time[1],units="sec")) # FIXME: should not assume all equal
+                          if (mode == 'diagnostic')
+                              dt <- as.numeric(difftime(x@data$timeDia[2], x@data$timeDia[1],units="sec")) # FIXME: should not assume all equal
+                          else
+                              dt <- as.numeric(difftime(x@data$time[2], x@data$time[1],units="sec")) # FIXME: should not assume all equal
                           m.per.km <- 1000
                           if (mode == 'diagnostic') {
                               U <- x@data$vDia[,1,1]
