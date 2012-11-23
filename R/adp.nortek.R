@@ -86,6 +86,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             oceDebug(debug, "head$headType=", head$headType, "\n")
             head$headSerialNumber <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
             oceDebug(debug, "head$headSerialNumber=", head$headSerialNumber, "\n")
+
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
             ## the inference of beamAngles and transformationMatrix is drawn from other code.
             ## Since I don't trust any of this, I hard-wire beamAngle in at the end.
@@ -187,7 +188,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                     user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
                 } else {
                     warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
+                    ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
             } else if (type == "aquadopp") {
