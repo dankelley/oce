@@ -1127,8 +1127,13 @@ setMethod(f="plot",
                               u <- x@data$v[,control$bin,1]
                               v <- x@data$v[,control$bin,2]
                           } else {
-                              u <- apply(x@data$v[,,1], 1, mean, na.rm=TRUE)
-                              v <- apply(x@data$v[,,2], 1, mean, na.rm=TRUE)
+                              if (x@metadata$numberOfCells > 1) {
+                                  u <- apply(x@data$v[,,1], 1, mean, na.rm=TRUE)
+                                  v <- apply(x@data$v[,,2], 1, mean, na.rm=TRUE)
+                              } else {
+                                  u <- x@data$v[,1,1]
+                                  v <- x@data$v[,1,2]
+                              }
                           }
                           u[is.na(u)] <- 0        # zero out missing
                           v[is.na(v)] <- 0
