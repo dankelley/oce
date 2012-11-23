@@ -173,7 +173,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                     user$cellSize <- user$hBinLength / 256 * 0.01350 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.01350 * cos(25 * degToRad) - user$cellSize
                 } else {
-                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size\n")
+                    warning("unknown frequency ", head$frequency, " (only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size\n")
                     user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 }
