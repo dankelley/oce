@@ -1118,21 +1118,28 @@ setMethod(f="plot",
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           dt <- as.numeric(difftime(x@data$time[2], x@data$time[1],units="sec")) # FIXME: should not assume all equal
                           m.per.km <- 1000
+                          if (mode == 'diagnostic') {
+                              U <- x@data$vDia[,1,1]
+                              V <- x@data$vDia[,1,2]
+                          } else {
+                              U <- x@data$v[,,1]
+                              V <- x@data$v[,,2]
+                          }
                           if (!missing(control) && !is.null(control$bin)) {
                               if (control$bin < 1)
                                   stop("cannot have control$bin less than 1, but got ", control$bin)
                               max.bin <- dim(x@data$v)[2]
                               if (control$bin > max.bin)
                                   stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                              u <- x@data$v[,control$bin,1]
-                              v <- x@data$v[,control$bin,2]
+                              u <- U[,control$bin,1]
+                              v <- V[,control$bin,2]
                           } else {
                               if (x@metadata$numberOfCells > 1) {
-                                  u <- apply(x@data$v[,,1], 1, mean, na.rm=TRUE)
-                                  v <- apply(x@data$v[,,2], 1, mean, na.rm=TRUE)
+                                  u <- apply(U[,,1], 1, mean, na.rm=TRUE)
+                                  v <- apply(V[,,2], 1, mean, na.rm=TRUE)
                               } else {
-                                  u <- x@data$v[,1,1]
-                                  v <- x@data$v[,1,2]
+                                  u <- U
+                                  v <- V
                               }
                           }
                           u[is.na(u)] <- 0        # zero out missing
