@@ -627,17 +627,14 @@ setMethod(f="plot",
                       mtext("beam 3")
                   } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
                       par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                      dt <- diff(as.numeric(x@data$time))
-                      dt <- c(dt[1], dt)    # make right length by copying first
-                      dt <- mean(dt, na.rm=TRUE)
                       m.per.km <- 1000
                       u <- x@data$v[,1]
                       v <- x@data$v[,2]
                       u[is.na(u)] <- 0        # zero out missing
                       v[is.na(v)] <- 0
-                      x.dist <- cumsum(u) * dt / m.per.km
-                      y.dist <- cumsum(v) * dt / m.per.km
-                      plot(x.dist, y.dist, xlab="km", ylab="km", type=type,
+                      xDist <- integrateTrapezoid(x@data$time, u, 'cA') / m.per.km
+                      yDist<- integrateTrapezoid(x@data$time, v, 'cA') / m.per.km
+                      plot(xDist, yDist, xlab="km", ylab="km", type=type,
                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                            asp=1, lwd=lwd[w], col=col[w], ...)
                       if (main[w] != "")
