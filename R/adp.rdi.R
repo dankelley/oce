@@ -31,18 +31,18 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
     if (FLD[2] != 0x00)
         stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
-    programVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
-    programVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
-    programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
-    programVersionNumeric <- as.numeric(programVersion)
-    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
-    ##if (programVersion < 16.28) warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
+    firmwareVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
+    firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
+    firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
+    firmwareVersionNumeric <- as.numeric(firmwareVersion)
+    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric,")\n")
+    ##if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!haveActualData)
         return(list(instrumentType="adcp",
-                    programVersionMajor=programVersionMajor,
-                    programVersionMinor=programVersionMinor,
-                    programVersion=programVersion,
+                    firmwareVersionMajor=firmwareVersionMajor,
+                    firmwareVersionMinor=firmwareVersionMinor,
+                    firmwareVersion=firmwareVersion,
                     haveActualData=haveActualData))
 
     ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
@@ -203,10 +203,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 1600 m/s.  Something went wrong in decoding the data.")
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
-         programVersionMajor=programVersionMajor,
-         programVersionMinor=programVersionMinor,
-         programVersion=programVersion,
-         ##programVersionMajor=fv,
+         firmwareVersionMajor=firmwareVersionMajor,
+         firmwareVersionMinor=firmwareVersionMinor,
+         firmwareVersion=firmwareVersion,
+         ##firmwareVersionMajor=fv,
          ##programVersionMinor=fr,
          bytesPerEnsemble=bytesPerEnsemble,
          systemConfiguration=systemConfiguration,
