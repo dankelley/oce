@@ -23,6 +23,7 @@
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      mai.palette=c(0, 1/8, 0, 3/8),
+     tformat,
      marginsAsImage=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim, ylim, 
@@ -98,6 +99,9 @@
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{mai.palette}{margins, in inches, for the palette}
+  \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+      plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
   \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, even if there are no images in the \code{which}
     list.  (The margin is made wide if there are some images in the sequence.)}
@@ -299,6 +303,7 @@ data(adp)
 plot(adp, which=1:3)
 plot(adp, which=5, missingColor='gray',
      adorn=expression({ lines(x[["time"]], x[["pressure"]], lwd=3, col='blue') }))
+plot(adp, which='temperature', tformat='\%H:\%M')
 }
 
 \seealso{The documentation for \code{\link{adp-class}} explains the structure

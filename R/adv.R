@@ -191,6 +191,7 @@ setMethod(f="plot",
                               useSmoothScatter,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                              tformat,
                               marginsAsImage=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               xlim, ylim,
@@ -361,6 +362,7 @@ setMethod(f="plot",
                                       mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
+                                      tformat=tformat,
                                       debug=debug-1,
                                       ...)
                           points(x@data$time[!good], x@data$v[!good,which[w]], col=colBrush, ...)
@@ -376,8 +378,8 @@ setMethod(f="plot",
                                       mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                       if (drawZeroLine)
                           abline(h=0)
@@ -400,8 +402,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                           points(x@data$time[!good], y[!good], col=colBrush)
                       } else {
                           oce.plot.ts(x@data$time, y,
@@ -415,8 +417,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                       rm(y)                       # space may be tight
                   } else if (which[w] %in% 9:11) { # q1, q2, q3 (named c1, c2, and c3 in the object)
@@ -434,8 +436,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                           points(x@data$time[!good], y[!good], col=colBrush)
                       } else {
                           oce.plot.ts(x@data$time, y,
@@ -448,8 +450,8 @@ setMethod(f="plot",
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                       rm(y)                       # space may be tight
                   } else if (which[w] == 14 || which[w] == "temperature") {
@@ -464,8 +466,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=if(col.per.point) col else col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       } else {
                           oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"),
                                       drawTimeRange=drawTimeRange,
@@ -477,8 +479,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=if(col.per.point) col else col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                   } else if (which[w] == 15 || which[w] == "pressure") {
                       oce.plot.ts(x@data$time, x@data$pressure, ylab=resizableLabel("p", "y"),
@@ -491,8 +493,8 @@ setMethod(f="plot",
                                   mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   lwd=lwd[w], col=if(col.per.point) col else col[w],
                                   main=main,
-                                  debug=debug-1,
-                                  ...)
+                                  tformat=tformat,
+                                  debug=debug-1)
                   } else if (which[w] == 16 || which[w] == "heading") {
                       if ("timeSlow" %in% names(x@data) && "headingSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$headingSlow, ylab="heading",
@@ -505,8 +507,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=if(col.per.point) col else col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       } else {
                           oce.plot.ts(x@data$time, x@data$heading, ylab="heading",
                                       drawTimeRange=drawTimeRange,
@@ -518,8 +520,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=if(col.per.point) col else col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                   } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
                       if ("timeSlow" %in% names(x@data) && "pitchSlow" %in% names(x@data)) {
@@ -533,8 +535,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=if(col.per.point) col else col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       } else {
                           oce.plot.ts(x@data$time, x@data$pitch, ylab="pitch",
                                       drawTimeRange=drawTimeRange,
@@ -546,8 +548,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=if(col.per.point) col else col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                   } else if (which[w] == 18 || which[w] == "roll") {
                       if ("timeSlow" %in% names(x@data) && "rollSlow" %in% names(x@data)) {
@@ -561,8 +563,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       } else {
                           oce.plot.ts(x@data$time, x@data$roll, ylab="roll",
                                       drawTimeRange=drawTimeRange,
@@ -574,8 +576,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       lwd=lwd[w], col=col[w],
                                       main=main,
-                                      debug=debug-1,
-                                      ...)
+                                      tformat=tformat,
+                                      debug=debug-1)
                       }
                       ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
                   } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
@@ -586,12 +588,14 @@ setMethod(f="plot",
                           plot(a, c, xlab="Amplitude", ylab="Correlation",
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
-                               main=main)
+                               main=main,
+                               debug=debug-1)
                       } else {
                           smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
-                                        main=main)
+                                        main=main,
+                                        debug=debug-1)
                       }
                       mtext("beam 1")
                   } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
@@ -602,12 +606,14 @@ setMethod(f="plot",
                           plot(a, c, xlab="Amplitude", ylab="Correlation",
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
-                               main=main)
+                               main=main,
+                               debug=debug-1)
                       } else {
                           smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
-                                        main=main)
+                                        main=main,
+                                        debug=debug-1)
                       }
                       mtext("beam 2")
                   } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
@@ -678,19 +684,25 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 50 || which[w] == "analog1") {
                       if ("analog1" %in% names(x@data)) {
-                          oce.plot.ts(x@data$time, x@data$analog1, ylab="Analog 1")
+                          oce.plot.ts(x@data$time, x@data$analog1, ylab="Analog 1",
+                                      tformat=tformat,
+                                      debug=debug-1)
                       } else {
                           warning("there is no analog1 signal in this ADV object")
                       }
                   } else if (which[w] == 51 || which[w] == "analog2") {
                       if ("analog2" %in% names(x@data)) {
-                          oce.plot.ts(x@data$time, x@data$analog2, ylab="Analog 2")
+                          oce.plot.ts(x@data$time, x@data$analog2, ylab="Analog 2",
+                                      tformat=tformat,
+                                      debug=debug-1)
                       } else {
                           warning("there is no analog2 signal in this ADV object")
                       }
                   } else if (which[w] == 100 || which[w] == "voltage") {
                       if ("voltageSlow" %in% names(x@data))
-                          oce.plot.ts(x@data$timeSlow, x@data$voltageSlow, ylab="Voltage")
+                          oce.plot.ts(x@data$timeSlow, x@data$voltageSlow, ylab="Voltage",
+                                      tformat=tformat,
+                                      debug=debug-1)
                       else
                           warning("no voltage signal to plot")
                   } else {
