@@ -8,7 +8,8 @@
 \description{Get a tidal prediction from a WebTide database}
 
 \usage{webtide(action=c("map", "predict"), latitude, longitude, time,
-        basedir="/usr/local/WebTide", region="nwatl", plot=TRUE)}
+        basedir="/usr/local/WebTide", region="nwatl", plot=TRUE,
+        tformat)}
 
 \arguments{
 
@@ -27,9 +28,10 @@
   \item{region}{database region, given as a directory name in the WebTide directory.  For example,
     \code{h3o} is for Halifax Harbour, \code{nwatl} is for the northwest Atlantic, and \code{sshelf}
     is for the Scotian Shelf and Gulf of Maine.}
-
   \item{plot}{boolean indicating whether to plot.}
-  
+  \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+      plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
 }
 
 \details{The \code{action="map"} method plots a map with a dot for the lower-left corner of each

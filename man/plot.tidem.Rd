@@ -10,17 +10,17 @@
 
 \usage{\S4method{plot}{tidem}(x, 
      which=1,
-     label.if=NULL, 
+     labelIf=NULL, 
      log="",
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
-     ...)}
+     \dots)}
 
 \arguments{
   \item{x}{a \code{tidem} object, as created by \code{\link{tidem}}.}
   \item{which}{integer flag indicating plot type, 1 for stair-case
     spectral, 2 for spike spectral.}
-  \item{label.if}{if NULL, the function will indicate some particular
+  \item{labelIf}{if NULL, the function will indicate some particular
 	tidal constituents; if a value is provided, labels will be given for
 	any constituent with amplitude exceeding the value provided.}
   \item{log}{if set to "\code{x}", the frequency axis will be
