@@ -114,6 +114,7 @@ setMethod(f="plot",
            definition=function(x, which = 1:4,
                                mgp=getOption("oceMgp"),
                                mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                               tformat,
                                debug=getOption("oceDebug"),
                                ...)
            {
@@ -125,13 +126,13 @@ setMethod(f="plot",
                for (w in 1:nw) {
                    oceDebug(debug, "which=", w, "\n")
                    if (which[w] == 1) {
-                       oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"))
+                       oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"), tformat=tformat)
                    } else if (which[w] == 2) {
-                       oce.plot.ts(x@data$time, x@data$pressure, ylab="Pressure [kPa]")
+                       oce.plot.ts(x@data$time, x@data$pressure, ylab="Pressure [kPa]", tformat=tformat)
                    } else if (which[w] == 3) {
-                       oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("eastward", "y"))
+                       oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("eastward", "y"), tformat=tformat)
                    } else if (which[w] == 4) {
-                       oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("northward", "y"))
+                       oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("northward", "y"), tformat=tformat)
                    }
                }
            })
