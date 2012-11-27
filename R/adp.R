@@ -1202,8 +1202,8 @@ setMethod(f="plot",
                               v <- V[,control$bin,2]
                           } else {
                               if (x@metadata$numberOfCells > 1) {
-                                  u <- apply(U[,,1], 1, mean, na.rm=TRUE)
-                                  v <- apply(V[,,2], 1, mean, na.rm=TRUE)
+                                  u <- apply(U, 1, mean, na.rm=TRUE)
+                                  v <- apply(V, 1, mean, na.rm=TRUE)
                               } else {
                                   u <- U
                                   v <- V
