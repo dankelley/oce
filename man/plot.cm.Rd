@@ -51,7 +51,7 @@
         several panels.}
     \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
         plot types that call that function.  (See \code{\link{strptime}} for the
-      format used.)}
+        format used.)}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
