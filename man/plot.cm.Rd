@@ -18,6 +18,7 @@
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      small=2000,
      main="",
+     tformat,
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -48,6 +49,9 @@
         instead.}
     \item{main}{main title for plot, used just on the top panel, if there are
         several panels.}
+    \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+        plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
