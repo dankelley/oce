@@ -569,7 +569,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$xmitPulseLength <- xmitPulseLength
             metadata$oceBeamUnspreaded <- FALSE
             metadata$oceCoordinate <- header$originalCoordinate
-            metadata$depth <- mean(depth, na.rm=TRUE)
+            metadata$depthMean <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
