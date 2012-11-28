@@ -61,7 +61,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      measurementEnd=NA,   # FIXME
                      samplingRate=512/header$user$averagingInterval, # FIXME: why 512?
                      serialNumber=header$hardware$serialNumber,
-                     frequency=header$head$frequency,
                      internalCodeVersion=header$hardware$picVersion,
                      softwareVersion=header$user$swVersion,
                      hardwareRevision=header$hardware$hwRevision,
