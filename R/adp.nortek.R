@@ -19,10 +19,11 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
-decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"), debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
-    oceDebug(debug, "decodeHeaderNortek() entry; buf[1:20]=",buf[1:20],"\n")
+    oceDebug(debug, "\b\bdecodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="")
+    oceDebug(debug, "buf starts:", buf[1:20], "\n")
     degToRad <- atan2(1, 1) / 45
     syncCode <- as.raw(0xa5)
     idHardwareConfiguration <- as.raw(0x05)
@@ -117,7 +118,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             oceDebug(debug, "user$T2=", user$T2, "(blanking distance, in counts)\n")
 
             user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts (Q: does this relate to cellSize?)\n")
+            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts\n")
+            oceDebug(debug, " ABOVE FROM buf[o+9]=0x", buf[o+9], " and buf[o+10]=0x", buf[0+10], '\n', sep='')
             
             user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
@@ -198,6 +200,12 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                 warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file\n")
                 user$cellSize <- 0.75  # value for one particular test file
                 user$blankingDistance <- 0.37 # value for one particular test file
+            } else if (type == "vector") {
+                ## Next two lines from Nortek forum http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
+                ## The cell size is well hidden as T3 in the User configuration (A5 00) described in the integrator manual.
+                ## To get it in cm you need to calculate it using 0.01*T3*480.0e3/SPEED_OF_SOUND
+                user$cellSize <- 0.01 * user$receiveLength * 480.0e3 / 1500 # BUG: hard wired speed of sound (not in this header)
+                user$blankingDistance <- 0 # ?
             } else {
                 warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
                 user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
