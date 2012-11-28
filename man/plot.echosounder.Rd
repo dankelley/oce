@@ -21,6 +21,7 @@
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
      atTop, labelsTop,
+     tformat,
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -66,6 +67,10 @@
 
   \item{labelsTop}{optional vector of character strings to be plotted above the
       \code{atTop} times.  Ignored unless \code{atTop} was provided.}
+
+  \item{tformat}{optional argument passed to \code{\link{imagep}}, for plot
+      types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
 
   \item{despike}{remove vertical banding by using \code{\link{smooth}} to smooth
       across image columns, row by row.}

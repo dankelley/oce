@@ -191,6 +191,7 @@ imagep <- function(x, y, z,
                    breaks, col,
                    labels=NULL, at=NULL,
                    drawContours=FALSE,
+                   tformat,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
                    filledContour=FALSE,
@@ -374,7 +375,7 @@ imagep <- function(x, y, z,
             box()
             oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
                              drawTimeRange=drawTimeRange,
-                             mar=mar, mgp=mgp, debug=debug-1)
+                             mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
             axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     } else {                           # x is not a POSIXt
