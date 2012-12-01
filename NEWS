@@ -1,4 +1,6 @@
 0.9-4
+- interpBarnes(): add args 'xgl' and 'ygl'
+- read.section(): add 'directory' argument
 - sectionSmooth(): add 'barnes' method
 - oce.plot.ts() and oce.axis.POSIXct(): add tformat argument
 - read.aquadopp() and cousins added [issues 253 and 258]
