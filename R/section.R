@@ -210,6 +210,7 @@ setMethod(f="plot",
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
+                              showBottom=TRUE,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
                               col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -469,9 +470,25 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      if (length(bottom.x) == length(bottom.y))
-                          polygon(bottom.x, bottom.y, col="lightgray")
-                      box()
+                      if (is.character(showBottom) || showBottom) {
+                          type <- "polygon"
+                          if (is.character(showBottom)) {
+                              type <- showBottom
+                          }
+                          if (length(bottom.x) == length(bottom.y)) {
+                              bottom <- par('usr')[3]
+                              if (type == "polygon") {
+                                  polygon(bottom.x, bottom.y, col="lightgray")
+                              } else if (type == "lines") {
+                                  for (s in seq_along(bottom.x))
+                                      lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                               } else if (type == "points") {
+                                  for (s in seq_along(bottom.x))
+                                      points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                              }
+                          }
+                          box()
+                      }
                       ##axis(1, pretty(xxOrig))
                       axis(1)
                       ##lines(xx, -waterDepth[ox], col='red')
@@ -637,11 +654,23 @@ setMethod(f="plot",
               invisible()
           })
 
-read.section <- function(file, sectionId="", flags,
+read.section <- function(file, directory, sectionId="", flags,
 			 ship="", scientist="", institute="",
                          missingValue=-999,
 			 debug=getOption("oceDebug"), processingLog)
 {
+    if (!missing(directory)) {
+        if (!missing(file))
+            stop("cannot specify both 'file' and 'directory'")
+        files <- list.files(directory)
+        nstations <- length(files)
+        stations <- vector("list", nstations)
+        for (i in seq_along(files)) {
+            name <- paste(directory, files[i], sep='/')
+            stations[[i]] <- ctdTrim(read.oce(name))
+        }
+        return(makeSection(stations))
+    }
     if (is.character(file)) {
 	filename <- file
 	file <- file(file, "r")
