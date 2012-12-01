@@ -162,7 +162,7 @@ as.ctd <- function(salinity, temperature, pressure,
                      latitude=latitude,
                      longitude=longitude,
                      recovery=recovery,
-                     waterDepth=waterDepth,
+                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
                      sampleInterval=sampleInterval,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
@@ -437,6 +437,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             warning("should add note about trimming depth inversions to processingLog")
         }
     }
+    res@metadata$waterDepth <- max(abs(res@data$pressure)) # the bad data sometimes have high p
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdTrim()\n")
     res
@@ -1026,9 +1027,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             ##  #CTDFILE_NAME:     KB51D003.WCT
             oceDebug(debug, "infer filename from:", line, "\n")
             filename.orig <- sub("^.*NAME:[ ]*", "", line)
-            oceDebug(debug, "trim to '", filename.orig, "'\n")
+            oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
             filename.orig <- sub("[ ]*$", "", filename.orig)
-            oceDebug(debug, "trim to '", filename.orig, "'\n", sep='')
+            oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
         }
         header <- c(header, line)
         ## SAMPLE:
@@ -1143,7 +1144,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
     }
     ## catch e.g. -999 sometimes used for water depth's missing value
-    if (is.finite(waterDepth) && waterDepth < 0)
+    if (is.finite(waterDepth) && waterDepth <= 0)
         waterDepth <- NA
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
@@ -1160,7 +1161,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      latitude=latitude,
                      longitude=longitude,
                      recovery=recovery,
-                     waterDepth=waterDepth,
+                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
                      sampleInterval=sampleInterval,
                      names=names,
                      labels=labels,
@@ -1509,7 +1510,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     }
-    #x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+    if (is.na(res@metadata$waterDepth)) 
+        res@metadata$waterDepth <- max(abs(data$pressure))
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1594,7 +1596,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                      latitude=latitude,
                      longitude=longitude,
                      recovery=NULL,
-                     waterDepth=waterDepth,
+                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
                      sampleInterval=NA,
                      filename=filename)
     fff <- textConnection(lines)
