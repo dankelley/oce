@@ -1000,10 +1000,10 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
     res / 1000
 }
 
-interpBarnes <- function(x, y, z, w, xg, yg,
+interpBarnes <- function(x, y, z, w,
+                         xg, yg, xgl, ygl,
                          xr, yr, gamma=0.5, iterations=2,
                          debug=getOption("oceDebug"))
-
 {
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "\b\binterpBarnes(x, ...) {\n")
@@ -1017,26 +1017,34 @@ interpBarnes <- function(x, y, z, w, xg, yg,
     if (missing(w))
         w <- rep(1.0, length(x))
     if (missing(xg)) {
-        if (0 == diff(range(x))) {
-            xg <- x[1]
+        if (missing(xgl)) {
+            if (0 == diff(range(x, na.rm=TRUE))) {
+                xg <- x[1]
+            } else {
+                xg <- pretty(x, n=50)
+            }
         } else {
-            xg <- pretty(x, n=50)
+            xg <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=xgl)
         }
     }
     if (missing(yg)) {
-        if (0 == diff(range(y))) {
-            yg <- y[1]
+        if (missing(ygl)) {
+            if (0 == diff(range(y, na.rm=TRUE))) {
+                yg <- y[1]
+            } else {
+                yg <- pretty(y, n=50)
+            }
         } else {
-            yg <- pretty(y, n=50)
+            yg <- seq(min(y, na.rm=TRUE), max(y, na.rm=TRUE), length.out=ygl)
         }
     }
     if (missing(xr)) {
-        xr <- diff(range(x)) / sqrt(n)
+        xr <- diff(range(x, na.rm=TRUE)) / sqrt(n)
         if (xr == 0)
             xr <- 1
     }
     if (missing(yr)) {
-        yr <- diff(range(y)) / sqrt(n)
+        yr <- diff(range(y, na.rm=TRUE)) / sqrt(n)
         if (yr == 0)
             yr <- 1
     }
