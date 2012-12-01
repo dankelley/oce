@@ -19,24 +19,27 @@
         \code{\link{smooth.spline}} or \code{\link{interpBarnes}}.}
 }
 
-\details{For \code{method="spline"}, the section is smoothed using
+\details{This function should be used with caution, as should any operation
+    that changes data.  Although smoothing may be desirable to produce
+    aesthetically-pleasing plots, it can also introduce artifacts that can lead
+    to erroneous conclusions.  The prudent analyst starts by comparing plots of
+    the raw data with plots of the smoothed data.
+    
+    For \code{method="spline"}, the section is smoothed using
     \code{\link{smooth.spline}} on individual pressure levels, with any
     parameters listed in \code{parameters} being passed to that function.  If
     \code{df} is not present in \code{parameters}, then this function sets it
     to the number of stations divided by 5.  Smoothing is done separately for
     temperature, salinity, and sigma-theta.
 
-    For \code{method="barnes"}, \code{\link{interpBarnes}} is used to construct
-    a grid, with any arguments in \code{\dots} being passed to that function;
-    see \sQuote{Examples}.
-
-    The \code{barnes} method is generally an order of magnitude slower than the
-    \code{spline} method, but it has the advantage of being closer to a standard.
-
+    For the (much slower) \code{method="barnes"} method, smoothing is done
+    across both horizontal and vertical coordinates, using
+    \code{\link{interpBarnes}}.  Any arguments in \code{\dots} being passed to
+    that function; see \sQuote{Examples}.
 }
 
-\value{An object of \code{\link[base]{class}} \code{"section"} that
-has less lateral variation than the input section.}
+\value{An object of \code{\link[base]{class}} \code{"section"} that is smoother
+    than the input section.}
 
 \seealso{The documentation for \code{\link{section-class}} explains the
     structure of section objects, and also outlines the other functions dealing

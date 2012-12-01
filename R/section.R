@@ -896,6 +896,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 			250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
 			1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
 			4500, 5000, 5500)
+                pt <- pt[pt < max(section[["pressure"]])]
 	    } else { # FIXME should insist numeric
 		p.max <- 0
 		for (i in 1:n) {
@@ -962,17 +963,26 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         ## turn off warnings about df being too small
         o <- options('warn')
         options(warn=-1) 
+        gaveDF <- "df" %in% names(list(...))
         for (p in 1:npressure) {
             ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
             nok <- sum(ok)
             iok <- (1:nstn)[ok]
             if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
-                temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], ...), x)$y
-                salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], ...), x)$y
-                sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], ...), x)$y
-                ##oceDebug(debug, p, "dbar: smoothing, based on", nok, "good values\n")
+                if (gaveDF) {
+                    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], ...), x)$y
+                    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], ...), x)$y
+                    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], ...), x)$y
+                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with supplied df=", list(...)$df, " (have", nok, "good values)\n")
+                } else {
+                    usedf <- nok / 5
+                    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], df=usedf), x)$y
+                    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], df=usedf), x)$y
+                    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], df=usedf), x)$y
+                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with df=", usedf, " (have", nok, "good values)\n")
+                }
             } else {
-                ##oceDebug(debug, "pessure index=", p, ": not smoothing, since have only", nok, "good values\n")
+                oceDebug(debug, stn1pressure[p], "dbar: not smoothing, since have only", nok, "good values\n")
             }
         }
         options(warn=o$warn) 
