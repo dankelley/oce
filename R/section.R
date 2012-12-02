@@ -468,7 +468,7 @@ setMethod(f="plot",
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == 'image') {
-                                      filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
                                   } else {
@@ -482,7 +482,7 @@ setMethod(f="plot",
                                           xaxs="i", yaxs="i",
                                           ...)
                                   } else if (ztype == 'image') {
-                                      filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
                                   } else {
@@ -513,7 +513,7 @@ setMethod(f="plot",
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == 'image') {
-                                      filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
                                   } else {
