@@ -172,6 +172,13 @@ plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
 plot(GSg, which='sigmaTheta', ylim=c(1000,0),
      contourLevel=seq(24, 29, 0.5),
      contourLabel=c("24", "", "25","","26","","27","","28","","29"))
+
+## image, with coloured dots to show if grid smoothing was OK
+plot(GSg, which=1, ztype='image')
+col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
+points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
+points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
+
 }
 
 \author{Dan Kelley}

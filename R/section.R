@@ -541,6 +541,11 @@ setMethod(f="plot",
                       ##axis(1, pretty(xxOrig))
                       axis(1)
                       ##lines(xx, -waterDepth[ox], col='red')
+
+                      ## undo negation of the y coordinate, so further can can make sense
+                      usr <- par('usr')
+                      par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
+
                       if (legend)
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
