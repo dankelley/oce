@@ -45,6 +45,19 @@ setMethod(f="[[",
                       rval <- c(rval, stn[['station']])
               } else if ("dynamic height" == i) {
                   rval <- swDynamicHeight(x)
+              } else if ("distance" == i) {
+                  rval <- NULL
+                  for (stn in seq_along(x@data$station)) {
+                      distance <- geodDist(x@data$station[[stn]]@metadata$latitude,
+                                           x@data$station[[stn]]@metadata$longitude,
+                                           x@data$station[[1]]@metadata$latitude,
+                                           x@data$station[[1]]@metadata$longitude)
+                      rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+                  }
+              } else if ("depth" == i) {
+                  rval <- NULL
+                  for (stn in seq_along(x@data$station))
+                      rval <- c(rval, x@data$station[[stn]]@data$pressure)
               } else {
                   stop("cannot access item named \"", i, "\" in this section object")
               }
@@ -207,6 +220,7 @@ setMethod(f="plot",
                               map.xlim=NULL, map.ylim=NULL,
                               xtype="distance",
                               ytype="depth",
+                              ztype=c("contour", "image"),
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
@@ -218,18 +232,23 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 2) 2 else floor(0.5 + debug)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n")
+              xtype <- match.arg(xtype)
+              ytype <- match.arg(ytype)
+              ztype <- match.arg(ztype)
+              legend.loc <- match.arg(legend.loc)
+              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n", sep="")
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         ztype="contour",
                                          legend=TRUE,
                                          debug=0,
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ...) {\n")
+                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
@@ -378,15 +397,15 @@ setMethod(f="plot",
                           len <- length(temp)
                           if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
                               wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
-                              oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
+                              ##oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
                           } else {
                               wd <- NA
                               if (is.na(temp[len])) {
                                   wdi <- len - which(!is.na(rev(temp)))[1] + 1
                                   wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
-                                  oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
+                                  ##oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
                               } else {
-                                  oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
+                                  ##oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
                               }
                           }
                           in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
@@ -409,7 +428,6 @@ setMethod(f="plot",
                       dots <- list(...) # adjust plot parameter labcex, unless user did
 
                       ##par(xaxs="i", yaxs="i")
-
 
                       ## Put x in order, if it's not already
                       ox <- order(xx)
@@ -438,56 +456,87 @@ setMethod(f="plot",
                               }
                           }
                       } else {
+                          zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE, add=TRUE, labcex=0.8,
-                                          levels=contourLevels, labels=contourLabels,
-                                          xaxs="i", yaxs="i",
-                                          ...)
+                                  if (ztype == 'contour') {
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                              axes=FALSE, add=TRUE, labcex=0.8,
+                                              levels=contourLevels, labels=contourLabels,
+                                              xaxs="i", yaxs="i",
+                                              ...)
+                                  } else if (ztype == 'image') {
+                                      filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype:", ztype)
+                                  }
                               } else {
+                                  if (ztype == 'contour') {
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE, add=TRUE,
                                           levels=contourLevels, labels=contourLabels,
                                           xaxs="i", yaxs="i",
                                           ...)
+                                  } else if (ztype == 'image') {
+                                      filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype:", ztype)
+                                  }
                               }
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               if (is.null(dots$labcex)) {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE, labcex=0.8,
-                                          add=TRUE,
-                                          xaxs="i", yaxs="i",
-                                          ...)
+                                  if (ztype == 'contour') {
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                              axes=FALSE, labcex=0.8,
+                                              add=TRUE,
+                                              xaxs="i", yaxs="i",
+                                              ...)
+                                  } else if (ztype == 'image') {
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype:", ztype)
+                                  }
                               } else {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE,
-                                          add=TRUE,
-                                          xaxs="i", yaxs="i",
-                                          ...)
+                                  if (ztype == 'contour') {
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                              axes=FALSE,
+                                              add=TRUE,
+                                              xaxs="i", yaxs="i",
+                                              ...)
+                                  } else if (ztype == 'image') {
+                                      filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  }
+                                  stop("unkown ztype:", ztype)
                               }
                           }
-                      }
-                      if (is.character(showBottom) || showBottom) {
-                          type <- "polygon"
-                          if (is.character(showBottom)) {
-                              type <- showBottom
-                          }
-                          if (length(bottom.x) == length(bottom.y)) {
-                              bottom <- par('usr')[3]
-                              if (type == "polygon") {
-                                  polygon(bottom.x, bottom.y, col="lightgray")
-                              } else if (type == "lines") {
-                                  for (s in seq_along(bottom.x))
-                                      lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
-                               } else if (type == "points") {
-                                  for (s in seq_along(bottom.x))
-                                      points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                          if (is.character(showBottom) || showBottom) {
+                              type <- "polygon"
+                              if (is.character(showBottom))
+                                  type <- showBottom
+                              if (length(bottom.x) == length(bottom.y)) {
+                                  bottom <- par('usr')[3]
+                                  if (type == "polygon") {
+                                      polygon(bottom.x, bottom.y, col="lightgray")
+                                  } else if (type == "lines") {
+                                      for (s in seq_along(bottom.x))
+                                          lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                                  } else if (type == "points") {
+                                      for (s in seq_along(bottom.x))
+                                          points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                                  }
                               }
+                              box()
                           }
-                          box()
                       }
                       ##axis(1, pretty(xxOrig))
                       axis(1)
@@ -495,8 +544,8 @@ setMethod(f="plot",
                       if (legend)
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
-                  oceDebug(debug, "\b} # plotSubsection()\n")
-              }                                   # plotSubsection
+                  oceDebug(debug, "\b\b} # plotSubsection()\n")
+              }
               if (!inherits(x, "section"))
                   stop("method is only for section objects")
               opar <- par(no.readonly = TRUE)
@@ -599,47 +648,85 @@ setMethod(f="plot",
                   adorn.length <- lw
               }
               for (w in 1:length(which)) {
-                  oceDebug(debug, "w=", w, "\n")
+                  oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
                       if (missing(contourLabels))
                           contourLabels <- format(contourLevels)
-                      if (which[w] == 1)
-                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 2)
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] > 2 && which[w] < 3)
-                          plotSubsection("salinity gradient","dS/dz", ylab="", levels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 3)
-                          plotSubsection("sigmaTheta",  expression(sigma[theta]), levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 4)
-                          plotSubsection("nitrate",     "nitrate", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 5)
-                          plotSubsection("nitrite",     "nitrite", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 6)
-                          plotSubsection("oxygen",      "oxygen", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 7)
-                          plotSubsection("phosphate",   "phosphate", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 8)
-                          plotSubsection("silicate",    "silicate", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 1) {
+                          plotSubsection("temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 2) {
+                          plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] > 2 && which[w] < 3) {
+                          plotSubsection("salinity gradient","dS/dz", ylab="",
+                                         levels=contourLevels, xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 3) {
+                          plotSubsection("sigmaTheta", expression(sigma[theta]),
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 4) {
+                          plotSubsection("nitrate", "nitrate",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 5) {
+                          plotSubsection("nitrite", "nitrite",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 6) {
+                          plotSubsection("oxygen", "oxygen",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 7) {
+                          plotSubsection("phosphate", "phosphate",
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 8) {
+                          plotSubsection("silicate", "silicate",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...) 
+                      }
                   } else {
-                      if (which[w] == 1)
-                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 2)
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] > 2 && which[w] < 3)
-                          plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 3)
-                          plotSubsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 4)
-                          plotSubsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 5)
-                          plotSubsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 6)
-                          plotSubsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 7)
-                          plotSubsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 8)
-                          plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 1) {
+                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 2) {
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] > 2 && which[w] < 3) {
+                          plotSubsection("salinity gradient","dS/dz", ylab="",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 3) {
+                          plotSubsection("sigmaTheta", expression(sigma[theta]),
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 4) {
+                          plotSubsection("nitrate",     "nitrate",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 5) {
+                          plotSubsection("nitrite",     "nitrite",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 6) {
+                          plotSubsection("oxygen",      "oxygen",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 7) {
+                          plotSubsection("phosphate",   "phosphate",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 8) {
+                          plotSubsection("silicate",    "silicate",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      }
                   }
                   if (which[w] == 20)
                       plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
@@ -650,7 +737,7 @@ setMethod(f="plot",
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b} # plot.section()\n")
+              oceDebug(debug, "\b\b} # plot.section()\n")
               invisible()
           })
 
