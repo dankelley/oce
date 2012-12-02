@@ -201,10 +201,10 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                 user$cellSize <- 0.75  # value for one particular test file
                 user$blankingDistance <- 0.37 # value for one particular test file
             } else if (type == "vector") {
-                ## Next two lines from Nortek forum http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
-                ## The cell size is well hidden as T3 in the User configuration (A5 00) described in the integrator manual.
-                ## To get it in cm you need to calculate it using 0.01*T3*480.0e3/SPEED_OF_SOUND
-                user$cellSize <- 0.01 * user$receiveLength * 480.0e3 / 1500 # BUG: hard wired speed of sound (not in this header)
+                ## Formula (revised) from Nortek http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
+                ## Cell size (mm) = T3counts * 1000 * 750 / 480000
+                soundspeed <- 1500
+                user$cellSize <- user$receiveLength * (soundspeed / 2) / 480.0e3 # drop the 1000 to get m
                 user$blankingDistance <- 0 # ?
             } else {
                 warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
