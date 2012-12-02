@@ -854,6 +854,8 @@ summary.oce <- function(object, ...)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
+    if (file.info(file)$isdir)
+        stop("please supply a file name, not a directory name")
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
         if (length(grep(".asc$", filename))) {
