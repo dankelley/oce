@@ -242,13 +242,14 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
-                                         ztype="contour",
+                                         ztype=c("contour", "image"),
                                          legend=TRUE,
                                          debug=0,
                                          col=par("col"),
                                          ...)
               {
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+                  ztype <- match.arg(ztype)
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
@@ -471,7 +472,7 @@ setMethod(f="plot",
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
                                   } else {
-                                      stop("unkown ztype:", ztype)
+                                      stop("unkown ztype: \"", ztype, "\" [1]")
                                   }
                               } else {
                                   if (ztype == 'contour') {
@@ -485,7 +486,7 @@ setMethod(f="plot",
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
                                   } else {
-                                      stop("unkown ztype:", ztype)
+                                      stop("unkown ztype: \"", ztype, "\" [2]")
                                   }
                               }
                           } else {
@@ -502,7 +503,7 @@ setMethod(f="plot",
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
                                   } else {
-                                      stop("unkown ztype:", ztype)
+                                      stop("unkown ztype: \"", ztype, "\" [3]")
                                   }
                               } else {
                                   if (ztype == 'contour') {
@@ -515,8 +516,9 @@ setMethod(f="plot",
                                       filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype: \"", ztype, "\" [4]")
                                   }
-                                  stop("unkown ztype:", ztype)
                               }
                           }
                           if (is.character(showBottom) || showBottom) {
