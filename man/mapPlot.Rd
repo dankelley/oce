@@ -24,14 +24,17 @@
 
 \details{Creates a map using the indicated projection.}
 
-\seealso{Points may be added to a map with \code{\link{mapPoints}}.}
+\seealso{Points may be added to a map with \code{\link{mapPoints}} and lines
+    may be added with \code{\link{mapLines}}.}
 
 \examples{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
-mapPlot(latitude, longitude, type='l', latitudelim=c(0,120), longitudelim=c(-80,10), projection="orthographic", orientation=c(45,-100,0))
+mapPlot(latitude, longitude, type='l',
+        latitudelim=c(0,120), longitudelim=c(-80,10), 
+        projection="orthographic", orientation=c(45,-100,0))
 }
 
 \author{Dan Kelley}
