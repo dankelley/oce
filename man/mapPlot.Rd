@@ -36,6 +36,7 @@ longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
 mapPlot(longitude, latitude, type='l',
         latitudelim=c(0,120), longitudelim=c(-80,10),
+        grid=10,
         projection="orthographic", orientation=c(45,-100,0))
 }
 
