@@ -552,6 +552,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             headingStd <- as.numeric(buf[profileStart + 31]) # p142 WorkHorse_commands_data_format_AUG10.PDF
             pitchStd <- 0.1 * as.numeric(buf[profileStart + 32])
             rollStd <- 0.1 * as.numeric(buf[profileStart + 33])
+            pressureStd <- readBin(buf[profileStart4 + 52, "integer", n=profilesToRead, size=4, endian="little")
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
             metadata <- header
@@ -633,7 +634,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              roll=roll,
                              headingStd=headingStd,
                              pitchStd=pitchStd,
-                             rollStd=rollStd)
+                             rollStd=rollStd,
+                             pressureStd=pressureStd)
             } else {
                 data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
