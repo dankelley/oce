@@ -7,12 +7,8 @@ library(mapproj)
 ##    stop("mapContour does not do anything yet")
 ##}
 ##
-##mapLines <- function()
-##{
-##    stop("mapLines does not do anything yet")
-##}
 
-mapPlot <- function(latitude, longitude, latitudelim, longitudelim,
+mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     projection="mercator", parameters=NULL, orientation=NULL,
                     ...)
 {
@@ -29,24 +25,48 @@ mapPlot <- function(latitude, longitude, latitudelim, longitudelim,
         plot(xy$x, xy$y,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     }
+    usr <- par('usr')
+    if (!missing(grid)) {
+        if (is.logical(grid))
+            grid <- 10
+        lons <- rep(seq(-180, 180, grid), each=180/grid)
+        lats <- rep(seq(-90, 90, grid), each=360/grid)
+        n <- 360 # points on line
+        for (lon in seq(-180, 180, grid)) {
+            line <- mapproject(rep(lon, n), seq(-90+grid, 90-grid, length.out=n))
+            ok <- !is.na(line$x) & !is.na(line$y)
+            if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
+                lines(line$x, line$y, col='gray', lty='dotted')
+            }
+        }
+        for (lat in seq(-90, 90-grid, grid)) {
+            line <- mapproject(seq(-180, 180, length.out=n), rep(lat, n))
+            ok <- !is.na(line$x) & !is.na(line$y)
+            if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
+                lines(line$x, line$y, col='gray', lty='dotted')
+            }
+        }
+    }
+
     box()
     ## FIXME: add lat-lon grid
 }
 
-mapLines <- function(latitude, longitude, ...)
+mapLines <- function(longitude, latitude, ...)
 {
     xy <- mapproject(longitude, latitude)
     lines(xy$x, xy$y, ...)
 }
 
-mapPoints <- function(latitude, longitude, ...)
+mapPoints <- function(longitude, latitude, ...)
 {
     xy <- mapproject(longitude, latitude)
     points(xy$x, xy$y, ...)
 }
 
-## mapText <- function()
-## {
-##     stop("mapText does not do anything yet")
-## }
-## 
+mapText <- function(longitude, latitude, labels, ...)
+{
+    xy <- mapproject(longitude, latitude)
+    text(xy$x, xy$y, labels, ...)
+}
+

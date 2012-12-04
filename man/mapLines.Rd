@@ -6,12 +6,11 @@
 
 \description{Plot lines on an existing map}
 
-\usage{mapLines(latitude, longitude, \dots)
-}
+\usage{mapLines(longitude, latitude, \dots)}
 
 \arguments{
-    \item{latitude}{latitudes of points to be plotted}
     \item{longitude}{longitudes of points to be plotted}
+    \item{latitude}{latitudes of points to be plotted}
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}
 }
 
@@ -20,20 +19,20 @@
 \section{Bugs}{This should use \code{\link{approx}} to fill in multiple
     segments within the line, so that e.g. great circle lines will be curved.}
 
-\seealso{Maps are created with \code{\link{mapPlot}}, and points may be added
-    to maps with \code{\link{mapPoints}}.}
+\seealso{See \code{\link{mapPlot}} for general information on plotting maps,
+    including other functions.}
 
 \examples{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
-mapPlot(latitude, longitude, type='l',
-        latitudelim=c(0,120), longitudelim=c(-80,10),
+mapPlot(longitude, latitude, type='l',
+        longitudelim=c(-80,10), latitudelim=c(0,120),
         projection="orthographic", orientation=c(45,-100,0))
 lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)
-mapLines(lat, lon, col='red')
+mapLines(lon, lat, col='red')
 }
 
 \author{Dan Kelley}
