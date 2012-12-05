@@ -15,6 +15,9 @@ help the author in the development of Oce.  The easy way to install the
     library(devtools)
     install_github('oce', 'dankelley', 'develop')
 
+(This uses the ``devtools`` package, which is one of many powerful tools
+written by Hadley Wickham; his site on github is https://github.com/hadley.)
+
 In addition to the ``master`` and ``develop`` branches, there is a ``testing``
 branch that is sometimes used to try out variants of new features, and any
 number of temporary branches that are used to address bugs or requests for new
