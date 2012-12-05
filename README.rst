@@ -13,6 +13,7 @@ help the author in the development of Oce.  The easy way to install the
 ``develop`` branch is to execute the following commands in R:
 
     library(devtools)
+
     install_github('oce', 'dankelley', 'develop')
 
 In addition to the ``master`` and ``develop`` branches, there is a ``testing``
