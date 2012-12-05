@@ -1098,30 +1098,35 @@ setMethod(f="plot",
                               if (which[w] == 40) {
                                   oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$br, na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 41) {
                                   oce.plot.ts(x@data$time, x@data$br[,1], ylab="Beam 1 range [m]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,1], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 42) {
                                   oce.plot.ts(x@data$time, x@data$br[,2], ylab="Beam 2 range [m]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,2], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 43) {
                                   oce.plot.ts(x@data$time, x@data$br[,3], ylab="Beam 3 range [m]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,3], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 44) {
                                   oce.plot.ts(x@data$time, x@data$br[,4], ylab="Beam 4 range [m]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,4], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
@@ -1136,30 +1141,35 @@ setMethod(f="plot",
                               if (which[w] == 50) {
                                   oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$bv, na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 51) {
                                   oce.plot.ts(x@data$time, x@data$bv[,1], ylab="Beam 1 velocity [m/s]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 52) {
                                   oce.plot.ts(x@data$time, x@data$bv[,2], ylab="Beam 2 velocity [m/s]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,2], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 53) {
                                   oce.plot.ts(x@data$time, x@data$bv[,3], ylab="Beam 3 velocity [m/s]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,3], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
                               } else if (which[w] == 54) {
                                   oce.plot.ts(x@data$time, x@data$bv[,4], ylab="Beam 4 velocity [m/s]",
                                               type=type,
+                                              xlim=if(gave.xlim) xlim[w,] else tlim,
                                               ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,4], na.rm=TRUE),
                                               tformat=tformat,
                                               debug=debug-1)
