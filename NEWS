@@ -1,4 +1,5 @@
 0.9-4
+- plot.ctd(): add argument 'add'
 - add crude mapping support
 - interpBarnes(): add args 'xgl' and 'ygl'
 - read.section(): add 'directory' argument
