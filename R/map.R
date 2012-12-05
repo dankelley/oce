@@ -2,11 +2,28 @@
 
 library(mapproj)
 
-##mapContour <- function()
-##{
-##    stop("mapContour does not do anything yet")
-##}
-##
+mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
+                       latitude=seq(0, 1, length.out=ncol(z)),
+                       z,
+                       nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels), 
+                       ##labels=null,
+                       ##xlim=range(longitude, finite=TRUE),
+                       #ylim=range(latitude, finite=TRUE),
+                       ##labcex=0.6,
+                       #drawlabels=TRUE,
+                       ##method="flattest",
+                       ##vfont,
+                       ## axes=TRUE, frame.plot=axes,
+                       col=par("fg"), lty=par("lty"), lwd=par("lwd"))
+{
+    cl <- contourLines(x=longitude, y=latitude, z=z, nlevels=nlevels, levels=levels)
+    for (i in 1:length(cl)) {
+        ##cat(cl[[i]]$level, 'm\n')
+        mapLines(cl[[i]]$x, cl[[i]]$y, lty=lty, lwd=lwd, col=col)
+    }
+    ## FIXME: labels, using labcex and vfont
+}
+
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     projection="mercator", parameters=NULL, orientation=NULL,
@@ -55,7 +72,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
 mapLines <- function(longitude, latitude, ...)
 {
     xy <- mapproject(longitude, latitude)
-    lines(xy$x, xy$y, ...)
+    ok <- !is.na(xy$x) & !is.na(xy$y)
+    usr <- par('usr')
+    if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
+        lines(xy$x, xy$y, ...)
+    }
 }
 
 mapPoints <- function(longitude, latitude, ...)
