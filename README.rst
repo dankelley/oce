@@ -10,10 +10,9 @@ a month.  The ``develop`` branch may be updated several times per day, as the
 author fixes bugs or adds features that are motivated by day-to-day usage.
 This is the branch favoured by users who need new features or would like to
 help the author in the development of Oce.  The easy way to install the
-``develop`` branch is to execute the following commands in R:
+``develop`` branch is to execute the following commands in R::
 
     library(devtools)
-
     install_github('oce', 'dankelley', 'develop')
 
 In addition to the ``master`` and ``develop`` branches, there is a ``testing``
