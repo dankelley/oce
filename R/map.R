@@ -26,6 +26,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     projection="mercator", parameters=NULL, orientation=NULL,
                     ...)
 {
+    if (inherits(longitude, "coastline")) {
+        latitude <- longitude[['latitude']]
+        longitude <- longitude[['longitude']]
+    }
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
