@@ -97,6 +97,10 @@ mapZones <- function(lon, ...)
 
 mapLines <- function(longitude, latitude, ...)
 {
+    if (inherits(longitude, "coastline")) {
+        latitude <- longitude[['latitude']]
+        longitude <- longitude[['longitude']]
+    }
     xy <- mapproject(longitude, latitude)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
@@ -201,5 +205,35 @@ map2lonlat <- function(xy)
     lon[bad] <- NA
     lat[bad] <- NA
     list(longitude=lon, latitude=lat)
+}
+
+mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
+                       border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
+{
+    n <- length(longitude)
+    xy <- mapproject(longitude, latitude)
+    bad <- is.na(xy$x)
+    polygon(xy[!bad]$x, xy[!bad]$y,
+            density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
+}
+
+mapImage <- function(longitude, latitude, z)
+{
+    ni <- dim(z)[1]
+    nj <- dim(z)[2]
+    dlongitude <- longitude[2] - longitude[1]
+    dlatitude <- latitude[2] - latitude[1]
+    cols <- oceColorsJet(100)
+    zmin <- min(z, na.rm=TRUE)
+    zmax <- max(z, na.rm=TRUE)
+    zrange <- zmax - zmin
+    for (i in 1:ni) {
+        for (j in 1:nj) {
+            col <- cols[100 * (z[i,j] - zmin)/ zrange]
+            mapPolygon(longitude[i]+dlongitude*c(0, 1, 1, 0, 0),
+                       latitude[j]+dlatitude*c(0, 0, 1, 1, 0),
+                       col=col, border=NA)
+        }
+    }
 }
 
