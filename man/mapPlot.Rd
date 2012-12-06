@@ -38,7 +38,27 @@ mapPlot(longitude, latitude, type='l',
         latitudelim=c(0,120), longitudelim=c(-80,10),
         grid=10,
         projection="orthographic", orientation=c(45,-100,0))
+
+## Illustrate the Lambert conformal conic projection,
+## said by Snyder (page 34) to be suitable for regions
+## of large east-west extent away from the equator.
+## Here, show USA and Canada.
+mapPlot(longitude, latitude, type='l',
+        latitudelim=c(30,60), longitudelim=c(-130,-50),
+        proj="lambert",
+        parameters=c(lat0=40,lat1=60),
+        orientation=c(90,-90,0), grid=TRUE)
+
+## Similar looking map, with the polyconic projection
+mapPlot(longitude, latitude, type='l',
+        latitudelim=c(30,60), longitudelim=c(-130,-50),
+        proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
 }
 
 \author{Dan Kelley}
+
+\references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
+    Professional Paper: 1395.  http:pubs.usgs.gov/pp/1395/report.pdf.
+}
+
 \keyword{hplot}
