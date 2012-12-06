@@ -175,3 +175,27 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     rval
 }
 
+map2lonlat <- function(xy)
+{
+    n <- length(xy$x)
+    lon <- rep(NA, n)
+    lat <- rep(NA, n)
+    for (i in 1:n) {
+        try({
+            ## FIXME: will this trick with the .Last.projection always work??
+            or <- get(".Last.projection", envir = globalenv())$orientation
+            error <- FALSE
+            o <- optim(c(or[2], or[1]), function(x) {xy2<-mapproject(x[1], x[2]); error <<- xy2$error; (xy2$x-xy$x[i])^2+(xy2$y-xy$y[i])^2})
+            if (o$convergence == 0 && !error) {
+                lonlat <- o$par
+                lon[i] <- lonlat[1]
+                lat[i] <- lonlat[2]
+            }
+        }, silent=TRUE)
+    }
+    bad <- lat < -90 | lat > 90 | lon < -180 | lon > 180
+    lon[bad] <- NA
+    lat[bad] <- NA
+    list(longitude=lon, latitude=lat)
+}
+
