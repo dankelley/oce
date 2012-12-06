@@ -160,65 +160,6 @@ prettyPosition <- function(x, debug=getOption("oceDebug"))
     rval
 }
 
-formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
-{
-    type <- match.arg(type)
-    signs <- sign(latlon)
-    x <- abs(latlon)
-    degrees <- floor(x)
-    minutes <- floor(60 * (x - degrees))
-    seconds <- 3600 * (x - degrees - minutes / 60)
-    seconds <- round(seconds, 2)
-
-    ## prevent rounding errors from giving e.g. seconds=60
-    ##print(data.frame(degrees,minutes,seconds))
-    secondsOverflow <- seconds == 60
-    seconds <- ifelse(secondsOverflow, 0, seconds)
-    minutes <- ifelse(secondsOverflow, minutes+1, minutes)
-    minutesOverflow <- minutes == 60
-    degrees <- ifelse(minutesOverflow, degrees+1, degrees)
-    ##print(data.frame(degrees,minutes,seconds))
-
-    noSeconds <- all(seconds == 0)
-    noMinutes <- noSeconds & all(minutes == 0)
-    hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
-    oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
-    if (type == "list") {
-        if (noMinutes)
-            rval <- list(degrees, hemispheres)
-        else if (noSeconds)
-            rval <- list(degrees, minutes, hemispheres)
-        else
-            rval <- list(degrees, minutes, seconds, hemispheres)
-    } else if (type == "string") {
-        if (noMinutes)
-            rval <- sprintf("%02d %s", degrees, hemispheres)
-        else if (noSeconds)
-            rval <- sprintf("%02d %02d %s", degrees, minutes, hemispheres)
-        else
-            rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
-    } else if (type == "expression") {
-        n <- length(degrees)
-        rval <- vector("expression", n)
-        for (i in 1:n) {
-            if (noMinutes) {
-                rval[i] <- as.expression(substitute(d*degree,
-                                                    list(d=degrees[i])))
-            } else if (noSeconds) {
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute,
-                                                    list(d=degrees[i],
-                                                         m=sprintf("%02d", minutes[i]))))
-            } else {
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
-                                                    list(d=degrees[i],
-                                                         m=sprintf("%02d", minutes[i]),
-                                                         s=sprintf("%02d", seconds[i]))))
-            }
-        }
-    }
-    rval
-}
-
 smoothSomething <- function(x, ...)
 {
     if (is.raw(x)) {

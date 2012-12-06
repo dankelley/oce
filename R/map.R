@@ -1,7 +1,4 @@
-#source('~/src/R-kelley/oce/R/map.R'); mapPlot(lon, lat, pro="orthographic",type='l',xlim=c(-80,10),ylim=c(0,120), orientation=c(45,-100,0))
-
 library(mapproj)
-
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -44,29 +41,54 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     }
     usr <- par('usr')
     if (!missing(grid)) {
-        if (is.logical(grid))
-            grid <- 10
-        lons <- rep(seq(-180, 180, grid), each=180/grid)
-        lats <- rep(seq(-90, 90, grid), each=360/grid)
-        n <- 360 # points on line
-        for (lon in seq(-180, 180, grid)) {
-            line <- mapproject(rep(lon, n), seq(-90+grid, 90-grid, length.out=n))
-            ok <- !is.na(line$x) & !is.na(line$y)
-            if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
-                lines(line$x, line$y, col='gray', lty='dotted')
-            }
-        }
-        for (lat in seq(-90, 90-grid, grid)) {
-            line <- mapproject(seq(-180, 180, length.out=n), rep(lat, n))
-            ok <- !is.na(line$x) & !is.na(line$y)
-            if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
-                lines(line$x, line$y, col='gray', lty='dotted')
-            }
+        mapMeridians(grid)
+        mapZones(grid)
+    }
+    box()
+}
+
+mapMeridians <- function(lat, ...)
+{
+    if (missing(lat))
+        lat <- TRUE
+    if (is.logical(lat)) {
+        if (!lat)
+            return
+        lat <- 10
+    }
+    if (length(lat) == 1)
+        lat <- rep(seq(-90, 90, lat), each=360/lat)
+    usr <- par('usr')
+    n <- 360 # points on line
+    for (l in lat) {
+        line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
+        ok <- !is.na(line$x) & !is.na(line$y)
+        if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
+            lines(line$x, line$y, ...)
         }
     }
+}
 
-    box()
-    ## FIXME: add lat-lon grid
+mapZones <- function(lon, ...)
+{
+    if (missing(lon))
+        lon <- TRUE
+    if (is.logical(lon)) {
+        if (!lon)
+            return
+        lon <- 10
+    }
+    if (length(lon) == 1)
+        lon <- rep(seq(-180, 180, lon), each=360/lon)
+    usr <- par('usr')
+    n <- 360 # points on line
+    for (l in lon) {
+        line <- mapproject(rep(l, n), seq(-90, 90, length.out=n))
+        ok <- !is.na(line$x) & !is.na(line$y)
+        if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
+            lines(line$x, line$y, ...)
+        }
+    }
 }
 
 mapLines <- function(longitude, latitude, ...)
@@ -89,5 +111,67 @@ mapText <- function(longitude, latitude, labels, ...)
 {
     xy <- mapproject(longitude, latitude)
     text(xy$x, xy$y, labels, ...)
+}
+
+formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=FALSE)
+{
+    type <- match.arg(type)
+    signs <- sign(latlon)
+    x <- abs(latlon)
+    degrees <- floor(x)
+    minutes <- floor(60 * (x - degrees))
+    seconds <- 3600 * (x - degrees - minutes / 60)
+    seconds <- round(seconds, 2)
+
+    ## prevent rounding errors from giving e.g. seconds=60
+    ##print(data.frame(degrees,minutes,seconds))
+    secondsOverflow <- seconds == 60
+    seconds <- ifelse(secondsOverflow, 0, seconds)
+    minutes <- ifelse(secondsOverflow, minutes+1, minutes)
+    minutesOverflow <- minutes == 60
+    degrees <- ifelse(minutesOverflow, degrees+1, degrees)
+    ##print(data.frame(degrees,minutes,seconds))
+
+    noSeconds <- all(seconds == 0)
+    noMinutes <- noSeconds & all(minutes == 0)
+    hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
+    oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
+    if (type == "list") {
+        if (noMinutes)
+            rval <- list(degrees, hemispheres)
+        else if (noSeconds)
+            rval <- list(degrees, minutes, hemispheres)
+        else
+            rval <- list(degrees, minutes, seconds, hemispheres)
+    } else if (type == "string") {
+        if (noMinutes)
+            rval <- sprintf("%02d %s", degrees, hemispheres)
+        else if (noSeconds)
+            rval <- sprintf("%02d %02d %s", degrees, minutes, hemispheres)
+        else
+            rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
+    } else if (type == "expression") {
+        n <- length(degrees)
+        rval <- vector("expression", n)
+        for (i in 1:n) {
+            if (noMinutes) {
+                rval[i] <- as.expression(substitute(d*degree*hemi,
+                                                    list(d=degrees[i],
+                                                         hemi=hemispheres[i])))
+            } else if (noSeconds) {
+                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]),
+                                                         hemi=hemispheres[i])))
+            } else {
+                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]),
+                                                         s=sprintf("%02d", seconds[i]),
+                                                         hemi=hemispheres[i])))
+            }
+        }
+    }
+    rval
 }
 

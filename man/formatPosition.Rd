@@ -6,12 +6,13 @@
 
 \description{Format geographical positions to degrees, minutes, and hemispheres}
 
-\usage{formatPosition(latlon, isLat=TRUE, type=c("list", "string", "expression"))}
+\usage{formatPosition(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=FALSE)}
 
 \arguments{
   \item{latlon}{a vector of latitudes or longitudes}
   \item{isLat}{a boolean that indicates whether the quantity is latitude or longitude}
   \item{type}{a string indicating the type of return value (see below)}
+  \item{showHemi}{a boolean that indicates whether to indicate the hemisphere}
 }
 
 \details{This function is in an early stage of development.}
