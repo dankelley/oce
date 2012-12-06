@@ -41,8 +41,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     }
     usr <- par('usr')
     if (!missing(grid)) {
-        mapMeridians(grid)
-        mapZones(grid)
+        mapMeridians(grid, lty='dotted', col='darkgray')
+        mapZones(grid, lty='dotted', col='darkgray')
     }
     box()
 }
