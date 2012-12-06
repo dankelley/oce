@@ -12,7 +12,9 @@
 }
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted}
+    \item{longitude}{longitudes of points to be plotted, or a coastline object
+        from which longitude and latitude are to be taken (see e.g.
+        \code{\link{read.coastline}}).}
     \item{latitude}{latitudes of points to be plotted}
     \item{longitudelim}{optional limit of longitudes to plot}
     \item{latitudelim}{optional limit of latitudes to plot}
@@ -43,14 +45,14 @@ mapPlot(longitude, latitude, type='l',
 ## said by Snyder (page 34) to be suitable for regions
 ## of large east-west extent away from the equator.
 ## Here, show USA and Canada.
-mapPlot(longitude, latitude, type='l',
+mapPlot(coastlineWorld, type='l',
         latitudelim=c(30,60), longitudelim=c(-130,-50),
         proj="lambert",
         parameters=c(lat0=40,lat1=60),
         orientation=c(90,-90,0), grid=TRUE)
 
 ## Similar looking map, with the polyconic projection
-mapPlot(longitude, latitude, type='l',
+mapPlot(coastlineWorld, type='l',
         latitudelim=c(30,60), longitudelim=c(-130,-50),
         proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
 }
