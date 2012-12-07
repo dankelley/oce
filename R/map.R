@@ -87,7 +87,7 @@ mapZones <- function(lon, ...)
     usr <- par('usr')
     n <- 360 # points on line
     for (l in lon) {
-        line <- mapproject(rep(l, n), seq(-90, 90, length.out=n))
+        line <- mapproject(rep(l, n), seq(-90+10, 90-10, length.out=n))
         ok <- !is.na(line$x) & !is.na(line$y)
         if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
             lines(line$x, line$y, ...)

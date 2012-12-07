@@ -22,13 +22,13 @@
 \examples{
 library(oce)
 data(coastlineWorld)
-longitude <- coastlineWorld[['longitude']]
-latitude <- coastlineWorld[['latitude']]
-mapPlot(longitude, latitude, type='l',
-        longitudelim=c(-80,10), latitudelim=c(0,120),
-        projection="orthographic", orientation=c(45,-100,0))
-lon <- -63.5744 # Halifax
-lat <- 44.6479
+mapPlot(coastlineWorld, type='l',
+        longitudelim=c(-70,0), latitudelim=c(40,80),
+        projection="orthographic", orientation=c(45,-35,0),
+        grid=TRUE)
+data(drifter)
+lon <- drifter[['longitude']]
+lat <- drifter[['latitude']]
 mapPoints(lon, lat, pch=20, col='red')
 }
 

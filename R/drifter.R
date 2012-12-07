@@ -15,6 +15,11 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+##setMethod(f="[[",
+##          signature="drifter",
+##          definition=function(x, i, j, drop) {
+##              as(x, "oce")[[i, j, drop]]
+##          })
 
 summary.drifter <- function(object, ...)
 {
