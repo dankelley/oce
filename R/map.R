@@ -216,8 +216,10 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
     }
     n <- length(longitude)
     xy <- mapproject(longitude, latitude)
-    bad <- is.na(xy$x) | is.na(xy$y)
-    polygon(xy$x[!bad], xy$y[!bad],
+    ##bad <- is.na(xy$x) | is.na(xy$y)
+    ##polygon(xy$x[!bad], xy$y[!bad],
+    ##        density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
+    polygon(xy$x, xy$y,
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
