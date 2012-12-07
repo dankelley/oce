@@ -1,4 +1,5 @@
 0.9-4
+- add map projections, with provisional functions mapPlot() etc
 - plot.ctd(): add argument 'add'
 - add crude mapping support
 - interpBarnes(): add args 'xgl' and 'ygl'

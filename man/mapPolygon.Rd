@@ -10,7 +10,9 @@
     border=NULL, col=NA, lty=par('lty'), \dots, fillOddEven=FALSE)}
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted}
+    \item{longitude}{longitudes of points to be plotted, or a coastline object
+        from which longitude and latitude are to be taken (see e.g.
+        \code{\link{read.coastline}}).}
     \item{latitude}{latitudes of points to be plotted}
     \item{density}{as for \code{\link{polygon}}}
     \item{angle}{as for \code{\link{polygon}}}

@@ -210,10 +210,14 @@ map2lonlat <- function(xy)
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
+    if (inherits(longitude, "coastline")) {
+        latitude <- longitude[['latitude']]
+        longitude <- longitude[['longitude']]
+    }
     n <- length(longitude)
     xy <- mapproject(longitude, latitude)
-    bad <- is.na(xy$x)
-    polygon(xy[!bad]$x, xy[!bad]$y,
+    bad <- is.na(xy$x) | is.na(xy$y)
+    polygon(xy$x[!bad], xy$y[!bad],
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
