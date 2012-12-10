@@ -552,6 +552,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             headingStd <- as.numeric(buf[profileStart + 31]) # p142 WorkHorse_commands_data_format_AUG10.PDF
             pitchStd <- 0.1 * as.numeric(buf[profileStart + 32])
             rollStd <- 0.1 * as.numeric(buf[profileStart + 33])
+
+            ## read ADC channels [CR's code]
+            xmitCurrent <- as.numeric(buf[profileStart + 34])
+            xmitVoltage <- as.numeric(buf[profileStart + 35])
+            ambientTemp <- as.numeric(buf[profileStart + 36])
+            pressurePlus <- as.numeric(buf[profileStart + 37])
+            pressureMinus <- as.numeric(buf[profileStart + 38])
+            attitudeTemp <- as.numeric(buf[profileStart + 39])
+            attitude <- as.numeric(buf[profileStart + 40])
+            contaminationSensor <- as.numeric(buf[profileStart + 41])
+
             pressureStd <- readBin(buf[profileStart4 + 52], "integer", n=profilesToRead, size=4, endian="little")
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
@@ -635,7 +646,15 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              headingStd=headingStd,
                              pitchStd=pitchStd,
                              rollStd=rollStd,
-                             pressureStd=pressureStd)
+                             pressureStd=pressureStd,
+                             xmitCurrent=xmitCurrent,
+                             xmitVoltage=xmitVoltage,
+                             ambientTemp=ambientTemp,
+                             pressurePlus=pressurePlus,
+                             pressureMinus=pressureMinus,
+                             attitudeTemp=attitudeTemp,
+                             attitude=attitude,
+                             contaminationSensor=contaminationSensor)
             } else {
                 data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
@@ -647,7 +666,19 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
-                             roll=roll)
+                             roll=roll,
+                             headingStd=headingStd,
+                             pitchStd=pitchStd,
+                             rollStd=rollStd,
+                             pressureStd=pressureStd,
+                             xmitCurrent=xmitCurrent,
+                             xmitVoltage=xmitVoltage,
+                             ambientTemp=ambientTemp,
+                             pressurePlus=pressurePlus,
+                             pressureMinus=pressureMinus,
+                             attitudeTemp=attitudeTemp,
+                             attitude=attitude,
+                             contaminationSensor=contaminationSensor)
             }
         } else {
             warning("There are no profiles in this file.")
