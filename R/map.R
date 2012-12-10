@@ -44,10 +44,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     }
     usr <- par('usr')
-    if (!missing(grid)) {
-        mapMeridians(grid, lty='dotted', col='darkgray')
-        mapZones(grid, lty='dotted', col='darkgray')
-    }
+    mapMeridians(grid, lty='dotted', col='darkgray')
+    mapZones(grid, lty='dotted', col='darkgray')
     box()
 }
 
@@ -61,14 +59,19 @@ mapMeridians <- function(lat, ...)
         lat <- 10
     }
     if (length(lat) == 1)
-        lat <- rep(seq(-90, 90, lat), each=360/lat)
+        lat <- seq(-90, 90, lat)
     usr <- par('usr')
-    n <- 360 # points on line
+    n <- 360                           # number of points on line
     for (l in lat) {
+        ## FIXME: should use mapLines here
         line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
-        ok <- !is.na(line$x) & !is.na(line$y)
-        if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
-            lines(line$x, line$y, ...)
+        x <- line$x
+        y <- line$y
+        ok <- !is.na(x) & !is.na(y)
+        x <- x[ok]
+        y <- y[ok]
+        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4])) {
+            lines(x, y, ...)
         }
     }
 }
@@ -83,14 +86,20 @@ mapZones <- function(lon, ...)
         lon <- 10
     }
     if (length(lon) == 1)
-        lon <- rep(seq(-180, 180, lon), each=360/lon)
+        ##lon <- rep(seq(-180, 180, lon), each=360/lon)
+        lon <- seq(-180, 180, lon)
     usr <- par('usr')
-    n <- 360 # points on line
+    n <- 360                           # number of points on line
     for (l in lon) {
+        ## FIXME: should use mapLines here
         line <- mapproject(rep(l, n), seq(-90+10, 90-10, length.out=n))
-        ok <- !is.na(line$x) & !is.na(line$y)
-        if (any(usr[1] <= line$x[ok] & line$x[ok] <= usr[2] & usr[3] <= line$y[ok] & line$y[ok] <= usr[4])) {
-            lines(line$x, line$y, ...)
+        x <- line$x
+        y <- line$y
+        ok <- !is.na(x) & !is.na(y)
+        x <- x[ok]
+        y <- y[ok]
+        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4])) {
+            lines(x, y, ...)
         }
     }
 }
@@ -111,14 +120,25 @@ mapLines <- function(longitude, latitude, ...)
 
 mapPoints <- function(longitude, latitude, ...)
 {
-    xy <- mapproject(longitude, latitude)
-    points(xy$x, xy$y, ...)
+    ok <- !is.na(longitude) & !is.na(latitude)
+    longitude <- longitude[ok]
+    latitude <- latitude[ok]
+    if (length(longitude) > 0) {
+        xy <- mapproject(longitude, latitude)
+        points(xy$x, xy$y, ...)
+    }
 }
 
 mapText <- function(longitude, latitude, labels, ...)
 {
-    xy <- mapproject(longitude, latitude)
-    text(xy$x, xy$y, labels, ...)
+    ok <- !is.na(longitude) & !is.na(latitude)
+    longitude <- longitude[ok]
+    latitude <- latitude[ok]
+    labels <- labels[ok]
+    if (length(longitude) > 0) {
+        xy <- mapproject(longitude, latitude)
+        text(xy$x, xy$y, labels, ...)
+    }
 }
 
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=FALSE)
@@ -183,27 +203,32 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     rval
 }
 
-map2lonlat <- function(xy)
+map2lonlat <- function(xusr, yusr, tolerance=1e-5)
 {
-    n <- length(xy$x)
+    n <- length(xusr)
+    if (length(yusr) != n)
+        error("lengths of x and y must match")
     lon <- rep(NA, n)
     lat <- rep(NA, n)
+    ## FIXME: will this trick with the .Last.projection always work??
+    or <- get(".Last.projection", envir = globalenv())$orientation # lat lon somethingElse
     for (i in 1:n) {
-        try({
-            ## FIXME: will this trick with the .Last.projection always work??
-            or <- get(".Last.projection", envir = globalenv())$orientation
+        t <- try({
             error <- FALSE
-            o <- optim(c(or[2], or[1]), function(x) {xy2<-mapproject(x[1], x[2]); error <<- xy2$error; (xy2$x-xy$x[i])^2+(xy2$y-xy$y[i])^2})
-            if (o$convergence == 0 && !error) {
+            o <- optim(c(or[2], or[1]), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
+            ##cat(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
+            if (o$convergence == 0 && !error && o$value < 100+tolerance) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]
             }
         }, silent=TRUE)
     }
-    bad <- lat < -90 | lat > 90 | lon < -180 | lon > 180
-    lon[bad] <- NA
-    lat[bad] <- NA
+    ## bad <- lat < -90 | lat > 90 | lon < -180 | lon > 180
+    ## lon[bad] <- NA
+    ## lat[bad] <- NA
+    lon <- ifelse(lon < -180, lon+360, lon)
+    lon <- ifelse(lon >  180, lon-360, lon)
     list(longitude=lon, latitude=lat)
 }
 
