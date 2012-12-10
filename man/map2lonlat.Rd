@@ -6,11 +6,11 @@
 
 \description{Find lon-lat coordinator of a point on a map}
 
-\usage{map2lonlat(xy)}
+\usage{map2lonlat(xusr, yusr, tolerance=1e-5)}
 
 \arguments{
-    \item{xy}{a list containing \code{x} and \code{y}, the x and y coordinates
-        of points on the map.}
+    \item{xusr, yusr}{coordinates of points on the map.}
+    \item{tolerance}{tolerance for misfit.}
 }
 
 \details{Uses \code{\link{optim}} to find the location, so it may fail in some circumstances.}
