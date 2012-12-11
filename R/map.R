@@ -270,3 +270,31 @@ mapImage <- function(longitude, latitude, z)
     }
 }
 
+## http://williams.best.vwh.net/avform.htm#Intermediate
+## interpreted by CR; typo corrected by DK
+geodGc <- function(lon1, lat1, lon2, lat2, dmax)
+{
+    pi <- 4 * atan2(1, 1)
+    rlat1 <- pi * lat1 / 180
+    rlat2 <- pi * lat2 / 180
+    rlon1 <- pi * lon1 / 180
+    rlon2 <- pi * lon2 / 180
+    d <- 2 * asin(sqrt((sin((rlat1 - rlat2)/2))^2
+                       + cos(rlat1) * cos(rlat2) * (sin((rlon1 - rlon2)/2))^2))
+    ddeg <- d * 180 / pi
+    if (ddeg < dmax) {
+        rval <- list(longitude=c(lon1, lon2), latitude=c(lat1, lat2))
+    } else {
+        f <- seq(0, 1, length.out=ceiling(1+ddeg/dmax))
+        A <- sin((1 - f) * d) / sin(d)
+        B <- sin(f * d) / sin(d)
+        x  <-  A * cos(rlat1) * cos(rlon1) + B * cos(rlat2) * cos(rlon2)
+        y  <-  A * cos(rlat1) * sin(rlon1) + B * cos(rlat2) * sin(rlon2)
+        z  <-  A * sin(rlat1)              + B * sin(rlat2)
+        lat <- atan2(z,sqrt(x^2+y^2))
+        lon <- atan2(y,x)
+        rval <- list(longitude=180/pi*lon, latitude=180/pi*lat)
+    }
+    rval
+}
+
