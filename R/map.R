@@ -104,12 +104,14 @@ mapZones <- function(lon, ...)
     }
 }
 
-mapLines <- function(longitude, latitude, ...)
+mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
     if (inherits(longitude, "coastline")) {
         latitude <- longitude[['latitude']]
         longitude <- longitude[['longitude']]
     }
+    if (greatCircle)
+        warning("mapLines() does not yet handle argument 'greatCircle'")
     xy <- mapproject(longitude, latitude)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
