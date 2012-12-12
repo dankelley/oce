@@ -272,29 +272,37 @@ mapImage <- function(longitude, latitude, z)
 
 ## http://williams.best.vwh.net/avform.htm#Intermediate
 ## interpreted by CR; typo corrected by DK
-geodGc <- function(lon1, lat1, lon2, lat2, dmax)
+geodGc <- function(longitude, latitude, dmax)
 {
-    pi <- 4 * atan2(1, 1)
-    rlat1 <- pi * lat1 / 180
-    rlat2 <- pi * lat2 / 180
-    rlon1 <- pi * lon1 / 180
-    rlon2 <- pi * lon2 / 180
-    d <- 2 * asin(sqrt((sin((rlat1 - rlat2)/2))^2
-                       + cos(rlat1) * cos(rlat2) * (sin((rlon1 - rlon2)/2))^2))
-    ddeg <- d * 180 / pi
-    if (ddeg < dmax) {
-        rval <- list(longitude=c(lon1, lon2), latitude=c(lat1, lat2))
-    } else {
-        f <- seq(0, 1, length.out=ceiling(1+ddeg/dmax))
-        A <- sin((1 - f) * d) / sin(d)
-        B <- sin(f * d) / sin(d)
-        x  <-  A * cos(rlat1) * cos(rlon1) + B * cos(rlat2) * cos(rlon2)
-        y  <-  A * cos(rlat1) * sin(rlon1) + B * cos(rlat2) * sin(rlon2)
-        z  <-  A * sin(rlat1)              + B * sin(rlat2)
-        lat <- atan2(z,sqrt(x^2+y^2))
-        lon <- atan2(y,x)
-        rval <- list(longitude=180/pi*lon, latitude=180/pi*lat)
+    n <- length(latitude)
+    if (n != length(longitude))
+        stop("lengths of longitude and latude must match")
+    d2r <- atan2(1, 1) / 45
+    rlat <- d2r * latitude
+    rlon <- d2r * longitude
+    lon <- NULL
+    lat <- NULL
+    ## FIXME: if this is slow, may need to use C
+    for (i in seq.int(1, n-1)) {
+        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2
+                           + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2))
+        ddeg <- d / d2r
+        if (ddeg < dmax) {
+            lon <- c(lon, longitude[i])
+            lat <- c(lat, latitude[i])
+        } else {
+            f <- seq(0, 1, length.out=ceiling(1 + ddeg/dmax))
+            A <- sin((1 - f) * d) / sin(d)
+            B <- sin(f * d) / sin(d)
+            x <- A * cos(rlat[i]) * cos(rlon[i]) + B * cos(rlat[i+1]) * cos(rlon[i+1])
+            y <- A * cos(rlat[i]) * sin(rlon[i]) + B * cos(rlat[i+1]) * sin(rlon[i+1])
+            z <- A * sin(rlat[i])              + B * sin(rlat[i+1])
+            lat <- atan2(z, sqrt(x^2+y^2)) / d2r
+            lon <- atan2(y, x) / d2r
+        }
     }
-    rval
+    lon <- c(lon, longitude[n])
+    lat <- c(lat, latitude[n])
+    list(longitude=lon, latitude=lat)
 }
 
