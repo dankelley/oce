@@ -1,23 +1,33 @@
-swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...) # BUG: think more about best density measure
+swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...)
 {
     if (inherits(pressure, "ctd")) {
-        sigmaTheta <- swSigmaTheta(pressure@data$salinity, pressure@data$temperature, pressure@data$pressure)
-        pressure <- pressure@data$pressure # over-writes pressure
+        sigmaTheta <- swSigmaTheta(pressure)
+        pressure <- pressure[['pressure']] # over-writes pressure
     }
+    if (missing(derivs))
+        derivs <- "smoothing"
     ok <- !is.na(pressure) & !is.na(sigmaTheta)
-    if (missing(derivs)) {
-        args <- list(...)
-        depths <- length(pressure)
-        df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
-        if (depths > 4 && df > 1) {
-            sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
-            sigmaThetaDeriv <- rep(NA, length(pressure))
-            sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
+    if (is.character(derivs)) {
+        if (derivs == "simple") {
+            sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
+        } else if (derivs == "smoothing") {
+            args <- list(...)
+            depths <- length(pressure)
+            df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
+            if (depths > 4 && df > 1) {
+                sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
+                sigmaThetaDeriv <- rep(NA, length(pressure))
+                sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
+            } else {
+                sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
+                sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
+            }
         } else {
-            sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
-            sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
+            stop("derivs must be 'simple', 'smoothing', or a function")
         }
     } else {
+        if (!is.function(derivs))
+            stop("derivs must be 'smoothing', 'simple', or a function")
         sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
     }
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
