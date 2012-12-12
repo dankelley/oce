@@ -60,7 +60,7 @@ mapPlot(coastlineWorld, type='l',
 \author{Dan Kelley}
 
 \references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
-    Professional Paper: 1395.  http:pubs.usgs.gov/pp/1395/report.pdf.
-}
+    Professional Paper: 1395 (available at
+    \url{pubs.usgs.gov/pp/1395/report.pdf}). }
 
 \keyword{hplot}

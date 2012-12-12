@@ -33,14 +33,26 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
+    ## trim wild points [github issue 227]
+    if (TRUE) {
+        x <- xy$x
+        y <- xy$y
+        d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+        d[!is.finite(d)] <- 0          # FIXME: ok?
+        dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
+        bad <- d > dc
+        x[bad] <- NA
+        y[bad] <- NA
+        plot(x, y, type='l', asp=1)
+    }
     if (limitsGiven) {
         box <- mapproject(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
                           c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1]))
-        plot(xy$x, xy$y,
+        plot(x, y,
              xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     } else {
-        plot(xy$x, xy$y,
+        plot(x, y,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     }
     usr <- par('usr')
@@ -56,7 +68,7 @@ mapMeridians <- function(lat, ...)
     if (is.logical(lat)) {
         if (!lat)
             return
-        lat <- 10
+        lat <- 15
     }
     if (length(lat) == 1)
         lat <- seq(-90, 90, lat)
@@ -83,7 +95,7 @@ mapZones <- function(lon, ...)
     if (is.logical(lon)) {
         if (!lon)
             return
-        lon <- 10
+        lon <- 15
     }
     if (length(lon) == 1)
         ##lon <- rep(seq(-180, 180, lon), each=360/lon)
