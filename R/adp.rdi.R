@@ -2,6 +2,223 @@
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
+decodeHeaderRDI2 <- function(buf, offset = 0, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
+{
+    ## reference: WCODF = "WorkHorse Commands and Output Data Format_Nov07.pdf"
+
+    ##
+    ## header, of length 6 + 2 * numberOfDataTypes bytes
+    ##
+    oceDebug(debug, "\b\bdecodeHeaderRDI2() {\n")
+    timeRval <- rep(NA, length(offset))
+    upwardRval <- rep(NA, length(offset))
+    i <- 1
+    for (o in offset) {
+        if (buf[o+1] != 0x7f || buf[o+2] != 0x7f)
+            stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[o+1], " 0x", buf[o+2])
+        bytesPerEnsemble <- readBin(buf[o+3:4], "integer", n=1, size=2, endian="little", signed=FALSE)
+        oceDebug(debug, "bytesPerEnsemble=", bytesPerEnsemble, "\n")
+        ## byte5 not used
+        numberOfDataTypes <- readBin(buf[o+6], "integer", n=1, size=1)
+        if (numberOfDataTypes < 1 || 200 < numberOfDataTypes) {
+            next # the first two bytes are OK, but this is not, so assume not a header
+            ##stop("cannot have ", numberOfDataTypes, " data types, as header indicates")
+        }
+        oceDebug(debug, "numberOfDataTypes=", numberOfDataTypes, "\n")
+        haveActualData <- numberOfDataTypes > 2 # will be 2 if just have headers
+        oceDebug(debug, "haveActualData=", haveActualData, "\n")
+        dataOffset <- readBin(buf[o+7+0:(2*numberOfDataTypes)], "integer", n=numberOfDataTypes, size=2, endian="little", signed=FALSE)
+        oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
+        ##
+        ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
+        FLD <- buf[o+dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
+        oceDebug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
+        if (FLD[1] != 0x00)
+            next # the first two bytes are OK, but this is not, so assume not a header
+        if (FLD[2] != 0x00)
+            next # the first two bytes are OK, but this is not, so assume not a header
+        firmwareVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
+        firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
+        firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
+        firmwareVersionNumeric <- as.numeric(firmwareVersion)
+        oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric,")\n")
+        ##if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
+
+        if (!haveActualData)
+            next
+
+        ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
+        ## FLD[6] = SYSTEM CONFIGURATION MSB
+        systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6],endian="big"),sep="-")
+        if (FALSE) {
+            oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
+            oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
+            oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
+            oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
+            bits <- substr(systemConfiguration, 6, 8)
+            if (bits == "000") frequency <- 75        # kHz
+            else if (bits == "001") frequency <-  150
+            else if (bits == "010") frequency <-  300
+            else if (bits == "011") frequency <-  600
+            else if (bits == "100") frequency <- 1200
+            else if (bits == "101") frequency <- 2400
+            else stop("unknown freq. bit code:", bits, " (expect 000 for 75kHz, 001 for 150kHz, etc)")
+            oceDebug(debug, "bits:", bits, "so frequency=", frequency, "\n")
+            bits <- substr(systemConfiguration, 16, 17)
+            oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
+            oceDebug(debug, "bits:", bits, "00 is 15deg, 01 is 20deg, 02 is 30deg, 11 is 'other'\n")
+            if (bits == "00") beamAngle <- 15
+            else if (bits == "01") beamAngle <- 20
+            else if (bits == "10") beamAngle <- 30
+            else if (bits == "11") beamAngle <- NA # means 'other'
+            oceDebug(debug, "bits=", bits, "so beamAngle=", beamAngle, "\n")
+            if (beamAngle < 19 || 21 < beamAngle)
+                warning("expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got ", beamAngle, "deg; using the latter in the transformationMatrix")
+            bits <- substr(systemConfiguration, 5, 5)
+            if (bits == "0") beamPattern <- "concave"
+            else beamPattern <- "convex"
+            oceDebug(debug, "bits=", bits, "so beamPattern=", beamPattern, "\n")
+            beamConfig <- "?"
+        }
+        bits <- substr(systemConfiguration, 10, 13)
+        if (bits == "0100") beamConfig <- "janus"
+        else if (bits == "0101") beamConfig <- "janus demod"
+        else if (bits == "1111") beamConfig <- "janus 2 demd"
+        bits <- substr(systemConfiguration, 1, 1)
+        if (bits == "1") orientation <- "upward"
+        else orientation <- "downward"
+        oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
+
+        real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
+        lag.length <- readBin(FLD[8], "integer", n=1, size=1)
+        numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1)
+        numberOfCells <- readBin(FLD[10], "integer", n=1, size=1) # WN
+        pingsPerEnsemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
+        cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
+        if (cellSize < 0 || cellSize > 64)
+            next # the first two bytes are OK, but this is not, so assume not a header
+            ##stop("cellSize of ", cellSize, "m is not in the allowed range of 0m to 64m")
+        blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
+        profilingMode <- readBin(FLD[17], "integer", n=1, size=1) # WM
+        lowCorrThresh <- readBin(FLD[18], "integer", n=1, size=1)
+        numberOfCodeReps <- readBin(FLD[19], "integer", n=1, size=1)
+        percentGdMinimum <- readBin(FLD[20], "integer", n=1, size=1)
+        errorVelocityMaximum <- readBin(FLD[21:22], "integer", n=1, size=2, endian="little")
+        tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
+        tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
+        tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
+        bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
+        originalCoordinate <- "???"
+        if (bits == "00") originalCoordinate <- "beam"
+        else if (bits == "01") originalCoordinate <- "instrument"
+        else if (bits == "10") originalCoordinate <- "xyz"
+        else if (bits == "11") originalCoordinate <- "enu"
+        headingAlignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
+        headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
+        oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
+        sensorSource <- byteToBinary(FLD[31], endian="big")
+        sensorsAvailable<- byteToBinary(FLD[32], endian="big")
+        bin1Distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
+        ##cat("bin1Distance being inferred from 0x", FLD[33:34], " as ", bin1Distance, "\n", sep="", ...)
+        xmitPulseLength <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
+        ##cat("xmitPulseLength being inferred from 0x", FLD[35:36], " as ", xmitPulseLength, "\n", sep="", ...)
+        wpRefLayerAverage <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little")
+        falseTargetThresh <- readBin(FLD[39], "integer", n=1, size=1)
+        ## FLD[40] spare
+        transmitLagDistance <- readBin(FLD[41:42], "integer", n=1, size=2, endian="little", signed=FALSE)
+        cpuBoardSerialNumber <- c(readBin(FLD[43], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[44], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[45], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[46], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[47], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[48], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[49], "integer", n=1, size=1, signed=FALSE),
+                                  readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
+        oceDebug(debug, paste("CPU.BOARD.SERIAL.NUMBER = '", paste(cpuBoardSerialNumber, collapse=""), "'\n", sep=""))
+        systemBandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
+        systemPower <- readBin(FLD[53], "integer", n=1, size=1)
+        ## FLD[54] spare
+        ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serialNumber only for REMUS, else spare
+        ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serialNumber
+        serialNumber <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
+        oceDebug(debug, "SERIAL NUMBER", serialNumber, "from bytes (", FLD[55:58], ")\n")
+        if (serialNumber == 0)
+            serialNumber <- "unknown"
+        ##beamAngle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
+        ##cat("BEAM ANGLE=", FLD[59], "or", beamAngle, "\n", ...)
+        ##
+        ## VLD (variable leader data)
+        ##   The VLD length varies (see below) so infer its position from dataOffset[1].
+        ##
+        ## "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130):
+        ##       HEADER (6+2*num.types bytes) bytes
+        ##       FLD 59 bytes
+        ##       VLD 65 bytes
+        ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139):
+        ##       HEADER (6+2*num.types bytes) bytes
+        ##       FLD 50 bytes
+        ##       VLD 58 bytes
+        ## dataOffset[1] = within-ensemble byte offset for FLD (e.g. Table D-1 of Surveyor manual)
+        ## dataOffset[2] = within-ensemble byte offset for VLD (e.g. Table D-1 of Surveyor manual)
+        ## thus, length of FLD is dataOffset[2]-dataOffset[1]
+        FLDLength <- dataOffset[2] - dataOffset[1]
+        oceDebug(debug, "FLDLength", FLDLength, " (expect 59 for Workhorse, or 40 for Surveyor)\n")
+        ## There really seems to be nothing specific in the file to tell instrument type, so, in an act of
+        ## desparation (or is that hope) I'm going to flag on the one thing that was clearly stated, and
+        ## clearly different, in the two documentation entries.
+        if (FLDLength == 59) {
+            instrumentSubtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
+        } else if (FLDLength == 50) {
+            instrumentSubtype <- "surveyor" # "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
+        } else {
+            instrumentSubtype <- "unknown"
+            warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for 'workhorse'.")
+        }
+        nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
+        VLD <- buf[o+dataOffset[2]+1:nVLD]
+        oceDebug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
+        ## ensure that header is not ill-formed
+        if (VLD[1] != 0x80)
+            next
+            ##stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
+        if (VLD[2] != 0x00)
+            next
+            ##stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
+        ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
+        ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
+
+        ## FIXME: probably would save time to read all elements at once.  Instrument to check
+        RTC.year <- unabbreviateYear(readBin(VLD[5], "integer", n=1, size=1))
+        RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
+        RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
+        RTC.hour <- readBin(VLD[8], "integer", n=1, size=1)
+        RTC.minute <- readBin(VLD[9], "integer", n=1, size=1)
+        RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
+        RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
+        time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
+        if (FALSE) {
+            oceDebug(debug, "profile time=", format(time), "(year=", RTC.year,
+                     "month=", RTC.month, "day-", RTC.day, "hour=", RTC.hour,
+                     "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
+            ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
+            bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
+            soundSpeed <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "soundSpeed= ", soundSpeed, "\n") # FIXME
+            transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "transducerDepth = ", transducerDepth, "\n")
+            if (soundSpeed < 1400 || soundSpeed > 1600)
+                warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
+                        1600 m/s.  Something went wrong in decoding the data.")
+        }
+        timeRval[i] <- time
+        upwardRval[i] <- orientation == "upward"
+        i <- i + 1
+    }
+    timeRval <- numberAsPOSIXct(timeRval)
+    list(time=timeRval, upward=upwardRval)
+}   
+
+
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
     ## reference: WCODF = "WorkHorse Commands and Output Data Format_Nov07.pdf"
@@ -92,7 +309,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     pingsPerEnsemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (cellSize < 0 || cellSize > 64)
-        stop("cellSize of ", cellSize, "is not in the allowed range of 0m to 64m")
+        stop("cellSize of ", cellSize, "m is not in the allowed range of 0m to 64m")
     blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profilingMode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     lowCorrThresh <- readBin(FLD[18], "integer", n=1, size=1)
