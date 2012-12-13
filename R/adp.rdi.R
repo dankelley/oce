@@ -379,6 +379,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     buf <- readBin(file, what="raw", n=file.size, endian="little")
     ## decode header
     header <- decodeHeaderRDI(buf, debug=debug-1)
+
+    offset <- matchBytes(buf, 0x7f, 0x7f)
+    test <- decodeHeaderRDI2(buf, offset-1)
+
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
         numberOfCells <- header$numberOfCells
@@ -701,7 +705,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              pressureMinus=pressureMinus,
                              attitudeTemp=attitudeTemp,
                              attitude=attitude,
-                             contaminationSensor=contaminationSensor)
+                             contaminationSensor=contaminationSensor,
+                             timeTest=test$time,
+                             upwardTest=test$upward)
             } else {
                 data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
@@ -725,7 +731,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              pressureMinus=pressureMinus,
                              attitudeTemp=attitudeTemp,
                              attitude=attitude,
-                             contaminationSensor=contaminationSensor)
+                             contaminationSensor=contaminationSensor,
+                             timeTest=test$time,
+                             upwardTest=test$upward)
             }
         } else {
             warning("There are no profiles in this file.")
