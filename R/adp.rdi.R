@@ -310,6 +310,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
                          monitor=FALSE, despike=FALSE, processingLog,
+                         testing=FALSE,
                          debug=getOption("oceDebug"),
                          ...)
 {
@@ -380,8 +381,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## decode header
     header <- decodeHeaderRDI(buf, debug=debug-1)
 
-    offset <- matchBytes(buf, 0x7f, 0x7f)
-    test <- decodeHeaderRDI2(buf, offset-1)
+    if (testing) {
+        testing <- decodeHeaderRDI2(buf, -1 + matchBytes(buf, 0x7f, 0x7f))
+    }
 
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
@@ -705,9 +707,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              pressureMinus=pressureMinus,
                              attitudeTemp=attitudeTemp,
                              attitude=attitude,
-                             contaminationSensor=contaminationSensor,
-                             timeTest=test$time,
-                             upwardTest=test$upward)
+                             contaminationSensor=contaminationSensor)
             } else {
                 data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
@@ -731,9 +731,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              pressureMinus=pressureMinus,
                              attitudeTemp=attitudeTemp,
                              attitude=attitude,
-                             contaminationSensor=contaminationSensor,
-                             timeTest=test$time,
-                             upwardTest=test$upward)
+                             contaminationSensor=contaminationSensor)
+            }
+            if (testing) {
+                data$timeTest=testing$time
+                data$upwardTest=testing$upward
             }
         } else {
             warning("There are no profiles in this file.")
