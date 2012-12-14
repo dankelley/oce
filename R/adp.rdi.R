@@ -425,20 +425,22 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 nensembles <- length(ensembleStart)
                 numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n=1, size=1) # Note: just using first one
                 FLDStart <- ensembleStart + 6 + 2 * numberOfDataTypes
-                VLDStart <- FLDStart + 59
-                RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
-                RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
-                RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
-                RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
-                RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
-                RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
-                RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
-                time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
+                ## FIXME: decide whether the code below is cleaner than the spot where time is determined
+                ## VLDStart <- FLDStart + 59
+                ## RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
+                ## RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
+                ## RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
+                ## RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
+                ## RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
+                ## RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
+                ## RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
+                ## time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
+
                 ## regarding the "4" below, see p 135 of WorkHorse_commands_data_format_AUG10.PDF,
                 ## noting that we subtract 1 because it's an offset; we are thus examining
                 ## the LSB of the "Sys Cfg" pair.
                 upward <- .Call("get_bit", buf[FLDStart+4], 7)
-                testingData <- list(time=time, upward=upward)
+                ##testingData <- list(time=time, upward=upward)
             }
 
             items <- numberOfBeams * numberOfCells
@@ -711,8 +713,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              contaminationSensor=contaminationSensor)
             }
             if (testing) {
-                data$timeTest=testingData$time
-                data$upwardTest=testingData$upward
+                data$upward=upward
             }
         } else {
             warning("There are no profiles in this file.")

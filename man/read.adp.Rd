@@ -115,11 +115,9 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{testing}{a flag that applies only to RDI units.  If this is
-      \code{TRUE}, then the data file is examined more closely, and the
-      following elements are added to the \code{data} slot: \code{timeTest}, a
-      vector of times, and \code{upwardTest}, a vector of boolean values
-      indicating whether the device was pointed upward.  Neither of these is
-      trimmed by the \code{from}, \code{to}, or \code{by} arguments.}
+      \code{TRUE}, then the time-varying device orientation is inferred from
+      the per-profile header information, and the boolean result is stored in
+      an integer vector named \code{upward} within the \code{data} slot.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{additional arguments, passed to called routines.}
