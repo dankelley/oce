@@ -15,6 +15,11 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+##setMethod(f="[[",
+##          signature="drifter",
+##          definition=function(x, i, j, drop) {
+##              as(x, "oce")[[i, j, drop]]
+##          })
 
 summary.drifter <- function(object, ...)
 {
@@ -123,6 +128,7 @@ setMethod(f="plot",
                                adorn=NULL,
                                mgp=getOption("oceMgp"),
                                mar=c(mgp[1]+1, mgp[1]+1, 1.5, 1.5),
+                               tformat,
                                debug=getOption("oceDebug"),
                                ...)
           {
@@ -177,7 +183,8 @@ setMethod(f="plot",
                               x@data$time
                           oce.plot.ts(t, as.vector(x@data$salinity[level,]),
                                       ylab=resizableLabel("S", "y"), type=type, 
-                                      col=if (missing(col)) "black" else col, ...)
+                                      col=if (missing(col)) "black" else col,
+                                      tformat=tformat, ...)
                       } else {
                           warning("no non-missing salinity data")
                       }
@@ -190,7 +197,8 @@ setMethod(f="plot",
                               x@data$time
                           oce.plot.ts(t, x@data$temperature[level,],
                                       ylab=resizableLabel("T", "y"), type=type,
-                                      col=if (missing(col)) "black" else col, ...)
+                                      col=if (missing(col)) "black" else col,
+                                      tformat=tformat, ...)
                       } else {
                           warning("no non-missing temperature data")
                       }

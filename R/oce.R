@@ -77,18 +77,18 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                     next
                 if (length(grep("^time", name)) || is.vector(res@data[[name]])) {
                     if (1 == length(agrep("Slow$", name))) {
-                        oceDebug(debug, "subsetting 'slow' variable data$", name, "\n", sep="")
+                        oceDebug(debug, "windowing 'slow' variable data$", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keepSlow]
                     } else {
-                        oceDebug(debug, "subsetting data@", name, "\n", sep="")
+                        oceDebug(debug, "windowing data@", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keep]
                     }
                 } else if (is.matrix(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data@", name, ", which is a matrix\n", sep="")
+                    oceDebug(debug, "windowing data@", name, ", which is a matrix\n", sep="")
                     res@data[[name]] <- x@data[[name]][keep,]
                 } else if (is.array(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data@", name, ", which is an array\n", sep="")
-                    res@data[[name]] <- x@data[[name]][keep,,]
+                    oceDebug(debug, "windowing data@", name, ", which is an array\n", sep="")
+                    res@data[[name]] <- x@data[[name]][keep,,,drop=FALSE]
                 }
             }
         }
@@ -164,7 +164,7 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     y <- y[ok]
     o <- order(x)
     if (missing(xout))
-        xout <- seq(min(x), max(x), length.out=lx)
+        xout <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=lx)
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
@@ -222,7 +222,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         mai.palette=c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
-                        axes=TRUE,
+                        axes=TRUE, tformat,
                         marginsAsImage=FALSE,
                         grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
                         debug=getOption("oceDebug"),
@@ -298,6 +298,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       mgp=mgp,
                                       xlim=if(missing(xlim)) range(x) else xlim,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                      tformat=tformat,
                                       debug=debug-1)#, ...)
         }
         if (grid) {
@@ -476,7 +477,7 @@ oce.write.table <- function (x, file="", ...)
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
 {
-    debug <- max(0, min(debug, 1))
+    debug <- max(0, min(debug, 1), na.rm=TRUE)
     oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -520,6 +521,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             if (length(grep("time", subsetString))) {
                 oceDebug(debug, "subsetting an adp by time\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
+                names <- names(x@data)
+                haveDia <- "timeDia" %in% names
+                if (haveDia) {
+                    subsetDiaString <- gsub("time", "timeDia", subsetString)
+                    keepDia <- eval(parse(text=subsetDiaString), x@data)
+                    oceDebug(debug, "for diagnostics, keeping ", 100*sum(keepDia) / length(keepDia), "% of data\n")
+                }
                 oceDebug(debug, vectorShow(keep, "keeping bins:"))
                 oceDebug(debug, "number of kept bins:", sum(keep), "\n")
                 if (sum(keep) < 2)
@@ -527,19 +535,35 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 rval <- x
                 ## FIXME: are we handling slow timescale data?
                 for (name in names(x@data)) {
-                    if (name == "time" || is.vector(x@data[[name]])) {
+                    if (length(grep("Dia$", name))) {
                         if ("distance" == name)
                             next
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
-                    } else if (is.matrix(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep,]
-                    } else if (is.array(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep,,]
+                        if (name == "timeDia" || is.vector(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keepDia]
+                        } else if (is.matrix(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keepDia,]
+                        } else if (is.array(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
+                        }
+                    } else {
+                        if (name == "time" || is.vector(x@data[[name]])) {
+                            if ("distance" == name)
+                                next
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                        } else if (is.matrix(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keep,]
+                        } else if (is.array(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                            rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                        }
                     }
                 }
+                #browser()
             } else if (length(grep("distance", subsetString))) {
                 oceDebug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
@@ -830,6 +854,8 @@ summary.oce <- function(object, ...)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
+    if (file.info(file)$isdir)
+        stop("please supply a file name, not a directory name")
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
         if (length(grep(".asc$", filename))) {
@@ -910,21 +936,23 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
         if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
         next.two.bytes <- readBin(file, what="raw", n=2)
-        oceDebug(debug, "next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
+        oceDebug(debug, "next.two.bytes:", paste("0x", next.two.bytes[1], sep=''),
+                 paste("0x", next.two.bytes[2], sep=''),
+                 "(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) {
-            oceDebug(debug, "this is adv/nortek/vector\n")
+            oceDebug(debug, "these two bytes imply this is adv/nortek/vector\n")
             return("adv/nortek/vector")
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) {
-            oceDebug(debug, "this is adp/nortek/aqudopp\n")
-            return("adp/nortek/aquadopp") # p33 SIG
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see system-integrator-manual_jan2011.pdf Table 5.2)\n")
+            return("adp/nortek/aquadopp")
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x21)  {
-            oceDebug(debug, "this is adp/nortek/aqudoppProfiler\n")
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppProfiler\n")
             return("adp/nortek/aquadoppProfiler") # p37 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
-            oceDebug(debug, "this is adp/nortek/aqudoppHR\n")
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
         }
         stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
@@ -990,11 +1018,11 @@ read.oce <- function(file, ...)
     if (type == "adp/sontek")
         return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
-        stop("cannot read \"adp/nortek/aquadopp\" files")
+        return(read.aquadopp(file, processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppProfiler")
-        return(read.adp.nortek(file, type="aquadoppProfiler", processingLog=processingLog, ...))
+        return(read.aquadoppProfiler(file, processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, type="aquadoppHR", processingLog=processingLog, ...))
+        return(read.aquadoppHR(file, processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")
@@ -1120,7 +1148,7 @@ oceColorsPalette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
+oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
@@ -1163,52 +1191,52 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         z <- seq(t.start, t.end, length.out=10)
         oceDebug(debug, "time range is under a minute\n")
         oceDebug(debug, vectorShow(z, "z"))
-        if (missing(format))
-            format <- "%S"
+        if (missing(tformat))
+            tformat <- "%S"
     } else if (d < 60 * 3) {                       # under 3 min
         t.start <- trunc(rr[1]-60, "mins")
         t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
         oceDebug(debug, "time range is under 3 minutes\n")
         oceDebug(debug, vectorShow(z, "z"))
-        if (missing(format))
-            format <- "%H:%M:%S"
+        if (missing(tformat))
+            tformat <- "%H:%M:%S"
     } else if (d < 60 * 30) {                  # under 30min
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
         oceDebug(debug, "time range is under 30 min\n")
         oceDebug(debug, vectorShow(z, "z"))
-        if (missing(format))
-            format <- "%H:%M"
+        if (missing(tformat))
+            tformat <- "%H:%M"
     } else if (d < 60 * 60) {                  # under 1 hour
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
         oceDebug(debug, vectorShow(z, "Time range is under an hour; z="))
-        if (missing(format))
-            format <- "%H:%M"
+        if (missing(tformat))
+            tformat <- "%H:%M"
     } else if (d < 60 * 60 * 2) {       # under 2 hours
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
         oceDebug(debug, vectorShow(z, "Time range is under 2 hours; z="))
-        if (missing(format))
-            format <- "%H:%M"
+        if (missing(tformat))
+            tformat <- "%H:%M"
     } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
         oceDebug(debug, vectorShow(z, "Time range is under 6 hours; z="))
-        if (missing(format))
-            format <- "%H:%M"
+        if (missing(tformat))
+            tformat <- "%H:%M"
     } else if (d < 60 * 60 * 30) {       # under about a day
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="1 hour")
         oceDebug(debug, vectorShow(z, "Time range is under 30 hours, so z="))
-        if (missing(format))
-            format <- "%H"
+        if (missing(tformat))
+            tformat <- "%H"
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
@@ -1216,8 +1244,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         z.sub <- seq(t.start, t.end, by="hour")
         oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
         oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
-        if (missing(format))
-            format <- "%H"             #b %d"
+        if (missing(tformat))
+            tformat <- "%H"             #b %d"
     } else if (d <= 60 * 60 * 24 * 5) {        # under 5 days: label day; show 2-h subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
@@ -1225,37 +1253,37 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         z.sub <- seq(t.start, t.end, by="2 hour")
         oceDebug(debug, vectorShow(z, "Time range is under 5 days; z="))
         oceDebug(debug, vectorShow(z.sub, "Time range is under 5 days; z.sub="))
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else if (d <= 60 * 60 * 24 * 14) { # under 2 weeks: label day; show 12-h subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         z.sub <- seq(t.start, t.end, by="12 hour")
         oceDebug(debug, vectorShow(z, "Time range is under 2 weeks; z="))
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else if (d <= 60 * 60 * 24 * 31) { # under 1 month: label day
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         oceDebug(debug, vectorShow(z, "Time range is under a month; z="))
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else if (d < 60 * 60 * 24 * 31 * 2) {        # under 2 months
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         oceDebug(debug, vectorShow(z, "Time range is under 2 months; z="))
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
         t.start <- trunc(rr[1], "days")
         t.end <- trunc(rr[2] + 86400, "days")
         z <- seq(t.start, t.end, by="week")
         oceDebug(debug, vectorShow(z, "Time range is under 4 months; z="))
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         rrl <- as.POSIXlt(rr)
         rrl[1]$mday <- 1
@@ -1265,8 +1293,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.end <- trunc(rrl[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
         oceDebug(debug, vectorShow(z, "Time range is under a year or so; z="))
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else if (d < 3.1 * 60 * 60 * 24 * 365) { # under about 3 years
         rrl <- as.POSIXlt(rr)
         rrl[1]$mday <- 1
@@ -1275,8 +1303,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.start <- trunc(rrl[1], "day")
         t.end <- trunc(rrl[2], "day")
         z <- seq(t.start, t.end, by="month")
-        if (missing(format))
-            format <- "%b %d"
+        if (missing(tformat))
+            tformat <- "%b %d"
     } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
@@ -1290,8 +1318,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         class(zz) <- c("POSIXt", "POSIXlt")
         z <- as.POSIXct(zz)
         attr(z, "tzone") <- attr(x, "tzone")
-        if (missing(format))
-            format <- "%Y"
+        if (missing(tformat))
+            tformat <- "%Y"
         oceDebug(debug, vectorShow(z, "z="))
     }
     if (!mat)
@@ -1312,7 +1340,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     if (!is.logical(labels))
         labels <- labels[keep]
     else if (identical(labels, TRUE))
-        labels <- format(z, format = format)
+        labels <- format(z, format = tformat)
     else if (identical(labels, FALSE))
         labels <- rep("", length(z))
     if (drawTimeRange) {
@@ -1320,9 +1348,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")[1]
         time.range <-  as.POSIXlt(time.range)
-        time.range.data <- range(x, na.rm=TRUE)
-        time.range[1] <- max(time.range[1], time.range.data[1])
-        time.range[2] <- min(time.range[2], time.range.data[2])
+        ## time.range.data <- range(x, na.rm=TRUE)
+        ## what was this for?# time.range[1] <- max(time.range[1], time.range.data[1], na.rm=TRUE)
+        ## what was this for?# time.range[2] <- min(time.range[2], time.range.data[2], na.rm=TRUE)
         tr1 <- format(time.range[1], getOption("oceTimeFormat"))
         tr2 <- format(time.range[2], getOption("oceTimeFormat"))
         if (abbreviateTimeRange) {
@@ -1379,11 +1407,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     invisible()
 }
 
-oceBisect <- function(f, xleft, xright, dx, debug=getOption("oceDebug"))
+oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
 {
     if (xleft >= xright)
         stop("xright must exceed xleft")
-    if (f(xleft) * f(xright) > 0)
+    if (f(xleft, ...) * f(xright, ...) > 0)
         stop("xleft and xright do not bracket a root")
     if (missing(dx))
         dx <- (xright - xleft) / 1e5
@@ -1397,7 +1425,7 @@ oceBisect <- function(f, xleft, xright, dx, debug=getOption("oceDebug"))
     npass <- 4 + floor(1 + log2((xright - xleft) / dx))
     oceDebug(debug, "npass=", npass, "\n")
     for (pass in 1:npass) {
-        if (f(xleft) * f(xmiddle) < 0) { # FIXME: should not need to do f(left)
+        if (f(xleft, ...) * f(xmiddle, ...) < 0) { # FIXME: should not need to do f(left)
             tmp <- xmiddle
             xmiddle <- 0.5 * (xleft + xmiddle)
             xright <- tmp

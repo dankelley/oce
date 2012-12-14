@@ -26,6 +26,7 @@
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1),
      inset=FALSE,
+     add=FALSE,
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -127,6 +128,9 @@
       effect is to prevent the present function from adjusting margins, which
       is necessary because margin adjustment is the basis for the method
       used by \code{\link{plotInset}}.}
+  \item{add}{add to an existing plot.  This only works if
+      \code{length(which)=1}, and it will yield odd results if the value of
+      \code{which} does not match that in the previous plots.}
   \item{debug}{set to a positive value to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{swN2} calculations.} 

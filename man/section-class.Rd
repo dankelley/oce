@@ -32,8 +32,12 @@
         \code{pairs()} call in the example section).  If just one latitude or
         longitude is desired per station, e.g. \code{section[["latitude",
             "byStation"]]} may be used.  Station-by-station values of dynamic
-        height are provided by e.g.  \code{section[["dynamic height"]]}.}
-
+        height are provided by e.g. \code{section[["dynamic height"]]}.  The
+        depths (actually pressures) of all data are obtained from e.g.
+        \code{section[["depth"]]}, and the distances along the transect
+        (measured from the first station) are obtained from e.g.
+        \code{section[["distance"]]}.}
+    
     \subsection{Assigning values}{(This feature has yet to be added.)}
     
     \subsection{Overview of contents}{The \code{show} method (e.g.

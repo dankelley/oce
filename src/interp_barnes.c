@@ -19,26 +19,48 @@ contour(xg, yg, g)
 points(x,y,col=hsv(0.666*(u-min(u))/diff(range(u)),1,1),pch=20)
 */
 
+//#define USE_APPROX_EXP 1
+#ifdef USE_APPROX_EXP
+// Compute exp(-x) approximately, as efficiency measure.
+// See [97/1/25] for demonstration of factor of 3 speedup, with
+// 1000 column data and a 10 by 10 grid, and demonstration
+// that error is < 0.1% in the final grid.
+inline double exp_approx(double x)
+{
+    return 1.0 / (0.999448 
+            + x * (1.023820 
+                + x * (0.3613967
+                    + x * (0.4169646
+                        + x * (-0.1292509
+                            + x * 0.0499565)))));
+}
+#endif
+
 static double
 interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
-		   int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
-		   unsigned int n, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
-		   double *z_last, /* last estimate of z at (x,y) */
-		   double xr, double yr) /* influence radii */
+        int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
+        unsigned int n, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
+        double *z_last, /* last estimate of z at (x,y) */
+        double xr, double yr) /* influence radii */
 {
-	double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
-	int k;
-	for (k = 0; k < n; k++) {
-		if (k != skip) {
-			dx = (xx - x[k]) / xr;
-			dy = (yy - y[k]) / yr;
-			d = dx*dx + dy*dy;
-			weight = w[k] * exp(-d);
-			sum += weight * (z[k] - z_last[k]);
-			sum_w += weight;
-		}
-	}
-	return ((sum_w > 0.0) ? (zz + sum / sum_w) : NA_REAL);
+    double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
+    int k;
+    for (k = 0; k < n; k++) {
+        //if (ISNA(x[k]) || ISNA(y[k]) || ISNA(z[k]) || ISNA(w[k])) continue;
+        if (k != skip) {
+            dx = (xx - x[k]) / xr;
+            dy = (yy - y[k]) / yr;
+            d = dx*dx + dy*dy;
+#ifdef USE_APPROX_EXP
+            weight = w[k] * exp_approx(-d);
+#else
+            weight = w[k] * exp(-d);
+#endif
+            sum += weight * (z[k] - z_last[k]);
+            sum_w += weight;
+        }
+    }
+    return ((sum_w > 0.0) ? (zz + sum / sum_w) : NA_REAL);
 }
 
 

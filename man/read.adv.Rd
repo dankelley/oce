@@ -21,6 +21,7 @@ read.adv(file, from=1, to, by=1, tz=getOption("oceTz"),
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oceTz"), 
   header=TRUE,
   latitude=NA, longitude=NA,
+  type=c("vector", "aquadopp"),
   haveAnalog1=FALSE, haveAnalog2=FALSE,
   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 

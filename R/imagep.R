@@ -191,6 +191,7 @@ imagep <- function(x, y, z,
                    breaks, col,
                    labels=NULL, at=NULL,
                    drawContours=FALSE,
+                   tformat,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
                    filledContour=FALSE,
@@ -271,13 +272,13 @@ imagep <- function(x, y, z,
     ## FIXME: should check on equal values
     ox <- order(x)
     if (any(diff(ox) < 0)) {
-        warning("reordered some x values")
+        ##warning("reordered some x values")
         x <- x[ox]
         z <- z[ox, ]
     }
     oy <- order(y)
     if (any(diff(oy) < 0)) {
-        warning("reordered some x values")
+        ##warning("reordered some y values")
         y <- y[oy]
         z <- z[,oy]
     }
@@ -370,11 +371,11 @@ imagep <- function(x, y, z,
                       xlim=xlim, ylim=ylim, zlim=zlim, ...)
             }
         }
-        box()
         if (axes) {
+            box()
             oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
                              drawTimeRange=drawTimeRange,
-                             mar=mar, mgp=mgp, debug=debug-1)
+                             mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
             axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     } else {                           # x is not a POSIXt
@@ -390,8 +391,8 @@ imagep <- function(x, y, z,
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
         }
-        box()
         if (axes) {
+            box()
             axis(1)#, cex.axis=cex, cex.lab=cex)
             axis(2)#, cex.axis=cex, cex.lab=cex)
         }
@@ -399,7 +400,8 @@ imagep <- function(x, y, z,
     if (!is.null(missingColor)) {
         ## FIXME: the negation on is.na is confusing, but it comes from col and breaks together
         image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0,1/2,1), add=TRUE)
-        box()
+        if (axes)
+            box()
     }
     if (!(is.character(main) && main == ""))
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))

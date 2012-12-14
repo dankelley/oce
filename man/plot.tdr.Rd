@@ -12,6 +12,7 @@
      which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
+     tformat,
      drawTimeRange=getOption("oceDrawTimeRange"),
      abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
      useSmoothScatter=FALSE,
@@ -47,6 +48,9 @@
     more lines are to be added later.)}
   \item{xlab}{optional label for x axis.}
   \item{ylab}{optional label for y axis.}
+  \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+      plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
   \item{drawTimeRange}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}

@@ -15,7 +15,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
             mai.palette=c(0, 1/8, 0, 3/8),
             main="",
             despike=FALSE,
-            axes=TRUE,
+            axes=TRUE, tformat,
             marginsAsImage=FALSE,
             grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
             debug=getOption("oceDebug"),
@@ -47,6 +47,10 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{mai.palette}{margins, in inches, for the palette}
 \item{main}{title of plot.}
 \item{despike}{boolean flag that can turn on despiking with \code{\link{despike}}.}
+\item{axes}{boolean, set to \code{TRUE} to get axes plotted}
+\item{tformat}{optional format for labels on the time axis}
+\item{marginsAsImage}{boolean indicatingn whether to set the right-hand margin
+    to the width normally taken by an image drawn with \code{\link{imagep}}.}
 \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
     argument is needed, because calling \code{\link{grid}} after doing a
     sequence of plots will not result in useful results for the individual
@@ -56,8 +60,6 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{grid.lwd}{line width of grid}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a
   moderate amount of debugging information, or to 2 to get more.}
-\item{axes}{boolean, set to \code{TRUE} to get axes plotted}
-\item{marginsAsImage}{FALSE},
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }
 

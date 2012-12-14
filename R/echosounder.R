@@ -55,6 +55,7 @@ setMethod(f="plot",
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
                               atTop, labelsTop,
+                              tformat,
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -108,7 +109,9 @@ setMethod(f="plot",
                                  ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
                                  zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                                  col=col,
-                                 mgp=mgp, mar=mar, debug=debug-1, ...)
+                                 mgp=mgp, mar=mar,
+                                 tformat=tformat,
+                                 debug=debug-1, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -129,6 +132,7 @@ setMethod(f="plot",
                                  zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
+                                 tformat=tformat,
                                  debug=debug-1,
                                  ...)
                       }
@@ -169,8 +173,9 @@ setMethod(f="plot",
                              ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
                              zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                              mgp=mgp, mar=mar,
-                             debug=debug-1,
-                             col=col)
+                             tformat=tformat,
+                             col=col,
+                             debug=debug-1)
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"

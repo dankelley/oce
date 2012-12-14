@@ -13,6 +13,7 @@
      which=1:4, 
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+     tformat,
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -32,6 +33,9 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+      plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{swN2} calculations.} 

@@ -24,8 +24,11 @@
      map.ylim=NULL,
      xtype="distance",
      ytype="depth",
+     ztype=c('contour', 'image'),
      legend.loc="bottomright",
      adorn=NULL,
+     showStations=FALSE,
+     showBottom=TRUE,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -34,78 +37,86 @@
 }
 
 \arguments{
-  \item{x}{a \code{section} object, e.g. as created by
-    \code{\link{makeSection}}.}
-  \item{which}{list of desired plot types.  There may be up to four
-    panels in total, and the desired plots are placed in these panels,
-    in reading order.  The codes for the plot types are explained in the 
-    \dQuote{Details} section.
-   
-    If only one panel is plotted, \code{par} is not
-    adjusted, which makes it easy to add to the plot with subsequent
-    plotting commands.}
-  \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
-      computer must have the TEOS library installed; see \code{\link{teos}}.
-      The effect of using \code{"teos"} is to plot ``absolute salinity''
-      instead of practical salinity, and conservative temperature instead of
-      in-situ temperature.  Typically, the temperature values will be very
-      similar to those with \code{unesco}, but the salinities will be increased
-      by 0.1 to 0.2 units.  See \code{\link{teos}} for more information.}
-  \item{at}{if \code{NULL} (the default), the x axis will indicate the
-    distance of the stations from the first in the section.  (This may
-    give errors in the contouring routine, if the stations are not present
-    in a geographical order.)  If a list, then it indicates the values at
-    which stations will be plotted.} 
-  \item{labels}{either a logical, indicating whether to put labels on
-    the x axis, or a vector that is a list of labels to be placed at the x
-    positions indicated by \code{at}.} 
-  \item{grid}{if \code{TRUE}, points are drawn at data locations.}
-  \item{contourLevels}{optional contour levels}
-  \item{contourLabels}{optional contour labels}
-  \item{stationIndices}{optional list of the indices of stations to
-    use.  Note that an index is \emph{not} a station number, e.g. to
-    show the first 4 stations, use \code{station.indices=1:4}.}
-  \item{coastline}{optional \code{coastline} to be used in a station
-    map}
-  \item{xlim}{optional limit for x axis (only in sections, not map)}
-  \item{ylim}{optional limit for y axis (only in sections, not map)}
-  \item{map.xlim}{optional xlim for station location, which can be
-    helpful in ensuring that a recognizable coastline can be seen.
-    (This value is used instead of \code{map.ylim}, if both are
-    supplied.)}
-  \item{map.ylim}{optional ylim for station location, which can be
-    helpful in ensuring that a recognizable coastline can be seen}
-  \item{xtype}{type of x axis, for contour plots, either
-    \code{"distance"} for distance (in km) to the first point in the
-    section, \code{"track"} for distance along the cruise track,
-    or \code{"longitude"} or \code{"latitude"}.
-    Note that if the x values are not in order, they will be put in
-    order (which may make no sense) and a warning will be printed.}
-  \item{ytype}{type of y axis for contour plots, either
-    \code{"pressure"} for pressure (in dbar, with zero at the surface)
-    or \code{"depth"} for depth (in m below the surface, calculated
-    from pressure with \code{\link{swDepth}}).}
-  \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
-  \item{adorn}{list of expressions to be executed for the panels in
-    turn, e.g. to adorn the plots.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels, as
-    they are drawn from top-left to bottom-right.   If only a single
-    expression is provided, it is used for all panels.  (See
-    \dQuote{Examples}.)}
-  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
-    also for \code{par(mar)}, computed from this.  The default is
-    tighter than the R default, in order to use more space for the data
-    and less for the axes.}
-  \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{col}{colour, as in \code{\link{par}("col")}.}
-  \item{cex}{value to be used with \code{\link{par}("cex")}, for any use of
-      \code{\link{points}}, e.g. for \code{which="data"}.}
-  \item{pch}{value to be used with \code{\link{par}("pch")} (see \code{cex},
-      above.)}
-  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-    moderate amount of debugging information, or to 2 to get more.}
-  \item{\dots}{optional arguments passed to the contouring function,
-    e.g. using \code{labcex=1} will increase the size of contour labels.}
+    \item{x}{a \code{section} object, e.g. as created by
+        \code{\link{makeSection}}.}
+    \item{which}{list of desired plot types.  There may be up to four
+        panels in total, and the desired plots are placed in these panels,
+        in reading order.  The codes for the plot types are explained in the 
+        \dQuote{Details} section.
+
+        If only one panel is plotted, \code{par} is not
+        adjusted, which makes it easy to add to the plot with subsequent
+        plotting commands.}
+    \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
+        computer must have the TEOS library installed; see \code{\link{teos}}.
+        The effect of using \code{"teos"} is to plot ``absolute salinity''
+        instead of practical salinity, and conservative temperature instead of
+        in-situ temperature.  Typically, the temperature values will be very
+        similar to those with \code{unesco}, but the salinities will be increased
+        by 0.1 to 0.2 units.  See \code{\link{teos}} for more information.}
+    \item{at}{if \code{NULL} (the default), the x axis will indicate the
+        distance of the stations from the first in the section.  (This may
+        give errors in the contouring routine, if the stations are not present
+        in a geographical order.)  If a list, then it indicates the values at
+        which stations will be plotted.} 
+    \item{labels}{either a logical, indicating whether to put labels on
+        the x axis, or a vector that is a list of labels to be placed at the x
+        positions indicated by \code{at}.} 
+    \item{grid}{if \code{TRUE}, points are drawn at data locations.}
+    \item{contourLevels}{optional contour levels}
+    \item{contourLabels}{optional contour labels}
+    \item{stationIndices}{optional list of the indices of stations to
+        use.  Note that an index is \emph{not} a station number, e.g. to
+        show the first 4 stations, use \code{station.indices=1:4}.}
+    \item{coastline}{optional \code{coastline} to be used in a station
+        map}
+    \item{xlim}{optional limit for x axis (only in sections, not map)}
+    \item{ylim}{optional limit for y axis (only in sections, not map)}
+    \item{map.xlim}{optional xlim for station location, which can be
+        helpful in ensuring that a recognizable coastline can be seen.
+        (This value is used instead of \code{map.ylim}, if both are
+        supplied.)}
+    \item{map.ylim}{optional ylim for station location, which can be
+        helpful in ensuring that a recognizable coastline can be seen}
+    \item{xtype}{type of x axis, for contour plots, either
+        \code{"distance"} for distance (in km) to the first point in the
+        section, \code{"track"} for distance along the cruise track,
+        or \code{"longitude"} or \code{"latitude"}.
+        Note that if the x values are not in order, they will be put in
+        order (which may make no sense) and a warning will be printed.}
+    \item{ytype}{type of y axis for contour plots, either
+        \code{"pressure"} for pressure (in dbar, with zero at the surface)
+        or \code{"depth"} for depth (in m below the surface, calculated
+        from pressure with \code{\link{swDepth}}).}
+    \item{ztype}{string indicating whether to use contours or an image.}
+    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+    \item{adorn}{list of expressions to be executed for the panels in
+        turn, e.g. to adorn the plots.  If the number matches the number of
+        panels, then the strings are applied to the appropriate panels, as
+        they are drawn from top-left to bottom-right.   If only a single
+        expression is provided, it is used for all panels.  (See
+        \dQuote{Examples}.)}
+    \item{showStations}{logical indicating whether to draw station numbers
+        on maps.}
+    \item{showBottom}{logical indicating whether to draw the bottom, or a
+        character string indicating the method for plotting the bottom.  The
+        allowed methods are: \code{polygon}, which fills the space to the bottom,
+        or \code{lines}, which draws lines from stations to the bottom, or
+        \code{points}, which draws points at the bottom.}
+    \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+        also for \code{par(mar)}, computed from this.  The default is
+        tighter than the R default, in order to use more space for the data
+        and less for the axes.}
+    \item{mar}{value to be used with \code{\link{par}("mar")}.}
+    \item{col}{colour, as in \code{\link{par}("col")}.}
+    \item{cex}{value to be used with \code{\link{par}("cex")}, for any use of
+        \code{\link{points}}, e.g. for \code{which="data"}.}
+    \item{pch}{value to be used with \code{\link{par}("pch")} (see \code{cex},
+        above.)}
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+        moderate amount of debugging information, or to 2 to get more.}
+    \item{\dots}{optional arguments passed to the contouring function,
+        e.g. using \code{labcex=1} will increase the size of contour labels.}
 }
 
 \details{Creates a summary plot for a CTD section, with one panel for each
@@ -138,24 +149,36 @@
 
 \seealso{The documentation for \code{\link{section-class}} explains the
     structure of section objects, and also outlines the other functions dealing
-    with them.}
+    with them.
+}
 
 \examples{
 library(oce)
-# Halifax Harbour
+## Halifax Harbour
 data(section)
 data(coastlineHalifax)
 plot(section, coastline=coastlineHalifax)
 
-# Gulf Stream
+## Gulf Stream
 data(a03)
 GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
-# Illustate adornment
+                                        # Illustate adornment
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
      adorn=expression({abline(v=200,col='blue')}))
+
+plot(GSg, which='sigmaTheta', ylim=c(1000,0),
+     contourLevel=seq(24, 29, 0.5),
+     contourLabel=c("24", "", "25","","26","","27","","28","","29"))
+
+## image, with coloured dots to show if grid smoothing was OK
+plot(GSg, which=1, ztype='image')
+col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
+points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
+points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
+
 }
 
 \author{Dan Kelley}

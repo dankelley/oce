@@ -13,7 +13,7 @@ print(xx)
 */
 
 /*#define DEBUG*/
-SEXP fillgap(SEXP x, SEXP rule)
+SEXP fillgap1d(SEXP x, SEXP rule)
 {
   int i;
   PROTECT(x = AS_NUMERIC(x));

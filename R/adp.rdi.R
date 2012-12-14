@@ -31,32 +31,36 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
     if (FLD[2] != 0x00)
         stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
-    programVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
-    programVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
-    programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
-    programVersionNumeric <- as.numeric(programVersion)
-    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
-    ##if (programVersion < 16.28) warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
+    firmwareVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
+    firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
+    firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
+    firmwareVersionNumeric <- as.numeric(firmwareVersion)
+    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric,")\n")
+    ##if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!haveActualData)
         return(list(instrumentType="adcp",
-                    programVersionMajor=programVersionMajor,
-                    programVersionMinor=programVersionMinor,
-                    programVersion=programVersion,
+                    firmwareVersionMajor=firmwareVersionMajor,
+                    firmwareVersionMinor=firmwareVersionMinor,
+                    firmwareVersion=firmwareVersion,
                     haveActualData=haveActualData))
 
+    ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
+    ## FLD[6] = SYSTEM CONFIGURATION MSB
     systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6],endian="big"),sep="-")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     bits <- substr(systemConfiguration, 6, 8)
+    ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
     if (bits == "000") frequency <- 75        # kHz
     else if (bits == "001") frequency <-  150
     else if (bits == "010") frequency <-  300
     else if (bits == "011") frequency <-  600
     else if (bits == "100") frequency <- 1200
     else if (bits == "101") frequency <- 2400
+    else stop("unknown freq. bit code:", bits, " (expect 000 for 75kHz, 001 for 150kHz, etc)")
     oceDebug(debug, "bits:", bits, "so frequency=", frequency, "\n")
     bits <- substr(systemConfiguration, 16, 17)
     oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
@@ -89,7 +93,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     pingsPerEnsemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (cellSize < 0 || cellSize > 64)
-        stop("cellSize of ", cellSize, "is not in the allowed range of 0m to 64m")
+        stop("cellSize of ", cellSize, "m is not in the allowed range of 0m to 64m")
     blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profilingMode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     lowCorrThresh <- readBin(FLD[18], "integer", n=1, size=1)
@@ -108,8 +112,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     headingAlignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
     headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
-    sensorSource <- readBin(FLD[31], "integer", n=1, size=1)
-    sensorsAvailable <- readBin(FLD[32], "integer", n=1, size=1)
+    sensorSource <- byteToBinary(FLD[31], endian="big")
+    sensorsAvailable<- byteToBinary(FLD[32], endian="big")
     bin1Distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
     ##cat("bin1Distance being inferred from 0x", FLD[33:34], " as ", bin1Distance, "\n", sep="", ...)
     xmitPulseLength <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
@@ -200,10 +204,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 1600 m/s.  Something went wrong in decoding the data.")
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
-         programVersionMajor=programVersionMajor,
-         programVersionMinor=programVersionMinor,
-         programVersion=programVersion,
-         ##programVersionMajor=fv,
+         firmwareVersionMajor=firmwareVersionMajor,
+         firmwareVersionMinor=firmwareVersionMinor,
+         firmwareVersion=firmwareVersion,
+         ##firmwareVersionMajor=fv,
          ##programVersionMinor=fr,
          bytesPerEnsemble=bytesPerEnsemble,
          systemConfiguration=systemConfiguration,
@@ -260,6 +264,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
                          monitor=FALSE, despike=FALSE, processingLog,
+                         testing=FALSE,
                          debug=getOption("oceDebug"),
                          ...)
 {
@@ -329,14 +334,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     buf <- readBin(file, what="raw", n=file.size, endian="little")
     ## decode header
     header <- decodeHeaderRDI(buf, debug=debug-1)
+
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
         numberOfCells <- header$numberOfCells
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
-        profileStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        profileStart <- profileStart + as.numeric(buf[profileStart[1]+8]) + 256*as.numeric(buf[profileStart[1]+9])
+        ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+
+
+        profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
@@ -391,7 +399,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     by <- floor(0.5 + ctimeToSeconds(by) / dt)
                 oceDebug(debug, "by=",by,"profiles (after decoding)\n")
                 profileStart <- profileStart[profileStart[fromIndex] < profileStart & profileStart < profileStart[toIndex]]
+                ensembleStart <- ensembleStart[ensembleStart[fromIndex] < ensembleStart & ensembleStart < ensembleStart[toIndex]]
                 profileStart <- profileStart[seq(1, length(profileStart), by=by)]
+                ensembleStart <- ensembleStart[seq(1, length(ensembleStart), by=by)]
             } else {
                 fromIndex <- from
                 toIndex <- to
@@ -400,14 +410,39 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 if (is.character(by))
                     stop("cannot have string for 'by' if 'from' and 'to' are integers")
                 profileStart <- profileStart[seq(from=from, to=to, by=by)]
+                ensembleStart <- ensembleStart[seq(from=from, to=to, by=by)]
                 oceDebug(debug, vectorShow(profileStart, "profileStart after indexing:"))
             }
             profileStart <- profileStart[!is.na(profileStart)]
+            ensembleStart <- ensembleStart[!is.na(ensembleStart)]
             profilesToRead <- length(profileStart)
             oceDebug(debug, "filename=",filename,"\n")
             oceDebug(debug, "profilesToRead=",profilesToRead,"\n")
             oceDebug(debug, "numberOfBeams=",numberOfBeams,"\n")
             oceDebug(debug, "numberOfCells=",numberOfCells,"\n")
+
+            if (testing) {
+                nensembles <- length(ensembleStart)
+                numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n=1, size=1) # Note: just using first one
+                FLDStart <- ensembleStart + 6 + 2 * numberOfDataTypes
+                ## FIXME: decide whether the code below is cleaner than the spot where time is determined
+                ## VLDStart <- FLDStart + 59
+                ## RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
+                ## RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
+                ## RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
+                ## RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
+                ## RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
+                ## RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
+                ## RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
+                ## time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
+
+                ## regarding the "4" below, see p 135 of WorkHorse_commands_data_format_AUG10.PDF,
+                ## noting that we subtract 1 because it's an offset; we are thus examining
+                ## the LSB of the "Sys Cfg" pair.
+                upward <- .Call("get_bit", buf[FLDStart+4], 7)
+                ##testingData <- list(time=time, upward=upward)
+            }
+
             items <- numberOfBeams * numberOfCells
             v <- array(dim=c(profilesToRead, numberOfCells, numberOfBeams))
             a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # echo amplitude
@@ -546,6 +581,21 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 temperature <- despike(temperature, reference="trim", min=-3, max=101)
                 pressure <- despike(pressure, reference="trim", min=1, max=10000)
             }
+            headingStd <- as.numeric(buf[profileStart + 31]) # p142 WorkHorse_commands_data_format_AUG10.PDF
+            pitchStd <- 0.1 * as.numeric(buf[profileStart + 32])
+            rollStd <- 0.1 * as.numeric(buf[profileStart + 33])
+
+            ## read ADC channels [CR's code]
+            xmitCurrent <- as.numeric(buf[profileStart + 34])
+            xmitVoltage <- as.numeric(buf[profileStart + 35])
+            ambientTemp <- as.numeric(buf[profileStart + 36])
+            pressurePlus <- as.numeric(buf[profileStart + 37])
+            pressureMinus <- as.numeric(buf[profileStart + 38])
+            attitudeTemp <- as.numeric(buf[profileStart + 39])
+            attitude <- as.numeric(buf[profileStart + 40])
+            contaminationSensor <- as.numeric(buf[profileStart + 41])
+
+            pressureStd <- readBin(buf[profileStart4 + 52], "integer", n=profilesToRead, size=4, endian="little")
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
             metadata <- header
@@ -564,9 +614,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$measurementDeltat <- measurementDeltat
             metadata$bin1Distance <- bin1Distance
             metadata$xmitPulseLength <- xmitPulseLength
-            metadata$oceBeamUnattenuated <- FALSE
+            metadata$oceBeamUnspreaded <- FALSE
             metadata$oceCoordinate <- header$originalCoordinate
-            metadata$depth <- mean(depth, na.rm=TRUE)
+            metadata$depthMean <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
@@ -624,7 +674,19 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
-                             roll=roll)
+                             roll=roll,
+                             headingStd=headingStd,
+                             pitchStd=pitchStd,
+                             rollStd=rollStd,
+                             pressureStd=pressureStd,
+                             xmitCurrent=xmitCurrent,
+                             xmitVoltage=xmitVoltage,
+                             ambientTemp=ambientTemp,
+                             pressurePlus=pressurePlus,
+                             pressureMinus=pressureMinus,
+                             attitudeTemp=attitudeTemp,
+                             attitude=attitude,
+                             contaminationSensor=contaminationSensor)
             } else {
                 data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
@@ -636,7 +698,22 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
-                             roll=roll)
+                             roll=roll,
+                             headingStd=headingStd,
+                             pitchStd=pitchStd,
+                             rollStd=rollStd,
+                             pressureStd=pressureStd,
+                             xmitCurrent=xmitCurrent,
+                             xmitVoltage=xmitVoltage,
+                             ambientTemp=ambientTemp,
+                             pressurePlus=pressurePlus,
+                             pressureMinus=pressureMinus,
+                             attitudeTemp=attitudeTemp,
+                             attitude=attitude,
+                             contaminationSensor=contaminationSensor)
+            }
+            if (testing) {
+                data$upward=upward
             }
         } else {
             warning("There are no profiles in this file.")

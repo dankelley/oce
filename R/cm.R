@@ -244,6 +244,7 @@ setMethod(f="plot",
                               mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                               small=2000,
                               main="",
+                              tformat,
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -321,10 +322,12 @@ setMethod(f="plot",
                   oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
                   if (which[w] == 1) {
                       oce.plot.ts(x@data$time, x@data$u,
-                                  type=type, xlab="", ylab="u [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                                  type=type, xlab="", ylab="u [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  tformat=tformat)
                   } else if (which[w] == 2) {
                       oce.plot.ts(x@data$time, x@data$v,
-                                  type=type, xlab="", ylab="v [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                                  type=type, xlab="", ylab="v [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  tformat=tformat)
                   } else if (which[w] == 3) {     # or "progressive vector"
                       oceDebug(debug, "progressive vector plot\n")
                       dt <- as.numeric(difftime(x@data$time[2], x@data$time[1],units="sec")) # FIXME: assuming equal dt
@@ -367,18 +370,22 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 7) {
                       oce.plot.ts(x@data$time, x@data$depth,
-                                  type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                                  type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  tformat=tformat)
                   } else if (which[w] == 8) {
                       oce.plot.ts(x@data$time, x@data$salinity,
-                                  type=type, xlab="", ylab=resizableLabel("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                                  type=type, xlab="", ylab=resizableLabel("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  tformat=tformat)
                   } else if (which[w] == 9) {
                       oce.plot.ts(x@data$time, x@data$temperature,
-                                  type=type, xlab="", ylab=resizableLabel("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                                  type=type, xlab="", ylab=resizableLabel("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  tformat=tformat)
                   } else if (which[w] == 10) {
                       oce.plot.ts(x@data$time, x@data$heading,
-                                  type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                                  type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  tformat=tformat)
                   } else if (which[w] == 11) {
-                      plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$depth), main=main, ...)
+                      plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$depth), main=main, ...) 
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }

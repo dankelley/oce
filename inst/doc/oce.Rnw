@@ -325,19 +325,19 @@ preferred scheme is to do as follows.
 \index{oce object changelog}
 \index{logged changes to oce objects}
 \index{editing oce objects}
-\index{oce.edit}
+\index{oceEdit}
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO") # better way
-x <- oce.edit(x, "scientist", "DAM") # better way
+x <- oceEdit(x, "institute", "SIO") # better way
+x <- oceEdit(x, "scientist", "DAM") # better way
 @
 which will store a note about the changes in the object's log.  Even
 better, provide a reason for the change, and sign the change with your
 name:
 <<ctdfix3,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO", "human-parsed","Dan Kelley") # best way
-x <- oce.edit(x, "scientist", "DAM", "human-parsed","Dan Kelley") # best way
+x <- oceEdit(x, "institute", "SIO", "human-parsed","Dan Kelley") # best way
+x <- oceEdit(x, "scientist", "DAM", "human-parsed","Dan Kelley") # best way
 @
 
 For a real-world example (with warts!), visit
@@ -354,7 +354,7 @@ for (i in 1:length(files)) {
     if (i == 1) {
         plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
     } else {
-        lines(x@data$salinity, x@data$temperature, col="red")
+        lines(x[["salinity"]], x[["temperature"]], col="red")
     }
 }
 @
@@ -366,8 +366,8 @@ problems. The graph that is produced by this code has several spurious lines
 oriented horizontally (indicating spurious salinity) and vertically (indicating
 spurious temperature). One way to find such values is to put the lines
 <<rangeg,eval=false>>=
-print(range(x@data$temperature))
-print(range(x@data$salinity))
+print(range(x[["temperature"]]))
+print(range(x[["salinity"]]))
 @
 after the \verb@read.ctd()@ command. One thing you'll find is that station 987
 has a minimum salinity range of 0.0009 to 987. These values are clearly in
@@ -617,8 +617,7 @@ png("adp.png", width=800, height=400, pointsize=20)
 <<label=adpplot>>=
 library(oce)
 data(adp)
-plot(adp, which=1,
-  adorn=expression({lines(x@data$time, x@data$pressure, col='green', lwd=2)}))
+plot(adp, which=1, adorn=expression({lines(x[["time"]], x[["pressure"]])}))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()

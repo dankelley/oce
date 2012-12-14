@@ -11,30 +11,61 @@
 \usage{swN2(pressure, sigmaTheta=NULL, derivs, \dots)}
 
 \arguments{
+
   \item{pressure}{either pressure [dbar] (in which case \code{sigmaTheta} must
-  be provided) \strong{or} an object of class \code{ctd} object (in which case
-    \code{sigmaTheta} is inferred from the object.}
-  \item{sigmaTheta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
-  \item{derivs}{optional function to replace the default calculation of the
-      \eqn{d\sigma_\theta/dp}{d(sigmaTheta)/d(pressure)}.  Its first argument
-      must be the actual pressure (i.e. it cannot be a CTD object) and the
-      second must be sigmaTheta.}
-  \item{\dots}{optional extra arguments to be passed to
-    \code{smooth.spline}.  See Details.}
+      be provided) \strong{or} an object of class \code{ctd} object (in which
+      case \code{sigmaTheta} is inferred from the object.}
+
+  \item{sigmaTheta}{Surface-referenced potential density minus 1000
+      [kg/m\eqn{^3}{^3}]}
+
+  \item{derivs}{optional argument to control how the derivative
+      \eqn{d\sigma_\theta/dp}{d(sigmaTheta)/d(pressure)} is calculated.  This
+      may be a character string or a function of two arguments.  See
+      \dQuote{Details}.}
+
+  \item{\dots}{additional argument, passed to \code{\link{smooth.spline}}, in
+      the case that \code{derivs="smoothing"}.  See \dQuote{Details}.}
+
 }
+  
+\details{If the first argument is a \code{ctd} object, then density is is
+    inferred from it, and the \code{sigmaTheta} argument is ignored.
 
-\details{If the first argument is a \code{ctd} object, then
-  \code{sigmaTheta} is inferred from it.
+    The core of the method involves differentiating density with respect to
+    pressure, and the \code{derivs} argument is used to control how this is
+    done, as follows.
 
-  The result is calculated from the derivative of a smoothing cubic
-  spline fitted to the density profile using \code{smooth.spline}.
-  Optional arguments in \dots are passed to this routine, providing the
-  user with a good degree of control over the smoothing technique.  A
-  common method is to set \code{df}, the degrees of freedom for the
-  spline fit.  (Note that if \code{df} is not provided as an argument,
-  \code{swN2} will set it to \code{min(length(p)/5, 10)} to provide a
-  result similar to what one might calculate by smoothing the density
-  profile manually.)}
+    \itemize{
+
+        \item if \code{derivs} is not supplied, the action is as though it were
+        given as the string \code{"smoothing"}
+
+        \item if \code{derivs} equals \code{"simple"}, then the derivative of
+        density with respect to pressure is calculated as the ratio of
+        first-order derivatives of density and pressure, each calculated using
+        \code{\link{diff}}.  (A zero is appended at the top level.)
+
+        \item if \code{derivs} equals \code{"smoothing"}, then the processing
+        depends on the number of data in the profile, and on whether \code{df}
+        is given as an optional argument.  When the number of points exceeds 4,
+        and when \code{df} exceeds 1, \code{\link{smooth.spline}} is used to
+        calculate smoothing spline representation the variation of density as a
+        function of pressure, and derivatives are extracted from the spline
+        using \code{predict}.  Otherwise, density is smoothed using
+        \code{\link{smooth}}, and derivatives are calculated as with the
+        \code{"simple"} method.
+
+        \item if \code{derivs} is a function taking two arguments (first
+        pressure, then density) then that function is called directly to
+        calculate the derivative, and no smoothing is done before or after that
+        call.
+    }
+
+    Given the derivative, the square of the buoyancy frequency is calculated as
+    \eqn{10^{-4}g^2d\sigma_\theta/dp}{1e-4*g^2*d(sigmaTheta)/dp}.
+
+} 
 
 \value{Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].}
 

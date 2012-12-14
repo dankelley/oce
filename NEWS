@@ -1,9 +1,40 @@
-0.9-2
+0.9-4
+- as.section() added
+- add data(endeavour)
+- add map projections, with provisional functions mapPlot() etc
+- plot.ctd(): add argument 'add'
+- add crude mapping support
+- interpBarnes(): add args 'xgl' and 'ygl'
+- read.section(): add 'directory' argument
+- sectionSmooth(): add 'barnes' method
+- oce.plot.ts() and oce.axis.POSIXct(): add tformat argument
+- read.aquadopp() and cousins added [issues 253 and 258]
+- read.ctd() guesses waterDepth if not supplied [issue 253]
+- plotTS(): extend isopycnal range [issue 252]
+- plot.section() contouring improved
+- data(oceans) added
+- data(papa) added
+- fillGap() works on matrices as well as vectors
+- read.lobo() is more flexible on column names
+- imagep(..., axes=FALSE): no longer plots axis box [issue 249]
+- oce.plot.ts(): alter time auto-ranging method
+- oceBisect(): increase generality of function whose root is sought
+- plotTS(): clean axes after isopycnals drawn
+- teos10: update test values (with help from PB)
+- read.adp.nortek(): handle missing 'to' argument as documented
+- beamUnattenuateAdp() renamed beamUnspreadAdp()
+- plotTS() and plotProfile(): permit type='n'
+- plotProfile(ytype='z'): fix bug in y label
+- improve error message if TEOS-10 is missing
+
+0.9-3
 - example(riley): remove error in R-devel
 - plot.ctd(..., which=7) improvement
 - swSCTp(): accept conductivity in mS/cm and S/m
 - as.ctd(): accept TEOS-10 values SA and CT
 - make TEOS routines more resistant to unphysical values
+
+0.9-2
 - remove unwanted files during build process
 
 0.9-1
@@ -363,7 +394,7 @@
 0.1.71
 - fix bug in makeSection (ignored the list, if a list provided)
    http://code.google.com/p/r-oce/issues/detail?id=18&q=label:Type-Defect
-- add oce.edit()
+- add oce.edit(), later renamed oceEdit()
 - add topoMaritimes dataset
 - add read.topo(), plot.topo(), and summary.topo()
 - add gebcoColors() ... renamed oceColorsGebco() in version 0.1.77

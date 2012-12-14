@@ -167,7 +167,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
     ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
-    oceDebug(debug, "read.adv.sontek.adr() ENTRY\n")
+    oceDebug(debug, "\b\bread.adv.sontek.adr() {\n")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -422,6 +422,10 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         print(data.frame(burst, burstTime, burstBufindex)[1:5,])
 
     ## Interpret 'from', 'to', and 'by', possibly integers, POSIX times, or strings for POSIX tiems
+    if (missing(from))
+        from <- 1
+    if (missing(to))
+        to <- burstSampleIndex[length(burstSampleIndex)]
     fromKeep <- from
     toKeep <- to
     if (inherits(from, "POSIXt")) {
