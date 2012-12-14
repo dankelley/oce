@@ -2,53 +2,6 @@
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
-decodeHeaderRDI2 <- function(buf, offset = 0, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
-{
-    ## Get orientation for each profile; this is a stripped-down version of decodeHeaderRDI().
-    timeRval <- rep(NA, length(offset))
-    upwardRval <- rep(NA, length(offset))
-    i <- 1
-    for (o in offset) {
-        if (buf[o+1] != 0x7f || buf[o+2] != 0x7f)
-            stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[o+1], " 0x", buf[o+2])
-        numberOfDataTypes <- readBin(buf[o+6], "integer", n=1, size=1)
-        if (numberOfDataTypes < 1 || 200 < numberOfDataTypes)
-            next
-        haveActualData <- numberOfDataTypes > 2 # will be 2 if just have headers
-        if (!haveActualData)
-            next
-        dataOffset <- readBin(buf[o+7+0:(2*numberOfDataTypes)], "integer", n=numberOfDataTypes, size=2, endian="little", signed=FALSE)
-        FLD <- buf[o+dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
-        if (FLD[1] != 0x00)
-            next
-        if (FLD[2] != 0x00)
-            next
-        systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6],endian="big"),sep="-")
-        bits <- substr(systemConfiguration, 1, 1)
-        upward <- bits == "1"
-        nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
-        VLD <- buf[o+dataOffset[2]+1:nVLD]
-        if (VLD[1] != 0x80)
-            next
-        if (VLD[2] != 0x00)
-            next
-        RTC.year <- unabbreviateYear(readBin(VLD[5], "integer", n=1, size=1))
-        RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
-        RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
-        RTC.hour <- readBin(VLD[8], "integer", n=1, size=1)
-        RTC.minute <- readBin(VLD[9], "integer", n=1, size=1)
-        RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
-        RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
-        time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
-        timeRval[i] <- time
-        upwardRval[i] <- upward
-        i <- i + 1
-    }
-    timeRval <- numberAsPOSIXct(timeRval)
-    list(time=timeRval, upward=upwardRval)
-}   
-
-
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
     ## reference: WCODF = "WorkHorse Commands and Output Data Format_Nov07.pdf"
@@ -100,6 +53,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     bits <- substr(systemConfiguration, 6, 8)
+    ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
     if (bits == "000") frequency <- 75        # kHz
     else if (bits == "001") frequency <-  150
     else if (bits == "010") frequency <-  300
@@ -381,18 +335,16 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## decode header
     header <- decodeHeaderRDI(buf, debug=debug-1)
 
-    if (testing) {
-        testing <- decodeHeaderRDI2(buf, -1 + matchBytes(buf, 0x7f, 0x7f))
-    }
-
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
         numberOfCells <- header$numberOfCells
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
-        profileStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        profileStart <- profileStart + as.numeric(buf[profileStart[1]+8]) + 256*as.numeric(buf[profileStart[1]+9])
+        ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+
+
+        profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
@@ -447,7 +399,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     by <- floor(0.5 + ctimeToSeconds(by) / dt)
                 oceDebug(debug, "by=",by,"profiles (after decoding)\n")
                 profileStart <- profileStart[profileStart[fromIndex] < profileStart & profileStart < profileStart[toIndex]]
+                ensembleStart <- ensembleStart[ensembleStart[fromIndex] < ensembleStart & ensembleStart < ensembleStart[toIndex]]
                 profileStart <- profileStart[seq(1, length(profileStart), by=by)]
+                ensembleStart <- ensembleStart[seq(1, length(ensembleStart), by=by)]
             } else {
                 fromIndex <- from
                 toIndex <- to
@@ -456,14 +410,37 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 if (is.character(by))
                     stop("cannot have string for 'by' if 'from' and 'to' are integers")
                 profileStart <- profileStart[seq(from=from, to=to, by=by)]
+                ensembleStart <- ensembleStart[seq(from=from, to=to, by=by)]
                 oceDebug(debug, vectorShow(profileStart, "profileStart after indexing:"))
             }
             profileStart <- profileStart[!is.na(profileStart)]
+            ensembleStart <- ensembleStart[!is.na(ensembleStart)]
             profilesToRead <- length(profileStart)
             oceDebug(debug, "filename=",filename,"\n")
             oceDebug(debug, "profilesToRead=",profilesToRead,"\n")
             oceDebug(debug, "numberOfBeams=",numberOfBeams,"\n")
             oceDebug(debug, "numberOfCells=",numberOfCells,"\n")
+
+            if (testing) {
+                nensembles <- length(ensembleStart)
+                numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n=1, size=1) # Note: just using first one
+                FLDStart <- ensembleStart + 6 + 2 * numberOfDataTypes
+                VLDStart <- FLDStart + 59
+                RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
+                RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
+                RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
+                RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
+                RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
+                RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
+                RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
+                time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
+                ## regarding the "4" below, see p 135 of WorkHorse_commands_data_format_AUG10.PDF,
+                ## noting that we subtract 1 because it's an offset; we are thus examining
+                ## the LSB of the "Sys Cfg" pair.
+                upward <- .Call("get_bit", buf[FLDStart+4], 7)
+                testingData <- list(time=time, upward=upward)
+            }
+
             items <- numberOfBeams * numberOfCells
             v <- array(dim=c(profilesToRead, numberOfCells, numberOfBeams))
             a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # echo amplitude
@@ -734,8 +711,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              contaminationSensor=contaminationSensor)
             }
             if (testing) {
-                data$timeTest=testing$time
-                data$upwardTest=testing$upward
+                data$timeTest=testingData$time
+                data$upwardTest=testingData$upward
             }
         } else {
             warning("There are no profiles in this file.")
