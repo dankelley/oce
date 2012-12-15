@@ -20,6 +20,7 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
@@ -30,6 +31,7 @@ data(drifter)
 lon <- drifter[['longitude']]
 lat <- drifter[['latitude']]
 mapPoints(lon, lat, pch=20, col='red')
+}
 }
 
 \author{Dan Kelley}

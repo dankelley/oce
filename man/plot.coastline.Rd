@@ -108,6 +108,7 @@
     dealing with them.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
@@ -120,6 +121,7 @@ y <- pretty(par('usr')[3:4], n=1.2*floor(par('fin')[2]))
 box()
 axis(side=1,at=x,labels=formatPosition(x,type='expression'))
 axis(side=2,at=y,labels=formatPosition(y,type='expression'))
+}
 }
 
 \author{Dan Kelley}

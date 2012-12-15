@@ -24,6 +24,7 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
@@ -32,6 +33,7 @@ mapPlot(longitude, latitude, type='l',
         latitudelim=c(30,60), longitudelim=c(-130,-50),
         proj="polyconic", orientation=c(90, -90, 0))
 mapMeridians()
+}
 }
 
 \author{Dan Kelley}

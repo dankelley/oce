@@ -1,5 +1,6 @@
 0.9-5
--
+- halve package check time
+
 0.9-4
 - as.section() added
 - add data(endeavour)
