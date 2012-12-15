@@ -1,5 +1,5 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
-#define DEBUG
+//#define DEBUG
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -166,8 +166,9 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
 	  val = *(yp + j - 1) + (xx - *(xp + j - 1)) * (*(yp + j) - *(yp + j - 1)) / (*(xp + j) - *(xp + j - 1));
         } else {
 	  if (j >= x_len - 2) {
-	    Rprintf("j >= x_len - 2\n");
-	    val = NA_REAL;
+	    //Rprintf("j >= x_len - 2\n");
+	    //val = NA_REAL;
+	    val = yp[x_len - 1]; // trim to endpoint
 	  } else {
 	    val = phi_z(j, xx, xp, yp, x_len);
 	  }

@@ -173,8 +173,7 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    browser()
-    .Call("oce_approx", x=x, y=y, xout=xout[length(xout)+c(-1, 0)])
+    .Call("oce_approx", x=x, y=y, xout=xout)
 }
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
