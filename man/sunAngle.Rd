@@ -33,33 +33,6 @@
 }
 
 \examples{
-## Example 1: daily variation in sun altitude
-dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60),
-                    location="Halifax, Nova Scotia", add=FALSE, ...)
-{
-    t0 <- as.POSIXct(paste(day, "00:00:00"), tz="UTC")
-    t <- seq(from=t0, to=t0+86400, by="15 min")
-    a <- sunAngle(t, lat, lon)
-    day <- a$altitude > 0
-    a$azimuth[!day] <- NA
-    if (add) {
-        points(a$azimuth, a$altitude, cex=0.5*par("cex"), ...)
-    } else {
-        plot(a$azimuth, a$altitude, type='p', xlab='Azimuth',
-             ylab='Elevation', ylim=c(0, 90), main=location,
-             cex=0.5*par("cex"), ...)
-    }
-    h <- which(trunc(t,"hours")==t)
-    points(a$azimuth[h], a$altitude[h], pch=16, ...)
-    hour <- as.POSIXlt(t[h])$hour
-    text(a$azimuth[h], a$altitude[h], paste(hour,"h",sep=""), pos=1,
-         offset=0.7, cex=0.7*par("cex"), ...)
-}
-dayplot("2009-06-22")
-dayplot("2009-12-22", add=TRUE)
-dayplot(trunc(Sys.time(),"days"), add=TRUE, col="red")
-
-## Example 2: infer location from sunrise and sunset times
 rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
 set <- as.POSIXct("2011-03-03 18:04:00", tz="UTC") + 4*3600
 mismatch <- function(latlon) 

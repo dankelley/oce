@@ -22,6 +22,7 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
@@ -36,6 +37,7 @@ mapImage(tlon, tlat, z)
 mapMeridians(10, lty='dotted', col='darkgray')
 mapZones(10, lty='dotted', col='darkgray')
 mapLines(coastlineWorld)
+}
 }
 
 \author{Dan Kelley}

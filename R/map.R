@@ -43,7 +43,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
         bad <- d > dc
         x[bad] <- NA
         y[bad] <- NA
-        plot(x, y, type='l', asp=1)
     }
     if (limitsGiven) {
         box <- mapproject(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),

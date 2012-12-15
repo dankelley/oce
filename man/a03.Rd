@@ -14,6 +14,7 @@
     Stream axis.}
 
 \examples{
+\dontrun{
 library(oce)
 # Gulf Stream (note that section runs east to west)
 data(a03)
@@ -21,6 +22,7 @@ GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
+}
 }
 
 \usage{data(a03)}

@@ -46,6 +46,7 @@
     with them.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 data(a03)
@@ -54,6 +55,7 @@ gss1 <- sectionSmooth(gs, "spline", df=16)
 plot(gss1, coastline=coastlineWorld, map.xlim=c(-80,-55))
 gss2 <- sectionSmooth(gs, "barnes", xr=24, yr=100)
 plot(gss2, coastline=coastlineWorld, map.xlim=c(-80,-55))
+}
 }
 
 \author{Dan Kelley}

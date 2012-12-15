@@ -32,6 +32,7 @@
     be added with \code{\link{mapLines}}, and text with \code{\link{mapText}}.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
@@ -55,6 +56,7 @@ mapPlot(coastlineWorld, type='l',
 mapPlot(coastlineWorld, type='l',
         latitudelim=c(30,60), longitudelim=c(-130,-50),
         proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+}
 }
 
 \author{Dan Kelley}
