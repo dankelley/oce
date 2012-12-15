@@ -1,5 +1,5 @@
 0.9-6
--
+- oceApprox() handles equal x values [issue 279]
 
 0.9-5
 - halve package check time
