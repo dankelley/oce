@@ -23,6 +23,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
+                    mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
                     projection="mercator", parameters=NULL, orientation=NULL,
                     ...)
 {
@@ -34,16 +35,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     ## trim wild points [github issue 227]
-    if (TRUE) {
-        x <- xy$x
-        y <- xy$y
-        d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
-        d[!is.finite(d)] <- 0          # FIXME: ok?
-        dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
-        bad <- d > dc
-        x[bad] <- NA
-        y[bad] <- NA
-    }
+    par(mar=mar, mgp=mgp)
+    x <- xy$x
+    y <- xy$y
+    d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+    d[!is.finite(d)] <- 0          # FIXME: ok?
+    dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
+    bad <- d > dc
+    x[bad] <- NA
+    y[bad] <- NA
     if (limitsGiven) {
         box <- mapproject(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
                           c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1]))
