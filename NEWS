@@ -1,5 +1,7 @@
 0.9-6
-- oceApprox() handles equal x values [issue 279]
+- address compilation error on Windows-64 platform
+- make some long-running operations more interruptible 
+- oceApprox(): permit equal x values [issue 279]
 
 0.9-5
 - halve package check time
