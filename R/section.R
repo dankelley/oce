@@ -39,8 +39,25 @@ setMethod(f="[[",
                               rval[[jj]] <- x@data$station[[jj]]
                       }
                   }
+              } else if ("station ID" == i) {
+                  rval <- NULL
+                  for (stn in x[['station']])
+                      rval <- c(rval, stn[['station']])
               } else if ("dynamic height" == i) {
                   rval <- swDynamicHeight(x)
+              } else if ("distance" == i) {
+                  rval <- NULL
+                  for (stn in seq_along(x@data$station)) {
+                      distance <- geodDist(x@data$station[[stn]]@metadata$latitude,
+                                           x@data$station[[stn]]@metadata$longitude,
+                                           x@data$station[[1]]@metadata$latitude,
+                                           x@data$station[[1]]@metadata$longitude)
+                      rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+                  }
+              } else if ("depth" == i) {
+                  rval <- NULL
+                  for (stn in seq_along(x@data$station))
+                      rval <- c(rval, x@data$station[[stn]]@data$pressure)
               } else {
                   stop("cannot access item named \"", i, "\" in this section object")
               }
@@ -203,8 +220,11 @@ setMethod(f="plot",
                               map.xlim=NULL, map.ylim=NULL,
                               xtype="distance",
                               ytype="depth",
+                              ztype=c("contour", "image"),
                               legend.loc="bottomright",
                               adorn=NULL,
+                              showStations=FALSE,
+                              showBottom=TRUE,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
                               col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -212,18 +232,24 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 2) 2 else floor(0.5 + debug)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n")
+              xtype <- match.arg(xtype)
+              ytype <- match.arg(ytype)
+              ztype <- match.arg(ztype)
+              legend.loc <- match.arg(legend.loc)
+              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n", sep="")
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         ztype=c("contour", "image"),
                                          legend=TRUE,
                                          debug=0,
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ...) {\n")
+                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+                  ztype <- match.arg(ztype)
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
@@ -285,6 +311,11 @@ setMethod(f="plot",
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
+                      if (showStations) {
+                          stationId <- x[['station ID']]
+                          text(lon, lat, stationId, pos=2)
+                          text(lon-360, lat, stationId, pos=2)
+                      }
                       if (xtype == "distance") {
                           points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
@@ -367,15 +398,15 @@ setMethod(f="plot",
                           len <- length(temp)
                           if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
                               wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
-                              oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
+                              ##oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
                           } else {
                               wd <- NA
                               if (is.na(temp[len])) {
                                   wdi <- len - which(!is.na(rev(temp)))[1] + 1
                                   wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
-                                  oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
+                                  ##oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
                               } else {
-                                  oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
+                                  ##oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
                               }
                           }
                           in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
@@ -398,7 +429,6 @@ setMethod(f="plot",
                       dots <- list(...) # adjust plot parameter labcex, unless user did
 
                       ##par(xaxs="i", yaxs="i")
-
 
                       ## Put x in order, if it's not already
                       ox <- order(xx)
@@ -427,51 +457,102 @@ setMethod(f="plot",
                               }
                           }
                       } else {
+                          zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE, labcex=0.8,
-                                          levels=contourLevels,
-                                          labels=contourLabels,
-                                          add=TRUE,
-                                          xaxs="i", yaxs="i",
-                                          ...)
+                                  if (ztype == 'contour') {
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                              axes=FALSE, add=TRUE, labcex=0.8,
+                                              levels=contourLevels, labels=contourLabels,
+                                              xaxs="i", yaxs="i",
+                                              ...)
+                                  } else if (ztype == 'image') {
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype: \"", ztype, "\" [1]")
+                                  }
                               } else {
+                                  if (ztype == 'contour') {
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE,
-                                          add=TRUE,
+                                          axes=FALSE, add=TRUE,
+                                          levels=contourLevels, labels=contourLabels,
                                           xaxs="i", yaxs="i",
                                           ...)
+                                  } else if (ztype == 'image') {
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype: \"", ztype, "\" [2]")
+                                  }
                               }
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               if (is.null(dots$labcex)) {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE, labcex=0.8,
-                                          add=TRUE,
-                                          xaxs="i", yaxs="i",
-                                          ...)
+                                  if (ztype == 'contour') {
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                              axes=FALSE, labcex=0.8,
+                                              add=TRUE,
+                                              xaxs="i", yaxs="i",
+                                              ...)
+                                  } else if (ztype == 'image') {
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype: \"", ztype, "\" [3]")
+                                  }
                               } else {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE,
-                                          add=TRUE,
-                                          xaxs="i", yaxs="i",
-                                          ...)
+                                  if (ztype == 'contour') {
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                              axes=FALSE,
+                                              add=TRUE,
+                                              xaxs="i", yaxs="i",
+                                              ...)
+                                  } else if (ztype == 'image') {
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                                      levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      col=oceColorsJet(100))
+                                  } else {
+                                      stop("unkown ztype: \"", ztype, "\" [4]")
+                                  }
                               }
                           }
+                          if (is.character(showBottom) || showBottom) {
+                              type <- "polygon"
+                              if (is.character(showBottom))
+                                  type <- showBottom
+                              if (length(bottom.x) == length(bottom.y)) {
+                                  bottom <- par('usr')[3]
+                                  if (type == "polygon") {
+                                      polygon(bottom.x, bottom.y, col="lightgray")
+                                  } else if (type == "lines") {
+                                      for (s in seq_along(bottom.x))
+                                          lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                                  } else if (type == "points") {
+                                      for (s in seq_along(bottom.x))
+                                          points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                                  }
+                              }
+                              box()
+                          }
                       }
-                      if (length(bottom.x) == length(bottom.y))
-                          polygon(bottom.x, bottom.y, col="lightgray")
-                      box()
                       ##axis(1, pretty(xxOrig))
                       axis(1)
                       ##lines(xx, -waterDepth[ox], col='red')
+
+                      ## undo negation of the y coordinate, so further can can make sense
+                      usr <- par('usr')
+                      par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
+
                       if (legend)
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
-                  oceDebug(debug, "\b} # plotSubsection()\n")
-              }                                   # plotSubsection
+                  oceDebug(debug, "\b\b} # plotSubsection()\n")
+              }
               if (!inherits(x, "section"))
                   stop("method is only for section objects")
               opar <- par(no.readonly = TRUE)
@@ -494,7 +575,7 @@ setMethod(f="plot",
               num.depths <- length(firstStation@data$pressure)
 
               ## Check that pressures coincide
-              if (length(which) > 1 || which != "data") {
+              if (length(which) > 1 || (which != "data" && which != 'map')) {
                   p1 <- firstStation@data$pressure
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[stationIndices[ix]]]
@@ -574,45 +655,85 @@ setMethod(f="plot",
                   adorn.length <- lw
               }
               for (w in 1:length(which)) {
-                  oceDebug(debug, "w=", w, "\n")
+                  oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
-                      if (which[w] == 1)
-                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 2)
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] > 2 && which[w] < 3)
-                          plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 3)
-                          plotSubsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 4)
-                          plotSubsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 5)
-                          plotSubsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 6)
-                          plotSubsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 7)
-                          plotSubsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 8)
-                          plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (missing(contourLabels))
+                          contourLabels <- format(contourLevels)
+                      if (which[w] == 1) {
+                          plotSubsection("temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 2) {
+                          plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] > 2 && which[w] < 3) {
+                          plotSubsection("salinity gradient","dS/dz", ylab="",
+                                         levels=contourLevels, xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 3) {
+                          plotSubsection("sigmaTheta", expression(sigma[theta]),
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 4) {
+                          plotSubsection("nitrate", "nitrate",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 5) {
+                          plotSubsection("nitrite", "nitrite",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 6) {
+                          plotSubsection("oxygen", "oxygen",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 7) {
+                          plotSubsection("phosphate", "phosphate",
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 8) {
+                          plotSubsection("silicate", "silicate",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         debug=debug-1, ...) 
+                      }
                   } else {
-                      if (which[w] == 1)
-                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 2)
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] > 2 && which[w] < 3)
-                          plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 3)
-                          plotSubsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 4)
-                          plotSubsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 5)
-                          plotSubsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 6)
-                          plotSubsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 7)
-                          plotSubsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-                      if (which[w] == 8)
-                          plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 1) {
+                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 2) {
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] > 2 && which[w] < 3) {
+                          plotSubsection("salinity gradient","dS/dz", ylab="",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 3) {
+                          plotSubsection("sigmaTheta", expression(sigma[theta]),
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 4) {
+                          plotSubsection("nitrate",     "nitrate",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 5) {
+                          plotSubsection("nitrite",     "nitrite",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 6) {
+                          plotSubsection("oxygen",      "oxygen",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 7) {
+                          plotSubsection("phosphate",   "phosphate",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      } else if (which[w] == 8) {
+                          plotSubsection("silicate",    "silicate",
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         debug=debug-1, ...)
+                      }
                   }
                   if (which[w] == 20)
                       plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
@@ -623,15 +744,27 @@ setMethod(f="plot",
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b} # plot.section()\n")
+              oceDebug(debug, "\b\b} # plot.section()\n")
               invisible()
           })
 
-read.section <- function(file, sectionId="", flags,
+read.section <- function(file, directory, sectionId="", flags,
 			 ship="", scientist="", institute="",
                          missingValue=-999,
 			 debug=getOption("oceDebug"), processingLog)
 {
+    if (!missing(directory)) {
+        if (!missing(file))
+            stop("cannot specify both 'file' and 'directory'")
+        files <- list.files(directory)
+        nstations <- length(files)
+        stations <- vector("list", nstations)
+        for (i in seq_along(files)) {
+            name <- paste(directory, files[i], sep='/')
+            stations[[i]] <- ctdTrim(read.oce(name))
+        }
+        return(makeSection(stations))
+    }
     if (is.character(file)) {
 	filename <- file
 	file <- file(file, "r")
@@ -843,7 +976,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	p.max <- 0
 	for (i in 1:n) {
 	    p <- section@data$station[[i]]@data$pressure
-	    dp.list <- c(dp.list, mean(diff(p)))
+	    dp.list <- c(dp.list, mean(diff(p)), na.rm=TRUE)
 	    p.max <- max(c(p.max, p), na.rm=TRUE)
 	}
 	dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
@@ -857,6 +990,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 			250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
 			1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
 			4500, 5000, 5500)
+                pt <- pt[pt < max(section[["pressure"]])]
 	    } else { # FIXME should insist numeric
 		p.max <- 0
 		for (i in 1:n) {
@@ -879,59 +1013,124 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
     res
 }
 
-sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
+sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
 {
+    method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "\bsection.smooth(section,debug=", debug, ", ...) {\n", sep="")
+    oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(section, "section"))
         stop("method is only for section objects")
     nstn <- length(section@data$station)
-    nprs <- length(section@data$station[[1]]@data$pressure)
-    if (missing(df))
-	df <- nstn / 5
-    oceDebug(debug, "nstn=", nstn, "nprs=", nprs, "df=", df, "\n")
-    res <- section
-    ## reorder stations by distance from first (this
-    ## is crucial if the files have been ordered by a
-    ## directory listing, and they are not named e.g. 01
-    ## to 10 etc but 1 to 10 etc.
-    x <- geodDist(section)
-    o <- order(x)
-    res@metadata$latitude <- section@metadata$latitude[o]
-    res@metadata$longitude <- section@metadata$longitude[o]
-    res@metadata$stationId <- section@metadata$stationId[o]
-    res@data$station <- section@data$station[o]
-    x <- geodDist(res)
-    temperatureMat <- array(dim=c(nprs, nstn))
-    salinityMat <- array(dim=c(nprs, nstn))
-    sigmaThetaMat <- array(dim=c(nprs, nstn))
-    for (s in 1:nstn) {
-        thisStation <- res@data$station[[s]]
-	temperatureMat[,s] <- thisStation@data$temperature
-	salinityMat[,s] <- thisStation@data$salinity
-	sigmaThetaMat[,s] <- thisStation@data$sigmaTheta
+    if (method == "spline") {
+        stn1pressure <- section[["station", 1]][["pressure"]]
+        npressure <- length(stn1pressure)
+        for (istn in 1:nstn) {
+            thisp <- section[["station", istn]][["pressure"]]
+            if (length(thisp) != npressure)
+                stop("pressure mismatch between station 1 and station", istn)
+            if (any(thisp != stn1pressure))
+                stop("pressure mismatch between station 1 and station", istn)
+        }
+        oceDebug(debug, "nstn=", nstn, "npressure=", npressure, "\n")
+        res <- section
+        ## reorder stations by distance from first (this
+        ## is crucial if the files have been ordered by a
+        ## directory listing, and they are not named e.g. 01
+        ## to 10 etc but 1 to 10 etc.
+        x <- geodDist(section)
+        o <- order(x)
+        res@metadata$latitude <- section@metadata$latitude[o]
+        res@metadata$longitude <- section@metadata$longitude[o]
+        res@metadata$stationId <- section@metadata$stationId[o]
+        res@data$station <- section@data$station[o]
+        x <- geodDist(res)
+        temperatureMat <- array(dim=c(npressure, nstn))
+        salinityMat <- array(dim=c(npressure, nstn))
+        sigmaThetaMat <- array(dim=c(npressure, nstn))
+        for (s in 1:nstn) {
+            thisStation <- res@data$station[[s]]
+            temperatureMat[,s] <- thisStation@data$temperature
+            salinityMat[,s] <- thisStation@data$salinity
+            sigmaThetaMat[,s] <- thisStation@data$sigmaTheta
+        }
+        ## turn off warnings about df being too small
+        o <- options('warn')
+        options(warn=-1) 
+        gaveDF <- "df" %in% names(list(...))
+        for (p in 1:npressure) {
+            ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
+            nok <- sum(ok)
+            iok <- (1:nstn)[ok]
+            if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
+                if (gaveDF) {
+                    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], ...), x)$y
+                    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], ...), x)$y
+                    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], ...), x)$y
+                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with supplied df=", list(...)$df, " (have", nok, "good values)\n")
+                } else {
+                    usedf <- nok / 5
+                    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], df=usedf), x)$y
+                    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], df=usedf), x)$y
+                    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], df=usedf), x)$y
+                    oceDebug(debug, stn1pressure[p], "dbar: smoothing with df=", usedf, " (have", nok, "good values)\n")
+                }
+            } else {
+                oceDebug(debug, stn1pressure[p], "dbar: not smoothing, since have only", nok, "good values\n")
+            }
+        }
+        options(warn=o$warn) 
+        for (s in 1:nstn) {
+            res@data$station[[s]]@data$temperature <- temperatureMat[,s]
+            res@data$station[[s]]@data$salinity <- salinityMat[,s]
+            res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
+        }
+    } else if (method == "barnes") {
+        vars <- names(section[["station", 1]]@data)
+        res <- section
+        x <- geodDist(section)
+        X <- p <- S <- NULL
+        stn1pressure <- section[["station", 1]][["pressure"]]
+        npressure <- length(stn1pressure)
+        for (istn in 1:nstn) {
+            stn <- section[["station", istn]]
+            if (length(stn[["pressure"]]) != npressure)
+                stop("pressure mismatch between station 1 and station", istn)
+            if (any(stn[["pressure"]] != stn1pressure))
+                stop("pressure mismatch between station 1 and station.", istn)
+        }
+        P <- rep(stn1pressure, nstn)
+        X <- rep(x, each=npressure)
+        for (var in vars) {
+            if (var == "scan" || var == "time" || var == "pressure"
+                || var == "depth" || var == "flag" || var == "quality")
+                next
+            v <- NULL
+            oceDebug(debug, "smoothing", var, "\n")
+            ## collect data
+            if (FALSE) {
+                for (istn in 1:nstn) {
+                    oceDebug(debug, "station", istn, "\n")
+                                        #browser()
+                    stn <- section[["station", istn]]
+                    v <- c(v, stn[[var]])
+                }
+            }
+            ## grid overall, then deposit into stations (trimming for NA)
+            v <- section[[var]]
+            smu <- interpBarnes(X, P, v, xg=x, yg=stn1pressure, ..., debug=debug-1)
+            for (istn in 1:nstn) {
+                res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
+                na <- is.na(section@data$station[[istn]][[var]])
+                res@data$station[[istn]]@data[[var]][na] <- NA
+            }
+        }
+    } else {
+        stop("unknown method \"", method, "\"") # cannot reach here
     }
-    for (p in 1:nprs) {
-	ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
-	nok <- sum(ok)
-	iok <- (1:nstn)[ok]
-	if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
-	    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], df=df, ...), x)$y
-	    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], df=df, ...), x)$y
-	    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], df=df, ...), x)$y
-	    ##oceDebug(debug, p, "dbar: smoothing, based on", nok, "good values\n")
-	} else {
-	    ##oceDebug(debug, "pessure index=", p, ": not smoothing, since have only", nok, "good values\n")
-	}
-    }
-    for (s in 1:nstn) {
-	res@data$station[[s]]@data$temperature <- temperatureMat[,s]
-	res@data$station[[s]]@data$salinity <- salinityMat[,s]
-	res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
-    }
+
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # section.smooth()\n")
+    oceDebug(debug, "\b\b} # sectionSmooth()\n")
     res
 }
 
@@ -968,6 +1167,22 @@ summary.section <- function(object, ...)
     } else {
         cat("* No stations\n")
     }
-    processingLogShow(object)
+    ##processingLogShow(object)
+}
+
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station) # FIXME: code this
+{
+    stationFactor <- factor(station)
+    stationLevels <- levels(stationFactor)
+    for (l in seq_along(stationLevels)) {
+        look <- station==stationLevels[l]
+        ctd <- as.ctd(salinity[look], temperature[look], pressure[look],
+                      longitude=longitude[look][1], latitude=latitude[look][1])
+        if (l == 1)
+            rval <- makeSection(ctd)
+        else
+            rval <- rval + ctd
+    }
+    rval 
 }
 

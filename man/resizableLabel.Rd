@@ -15,7 +15,7 @@ resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "heading", "pitch", "roll",
   "u", "v", "w", "speed", "direction",
   "eastward", "northward",
-  "elevation"),
+  "depth", "elevation"),
   axis=c("x", "y"))}
 
 \arguments{

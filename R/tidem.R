@@ -23,13 +23,13 @@ setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,
                               which=1,
-                              label.if=NULL,
+                              labelIf=NULL,
                               log="",
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
                               ...)
           {
-              draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
+              drawConstituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
               {
                   abline(v=frequency, col=col, lty="dotted")
                   if (frequency <= par('usr')[2]) {
@@ -39,19 +39,19 @@ setMethod(f="plot",
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              draw.constituents <- function(type="standard", label.if=NULL, col="blue")
+              drawConstituents <- function(type="standard", labelIf=NULL, col="blue")
               {
                   if (type == "standard") {
-                      draw.constituent("SA", 0.0001140741, side=3)
-                      draw.constituent("O1", 0.0387306544, side=3, adj=1)
-                      draw.constituent("K1", 0.0417807462, side=1, adj=0)
-                      draw.constituent("M2", 0.0805114007, side=3, adj=1)
-                      draw.constituent("S2", 0.0833333333, side=1, adj=0)
-                      draw.constituent("M4", 0.1610228013, side=3)
+                      drawConstituent("SA", 0.0001140741, side=3)
+                      drawConstituent("O1", 0.0387306544, side=3, adj=1)
+                      drawConstituent("K1", 0.0417807462, side=1, adj=0)
+                      drawConstituent("M2", 0.0805114007, side=3, adj=1)
+                      drawConstituent("S2", 0.0833333333, side=1, adj=0)
+                      drawConstituent("M4", 0.1610228013, side=3)
                   } else {
-                      if (is.null(label.if)) label.if <- amplitude[order(amplitude, decreasing=TRUE)[3]]
+                      if (is.null(labelIf)) labelIf <- amplitude[order(amplitude, decreasing=TRUE)[3]]
                       for (i in 1:nc) {
-                          if (amplitude[i] >= label.if) {
+                          if (amplitude[i] >= labelIf) {
                               abline(v=frequency[i], col=col, lty="dotted")
                               mtext(name[i], side=3, at=frequency[i], col=col)
                           }
@@ -72,10 +72,10 @@ setMethod(f="plot",
                   if (which[w] == 2) {
                       plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
                       segments(frequency, 0, frequency, amplitude)
-                      draw.constituents()
+                      drawConstituents()
                   } else if (which[w] == 1) {
                       plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-                      draw.constituents()
+                      drawConstituents()
                   } else {
                       stop("unknown value of which ", which, "; should be 1 or 2")
                   }
@@ -616,7 +616,8 @@ predict.tidem <- function(object, newdata, ...)
 }
 
 webtide <- function(action=c("map", "predict"), latitude, longitude, time,
-                    basedir="/usr/local/WebTide", region="nwatl", plot=TRUE)
+                    basedir="/usr/local/WebTide", region="nwatl",
+                    plot=TRUE, tformat)
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
@@ -676,9 +677,12 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
         if (plot) {
             par(mfrow=c(3,1))
             oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
-                        main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""))
-            oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"), drawTimeRange=FALSE)
-            oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"), drawTimeRange=FALSE)
+                        main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""),
+                        tformat=tformat)
+            oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"),
+                        drawTimeRange=FALSE, tformat=tformat)
+            oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
+                        drawTimeRange=FALSE, tformat=tformat)
         }
     }
     invisible(list(time=time, elevation=elevation, u=u, v=v, node=node, basedir=basedir, region=region))

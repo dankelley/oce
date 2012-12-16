@@ -34,11 +34,12 @@
   a \code{tide} object.}
 
 \examples{
+\dontrun{
 library(oce)
-# Halifax data
 data(sealevelHalifax)
 tide <- tidem(sealevelHalifax)
 summary(tide)
+}
 }
 
 \author{Dan Kelley}

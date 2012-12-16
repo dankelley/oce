@@ -9,6 +9,7 @@
       breaks, col,
       labels=NULL, at=NULL,
       drawContours=FALSE,
+      tformat,
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
       filledContour=FALSE,
@@ -59,6 +60,9 @@
   \item{drawContours}{boolean, \code{TRUE} to get contours on the
     image, and palette, at the colour breaks.  Images with a great deal
     of high-wavenumber variation look poor with contours.}
+  \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+      plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
   \item{drawTimeRange}{boolean, only used if the \code{x} axis is a
     time.  If \code{TRUE}, then an indication of the time range of the
     data (not the axis) is indicated at the top-left margin of the

@@ -8,13 +8,16 @@
 
 \description{Plot \code{LISST} data}
 
-\usage{\S4method{plot}{lisst}(x, which=c(16, 37, 38), debug=getOption("oceDebug"), \dots)}
+\usage{\S4method{plot}{lisst}(x, which=c(16, 37, 38), tformat, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{x}{a \code{lisst} object, e.g. as read by \code{\link{read.lisst}}.}
     \item{which}{list of desired plot types.  These are graphed in
         panels running down from the top of the page.  See \dQuote{Details}
         for the meanings of various values of \code{which}.}
+    \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+        plot types that call that function.  (See \code{\link{strptime}} for the
+        format used.)}
     \item{debug}{a flag that turns on debugging.  The value indicates the
         depth within the call stack to which debugging applies.}
     \item{\dots}{optional arguments passed to plotting functions.}

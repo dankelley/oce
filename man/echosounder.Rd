@@ -11,11 +11,13 @@
     Experiment (SLEIWEX).}
 
 \examples{
+\dontrun{
 library(oce)
 data(echosounder)
 plot(echosounder)
 plot(echosounder, drawBottom=TRUE)
 plot(echosounder, which=2, drawBottom=TRUE, atTop=pretty(echosounder[["time"]]))
+}
 }
 
 \usage{data(echosounder)}

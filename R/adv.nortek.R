@@ -1,6 +1,7 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
                             latitude=NA, longitude=NA,
+                            type=c("vector", "aquadopp"),
                             haveAnalog1=FALSE,
                             haveAnalog2=FALSE,
                             debug=getOption("oceDebug"), monitor=FALSE, 
@@ -12,7 +13,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
-    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
+    type <- match.arg(type)
+    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", latitude=", latitude, ", longitude=", longitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (by != 1)
@@ -43,7 +45,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     fileSize <- seek(file, 0, "start")
     oceDebug(debug, "  fileSize=", fileSize, "\n")
     buf <- readBin(file, "raw", fileSize)
-    header <- decodeHeaderNortek(buf, debug=debug-1)
+    header <- decodeHeaderNortek(buf, type="vector", debug=debug-1)
     if (debug > 1) {                    # Note: need high debugging to get this
         cat("\nheader is as follows:\n")
         str(header)
@@ -59,7 +61,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      measurementEnd=NA,   # FIXME
                      samplingRate=512/header$user$averagingInterval, # FIXME: why 512?
                      serialNumber=header$hardware$serialNumber,
-                     frequency=header$head$frequency,
                      internalCodeVersion=header$hardware$picVersion,
                      softwareVersion=header$user$swVersion,
                      hardwareRevision=header$hardware$hwRevision,
@@ -83,7 +84,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityScale=header$user$velocityScale,
                      originalCoordinate=header$user$originalCoordinate,
                      oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnattenuated=FALSE,
+                     oceBeamUnspreaded=FALSE,
                      comments=header$user$comments)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

@@ -46,6 +46,7 @@ setMethod(f="plot",
           definition=function(x, which=1:4, title="", adorn=NULL,
                               tlim, plim, Tlim,
                               xlab, ylab,
+                              tformat,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
                               useSmoothScatter=FALSE,
@@ -112,6 +113,7 @@ setMethod(f="plot",
                                   type='l',
                                   xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
                                   ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                  tformat=tformat,
                                   drawTimeRange=drawTimeRange,
                                   mgp=mgp, mar=mar, main=main[w], ...)
                       ##box()
@@ -125,6 +127,7 @@ setMethod(f="plot",
                                   type='l',
                                   xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
                                   ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
+                                  tformat=tformat,
                                   drawTimeRange=drawTimeRange,
                                   mgp=mgp, mar=mar, main=main[w], ...)
                       ##box()

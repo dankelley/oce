@@ -6,8 +6,10 @@
 
 \description{Grid data using Barnes algorithm.}
 
-\usage{interpBarnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
-gamma=0.5, iterations=2)}
+\usage{interpBarnes(x, y, z, w,
+    xg, yg, xgl, ygl,
+    xr, yr, gamma=0.5, iterations=2,
+    debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{a vector of x locations.}
@@ -17,14 +19,14 @@ gamma=0.5, iterations=2)}
     supplied, i.e. if a NULL value, then a weight of 1 is used for each
     point, which means equal weighting.  Higher weights give data points
     more influence.}
-  \item{xg}{an optional vector defining the x grid.  If not supplied,
-    this will be determined from the x data, using \code{pretty(x,
-      n=50)}.}
-  \item{yg}{a optional vector defining the y grid.  If not supplied,
-    this will be determined from the x data, using \code{pretty(y,
-      n=50)}.  In the special case with all y values identical,
-    \code{yg} is set to that value.  This is useful for one-dimensional
-  gridding, e.g. for profiles (see below).}
+  \item{xg}{optional vector defining the x grid.  If not supplied, this will
+      be determined from the x data, using \code{pretty(x, n=50)}.}
+  \item{yg}{analogous to \code{xg}.}
+  \item{xgl}{optional length of x grid, to be constructed with
+      \code{\link{seq}} spanning the range of \code{x}.  The 
+      value of \code{xgl} is only examined if \code{xg} is not
+      supplied.}
+  \item{ygl}{analogous to \code{xgl}.}
   \item{xr}{a optional value defining the width of the radius ellipse in
     the x direction.  If not supplied, }
   \item{yr}{an optional value defining the height of the radius ellipse
@@ -32,6 +34,9 @@ gamma=0.5, iterations=2)}
   \item{gamma}{grid-focussing parameter.  At each iteration, \code{xr}
     and \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
   \item{iterations}{number of iterations.}
+  \item{debug}{a flag that turns on debugging.  Set to 0 for no debugging
+      information, to 1 for more, etc; the value is reduced by 1 for each
+      descendent function call.}
 }
 
 \details{The algorithm follows that described by Koch et al. (1983).}

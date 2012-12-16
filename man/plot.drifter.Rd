@@ -13,6 +13,7 @@
                           adorn=NULL,
                           mgp=getOption("oceMgp"),
                           mar=c(mgp[1]+1, mgp[1]+1, 1.5, 1.5),
+                          tformat,
                           debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -55,6 +56,9 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+      plot types that call that function.  (See \code{\link{strptime}} for the
+      format used.)}
   \item{debug}{debugging flag}
   \item{\dots}{optional arguments passed to plotting functions.}
 }

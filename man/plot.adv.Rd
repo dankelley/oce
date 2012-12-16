@@ -20,6 +20,7 @@
     useSmoothScatter,
     mgp=getOption("oceMgp"),
     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+    tformat,
     marginsAsImage=FALSE,
     cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
     xlim, ylim,
@@ -63,6 +64,9 @@
         tighter than the R default, in order to use more space for the data
         and less for the axes.}
     \item{mar}{value to be used with \code{\link{par}("mar")}.}
+    \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+        plot types that call that function.  (See \code{\link{strptime}} for the
+        format used.)}
     \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the
         right of time-series plots, matching the space used up by a palette
         in an \code{\link{imagep}} plot.}

@@ -19,10 +19,11 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
-decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
-    oceDebug(debug, "decodeHeaderNortek() entry; buf[1:20]=",buf[1:20],"\n")
+    oceDebug(debug, "\b\bdecodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="")
+    oceDebug(debug, "buf starts:", buf[1:20], "\n")
     degToRad <- atan2(1, 1) / 45
     syncCode <- as.raw(0xa5)
     idHardwareConfiguration <- as.raw(0x05)
@@ -86,6 +87,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
             oceDebug(debug, "head$headType=", head$headType, "\n")
             head$headSerialNumber <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
             oceDebug(debug, "head$headSerialNumber=", head$headSerialNumber, "\n")
+
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
             ## the inference of beamAngles and transformationMatrix is drawn from other code.
             ## Since I don't trust any of this, I hard-wire beamAngle in at the end.
@@ -116,7 +118,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
             oceDebug(debug, "user$T2=", user$T2, "(blanking distance, in counts)\n")
 
             user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts (Q: does this relate to cellSize?)\n")
+            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts\n")
+            oceDebug(debug, " ABOVE FROM buf[o+9]=0x", buf[o+9], " and buf[o+10]=0x", buf[0+10], '\n', sep='')
             
             user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
@@ -172,7 +175,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
                     user$cellSize <- user$hBinLength / 256 * 0.01350 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.01350 * cos(25 * degToRad) - user$cellSize
                 } else {
-                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size\n")
+                    warning("unknown frequency ", head$frequency, " (only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size\n")
                     user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 }
@@ -187,9 +190,22 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
                     user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
                 } else {
                     warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size\n")
-                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
+                    ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
+            } else if (type == "aquadopp") {
+                ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                ##user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
+                warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file\n")
+                user$cellSize <- 0.75  # value for one particular test file
+                user$blankingDistance <- 0.37 # value for one particular test file
+            } else if (type == "vector") {
+                ## Formula (revised) from Nortek http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/595666030
+                ## Cell size (mm) = T3counts * 1000 * 750 / 480000
+                soundspeed <- 1500
+                user$cellSize <- user$receiveLength * (soundspeed / 2) / 480.0e3 # drop the 1000 to get m
+                user$blankingDistance <- 0 # ?
             } else {
                 warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
                 user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
@@ -256,9 +272,52 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
+read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                          latitude=NA, longitude=NA,
+                          orientation, distance,
+                          monitor=FALSE, despike=FALSE, processingLog,
+                          debug=getOption("oceDebug"), ...)
+{
+    return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
+                           latitude=latitude, longitude=longitude,
+                           type="aquadopp",
+                           orientation=orientation, distance=distance,
+                           monitor=monitor, despike=despike, processingLog=processingLog,
+                           debug=debug, ...))
+}
+
+read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                            latitude=NA, longitude=NA,
+                            orientation=orientation, distance,
+                            monitor=FALSE, despike=FALSE, processingLog,
+                            debug=getOption("oceDebug"), ...)
+{
+    return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
+                           latitude=latitude, longitude=longitude,
+                           type="aquadoppHR",
+                           orientation=orientation, distance=distance,
+                           monitor=monitor, despike=despike, processingLog=processingLog,
+                           debug=debug, ...))
+}
+
+read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                                  latitude=NA, longitude=NA,
+                                  orientation, distance,
+                                  monitor=FALSE, despike=FALSE, processingLog,
+                                  debug=getOption("oceDebug"), ...)
+{
+    return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
+                           latitude=latitude, longitude=longitude,
+                           type="aquadoppProfiler",
+                           orientation=orientation, distance=distance,
+                           monitor=monitor, despike=despike, processingLog=processingLog,
+                           debug=getOption("oceDebug"), ...))
+}
+
+
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
-                            type=c("aquadoppHR", "aquadoppProfiler"),
+                            type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
                             orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"),
@@ -305,6 +364,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
     }
+    if (missing(to))
+        to <- NA                       # will catch this later
     oceDebug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
     fromKeep <- from
     toKeep <- to
@@ -338,9 +399,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     cellSize <- header$cellSize
     ##profilesInFile <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
+    oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset+1], " 0x", buf[header$offset+2], '\n', sep="")
     profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
     profilesInFile <- length(profileStart)
+    if (is.na(to))
+        to <- profilesInFile
     oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
+
     measurementStart <- ISOdatetime(2000+bcdToInteger(buf[profileStart[1]+8]), # year FIXME: have to check if before 1990
                                     bcdToInteger(buf[profileStart[1]+9]), # month
                                     bcdToInteger(buf[profileStart[1]+6]), # day
@@ -431,6 +496,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         tz=tz)
     class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
     attr(time, "tzone") <- getOption("oceTz") # Q: does file hold the zone?
+    ## aquadopp error: see table 5.4 (p40) and table 5.10 (p53) of system-integrator-manual_jan2011.pdf
+    error <- readBin(buf[profileStart2 + 10], what="integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
     heading <- 0.1 * readBin(buf[profileStart2 + 18], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     pitch <- 0.1 * readBin(buf[profileStart2 + 20], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     roll <- 0.1 * readBin(buf[profileStart2 + 22], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
@@ -443,13 +510,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
     velocityScale <- 1e-3              # FIXME: why not use the value in user$velocityScale?
     ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
-    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30)
+    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30, aquadopp=30)
     for (i in 1:profilesToRead) {
         o <- profileStart[i] + oShift
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)],
-                                                 "integer", n=items, size=2, endian="little", signed=TRUE),
-                                         ncol=numberOfBeams, byrow=FALSE)
+        v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE), ncol=numberOfBeams, byrow=FALSE)
         o <- o + items * 2
         a[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=items, byrow=TRUE)
         o <- o + items
@@ -467,21 +532,72 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (length(distance) != dim(v)[2])
             stop("the argument distance is of length ", length(distance), ", which does not match the second dimension of the velocity matrix, ", dim(v)[2])
     }
+
+    ## get diagnostic data, if any, and trim them to same index range as conventional data
+    if (type == "aquadopp") {
+        ##warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
+        diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        oceDebug(debug, "diaStart range:", range(diaStart), "\n")
+        diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])
+        diaStart <- subset(diaStart, diaStart <= profileStart[toIndex])
+        oceDebug(debug, "LATER diaStart range:", range(diaStart), "\n")
+        diaToRead <- length(diaStart)
+        diaStart2 <- sort(c(diaStart, diaStart+1))
+        timeDia <- ISOdatetime(2000+bcdToInteger(buf[diaStart+8]),
+                               bcdToInteger(buf[diaStart+9]), # month
+                               bcdToInteger(buf[diaStart+6]), # day
+                               bcdToInteger(buf[diaStart+7]), # hour
+                               bcdToInteger(buf[diaStart+4]), # min
+                               bcdToInteger(buf[diaStart+5]), # sec
+                               tz=tz)
+        ## aquadopp error: see table 5.4 (p40) and table 5.10 (p53) of system-integrator-manual_jan2011.pdf
+        errorDia <- readBin(buf[diaStart2 + 10], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
+        headingDia <- 0.1 * readBin(buf[diaStart2 + 18], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        pitchDia <- 0.1 * readBin(buf[diaStart2 + 20], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        rollDia <- 0.1 * readBin(buf[diaStart2 + 22], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        pressureMSB <- readBin(buf[diaStart + 24], what="integer", n=diaToRead, size=1, endian="little", signed=FALSE)
+        pressureLSW <- readBin(buf[diaStart2 + 26], what="integer", n=diaToRead, size=2, endian="little", signed=FALSE)
+        pressureDia <- (as.integer(pressureMSB)*65536 + pressureLSW) * 0.001
+        temperatureDia <- 0.01 * readBin(buf[diaStart2 + 28], what="integer", n=diaToRead, size=2, endian="little")
+        vDia <- array(double(), dim=c(diaToRead,  1,  3))
+        vDia[, , 1] <- 0.001 * readBin(buf[diaStart2 + 30], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        vDia[, , 2] <- 0.001 * readBin(buf[diaStart2 + 32], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        vDia[, , 3] <- 0.001 * readBin(buf[diaStart2 + 34], what="integer", n=diaToRead, size=2, endian="little", signed=TRUE)
+        aDia <- array(raw(), dim=c(diaToRead,  1,  3))
+        aDia[, , 1] <- buf[diaStart + 36]
+        aDia[, , 2] <- buf[diaStart + 37]
+        aDia[, , 3] <- buf[diaStart + 38]
+    }
+
     data <- list(v=v, a=a, q=q,
                  distance=distance,
                  time=time,
                  pressure=pressure,
+                 error=error,
                  temperature=temperature,
                  heading=heading,
                  pitch=pitch,
                  roll=roll)
+    if (type == "aquadopp" && diaToRead > 0) {
+        ## FIXME: there may be other things here, e.g. does it try to measure salinity?
+        data$timeDia <- timeDia
+        data$errorDia <- errorDia
+        data$headingDia <- headingDia
+        data$pitchDia <- pitchDia
+        data$rollDia <- rollDia
+        data$pressureDia <- pressureDia
+        data$temperatureDia <- temperatureDia
+        data$vDia <- vDia
+        data$aDia <- aDia
+    }
+
     if (missing(orientation)) {
         orientation <- header$head$tiltSensorOrientation
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
     metadata <- list(manufacturer="nortek",
-                     instrumentType="aquadopp-hr",
+                     instrumentType=type, #"aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
                      latitude=latitude,
@@ -498,7 +614,6 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      subsampleDeltat=as.numeric(time[2]) - as.numeric(time[1]),
                      size=header$head$size,
                      serialNumber=header$hardware$serialNumber,
-                     frequency=header$head$frequency,
                      internalCodeVersion=header$hardware$picVersion,
                      hardwareRevision=header$hardware$hwRevision,
                      recSize=header$hardware$recSize,
@@ -523,7 +638,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityMaximum=velocityScale * 2^15,
                      originalCoordinate=header$user$originalCoordinate,
                      oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnattenuated=FALSE
+                     oceBeamUnspreaded=FALSE
                      )
     res <- new("adp")
     res@data <- data

@@ -46,8 +46,11 @@ void sfm_enu(int *nhpr, double *heading, double *pitch, double *roll,
             CR[j] = cos(r);
             SR[j] = sin(r);
         }
+        R_CheckUserInterrupt();
         j = 0; /* see end of loop for recycling */
         for (i = 0; i < (*nsfm); i++) {
+            if (0 == (i % 10))
+                R_CheckUserInterrupt();
             east[i] =
                 starboard[i] * ( CH[j] * CR[j] + SH[j] * SP[j] * SR[j] ) +
                 forward[i]   * ( SH[j] * CP[j]                         ) +
@@ -66,6 +69,8 @@ void sfm_enu(int *nhpr, double *heading, double *pitch, double *roll,
     } else {
         /* no need to allocate storage */
         for (i = 0; i < (*nsfm); i++) {
+            if (0 == (i % 10))
+                R_CheckUserInterrupt();
             double h = PI_OVER_180 * heading[i];
             double p = PI_OVER_180 * pitch[i];
             double r = PI_OVER_180 * roll[i];

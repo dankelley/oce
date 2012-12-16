@@ -2,9 +2,9 @@
 
 \alias{swSCTp}
 
-\title{Seawater salinity from conductivity ratio, temperature and pressure}
+\title{Seawater salinity from electrical conductivity, temperature and pressure}
 
-\description{Compute salinity, given conductivity ratio, temperature, and pressure.}
+\description{Compute salinity based on electrical conductivity, temperature, and pressure.}
 
 \usage{swSCTp(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))}
 
@@ -26,7 +26,7 @@
 
 \value{Practical salinity [PSU].}
 
-\seealso{\code{\link{swConductivity}}}
+\seealso{For thermal (as opposed to electrical) conductivity, see \code{\link{swConductivity}}.}
 
 \examples{
 print(swSCTp(1,15,2000))   # 34.25045

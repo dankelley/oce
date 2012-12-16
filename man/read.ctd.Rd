@@ -23,10 +23,10 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{type}{if \code{NULL}, then the first line is studied, in order to determine the
-    file type.  If \code{type="SBE19"}, then a \emph{Seabird 19} (or similar) CTD
-    format is assumed. If \code{type="WOCE"} then a 
-    WOCE-exchange file is assumed.}
+  \item{type}{if \code{NULL}, then the first line is studied, in order to
+      determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird
+          19} (or similar) CTD format is assumed. If \code{type="WOCE"} then a
+      WOCE-exchange file is assumed.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column names from the

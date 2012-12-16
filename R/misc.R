@@ -160,65 +160,6 @@ prettyPosition <- function(x, debug=getOption("oceDebug"))
     rval
 }
 
-formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
-{
-    type <- match.arg(type)
-    signs <- sign(latlon)
-    x <- abs(latlon)
-    degrees <- floor(x)
-    minutes <- floor(60 * (x - degrees))
-    seconds <- 3600 * (x - degrees - minutes / 60)
-    seconds <- round(seconds, 2)
-
-    ## prevent rounding errors from giving e.g. seconds=60
-    ##print(data.frame(degrees,minutes,seconds))
-    secondsOverflow <- seconds == 60
-    seconds <- ifelse(secondsOverflow, 0, seconds)
-    minutes <- ifelse(secondsOverflow, minutes+1, minutes)
-    minutesOverflow <- minutes == 60
-    degrees <- ifelse(minutesOverflow, degrees+1, degrees)
-    ##print(data.frame(degrees,minutes,seconds))
-
-    noSeconds <- all(seconds == 0)
-    noMinutes <- noSeconds & all(minutes == 0)
-    hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
-    oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
-    if (type == "list") {
-        if (noMinutes)
-            rval <- list(degrees, hemispheres)
-        else if (noSeconds)
-            rval <- list(degrees, minutes, hemispheres)
-        else
-            rval <- list(degrees, minutes, seconds, hemispheres)
-    } else if (type == "string") {
-        if (noMinutes)
-            rval <- sprintf("%02d %s", degrees, hemispheres)
-        else if (noSeconds)
-            rval <- sprintf("%02d %02d %s", degrees, minutes, hemispheres)
-        else
-            rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
-    } else if (type == "expression") {
-        n <- length(degrees)
-        rval <- vector("expression", n)
-        for (i in 1:n) {
-            if (noMinutes) {
-                rval[i] <- as.expression(substitute(d*degree,
-                                                    list(d=degrees[i])))
-            } else if (noSeconds) {
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute,
-                                                    list(d=degrees[i],
-                                                         m=sprintf("%02d", minutes[i]))))
-            } else {
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
-                                                    list(d=degrees[i],
-                                                         m=sprintf("%02d", minutes[i]),
-                                                         s=sprintf("%02d", seconds[i]))))
-            }
-        }
-    }
-    rval
-}
-
 smoothSomething <- function(x, ...)
 {
     if (is.raw(x)) {
@@ -568,7 +509,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward",
-                                  "elevation"), axis=c("x", "y"))
+                                  "depth", "elevation"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -615,8 +556,8 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Pressure, ", P, " [dbar]"))
         abbreviated <- expression(paste(P, " [dbar]"))
     } else if (item == "z") {
-        full <- expression(z, " [ m ]")
-        abbreviated <- expression(z, " [m]")
+        abbreviated <- expression(paste(z, " [m]"))
+        full <- expression(paste(z, " [m]"))
     } else if (item == "distance") {
         full <- "Distance [m]"
         abbreviated <- "Dist. [m]"
@@ -644,14 +585,17 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "northward") {
         full <- "Northward wind [m/s]"
         abbreviated <- "v [m/s]"
+    } else if (item == "depth") {
+        full <- "Depth [m]"
+        abbreviated <- "Depth [m]"
     } else if (item == "elevation") {
         full <- "Elevation [m]"
-        abbreviated <- "Elevation [m/s]"
+        abbreviated <- "Elevation [m]"
     } else if (item ==  "speed") {
         full <- "Speed [m/s]"
         abbreviated <- "Speed [m/s]"
     }
-    spaceNeeded <- strwidth(full, "inches")
+    spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
@@ -997,46 +941,73 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
     res / 1000
 }
 
-interpBarnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
-                         xr=NULL, yr=NULL, gamma=0.5, iterations=2)
+interpBarnes <- function(x, y, z, w,
+                         xg, yg, xgl, ygl,
+                         xr, yr, gamma=0.5, iterations=2,
+                         debug=getOption("oceDebug"))
 {
+    debug <- max(0, min(debug, 2))
+    oceDebug(debug, "\b\binterpBarnes(x, ...) {\n")
+    if (!is.vector(x))
+        stop("x must be a vector")
     n <- length(x)
     if (length(y) != n)
         stop("lengths of x and y disagree; they are ", n, " and ", length(y))
     if (length(z) != n)
         stop("lengths of x and z disagree; they are ", n, " and ", length(z))
-    if (is.null(w))
+    if (missing(w))
         w <- rep(1.0, length(x))
-    if (is.null(xg))
-        xg <- pretty(x, n=50)
-    if (is.null(yg)) {
-        if (0 == diff(range(y))) {
-            yg <- y[1]
+    if (missing(xg)) {
+        if (missing(xgl)) {
+            if (0 == diff(range(x, na.rm=TRUE))) {
+                xg <- x[1]
+            } else {
+                xg <- pretty(x, n=50)
+            }
         } else {
-            yg <- pretty(y, n=50)
+            xg <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=xgl)
         }
     }
-    if (is.null(xr)) {
-        xr <- diff(range(x)) / sqrt(n)
+    if (missing(yg)) {
+        if (missing(ygl)) {
+            if (0 == diff(range(y, na.rm=TRUE))) {
+                yg <- y[1]
+            } else {
+                yg <- pretty(y, n=50)
+            }
+        } else {
+            yg <- seq(min(y, na.rm=TRUE), max(y, na.rm=TRUE), length.out=ygl)
+        }
+    }
+    if (missing(xr)) {
+        xr <- diff(range(x, na.rm=TRUE)) / sqrt(n)
         if (xr == 0)
             xr <- 1
     }
-    if (is.null(yr)) {
-        yr <- diff(range(y)) / sqrt(n)
+    if (missing(yr)) {
+        yr <- diff(range(y, na.rm=TRUE)) / sqrt(n)
         if (yr == 0)
             yr <- 1
     }
+
+    oceDebug(debug, "xg:", xg, "\n")
+    oceDebug(debug, "yg:", yg, "\n")
+    oceDebug(debug, "xr:", xr, "yr:", yr, "\n")
+    oceDebug(debug, "gamma:", gamma, "iterations:", iterations, "\n")
+
+    ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     zg <- .Call("interp_barnes",
-                as.double(x),
-                as.double(y),
-                as.double(z),
-                as.double(w),
+                as.double(x[ok]),
+                as.double(y[ok]),
+                as.double(z[ok]),
+                as.double(w[ok]),
                 as.double(xg),
                 as.double(yg),
                 as.double(xr),
                 as.double(yr),
                 as.double(gamma),
                 as.integer(iterations))
+    oceDebug(debug, "\b\b} # interpBarnes(...)\n")
     list(xg=xg, yg=yg, zg=zg)
 }
 
@@ -1084,12 +1055,19 @@ fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
         stop("only works for numeric 'x'")
-    if (!is.vector(x))
-        stop("only works for vector 'x'")
     method <- match.arg(method)
     class <- class(x)
-    x <- as.numeric(x)
-    res <- .Call("fillgap", x, rule)
+    if (is.vector(x)) {
+        res <- .Call("fillgap1d", as.numeric(x), rule)
+    } else if (is.matrix(x))  {
+        res <- x
+        for (col in 1:ncol(x))
+            res[,col] <- .Call("fillgap1d", as.numeric(x[,col]), rule)
+        for (row in 1:nrow(x))
+            res[row,] <- .Call("fillgap1d", as.numeric(x[row,]), rule)
+    } else {
+        stop("only works if 'x' is a vector or a matrix")
+    }
     class(res) <-  class
     res
 }
@@ -1375,6 +1353,8 @@ byteToBinary <- function(x, endian=c("little", "big"))
         if (x[i] < 0) {
             rval <- c(rval, "??")
         } else {
+            ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
+            ## makes ANY SENSE at all.  2012-11-22
             byte1 <- as.integer(floor(x[i] / 16))
             byte2 <- x[i] - 16 * byte1
             ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")

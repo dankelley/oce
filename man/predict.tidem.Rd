@@ -19,6 +19,7 @@
 \seealso{\code{\link{tidem}} fits a tidal model.}
 
 \examples{
+\dontrun{
 library(oce)
 #
 # 1. tidal anomaly
@@ -41,6 +42,7 @@ oce.plot.ts(time[look], elevation[look])
 t <- seq(from=time[1], to=time[max(look)], by=360) # 360s = 10 minute timescale
 lines(t, predict(m,newdata=t), col='red')
 legend("topright", col=c("black","red"),legend=c("data","model"),lwd=1)
+}
 }
 
 \author{Dan Kelley}
