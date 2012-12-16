@@ -47,13 +47,25 @@ teos <- function(name, a1, a2, a3, a4, lib=getOption("libteos")) # FIXME: what's
     ngood <- sum(good)
     if (args == 2) {
         rval[good] <- .C("gsw2a", as.character(lib), as.character(name),
-                         as.integer(ngood), as.double(a1[good]), as.double(a2[good]), rval=double(ngood))$rval
+                         as.integer(ngood),
+                         as.double(a1[good]),
+                         as.double(a2[good]),
+                         rval=double(ngood), NAOK=TRUE, PACKAGE="oce")$rval
     } else if (args == 3) {
         rval[good] <- .C("gsw3a", as.character(lib), as.character(name),
-                         as.integer(ngood), as.double(a1[good]), as.double(a2[good]), as.double(a3[good]), rval=double(ngood))$rval
+                         as.integer(ngood),
+                         as.double(a1[good]),
+                         as.double(a2[good]),
+                         as.double(a3[good]),
+                         rval=double(ngood), NAOK=TRUE, PACKAGE="oce")$rval
     } else if (args == 4) {
         rval[good] <- .C("gsw4a", as.character(lib), as.character(name),
-                         as.integer(ngood), as.double(a1[good]), as.double(a2[good]), as.double(a3[good]), as.double(a4[good]), rval=double(ngood))$rval
+                         as.integer(ngood),
+                         as.double(a1[good]),
+                         as.double(a2[good]),
+                         as.double(a3[good]),
+                         as.double(a4[good]),
+                         rval=double(ngood), NAOK=TRUE, PACKAGE="oce")$rval
     }
     rval[rval == 9e15] <- NA
     dim(rval) <- dim
