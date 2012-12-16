@@ -33,6 +33,8 @@ SEXP latlon_trim(SEXP x, SEXP y)
     int *resp = INTEGER(res);
     int last_NA = 0;
     for (i = 0; i < nx; i++) {
+        if (0 == (i % 10))
+            R_CheckUserInterrupt();
         if (ISNA(xp[i]) | ISNA(yp[i])) {
             // Rprintf("i=%d NA\n", i);
             if (last_NA)

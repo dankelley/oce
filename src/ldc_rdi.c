@@ -82,6 +82,7 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
       }
     }
   }
+  R_CheckUserInterrupt();
   /* allocate space, then run through whole buffer again, noting the matches */
   lres = matches;
   if (lres > 0) {

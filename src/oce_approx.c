@@ -1,4 +1,5 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+//#define DEBUG
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -9,17 +10,13 @@
 
 To test this, without building the whole package, do the following.
 
-In shell:
-
-R CMD SHLIB oce_approx.c
-
 In R:
 
 par(mar=c(2,2,1,1))
 library(oce)
 data(RRprofile)
 zz <- seq(0,2000,5)
-dyn.load("oce_approx.so")
+system("R CMD SHLIB oce_approx.c");dyn.load("oce_approx.so")
 TT <- .Call("oce_approx",RRprofile$depth,RRprofile$temperature,zz)
 plot(RRprofile$temperature,RRprofile$depth,ylim=c(500,0),xlim=c(2,10), col='red', pch=20)
 lines(TT,zz,col='blue')
@@ -49,12 +46,16 @@ static double phi_z(int i0, double z0, double *z, double *phi, int len) /* Reini
 }
 static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3a) */
 {
-  //Rprintf("phi_R ...\n");
+#ifdef DEBUG
+  Rprintf("phi_R ...\n");
+#endif
   if (0 < i0 && i0 < (len - 2)) {
     double phi12 = phi_ij(i0-1, i0  , z0, z, phi, len);
     double phi23 = phi_ij(i0  , i0+1, z0, z, phi, len);
     double phi34 = phi_ij(i0+1, i0+2, z0, z, phi, len);
-    //Rprintf("phi_R denom=%f\n", (SQR(phi23 - phi34) + SQR(phi12 - phi23)));
+#ifdef DEBUG
+    Rprintf("phi_R phi12=%f phi23=%f phi34=%f denom=%f\n", phi12, phi23, phi34, (SQR(phi23 - phi34) + SQR(phi12 - phi23)));
+#endif
     return (0.5 * (phi23 + 
 	  (SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34)
 	  /
@@ -91,7 +92,9 @@ static double phi_P2(int i0, double z0, double *z, double *phi, int len) /* Rein
 static double gamma_ijk(int i, int j, int k, double z0, double *z, int len) /* Reiniger & Ross (1968, eqn 3c) */
 {
   if (-1 < i && -1 < j && -1 < k && i < len && j < len && k < len) {
-    //Rprintf("gamma_ijk denom=%f\n", ((z[i] - z[j]) * (z[i] - z[k])));
+#ifdef DEBUG
+    Rprintf("gamma_ijk denom=%f\n", ((z[i] - z[j]) * (z[i] - z[k])));
+#endif
     return ((z0 - z[j]) * (z0 - z[k])) / ((z[i] - z[j]) * (z[i] - z[k]));
   } else {
     error("gamma_ijk given bad i=%d or bad j=%d or bad k=%d (with len=%d)", i, j, k, len);
@@ -101,7 +104,12 @@ static double gamma_ijk(int i, int j, int k, double z0, double *z, int len) /* R
 static double phi_ij(int i, int j, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3d) */
 {
   if (-1 < i && i < len && -1 < j && j < len) {
-    //Rprintf("phi_ij denom=%f\n", (z[i] - z[j]));
+#ifdef DEBUG
+    Rprintf("phi_ij denom=%f\n", (z[i] - z[j]));
+    if (z[i] == z[j]) {
+      Rprintf("   i=%d  j=%d  z0=%f\n", i, j, z0);
+    }
+#endif
     return (phi[i] * (z0 - z[j]) - phi[j] * (z0 - z[i])) / (z[i] - z[j]);
   } else {
     error("phi_ij given bad i=%d or bad j=%d (with len=%d)", i, j, len);
@@ -124,18 +132,22 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
   yp = REAL(y);
   PROTECT(ans = allocVector(REALSXP, xout_len));
   ansp = REAL(ans);
-#if 0
-  Rprintf("DEBUG: x="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(xp + i));  Rprintf("\n");
-  Rprintf("DEBUG: y="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
-  Rprintf("DEBUG: xout="); for (int i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
-#endif
+//#ifdef DEBUG
+//  Rprintf("DEBUG: x="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(xp + i));  Rprintf("\n");
+//  Rprintf("DEBUG: y="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
+//  Rprintf("DEBUG: xout="); for (int i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
+//#endif
   for (int i = 0; i < xout_len; i++) {
-    //Rprintf("xout[%d] = %f\n",i,*(xoutp+i));
+#ifdef DEBUG
+    Rprintf("xout[%d] = %f\n",i,*(xoutp+i));
+#endif
     double val = 0.0; // value always altered; this is to prevent compiler warning
     int found;
     found = 0;
     for (int j = 0; j < x_len - 1; j++) {
+      //#ifdef DEBUG
       //Rprintf("x[%d]=%.1f\n", j, *(xp + j));
+      //#endif
       double xx = *(xoutp + i);
       // Look for neighbors (BUG: what about hitting directly?)
       if (xx == *(xp + j)) {
@@ -147,16 +159,23 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
       } else if (*(xp + j) < xx && xx < *(xp + j + 1)) {
         if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
           val = *yp + (xx - *xp) * (*(yp + 1) - *(yp)) / (*(xp + 1) - *xp);
-          //Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n", xx, val, *xp, *(xp+1), *yp,*(yp+1));
+#ifdef DEBUG
+          Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n", xx, val, *xp, *(xp+1), *yp,*(yp+1));
+#endif
         } else if (j == x_len - 1) {
 	  val = *(yp + j - 1) + (xx - *(xp + j - 1)) * (*(yp + j) - *(yp + j - 1)) / (*(xp + j) - *(xp + j - 1));
         } else {
-	  if (j >= x_len - 2)
-	    val = NA_REAL;
-	  else
+	  if (j >= x_len - 2) {
+	    //Rprintf("j >= x_len - 2\n");
+	    //val = NA_REAL;
+	    val = yp[x_len - 1]; // trim to endpoint
+	  } else {
 	    val = phi_z(j, xx, xp, yp, x_len);
+	  }
         }
-        //Rprintf("Y j=%d VAL=%f\n", j, val);
+#ifdef DEBUG
+        Rprintf("Y j=%d VAL=%f\n", j, val);
+#endif
         found = 1;
         break;
       }

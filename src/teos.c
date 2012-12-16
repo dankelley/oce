@@ -1,9 +1,6 @@
 // vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70:
 //
-// This code uses "WIN32" as the compiler symbol to distinguish between MSWindows.
-// Possibly this is wrong.  I tried the following, to detect unix
-// (assuming MSWindows to be the reverse) but none are defined in OSX:
-//    _unix_ __unix__ unix Unix
+// This code uses "WIN32" and similar as the compiler symbol to detect Windows.
 //
 // FIXME: dlclose(), or the MSWindows equivalent, is never called,
 // because the idea here is to cache the library 'handle'.
@@ -17,11 +14,13 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
-#ifdef WIN32
-#  include <windows.h>
+
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
 #else
-#  include <dlfcn.h>
+#include <dlfcn.h>
 #endif
+
 static void *teos_handle = NULL;
 
 //#define DEBUG
@@ -51,24 +50,28 @@ void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval
   Rprintf("gsw2a(\"%s\", \"%s\", %d...)\n", *lib, *name, *n);
 #endif
   if (first_teos_call) {
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
     teos_handle = LoadLibrary(*lib);
 #else
     teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
 #endif
     if (!teos_handle) {
+#if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
       Rprintf(dlerror());
+#endif
       error("cannot open TEOS library %s", *lib);
     }
     first_teos_call = 0;
   }
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
   double (*f2)(double, double) = GetProcAddress(teos_handle, *name);
 #else
   double (*f2)(double, double) = dlsym(teos_handle, *name);
 #endif
   if (!f2) {
+#if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
     Rprintf(dlerror());
+#endif
     error("cannot find \"%s\" in TEOS library %s", *name, *lib);
   }
   for (int i = 0; i < *n; i++) {
@@ -82,24 +85,28 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
   Rprintf("gsw3a(\"%s\", \"%s\", %d...)\n", *lib, *name, *n);
 #endif
   if (first_teos_call) {
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
     teos_handle = LoadLibrary(*lib);
 #else
     teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
 #endif
     if (!teos_handle) {
+#if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
       Rprintf(dlerror());
+#endif
       error("cannot open TEOS library %s", *lib);
     }
     first_teos_call = 0;
   }
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
   double (*f3)(double, double, double) = GetProcAddress(teos_handle, *name);
 #else
   double (*f3)(double, double, double) = dlsym(teos_handle, *name);
 #endif
   if (!f3) {
+#if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
     Rprintf(dlerror());
+#endif
     error("cannot find \"%s\" in TEOS library %s", *name, *lib);
   }
   for (int i = 0; i < *n; i++) {
@@ -113,24 +120,28 @@ void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
   Rprintf("gsw4a(\"%s\", \"%s\", %d...)\n", *lib, *name, *n);
 #endif
   if (first_teos_call) {
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
     teos_handle = LoadLibrary(*lib);
 #else
     teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
 #endif
     if (!teos_handle) {
+#if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
       Rprintf(dlerror());
+#endif
       error("cannot open TEOS library %s", *lib);
     }
     first_teos_call = 0;
   }
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
   double (*f4)(double, double, double, double) = GetProcAddress(teos_handle, *name);
 #else
   double (*f4)(double, double, double, double) = dlsym(teos_handle, *name);
 #endif
   if (!f4) {
+#if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
     Rprintf(dlerror());
+#endif
     error("cannot find \"%s\" in TEOS library %s", *name, *lib);
   }
   for (int i = 0; i < *n; i++) {

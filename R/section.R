@@ -575,7 +575,7 @@ setMethod(f="plot",
               num.depths <- length(firstStation@data$pressure)
 
               ## Check that pressures coincide
-              if (length(which) > 1 || which != "data") {
+              if (length(which) > 1 || (which != "data" && which != 'map')) {
                   p1 <- firstStation@data$pressure
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[stationIndices[ix]]]
