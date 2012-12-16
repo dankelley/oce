@@ -8,7 +8,8 @@
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid,
     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
-    projection="mercator", parameters=NULL, orientation=NULL,
+    type='l', axes=TRUE,
+    projection="mollweide", parameters=NULL, orientation=NULL,
     \dots)
 }
 
@@ -26,6 +27,11 @@
         tighter than the R default, in order to use more space for the
         data and less for the axes.}
     \item{mar}{value to be used with \code{\link{par}("mar")}.}
+    \item{type}{value to indicate type of plot, as with
+        \code{\link{par}("plot")}.}
+    \item{axes}{boolean value indicating whether to draw longitude and latitude
+        values in the lower and left margin, respectively.  This may not work
+        well for some projections or scales.}
     \item{projection}{projection; see \code{\link{mapproject}}.}
     \item{parameters}{parameters for projection; see \code{\link{mapproject}}.}
     \item{orientation}{orientation for projection; see \code{\link{mapproject}}.}
