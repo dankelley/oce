@@ -25,6 +25,7 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
@@ -35,6 +36,7 @@ mapPlot(longitude, latitude, type='l',
 lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)
 mapLines(lon, lat, col='red')
+}
 }
 
 \author{Dan Kelley}

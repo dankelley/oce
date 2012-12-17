@@ -21,9 +21,10 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     ## FIXME: labels, using labcex and vfont
 }
 
-
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
-                    projection="mercator", parameters=NULL, orientation=NULL,
+                    mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
+                    type='l', axes=TRUE,
+                    projection="mollweide", parameters=NULL, orientation=NULL,
                     ...)
 {
     if (inherits(longitude, "coastline")) {
@@ -34,31 +35,59 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     ## trim wild points [github issue 227]
-    if (TRUE) {
-        x <- xy$x
-        y <- xy$y
-        d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
-        d[!is.finite(d)] <- 0          # FIXME: ok?
-        dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
-        bad <- d > dc
-        x[bad] <- NA
-        y[bad] <- NA
-        plot(x, y, type='l', asp=1)
-    }
+    par(mar=mar, mgp=mgp)
+    x <- xy$x
+    y <- xy$y
+    d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+    d[!is.finite(d)] <- 0          # FIXME: ok?
+    dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
+    bad <- d > dc
+    x[bad] <- NA
+    y[bad] <- NA
     if (limitsGiven) {
         box <- mapproject(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
                           c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1]))
-        plot(x, y,
+        plot(x, y, type=type,
              xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     } else {
-        plot(x, y,
+        plot(x, y, type=type,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     }
     usr <- par('usr')
     mapMeridians(grid, lty='dotted', col='darkgray')
     mapZones(grid, lty='dotted', col='darkgray')
     box()
+    if (axes) {
+        inc <- if (missing(grid)) 15 else if (is.logical(grid)) 15 else grid
+        usr <- par('usr')
+        for (latlab in seq(-90, 90, inc)) {
+            if (-90 <= latlab && latlab <= 90) {
+                try({
+                    lonlab <- oceBisect(function(lon) mapproject(lon, latlab)$x-usr[1], -180, -90, 1)
+                    at <- mapproject(lonlab, latlab)
+                    if (usr[3] < at$y && at$y < usr[4]) {
+                        mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
+                              line=mgp[2],
+                              side=2, at=at$y, srt=90) # how to rotate?
+                    }
+                }, silent=TRUE)
+            }
+        }
+        for (lonlab in seq(-180, 180, inc)) {
+            if (-180 <= lonlab && lonlab <= 180) { # the limits are the lonlim
+                try({
+                    latlab <- oceBisect(function(lat) mapproject(lonlab, lat)$y-usr[3], -90, 60, 1)
+                    at <- mapproject(lonlab, latlab)
+                    if (usr[1] < at$x && at$x < usr[2]) {
+                        mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
+                              line=mgp[2],
+                              side=1, at=at$x)
+                    }
+                }, silent=TRUE)
+            }
+        }
+    }
 }
 
 mapMeridians <- function(lat, ...)
@@ -104,7 +133,7 @@ mapZones <- function(lon, ...)
     n <- 360                           # number of points on line
     for (l in lon) {
         ## FIXME: should use mapLines here
-        line <- mapproject(rep(l, n), seq(-90+10, 90-10, length.out=n))
+        line <- mapproject(rep(l, n), seq(-90+15, 90-15, length.out=n))
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)

@@ -575,7 +575,7 @@ setMethod(f="plot",
               num.depths <- length(firstStation@data$pressure)
 
               ## Check that pressures coincide
-              if (length(which) > 1 || which != "data") {
+              if (length(which) > 1 || (which != "data" && which != 'map')) {
                   p1 <- firstStation@data$pressure
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[stationIndices[ix]]]
@@ -976,7 +976,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	p.max <- 0
 	for (i in 1:n) {
 	    p <- section@data$station[[i]]@data$pressure
-	    dp.list <- c(dp.list, mean(diff(p)))
+	    dp.list <- c(dp.list, mean(diff(p)), na.rm=TRUE)
 	    p.max <- max(c(p.max, p), na.rm=TRUE)
 	}
 	dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
@@ -1168,5 +1168,21 @@ summary.section <- function(object, ...)
         cat("* No stations\n")
     }
     ##processingLogShow(object)
+}
+
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station) # FIXME: code this
+{
+    stationFactor <- factor(station)
+    stationLevels <- levels(stationFactor)
+    for (l in seq_along(stationLevels)) {
+        look <- station==stationLevels[l]
+        ctd <- as.ctd(salinity[look], temperature[look], pressure[look],
+                      longitude=longitude[look][1], latitude=latitude[look][1])
+        if (l == 1)
+            rval <- makeSection(ctd)
+        else
+            rval <- rval + ctd
+    }
+    rval 
 }
 

@@ -162,7 +162,7 @@ as.ctd <- function(salinity, temperature, pressure,
                      latitude=latitude,
                      longitude=longitude,
                      recovery=recovery,
-                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
+                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure), na.rm=TRUE) else waterDepth,
                      sampleInterval=sampleInterval,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
@@ -215,10 +215,10 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
     if (missing(p)) { # autoscale
         dp.exact <- median(abs(diff(x@data$pressure)))
         dp <- pretty(3 * dp.exact)[2] # try for 3 data at least
-        pt <- seq(0, dp * floor(max(x@data$pressure) / dp), dp)
+        pt <- seq(0, dp * floor(max(x@data$pressure, na.rm=TRUE) / dp), dp)
     } else {
         if (length(p) == 1) {
-            pt <- seq(0, p * floor(max(x@data$pressure) / p), p)
+            pt <- seq(0, p * floor(max(x@data$pressure, na.rm=TRUE) / p), p)
         } else {
             pt <- p
         }

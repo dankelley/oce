@@ -163,12 +163,17 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     x <- x[ok]
     y <- y[ok]
     o <- order(x)
+    x <- x[o]
+    y <- y[o]
+    keep <- c(TRUE, 0 != diff(x))
+    x <- x[keep]
+    y <- y[keep]
     if (missing(xout))
         xout <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=lx)
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x[o], y=y[o], xout=xout)
+    .Call("oce_approx", x=x, y=y, xout=xout)
 }
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,

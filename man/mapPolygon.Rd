@@ -30,6 +30,7 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
@@ -41,6 +42,7 @@ tlat <- topoMaritimes[['latitude']][seq(1, 500, 10)]
 z <- topoMaritimes[['z']][seq(1, 500, 10), seq(1, 500, 10)]
 mapImage(tlon, tlat, z)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+}
 }
 
 \author{Dan Kelley}

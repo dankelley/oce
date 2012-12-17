@@ -306,7 +306,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     timeBottom <- rangeBottom <- NULL
     while (offset < fileSize) {
         print <- debug && tuple < 200
-        N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1))$res
+        N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
         code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
@@ -314,10 +314,10 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
-            thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
+            thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
             pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
-            ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res # number of samples
+            ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
             if (thisChannel == channelNumber[channel]) {
                 if (debug > 0) {
                     cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
@@ -343,7 +343,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             }
         } else if (code1 == 0x0f || code == 0x20) { # time
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
-            timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1))$res
+            timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1), NAOK=TRUE, PACKAGE="oce")$res
             timeFull <- timeSec + timeSubSec
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
             ## centisecond = ss & 0x7F (according to section 4.7)
@@ -365,11 +365,12 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x11) {
             if (print) cat(" navigation string) IGNORED\n")
         } else if (code1 == 0x12) {
-            channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
-            blankedSamples <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1))$res
-            channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
+            channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res)
+            blankedSamples <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE,
+                                                      PACKAGE="oce")$res)
             pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
-            samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1))$res
+            samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (1 == length(channelNumber)) { # get space
                 a <- matrix(1, nrow=pingsInFile, ncol=samplesPerPing)
             }
@@ -399,7 +400,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (print) cat(" bottom pick) ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
-            foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res
+            foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (foundBottom) {
                 binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
                 ##timeBottom <- c(timeBottom, readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000)
@@ -417,7 +418,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else {
             if (print) cat(" unknown code) IGNORED\n")
         }
-        N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1))$res
+        N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
         if (N6 != N + 6)
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
         offset <- offset + N + 6

@@ -23,6 +23,7 @@ read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
   monitor=FALSE, despike=FALSE, processingLog,
+  testing=FALSE,
   debug=getOption("oceDebug"),
   \dots)
 
@@ -105,8 +106,6 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     degrees North.}
   \item{longitude}{optional signed number indicating the longitude in 
     degrees East.}
-  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-    moderate amount of debugging information, or to 2 to get more.} 
   \item{beamAngle}{angle between instrument axis and beams, in degrees.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     (with numbers and dots) of every profile read.}
@@ -115,6 +114,12 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
+  \item{testing}{a flag that applies only to RDI units.  If this is
+      \code{TRUE}, then the time-varying device orientation is inferred from
+      the per-profile header information, and the boolean result is stored in
+      an integer vector named \code{upward} within the \code{data} slot.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{additional arguments, passed to called routines.}
 }
 

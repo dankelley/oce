@@ -35,6 +35,7 @@ col=par("fg"), lty=par("lty"), lwd=par("lwd"))}
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
@@ -49,6 +50,7 @@ lon <- topoWorld[['longitude']]
 lat <- topoWorld[['latitude']]
 z <- topoWorld[['z']] 
 mapContour(lon, lat, z, levels=-1000, lty='dotted')
+}
 }
 
 \author{Dan Kelley}

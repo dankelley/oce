@@ -20,16 +20,17 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-70,0), latitudelim=c(40,80),
-        projection="orthographic", orientation=c(45,-35,0),
-        grid=TRUE)
-data(drifter)
-lon <- drifter[['longitude']]
-lat <- drifter[['latitude']]
+mapPlot(coastlineWorld, type='l', grid=TRUE,
+        longitudelim=c(-80,0), latitudelim=c(20,50),
+        projection="mercator", orientation=c(90,-40,0))
+data(a03)
+lon <- a03[["longitude", 'byStation']]
+lat <- a03[["latitude", 'byStation']]
 mapPoints(lon, lat, pch=20, col='red')
+}
 }
 
 \author{Dan Kelley}

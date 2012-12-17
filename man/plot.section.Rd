@@ -153,6 +153,7 @@
 }
 
 \examples{
+\dontrun{
 library(oce)
 ## Halifax Harbour
 data(section)
@@ -178,7 +179,7 @@ plot(GSg, which=1, ztype='image')
 col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
 points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
 points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
-
+}
 }
 
 \author{Dan Kelley}

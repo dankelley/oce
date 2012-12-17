@@ -1,4 +1,16 @@
+0.9-7
+- mapPlot(): add 'axes' argument
+
+0.9-6
+- address compilation error on Windows-64 platform
+- make some long-running operations more interruptible 
+- oceApprox(): permit equal x values [issue 279]
+
+0.9-5
+- halve package check time
+
 0.9-4
+- as.section() added
 - add data(endeavour)
 - add map projections, with provisional functions mapPlot() etc
 - plot.ctd(): add argument 'add'
