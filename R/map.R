@@ -25,8 +25,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
                     type='l', axes=TRUE,
                     projection="mollweide", parameters=NULL, orientation=NULL,
+                    debug=getOption("oceDebug"),
                     ...)
 {
+    oceDebug(debug, "\b\bmapPlot(...) {\n")
     if (inherits(longitude, "coastline")) {
         latitude <- longitude[['latitude']]
         longitude <- longitude[['longitude']]
@@ -59,35 +61,72 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     mapZones(grid, lty='dotted', col='darkgray')
     box()
     if (axes) {
+        options <- options('warn') # optimize() makes warnings for NA, which we will get
+        options(warn=-1) 
         inc <- if (missing(grid)) 15 else if (is.logical(grid)) 15 else grid
         usr <- par('usr')
+        labelAt <- NULL
+        labels <- NULL
+        ## FIXME: tried axes, and not good.  Next: try figuring spacing manually
+        lastAtY <- NA
         for (latlab in seq(-90, 90, inc)) {
+            oceDebug(debug, "latlab", latlab, "\n")
             if (-90 <= latlab && latlab <= 90) {
                 try({
-                    lonlab <- oceBisect(function(lon) mapproject(lon, latlab)$x-usr[1], -180, -90, 1)
+                    o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]), lower=-180, upper=180)
+                    if (o$object > 0.01)
+                        next
+                    lonlab <- o$minimum
                     at <- mapproject(lonlab, latlab)
                     if (usr[3] < at$y && at$y < usr[4]) {
+                        labelAt <- c(labelAt, at$y)
+                        #label <- c(label, formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE))
+                        labels <- c(labels, formatPosition(latlab, isLat=TRUE, type="string", showHemi=TRUE))
+                        oceDebug(debug, "  y axis: ",
+                            formatPosition(latlab, isLat=TRUE, type="string", showHemi=TRUE),
+                            "at$y", at$y, "lastAtY", lastAtY, "\n")
                         mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
-                              line=mgp[2],
+                              line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
                               side=2, at=at$y, srt=90) # how to rotate?
+                        lastAtY <- at$y
                     }
                 }, silent=TRUE)
             }
         }
+        #axis(side=2, at=labelAt, labels=labels)
+        labelAt <- NULL
+        labels <- NULL
+        lastx <- NA
+        dxMin <- (usr[2] - usr[1]) / 10
         for (lonlab in seq(-180, 180, inc)) {
             if (-180 <= lonlab && lonlab <= 180) { # the limits are the lonlim
                 try({
-                    latlab <- oceBisect(function(lat) mapproject(lonlab, lat)$y-usr[3], -90, 60, 1)
+                    o <- optimize(function(lat) abs(mapproject(lonlab, lat)$y-usr[3]), lower=-89, upper=89)
+                    if (o$object > 0.01)
+                        next
+                    latlab <- o$minimum
                     at <- mapproject(lonlab, latlab)
                     if (usr[1] < at$x && at$x < usr[2]) {
-                        mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
-                              line=mgp[2],
-                              side=1, at=at$x)
+                        labelAt <- c(labelAt, at$x)
+                        #label <- c(label, formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE))
+                        labels <- c(labels, formatPosition(lonlab, isLat=FALSE, type="string", showHemi=TRUE))
+                        if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
+                            mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
+                                  line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
+                                  side=1, at=at$x)
+                            lastx <- at$x
+                        }
+                        oceDebug(debug, "  x axis: ",
+                            formatPosition(lonlab, isLat=FALSE, type="string", showHemi=TRUE),
+                            "at$x", at$x, "lastx", lastx, "\n")
                     }
                 }, silent=TRUE)
             }
         }
+        #axis(side=1, at=labelAt, labels=labels)
+        options(warn=options$warn) 
     }
+    oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
 mapMeridians <- function(lat, ...)
@@ -110,8 +149,20 @@ mapMeridians <- function(lat, ...)
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
         x <- x[ok]
+        if (0 == length(x))
+            next
         y <- y[ok]
-        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4])) {
+        if (0 == length(y))
+            next
+        d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+        d[!is.finite(d)] <- 0          # FIXME: ok?
+        if (0 == length(d))
+            next
+        dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
+        bad <- d > dc
+        x[bad] <- NA
+        y[bad] <- NA
+        if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
             lines(x, y, ...)
         }
     }
@@ -139,7 +190,7 @@ mapZones <- function(lon, ...)
         ok <- !is.na(x) & !is.na(y)
         x <- x[ok]
         y <- y[ok]
-        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4])) {
+        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
             lines(x, y, ...)
         }
     }
@@ -205,7 +256,8 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
-    hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
+    hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
+    hemispheres[signs==0] <- ""
     oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
     if (type == "list") {
         if (noMinutes)

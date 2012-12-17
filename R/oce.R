@@ -1414,10 +1414,14 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
 
 oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "\b\boceBisect(f, xleft=", xleft, ", xright=", xright, " ...) {\n", sep="")
     if (xleft >= xright)
         stop("xright must exceed xleft")
+    oceDebug(debug, "f(xleft)", f(xleft), "\n")
+    oceDebug(debug, "f(xright)", f(xright), "\n")
+    oceDebug(debug, "f(middle)", f(0.5*(xright+xleft)), "\n")
     if (f(xleft, ...) * f(xright, ...) > 0)
-        stop("xleft and xright do not bracket a root")
+        ("xleft and xright do not bracket a root")
     if (missing(dx))
         dx <- (xright - xleft) / 1e5
     else {
@@ -1446,6 +1450,7 @@ oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
             break
         }
     }
+    oceDebug(debug, "\b\b} # oceBisect()\n", sep="")
     xmiddle
 }
 

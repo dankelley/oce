@@ -10,6 +10,7 @@
     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
     type='l', axes=TRUE,
     projection="mollweide", parameters=NULL, orientation=NULL,
+    debug=getOption("oceDebug"),
     \dots)
 }
 
@@ -35,6 +36,8 @@
     \item{projection}{projection; see \code{\link{mapproject}}.}
     \item{parameters}{parameters for projection; see \code{\link{mapproject}}.}
     \item{orientation}{orientation for projection; see \code{\link{mapproject}}.}
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+        moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
