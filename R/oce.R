@@ -859,7 +859,8 @@ summary.oce <- function(object, ...)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
-    if (file.info(file)$isdir)
+    isdir<- file.info(file)$isdir
+    if (is.finite(isdir) && isdir)
         stop("please supply a file name, not a directory name")
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
@@ -887,6 +888,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("\\s*$", "", subtype)
             return(paste("odf", subtype, sep="/"))
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
+            if (substr(filename, 1, 5) == "http:")
+                stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
+                     filename, "\", \"", gsub(".*/", "", filename), "\")")
             library(ncdf)
             f <- open.ncdf(filename)
             if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
