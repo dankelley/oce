@@ -88,6 +88,9 @@ as.ctd <- function(salinity, temperature, pressure,
         if (missing(pressure))
             stop("must give pressure")
     }
+    salinity <- as.vector(salinity)
+    temperature <- as.vector(temperature)
+    pressure <- as.vector(pressure)
     haveSA <- !missing(SA)
     haveCT <- !missing(CT)
     if (haveSA != haveCT)
@@ -1793,8 +1796,13 @@ plotTS <- function (x,
         if (add) {
             if (type == 'p')
                 points(salinity, y, cex=cex, pch=pch, col=col)
-            else
+            else if (type == 'l')
                 lines(salinity, y, col=col, ...)
+            else if (type == 'o') {
+                points(salinity, y, cex=cex, pch=pch, col=col)
+                lines(salinity, y, col=col, ...)
+            } else 
+                points(salinity, y, cex=cex, pch=pch, col=col)
         } else {
             plot(Slim, Tlim,
                  xlab = xlab, ylab=ylab,
@@ -1810,6 +1818,12 @@ plotTS <- function (x,
                 points(salinity, y, cex=cex, pch=pch, col=col, ...)
             else if (type == 'l')
                 lines(salinity, y, col=col, ...)
+            else if (type == 'o') {
+                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+                lines(salinity, y, col=col, ...)
+            } else
+                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+
         }
     }
     ## grid, isopycnals, then freezing-point line
@@ -1860,7 +1874,6 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
     for (rho in rhoList) {
         rhoLabel <- if (rho1000) 1000+rho else rho
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
-        #browser()
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
             Sok <- Sline[ok]
