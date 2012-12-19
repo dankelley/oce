@@ -29,7 +29,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
-                    type='l', axes=TRUE,
+                    bg, fill=NULL, type='l', axes=TRUE,
                     projection="mollweide", parameters=NULL, orientation=NULL,
                     debug=getOption("oceDebug"),
                     ...)
@@ -47,15 +47,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     par(mar=mar, mgp=mgp)
     x <- xy$x
     y <- xy$y
+    ## FIXME: below is a kludge to avoid weird horiz lines; it
+    ## FIXME: would be better to complete the polygons, so they 
+    ## FIXME: can be filled.  It might be smart to do this in C
     d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
     d[!is.finite(d)] <- 0          # FIXME: ok?
     dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
     bad <- d > dc
-    x[bad] <- NA
+    x[bad] <- NA                       # FIXME: should finish off polygons
     y[bad] <- NA
     if (limitsGiven) {
-        box <- mapproject(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
-                          c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1]))
+        box <- mapproject(c(longitudelim[1], longitudelim[1],
+                            longitudelim[2], longitudelim[2]),
+                          c(latitudelim[1], latitudelim[2],
+                            latitudelim[2], latitudelim[1]))
         plot(x, y, type=type,
              xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
              xlab="", ylab="", asp=1, axes=FALSE, ...)
@@ -63,6 +68,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
         plot(x, y, type=type,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
     }
+    if (!is.null(fill))
+        polygon(x, y, col=fill, ...)
     usr <- par('usr')
     mapMeridians(grid, lty='dotted', col='darkgray')
     mapZones(grid, lty='dotted', col='darkgray')
@@ -161,14 +168,17 @@ mapMeridians <- function(lat, ...)
         y <- y[ok]
         if (0 == length(y))
             next
+        ## FIXME: below is a kludge to avoid weird horiz lines; it
+        ## FIXME: would be better to complete the polygons, so they 
+        ## FIXME: can be filled.  It might be smart to do this in C
         d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
-        d[!is.finite(d)] <- 0          # FIXME: ok?
+        d[!is.finite(d)] <- 0
         if (0 == length(d))
             next
         dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
         bad <- d > dc
-        x[bad] <- NA
-        y[bad] <- NA
+        x[bad] <- NA                   # FIXME: add, don't replace
+        y[bad] <- NA                   # FIXME: add, don't replace
         if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
             lines(x, y, ...)
         }

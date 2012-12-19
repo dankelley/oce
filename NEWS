@@ -1,6 +1,6 @@
 0.9-7
 - mapContour(): permit first argument to be a 'topo' object
-- mapPlot(): add 'axes' argument
+- mapPlot(): add arguments axes, bg and fill
 
 0.9-6
 - address compilation error on Windows-64 platform
