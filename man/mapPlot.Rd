@@ -15,9 +15,11 @@
 }
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted, or a coastline object
-        from which longitude and latitude are to be taken (see e.g.
-        \code{\link{read.coastline}}).}
+    \item{longitude}{longitudes of points to be plotted, or an object with a
+        slot named \code{data} that contains items named \code{longitude} and
+        \code{latitude} (e.g. of class \code{coastline}; see
+        \code{\link{coastline-class}}), in which case position is inferred from
+        the object and the second argument to this function is ignored.}
     \item{latitude}{latitudes of points to be plotted}
     \item{longitudelim}{optional limit of longitudes to plot}
     \item{latitudelim}{optional limit of latitudes to plot}

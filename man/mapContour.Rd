@@ -14,14 +14,15 @@ col=par("fg"), lty=par("lty"), lwd=par("lwd"))}
 
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted}
+    \item{longitude}{longitudes of points to be plotted, or an object of class
+        \code{topo} (see \code{\link{topo-class}}), in which case
+        \code{longitude}, \code{latitude} and \code{z} are inferred from that
+        object.}
     \item{latitude}{latitudes of points to be plotted}
     \item{z}{matrix to be contoured}
     \item{nlevels}{number of contour levels}
-    \item{levels}{list of contour levels}
-    \item{col}{colour of lines}
-    \item{lty}{type of lines}
-    \item{lwd}{width of lines}
+    \item{levels}{list of contour levels} \item{col}{colour of lines}
+    \item{lty}{type of lines} \item{lwd}{width of lines}
 }
 
 \details{Adds contour lines to an existing map, using \code{\link{mapLines}}.

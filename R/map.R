@@ -13,6 +13,12 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
+    if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
+        3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) {
+        z <- longitude@data$z
+        latitude <- longitude@data$latitude
+        longitude <- longitude@data$longitude
+    }
     cl <- contourLines(x=longitude, y=latitude, z=z, nlevels=nlevels, levels=levels)
     for (i in 1:length(cl)) {
         ##cat(cl[[i]]$level, 'm\n')
@@ -29,9 +35,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     ...)
 {
     oceDebug(debug, "\b\bmapPlot(...) {\n")
-    if (inherits(longitude, "coastline")) {
-        latitude <- longitude[['latitude']]
-        longitude <- longitude[['longitude']]
+    if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
+        2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
+        latitude <- longitude@data$latitude
+        longitude <- longitude@data$longitude
     }
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
@@ -214,6 +221,11 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 
 mapPoints <- function(longitude, latitude, ...)
 {
+    if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
+        2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
+        latitude <- longitude@data$latitude
+        longitude <- longitude@data$longitude
+    }
     ok <- !is.na(longitude) & !is.na(latitude)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
