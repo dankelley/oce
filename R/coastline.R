@@ -34,6 +34,7 @@ setMethod(f="plot",
                                xlab="", ylab="",
                                asp,
                                clatitude, clongitude, span,
+                               projection, parameters=NULL, orientation=NULL,
                                ## center, span,
                                expand=1,
                                mgp=getOption("oceMgp"),
@@ -55,6 +56,23 @@ setMethod(f="plot",
                        ", inset=", inset, 
                        ", ...) {\n", sep="")
               ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
+              if (!missing(projection)) {
+                  if (missing(span))
+                      span <- 1000
+                  if (missing(clongitude))
+                      longitudelim <- c(-180, 180)
+                  else
+                      longitudelim <- clongitude + c(-1, 1) * span / 111
+                  if (missing(clatitude))
+                      latitudelim <- c(-90, 90)
+                  else
+                      latitudelim <- clatitude + c(-1, 1) * span / 111
+                  return(mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
+                                 mgp=mgp, mar=mar,
+                                 bg="white", fill=fill, type='l', axes=TRUE,
+                                 projection=projection, parameters=parameters, orientation=orientation,
+                                 debug=debug, ...))
+              }
               geographical <- round(geographical)
               if (geographical < 0 || geographical > 2)
                   stop("argument geographical must be 0, 1, or 2")
