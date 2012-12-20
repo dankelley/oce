@@ -68,7 +68,8 @@
 \details{Creates a map using the indicated projection.}
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines may
-    be added with \code{\link{mapLines}}, and text with \code{\link{mapText}}.}
+    be added with \code{\link{mapLines}}, and text with \code{\link{mapText}}.
+    Points on a map may be found with \code{\link{mapLocator}}.}
 
 \examples{
 \dontrun{

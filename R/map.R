@@ -325,6 +325,12 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     rval
 }
 
+mapLocator <- function(n=512, type='n')
+{
+    xy <- locator(n, type)
+    map2lonlat(xy$x, xy$y)
+}
+
 map2lonlat <- function(xusr, yusr, tolerance=1e-5)
 {
     n <- length(xusr)
@@ -337,7 +343,12 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-5)
     for (i in 1:n) {
         t <- try({
             error <- FALSE
+            ## FIXME: find better way to do the inverse mapping
+            ## FIXME: here, try two starting points and pick best
             o <- optim(c(or[2], or[1]), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
+            oo <- optim(c(0, 0), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
+            if (oo$value < o$value)
+                o <- oo
             ##cat(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
             if (o$convergence == 0 && !error && o$value < 100+tolerance) {
                 lonlat <- o$par

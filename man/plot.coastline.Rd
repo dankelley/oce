@@ -58,10 +58,8 @@
       near the centre of the plot are preserved.  If a projection is provided,
       the coordinate system will bear an indirect relationship to longitude and
       longitude, and further adornment of the plot must be done with
-      \code{\link{mapPoints}} instead of \code{\link{points}},
-      \code{\link{mapLines}} instead of \code{\link{lines}}, and
-      \code{\link{mapText}} instead of \code{\link{text}}.}
-
+      e.g.  \code{\link{mapPoints}} instead of \code{\link{points}}.}
+  
   \item{parameters}{optional parameters to map projection (see
       \code{\link{mapPlot}}.}
 
@@ -131,10 +129,9 @@ data(coastlineWorld)
 plot(coastlineWorld)
 plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
 
-## North America, focussing on Canada
+## Canada in Lambert projection
 plot(coastlineWorld, clatitude=60, clongitude=-90, span=3000, fill=NULL, grid=10,
      projection='lambert', parameters=c(lat0=50,lat1=70), orientation=c(90,-90,0))
-
 }
 }
 

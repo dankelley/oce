@@ -13,7 +13,11 @@
     \item{tolerance}{tolerance for misfit.}
 }
 
-\details{Uses \code{\link{optim}} to find the location, so it may fail in some circumstances.}
+\details{The location is inferred by trying to invert the
+    \code{\link{mapproject}} function.  The inversion is done by using
+    \code{\link{optim}} to find a good match between a point in geographical
+    space and plot space, and this match is not always good, being dependent on
+    a starting guess.}
 
 \value{A list containing \code{longitude} and \code{latitdue}.}
 
