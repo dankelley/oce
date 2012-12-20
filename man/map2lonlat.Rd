@@ -2,11 +2,11 @@
 
 \alias{map2lonlat}
 
-\title{Find lon-lat coordinator of a point on a map}
+\title{Find lon-lat coordinates of a point on a map}
 
-\description{Find lon-lat coordinator of a point on a map}
+\description{Find lon-lat coordinates of a point on a map}
 
-\usage{map2lonlat(xusr, yusr, tolerance=1e-5)}
+\usage{map2lonlat(xusr, yusr, tolerance=1e-4)}
 
 \arguments{
     \item{xusr, yusr}{coordinates of points on the map.}

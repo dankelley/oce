@@ -220,9 +220,14 @@ mapZones <- function(lon, ...)
 
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
-    if (inherits(longitude, "coastline")) {
-        latitude <- longitude[['latitude']]
-        longitude <- longitude[['longitude']]
+    if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
+        2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
+        latitude <- longitude@data$latitude
+        longitude <- longitude@data$longitude
+    }
+    if (2 == sum(c("longitude", "latitude") %in% names(longitude))) {
+        latitude <- longitude$latitude
+        longitude <- longitude$longitude
     }
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
@@ -240,6 +245,10 @@ mapPoints <- function(longitude, latitude, ...)
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
         longitude <- longitude@data$longitude
+    }
+    if (2 == sum(c("longitude", "latitude") %in% names(longitude))) {
+        latitude <- longitude$latitude
+        longitude <- longitude$longitude
     }
     ok <- !is.na(longitude) & !is.na(latitude)
     longitude <- longitude[ok]
@@ -325,13 +334,18 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     rval
 }
 
-mapLocator <- function(n=512, type='n')
+mapLocator <- function(n=512, type='n', ...)
 {
-    xy <- locator(n, type)
-    map2lonlat(xy$x, xy$y)
+    xy <- locator(n, type, ...)
+    rval <- map2lonlat(xy$x, xy$y)
+    if (type == 'l')
+        mapLines(rval$longitude, rval$latitude, ...)
+    else if (type == 'p')
+        mapPoints(rval$longitude, rval$latitude, ...)
+    rval
 }
 
-map2lonlat <- function(xusr, yusr, tolerance=1e-5)
+map2lonlat <- function(xusr, yusr, tolerance=1e-4)
 {
     n <- length(xusr)
     if (length(yusr) != n)
@@ -346,11 +360,13 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-5)
             ## FIXME: find better way to do the inverse mapping
             ## FIXME: here, try two starting points and pick best
             o <- optim(c(or[2], or[1]), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
-            oo <- optim(c(0, 0), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
-            if (oo$value < o$value)
-                o <- oo
+            if (o$value > 100*tolerance) {
+                oo <- optim(c(0, 0), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
+                if (oo$value < o$value)
+                    o <- oo
+            }
             ##cat(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-            if (o$convergence == 0 && !error && o$value < 100+tolerance) {
+            if (o$convergence == 0 && !error && o$value < tolerance) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]

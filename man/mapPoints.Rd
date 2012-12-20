@@ -10,12 +10,11 @@
 
 \arguments{
 
-    \item{longitude}{longitudes of points to be plotted, or an object with a
-        slot named \code{data} that contains items named \code{longitude} and
-        \code{latitude} (e.g. of class \code{coastline}; see
-        \code{\link{coastline-class}}), in which case position is inferred from
-        the object and the second argument to this function is ignored.}
-
+    \item{longitude}{longitudes of points to be plotted, or an object from
+        which latitude and longitude can be inferred (e.g. a coastline file, or
+        the return value from \code{\link{mapLocator}}), in which case the
+        following two arguments are ignored.}
+    
     \item{latitude}{latitudes of points to be plotted}
 
     \item{\dots}{optional arguments passed to \code{\link{points}}.}
