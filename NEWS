@@ -1,7 +1,7 @@
 0.9-7
 - plot.coastline(): new arguments 'projection' etc to use mapPlot()
 - mapContour(): permit first argument to be a 'topo' object
-- mapPlot(): add arguments axes, bg and fill
+- mapPlot(): add arguments axes, bg, fill, and drawBox
 
 0.9-6
 - address compilation error on Windows-64 platform

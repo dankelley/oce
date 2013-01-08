@@ -8,7 +8,7 @@
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid,
     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
-    bg, fill=NULL, type='l', axes=TRUE,
+    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
     projection="mollweide", parameters=NULL, orientation=NULL,
     debug=getOption("oceDebug"),
     \dots)
@@ -51,6 +51,9 @@
     \item{axes}{boolean value indicating whether to draw longitude and latitude
         values in the lower and left margin, respectively.  This may not work
         well for some projections or scales.}
+
+    \item{drawBox}{boolean value indicating whether to draw a box around the
+        plot.  This is helpful for many projections at sub-global scale.}
 
     \item{projection}{projection; see \code{\link{mapproject}}.}
 

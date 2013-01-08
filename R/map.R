@@ -29,7 +29,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
-                    bg, fill=NULL, type='l', axes=TRUE,
+                    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
                     projection="mollweide", parameters=NULL, orientation=NULL,
                     debug=getOption("oceDebug"),
                     ...)
@@ -78,7 +78,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     usr <- par('usr')
     mapMeridians(grid, lty='dotted', col='darkgray')
     mapZones(grid, lty='dotted', col='darkgray')
-    box()
+    if (drawBox)
+        box()
     if (axes) {
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
