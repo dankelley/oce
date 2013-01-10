@@ -882,6 +882,7 @@ plotScan <- function(x,
                      name = "scan",
                      adorn=NULL,
                      mgp=getOption("oceMgp"),
+                     type='l',
                      ...)
 {
     if (!inherits(x, "ctd"))
@@ -909,9 +910,10 @@ plotScan <- function(x,
     if (!("scan" %in% names(x@data))) {
         x@data[["scan"]] <- 1:length(x@data$pressure)
     }
-    plot(x@data[[name]], x@data$pressure,
+    plot(x[[name]], x@data$pressure,
          xlab=name, ylab=resizableLabel("p", "y"),
-         type="l")
+         yaxs='r',
+         type=type)
     mtext(paste("Station", x@metadata$station), side=3, adj=1, cex=par('cex'))
     mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
     if (1 <= adorn.length) {
@@ -925,16 +927,16 @@ plotScan <- function(x,
     Tlen <- length(x@data$temperature)
     if (Slen != Tlen)
         stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    plot(x@data[[name]], x@data$temperature, xlab="scan", ylab=resizableLabel("T", "y"),
-         type="l")
+    plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
+         yaxs='r', type=type)
     grid()
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
         if (class(t) == "try-error")
             warning("cannot evaluate adorn[", 2, "]\n")
     }
-    plot(x@data[[name]], x@data$salinity, xlab="scan", ylab=resizableLabel("S", "y"),
-         type="l")
+    plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
+         yaxs='r', type=type)
     grid()
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
