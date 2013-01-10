@@ -9,6 +9,7 @@
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid,
     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+    polarCircle=0,
     projection="mollweide", parameters=NULL, orientation=NULL,
     debug=getOption("oceDebug"),
     \dots)
@@ -54,6 +55,9 @@
 
     \item{drawBox}{boolean value indicating whether to draw a box around the
         plot.  This is helpful for many projections at sub-global scale.}
+
+    \item{polarCircle}{a number indicating the number of degrees of latitude
+        extending from the poles, within which zones are not drawn.}
 
     \item{projection}{projection; see \code{\link{mapproject}}.}
 

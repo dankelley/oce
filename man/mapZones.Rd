@@ -6,12 +6,16 @@
 
 \description{Plot zones (lines of constant longitude) on a existing map}
 
-\usage{mapZones(lon, \dots)}
+\usage{mapZones(lon, polarCircle=0, \dots)}
 
 \arguments{
     \item{lon}{either a boolean indicating whether to draw a zonal grid, or a
         single number to indicate the increment in zone longitudes, or a vector 
         of longitudes at which to draw zones.}
+
+    \item{polarCircle}{a number indicating the number of degrees of latitude
+        extending from the poles, within which zones are not drawn.}
+
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}
 }
 

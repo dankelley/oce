@@ -30,6 +30,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                     mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+                    polarCircle=0,
                     projection="mollweide", parameters=NULL, orientation=NULL,
                     debug=getOption("oceDebug"),
                     ...)
@@ -77,7 +78,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
     mapMeridians(grid, lty='dotted', col='darkgray')
-    mapZones(grid, lty='dotted', col='darkgray')
+    mapZones(grid, polarCircle=polarCircle, lty='dotted', col='darkgray')
     if (drawBox)
         box()
     if (axes) {
@@ -191,7 +192,7 @@ mapMeridians <- function(lat, ...)
     }
 }
 
-mapZones <- function(lon, ...)
+mapZones <- function(lon, polarCircle=0, ...)
 {
     if (missing(lon))
         lon <- TRUE
@@ -203,11 +204,14 @@ mapZones <- function(lon, ...)
     if (length(lon) == 1)
         ##lon <- rep(seq(-180, 180, lon), each=360/lon)
         lon <- seq(-180, 180, lon)
+    if (polarCircle < 0 || polarCircle > 90)
+        polarCircle <- 0
+
     usr <- par('usr')
     n <- 360                           # number of points on line
     for (l in lon) {
         ## FIXME: should use mapLines here
-        line <- mapproject(rep(l, n), seq(-90+15, 90-15, length.out=n))
+        line <- mapproject(rep(l, n), seq(-90+polarCircle, 90-polarCircle, length.out=n))
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
