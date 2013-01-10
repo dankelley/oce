@@ -860,11 +860,11 @@ setMethod(f="plot",
                       oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
                       points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                       if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                          mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"))
+                          mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                       if (!is.null(x@metadata$startTime))
-                          mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"))
-                      if (!is.null(x@metadata$scientist))
-                          mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
+                          mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                      ##if (!is.null(x@metadata$scientist))
+                      ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
