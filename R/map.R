@@ -426,12 +426,15 @@ mapImage <- function(longitude, latitude, z)
     zmin <- min(z, na.rm=TRUE)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
+    lty <- par('lty')
+    icol <- 100 * (z - zmin) / zrange
     for (i in 1:ni) {
         for (j in 1:nj) {
             col <- cols[100 * (z[i,j] - zmin)/ zrange]
-            mapPolygon(longitude[i]+dlongitude*c(0, 1, 1, 0, 0),
-                       latitude[j]+dlatitude*c(0, 0, 1, 1, 0),
-                       col=col, border=NA)
+            ## calling mapPolygon() is cleaner, but 33% slower than doing as below
+            ##mapPolygon(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0), col=col, border=NA)
+            xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
+            polygon(xy$x, xy$y, col=col, lty=lty, border=NA, fillOddEven=FALSE)
         }
     }
 }
