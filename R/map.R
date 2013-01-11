@@ -436,12 +436,12 @@ mapImage <- function(longitude, latitude, z)
     for (i in 1:ni) {
         for (j in 1:nj) {
             col <- cols[100 * (z[i,j] - zmin)/ zrange]
-            ## Speed improvement: 1.5X: avoid calling mapPolygon()
+            ## Speed improvement by 1.5X: avoid calling mapPolygon()
             xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
             ## avoid lines crossing whole domain
             if (abs(xy$x[1] - xy$x[2]) > allowedSpan)
                 next
-            ## Speed improvement 1.8X: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
+            ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
             if (xmax < min(xy$x))
                 next
             if (max(xy$x) < xmin)
