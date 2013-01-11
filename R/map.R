@@ -404,6 +404,20 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 
 mapImage <- function(longitude, latitude, z)
 {
+    if ("data" %in% slotNames(longitude)) {
+        if (3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) { # e.g. a topo object
+            z <- longitude@data$z
+            latitude <- longitude@data$latitude
+            longitude <- longitude@data$longitude
+        }
+    } else {
+        names <- names(longitude)
+        if ("x" %in% names && "y" %in% names && "z" %in% names) {
+            z <- longitude$z
+            latitude <- longitude$y
+            litude <- longitude$x
+        }
+    }
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1]
