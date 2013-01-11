@@ -420,23 +420,37 @@ mapImage <- function(longitude, latitude, z)
     }
     ni <- dim(z)[1]
     nj <- dim(z)[2]
-    dlongitude <- longitude[2] - longitude[1]
+    dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
     dlatitude <- latitude[2] - latitude[1]
     cols <- oceColorsJet(100)
     zmin <- min(z, na.rm=TRUE)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
     lty <- par('lty')
-    allowedSpan <- diff(par('usr')[1:2]) / 5 # a trick to avoid lines crossing whole domain
+    usr <- par('usr')
+    xmin <- usr[1]
+    xmax <- usr[2]
+    ymin <- usr[3]
+    ymax <- usr[4]
+    allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
     for (i in 1:ni) {
         for (j in 1:nj) {
             col <- cols[100 * (z[i,j] - zmin)/ zrange]
-            ## calling mapPolygon() is cleaner, but 33% slower than doing as below
-            ##mapPolygon(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0), col=col, border=NA)
-            #### if (i == 360 && j == 180) browser()
+            ## Speed improvement: 1.5X: avoid calling mapPolygon()
             xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
-            if (abs(xy$x[1] - xy$x[2]) < allowedSpan)
-                polygon(xy$x, xy$y, col=col, lty=lty, border=NA, fillOddEven=FALSE)
+            ## avoid lines crossing whole domain
+            if (abs(xy$x[1] - xy$x[2]) > allowedSpan)
+                next
+            ## Speed improvement 1.8X: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
+            if (xmax < min(xy$x))
+                next
+            if (max(xy$x) < xmin)
+                next
+            if (ymax < min(xy$y))
+                next
+            if (max(xy$y) < ymin)
+                next
+            polygon(xy$x, xy$y, col=col, lty=lty, border=NA, fillOddEven=FALSE)
         }
     }
 }
