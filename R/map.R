@@ -408,14 +408,14 @@ mapImage <- function(longitude, latitude, z)
         if (3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) { # e.g. a topo object
             z <- longitude@data$z
             latitude <- longitude@data$latitude
-            longitude <- longitude@data$longitude
+            longitude <- longitude@data$longitude # destroys container
         }
     } else {
         names <- names(longitude)
         if ("x" %in% names && "y" %in% names && "z" %in% names) {
             z <- longitude$z
             latitude <- longitude$y
-            litude <- longitude$x
+            longitude <- longitude$x   # destroys container
         }
     }
     ni <- dim(z)[1]
@@ -427,14 +427,16 @@ mapImage <- function(longitude, latitude, z)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
     lty <- par('lty')
-    icol <- 100 * (z - zmin) / zrange
+    allowedSpan <- diff(par('usr')[1:2]) / 5 # a trick to avoid lines crossing whole domain
     for (i in 1:ni) {
         for (j in 1:nj) {
             col <- cols[100 * (z[i,j] - zmin)/ zrange]
             ## calling mapPolygon() is cleaner, but 33% slower than doing as below
             ##mapPolygon(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0), col=col, border=NA)
+            #### if (i == 360 && j == 180) browser()
             xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
-            polygon(xy$x, xy$y, col=col, lty=lty, border=NA, fillOddEven=FALSE)
+            if (abs(xy$x[1] - xy$x[2]) < allowedSpan)
+                polygon(xy$x, xy$y, col=col, lty=lty, border=NA, fillOddEven=FALSE)
         }
     }
 }
