@@ -7,7 +7,6 @@
 \description{Plot a map}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid,
-    mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
     polarCircle=0,
     projection="mollweide", parameters=NULL, orientation=NULL,
@@ -31,13 +30,6 @@
 
     \item{grid}{if \code{TRUE}, draw an auto-scaled lat-lon grid; if a number,
         draw a grid with the indicated spacing, in degrees.}
-
-    \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
-        also for \code{par(mar)}, computed from this.  The default is
-        tighter than the R default, in order to use more space for the
-        data and less for the axes.}
-
-    \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
     \item{bg}{background colour for plot (ignored at present).}
 

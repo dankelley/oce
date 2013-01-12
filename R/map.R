@@ -28,7 +28,6 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 }
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
-                    mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
                     polarCircle=0,
                     projection="mollweide", parameters=NULL, orientation=NULL,
@@ -45,7 +44,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     ## trim wild points [github issue 227]
-    par(mar=mar, mgp=mgp)
     x <- xy$x
     y <- xy$y
     ## FIXME: below is a kludge to avoid weird horiz lines; it
@@ -62,6 +60,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     y[bad] <- NA
     ##XX <<- x
     ##YY <<- y
+
     if (limitsGiven) {
         box <- mapproject(c(longitudelim[1], longitudelim[1],
                             longitudelim[2], longitudelim[2]),
@@ -84,7 +83,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     if (axes) {
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
-        inc <- if (missing(grid)) 15 else if (is.logical(grid)) 15 else grid
+        inc <- if (missing(grid)) 15 else if (is.logical(grid && grid)) 15 else grid
         usr <- par('usr')
         labelAt <- NULL
         labels <- NULL
@@ -107,7 +106,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                             formatPosition(latlab, isLat=TRUE, type="string", showHemi=TRUE),
                             "at$y", at$y, "lastAtY", lastAtY, "\n")
                         mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
-                              line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
+                              line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
                               side=2, at=at$y, srt=90) # how to rotate?
                         lastAtY <- at$y
                     }
@@ -150,15 +149,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
-mapMeridians <- function(lat, polarCircle=0, lty='dotted', col='darkgray', ...)
+mapMeridians <- function(lat, lty='dotted', col='darkgray', ...)
 {
     if (missing(lat))
         lat <- TRUE
     if (is.logical(lat)) {
         if (!lat)
-            return
+            return()
         lat <- 15
     }
+    cat("2...\n")
     if (length(lat) == 1)
         lat <- seq(-90, 90, lat)
     usr <- par('usr')
@@ -198,7 +198,7 @@ mapZones <- function(lon, polarCircle=0, lty='dotted', col='darkgray', ...)
         lon <- TRUE
     if (is.logical(lon)) {
         if (!lon)
-            return
+            return()
         lon <- 15
     }
     if (length(lon) == 1)
