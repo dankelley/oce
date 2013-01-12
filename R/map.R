@@ -77,8 +77,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
-    mapMeridians(grid, lty='dotted', col='darkgray')
-    mapZones(grid, polarCircle=polarCircle, lty='dotted', col='darkgray')
+    mapMeridians(grid)
+    mapZones(grid, polarCircle=polarCircle)
     if (drawBox)
         box()
     if (axes) {
@@ -150,7 +150,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
-mapMeridians <- function(lat, ...)
+mapMeridians <- function(lat, polarCircle=0, lty='dotted', col='darkgray', ...)
 {
     if (missing(lat))
         lat <- TRUE
@@ -192,7 +192,7 @@ mapMeridians <- function(lat, ...)
     }
 }
 
-mapZones <- function(lon, polarCircle=0, ...)
+mapZones <- function(lon, polarCircle=0, lty='dotted', col='darkgray', ...)
 {
     if (missing(lon))
         lon <- TRUE
@@ -402,7 +402,9 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
-mapImage <- function(longitude, latitude, z)
+mapImage <- function(longitude, latitude, z,
+                     zlim,
+                     breaks, col)
 {
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) { # e.g. a topo object
@@ -418,11 +420,41 @@ mapImage <- function(longitude, latitude, z)
             longitude <- longitude$x   # destroys container
         }
     }
+    breaksGiven <- !missing(breaks)
+    if (!breaksGiven) {
+        zrange <- range(z, na.rm=TRUE)
+        if (missing(zlim)) {
+            if (missing(col)) {
+                breaks <- pretty(zrange, n=10)
+                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
+                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
+            } else {
+                breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+            }
+            breaksOrig <- breaks
+        } else {
+            if (missing(col))
+                breaks <- c(zlim[1], pretty(zlim), zlim[2])
+            else
+                breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+            breaksOrig <- breaks
+            breaks[1] <- min(zrange[1], breaks[1])
+            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
+        }
+    } else {
+        breaksOrig <- breaks
+        if (1 == length(breaks)) {
+            breaks <- pretty(z, n=breaks)
+        }
+    }
+    if (missing(col))
+        col <- oceColorsPalette(n=length(breaks)-1)
+    if (is.function(col))
+        col <- col(n=length(breaks)-1)
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
     dlatitude <- latitude[2] - latitude[1]
-    cols <- oceColorsJet(100)
     zmin <- min(z, na.rm=TRUE)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
@@ -435,22 +467,23 @@ mapImage <- function(longitude, latitude, z)
     allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
     for (i in 1:ni) {
         for (j in 1:nj) {
-            col <- cols[100 * (z[i,j] - zmin)/ zrange]
+            ##col <- cols[100 * (z[i,j] - zmin)/ zrange]
             ## Speed improvement by 1.5X: avoid calling mapPolygon()
             xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
             ## avoid lines crossing whole domain
+            ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
+            if (xmax < min(xy$x, na.rm=TRUE))
+                next
+            if (max(xy$x, na.rm=TRUE) < xmin)
+                next
+            if (ymax < min(xy$y, na.rm=TRUE))
+                next
+            if (max(xy$y, na.rm=TRUE) < ymin)
+                next
             if (abs(xy$x[1] - xy$x[2]) > allowedSpan)
                 next
-            ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
-            if (xmax < min(xy$x))
-                next
-            if (max(xy$x) < xmin)
-                next
-            if (ymax < min(xy$y))
-                next
-            if (max(xy$y) < ymin)
-                next
-            polygon(xy$x, xy$y, col=col, lty=lty, border=NA, fillOddEven=FALSE)
+            thiscol <- col[which(z[i,j] < breaks)[1]]
+            polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
         }
     }
 }

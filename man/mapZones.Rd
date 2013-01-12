@@ -6,7 +6,7 @@
 
 \description{Plot zones (lines of constant longitude) on a existing map}
 
-\usage{mapZones(lon, polarCircle=0, \dots)}
+\usage{mapZones(lon, polarCircle=0, lty='dotted', col='darkgray', \dots)}
 
 \arguments{
     \item{lon}{either a boolean indicating whether to draw a zonal grid, or a
@@ -15,6 +15,10 @@
 
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
+
+    \item{lty}{line type}
+
+    \item{col}{colour}
 
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}
 }

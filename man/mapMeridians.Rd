@@ -6,12 +6,16 @@
 
 \description{Plot meridians (lines of constant latitude) on a existing map}
 
-\usage{mapMeridians(lat, \dots)}
+\usage{mapMeridians(lat, lty='dotted', col='darkgray', \dots)}
 
 \arguments{
     \item{lat}{either a boolean indicating whether to draw a meridian grid, or
         a single number to indicate the increment in meridian latitudes, or a
         vector of latitudes at which to draw meridians.}
+
+    \item{lty}{line type}
+
+    \item{col}{colour}
 
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}
 }
