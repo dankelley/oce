@@ -83,7 +83,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
     if (axes) {
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
-        inc <- if (missing(grid)) 15 else if (is.logical(grid && grid)) 15 else grid
+        inc <- if (missing(grid)) 15 else if (is.logical(grid) && grid) 15 else grid
         usr <- par('usr')
         labelAt <- NULL
         labels <- NULL
@@ -118,6 +118,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
         labels <- NULL
         lastx <- NA
         dxMin <- (usr[2] - usr[1]) / 10
+        mgp <- par('mgp')
         for (lonlab in seq(-180, 180, inc)) {
             if (-180 <= lonlab && lonlab <= 180) { # the limits are the lonlim
                 try({
@@ -126,14 +127,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid,
                         next
                     latlab <- o$minimum
                     at <- mapproject(lonlab, latlab)
+                    #if (lonlab > -66 && lonlab < -64) browser()
                     if (usr[1] < at$x && at$x < usr[2]) {
                         labelAt <- c(labelAt, at$x)
                         #label <- c(label, formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE))
                         labels <- c(labels, formatPosition(lonlab, isLat=FALSE, type="string", showHemi=TRUE))
                         if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
                             mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
+                                  side=1,
                                   line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
-                                  side=1, at=at$x)
+                                  at=at$x)
                             lastx <- at$x
                         }
                         oceDebug(debug, "  x axis: ",
@@ -158,7 +161,6 @@ mapMeridians <- function(lat, lty='dotted', col='darkgray', ...)
             return()
         lat <- 15
     }
-    cat("2...\n")
     if (length(lat) == 1)
         lat <- seq(-90, 90, lat)
     usr <- par('usr')
