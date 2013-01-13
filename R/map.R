@@ -403,9 +403,14 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 }
 
 mapImage <- function(longitude, latitude, z,
-                     zlim,
-                     breaks, col)
+                     zlim, breaks, col,
+                     missingColor=NULL,
+                     debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "\b\bmapImage(..., ",
+             " missingColor='", missingColor, "', ",
+             ", ...) {\n", sep="")
+ 
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) { # e.g. a topo object
             z <- longitude@data$z
@@ -482,10 +487,17 @@ mapImage <- function(longitude, latitude, z,
                 next
             if (abs(xy$x[1] - xy$x[2]) > allowedSpan)
                 next
-            thiscol <- col[which(z[i,j] < breaks)[1]]
-            polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
+            zz <- z[i, j]
+            if (is.finite(zz)) {
+                thiscol <- col[which(zz < breaks)[1]]
+                polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
+            } else if (!is.null(missingColor)) {
+                polygon(xy$x, xy$y, col=missingColor, lty=lty, border=NA, fillOddEven=FALSE)
+            }
         }
     }
+    oceDebug(debug, "\b\b} # mapImage()\n")
+    invisible()
 }
 
 ## http://williams.best.vwh.net/avform.htm#Intermediate

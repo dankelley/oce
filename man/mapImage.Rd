@@ -6,7 +6,8 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z, zlim, breaks, col)}
+\usage{mapImage(longitude, latitude, z, zlim, breaks, col,
+         missingColor=NULL, debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -25,11 +26,15 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+
+    \item{missingColor}{a color to be used to indicate missing data, or
+        \code{NULL} to simply skip the drawing of such regions.}
+
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+        moderate amount of debugging information, or to 2 to get more.} 
 }
 
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
-
-\section{Bugs}{More arguments need to be added, e.g. for the colour mapping, etc.}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}
@@ -59,17 +64,18 @@ mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus July SST (requires dataset from http://www.esrl.noaa.gov)
+library(ncdf)
 con <- open.ncdf("/data/oar/levitus/otemp.mnltm.nc")
 lon <- get.var.ncdf(con, "lon")
 lat <- get.var.ncdf(con, "lat")
-temp <- get.var.ncdf(con, "otemp")
-SSTjuly <- temp[,,1,7]
+SSTjuly <- get.var.ncdf(con, "otemp")[,,1,7]
 x11(width=8, height=4) # x11 is fast, so use for tests
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SSTjuly, col=oceColorsJet, zlim=Tlim)
+mapImage(lon, lat, SSTjuly, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
+mapLines(coastlineWorld)
 mtext("July SST", side=3, line=-1, adj=1)
 }
 }
