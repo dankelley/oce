@@ -189,7 +189,7 @@ mapMeridians <- function(lat, lty='dotted', col='darkgray', ...)
         x[bad] <- NA                   # FIXME: add, don't replace
         y[bad] <- NA                   # FIXME: add, don't replace
         if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-            lines(x, y, ...)
+            lines(x, y, lty=lty, lwd=lwd, ...)
         }
     }
 }
@@ -220,7 +220,7 @@ mapZones <- function(lon, polarCircle=0, lty='dotted', col='darkgray', ...)
         x <- x[ok]
         y <- y[ok]
         if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-            lines(x, y, ...)
+            lines(x, y, lty=lty, lwd=lwd, ...)
         }
     }
 }
