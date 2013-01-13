@@ -6,7 +6,7 @@
 
 \description{Plot a map}
 
-\usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid,
+\usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
     polarCircle=0,
     projection="mollweide", parameters=NULL, orientation=NULL,
@@ -28,8 +28,9 @@
 
     \item{latitudelim}{optional limit of latitudes to plot}
 
-    \item{grid}{if \code{TRUE}, draw an auto-scaled lat-lon grid; if a number,
-        draw a grid with the indicated spacing, in degrees.}
+    \item{grid}{either a number indicating the spacing of latitude and
+        longitude lines, in degrees, or a boolean value indicating whether to
+        draw a default grid with 15 degree spacing.}
 
     \item{bg}{background colour for plot (ignored at present).}
 

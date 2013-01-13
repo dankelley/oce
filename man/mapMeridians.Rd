@@ -6,7 +6,7 @@
 
 \description{Plot meridians (lines of constant latitude) on a existing map}
 
-\usage{mapMeridians(lat, lty='dotted', col='darkgray', \dots)}
+\usage{mapMeridians(lat, lty='dotted', lwd=par('lwd'), col='lightgray', \dots)}
 
 \arguments{
     \item{lat}{either a boolean indicating whether to draw a meridian grid, or
@@ -14,6 +14,8 @@
         vector of latitudes at which to draw meridians.}
 
     \item{lty}{line type}
+
+    \item{lwd}{line width}
 
     \item{col}{colour}
 
