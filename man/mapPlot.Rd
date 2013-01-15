@@ -28,9 +28,9 @@
 
     \item{latitudelim}{optional limit of latitudes to plot}
 
-    \item{grid}{either a number indicating the spacing of latitude and
-        longitude lines, in degrees, or a boolean value indicating whether to
-        draw a default grid with 15 degree spacing.}
+    \item{grid}{either a number (or pair of numbers) indicating the spacing of
+        longitude and latitude lines, in degrees, or a boolean value indicating
+        whether to draw a default grid with 15 degree spacing.}
 
     \item{bg}{background colour for plot (ignored at present).}
 

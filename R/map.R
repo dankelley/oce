@@ -40,9 +40,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         latitude <- longitude@data$latitude
         longitude <- longitude@data$longitude
     }
-    drawGrid <- (is.logical(grid) && grid) || (is.numeric(grid) && grid > 0)
-    if (is.logical(grid) && grid)
-        grid <- 15
+    if (length(grid) > 2)
+        grid <- grid[1:2]
+    if (length(grid) == 1)
+        grid <- rep(grid[1], 2)
+    drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
+    if (is.logical(grid[1]) && grid[1])
+        grid <- rep(15, 2)
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
@@ -79,15 +83,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
-    mapMeridians(grid)
-    mapZones(grid, polarCircle=polarCircle)
+    mapMeridians(grid[2])
+    mapZones(grid[1], polarCircle=polarCircle)
     if (drawBox)
         box()
-    drawGrid <- (is.logical(grid) && grid) || grid > 0
+    drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
     if (axes && drawGrid) {
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
-        inc <- if (is.logical(grid) && grid) 15 else grid
+        inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
         usr <- par('usr')
         labelAt <- NULL
         labels <- NULL
@@ -121,6 +125,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         labelAt <- NULL
+        inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
         labels <- NULL
         lastx <- NA
         dxMin <- (usr[2] - usr[1]) / 10
