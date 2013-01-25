@@ -614,9 +614,20 @@ setMethod(f="plot",
                   xx <- at
               }
 
-              if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
-              else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
-              else stop("unknown ytype")
+              ## Grid is regular (so need only first station) unless which=="data"
+              if (which.ytype == 1) {
+                  if (which == "data")
+                      yy <- c(0, -max(x[["pressure"]]))
+                  else
+                      yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+              } else if (which.ytype == 2) {
+                  if (which == "data")
+                      yy <- c(-max(x[["pressure"]]), 0)
+                  else
+                      yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+              } else {
+                  stop("unknown ytype")
+              }
 
               oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
