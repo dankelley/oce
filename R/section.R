@@ -207,7 +207,7 @@ makeSection <- function(item, ...)
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
-                              which=c("salinity", "temperature", "sigmaTheta", "map"),
+                              which,
                               eos=getOption("eos", default='unesco'),
                               at=NULL,
                               labels=TRUE,
@@ -232,6 +232,8 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 2) 2 else floor(0.5 + debug)
+              if (missing(which))
+                  which <- "temperature"
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
@@ -616,12 +618,12 @@ setMethod(f="plot",
 
               ## Grid is regular (so need only first station) unless which=="data"
               if (which.ytype == 1) {
-                  if (which == "data")
+                  if (which[1] == "data") # FIXME: why checking just first?
                       yy <- c(0, -max(x[["pressure"]]))
                   else
                       yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
               } else if (which.ytype == 2) {
-                  if (which == "data")
+                  if (which[1] == "data") # FIXME: why checking just first?
                       yy <- c(-max(x[["pressure"]]), 0)
                   else
                       yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))

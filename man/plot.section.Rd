@@ -9,7 +9,7 @@
 \description{Plot a CTD section.}
 
 \usage{\S4method{plot}{section}(x,
-     which=c("salinity", "temperature", "sigmaTheta", "map"),
+     which,
      eos=getOption("eos", default='unesco'),
      at=NULL,
      labels=TRUE,
@@ -39,14 +39,15 @@
 \arguments{
     \item{x}{a \code{section} object, e.g. as created by
         \code{\link{makeSection}}.}
-    \item{which}{list of desired plot types.  There may be up to four
-        panels in total, and the desired plots are placed in these panels,
-        in reading order.  The codes for the plot types are explained in the 
-        \dQuote{Details} section.
 
-        If only one panel is plotted, \code{par} is not
-        adjusted, which makes it easy to add to the plot with subsequent
+    \item{which}{list of desired plot types.  If not supplied, the value
+        \code{"temperature"} is assumed.  There may be up to four panels in
+        total, and the desired plots are placed in these panels, in reading
+        order.  The codes for the plot types are explained in the
+        \dQuote{Details} section.  If only one panel is plotted, \code{par} is
+        not adjusted, which makes it easy to add to the plot with subsequent
         plotting commands.}
+
     \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
         computer must have the TEOS library installed; see \code{\link{teos}}.
         The effect of using \code{"teos"} is to plot ``absolute salinity''
@@ -121,8 +122,8 @@
 
 \details{Creates a summary plot for a CTD section, with one panel for each
     value of \code{which}.  The codes are as follows.
-    \itemize{ 
-        \item \code{which=1} or \code{"temperature"} for temperature contours
+    \itemize{  
+        \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
         \item \code{which=2} or \code{"salinity"} for salinity contours
         \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
         \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
