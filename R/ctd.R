@@ -73,13 +73,13 @@ as.ctd <- function(salinity, temperature, pressure,
                    src="")
 {
     if (!missing(salinity) && class(salinity) == "data.frame") {
-        df <- salinity
-        names <- names(df)
+        d <- salinity
+        names <- names(d)
         if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
             ## FIXME: extract SA and CT if they exist
-            salinity <- df$salinity
-            temperature <- df$temperature
-            pressure <- df$pressure
+            salinity <- d$salinity
+            temperature <- d$temperature
+            pressure <- d$pressure
             ## FIXME: extract nitrate etc
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
     } else {
@@ -507,6 +507,7 @@ setMethod(f="plot",
                               cex=1, cex.axis=par('cex.axis'),
                               pch=1,
                               useSmoothScatter=FALSE,
+                              df,
                               keepNA=FALSE,
                               type='l',
                               adorn=NULL,
@@ -616,6 +617,7 @@ setMethod(f="plot",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
+                                  df=df,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
@@ -683,6 +685,7 @@ setMethod(f="plot",
                                   N2lim=N2lim,
                                   grid=grid,
                                   eos=eos,
+                                  df=df,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid=col.grid, lty.grid=lty.grid,
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
@@ -1917,6 +1920,7 @@ plotProfile <- function (x,
                          yaxs="r",
                          cex=1, pch=1,
                          useSmoothScatter=FALSE,
+                         df,
                          keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
@@ -1928,7 +1932,7 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "\bplotProfile(x, xtype=\"", xtype, "\", ...) {\n", sep="")
     eos <- match.arg(eos, c("unesco", "teos"))
-    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, keepNA=FALSE)
+    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE)
     {
         oceDebug(debug, "\b    plotJustProfile(type=\"", type, "\") {\n", sep="")
         if (!keepNA) {
@@ -2226,7 +2230,7 @@ plotProfile <- function (x,
         box()
         if (type == 'l') lines(st, y, col = col.rho, lwd=lwd) else points(st, y, col = col.rho, pch=pch)
         par(new = TRUE)
-        N2 <- swN2(x@data$pressure, st, xaxs=xaxs, yaxs=yaxs)
+        N2 <- swN2(x@data$pressure, st, df=df)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         plot(N2[look], y[look],
@@ -2242,7 +2246,7 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x@data$pressure, x@data$sigmaTheta)
+        N2 <- swN2(x@data$pressure, x@data$sigmaTheta, df=df)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)

@@ -20,6 +20,7 @@
      cex=1, cex.axis=par('cex.axis'),
      pch=1,
      useSmoothScatter=FALSE,
+     df,
      keepNA=FALSE,
      type='l',
      adorn=NULL,
@@ -110,6 +111,11 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
+
+  \item{df}{optional argument that is ignored except for plotting buoyancy
+      frequency; in that case, it is passed to \code{\link{swN2}} as the
+      argument named \code{df}.}
+
   \item{keepNA}{flag indicating whether to keep \code{NA} values in linegraphs,
       which will yield breaks in the lines.}
   \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
