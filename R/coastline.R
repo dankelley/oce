@@ -263,7 +263,7 @@ setMethod(f="plot",
           })
 
 read.coastline <- function(file,
-                           type=c("R","S","mapgen","shapefile"),
+                           type=c("R","S","mapgen","shapefile","openstreetmap"),
                            debug=getOption("oceDebug"),
                            monitor=FALSE,
                            processingLog)
@@ -277,7 +277,9 @@ read.coastline <- function(file,
         filename <- "(unknown)"
     }
     if (type == "shapefile") {
-        res <- read.coastline.shapefile(file, monitor=monitor, debug=debug)
+        res <- read.coastline.shapefile(file, monitor=monitor, debug=debug, processingLog=processingLog)
+    } else if (type == "openstreetmap") {
+        res <- read.coastline.openstreetmap(file, monitor=monitor, debug=debug, processingLog=processingLog)
     } else if (type == "R" || type == "S") {
         ##
         ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/
@@ -345,7 +347,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ##     http://en.wikipedia.org/wiki/Shapefile#Shapefile_shape_format_.28.shp.29
     ## Shapefile for Canada:
     ## http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm
-    oceDebug(debug, "\b\bread.shape() {\n")
+    oceDebug(debug, "\b\bread.coastline.shapefile() {\n")
     shapeTypeList <- c("nullshape",
                        "point", "not used",
                        "polyline", "not used",
@@ -476,8 +478,69 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # read.shape()\n")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
+    oceDebug(debug, "\b\b} # read.coastline.shapefile()\n")
+    res
+}
+
+read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
+                                     debug=getOption("oceDebug"),
+                                     monitor=FALSE,
+                                     processingLog)
+{
+    oceDebug(debug, "\b\bread.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="")
+    ## FIXME: ignoring lonlim and latlim
+    if (is.character(file)) {
+        filename <- fullFilename(file)
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    res <- new("coastline", fillable=FALSE, filename=filename)
+    d <- readLines(file)
+    ## get all <nd> (even if only using some)
+    nodeLines <- d[grep("^ *<node", d)]
+    nodeIds <- as.numeric(sub('".*$', '', sub('^.* id="', '', nodeLines)))
+    nodeLats <- as.numeric(sub('".*$', '', sub('^.* lat="', '', nodeLines)))
+    nodeLons <- as.numeric(sub('".*$', '', sub('^.* lon="', '', nodeLines)))
+    ## get all <way>
+    wayStart <- grep("<way ", d)
+    wayEnd <- grep("</way ", d)
+    coastlineWayEnd <- grep('k="natural" v="coastline"', d)
+    ncoastline <- length(coastlineWayEnd)
+    coastlineWayStart <- vector("integer", ncoastline)
+    for (i in 1:ncoastline) {
+        coastlineWayStart[i] <- wayStart[max(which(wayStart < coastlineWayEnd[i]))]
+    }
+    oceDebug(debug, "ncoastline:", ncoastline, "\n")
+    latitude <- longitude <- NULL
+    for (i in 1:ncoastline) {
+        oceDebug(debug, "coastline chunk #", i, "\n")
+        look <- d[seq.int(coastlineWayStart[i]+1, coastlineWayEnd[i]-1)]
+        look <- look[grep("ref=", look)]
+        refs <- as.numeric(sub('\"/>', '', sub('.*=\"', '', look)))
+        ## following is 10% slower than using match
+        ##for (r in refs) {
+        ##    w <- which(r == nodeIds)   # FIXME: for speed, perhaps use match(r, nodeIds)
+        ##    latitude <- c(latitude, nodeLats[w])
+        ##    longitude <- c(longitude, nodeLons[w])
+        ##}
+        m <- match(refs, nodeIds)
+        longitude <- c(longitude, nodeLons[m], NA)
+        latitude <- c(latitude, nodeLats[m], NA)
+    }
+    res@data$latitude <- latitude
+    res@data$longitude <- longitude
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
+    oceDebug(debug, "\b\b} # read.coastline.openstreetmap()\n")
     res
 }
 

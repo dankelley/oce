@@ -1,4 +1,5 @@
 0.9-7
+- read.coastline.openstreetmap() added
 - data(levitus) added
 - plot.coastline(): new arguments 'projection' etc to use mapPlot()
 - mapContour(): permit first argument to be a 'topo' object

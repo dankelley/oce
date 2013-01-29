@@ -895,6 +895,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             f <- open.ncdf(filename)
             if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
                 return("drifter/argo")
+        } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
+            return("openstreetmap")
         }
         file <- file(file, "r")
     }
@@ -1020,6 +1022,8 @@ read.oce <- function(file, ...)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         return(read.coastline.shapefile(file, ...))
+    if (type == "openstreetmap")
+        return(read.coastline.openstreetmap(file, ...))
     if (type == "echosounder")
         return(read.echosounder(file, ...))
     if (type == "adp/rdi")
