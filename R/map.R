@@ -416,13 +416,17 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 
 mapImage <- function(longitude, latitude, z,
                      zlim, breaks, col,
+                     filledContour=FALSE,
                      missingColor=NULL,
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bmapImage(..., ",
              " missingColor='", missingColor, "', ",
+             " filledContour=", filledContour, ", ",
              ", ...) {\n", sep="")
  
+    if (filledContour)
+        warning("mapImage() cannot yet handle filledContour\n")
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) { # e.g. a topo object
             z <- longitude@data$z

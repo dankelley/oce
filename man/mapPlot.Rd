@@ -29,7 +29,7 @@
     \item{latitudelim}{optional limit of latitudes to plot}
 
     \item{grid}{either a number (or pair of numbers) indicating the spacing of
-        longitude and latitude lines, in degrees, or a boolean value indicating
+        longitude and latitude lines, in degrees, or a logical value indicating
         whether to draw a default grid with 15 degree spacing.}
 
     \item{bg}{background colour for plot (ignored at present).}
@@ -42,11 +42,11 @@
     \item{type}{value to indicate type of plot, as with
         \code{\link{par}("plot")}.}
 
-    \item{axes}{boolean value indicating whether to draw longitude and latitude
+    \item{axes}{logical value indicating whether to draw longitude and latitude
         values in the lower and left margin, respectively.  This may not work
         well for some projections or scales.}
 
-    \item{drawBox}{boolean value indicating whether to draw a box around the
+    \item{drawBox}{logical value indicating whether to draw a box around the
         plot.  This is helpful for many projections at sub-global scale.}
 
     \item{polarCircle}{a number indicating the number of degrees of latitude

@@ -6,7 +6,7 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z, zlim, breaks, col,
+\usage{mapImage(longitude, latitude, z, zlim, breaks, col, filledContour=FALSE,
          missingColor=NULL, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -26,6 +26,9 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+  
+    \item{filledContour}{boolean value indicating whether to use filled
+        contours to plot the image.}
 
     \item{missingColor}{a color to be used to indicate missing data, or
         \code{NULL} to simply skip the drawing of such regions.}
