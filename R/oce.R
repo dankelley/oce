@@ -897,6 +897,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 return("drifter/argo")
         } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
+        } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
+            return("openstreetmap")
         }
         file <- file(file, "r")
     }
