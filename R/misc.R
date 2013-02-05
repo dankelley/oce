@@ -504,8 +504,7 @@ matchBytes <- function(input, b1, ...)
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "conservative temperature", "absolute salinity",
-                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
-                                  "spice",
+                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice", "fluorescence",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward",
@@ -543,6 +542,9 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item ==  "silicate") {
         full <- "Silicate Concentration [umol/kg]"
         abbreviated <- "Si [umol/kg]"
+    } else if (item == "fluorescence") {
+        full <- expression(paste("Fluorescence"))
+        abbreviated <- full
     } else if (item == "spice") {
         full <- expression(paste("Spice [", kg/m^3, "]"))
         abbreviated <- full
@@ -909,7 +911,8 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
         if (length(lon2) != n2)
             stop("lat2 and lon2 must be vectors of the same length")
         if (n2 < n1) { # take only first one
-            if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements")
+            if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements (n1=", n1, "n2=", n2, ")")
+
             llat2 <- rep(lat2[1], n1)
             llon2 <- rep(lon2[1], n1)
         } else {
