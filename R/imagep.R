@@ -68,20 +68,11 @@ drawPalette <- function(zlim,
                         col,
                         labels=NULL,
                         at=NULL,
-                        mai=c(0, 1/8, 0, 3/8),
-                        top=0, bottom=0,
+                        mai=c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0),
                         drawContours=FALSE,
                         debug=getOption("oceDebug"),
                         ...)
 {
-    if (top != 0) {
-        warning("drawPalette(): please use mai instead of top\n")
-        mai[3] <- top
-    }
-    if (bottom != 0) {
-        warning("drawPalette(): please use mai instead of bottom\n")
-        mai[1] <- bottom
-    }
     zlimGiven <- !missing(zlim)
     breaksGiven <- !missing(breaks)
     if (zlimGiven)

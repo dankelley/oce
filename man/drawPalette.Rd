@@ -8,7 +8,7 @@
 
 \usage{drawPalette(zlim, zlab="", breaks, col,
             labels=NULL, at=NULL,
-            mai=c(0, 1/8, 0, 3/8), top=0, bottom=0,
+            mai=c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0),
             drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -26,10 +26,6 @@
     \item{at}{optional vector of positions for the \code{label}s}
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.}
-    \item{top}{\strong{DEPRECATED (use mai instead)} ... extra space to
-            insert at top of palette, in inches]}
-    \item{bottom}{\strong{DEPRECATED (use mai instead)} ... extra space to
-            insert at bottom of palette, in inches]}
     \item{drawContours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
