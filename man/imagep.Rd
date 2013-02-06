@@ -5,7 +5,7 @@
 \usage{imagep(x, y, z, 
       xlim, ylim, zlim, 
       flipy=FALSE,
-      xlab="", ylab="", zlab="",
+      xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
       breaks, col,
       labels=NULL, at=NULL,
       drawContours=FALSE,
@@ -15,11 +15,7 @@
       filledContour=FALSE,
       missingColor=NULL,
       mgp=getOption("oceMgp"),
-      mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
-            mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
-            mgp[2]+1/2, 
-            1/2),
-      mai.palette=c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0),
+      mar, mai.palette,
       xaxs="i", yaxs="i",
       cex=par("cex"),
       adorn,
@@ -48,6 +44,9 @@
     should be flipped top to bottom (e.g. to produce a profile image
     for a downward-looking acoustic-doppler profile).}
   \item{xlab,ylab,zlab}{names for x axis, y axis, and the image values.}
+  \item{zlabPosition}{string indicating where to put the label for the z axis,
+      either at the top-right of the main image, or on the side, in the axis
+      for the palette.}
   \item{breaks}{the z values for breaks in the colour scheme.  If this is of
       length 1, the value indicates the desired number of breaks, which is
       supplied to \code{\link{pretty}}, in determining clean break points.}
@@ -85,11 +84,15 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
-  \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{mai.palette}{margins, in inches, for the palette}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.  If not given, a
+      reasonable value is calculated based on whether \code{xlab} and
+      \code{ylab} are empty strings.}
+  \item{mai.palette}{margins, in inches, for the palette.  If not given, a
+      reasonable value is calculated based on whether \code{zlab} is an empty
+      string, and the value of \code{zlabPosition}.}
   \item{xaxs}{character indicating whether image should extend to edge
-    of x axis (with value \code{"i"}) or not; see
-    \code{\link[graphics]{par}}("xaxs").}
+      of x axis (with value \code{"i"}) or not; see
+      \code{\link[graphics]{par}}("xaxs").}
   \item{yaxs}{as \code{xaxs} but for y axis.}
   \item{cex}{size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
   \item{adorn}{optional \code{\link{expression}} to be performed immediately after
