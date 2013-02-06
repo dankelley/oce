@@ -19,7 +19,7 @@
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
             mgp[2]+1/2, 
             1/2),
-      mai.palette=c(0, 1/8, 0, 3/8),
+      mai.palette=c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0),
       xaxs="i", yaxs="i",
       cex=par("cex"),
       adorn,

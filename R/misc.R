@@ -417,6 +417,18 @@ unwrapAngle <- function(angle)
     list(mean=resMean, median=resMedian)
 }
 
+ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
+{
+    if (is.numeric(x)) { 
+        return(x)
+    } else if (is.character(x)) {
+        m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+        return(as.numeric(table)[m])
+    } else {
+        stop("'x' must be numeric or character")
+    }
+}
+
 oceSpectrum <- function(x, ...)
 {
     args <- list(...)
