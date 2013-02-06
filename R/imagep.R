@@ -74,6 +74,8 @@ drawPalette <- function(zlim,
                         ...)
 {
     zlimGiven <- !missing(zlim)
+    if (zlimGiven)
+        zlim <- range(zlim, na.rm=TRUE)
     breaksGiven <- !missing(breaks)
     if (zlimGiven)
         oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
