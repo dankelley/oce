@@ -55,7 +55,6 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="")
-              ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
               if (!missing(projection)) {
                   if (missing(span))
                       span <- 1000

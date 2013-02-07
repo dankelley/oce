@@ -427,9 +427,13 @@ ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
         nx <- length(x)
         rval <- NULL
         for (i in 1:nx) {
-            ix <- pmatch(x[i], names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
-            ## use unlist() to expand e.g. list(x=1:10)
-            rval <- c(rval, unlist(table[[ix]]))
+            if (1 == length(grep("^[0-9]*$", x[i]))) {
+                rval <- c(rval, as.numeric(x[i]))
+            } else {
+                ix <- pmatch(x[i], names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+                ## use unlist() to expand e.g. list(x=1:10)
+                rval <- c(rval, if (is.na(ix)) NA else unlist(table[[ix]]))
+            }
         }
         ##m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
         ##return(as.numeric(table)[m])
