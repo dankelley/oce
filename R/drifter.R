@@ -166,9 +166,20 @@ setMethod(f="plot",
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
+
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which,
+                                 list(trajectory=1,
+                                      "salinity ts"=2,
+                                      "temperature ts"=3,
+                                      "TS"=4,
+                                      "salinity profile"=5,
+                                      "temperature profile"=6))
+              oceDebug(debug, "which:", which, "(after conversion to numerical form)\n")
+
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "] = ", which[w], "\n")
-                  if (which[w] == 1 || which[w] == "trajectory") {
+                  if (which[w] == 1) {
                       asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
                            type=type, cex=cex, pch=pch,
@@ -227,7 +238,7 @@ setMethod(f="plot",
                            Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
                            ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
                   } else {
-                      stop("invalid value of which (", which, ")")
+                      stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
               oceDebug(debug, "\b\b} # plot.drifter()\n")
