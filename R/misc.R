@@ -419,11 +419,21 @@ unwrapAngle <- function(angle)
 
 ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
+    ## FIXME: do element by element, and extend as follows, to allow string numbers
+    ## if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
     if (is.numeric(x)) { 
         return(x)
     } else if (is.character(x)) {
-        m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
-        return(as.numeric(table)[m])
+        nx <- length(x)
+        rval <- NULL
+        for (i in 1:nx) {
+            ix <- pmatch(x[i], names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+            ## use unlist() to expand e.g. list(x=1:10)
+            rval <- c(rval, unlist(table[[ix]]))
+        }
+        ##m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+        ##return(as.numeric(table)[m])
+        return(as.numeric(rval))
     } else {
         stop("'x' must be numeric or character")
     }
