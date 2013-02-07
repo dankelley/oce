@@ -109,7 +109,6 @@ setMethod(f="plot",
               ## 1=salinity 2=temperature 3=TS 4=u 5=v 6=nitrate 7=fluorescence 8=p
               ## default: 1,2,3 (skip missing columns)
               nw <- length(which)
-              which2 <- vector("numeric", length(which))
               oceDebug(debug, "which:", which, "\n")
               which2 <- ocePmatch(which,
                                   list(temperature=1, salinity=2, TS=3, u=4, v=5, nitrate=6, fluoresence=7))
