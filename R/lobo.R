@@ -105,9 +105,6 @@ setMethod(f="plot",
                   stop("method is only for lobo objects")
               oceDebug(debug, "plot.lobo(...)\n", sep="")
               opar <- par(no.readonly = TRUE)
-              ## parse ''which'
-              ## 1=salinity 2=temperature 3=TS 4=u 5=v 6=nitrate 7=fluorescence 8=p
-              ## default: 1,2,3 (skip missing columns)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
               which2 <- ocePmatch(which,
