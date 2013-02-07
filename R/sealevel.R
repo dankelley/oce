@@ -178,8 +178,14 @@ setMethod(f="plot",
               ylim <- c(-tmp,tmp)
               oceDebug(debug, "ylim=", ylim, "\n")
               n <- length(x@data$elevation) # do not trust value in metadata
-              for (w in 1:length(which)) {
-                  if (which[w] == 1) {
+
+              oceDebug(debug, "which:", which, "\n")
+              which2 <- ocePmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
+              oceDebug(debug, "which2:", which2, "\n")
+
+              for (w in 1:length(which2)) {
+                  oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
+                  if (which2[w] == 1) {
                       plot(x@data$time, x@data$elevation-MSL,
                            xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
                            lwd=0.5, axes=FALSE, ...)
@@ -191,7 +197,7 @@ setMethod(f="plot",
                       abline(v=tics, col="darkgray", lty="dotted")
                       abline(h=0,col="darkgreen")
                       mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-                  } else if (which[w] == 2) {     # sample days
+                  } else if (which2[w] == 2) {     # sample month 
                       from <- trunc(x@data$time[1], "day")
                       to <- from + 28 * 86400 # 28 days
                       look <- from <= x@data$time & x@data$time <= to
@@ -215,10 +221,10 @@ setMethod(f="plot",
                       abline(v=atDay, col="lightgray", lty="dotted")
                       abline(h=0,col="darkgreen")
                       mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-                  } else if (which[w] == 3) {
+                  } else if (which2[w] == 3) {
                       if (num.NA == 0) {
                           Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
-                                        #s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+                          ##s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                           s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                           par(mar=c(mgp[1]+1.25,mgp[1]+1.5,mgp[2]+0.25,mgp[2]+3/4))
                           xlim <- c(0, 0.1) # FIXME: should be able to set this
@@ -231,9 +237,11 @@ setMethod(f="plot",
                       } else {
                           warning("cannot draw sealevel spectum, because the series contains missing values")
                       }
-                  } else if (which[w] == 4) {
+                  } else if (which2[w] == 4) {
                       if (num.NA == 0) {
                           n <- length(x@data$elevation)
+                          Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
+                          s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                           nCumSpec <- length(s$spec)
                           cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
                           e <- x@data$elevation - mean(x@data$elevation)
@@ -252,7 +260,7 @@ setMethod(f="plot",
                           warning("cannot draw sealevel spectum, because the series contains missing values")
                       }
                   } else {
-                      stop("unrecognized value of which", which[w])
+                      stop("unrecognized value of which: ", which[w])
                   }
                   if (marginsAsImage)  {
                       ## blank plot, to get axis length same as for images
