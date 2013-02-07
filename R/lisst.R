@@ -17,28 +17,20 @@ setMethod(f="plot",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
               oceDebug(debug, "\b\bplot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="")
               nw <- length(which)
-              which2 <- vector("numeric", nw)
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n", sep="")
-              for (w in 1:nw) {
-                  ww <- which[w]
-                  if (is.numeric(which[w])) which2[w] <- which[w]
-                  else if (length(grep("^C[123]", which[w]))) which2[w] <- as.numeric(substr(which[1], 2, 4))
-                  else if (ww == "lts")  which2[w] <- 33
-                  else if (ww == "voltage")  which2[w] <- 34
-                  else if (ww == "aux") which2[w] <- 35
-                  else if (ww == "lrs") which2[w] <- 36
-                  else if (ww == "pressure") which2[w] <- 37
-                  else if (ww == "temperature") which2[w] <- 38
-                  else if (ww == "transmission") which2[w] <- 41
-                  else if (ww == "beam") which2[w] <- 42
-                  else stop("cannot handle which value \"", which[w], "\"")
-              }
-              oceDebug(debug, "which2=c(", paste(which2, collapse=","), ")\n", sep="")
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which,
+                                 list(C1=1, C2=2, C3=3, C4=4, C5=5, C6=6, C7=7, C8=8, C9=9, C10=10,
+                                      C11=11, C12=12, C13=13, C14=14, C15=15, C16=16, C17=17, C18=18, C19=19, C20=20,
+                                      C21=21, C22=22, C23=23, C24=24, C25=25, C26=26, C27=27, C28=28, C29=29, C30=30,
+                                      C31=31, C32=32,
+                                      lts=33, voltage=34, aux=35, lrs=36,
+                                      pressure=37, temperature=38, transmission=41, beam=42))
+              oceDebug(debug, "which:", which, "\n")
               par(mfrow=c(nw, 1))
               time <- x[["time"]]
               for (w in 1:nw) {
-                  ww <- which2[w]
-                  if      (ww <= 32) oce.plot.ts(time, x@data[[which2[w]]], ylab=paste("Size Class #", ww, sep=""), tformat=tformat, debug=debug-1, ...)
+                  ww <- which[w]
+                  if      (ww <= 32) oce.plot.ts(time, x@data[[which[w]]], ylab=paste("Size Class #", ww, sep=""), tformat=tformat, debug=debug-1, ...)
                   else if (ww == 33) oce.plot.ts(time, x[["lts"]], ylab="Laser Trans. Sensor", tformat=tformat, debug=debug-1, ...)
                   else if (ww == 34) oce.plot.ts(time, x[["voltage"]], ylab="Voltage", tformat=tformat, debug=debug-1, ...)
                   else if (ww == 35) oce.plot.ts(time, x[["aux"]], ylab="Ext. Aux. Input", tformat=tformat, debug=debug-1, ...)
