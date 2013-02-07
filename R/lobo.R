@@ -111,22 +111,8 @@ setMethod(f="plot",
               nw <- length(which)
               which2 <- vector("numeric", length(which))
               oceDebug(debug, "which:", which, "\n")
-              for (w in 1:nw) {
-                  ww <- which[w]
-                  oceDebug(debug, "which[", w, "] =", ww, "\n")
-                  if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
-                      which2[w] <- as.numeric(ww)
-                  } else {
-                      if (pmatch(ww, "temperature", nomatch=0)) which2[w] <- 1
-                      else if (pmatch(ww, "salinity", nomatch=0)) which2[w] <- 2
-                      else if (pmatch(ww, "TS", nomatch=0)) which2[w] <- 3
-                      else if (pmatch(ww, "u", nomatch=0)) which2[w] <- 4
-                      else if (pmatch(ww, "v", nomatch=0)) which2[w] <- 5
-                      else if (pmatch(ww, "nitrate", nomatch=0)) which2[w] <- 6
-                      else if (pmatch(ww, "fluorescence", nomatch=0)) which2[w] <- 7
-                      else which2[w] <- 0
-                  }
-              }
+              which2 <- ocePmatch(which,
+                                  list(temperature=1, salinity=2, TS=3, u=4, v=5, nitrate=6, fluoresence=7))
               oceDebug(debug, "which2:", which2, "\n")
               ##on.exit(par(opar))
               par(mgp=mgp, mar=mar)

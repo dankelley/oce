@@ -2,7 +2,7 @@
 
 \alias{ocePmatch}
 
-\title{An extended version of pmatch}
+\title{Partial matching of character strings or numbers}
 
 \description{An extended version of \code{\link{pmatch}} that allows \code{x}
     to be numeric or string-based.  As with \code{\link{pmatch}}, partial
