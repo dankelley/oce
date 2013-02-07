@@ -631,30 +631,13 @@ setMethod(f="plot",
                   stop("unknown ytype")
               }
 
-              oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
-              which2 <- vector("numeric", lw)
-              for (w in 1:lw) {
-                  ww <- which[w]
-                  if (is.numeric(ww)) {
-                      which2[w] <- ww
-                  } else {
-                      if (     ww == "temperature") which2[w] <- 1
-                      else if (ww == "salinity") which2[w] <- 2
-                      else if (ww == "salinity gradient") which2[w] <- 2.5
-                      else if (ww == "sigmaTheta") which2[w] <- 3
-                      else if (ww == "nitrate") which2[w] <- 4
-                      else if (ww == "nitrite") which2[w] <- 5
-                      else if (ww == "oxygen") which2[w] <- 6
-                      else if (ww == "phosphate") which2[w] <- 7
-                      else if (ww == "silicate") which2[w] <- 8
-                      else if (ww == "data") which2[w] <- 20
-                      else if (ww == "map") which2[w] <- 99
-                      else stop("unknown 'which':", ww)
-                  }
-              }
-              which <- which2
-              oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+              which <- ocePmatch(which,
+                                 list(temperature=1, salinity=2, 
+                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                      phosphate=7, silicate=8, data=20, map=99))
+              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
@@ -667,7 +650,7 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
-              for (w in 1:length(which)) {
+              for (w in 1:lw) {
                   oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
                       if (missing(contourLabels))
@@ -679,10 +662,6 @@ setMethod(f="plot",
                       } else if (which[w] == 2) {
                           plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
-                      } else if (which[w] > 2 && which[w] < 3) {
-                          plotSubsection("salinity gradient","dS/dz", ylab="",
-                                         levels=contourLevels, xlim=xlim, ylim=ylim,
                                          debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
@@ -716,10 +695,6 @@ setMethod(f="plot",
                                          debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
-                      } else if (which[w] > 2 && which[w] < 3) {
-                          plotSubsection("salinity gradient","dS/dz", ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          debug=debug-1, ...)
                       } else if (which[w] == 3) {
