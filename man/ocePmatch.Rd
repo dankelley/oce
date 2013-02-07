@@ -6,7 +6,8 @@
 
 \description{An extended version of \code{\link{pmatch}} that allows \code{x}
     to be numeric or string-based.  As with \code{\link{pmatch}}, partial
-    string matches are handled.}
+    string matches are handled.
+}
 
 \usage{ocePmatch(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)}
 
@@ -18,7 +19,9 @@
         find numeric matches.}
 
     \item{table}{a list that maps strings to numbers; \code{\link{pmatch}} is
-        used on \code{names(table)}, as shown in the examples.}
+        used on \code{names(table)}.  If the name contains characters that are
+        normally not permitted in a variable name, use quotes, e.g.
+        \code{list(salinity=1, temperature=2, "salinity+temperature"=3)}. }
 
     \item{nomatch}{value to be returned for cases of no match (passed to
         \code{\link{pmatch}}.}
