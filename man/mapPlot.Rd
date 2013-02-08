@@ -102,6 +102,9 @@ mapPlot(coastlineWorld, type='l',
 
 \references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
-    \url{pubs.usgs.gov/pp/1395/report.pdf}). }
+    \url{pubs.usgs.gov/pp/1395/report.pdf}). 
+
+    XKCD guide to map projections (\url{http://xkcd.com/977/}).
+}
 
 \keyword{hplot}
