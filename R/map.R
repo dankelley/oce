@@ -50,23 +50,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
-    ## trim wild points [github issue 227]
     x <- xy$x
     y <- xy$y
-    ## FIXME: below is a kludge to avoid weird horiz lines; it
-    ## FIXME: would be better to complete the polygons, so they 
-    ## FIXME: can be filled.  It might be smart to do this in C
-    d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
-    d[!is.finite(d)] <- 0          # FIXME: ok?
-    dc <- as.numeric(quantile(d, 1-100*(1/length(x)), na.rm=TRUE)) # FIXME: criterion
-    ##cat("dc=", dc, "vs dx=", diff(par('usr')[1:2]),"\n")
-    bad <- d > dc
-    ##X<<-x # FIXME: debugging
-    ##Y<<-y # FIXME: debugging
-    x[bad] <- NA                       # FIXME: should finish off polygons
-    y[bad] <- NA
-    ##XX <<- x
-    ##YY <<- y
+    if (projection %in% c('mollweide')) {
+        ## trim wild points [github issue 227]
+        ## FIXME: below is a kludge to avoid weird horiz lines; it
+        ## FIXME: would be better to complete the polygons, so they 
+        ## FIXME: can be filled.  It might be smart to do this in C
+        d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+        d[!is.finite(d)] <- 0          # FIXME: ok?
+        dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
+        bad <- d > dc
+        x[bad] <- NA                       # FIXME: should finish off polygons
+        y[bad] <- NA
+    }
 
     if (limitsGiven) {
         box <- mapproject(c(longitudelim[1], longitudelim[1],
