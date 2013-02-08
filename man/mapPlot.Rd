@@ -104,6 +104,10 @@ mapPlot(coastlineWorld, type='l',
     Professional Paper: 1395 (available at
     \url{pubs.usgs.gov/pp/1395/report.pdf}). 
 
+    Jenny, B., 2012.  Adaptive composite map projections.  IEEE Transactions on
+    Visualization and Computer Graphics (Proceedings Scientific Visualization /
+    Information Visualization 2012), 18-22, p 2575-2582.
+
     XKCD guide to map projections (\url{http://xkcd.com/977/}).
 }
 
