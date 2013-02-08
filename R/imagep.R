@@ -78,10 +78,9 @@ drawPalette <- function(zlim,
         zlim <- range(zlim, na.rm=TRUE)
     breaksGiven <- !missing(breaks)
     if (zlimGiven)
-        oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
-            "(expression)", "\", ...) {\n", sep="")
+        oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", as.character(zlab), "\", ...) {\n", sep="")
     else
-        oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
+        oceDebug(debug, "\bdrawPalette() with no arguments: set space to right of a graph\n", sep="")
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
         zlimOrig <- zlim
@@ -94,8 +93,10 @@ drawPalette <- function(zlim,
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(format(omar, digits=3), collapse=","), ")\n")
 
-    if (missing(mai))
+    if (missing(mai)) {
         mai <- c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0)
+        oceDebug(debug, "set mai=", mai, "\n")
+    }
     pc <- paletteCalculations(mai=mai)
 
     contours <- NULL
@@ -202,10 +203,10 @@ imagep <- function(x, y, z,
                    ...)
 {
     zlabPosition <- match.arg(zlabPosition)
-    oceDebug(debug, "\b\bimagep(..., cex=", cex, ", flipy=", flipy,
-             " xlab='", xlab, "'; ylab='", ylab, "'; zlab='", as.character(zlab),
+    oceDebug(debug, "\b\bimagep(..., cex=", cex, ", flipy=", flipy, ",", 
+             " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
-             " filledContour='", filledContour,
+             " filledContour=", filledContour, ", ",
              " missingColor='", missingColor,
              ", ...) {\n", sep="")
     oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
@@ -297,8 +298,11 @@ imagep <- function(x, y, z,
     ocex <- par("cex")
     if (missing(mar))
         mar <- c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)
-    if (missing(mai.palette))
+    if (missing(mai.palette)) {
         mai.palette <- c(0, 1/8, 0, 3/8 + if (nchar(zlab) && zlabPosition=="side") 1.5*par('cin')[2] else 0)
+        oceDebug(debug, "set mai.palette=", mai.palette, "\n")
+    }
+
     par(mgp=mgp, mar=mar, cex=cex)
     breaksGiven <- !missing(breaks)
     if (!breaksGiven) {
@@ -335,8 +339,9 @@ imagep <- function(x, y, z,
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 
+    #browser()
     if (drawPalette == "space") {
-        drawPalette()
+        drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
         drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",
