@@ -100,16 +100,11 @@ mapPlot(coastlineWorld, latitudelim=c(0,120), longitudelim=c(-80,10),
 mapPlot(coastlineWorld, latitudelim=c(35,60), longitudelim=c(-130,-55),
         proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
 
-## Arctic view with a stereographic projection, showing
-## also the 200m isobath (indicating the shallowness of most
-## of the ocean).
+## Arctic view with a stereographic projection.
 par(mar=rep(1, 4))
 mapPlot(coastlineWorld, latitudelim=c(60,120), longitudelim=c(-130,-50), 
         proj="stereographic", orientation=c(90, -90, 0), 
         axes=FALSE, fill='lightgray')
-data(topoWorld)
-mapContour(topoWorld[['longitude']], topoWorld[['latitude']], topoWorld[['z']],
-           levels=-1000, col='red')
 }
 }
 

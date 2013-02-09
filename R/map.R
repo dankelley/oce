@@ -2,7 +2,7 @@ library(mapproj)
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
-                       nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels), 
+                       nlevels=10, levels=pretty(range(z, na.rm=TRUE), nlevels),
                        ##labels=null,
                        ##xlim=range(longitude, finite=TRUE),
                        #ylim=range(latitude, finite=TRUE),
@@ -19,10 +19,15 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
         latitude <- longitude@data$latitude
         longitude <- longitude@data$longitude
     }
-    cl <- contourLines(x=longitude, y=latitude, z=z, nlevels=nlevels, levels=levels)
-    for (i in 1:length(cl)) {
-        ##cat(cl[[i]]$level, 'm\n')
-        mapLines(cl[[i]]$x, cl[[i]]$y, lty=lty, lwd=lwd, col=col)
+    nlevels <- length(levels)
+    col <- rep(col, nlevels)
+    lty <- rep(lty, nlevels)
+    lwd <- rep(lwd, nlevels)
+    for (ilevel in 1:nlevels) {
+        cl <- contourLines(x=longitude, y=latitude, z=z, levels=levels[ilevel])
+        for (segment in 1:length(cl)) {
+            mapLines(cl[[segment]]$x, cl[[segment]]$y, lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+        }
     }
     ## FIXME: labels, using labcex and vfont
 }
