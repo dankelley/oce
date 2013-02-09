@@ -65,7 +65,15 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a map using the indicated projection.}
+\details{Creates a map using the indicated projection.  The available
+    projections can be found in the documentation for \code{\link{mapproject}},
+    along with the important choices of the arguments named \code{projection}
+    and \code{parameters}.  Since map projection is a large and subtle field,
+    this documentation is necessarily limited; those seeking to learn the
+    details should consult the exhaustive treatment provided by Snyder (1987),
+    which includes not just helpful illustrations but also an overview of the
+    long history of the topic, and the strengths and weaknesses of the various
+    formulations.  See especially page 34, which provides recommendations.}
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines may
     be added with \code{\link{mapLines}}, and text with \code{\link{mapText}}.
@@ -75,26 +83,33 @@
 \dontrun{
 library(oce)
 data(coastlineWorld)
-longitude <- coastlineWorld[['longitude']]
-latitude <- coastlineWorld[['latitude']]
-mapPlot(longitude, latitude, type='l',
-        latitudelim=c(0,120), longitudelim=c(-80,10),
+
+## Orthographic projections resemble a globe, making them
+## attractive for non-technical use, but they are neither conformal
+## nor equal-area, so they are somewhat limited for serious
+## use on large scales.  There is no distortion at the centre.
+## See Snyder (1987 section 20).
+mapPlot(coastlineWorld, latitudelim=c(0,120), longitudelim=c(-80,10),
         projection="orthographic", orientation=c(45,-100,0))
 
-## Illustrate the Lambert conformal conic projection,
-## said by Snyder (page 34) to be suitable for regions
-## of large east-west extent away from the equator.
-## Here, show USA and Canada.
-mapPlot(coastlineWorld, type='l',
-        latitudelim=c(30,60), longitudelim=c(-130,-50),
-        proj="lambert", fill='lightgray',
-        parameters=c(lat0=40,lat1=60),
-        orientation=c(90,-90,0), grid=TRUE)
+## The Lambert conformal conic projection is an equal-area
+## projection recommended by Snyder for regions of large 
+## east-west extent away from the equator, here illustrated 
+## for the USA and Canada.  Readers should compare the results
+## with those with a polygonic projection, which is also popular.
+mapPlot(coastlineWorld, latitudelim=c(35,60), longitudelim=c(-130,-55),
+        proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
 
-## Similar looking map, with the polyconic projection
-mapPlot(coastlineWorld, type='l',
-        latitudelim=c(30,60), longitudelim=c(-130,-50),
-        proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+## Arctic view with a stereographic projection, showing
+## also the 200m isobath (indicating the shallowness of most
+## of the ocean).
+par(mar=rep(1, 4))
+mapPlot(coastlineWorld, latitudelim=c(60,120), longitudelim=c(-130,-50), 
+        proj="stereographic", orientation=c(90, -90, 0), 
+        axes=FALSE, fill='lightgray')
+data(topoWorld)
+mapContour(topoWorld[['longitude']], topoWorld[['latitude']], topoWorld[['z']],
+           levels=-1000, col='red')
 }
 }
 

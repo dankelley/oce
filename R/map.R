@@ -52,16 +52,22 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
-    if (projection %in% c('mollweide')) {
+    if (projection %in% c('mollweide', 'polyconic')) { ## FIXME: should probably add other proj here
         ## trim wild points [github issue 227]
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
         ## FIXME: can be filled.  It might be smart to do this in C
         d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
         d[!is.finite(d)] <- 0          # FIXME: ok?
-        dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
-        bad <- d > dc
-        x[bad] <- NA                       # FIXME: should finish off polygons
+        ##dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
+        ##bad <- d > dc
+        bad <- (d / diff(range(x, na.rm=TRUE))) > 0.1
+        ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
+        ## FIXME: should we create a series of points to a trace along the edge 
+        ## FIXME: the visible earth?
+        if (sum(bad))
+            warning("mapPlot(): trimming spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
+        x[bad] <- NA                       
         y[bad] <- NA
     }
 
