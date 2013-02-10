@@ -343,6 +343,11 @@ oce.as.POSIXlt <- function (x, tz = "")
             if (is.na(xx))
                 f <- "%Y-%m-%d"
         }
+        ## year day hhmm
+        tokens <- strsplit(xx, " +")[[1]]
+        if (length(tokens) == 3 && nchar(tokens[3]) == 4) { # the nchar check skips [year month day]
+            return(strptime(x, format="%Y %j %H%M"))
+        }
         if (is.na(xx) ||
                                         # additions ...
             ((nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d"))) || # 20020823
@@ -1002,7 +1007,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line)) {
+    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line, ignore.case=TRUE)) {
         oceDebug(debug, "this is topo\n")
         return("topo")
     }
