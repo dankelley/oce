@@ -895,7 +895,7 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
         lat <- section[["latitude", "byStation"]]
         lon <- section[["longitude", "byStation"]]
         if (alongPath) {
-            res <- .Call("geoddist_alongpath", lat1, lon, a, f) / 1000
+            res <- .Call("geoddist_alongpath", lat, lon, a, f) / 1000
         } else {
             n <- length(section@data$station)
             res <- .Call("geoddist",
