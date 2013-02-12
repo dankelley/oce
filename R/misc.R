@@ -417,6 +417,32 @@ unwrapAngle <- function(angle)
     list(mean=resMean, median=resMedian)
 }
 
+ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
+{
+    ## FIXME: do element by element, and extend as follows, to allow string numbers
+    ## if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
+    if (is.numeric(x)) { 
+        return(x)
+    } else if (is.character(x)) {
+        nx <- length(x)
+        rval <- NULL
+        for (i in 1:nx) {
+            if (1 == length(grep("^[0-9]*$", x[i]))) {
+                rval <- c(rval, as.numeric(x[i]))
+            } else {
+                ix <- pmatch(x[i], names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+                ## use unlist() to expand e.g. list(x=1:10)
+                rval <- c(rval, if (is.na(ix)) NA else unlist(table[[ix]]))
+            }
+        }
+        ##m <- pmatch(x, names(table), nomatch=nomatch, duplicates.ok=duplicates.ok)
+        ##return(as.numeric(table)[m])
+        return(as.numeric(rval))
+    } else {
+        stop("'x' must be numeric or character")
+    }
+}
+
 oceSpectrum <- function(x, ...)
 {
     args <- list(...)
@@ -504,8 +530,7 @@ matchBytes <- function(input, b1, ...)
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "conservative temperature", "absolute salinity",
-                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
-                                  "spice",
+                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice", "fluorescence",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward",
@@ -543,6 +568,9 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item ==  "silicate") {
         full <- "Silicate Concentration [umol/kg]"
         abbreviated <- "Si [umol/kg]"
+    } else if (item == "fluorescence") {
+        full <- expression(paste("Fluorescence"))
+        abbreviated <- full
     } else if (item == "spice") {
         full <- expression(paste("Spice [", kg/m^3, "]"))
         abbreviated <- full
@@ -863,82 +891,43 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (inherits(lat1, "section")) {
-        ##cat("\nSECTION\n")
-        ##print(lat1[["latitude", "byStation"]])
-        ##print(lat1[["longitude", "byStation"]])
-        if (alongPath)
-            return(.Call("geoddist_alongpath", lat1[["latitude", "byStation"]], lat1[["longitude", "byStation"]], a, f) / 1000)
-        copy <- lat1
-        n <- length(copy@data$station)
-        lat1 <- vector("numeric", n)
-        lon1 <- vector("numeric", n)
-        for (i in 1:n) {
-            lat1[i] <- copy@data$station[[i]]@metadata$latitude
-            lon1[i] <- copy@data$station[[i]]@metadata$longitude
-        }
-        res <- vector("numeric", n)
-        for (i in 1:n) {
-            if (is.finite(lat1[1]) && is.finite(lon1[1]) && is.finite(lat1[i]) && is.finite(lon1[i])) {
-                ## dist <- .Fortran("geoddist",
-                dist <- .C("geoddist",
-                           as.double(lat1[1]),
-                           as.double(lon1[1]),
-                           as.double(lat1[i]),
-                           as.double(lon1[i]),
-                           as.double(a),
-                           as.double(f),
-                           as.double(1),
-                           as.double(1),
-                           dist = double(1),
-                           PACKAGE = "oce")$dist
-            } else {
-                dist <- NA
-            }
-            res[i] <- dist
+        section <- lat1
+        lat <- section[["latitude", "byStation"]]
+        lon <- section[["longitude", "byStation"]]
+        if (alongPath) {
+            res <- .Call("geoddist_alongpath", lat, lon, a, f) / 1000
+        } else {
+            n <- length(section@data$station)
+            res <- .Call("geoddist",
+                         as.double(rep(lat[1], length.out=n)), as.double(rep(lon[1], length.out=n)),
+                         as.double(lat), as.double(lon),
+                         as.double(a), as.double(f), as.double(1), as.double(1),
+                         dist = double(n)) / 1000
         }
     } else {
-        ##cat("\nCOMPONENTS\n")
-        ##print(lat1)
-        ##print(lon1)
-        if (alongPath)
-            return(.Call("geoddist_alongpath", lat1, lon1, a, f) / 1000)
-        n1 <- length(lat1)
-        if (length(lon1) != n1)
-            stop("lat1 and lon1 must be vectors of the same length")
-        n2 <- length(lat2)
-        if (length(lon2) != n2)
-            stop("lat2 and lon2 must be vectors of the same length")
-        if (n2 < n1) { # take only first one
-            if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements")
-            llat2 <- rep(lat2[1], n1)
-            llon2 <- rep(lon2[1], n1)
+        if (alongPath) {
+            res <- .Call("geoddist_alongpath", lat1, lon1, a, f) / 1000
         } else {
-            llat2 <- lat2
-            llon2 <- lon2
-        }
-                                        #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
-        res <- vector("numeric", n1)
-        for (i in 1:n1) {
-                                        #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
-            if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
-                ## res[i] <- .Fortran("geoddist",
-                res[i] <- .C("geoddist",
-                             as.double(lat1[i]),
-                             as.double(lon1[i]),
-                             as.double(llat2[i]),
-                             as.double(llon2[i]),
-                             as.double(a),
-                             as.double(f),
-                             as.double(1),
-                             as.double(1),
-                             dist = double(1),
-                             PACKAGE = "oce")$dist
-            } else {
-                res[i] <- NA
+            n1 <- length(lat1)
+            if (length(lon1) != n1)
+                stop("lat1 and lon1 must be vectors of the same length")
+            n2 <- length(lat2)
+            if (length(lon2) != n2)
+                stop("lat2 and lon2 must be vectors of the same length")
+            if (n2 < n1) { # copy first (lat2, lon2)
+                lat2 <- rep(lat2[1], n1)
+                lon2 <- rep(lon2[1], n1)
+            } else { # trim
+                lat2 <- lat2[1:n1]
+                lon2 <- lon2[1:n1]
             }
+            res <- .Call("geoddist",
+                      as.double(lat1), as.double(lon1),
+                      as.double(lat2), as.double(lon2),
+                      as.double(a), as.double(f), as.double(1), as.double(1)) / 1000
         }
     }
-    res / 1000
+    res
 }
 
 interpBarnes <- function(x, y, z, w,

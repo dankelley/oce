@@ -8,14 +8,16 @@
 
 \usage{drawPalette(zlim, zlab="", breaks, col,
             labels=NULL, at=NULL,
-            mai=c(0, 1/8, 0, 3/8), top=0, bottom=0,
+            mai,
             drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
-        If not provided, the palette is not drawn, but space is set aside for it,
-        so that the next plotting command has a right-hand margin matching the
-        space that would have been occupied by the palette.}
+        (This may also be a vector of any length exceeding 1, in which case its
+        range is used.) If not provided, the palette is not drawn, but space is
+        set aside for it, so that the next plotting command has a right-hand
+        margin matching the space that would have been occupied by the
+        palette.}
     \item{zlab}{label for the palette scale.}
     \item{breaks}{the z values for breaks in the colour scheme.}
     \item{col}{either a vector of colours corresponding to the breaks, of length
@@ -25,11 +27,8 @@
         correspond with \code{at})}
     \item{at}{optional vector of positions for the \code{label}s}
     \item{mai}{margins for palette, as defined in the usual way; see
-        \code{\link{par}}.}
-    \item{top}{\strong{DEPRECATED (use mai instead)} ... extra space to
-            insert at top of palette, in inches]}
-    \item{bottom}{\strong{DEPRECATED (use mai instead)} ... extra space to
-            insert at bottom of palette, in inches]}
+        \code{\link{par}}.  If not given, reasonable values are inferred from
+        the existence of a non-blank \code{zlab}.}
     \item{drawContours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a

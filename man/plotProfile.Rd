@@ -25,6 +25,7 @@
     xaxs="r", yaxs="r",
     cex=1, pch=1,
     useSmoothScatter=FALSE,
+    df,
     keepNA=FALSE,
     type='l',
     mgp=getOption("oceMgp"),
@@ -96,7 +97,9 @@
     \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
         \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
         the plot.}
-    \item{keepNA}{FALSE},
+    \item{df}{optional argument, passed to \code{\link{swN2}} if provided, and
+        if a plot using \eqn{N^2}{N^2} is requested.}
+    \item{keepNA}{FALSE}
     \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
     \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
         also for \code{par(mar)}, computed from this.  The default is

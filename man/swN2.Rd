@@ -8,7 +8,7 @@
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
 }
 
-\usage{swN2(pressure, sigmaTheta=NULL, derivs, \dots)}
+\usage{swN2(pressure, sigmaTheta=NULL, derivs, df, \dots)}
 
 \arguments{
 
@@ -23,6 +23,9 @@
       \eqn{d\sigma_\theta/dp}{d(sigmaTheta)/d(pressure)} is calculated.  This
       may be a character string or a function of two arguments.  See
       \dQuote{Details}.}
+
+  \item{df}{optional argument, passed to \code{\link{smooth.spline}} if this
+      function is used for smoothing.}
 
   \item{\dots}{additional argument, passed to \code{\link{smooth.spline}}, in
       the case that \code{derivs="smoothing"}.  See \dQuote{Details}.}

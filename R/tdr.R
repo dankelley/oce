@@ -78,27 +78,8 @@ setMethod(f="plot",
                   layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
               }
               par(mgp=mgp, mar=mar)
-
-              ## decode string values of 'which'
-              which2 <- vector("numeric", nw)
-              for (w in 1:nw) {
-                  ww <- which[w]
-                  if (is.numeric(ww)) {
-                      which2[w] <- ww
-                  } else {
-                      if (     ww == "temperature")
-                          which2[w] <- 1
-                      else if (ww == "text")
-                          which2[w] <- 2
-                      else if (ww == "pressure")
-                          which2[w] <- 3
-                      else if (ww == "profile")
-                          which2[w] <- 4
-                      else
-                          stop("unknown 'which':", ww)
-                  }
-              }
-              which <- which2
+              which <- ocePmatch(which,
+                                 list(temperature=1, text=2, pressure=3, profile=4))
               if (missing(main))
                   main <- rep('', length.out=nw)
               else

@@ -1,3 +1,11 @@
+0.9-7
+- plot.lobo(): add 'which' argument
+- read.coastline.openstreetmap() added
+- data(levitus) added
+- plot.coastline(): new arguments 'projection' etc to use mapPlot()
+- mapContour(): permit first argument to be a 'topo' object
+- mapPlot(): add arguments axes, bg, fill, and drawBox
+
 0.9-6
 - address compilation error on Windows-64 platform
 - make some long-running operations more interruptible 

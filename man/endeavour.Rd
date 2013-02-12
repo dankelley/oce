@@ -7,7 +7,7 @@
 \title{Cook's Endeavour cruise track}
 
 \description{Time, longitude, and latitude for the H.M.S. Endeavour cruise,
-    1738-1771}
+    1768-1771}
 
 \usage{data(endeavour)}
 
@@ -15,7 +15,6 @@
 library(oce)
 data(coastlineWorld)
 data(endeavour)
-par(mar=rep(1, 4))
 mapPlot(coastlineWorld, type='l', proj='mollweide', orientation=c(90, -100, 0))
 mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col='red')
 }
