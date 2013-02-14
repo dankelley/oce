@@ -29,7 +29,7 @@
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.  If not given, reasonable values are inferred from
         the existence of a non-blank \code{zlab}.}
-    \item{fullwidth}{logical value indicating whether to draw the palette
+    \item{fullpage}{logical value indicating whether to draw the palette
         filling the whole plot width (apart from \code{mai}, of course; use
         this if you are creating panels yourself, with \code{\link{layout}},
         etc.}
