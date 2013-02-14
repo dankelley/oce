@@ -134,12 +134,20 @@ drawPalette <- function(zlim,
     oceDebug(debug, "maiGiven=", maiGiven, "\n")
     #print(pc)
     if (fullpage) {
-        if (maiGiven)
+        if (maiGiven) {
             theMai <- mai
-        else
-            theMai <- c(omai[1], pc$maiLHS-omai[4], omai[3], pc$maiRHS)
+        } else {
+            #browser()
+            width <- par('fin')[1] # width
+            mai4 <- 3 * par('cin')[2]
+            ##paletteWidth <- 1/4
+            mai2 <- 1/8 #width - paletteWidth - mai4
+            theMai <- c(omai[1], mai2, omai[3], mai4)
+            oceDebug(debug, "width=", width, ", mai2=", mai2, ", mai4=", mai4, "\n")
+            #theMai <- c(omai[1], pc$maiLHS-omai[4], omai[3], pc$maiRHS)
             #theMai <- c(omai[1], max(pc$maiLHS, pc$maiLHS-omai[4]), omai[3], pc$maiRHS)
             #theMai <- c(omai[1], pc$maiLHS, omai[3], pc$maiRHS)
+        }
     } else {
         theMai <- c(pc$omai[1]+mai[1],
                     pc$main + pc$maiLHS + mai[2],

@@ -30,9 +30,9 @@
         \code{\link{par}}.  If not given, reasonable values are inferred from
         the existence of a non-blank \code{zlab}.}
     \item{fullpage}{logical value indicating whether to draw the palette
-        filling the whole plot width (apart from \code{mai}, of course; use
-        this if you are creating panels yourself, with \code{\link{layout}},
-        etc.}
+        filling the whole plot width (apart from \code{mai}, of course).  This
+        can be helpful if the palette panel is to be created with
+        \code{\link{layout}}, as illustrated in the \dQuote{Examples}.}
     \item{drawContours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
@@ -58,9 +58,8 @@
 
 \value{None.}
 
-\seealso{
-    This may eventually be used by \code{\link{imagep}}.
-}
+\seealso{This is used by \code{\link{imagep}}. }
+
 \examples{
 par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,1,1))
@@ -78,6 +77,15 @@ plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10],pch=21,cex=5,col='black',x
 drawPalette(zlab="Image Scale")
 plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 4')
 
+# Use layout to mimic the action of imagep(), with the width
+# of the palette region being 14 percent of figure width.
+d <- 0.14
+layout(matrix(1:2,nrow=1), widths=c(1-d,d))
+image(volcano, col=oceColorsJet(100), zlim=c(90, 200))
+contour(volcano, add=TRUE)
+drawPalette(c(90, 200), fullpage=TRUE, col=oceColorsJet)
 }
+
 \author{Dan Kelley, with help from Clark Richards}
+
 \keyword{misc}

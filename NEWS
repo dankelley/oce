@@ -1,4 +1,5 @@
 0.9-7
+- drawPalette(): new arg 'fullpage'
 - plot.lobo(): add 'which' argument
 - read.coastline.openstreetmap() added
 - data(levitus) added
