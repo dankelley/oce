@@ -8,7 +8,7 @@
 
 \usage{drawPalette(zlim, zlab="", breaks, col,
             labels=NULL, at=NULL,
-            mai,
+            mai, fullpage=FALSE,
             drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -29,6 +29,10 @@
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.  If not given, reasonable values are inferred from
         the existence of a non-blank \code{zlab}.}
+    \item{fullwidth}{logical value indicating whether to draw the palette
+        filling the whole plot width (apart from \code{mai}, of course; use
+        this if you are creating panels yourself, with \code{\link{layout}},
+        etc.}
     \item{drawContours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
@@ -36,18 +40,14 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\section{Deprecation note}{Use \code{mai} instead of \code{top} and
-    \code{bottom}; the latter arguments will be delete very soon, and without
-    notice!}
 
-\details{
-    In the normal use, \code{drawPalette} draws an image palette near the
+\details{In the normal use, \code{drawPalette} draws an image palette near the
     right-hand side of the plotting device, and then adjusts the global margin
-    settings in such a way as to cause the next plot to appear to the left of
-    the palette. The function can also be used, if \code{zlim} is not provided,
-    to adjust the margin without drawing anything; this is useful in lining up
-    the x axes of a stack of plots, some some of which will have palettes and
-    others not.
+    settings in such a way as to cause the next plot to appear (with much
+    larger width) to the left of the palette. The function can also be used, if
+    \code{zlim} is not provided, to adjust the margin without drawing anything;
+    this is useful in lining up the x axes of a stack of plots, some some of
+    which will have palettes and others not.
     
     Note that the plot positioning is done entirely with margins, not with
     \code{par(mfrow)} or other R schemes for multi-panel plots.  This means

@@ -68,7 +68,7 @@ drawPalette <- function(zlim,
                         col,
                         labels=NULL,
                         at=NULL,
-                        mai,
+                        mai, fullpage=FALSE,
                         drawContours=FALSE,
                         debug=getOption("oceDebug"),
                         ...)
@@ -81,6 +81,7 @@ drawPalette <- function(zlim,
         oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", as.character(zlab), "\", ...) {\n", sep="")
     else
         oceDebug(debug, "\bdrawPalette() with no arguments: set space to right of a graph\n", sep="")
+    maiGiven <- !missing(mai)
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
         zlimOrig <- zlim
@@ -93,9 +94,8 @@ drawPalette <- function(zlim,
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(format(omar, digits=3), collapse=","), ")\n")
 
-    if (missing(mai)) {
+    if (!maiGiven) {
         mai <- c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0)
-        oceDebug(debug, "set mai=", mai, "\n")
     }
     pc <- paletteCalculations(mai=mai)
 
@@ -130,11 +130,23 @@ drawPalette <- function(zlim,
 ##                pc$main + pc$marLHS + pc$paletteSeparation + mai[2],
 ##                pc$omai[3]+mai[3],
 ##                pc$marRHS+mai[4])
-    theMai <- c(pc$omai[1]+mai[1],
-                pc$main + pc$maiLHS + mai[2],
-                pc$omai[3]+mai[3],
-                pc$maiRHS)
-    oceDebug(debug, "setting par(mai)=", format(theMai, digits=2), "\n")
+    oceDebug(debug, "fullpage=", fullpage, "\n")
+    oceDebug(debug, "maiGiven=", maiGiven, "\n")
+    #print(pc)
+    if (fullpage) {
+        if (maiGiven)
+            theMai <- mai
+        else
+            theMai <- c(omai[1], pc$maiLHS-omai[4], omai[3], pc$maiRHS)
+            #theMai <- c(omai[1], max(pc$maiLHS, pc$maiLHS-omai[4]), omai[3], pc$maiRHS)
+            #theMai <- c(omai[1], pc$maiLHS, omai[3], pc$maiRHS)
+    } else {
+        theMai <- c(pc$omai[1]+mai[1],
+                    pc$main + pc$maiLHS + mai[2],
+                    pc$omai[3]+mai[3],
+                    pc$maiRHS)
+    }
+    oceDebug(debug, "theMai=", theMai, "\n")
     if (zlimGiven) {
         par(mai=theMai)
         if (!breaksGiven) {
@@ -175,6 +187,8 @@ drawPalette <- function(zlim,
         par(new=TRUE, mai=theMai)
     else
         par(mai=theMai)
+    if (fullpage)
+        par(mai=omai)
     oceDebug(debug, "drawPalette at end mar=",par('mar'),"\n")
     oceDebug(debug, "\b\b} # drawPalette()\n")
     invisible()
