@@ -151,6 +151,9 @@ drawPalette <- function(zlim, zlab="", breaks, col,
                   col=col,
                   zlim=zlim)
         }
+        if (drawContours)
+            abline(h=contours)
+        box()
         if (drawPaletteTriangles) {
             mai <- par('mai')
             fin <- par('fin')
@@ -159,16 +162,21 @@ drawPalette <- function(zlim, zlab="", breaks, col,
             usr <- par('usr')
             dx <- usr[2] - usr[1]      # user unit
             dy <- usr[4] - usr[3]      # user unit
-            triangleHeight <- 0.5 * paletteWidth * dy / dx / paletteHeight
+            triangleHeight <- 1 / 3 * paletteWidth * dy / dx / paletteHeight
             oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
             polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                    usr[4] + c(0, triangleHeight, 0), col=col[length(col)], xpd=TRUE)
+                    usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
+                    border=col[length(col)], xpd=TRUE)
+            lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                    usr[4] + c(0, triangleHeight, 0),
+                    xpd=TRUE)
             polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                    usr[3] + c(0, -triangleHeight, 0), col=col[1], xpd=TRUE)
+                    usr[3] + c(0, -triangleHeight, 0), col=col[1], 
+                    border=col[1], xpd=TRUE)
+            lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                    usr[3] + c(0, -triangleHeight, 0),
+                    xpd=TRUE)
         }
-        if (drawContours)
-            abline(h=contours)
-        box()
         if (zIsTime & is.null(at)) {
             at <- as.numeric(pretty(zlim))
         } else if (is.null(at)) {
