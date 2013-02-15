@@ -62,23 +62,19 @@ paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
     pc 
 }
 
-drawPalette <- function(zlim,
-                        zlab="",
-                        breaks,
-                        col,
-                        labels=NULL,
-                        at=NULL,
-                        mai, fullpage=FALSE,
-                        drawContours=FALSE,
-                        debug=getOption("oceDebug"),
-                        ...)
+drawPalette <- function(zlim, zlab="", breaks, col,
+                        labels=NULL, at=NULL, mai, fullpage=FALSE,
+                        drawContours=FALSE, drawPaletteTriangles=FALSE,
+                        debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
     if (zlimGiven)
         zlim <- range(zlim, na.rm=TRUE)
     breaksGiven <- !missing(breaks)
     if (zlimGiven)
-        oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", as.character(zlab), "\", ...) {\n", sep="")
+        oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",",
+                 zlim[2], "), zlab=", "\"", as.character(zlab), "\",
+                 drawPaletteTriangles=", drawPaletteTriangles, "...) {\n", sep="")
     else
         oceDebug(debug, "\bdrawPalette() with no arguments: set space to right of a graph\n", sep="")
     maiGiven <- !missing(mai)
@@ -93,12 +89,9 @@ drawPalette <- function(zlim,
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(format(omar, digits=3), collapse=","), ")\n")
-
-    if (!maiGiven) {
+    if (!maiGiven)
         mai <- c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0)
-    }
     pc <- paletteCalculations(mai=mai)
-
     contours <- NULL
     if (zlimGiven) {
         if (breaksGiven) {
@@ -126,27 +119,17 @@ drawPalette <- function(zlim,
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
-##    theMai <- c(pc$omai[1]+mai[1],
-##                pc$main + pc$marLHS + pc$paletteSeparation + mai[2],
-##                pc$omai[3]+mai[3],
-##                pc$marRHS+mai[4])
     oceDebug(debug, "fullpage=", fullpage, "\n")
     oceDebug(debug, "maiGiven=", maiGiven, "\n")
-    #print(pc)
     if (fullpage) {
         if (maiGiven) {
             theMai <- mai
         } else {
-            #browser()
             width <- par('fin')[1] # width
             mai4 <- 3 * par('cin')[2]
-            ##paletteWidth <- 1/4
             mai2 <- 1/8 #width - paletteWidth - mai4
             theMai <- c(omai[1], mai2, omai[3], mai4)
             oceDebug(debug, "width=", width, ", mai2=", mai2, ", mai4=", mai4, "\n")
-            #theMai <- c(omai[1], pc$maiLHS-omai[4], omai[3], pc$maiRHS)
-            #theMai <- c(omai[1], max(pc$maiLHS, pc$maiLHS-omai[4]), omai[3], pc$maiRHS)
-            #theMai <- c(omai[1], pc$maiLHS, omai[3], pc$maiRHS)
         }
     } else {
         theMai <- c(pc$omai[1]+mai[1],
@@ -168,6 +151,21 @@ drawPalette <- function(zlim,
                   col=col,
                   zlim=zlim)
         }
+        if (drawPaletteTriangles) {
+            mai <- par('mai')
+            fin <- par('fin')
+            paletteWidth <- fin[1] - mai[2] - mai[4] # inch
+            paletteHeight <- fin[2] - mai[1] - mai[3] # inch
+            usr <- par('usr')
+            dx <- usr[2] - usr[1]      # user unit
+            dy <- usr[4] - usr[3]      # user unit
+            triangleHeight <- 0.5 * paletteWidth * dy / dx / paletteHeight
+            oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
+            polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                    usr[4] + c(0, triangleHeight, 0), col=col[length(col)], xpd=TRUE)
+            polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                    usr[3] + c(0, -triangleHeight, 0), col=col[1], xpd=TRUE)
+        }
         if (drawContours)
             abline(h=contours)
         box()
@@ -177,7 +175,8 @@ drawPalette <- function(zlim,
             ## NB. in next line, the '10' matches a call to pretty() in imagep().
             at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10) # FIXME: wrong on contours
         }
-        if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
+        if (is.null(labels))
+            labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
@@ -209,9 +208,10 @@ imagep <- function(x, y, z,
                    breaks, col,
                    labels=NULL, at=NULL,
                    drawContours=FALSE,
+                   drawPalette=TRUE,
+                   drawPaletteTriangles=FALSE,
                    tformat,
                    drawTimeRange=getOption("oceDrawTimeRange"),
-                   drawPalette=TRUE,
                    filledContour=FALSE,
                    missingColor=NULL,
                    mgp=getOption("oceMgp"),
@@ -370,6 +370,7 @@ imagep <- function(x, y, z,
                     breaks=breaks, col=col, 
                     labels=labels, at=at,
                     drawContours=drawContours,
+                    drawPaletteTriangles=drawPaletteTriangles,
                     mai=mai.palette, debug=debug-1)
     }
 
