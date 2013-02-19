@@ -192,13 +192,14 @@ binAverage <- function(x, y, xmin, xmax, xinc)
         stop("must have xmax > xmin")
     if (xinc <= 0)
         stop("must have xinc > 0")
-    nb <- floor(1 + (xmax - xmin) / xinc)
-    if (nb < 1)
-        stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
-    xx <- seq(xmin, xmax, xinc) + xinc / 2
+    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
+    #cat("xx:", xx, "\n")
+    nb <- length(xx)
+    ##dyn.load("bin_average.so") # include this whilst debugging
     yy <- .C("bin_average", length(x), as.double(x), as.double(y),
              as.double(xmin), as.double(xmax), as.double(xinc),
-             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+             ##means=double(nb), NAOK=TRUE)$means
+             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
     list(x=xx, y=yy)
 }
 
