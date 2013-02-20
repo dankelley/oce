@@ -5,7 +5,7 @@
 //#define debug
 //#define debug2
 
-#define ijk(i, j, k) ((i) + (ny) * (j) + (ny) * (nz) * (k))
+#define ijk(i, j, k) ((i) + (nx) * (j) + (nx) * (ny) * (k))
 
 SEXP approx3d(SEXP x, SEXP y, SEXP z, SEXP f, SEXP xout, SEXP yout, SEXP zout)
 {
