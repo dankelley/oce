@@ -30,14 +30,14 @@
 }
 
 
-\details{For values of \code{xout}, \code{yout} and \code{zout} that are inside
-    the region specified by \code{x}, \code{y} and \code{z}, use trilinear
-    interpolation within the grid cube containing the point.  For values
-    outside the cube, return \code{NA}.}
-
+\details{Trilinear interpolation is used to interpolate within the \code{f}
+    array, for those (\code{xout}, \code{yout} and \code{zout}) triplets that
+    are inside the region specified by \code{x}, \code{y} and \code{z}.
+    Triplets that lie outside the range of \code{x}, \code{y} or \code{z} result 
+    in \code{NA} values.}
     
-\value{A vector of interpolated values, with length matching that of
-    \code{xout}.  Any points that are outside the grid yield \code{NA} values.}
+\value{A vector of interpolated values (or \code{NA} values), with length
+    matching that of \code{xout}.}
 
     
 \examples{
@@ -60,7 +60,7 @@ points(xout[1], f[1,1,1])
 points(xout[m], f[n,n,n])
 }
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 \keyword{misc}
 
