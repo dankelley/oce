@@ -1,5 +1,20 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+approx3d <- function(x, y, z, f, xout, yout, zout) {
+    equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
+    if (missing(x)) stop("must provide x")
+    if (missing(y)) stop("must provide y")
+    if (missing(z)) stop("must provide z")
+    if (missing(f)) stop("must provide f")
+    if (missing(xout)) stop("must provide xout")
+    if (missing(yout)) stop("must provide yout")
+    if (missing(zout)) stop("must provide zout")
+    if (!equispaced(x)) stop("x values must be equi-spaced")
+    if (!equispaced(y)) stop("y values must be equi-spaced")
+    if (!equispaced(z)) stop("z values must be equi-spaced")
+    .Call("approx3d", x, y, z, f, xout, yout, zout);
+}
+
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 {
     if (missing(x))

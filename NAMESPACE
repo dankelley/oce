@@ -6,6 +6,7 @@ importFrom(utils, head, tail)
 exportMethods(plot)
 export("+.section",
        abbreviateTimeLabels,
+       approx3d,
        beamName,
        addColumn,
        airRho,
