@@ -41,6 +41,7 @@
         \describe{
             \item{\code{"salinity"}}{Profile of salinity.}
             \item{\code{"temperature"}}{Profile of \emph{in-situ} temperature.}
+            \item{\code{"theta"}}{Profile of \emph{potential} temperature.}
             \item{\code{"density"}}{Profile of density (expressed as
                 \eqn{\sigma_\theta}{sigma_theta}).}
             \item{\code{"index"}}{Index of sample (very useful for working with

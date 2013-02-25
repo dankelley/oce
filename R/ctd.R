@@ -673,7 +673,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 11) {
+                   } else if (which[w] == 11) {
                       plotProfile(x, xtype="density",
                                   ylim=plim,
                                   densitylim=densitylim,
@@ -2211,6 +2211,43 @@ plotProfile <- function (x,
                 }
             }
             plotJustProfile(temperature, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
+        }
+    } else if (xtype == "theta") {
+        theta <- swTheta(x, method=eos)
+        if (missing(Tlim)) {
+            if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
+        }
+        if (useSmoothScatter) {
+            smoothScatter(theta, y, xlim=Tlim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
+            axis(2)
+            axis(3)
+            box()
+            if (eos == "teos")
+                mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            else
+                mtext(resizableLabel(theta, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+        } else {
+            look <- if (keepNA) 1:length(y) else !is.na(theta) & !is.na(y)
+            if (!add) {
+                plot(theta[look], y[look],
+                     xlim=Tlim, ylim=ylim,
+                     type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                if (eos == "teos")
+                    mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                else
+                    mtext(resizableLabel("theta", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                mtext(yname, side = 2, line = axis.name.loc, cex=par("cex"))
+                axis(2)
+                axis(3)
+                box()
+                if (grid) {
+                    at <- par("yaxp")
+                    abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                    at <- par("xaxp")
+                    abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                }
+            }
+            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
     } else if (xtype == "density") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?

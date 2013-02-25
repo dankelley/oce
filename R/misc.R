@@ -545,7 +545,8 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
-                                  "conservative temperature", "absolute salinity",
+                                  "conservative temperature",
+                                  "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice", "fluorescence",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
