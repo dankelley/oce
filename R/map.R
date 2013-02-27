@@ -26,7 +26,9 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     for (ilevel in 1:nlevels) {
         cl <- contourLines(x=longitude, y=latitude, z=z, levels=levels[ilevel])
         for (segment in 1:length(cl)) {
-            mapLines(cl[[segment]]$x, cl[[segment]]$y, lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+            if (length(cl) > 0) {
+                mapLines(cl[[segment]]$x, cl[[segment]]$y, lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+            }
         }
     }
     ## FIXME: labels, using labcex and vfont
