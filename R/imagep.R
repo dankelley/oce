@@ -64,7 +64,7 @@ paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
 
 drawPalette <- function(zlim, zlab="", breaks, col,
                         labels=NULL, at=NULL, mai, fullpage=FALSE,
-                        drawContours=FALSE, drawPaletteTriangles=FALSE,
+                        drawContours=FALSE, drawTriangles=FALSE,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
@@ -74,7 +74,7 @@ drawPalette <- function(zlim, zlab="", breaks, col,
     if (zlimGiven)
         oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",",
                  zlim[2], "), zlab=", "\"", as.character(zlab), "\",
-                 drawPaletteTriangles=", drawPaletteTriangles, "...) {\n", sep="")
+                 drawTriangles=", drawTriangles, "...) {\n", sep="")
     else
         oceDebug(debug, "\bdrawPalette() with no arguments: set space to right of a graph\n", sep="")
     maiGiven <- !missing(mai)
@@ -154,7 +154,8 @@ drawPalette <- function(zlim, zlab="", breaks, col,
         if (drawContours)
             abline(h=contours)
         box()
-        if (drawPaletteTriangles) {
+        drawTriangles <- rep(drawTriangles, length.out=2)
+        if (any(drawTriangles, na.rm=TRUE)) {
             mai <- par('mai')
             fin <- par('fin')
             paletteWidth <- fin[1] - mai[2] - mai[4] # inch
@@ -164,18 +165,22 @@ drawPalette <- function(zlim, zlab="", breaks, col,
             dy <- usr[4] - usr[3]      # user unit
             triangleHeight <- 1 / 3 * paletteWidth * dy / dx / paletteHeight
             oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
-            polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                    usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
-                    border=col[length(col)], xpd=TRUE)
-            lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                    usr[4] + c(0, triangleHeight, 0),
-                    xpd=TRUE)
-            polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                    usr[3] + c(0, -triangleHeight, 0), col=col[1], 
-                    border=col[1], xpd=TRUE)
-            lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                    usr[3] + c(0, -triangleHeight, 0),
-                    xpd=TRUE)
+            if (drawTriangles[2]) {
+                polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                        usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
+                        border=col[length(col)], xpd=TRUE)
+                lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                      usr[4] + c(0, triangleHeight, 0),
+                      xpd=TRUE)
+            }
+            if (drawTriangles[1]) {
+                polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                        usr[3] + c(0, -triangleHeight, 0), col=col[1], 
+                        border=col[1], xpd=TRUE)
+                lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                      usr[3] + c(0, -triangleHeight, 0),
+                      xpd=TRUE)
+            }
         }
         if (zIsTime & is.null(at)) {
             at <- as.numeric(pretty(zlim))
@@ -375,11 +380,14 @@ imagep <- function(x, y, z,
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
+        drawTriangles <- rep(drawPaletteTriangles, length.out=2)
+        drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1])
+        drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2])
         drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",
                     breaks=breaks, col=col, 
                     labels=labels, at=at,
                     drawContours=drawContours,
-                    drawPaletteTriangles=drawPaletteTriangles||!zclip,
+                    drawTriangles=drawTriangles,
                     mai=mai.palette, debug=debug-1)
     }
 

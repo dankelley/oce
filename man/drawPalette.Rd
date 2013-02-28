@@ -8,7 +8,7 @@
 
 \usage{drawPalette(zlim, zlab="", breaks, col,
     labels=NULL, at=NULL, mai, fullpage=FALSE,
-    drawContours=FALSE, drawPaletteTriangles=FALSE,
+    drawContours=FALSE, drawTriangles=FALSE,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -37,8 +37,11 @@
     \item{drawContours}{logical value indicating whether to draw contours on
         the palette, at the colour breaks.}
 
-    \item{drawPaletteTriangles}{logical value indicating whether to draw
-        triangles on the top and bottom of the palette.}
+    \item{drawTriangles}{logical value indicating whether to draw triangles on
+        the top and bottom of the palette.  If a single value is provide, it
+        applies to both ends of the palette.  If a pair is provided, the first
+        refers to the lower range of the palette, and the second to the upper
+        range.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
