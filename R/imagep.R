@@ -379,7 +379,7 @@ imagep <- function(x, y, z,
                     breaks=breaks, col=col, 
                     labels=labels, at=at,
                     drawContours=drawContours,
-                    drawPaletteTriangles=drawPaletteTriangles,
+                    drawPaletteTriangles=drawPaletteTriangles||!zclip,
                     mai=mai.palette, debug=debug-1)
     }
 
