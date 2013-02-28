@@ -8,7 +8,7 @@
 
 \usage{imagep(x, y, z, 
     xlim, ylim, zlim, 
-    clipz=FALSE,
+    zclip=FALSE,
     flipy=FALSE,
     xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
     breaks, col,
@@ -48,7 +48,7 @@
         description here.)} 
     \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
 
-    \item{clipz}{logical, indicating whether to clip the colours to those
+    \item{zclip}{logical, indicating whether to clip the colours to those
         corresponding to \code{zlim}, if the latter is provided.  Clipped
         regions will be coloured with \code{missingColor}.}
 

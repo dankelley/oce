@@ -424,11 +424,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
-mapImage <- function(longitude, latitude, z,
-                     zlim, breaks, col,
-                     filledContour=FALSE,
-                     missingColor=NULL,
-                     debug=getOption("oceDebug"))
+mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
+                     filledContour=FALSE, missingColor=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bmapImage(..., ",
              " missingColor='", missingColor, "', ",
@@ -496,6 +493,18 @@ mapImage <- function(longitude, latitude, z,
     ymin <- usr[3]
     ymax <- usr[4]
     allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
+    if (zclip) {
+        oceDebug(debug, "using missingColour for out-of-range values\n")
+        z[z < zlim[1]] <- NA
+        z[z > zlim[2]] <- NA
+    } else {
+        if (!missing(zlim)) {
+            oceDebug(debug, "using range colours for out-of-range values\n")
+            small <- sqrt(.Machine$double.eps)
+            z[z <= zlim[1]] <- zlim[1] + small
+            z[z >= zlim[2]] <- zlim[2] - small
+        }
+    }
     for (i in 1:ni) {
         for (j in 1:nj) {
             ##col <- cols[100 * (z[i,j] - zmin)/ zrange]
@@ -515,7 +524,7 @@ mapImage <- function(longitude, latitude, z,
                 next
             zz <- z[i, j]
             if (is.finite(zz)) {
-                thiscol <- col[which(zz < breaks)[1]]
+                thiscol <- col[-1 + which(zz < breaks)[1]]
                 polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
             } else if (!is.null(missingColor)) {
                 polygon(xy$x, xy$y, col=missingColor, lty=lty, border=NA, fillOddEven=FALSE)

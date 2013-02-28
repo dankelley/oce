@@ -211,7 +211,7 @@ drawPalette <- function(zlim, zlab="", breaks, col,
 
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
-                   clipz=FALSE,
+                   zclip=FALSE,
                    flipy=FALSE,
                    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
                    breaks, col,
@@ -391,7 +391,7 @@ imagep <- function(x, y, z,
         ## z[, seq.int(nc, 1L)] <- z[, seq.int(1L, nc)]
         ylim <- rev(ylim)
     }
-    if (clipz) {
+    if (zclip) {
         oceDebug(debug, "using missingColour for out-of-range values")
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA

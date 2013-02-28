@@ -6,8 +6,8 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z, zlim, breaks, col, filledContour=FALSE,
-         missingColor=NULL, debug=getOption("oceDebug"))}
+\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
+         filledContour=FALSE, missingColor=NULL, debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -18,6 +18,10 @@
     \item{z}{matrix for image}
     
     \item{zlim}{limit for z (colour)}
+    
+    \item{zclip}{logical, indicating whether to clip the colours to those
+        corresponding to \code{zlim}, if the latter is provided.  Clipped
+        regions will be coloured with \code{missingColor}.}
 
     \item{breaks}{the z values for breaks in the colour scheme.  If this is of
         length 1, the value indicates the desired number of breaks, which is
