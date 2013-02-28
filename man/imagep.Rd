@@ -8,6 +8,7 @@
 
 \usage{imagep(x, y, z, 
     xlim, ylim, zlim, 
+    clipz=FALSE,
     flipy=FALSE,
     xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
     breaks, col,
@@ -46,7 +47,12 @@
         are meant to mimic those of \code{\link{image}}, which explains the same
         description here.)} 
     \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
-    \item{flipy}{boolean, with \code{TRUE} indicating that the image
+
+    \item{clipz}{logical, indicating whether to clip the colours to those
+        corresponding to \code{zlim}, if the latter is provided.  Clipped
+        regions will be coloured with \code{missingColor}.}
+
+    \item{flipy}{logical, with \code{TRUE} indicating that the image
         should be flipped top to bottom (e.g. to produce a profile image
         for a downward-looking acoustic-doppler profile).}
     \item{xlab,ylab,zlab}{names for x axis, y axis, and the image values.}
