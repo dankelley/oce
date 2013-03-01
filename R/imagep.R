@@ -223,7 +223,7 @@ imagep <- function(x, y, z,
                    labels=NULL, at=NULL,
                    drawContours=FALSE,
                    drawPalette=TRUE,
-                   drawPaletteTriangles=FALSE,
+                   drawTriangles=FALSE,
                    tformat,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    filledContour=FALSE,
@@ -380,7 +380,7 @@ imagep <- function(x, y, z,
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
-        drawTriangles <- rep(drawPaletteTriangles, length.out=2)
+        drawTriangles <- rep(drawTriangles, length.out=2)
         drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1])
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2])
         drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",

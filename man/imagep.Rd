@@ -15,7 +15,7 @@
     labels=NULL, at=NULL,
     drawContours=FALSE,
     drawPalette=TRUE,
-    drawPaletteTriangles=FALSE,
+    drawTriangles=FALSE,
     tformat,
     drawTimeRange=getOption("oceDrawTimeRange"),
     filledContour=FALSE,
@@ -71,8 +71,6 @@
     \item{drawContours}{logical value indicating whether to draw contours on the
         image, and palette, at the colour breaks.  Images with a great deal of
         high-wavenumber variation look poor with contours.}
-
-
     \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
         plot types that call that function.  (See \code{\link{strptime}} for the
         format used.)}
@@ -90,8 +88,9 @@
         have been drawn.  This last form is useful for producing stacked plots
         with uniform left and right margins, but with palettes on only some of
         the images.}
-    \item{drawPaletteTriangles}{logical value indicating whether to draw
-        triangles on the top and bottom of the palette.}
+    \item{drawTriangles}{logical value indicating whether to draw
+        triangles on the top and bottom of the palette.  This is passed to
+        \code{\link{drawPalette}}.}
     \item{filledContour}{boolean value indicating whether to use filled
         contours to plot the image.}
     \item{missingColor}{a color to be used to indicate missing data, or
