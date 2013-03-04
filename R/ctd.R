@@ -17,6 +17,8 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
+              } else if (i == "theta" || i == "potential temperature") {
+                  swTheta(x)
               } else if (i == "absoluteSalinity" || i == "SA") {
                   Sp <- x@data$salinity
                   t <- x@data$temperature
@@ -2212,7 +2214,7 @@ plotProfile <- function (x,
             }
             plotJustProfile(temperature, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
-    } else if (xtype == "theta") {
+    } else if (xtype == "theta" || xtype == "potential temperature") {
         theta <- swTheta(x, method=eos)
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
