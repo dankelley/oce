@@ -381,8 +381,8 @@ imagep <- function(x, y, z,
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
         drawTriangles <- rep(drawTriangles, length.out=2)
-        drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1])
-        drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2])
+        drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
+        drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
         drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",
                     breaks=breaks, col=col, 
                     labels=labels, at=at,
