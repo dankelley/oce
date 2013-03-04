@@ -37,7 +37,8 @@
 
 \arguments{
     \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-    \item{xtype}{Item(s) plotted on the x axis, from the list below.
+    \item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
+        to that of \code{x@data$pressure} or a text code from the list below.
         \describe{
             \item{\code{"salinity"}}{Profile of salinity.}
             \item{\code{"temperature"}}{Profile of \emph{in-situ} temperature.}

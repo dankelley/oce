@@ -2016,7 +2016,13 @@ plotProfile <- function (x,
     if (!add)
         par(mar=mar, mgp=mgp)
 
-    if (is.numeric(xtype)) {
+    if (is.vector(xtype) && length(xtype) == length(y)) {
+        plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, ...)
+        axis(3)
+        mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
+        axis(2)
+        box()
+    } else if (is.numeric(xtype)) {
         if (length(xtype) != length(y))
             stop("length(xtype) must match number of levels in the CTD object")
         if (add) {
