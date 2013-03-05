@@ -11,6 +11,7 @@
     ytype=c("pressure", "z", "sigmaTheta"),
     eos=getOption("eos", default='unesco'),
     xlab=NULL, ylab=NULL,
+    col="black",
     col.salinity="darkgreen",
     col.temperature="red",
     col.rho="blue",
@@ -75,6 +76,7 @@
         library installed; see \code{\link{teos}}.}
     \item{xlab}{optional label for x axis}
     \item{ylab}{optional label for y axis}
+    \item{col}{colour for a general profile.}
     \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
     \item{col.temperature}{color for temperature (see \dQuote{Details}).}
     \item{col.rho}{color for density (see \dQuote{Details}).}
