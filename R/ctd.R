@@ -2031,7 +2031,7 @@ plotProfile <- function (x,
             }
             box()
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=, yaxs=yaxs, ylim=ylim, col=col, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
