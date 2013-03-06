@@ -15,7 +15,7 @@ abbreviateTimeLabels <- function(t, ...)
     if (!inherits(t, "POSIXt"))
         return(t)                     # not a time, so just return the argument
     dots <- list(...)
-    if (!is.na(dots$format))
+    if ("format" %in% names(dots$format))
         return(format(t, dots$format)) # a format was specified, so just return the argument
     t <- format(t, "%Y-%m-%d %H:%M:%S")
     n <- length(t)
