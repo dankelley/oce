@@ -490,7 +490,8 @@ setMethod(f="plot",
                   }
               }
 
-              ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+              ylim.given <- if (gave.ylim) ylim else NULL
+              #ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
               if (missing(lwd))
                   lwd <- rep(par('lwd'), length.out=nw)
               else
@@ -592,13 +593,15 @@ setMethod(f="plot",
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[,,which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
-                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
                               zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$vDia[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
                               z <- x@data$v[,,which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
+                              if (0 == sum(y.look))
+                                  stop("no data in the provided ylim=c(", paste(ylim.given[w,], collapse=","), ")")
                               zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           }
                           oceDebug(debug, 'flipy=', flipy, '\n')
@@ -669,6 +672,7 @@ setMethod(f="plot",
                                   imagep(x=tt, y=x@data$distance, z=z,
                                          zlim=zlim,
                                          flipy=flipy,
+                                         ylim=if (gave.ylim) ylim[w,] else range(x@data$distance, na.rm=TRUE),
                                          col=if (gave.col) col else oceColorsPalette(128, 1),
                                          ylab=resizableLabel("distance"),
                                          xlab="Time",
