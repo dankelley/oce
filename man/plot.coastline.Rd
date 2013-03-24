@@ -12,6 +12,7 @@
      xlab="", ylab="",
      asp,
      clatitude, clongitude, span,
+     projection, parameters=NULL, orientation=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
@@ -51,6 +52,20 @@
       plotting device, the radius may be smaller than \code{span}.  A value for
       \code{span} must be supplied, if \code{clatitude} and \code{clongitude}
       are supplied.}
+
+  \item{projection}{optional map projection to use (see \code{\link{mapPlot}});
+      if not given, a cartesian frame is used, scaled so that coastline shapes
+      near the centre of the plot are preserved.  If a projection is provided,
+      the coordinate system will bear an indirect relationship to longitude and
+      longitude, and further adornment of the plot must be done with
+      e.g.  \code{\link{mapPoints}} instead of \code{\link{points}}.}
+  
+  \item{parameters}{optional parameters to map projection (see
+      \code{\link{mapPlot}}.}
+
+  \item{orientation}{optional orientation of map projection (see
+      \code{\link{mapPlot}}.}
+
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
@@ -113,14 +128,10 @@ library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
 plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
-# Test code, examplifying how a new option could yield geographical labels
-data(coastlineMaritimes)
-plot(coastlineMaritimes, axes=FALSE, span=300)
-x <- pretty(par('usr')[1:2], n=1.2*floor(par('fin')[1])) # the 1.2 bears some thinking; should cin be used?
-y <- pretty(par('usr')[3:4], n=1.2*floor(par('fin')[2]))
-box()
-axis(side=1,at=x,labels=formatPosition(x,type='expression'))
-axis(side=2,at=y,labels=formatPosition(y,type='expression'))
+
+## Canada in Lambert projection
+plot(coastlineWorld, clatitude=60, clongitude=-90, span=3000, fill=NULL, grid=10,
+     projection='lambert', parameters=c(lat0=50,lat1=70), orientation=c(90,-90,0))
 }
 }
 

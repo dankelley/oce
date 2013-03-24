@@ -73,13 +73,13 @@ as.ctd <- function(salinity, temperature, pressure,
                    src="")
 {
     if (!missing(salinity) && class(salinity) == "data.frame") {
-        df <- salinity
-        names <- names(df)
+        d <- salinity
+        names <- names(d)
         if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
             ## FIXME: extract SA and CT if they exist
-            salinity <- df$salinity
-            temperature <- df$temperature
-            pressure <- df$pressure
+            salinity <- d$salinity
+            temperature <- d$temperature
+            pressure <- d$pressure
             ## FIXME: extract nitrate etc
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
     } else {
@@ -88,6 +88,9 @@ as.ctd <- function(salinity, temperature, pressure,
         if (missing(pressure))
             stop("must give pressure")
     }
+    salinity <- as.vector(salinity)
+    temperature <- as.vector(temperature)
+    pressure <- as.vector(pressure)
     haveSA <- !missing(SA)
     haveCT <- !missing(CT)
     if (haveSA != haveCT)
@@ -504,6 +507,7 @@ setMethod(f="plot",
                               cex=1, cex.axis=par('cex.axis'),
                               pch=1,
                               useSmoothScatter=FALSE,
+                              df,
                               keepNA=FALSE,
                               type='l',
                               adorn=NULL,
@@ -550,24 +554,6 @@ setMethod(f="plot",
                       }
                   }
               }
-              ## 1=S+T
-              ## 2=density+N2
-              ## 3=TS
-              ## 4=text
-              ## 5=map
-              ## 6=density+dpdt
-              ## 7=density+time
-              ## 8=index
-              ##
-              ## new as of 2010-08-11
-              ## 9=salinity profile
-              ## 10=temperature profile
-              ## 11=density profile
-              ## 12=N2 profile
-
-              ##if (any(!which %in% 1:12))
-              ##    stop("which must be between 1 and 12")
-
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
                   adorn <- rep(adorn, lw)
@@ -598,9 +584,32 @@ setMethod(f="plot",
                   for (nc in seq_along(x@data))
                       x@data[[nc]] <- x@data[[nc]][1:last.good]
               }
+
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which,
+                                 list("temperature+salinity"=1,
+                                      "density+N2"=2,
+                                      TS=3,
+                                      text=4,
+                                      map=5,
+                                      "density+dpdt"=6,
+                                      "density+time"=7,
+                                      index=8,
+                                      salinity=9,
+                                      temperature=10,
+                                      density=11,
+                                      N2=12,
+                                      spice=13,
+                                      tritium=14))
+              oceDebug(debug, "which:", which, "\n")
+
               for (w in 1:length(which)) {
+                  if (is.na(which[w])) {
+                      warning("plot.ctd(): unknown plot type requested\n", call.=FALSE)
+                      next
+                  }
                   oceDebug(debug, "this which:", which[w], "\n")
-                  if (which[w] == 1 || which[w] == "temperature+salinity") {
+                  if (which[w] == 1) {
                       plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -608,16 +617,17 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 2 || which[w] == "density+N2") {
+                  } else if (which[w] == 2) {
                       plotProfile(x, xtype="density+N2",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
+                                  df=df,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 6 || which[w] == "density+dpdt") {
+                  } else if (which[w] == 6) {
                       plotProfile(x, xtype="density+dpdt",
                                   ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                                   eos=eos,
@@ -626,7 +636,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 7 || which[w] == "density+time") {
+                  } else if (which[w] == 7) {
                       plotProfile(x, xtype="density+time",
                                   ylim=plim, densitylim=densitylim, timelim=timelim,
                                   useSmoothScatter=useSmoothScatter,
@@ -634,7 +644,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 8 || which[w] == "index") {
+                  } else if (which[w] == 8) {
                       plotProfile(x, xtype="index",
                                   ylim=plim,
                                   eos=eos,
@@ -643,7 +653,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 9 || which[w] == "salinity") {
+                  } else if (which[w] == 9) {
                       plotProfile(x, xtype="salinity",
                                   ylim=plim,
                                   Slim=Slim,
@@ -653,7 +663,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 10 || which[w] == "temperature") {
+                  } else if (which[w] == 10) {
                       plotProfile(x, xtype="temperature",
                                   ylim=plim,
                                   Tlim=Tlim,
@@ -663,7 +673,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 11 || which[w] == "density") {
+                  } else if (which[w] == 11) {
                       plotProfile(x, xtype="density",
                                   ylim=plim,
                                   densitylim=densitylim,
@@ -674,18 +684,19 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 12 || which[w] == "N2") {
+                  } else if (which[w] == 12) {
                       plotProfile(x, xtype="N2",
                                   ylim=plim,
                                   N2lim=N2lim,
                                   grid=grid,
                                   eos=eos,
+                                  df=df,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid=col.grid, lty.grid=lty.grid,
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 13 || which[w] == "spice") {
+                  } else if (which[w] == 13) {
                       plotProfile(x, xtype="spice",
                                   ylim=plim,
                                   eos=eos,
@@ -694,7 +705,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 13 || which[w] == "tritium") {
+                  } else if (which[w] == 14) {
                       plotProfile(x, xtype="tritium",
                                   ylim=plim,
                                   eos=eos,
@@ -703,7 +714,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                  } else if (which[w] == 3 || which[w] == "TS") {
+                  } else if (which[w] == 3) {
                       ##par(mar=c(3.5,3,2,2))
                       lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
                       lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
@@ -715,7 +726,7 @@ setMethod(f="plot",
                              inset=inset,
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
-                  } else if (which[w] == 4 || which[w] == "text") {
+                  } else if (which[w] == 4) {
                       text.item <- function(item, label, cex=0.8) {
                           if (!is.null(item) && !is.na(item)) {
                               text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex)
@@ -774,7 +785,7 @@ setMethod(f="plot",
                                                          ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
                           yloc <- yloc - d.yloc
                       }
-                  } else if (which[w] == "map" || round(which[w]) == 5) {
+                  } else if (which[w] == 5) {
                       oceDebug(debug, "draw(ctd, ...) of type MAP\n")
                       ## get coastline file
                       if (is.character(coastline)) {
@@ -857,11 +868,11 @@ setMethod(f="plot",
                       oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
                       points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                       if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                          mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"))
+                          mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                       if (!is.null(x@metadata$startTime))
-                          mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"))
-                      if (!is.null(x@metadata$scientist))
-                          mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
+                          mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                      ##if (!is.null(x@metadata$scientist))
+                      ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
@@ -879,6 +890,7 @@ plotScan <- function(x,
                      name = "scan",
                      adorn=NULL,
                      mgp=getOption("oceMgp"),
+                     type='l',
                      ...)
 {
     if (!inherits(x, "ctd"))
@@ -906,9 +918,10 @@ plotScan <- function(x,
     if (!("scan" %in% names(x@data))) {
         x@data[["scan"]] <- 1:length(x@data$pressure)
     }
-    plot(x@data[[name]], x@data$pressure,
+    plot(x[[name]], x@data$pressure,
          xlab=name, ylab=resizableLabel("p", "y"),
-         type="l")
+         yaxs='r',
+         type=type)
     mtext(paste("Station", x@metadata$station), side=3, adj=1, cex=par('cex'))
     mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
     if (1 <= adorn.length) {
@@ -922,16 +935,16 @@ plotScan <- function(x,
     Tlen <- length(x@data$temperature)
     if (Slen != Tlen)
         stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    plot(x@data[[name]], x@data$temperature, xlab="scan", ylab=resizableLabel("T", "y"),
-         type="l")
+    plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
+         yaxs='r', type=type)
     grid()
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
         if (class(t) == "try-error")
             warning("cannot evaluate adorn[", 2, "]\n")
     }
-    plot(x@data[[name]], x@data$salinity, xlab="scan", ylab=resizableLabel("S", "y"),
-         type="l")
+    plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
+         yaxs='r', type=type)
     grid()
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
@@ -1793,8 +1806,13 @@ plotTS <- function (x,
         if (add) {
             if (type == 'p')
                 points(salinity, y, cex=cex, pch=pch, col=col)
-            else
+            else if (type == 'l')
                 lines(salinity, y, col=col, ...)
+            else if (type == 'o') {
+                points(salinity, y, cex=cex, pch=pch, col=col)
+                lines(salinity, y, col=col, ...)
+            } else 
+                points(salinity, y, cex=cex, pch=pch, col=col)
         } else {
             plot(Slim, Tlim,
                  xlab = xlab, ylab=ylab,
@@ -1810,6 +1828,12 @@ plotTS <- function (x,
                 points(salinity, y, cex=cex, pch=pch, col=col, ...)
             else if (type == 'l')
                 lines(salinity, y, col=col, ...)
+            else if (type == 'o') {
+                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+                lines(salinity, y, col=col, ...)
+            } else
+                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+
         }
     }
     ## grid, isopycnals, then freezing-point line
@@ -1860,7 +1884,6 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
     for (rho in rhoList) {
         rhoLabel <- if (rho1000) 1000+rho else rho
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
-        #browser()
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
             Sok <- Sline[ok]
@@ -1902,6 +1925,7 @@ plotProfile <- function (x,
                          yaxs="r",
                          cex=1, pch=1,
                          useSmoothScatter=FALSE,
+                         df,
                          keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
@@ -1913,7 +1937,7 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "\bplotProfile(x, xtype=\"", xtype, "\", ...) {\n", sep="")
     eos <- match.arg(eos, c("unesco", "teos"))
-    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, keepNA=FALSE)
+    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE)
     {
         oceDebug(debug, "\b    plotJustProfile(type=\"", type, "\") {\n", sep="")
         if (!keepNA) {
@@ -2211,7 +2235,7 @@ plotProfile <- function (x,
         box()
         if (type == 'l') lines(st, y, col = col.rho, lwd=lwd) else points(st, y, col = col.rho, pch=pch)
         par(new = TRUE)
-        N2 <- swN2(x@data$pressure, st, xaxs=xaxs, yaxs=yaxs)
+        N2 <- swN2(x@data$pressure, st, df=df)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         plot(N2[look], y[look],
@@ -2227,7 +2251,7 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x@data$pressure, x@data$sigmaTheta)
+        N2 <- swN2(x@data$pressure, x@data$sigmaTheta, df=df)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)

@@ -6,17 +6,38 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z)}
+\usage{mapImage(longitude, latitude, z, zlim, breaks, col, filledContour=FALSE,
+         missingColor=NULL, debug=getOption("oceDebug"))}
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted}
-    \item{latitude}{latitudes of points to be plotted}
+
+    \item{longitude}{longitudes of grid lines}
+
+    \item{latitude}{latitudes of grid lines}
+
     \item{z}{matrix for image}
+    
+    \item{zlim}{limit for z (colour)}
+
+    \item{breaks}{the z values for breaks in the colour scheme.  If this is of
+        length 1, the value indicates the desired number of breaks, which is
+        supplied to \code{\link{pretty}}, in determining clean break points.}
+
+    \item{col}{either a vector of colours corresponding to the breaks, of length
+        1 plus the number of breaks, or a function specifying colours,
+        e.g. \code{\link{oceColorsJet}} for a rainbow.}
+  
+    \item{filledContour}{boolean value indicating whether to use filled
+        contours to plot the image.}
+
+    \item{missingColor}{a color to be used to indicate missing data, or
+        \code{NULL} to simply skip the drawing of such regions.}
+
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+        moderate amount of debugging information, or to 2 to get more.} 
 }
 
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
-
-\section{Bugs}{More arguments need to be added, e.g. for the colour mapping, etc.}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}
@@ -27,16 +48,38 @@ library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
         latitudelim=c(40,50), longitudelim=c(-70,-50),
-        proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
-data(topoMaritimes)
-look <- seq(1, 600, 10)
-tlon <- topoMaritimes[['longitude']][look]
-tlat <- topoMaritimes[['latitude']][look]
-z <- topoMaritimes[['z']][look, look]
-mapImage(tlon, tlat, z)
+        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
+data(topoWorld)
+mapImage(topoWorld, col=oceColorsGebco)
 mapMeridians(10, lty='dotted', col='darkgray')
 mapZones(10, lty='dotted', col='darkgray')
 mapLines(coastlineWorld)
+
+## Northern polar region, with colour-coded bathymetry
+drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
+mapPlot(coastlineWorld, type='l',
+         latitudelim=c(60,120), longitudelim=c(-180,180),
+         proj="stereographic", grid=TRUE)
+data(topoWorld)
+mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)
+mapMeridians()
+mapZones()
+mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+
+# Levitus July SST (requires dataset from http://www.esrl.noaa.gov)
+library(ncdf)
+con <- open.ncdf("/data/oar/levitus/otemp.mnltm.nc")
+lon <- get.var.ncdf(con, "lon")
+lat <- get.var.ncdf(con, "lat")
+SSTjuly <- get.var.ncdf(con, "otemp")[,,1,7]
+x11(width=8, height=4) # x11 is fast, so use for tests
+par(mar=rep(1, 4))
+Tlim <- c(-2, 30)
+drawPalette(Tlim, col=oceColorsJet)
+mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
+mapImage(lon, lat, SSTjuly, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
+mapLines(coastlineWorld)
+mtext("July SST", side=3, line=-1, adj=1)
 }
 }
 

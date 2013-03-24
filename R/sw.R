@@ -1,5 +1,6 @@
-swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...)
+swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
 {
+    ##cat("swN2(..., df=", df, ")\n",sep="")
     if (inherits(pressure, "ctd")) {
         sigmaTheta <- swSigmaTheta(pressure)
         pressure <- pressure[['pressure']] # over-writes pressure
@@ -7,13 +8,18 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...)
     if (missing(derivs))
         derivs <- "smoothing"
     ok <- !is.na(pressure) & !is.na(sigmaTheta)
+    if (!missing(df)) {
+        df <- max(2, min(df, length(unique(pressure))))
+    }
     if (is.character(derivs)) {
         if (derivs == "simple") {
             sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
         } else if (derivs == "smoothing") {
             args <- list(...)
             depths <- length(pressure)
-            df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
+            ##df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
+            if (missing(df))
+               df <- min(floor(length(pressure)/5), 10)
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))

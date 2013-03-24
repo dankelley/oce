@@ -78,6 +78,13 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     pressure <- ncdf::get.var.ncdf(file, "PRES")
     pressureNA <- ncdf::att.get.ncdf(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
+    ## make things into matrices, even for a single profile
+    if (1 == length(dim(salinity))) {
+        dim <- c(length(salinity), 1)
+        dim(salinity) <- dim
+        dim(temperature) <- dim
+        dim(pressure) <- dim
+    }
     metadata <- list(filename=filename, id=id)
     res <- new("drifter", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
@@ -119,7 +126,7 @@ as.drifter <- function(time, longitude, latitude,
 
 setMethod(f="plot",
           signature=signature("drifter"),
-          definition=function (x, which = 1, level=1,
+          definition=function (x, which = 1, level,
                                coastline,
                                cex=1,
                                pch=1,
@@ -127,7 +134,7 @@ setMethod(f="plot",
                                col,
                                adorn=NULL,
                                mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1, mgp[1]+1, 1.5, 1.5),
+                               mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                                tformat,
                                debug=getOption("oceDebug"),
                                ...)
@@ -152,15 +159,27 @@ setMethod(f="plot",
               omar <- par('mar')
               nw  <- length(which)
               if (nw > 1) {
-                  par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+                  par(mfcol=c(1, nw), mgp=mgp, mar=mar)
               } else {
                   par(mgp=mgp, mar=mar)
               }
-              if (level == "all")
+              if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
+              ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
+
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which,
+                                 list(trajectory=1,
+                                      "salinity ts"=2,
+                                      "temperature ts"=3,
+                                      "TS"=4,
+                                      "salinity profile"=5,
+                                      "temperature profile"=6))
+              oceDebug(debug, "which:", which, "(after conversion to numerical form)\n")
+
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "] = ", which[w], "\n")
-                  if (which[w] == 1 || which[w] == "trajectory") {
+                  if (which[w] == 1) {
                       asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
                            type=type, cex=cex, pch=pch,
@@ -204,27 +223,22 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 4) {    # TS
                       if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
-                          plotTS(as.ctd(x@data$salinity[level,], x@data$temperature[level,], 0), 
-                                 col=if (missing(col)) "black" else col, ...)
-                      } else {
+                          plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ...)
+                     } else {
                           warning("no non-missing salinity data")
                       }
                   } else if (which[w] == 5) {    # S profile
                       ## FIXME: how to handle the noise; if as below, document it
-                      plot(x@data$salinity, x@data$pressure,
-                           xlim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
-                           xlab=resizableLabel("S", "x"),
-                           ylab=resizableLabel("p", "y"))
+                      plotProfile(ctd, xtype="salinity",
+                           Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
+                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
                   } else if (which[w] == 6) {    # T profile
                       ## FIXME: how to handle the noise; if as below, document it
-                      plot(x@data$temperature, x@data$pressure,
-                           xlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
-                           xlab=resizableLabel("T", "x"),
-                           ylab=resizableLabel("p", "y"))
+                      plotProfile(ctd, xtype="temperature",
+                           Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
+                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
                   } else {
-                      stop("invalid value of which (", which, ")")
+                      stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
               oceDebug(debug, "\b\b} # plot.drifter()\n")

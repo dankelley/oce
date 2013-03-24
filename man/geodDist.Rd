@@ -65,7 +65,7 @@
 
 \examples{
 library(oce)
-km <- geodDist(45, 100, 46, 100)/1000 
+km <- geodDist(45, 100, 46, 100)
 data(section)
 geodDist(section)
 geodDist(section, alongPath=TRUE)

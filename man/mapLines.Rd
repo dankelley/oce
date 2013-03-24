@@ -9,17 +9,21 @@
 \usage{mapLines(longitude, latitude, greatCircle=FALSE, \dots)}
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted}
+
+    \item{longitude}{longitudes of points to be plotted, or an object from
+        which latitude and longitude can be inferred (e.g. a coastline file, or
+        the return value from \code{\link{mapLocator}}), in which case the
+        following two arguments are ignored.}
+
     \item{latitude}{latitudes of points to be plotted}
+
     \item{greatCircle}{boolean indicating whether to render line segments as
         great circles.  (Ignored at present.)}
+
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}
 }
 
 \details{Adds lines to an existing map, by analogy to \code{\link{lines}}.}
-
-\section{Bugs}{This should use \code{\link{approx}} to fill in multiple
-    segments within the line, so that e.g. great circle lines will be curved.}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}

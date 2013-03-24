@@ -9,13 +9,17 @@
 \usage{oce.as.POSIXlt(x, tz = "")}
 
 \arguments{
-  \item{x}{a date, as for \code{as.POSIXlt}, but also including forms in which the month name appears.}
+
+  \item{x}{a date, as for \code{as.POSIXlt}, but also including forms in which
+      the month name appears.}
+
   \item{tz}{the timezone, as for \code{as.POSIXlt}}
 }
 
 \details{Used in parsing headers, this function is built on the standard
   \code{\link{as.POSIXlt}} function.  the only difference is that this
   also recognizes dates of forms such as
+\code{"2002 100 1430"} (year day hhmm),
 \code{"Aug 23 2002"},
 \code{"August 23 2002"},
 \code{"2002 Aug 23"}, and
