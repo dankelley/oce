@@ -425,8 +425,13 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
         }
     }
-    for (col in seq_along(x@data))
-        res@data[[col]] <- subset(x@data[[col]], keep)
+    if (is.data.frame(res@data)) {
+        res@data <- res@data[keep,]
+    } else {
+        for (i in seq_along(res@data)) {
+            res@data[[i]] <- res@data[[i]][keep]
+        }
+    }
     if (inferWaterDepth && !is.finite(res@metadata$waterDepth)) {
         res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
         oceDebug(debug, "inferred water depth of", res@metadata$waterDepth, "from pressure\n")
