@@ -128,23 +128,24 @@ as.ctd <- function(salinity, temperature, pressure,
     temperature <- as.vector(temperature)
     scan <- as.vector(scan)
     nSalinity <- length(salinity)
-    data <- data.frame(salinity=salinity,
-                       temperature=temperature,
-                       pressure=pressure,
-                       scan=scan,
-                       oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, nSalinity),
-                       nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, nSalinity),
-                       nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, nSalinity),
-                       phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, nSalinity),
-                       silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, nSalinity),
-                       quality=quality,
-                       sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
+    data <- list(salinity=salinity,
+                 temperature=temperature,
+                 pressure=pressure,
+                 scan=scan,
+                 oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, nSalinity),
+                 nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, nSalinity),
+                 nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, nSalinity),
+                 phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, nSalinity),
+                 silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, nSalinity),
+                 quality=quality,
+                 sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
     if (!missing(other)) {
         names <- names(other)
         n <- length(names)
         for (i in 1:n) {
             if (names[i] != "") {
-                data <- data.frame(data, other)
+                ##data <- data.frame(data, other)
+                data[[names[i]]] <- data
             } else {
                 warning("'other' item number ", i, " has no name")
             }
@@ -232,7 +233,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
     }
     npt <- length(pt)
     data.names <- names(x@data)         # Step through each variable.
-    data.new <- as.data.frame(array(NA, dim=c(npt, length(data.names))))
+    data.new <- vector("list", length(data.names)) # as.data.frame(array(NA, dim=c(npt, length(data.names))))
     names(data.new) <- data.names
     method <- match.arg(method)
     if (method == "approx") {
@@ -426,6 +427,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         }
     }
     if (is.data.frame(res@data)) {
+        warning("old-style CTD data (with data as a data.frame, not a list)")
         res@data <- res@data[keep,]
     } else {
         for (i in seq_along(res@data)) {
@@ -1191,12 +1193,13 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     temperature[temperature == missing.value] <- NA
     sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
 
-    data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
+    ##data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
+    data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
     names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
     labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
     if (length(oxygen) > 0) {
         oxygen[oxygen == missing.value] <- NA
-        data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
+        data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
     }
     ## catch e.g. -999 sometimes used for water depth's missing value
     if (is.finite(waterDepth) && waterDepth <= 0)
