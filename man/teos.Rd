@@ -31,7 +31,7 @@
 \preformatted{
 curl -OL http://www.teos-10.org/software/gsw_c_v3_0.zip
 unzip gsw_c_v3_0.zip 
-cd gsw-3.0
+cd gsw-_v3.0
 make library
 sudo mv libgswteos-10.so /usr/local/lib
 }

@@ -11,6 +11,7 @@
     ytype=c("pressure", "z", "sigmaTheta"),
     eos=getOption("eos", default='unesco'),
     xlab=NULL, ylab=NULL,
+    col="black",
     col.salinity="darkgreen",
     col.temperature="red",
     col.rho="blue",
@@ -37,10 +38,12 @@
 
 \arguments{
     \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-    \item{xtype}{Item(s) plotted on the x axis, from the list below.
+    \item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
+        to that of \code{x@data$pressure} or a text code from the list below.
         \describe{
             \item{\code{"salinity"}}{Profile of salinity.}
             \item{\code{"temperature"}}{Profile of \emph{in-situ} temperature.}
+            \item{\code{"theta"}}{Profile of \emph{potential} temperature.}
             \item{\code{"density"}}{Profile of density (expressed as
                 \eqn{\sigma_\theta}{sigma_theta}).}
             \item{\code{"index"}}{Index of sample (very useful for working with
@@ -73,6 +76,7 @@
         library installed; see \code{\link{teos}}.}
     \item{xlab}{optional label for x axis}
     \item{ylab}{optional label for y axis}
+    \item{col}{colour for a general profile.}
     \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
     \item{col.temperature}{color for temperature (see \dQuote{Details}).}
     \item{col.rho}{color for density (see \dQuote{Details}).}

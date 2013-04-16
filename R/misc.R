@@ -1,5 +1,20 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+approx3d <- function(x, y, z, f, xout, yout, zout) {
+    equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
+    if (missing(x)) stop("must provide x")
+    if (missing(y)) stop("must provide y")
+    if (missing(z)) stop("must provide z")
+    if (missing(f)) stop("must provide f")
+    if (missing(xout)) stop("must provide xout")
+    if (missing(yout)) stop("must provide yout")
+    if (missing(zout)) stop("must provide zout")
+    if (!equispaced(x)) stop("x values must be equi-spaced")
+    if (!equispaced(y)) stop("y values must be equi-spaced")
+    if (!equispaced(z)) stop("z values must be equi-spaced")
+    .Call("approx3d", x, y, z, f, xout, yout, zout);
+}
+
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 {
     if (missing(x))
@@ -192,13 +207,14 @@ binAverage <- function(x, y, xmin, xmax, xinc)
         stop("must have xmax > xmin")
     if (xinc <= 0)
         stop("must have xinc > 0")
-    nb <- floor(1 + (xmax - xmin) / xinc)
-    if (nb < 1)
-        stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
-    xx <- seq(xmin, xmax, xinc) + xinc / 2
+    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
+    #cat("xx:", xx, "\n")
+    nb <- length(xx)
+    ##dyn.load("bin_average.so") # include this whilst debugging
     yy <- .C("bin_average", length(x), as.double(x), as.double(y),
              as.double(xmin), as.double(xmax), as.double(xinc),
-             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+             ##means=double(nb), NAOK=TRUE)$means
+             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
     list(x=xx, y=yy)
 }
 
@@ -529,7 +545,8 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
-                                  "conservative temperature", "absolute salinity",
+                                  "conservative temperature",
+                                  "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice", "fluorescence",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",

@@ -419,7 +419,8 @@ pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
 
 salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
-spice <- function(x, time) {
+spice <- function(x, time)
+{
     S <- salinity(x, time)
     T <- temperature(x, time)
     p <- pressure(x, time)
@@ -427,7 +428,6 @@ spice <- function(x, time) {
 }
 
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
-
 nitrate <- function(x, time) hydrographyLocal(x, time, "nitrate")
 "nitrate<-" <- function(x, value) { x@data$nitrate <- value }
 nitrite <- function(x, time) hydrographyLocal(x, time, "nitrite")
@@ -444,9 +444,11 @@ sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 "sigmaTheta<-" <- function(x, value)
 {
     x@data$sigmaTheta <- value
+    x
 }
 
-tritium <- function(x, time) hydrographyLocal(x, time, "tritium")
+tritium <- function(x, time)
+    hydrographyLocal(x, time, "tritium")
 
 time <- function(x)
 {
@@ -461,7 +463,7 @@ velocity <- function(x)
         stop("'x' must be an oce object")
     if (!("v" %in% names(x@data)))
         stop("'x' does not contain 'data$v'")
-    return(x@data$v)
+    x@data$v
 }
 
 "velocity<-" <- function(x, value)

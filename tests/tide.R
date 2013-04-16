@@ -53,7 +53,7 @@ stopifnot(name[1] == "Z0")
 stopifnot(name[2] == "SA")
 stopifnot(kmpr[2] == "SSA")
 i <- which(name == "M2")
-stopifnot(freq[i] == 1/12.42060119816049912345)
+stopifnot(all.equal(freq[i], 1/12.4206011981605))
 
 ############################
 ## Satellites [sat]       ##

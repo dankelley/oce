@@ -796,10 +796,11 @@ read.section <- function(file, directory, sectionId="", flags,
     header <- lines[1:header.length]
     nd <- n - header.length - 1
     nv <- length(var.names)
-    data <- array(dim=c(nd, nv - 2))
+    col.start <- 3                     # FIXME: why is this value used?  It fails on some (Arctic) data.
+    col.start <- 1
+    data <- array(dim=c(nd, nv - col.start + 1))
     stnSectionId <- vector("character", nd)
     stnId <- vector("character", nd)
-    col.start <- 3
     for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
 	contents <- strsplit(lines[l], split=",")[[1]]
 	stnSectionId[l - header.length] <- sub(" *","", contents[2])
@@ -811,6 +812,8 @@ read.section <- function(file, directory, sectionId="", flags,
 	pressure <- as.numeric(data[,which(var.names=="CTDPRS") - col.start + 1])
     else
 	stop("no column named \"CTDPRS\"")
+
+
     if (length(which(var.names=="CTDTMP")))
 	temperature <- as.numeric(data[,which(var.names=="CTDTMP") - col.start + 1])
     else
@@ -820,22 +823,20 @@ read.section <- function(file, directory, sectionId="", flags,
     ## has a bad flag value, we try SALNTY as a second option.  But
     ## if both CTDSAL and SALNTY are flagged, we just give up on the
     ## depth.
-    if (length(which(var.names=="CTDSAL")))
+    if (length(which(var.names=="CTDSAL"))) {
 	ctdsal <- as.numeric(data[,which(var.names=="CTDSAL") - col.start + 1])
-    else
-	stop("no column named \"CTDSAL\"")
-    if (length(which(var.names=="CTDSAL_FLAG_W")))
+    } else if (length(which(var.names=="SALNTY"))) {
+        ctdsal <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
+    } else {
+        stop("no column named \"CTDSAL\" or \"SALNTY\"; have:", paste(var.names, collapse=", "))
+    }
+    if (length(which(var.names=="CTDSAL_FLAG_W"))) {
 	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
-    else
-	stop("no column named \"CTDSAL_FLAG_W\"")
-    if (length(which(var.names=="SALNTY")))
-	salnty <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
-    else
-	stop("no column named \"SALNTY\"")
-    if (length(which(var.names=="SALNTY_FLAG_W")))
-	salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
-    else
-	stop("no column named \"SALNTY_FLAG_W\"")
+    } else if (length(which(var.names=="SALNTY_FLAG_W"))) {
+        ctdsal.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
+    } else {
+        stop("no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:", paste(var.names, collapse=", "))
+    }
     if (length(which(var.names=="DATE")))
 	stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
     else
@@ -910,9 +911,7 @@ read.section <- function(file, directory, sectionId="", flags,
 	lat[i] <- latitude[select[1]]
 	lon[i] <- longitude[select[1]]
 	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
-	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags,
-                               ctdsal[select],
-                               ifelse(salnty.flag[select] %in% flags, salnty[select], NA))
+	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], NA)
 	ok <- !is.na(goodSalinity)
 	ok <- ok & pressure[select] >= 0
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
@@ -1134,7 +1133,7 @@ summary.section <- function(object, ...)
     cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
     stn.sum <- matrix(nrow=numStations, ncol=5)
     if (numStations > 0) {
-        cat("* Station summary (first column is station ID):\n")
+        cat("* Summary of", numStations, "stations (first column is station ID)\n")
         for (i in 1:numStations) {
             stn <- object@data$station[[i]]
             stn.sum[i, 1] <- stn@metadata$longitude

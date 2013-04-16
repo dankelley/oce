@@ -1,4 +1,8 @@
 0.9-7
+- make ctdTrim() work in R 3.0
+- support for adp vmdas nav data (coded by Clark Richards)
+- approx3d(): added
+- drawPalette(): new arg 'fullpage'
 - plot.lobo(): add 'which' argument
 - read.coastline.openstreetmap() added
 - data(levitus) added

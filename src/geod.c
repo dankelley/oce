@@ -135,6 +135,7 @@ void geoddist_core(double *lat1, double *lon1, double *lat2, double *lon2, doubl
 	double rad = 0.0174532925199432957692369076848861;
 	double r = 1.0 - (*f);
 	double glat1, glon1, glat2, glon2, tu1, tu2, cu1, su1, cu2, x, sx, cx, sy, cy, y, sa, c2a, cz, e, c, d;
+        double lon1copy = *lon1, lon2copy = *lon2;
 	int iter;
 	if (((*lat1) == (*lat2)) && ((*lon1) == (*lon2))) {
 		*s = 0.0;
@@ -194,6 +195,8 @@ void geoddist_core(double *lat1, double *lon1, double *lat2, double *lon2, doubl
 	*s = ((((sy * sy * 4.0 - 3.0) * (*s) * cz * d / 6.0 - x) * d / 4.0 + cz) * sy * d + y) * c * (*a) * r;
 	*faz = (*faz) / rad;
 	*baz = (*baz) / rad;
+        *lon1 = lon1copy;
+        *lon2 = lon2copy;
 }
 
 void
