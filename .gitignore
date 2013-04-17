@@ -2,6 +2,7 @@ TAGS
 *.o
 *.so
 .Rhistory
+.Rapp.history
 *~
 Rplots.pdf
 src-*
