@@ -427,7 +427,6 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         }
     }
     if (is.data.frame(res@data)) {
-        warning("old-style CTD data (with data as a data.frame, not a list)")
         res@data <- res@data[keep,]
     } else {
         for (i in seq_along(res@data)) {
@@ -1525,8 +1524,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
     col.names.inferred <- tolower(col.names.inferred)
     oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-    data <- read.table(file, col.names=col.names.inferred, colClasses="numeric")
-    if (0 < dim(data)[1]) {
+    data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
+    if (0 < length(data[[1]])) {
         haveData <- TRUE
         names <- names(data)
         labels <- names
