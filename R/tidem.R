@@ -88,7 +88,7 @@ setMethod(f="plot",
 tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
-    data("tidedata")
+    data("tidedata", envir=environment())
     tidedata <- get("tidedata", pos=globalenv())
 
     a <- tidemAstron(t)
@@ -359,7 +359,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
-    data("tidedata")
+    data("tidedata", envir=environment())
     tidedata <- get("tidedata", pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
@@ -648,7 +648,7 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
-        data(tidedata)
+        data("tidedata", envir=environment())
         tidedata  <- get("tidedata",   pos=globalenv())
         for (i in 1:nconstituents) {
             period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]

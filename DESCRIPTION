@@ -1,6 +1,6 @@
 Package: oce
-Version: 0.9-7
-Date: 2013-04-17
+Version: 0.9-8
+Date: 2013-04-23
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
@@ -17,4 +17,5 @@ Description: Supports the analysis of Oceanographic data,
 License: GPL (>= 2)
 URL: http://dankelley.github.com/oce/
 LazyLoad: yes
+LazyData: yes
 Packaged: Dan Kelley

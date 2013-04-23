@@ -35,7 +35,7 @@ void set_libteos(char **lib)
 #ifdef DEBUG
   Rprintf("set_libteos(\"%s\")\n", *lib);
 #endif
-  libteosp = (char *)malloc(sizeof(char)*strlen(*lib));
+  libteosp = (char *)malloc(sizeof(char)*(1+strlen(*lib)));
   strcpy(libteosp, *lib);
 }
 

@@ -1284,16 +1284,16 @@ setMethod(f="plot",
                               if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
                                   oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
                                   if (coastline == "coastlineWorld") {
-                                      data(coastlineWorld)
+                                      data(coastlineWorld, envir=environment())
                                       coastline <- coastlineWorld
                                   } else if (coastline == "coastlineMaritimes") {
-                                      data(coastlineMaritimes)
+                                      data(coastlineMaritimes, envir=environment())
                                       coastline <- coastlineMaritimes
                                   } else if (coastline == "coastlineHalifax") {
-                                      data(coastlineHalifax)
+                                      data(coastlineHalifax, envir=environment())
                                       coastline <- coastlineHalifax
                                   } else if (coastline == "coastlineSLE") {
-                                      data(coastlineSLE)
+                                      data(coastlineSLE, envir=environment())
                                       coastline <- coastlineSLE
                                   } else {
                                       stop("there is no built-in coastline file of name \"", coastline, "\"")
