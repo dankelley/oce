@@ -1806,7 +1806,9 @@ plotTS <- function (x,
         if (!inset) {
             ## on.exit(par(mar=omar, mgp=omgp))
             if (3 == length(mgp)) par(mgp=mgp)
-            if (4 == length(mar)) par(mar=mar)
+            if (debug != 10) {
+                if (4 == length(mar)) par(mar=mar)
+            }
         }
     }
     axis.name.loc <- mgp[1]
