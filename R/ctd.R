@@ -1525,14 +1525,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     col.names.inferred <- tolower(col.names.inferred)
     oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
     data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
-    if (0 < length(data[[1]])) {
+    ndata <- length(data[[1]])
+    if (0 < ndata) {
         haveData <- TRUE
         names <- names(data)
         labels <- names
         if (!found.scan) {
-            newnames <- c("scan", names(data))
-            data <- cbind(seq(1,dim(data)[1]), data)
-            names(data) <- newnames
+            data[['scan']] <- 1:ndata
         }
     } else {
         haveData <- FALSE
@@ -1659,8 +1658,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     fff <- textConnection(lines)
     data <- read.table(fff, skip=dataStart)
     close(fff)
-    if (dim(data)[2] != length(names))
-        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(data)[2], ")")
+    if (length(data) != length(names))
+        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
     ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
