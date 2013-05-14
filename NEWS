@@ -1,4 +1,8 @@
+0.9-9
+- fix recent bug in reading CNV files (issue 318)
+
 0.9-8
+- TEMPORARY: plotTS(..., debug=10) now avoids setting par(mar)
 - fix memory error in teos handler (thanks, B. Ripley)
 
 0.9-7
