@@ -1805,7 +1805,7 @@ plotTS <- function (x,
         if (!inset) {
             ## on.exit(par(mar=omar, mgp=omgp))
             if (3 == length(mgp)) par(mgp=mgp)
-            if (debug != 10) {
+            if (!is.null(mar)) {
                 if (4 == length(mar)) par(mar=mar)
             }
         }
