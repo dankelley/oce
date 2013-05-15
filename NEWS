@@ -1,4 +1,5 @@
 0.9-9
+- mapPlot() uses ... graphical parameters (e.g. cex) in labelling axes
 - fix recent bug in reading CNV files (issue 318)
 - plotTS(..., mar=NULL) now avoids setting par(mar)
 

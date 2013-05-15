@@ -127,7 +127,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
                             mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
                                   line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
-                                  side=2, at=at$y, srt=90) # how to rotate?
+                                  side=2, at=at$y, srt=90, ...) # how to rotate?
                             lastAtY <- at$y
                         }
                     }, silent=TRUE)
@@ -157,7 +157,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
                                   side=1,
                                   line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
-                                  at=at$x)
+                                  at=at$x, ...)
                             lastx <- at$x
                         }
                         oceDebug(debug, "  x axis: ",
