@@ -343,6 +343,11 @@ oce.as.POSIXlt <- function (x, tz = "")
             if (is.na(xx))
                 f <- "%Y-%m-%d"
         }
+        ## year day hhmm
+        tokens <- strsplit(xx, " +")[[1]]
+        if (length(tokens) == 3 && nchar(tokens[3]) == 4) { # the nchar check skips [year month day]
+            return(strptime(x, format="%Y %j %H%M"))
+        }
         if (is.na(xx) ||
                                         # additions ...
             ((nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d"))) || # 20020823
@@ -859,7 +864,8 @@ summary.oce <- function(object, ...)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
-    if (file.info(file)$isdir)
+    isdir<- file.info(file)$isdir
+    if (is.finite(isdir) && isdir)
         stop("please supply a file name, not a directory name")
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
@@ -887,10 +893,17 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("\\s*$", "", subtype)
             return(paste("odf", subtype, sep="/"))
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
+            if (substr(filename, 1, 5) == "http:")
+                stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
+                     filename, "\", \"", gsub(".*/", "", filename), "\")")
             library(ncdf)
             f <- open.ncdf(filename)
             if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
                 return("drifter/argo")
+        } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
+            return("openstreetmap")
+        } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
+            return("openstreetmap")
         }
         file <- file(file, "r")
     }
@@ -994,7 +1007,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line)) {
+    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line, ignore.case=TRUE)) {
         oceDebug(debug, "this is topo\n")
         return("topo")
     }
@@ -1016,6 +1029,8 @@ read.oce <- function(file, ...)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         return(read.coastline.shapefile(file, ...))
+    if (type == "openstreetmap")
+        return(read.coastline.openstreetmap(file, ...))
     if (type == "echosounder")
         return(read.echosounder(file, ...))
     if (type == "adp/rdi")
@@ -1414,10 +1429,14 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
 
 oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "\b\boceBisect(f, xleft=", xleft, ", xright=", xright, " ...) {\n", sep="")
     if (xleft >= xright)
         stop("xright must exceed xleft")
+    oceDebug(debug, "f(xleft)", f(xleft), "\n")
+    oceDebug(debug, "f(xright)", f(xright), "\n")
+    oceDebug(debug, "f(middle)", f(0.5*(xright+xleft)), "\n")
     if (f(xleft, ...) * f(xright, ...) > 0)
-        stop("xleft and xright do not bracket a root")
+        ("xleft and xright do not bracket a root")
     if (missing(dx))
         dx <- (xright - xleft) / 1e5
     else {
@@ -1446,6 +1465,7 @@ oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
             break
         }
     }
+    oceDebug(debug, "\b\b} # oceBisect()\n", sep="")
     xmiddle
 }
 

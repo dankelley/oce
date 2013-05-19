@@ -270,41 +270,12 @@ setMethod(f="plot",
               oceDebug(debug, "later on in plot.adp:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-
-              ## Translate word-style (FIXME: ugly coding)
-              which2 <- vector("numeric", length(which))
-              for (w in 1:lw) {
-                  ww <- which[w]
-                  if (is.numeric(ww)) {
-                      which2[w] <- ww
-                  } else {
-                      if (     ww == "u")
-                          which2[w] <- 1
-                      else if (ww == "v")
-                          which2[w] <- 2
-                      else if (ww == "progressive vector")
-                          which2[w] <- 3
-                      else if (ww == "uv")
-                          which2[w] <- 4
-                      else if (ww == "uv+ellipse")
-                          which2[w] <- 5
-                      else if (ww == "uv+ellipse+arrow")
-                          which2[w] <- 6
-                      else if (ww == "depth")
-                          which2[w] <- 7
-                      else if (ww == "salinity")
-                          which2[w] <- 8
-                      else if (ww == "temperature")
-                          which2[w] <- 9
-                      else if (ww == "heading")
-                          which2[w] <- 10
-                      else if (ww == "TS")
-                          which2[w] <- 11
-                      else
-                          stop("unknown 'which':", ww)
-                  }
-              }
-              which <- which2
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which,
+                                 list(u=1, v=2, "progressive vector"=3,
+                                      "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
+                                      depth=7, salinity=8, temperature=9, heading=10, TS=11))
+              oceDebug(debug, "which:", which, "\n")
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
                   adorn <- rep(adorn, lw)

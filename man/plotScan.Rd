@@ -7,7 +7,7 @@
 \description{Plot CTD data as time-series against scan number, to help
   with trimming extraneous data from a CTD cast.}
 
-\usage{plotScan(x, name = "scan", adorn=NULL, mgp=getOption("oceMgp"), \dots)}
+\usage{plotScan(x, name = "scan", adorn=NULL, mgp=getOption("oceMgp"), type='l', \dots)}
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -22,6 +22,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{type}{line type}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

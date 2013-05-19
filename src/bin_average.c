@@ -28,11 +28,11 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
         error("cannot have non-positive xinc (%f)", *xinc);
     // 'b' stands for bin
     //int nb = (int)floor(((*xmax - *xmin) / *xinc));
-    int nb = (int)floor(1.0 + ((*xmax - *xmin) / *xinc));
+    int nb = (int)floor(((*xmax - *xmin) / *xinc));
     if (nb < 1)
         error("calculated number of regions (%d) is less than 1", nb);
 #ifdef DEBUG
-    Rprintf("nb=%d\n", nb);
+    Rprintf("xmin=%f  xmax=%f  xinc=%f  so calculate nb=%d\n", *xmin, *xmax, *xinc, nb);
 #endif
     int *num = (int*)R_alloc(nb, sizeof(int)); // R will clean up memory after .C() returns
     for (int b = 0; b < nb; b++) {
@@ -43,17 +43,25 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     for (int i = 0; i < *nx; i++) {
         if (ISNA(y[i]))
             continue;
-        b = (int)floor(0.5 + (x[i] - *xmin) / *xinc);
+        b = (int)floor((x[i] - *xmin) / (*xinc));
 #ifdef DEBUG
-        if (b > 131 & b < 133)
-            Rprintf("i=%d x=%f  y=%f  b=%d\n", i, x[i], y[i], b);
+        Rprintf("  x[%d]=%f yields b=%d (%.20f) (%.20f)", i, x[i], b, x[i]-*xmin, (x[i]-*xmin)/ *xinc);
 #endif
         if (-1 < b && b < nb) {
             num[b]++;
-            means[b] += y[i];
+            means[b] +=y[i];
 #ifdef DEBUG
-            if (b > 131 & b < 133)
-                Rprintf("b=%d  y=%f num[b]=%d  means[b]=%f\n", b, y[i], num[b], means[b]);
+            Rprintf(" inside  range, so use  y[%d]=%f; now, num[b]=%d means[b]=%f\n", i, y[i], num[b], means[b]);
+#endif
+        } else if (b == nb && x[i] == *xinc * b) { // catch exact match to max value; min value works without a trick
+            num[b-1]++;
+            means[b-1] += y[i];
+#ifdef DEBUG
+            Rprintf(" exact match to large end of range, so use y[%d]=%f; now, num[%d]=%d means[b]=%f\n", i, y[i], b-1, num[b-1], means[b-1]);
+#endif
+        } else {
+#ifdef DEBUG
+            Rprintf(" outside range, so skip y[%d]=%f <%.20f>\n", i, y[i], *xinc * b - x[i]);
 #endif
         }
     }

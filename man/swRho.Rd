@@ -6,7 +6,8 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), longitude, latitude)}
+\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"),
+      longitude, latitude)}
 
 \arguments{
   \item{salinity}{either salinity (in which case

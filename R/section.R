@@ -207,7 +207,7 @@ makeSection <- function(item, ...)
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
-                              which=c("salinity", "temperature", "sigmaTheta", "map"),
+                              which,
                               eos=getOption("eos", default='unesco'),
                               at=NULL,
                               labels=TRUE,
@@ -218,8 +218,8 @@ setMethod(f="plot",
                               coastline="coastlineWorld",
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
-                              xtype="distance",
-                              ytype="depth",
+                              xtype=c("distance", "track", "latitude", "longitude"),
+                              ytype=c("depth", "pressure"),
                               ztype=c("contour", "image"),
                               legend.loc="bottomright",
                               adorn=NULL,
@@ -232,6 +232,8 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 2) 2 else floor(0.5 + debug)
+              if (missing(which))
+                  which <- "temperature"
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
@@ -281,16 +283,16 @@ setMethod(f="plot",
                                   if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
                                       oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
                                       if (coastline == "coastlineWorld") {
-                                          data(coastlineWorld)
+                                          data(coastlineWorld, envir=environment())
                                           coastline <- coastlineWorld
                                       } else if (coastline == "coastlineMaritimes") {
-                                          data(coastlineMaritimes)
+                                          data(coastlineMaritimes, envir=environment())
                                           coastline <- coastlineMaritimes
                                       } else if (coastline == "coastlineHalifax") {
-                                          data(coastlineHalifax)
+                                          data(coastlineHalifax, envir=environment())
                                           coastline <- coastlineHalifax
                                       } else if (coastline == "coastlineSLE") {
-                                          data(coastlineSLE)
+                                          data(coastlineSLE, envir=environment())
                                           coastline <- coastlineSLE
                                       } else {
                                           stop("there is no built-in coastline file of name \"", coastline, "\"")
@@ -614,34 +616,28 @@ setMethod(f="plot",
                   xx <- at
               }
 
-              if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
-              else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
-              else stop("unknown ytype")
-
-              oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-              lw <- length(which)
-              which2 <- vector("numeric", lw)
-              for (w in 1:lw) {
-                  ww <- which[w]
-                  if (is.numeric(ww)) {
-                      which2[w] <- ww
-                  } else {
-                      if (     ww == "temperature") which2[w] <- 1
-                      else if (ww == "salinity") which2[w] <- 2
-                      else if (ww == "salinity gradient") which2[w] <- 2.5
-                      else if (ww == "sigmaTheta") which2[w] <- 3
-                      else if (ww == "nitrate") which2[w] <- 4
-                      else if (ww == "nitrite") which2[w] <- 5
-                      else if (ww == "oxygen") which2[w] <- 6
-                      else if (ww == "phosphate") which2[w] <- 7
-                      else if (ww == "silicate") which2[w] <- 8
-                      else if (ww == "data") which2[w] <- 20
-                      else if (ww == "map") which2[w] <- 99
-                      else stop("unknown 'which':", ww)
-                  }
+              ## Grid is regular (so need only first station) unless which=="data"
+              if (which.ytype == 1) {
+                  if (which[1] == "data") # FIXME: why checking just first?
+                      yy <- c(0, -max(x[["pressure"]]))
+                  else
+                      yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+              } else if (which.ytype == 2) {
+                  if (which[1] == "data") # FIXME: why checking just first?
+                      yy <- c(-max(x[["pressure"]]), 0)
+                  else
+                      yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+              } else {
+                  stop("unknown ytype")
               }
-              which <- which2
-              oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+
+              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+              lw <- length(which)
+              which <- ocePmatch(which,
+                                 list(temperature=1, salinity=2, 
+                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                      phosphate=7, silicate=8, data=20, map=99))
+              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
@@ -654,7 +650,7 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
-              for (w in 1:length(which)) {
+              for (w in 1:lw) {
                   oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
                       if (missing(contourLabels))
@@ -666,10 +662,6 @@ setMethod(f="plot",
                       } else if (which[w] == 2) {
                           plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
-                      } else if (which[w] > 2 && which[w] < 3) {
-                          plotSubsection("salinity gradient","dS/dz", ylab="",
-                                         levels=contourLevels, xlim=xlim, ylim=ylim,
                                          debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
@@ -703,10 +695,6 @@ setMethod(f="plot",
                                          debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
-                      } else if (which[w] > 2 && which[w] < 3) {
-                          plotSubsection("salinity gradient","dS/dz", ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          debug=debug-1, ...)
                       } else if (which[w] == 3) {
@@ -808,10 +796,11 @@ read.section <- function(file, directory, sectionId="", flags,
     header <- lines[1:header.length]
     nd <- n - header.length - 1
     nv <- length(var.names)
-    data <- array(dim=c(nd, nv - 2))
+    col.start <- 3                     # FIXME: why is this value used?  It fails on some (Arctic) data.
+    col.start <- 1
+    data <- array(dim=c(nd, nv - col.start + 1))
     stnSectionId <- vector("character", nd)
     stnId <- vector("character", nd)
-    col.start <- 3
     for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
 	contents <- strsplit(lines[l], split=",")[[1]]
 	stnSectionId[l - header.length] <- sub(" *","", contents[2])
@@ -823,6 +812,8 @@ read.section <- function(file, directory, sectionId="", flags,
 	pressure <- as.numeric(data[,which(var.names=="CTDPRS") - col.start + 1])
     else
 	stop("no column named \"CTDPRS\"")
+
+
     if (length(which(var.names=="CTDTMP")))
 	temperature <- as.numeric(data[,which(var.names=="CTDTMP") - col.start + 1])
     else
@@ -832,22 +823,20 @@ read.section <- function(file, directory, sectionId="", flags,
     ## has a bad flag value, we try SALNTY as a second option.  But
     ## if both CTDSAL and SALNTY are flagged, we just give up on the
     ## depth.
-    if (length(which(var.names=="CTDSAL")))
+    if (length(which(var.names=="CTDSAL"))) {
 	ctdsal <- as.numeric(data[,which(var.names=="CTDSAL") - col.start + 1])
-    else
-	stop("no column named \"CTDSAL\"")
-    if (length(which(var.names=="CTDSAL_FLAG_W")))
+    } else if (length(which(var.names=="SALNTY"))) {
+        ctdsal <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
+    } else {
+        stop("no column named \"CTDSAL\" or \"SALNTY\"; have:", paste(var.names, collapse=", "))
+    }
+    if (length(which(var.names=="CTDSAL_FLAG_W"))) {
 	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
-    else
-	stop("no column named \"CTDSAL_FLAG_W\"")
-    if (length(which(var.names=="SALNTY")))
-	salnty <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
-    else
-	stop("no column named \"SALNTY\"")
-    if (length(which(var.names=="SALNTY_FLAG_W")))
-	salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
-    else
-	stop("no column named \"SALNTY_FLAG_W\"")
+    } else if (length(which(var.names=="SALNTY_FLAG_W"))) {
+        ctdsal.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
+    } else {
+        stop("no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:", paste(var.names, collapse=", "))
+    }
     if (length(which(var.names=="DATE")))
 	stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
     else
@@ -922,9 +911,7 @@ read.section <- function(file, directory, sectionId="", flags,
 	lat[i] <- latitude[select[1]]
 	lon[i] <- longitude[select[1]]
 	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
-	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags,
-                               ctdsal[select],
-                               ifelse(salnty.flag[select] %in% flags, salnty[select], NA))
+	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], NA)
 	ok <- !is.na(goodSalinity)
 	ok <- ok & pressure[select] >= 0
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
@@ -1146,7 +1133,7 @@ summary.section <- function(object, ...)
     cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
     stn.sum <- matrix(nrow=numStations, ncol=5)
     if (numStations > 0) {
-        cat("* Station summary (first column is station ID):\n")
+        cat("* Summary of", numStations, "stations (first column is station ID)\n")
         for (i in 1:numStations) {
             stn <- object@data$station[[i]]
             stn.sum[i, 1] <- stn@metadata$longitude

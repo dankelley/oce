@@ -310,12 +310,17 @@ read.topo <- function(file, processingLog, ...)
     longitudeLowerLeft <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
     latitudeLowerLeft <- as.numeric(strsplit(header[4],"[ ]+",perl=TRUE)[[1]][2])
     cellSize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
+    missingValue <- NA
+    if (length(i <- grep("nodata", header)))
+        missingValue <- as.numeric(strsplit(header[i],"[ ]+",perl=TRUE)[[1]][2])
     zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
     rownames(zz) <- NULL
     colnames(zz) <- NULL
     longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)
     latitude <- latitudeLowerLeft + cellSize * seq(0, nrow-1)
     z <- t(zz[dim(zz)[1]:1,])
+    if (!is.na(missingValue))
+        z[z == missingValue] <- NA
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)

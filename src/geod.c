@@ -3,19 +3,25 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a, double *f, double *faz, double *baz, double *s);
+void geoddist_core(double *lat1, double *lon1, double *lat2, double *lon2, double *a, double *f, double *faz, double *baz, double *s);
 
 /*
 library(oce) 
-data(coastlineHalifax)
-lat<-coastlineHalifax[["latitude"]]
-lon<-coastlineHalifax[["longitude"]]
+data(section)
+lon1 <- section[["longitude", "byStation"]]
+lat1 <- section[["latitude", "byStation"]]
 a <- 6378137.00          # WGS84 major axis
 f <- 1/298.257223563     # WGS84 flattening parameter
 n <- length(lat)
-system("R CMD SHLIB geod.c"); dyn.load("geod.so")
-dd <- .Call("geoddist_alongpath", lat, lon, a, f)
-plot(dd, lat, type='l')
+system("R CMD SHLIB geod.c"); dyn.load("geod.so");
+lon2 <- lon1
+lat2 <- lat1 + 1
+
+.Call("geoddist", lat1, lon1, lat2, lon2, a, f, dist=double(length(lon2)))
+#[1] 111136.0 111135.8 111135.6 111135.2 111135.1 111135.0 111134.9 111134.3
+
+geodDist(lat1,lon1,lat2,lon2)
+#[1] 111.1360 111.1358 111.1356 111.1352 111.1351 111.1350 111.1349 111.1343
 
 */
 
@@ -41,14 +47,45 @@ SEXP geoddist_alongpath(SEXP lat, SEXP lon, SEXP a, SEXP f)
     resp[0] = 0.0;
     for (int i = 1; i < n; i++) {
         double faz, baz, s;
-        geoddist(latp+(i-1), lonp+(i-1), latp+i, lonp+i, ap, fp, &faz, &baz, &s);
+        geoddist_core(latp+(i-1), lonp+(i-1), latp+i, lonp+i, ap, fp, &faz, &baz, &s);
         resp[i] = resp[i-1] + s;
     }
     UNPROTECT(1);
     return(res);
 }
 
-void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a, double *f,
+SEXP geoddist(SEXP lat1, SEXP lon1, SEXP lat2, SEXP lon2, SEXP a, SEXP f)
+{
+    if (!isReal(lat1)) error("lat1 must be a numeric (floating-point) vector");
+    if (!isReal(lon1)) error("lon1 must be a numeric (floating-point) vector");
+    if (!isReal(lat2)) error("lat2 must be a numeric (floating-point) vector");
+    if (!isReal(lon2)) error("lon2 must be a numeric (floating-point) vector");
+    int n = GET_LENGTH(lat1);
+    if (n != GET_LENGTH(lon1))
+        error("lengths of lat1 and lon1 must match, but they are ", n, " and ", GET_LENGTH(lon1), ", respectively");
+    if (n != GET_LENGTH(lat2))
+        error("lengths of lat1 and lat2 must match, but they are ", n, " and ", GET_LENGTH(lat2), ", respectively");
+    if (n != GET_LENGTH(lon2))
+        error("lengths of lon2 and lon2 must match, but they are ", n, " and ", GET_LENGTH(lon2), ", respectively");
+    double *lat1p = REAL(lat1);
+    double *lon1p = REAL(lon1);
+    double *lat2p = REAL(lat2);
+    double *lon2p = REAL(lon2);
+    double *ap = REAL(a);
+    double *fp = REAL(f);
+    SEXP res;
+    PROTECT(res = allocVector(REALSXP, n));
+    double *resp = REAL(res);
+    for (int i = 0; i < n; i++) {
+        double faz, baz, s;
+        geoddist_core(lat1p+i, lon1p+i, lat2p+i, lon2p+i, ap, fp, &faz, &baz, &s);
+        resp[i] = s;
+    }
+    UNPROTECT(1);
+    return(res);
+}
+
+void geoddist_core(double *lat1, double *lon1, double *lat2, double *lon2, double *a, double *f,
 	      double *faz, double *baz, double *s)
 {
 	/*
@@ -98,6 +135,7 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 	double rad = 0.0174532925199432957692369076848861;
 	double r = 1.0 - (*f);
 	double glat1, glon1, glat2, glon2, tu1, tu2, cu1, su1, cu2, x, sx, cx, sy, cy, y, sa, c2a, cz, e, c, d;
+        double lon1copy = *lon1, lon2copy = *lon2;
 	int iter;
 	if (((*lat1) == (*lat2)) && ((*lon1) == (*lon2))) {
 		*s = 0.0;
@@ -106,10 +144,15 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 		return;
 	}
 
+        if ((*lon1) < 0)
+            *lon1 += 360.0;
+        if ((*lon2) < 0)
+            *lon2 += 360.0;
+
 	glat1 = (*lat1) * rad;
 	glon1 = (*lon1) * rad;
 	glat2 = (*lat2) * rad;
-	glon2 = (*lon2) * rad ;
+	glon2 = (*lon2) * rad;
 
 	tu1 = r * sin(glat1) / cos(glat1);
 	tu2 = r * sin(glat2) / cos(glat2);
@@ -152,6 +195,8 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 	*s = ((((sy * sy * 4.0 - 3.0) * (*s) * cz * d / 6.0 - x) * d / 4.0 + cz) * sy * d + y) * c * (*a) * r;
 	*faz = (*faz) / rad;
 	*baz = (*baz) / rad;
+        *lon1 = lon1copy;
+        *lon2 = lon2copy;
 }
 
 void
@@ -168,7 +213,7 @@ geod_xy(int *n,
 	double faz, baz, s;
 	int i;
 	for (i = 0; i < *n; i++) {
-		geoddist(lat++,
+		geoddist_core(lat++,
 			 lon++,
 			 latr, 
 			 lonr,

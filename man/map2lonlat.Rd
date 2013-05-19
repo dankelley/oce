@@ -2,18 +2,22 @@
 
 \alias{map2lonlat}
 
-\title{Find lon-lat coordinator of a point on a map}
+\title{Find lon-lat coordinates of a point on a map}
 
-\description{Find lon-lat coordinator of a point on a map}
+\description{Find lon-lat coordinates of a point on a map}
 
-\usage{map2lonlat(xusr, yusr, tolerance=1e-5)}
+\usage{map2lonlat(xusr, yusr, tolerance=1e-4)}
 
 \arguments{
     \item{xusr, yusr}{coordinates of points on the map.}
     \item{tolerance}{tolerance for misfit.}
 }
 
-\details{Uses \code{\link{optim}} to find the location, so it may fail in some circumstances.}
+\details{The location is inferred by trying to invert the
+    \code{\link{mapproject}} function.  The inversion is done by using
+    \code{\link{optim}} to find a good match between a point in geographical
+    space and plot space, and this match is not always good, being dependent on
+    a starting guess.}
 
 \value{A list containing \code{longitude} and \code{latitdue}.}
 

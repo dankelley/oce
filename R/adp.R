@@ -490,7 +490,8 @@ setMethod(f="plot",
                   }
               }
 
-              ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+              ylim.given <- if (gave.ylim) ylim else NULL
+              #ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
               if (missing(lwd))
                   lwd <- rep(par('lwd'), length.out=nw)
               else
@@ -503,63 +504,36 @@ setMethod(f="plot",
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
-              ## Translate word-style (FIXME: ugly coding)
-              which2 <- vector("numeric", length(which))
-              for (w in 1:nw) {
-                  ww <- which[w]
-                  oceDebug(debug, "which[", w, "] =", ww, "\n")
-                  if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
-                      which2[w] <- as.numeric(ww)
-                  } else {
-                      if (     ww == "u1") which2[w] <- 1
-                      else if (ww == "u2") which2[w] <- 2
-                      else if (ww == "u3") which2[w] <- 3
-                      else if (ww == "u4") which2[w] <- 4
-                      else if (ww == "a1") which2[w] <- 5
-                      else if (ww == "a2") which2[w] <- 6
-                      else if (ww == "a3") which2[w] <- 7
-                      else if (ww == "a4") which2[w] <- 8
-                      else if (ww == "q1") which2[w] <- 9
-                      else if (ww == "q2") which2[w] <- 10
-                      else if (ww == "q3") which2[w] <- 11
-                      else if (ww == "q4") which2[w] <- 12
-                      else if (ww == "g1") which2[w] <- 70
-                      else if (ww == "g2") which2[w] <- 71
-                      else if (ww == "g3") which2[w] <- 72
-                      else if (ww == "g4") which2[w] <- 73
-                      else if (ww == "salinity") which2[w] <- 13
-                      else if (ww == "temperature") which2[w] <- 14
-                      else if (ww == "pressure") which2[w] <- 15
-                      else if (ww == "heading") which2[w] <- 16
-                      else if (ww == "pitch") which2[w] <- 17
-                      else if (ww == "roll") which2[w] <- 18
-                      ## 19 beam-1 correlation-amplitude plot
-                      ## 20 beam-2 correlation-amplitude plot
-                      ## 21 beam-3 correlation-amplitude plot
-                      ## 22 beam-4 correlation-amplitude plot
-                      else if (ww == "progressive vector") which2[w] <- 23
-                      else if (ww == "uv") which2[w] <- 28
-                      else if (ww == "uv+ellipse") which2[w] <- 29
-                      else if (ww == "uv+ellipse+arrow") which2[w] <- 30
-                      ## 40 to 44 only work for bottom-tracking devices
-                      else if (ww == "bottom range" ) which2[w] <- 40 # average of all beams
-                      else if (ww == "bottom range1") which2[w] <- 41 # beam1
-                      else if (ww == "bottom range2") which2[w] <- 42 # beam2
-                      else if (ww == "bottom range3") which2[w] <- 43 # beam3
-                      else if (ww == "bottom range4") which2[w] <- 44 # beam4 (if there is one)
-                      ## 50 to 54 only work for bottom-tracking devices
-                      else if (ww == "bottom velocity" ) which2[w] <- 50 # average of all beams
-                      else if (ww == "bottom velocity1") which2[w] <- 51 # beam1
-                      else if (ww == "bottom velocity2") which2[w] <- 52 # beam2
-                      else if (ww == "bottom velocity3") which2[w] <- 53 # beam3
-                      else if (ww == "bottom velocity4") which2[w] <- 54 # beam4 (if there is one)
-                      else if (ww == "heaving") which2[w] <- 55
-                      else if (ww == "map") which2[w] <- 60
-                      else if (ww == "soundSpeed") which2[w] <- 100
-                      else stop("unknown 'which':", ww)
-                  }
-              }
-              which <- which2
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which,
+                                 list(u1=1, u2=2, u3=3, u4=4,
+                                      a1=5, a2=6, a3=7, a4=8,
+                                      q1=9, q2=10, q3=11, q4=12,
+                                      g1=70, g2=71, g3=72, g4=73,
+                                      salinity=13,
+                                      temperature=14,
+                                      pressure=15,
+                                      heading=16,
+                                      pitch=17,
+                                      roll=18,
+                                      progressivevector=23,
+                                      uv=28,
+                                      "uv+ellipse"=29,
+                                      "uv+ellipse+arrow"=30,
+                                      bottomrange=40,
+                                      bottomrange1=41, bottomrange2=42, bottomrange3=43, bottomrange4=44,
+                                      bottomvelocity=50,
+                                      bottomvelocity1=51, bottomvelocity2=52, bottomvelocity3=53, bottomvelocity4=54,
+                                      heaving=55,
+                                      map=60,
+                                      soundSpeed=100,
+                                      velocity=1:3,
+                                      amplitude=5:7,
+                                      quality=9:11,
+                                      hydrography=14:15,
+                                      angles=16:18))
+              nw <- length(which) # may be longer with e.g. which='velocity'
+              oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
               images <- c(1:12, 70:73)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
@@ -619,13 +593,15 @@ setMethod(f="plot",
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[,,which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
-                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
                               zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$vDia[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
                               z <- x@data$v[,,which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
+                              y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
+                              if (0 == sum(y.look))
+                                  stop("no data in the provided ylim=c(", paste(ylim.given[w,], collapse=","), ")")
                               zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           }
                           oceDebug(debug, 'flipy=', flipy, '\n')
@@ -696,6 +672,7 @@ setMethod(f="plot",
                                   imagep(x=tt, y=x@data$distance, z=z,
                                          zlim=zlim,
                                          flipy=flipy,
+                                         ylim=if (gave.ylim) ylim[w,] else range(x@data$distance, na.rm=TRUE),
                                          col=if (gave.col) col else oceColorsPalette(128, 1),
                                          ylab=resizableLabel("distance"),
                                          xlab="Time",
@@ -1307,16 +1284,16 @@ setMethod(f="plot",
                               if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
                                   oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
                                   if (coastline == "coastlineWorld") {
-                                      data(coastlineWorld)
+                                      data(coastlineWorld, envir=environment())
                                       coastline <- coastlineWorld
                                   } else if (coastline == "coastlineMaritimes") {
-                                      data(coastlineMaritimes)
+                                      data(coastlineMaritimes, envir=environment())
                                       coastline <- coastlineMaritimes
                                   } else if (coastline == "coastlineHalifax") {
-                                      data(coastlineHalifax)
+                                      data(coastlineHalifax, envir=environment())
                                       coastline <- coastlineHalifax
                                   } else if (coastline == "coastlineSLE") {
-                                      data(coastlineSLE)
+                                      data(coastlineSLE, envir=environment())
                                       coastline <- coastlineSLE
                                   } else {
                                       stop("there is no built-in coastline file of name \"", coastline, "\"")

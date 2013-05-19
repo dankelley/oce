@@ -7,6 +7,7 @@ setMethod(f="initialize",
               if (!missing(salinity)) .Object@data$salinity <- salinity
               if (!missing(temperature)) .Object@data$temperature <- temperature
               if (!missing(airtemperature)) .Object@data$airtemperature <- airtemperature
+              if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(nitrate)) .Object@data$nitrate <- nitrate
               if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
               .Object@metadata$filename <- if (missing(filename)) "" else filename
@@ -93,52 +94,75 @@ plot.lobo.TS <- function(lobo, ...)
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
+                              which=c(1,2,3), 
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
+                              debug=getOption("oceDebug"),
                               ...)
           {
               if (!inherits(x, "lobo"))
                   stop("method is only for lobo objects")
+              oceDebug(debug, "plot.lobo(...)\n", sep="")
               opar <- par(no.readonly = TRUE)
+              nw <- length(which)
+              oceDebug(debug, "which:", which, "\n")
+              which2 <- ocePmatch(which,
+                                  list(temperature=1, salinity=2, TS=3, u=4, v=5, nitrate=6, fluoresence=7))
+              oceDebug(debug, "which2:", which2, "\n")
               ##on.exit(par(opar))
               par(mgp=mgp, mar=mar)
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, 4)
-                  adorn.length <- 4
+              adornLength <- length(adorn)
+              if (adornLength < nw) {
+                  adorn <- rep(adorn, nw)
+                  adornLength <- nw
               }
               par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-              layout(rbind(c(1,2),
-                           c(3,4)))
-              plot.lobo.timeseries.TS(x, ...)
-              if (adorn.length > 0) {
-                  t <- try(eval(adorn[1]), silent=TRUE)
-                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
-              }
-
-              if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
-                  par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-                  plot.lobo.timeseries.uv(x, ...)
-                  if (adorn.length > 0) {
-                      t <- try(eval(adorn[2]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+              par(mfrow=c(nw, 1))
+              for (w in which2) {
+                  if (w == 1) {
+                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T"), ...)
+                  } else if (w == 2) {
+                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), ...)
+                  } else if (w == 3) {
+                      plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), ...)
+                  } else if (w == 4) {
+                      oce.plot.ts(x[["time"]], x[["u"]], ylab=resizableLabel("u"), ...)
+                  } else if (w == 5) {
+                      oce.plot.ts(x[["time"]], x[["v"]], ylab=resizableLabel("v"), ...)
+                  } else if (w == 6) {
+                      oce.plot.ts(x[["time"]], x[["nitrate"]], ylab=resizableLabel("nitrate", axis="y"), ...)
+                  } else if (w == 7) {
+                      oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab=resizableLabel("fluorescence", axis="y"), ...)
+                  }
+                  if (adornLength > 0) {
+                      t <- try(eval(adorn[1]), silent=TRUE)
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
                   }
               }
 
-              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-              plot.lobo.timeseries.biology(x, ...)
-              if (adorn.length > 0) {
-                  t <- try(eval(adorn[3]), silent=TRUE)
-                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
-              }
-
-              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-              plot.lobo.TS(x, ...)
-              if (adorn.length > 0) {
-                  t <- try(eval(adorn[4]), silent=TRUE)
-                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
-              }
+#              if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
+#                  par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+#                  plot.lobo.timeseries.uv(x, ...)
+#                  if (adornLength > 0) {
+#                      t <- try(eval(adorn[2]), silent=TRUE)
+#                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+#                  }
+#              }
+#
+#              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+#              plot.lobo.timeseries.biology(x, ...)
+#              if (adornLength > 0) {
+#                  t <- try(eval(adorn[3]), silent=TRUE)
+#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
+#              }
+#
+#              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+#              plot.lobo.TS(x, ...)
+#              if (adornLength > 0) {
+#                  t <- try(eval(adorn[4]), silent=TRUE)
+#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+#              }
           })
 
 

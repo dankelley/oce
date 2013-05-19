@@ -1,3 +1,26 @@
+0.9-10
+- improve line breaks in some help pages (thanks, B. Ripley)
+
+0.9-9
+- mapPlot() uses ... graphical parameters (e.g. cex) in labelling axes
+- fix recent bug in reading CNV files (issue 318)
+- plotTS(..., mar=NULL) now avoids setting par(mar)
+
+0.9-8
+- fix memory error in teos handler (thanks, B. Ripley)
+
+0.9-7
+- make ctdTrim() work in R 3.0
+- support for adp vmdas nav data (coded by Clark Richards)
+- approx3d(): added
+- drawPalette(): new arg 'fullpage'
+- plot.lobo(): add 'which' argument
+- read.coastline.openstreetmap() added
+- data(levitus) added
+- plot.coastline(): new arguments 'projection' etc to use mapPlot()
+- mapContour(): permit first argument to be a 'topo' object
+- mapPlot(): add arguments axes, bg, fill, and drawBox
+
 0.9-6
 - address compilation error on Windows-64 platform
 - make some long-running operations more interruptible 

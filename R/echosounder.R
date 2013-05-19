@@ -78,9 +78,13 @@ setMethod(f="plot",
                   else
                       lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
+
+              oceDebug(debug, "which:", which, "\n")
+              which <- ocePmatch(which, list("zt image"=1, "zx image"=2, map=3))
+              oceDebug(debug, "which:", which, "\n")
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
-                  if (which[w] == 1 || which[w] == "zt image") {
+                  if (which[w] == 1) {
                       time <- x[["time"]]
                       xInImage <- time
                       if (!length(time))
@@ -149,7 +153,7 @@ setMethod(f="plot",
                               axis(3, at=at, labels=labels, cex.axis=par('cex'))
                           }
                       }
-                  } else if (which[w] == 2 || which[w] == "zx image") {
+                  } else if (which[w] == 2) {
                       latitude <- x[["latitude"]]
                       longitude <- x[["longitude"]]
                       jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
@@ -191,7 +195,7 @@ setMethod(f="plot",
                               labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
                           axis(side=3, at=at, labels=labelsTop, cex.axis=par('cex'))
                       }
-                  } else if (which[w] == 3 || which[w] == "map") {
+                  } else if (which[w] == 3) {
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
                       asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
@@ -220,9 +224,6 @@ setMethod(f="plot",
                           }
                       }
                       lines(lon, lat, col=if(!is.function(col)) col else "black", lwd=lwd)
-                  } else {
-                      stop("in plot.echosounder(), which=", which, " but only 1, 2, and 3 are allowed",
-                           call.=FALSE)
                   }
                   if (w <= adorn.length && nchar(adorn[w]) > 0) {
                       t <- try(eval(adorn[w]), silent=TRUE)

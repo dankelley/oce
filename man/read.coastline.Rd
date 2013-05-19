@@ -2,23 +2,25 @@
 
 \alias{read.coastline}
 \alias{read.coastline.shapefile}
+\alias{read.coastline.openstreetmap}
 
 \title{Scan a coastline data file}
 
 \description{Read a coastline file in mapgen, matlab, or Splus format}
 
 \usage{
-read.coastline(file, type=c("R","S","mapgen","shapefile"),
+read.coastline(file, type=c("R","S","mapgen","shapefile","openstreetmap"),
   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
-
+read.coastline.openstreetmap(file, lonlim=c(-180,180), latlim=c(-90,90),
+  debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 }
 
 \arguments{
   \item{file}{name of file containing coastline data.}
-  \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"} or
-      \code{"shapefile"}.}
+  \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"},
+      \code{"shapefile"} or \code{"openstreetmap"}.}
   \item{debug}{set to TRUE to print information about the header, etc.}
   \item{latlim}{range of (signed) latitudes, used only for shapefiles.
     Regions that do not intersect this range are skipped.}

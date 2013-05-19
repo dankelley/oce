@@ -7,8 +7,8 @@
 \description{Create a TDR (temperature-depth recorder) object.}
 
 \usage{as.tdr(time, temperature, pressure,
-      filename="", instrumentType="rbr", serialNumber="", model="", pressureAtmospheric=NA,
-      processingLog, debug=getOption("oceDebug"))}
+      filename="", instrumentType="rbr", serialNumber="", model="",
+      pressureAtmospheric=NA, processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{time}{a vector of times for the data.}
