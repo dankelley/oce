@@ -1,5 +1,5 @@
 0.9-10
-- ...
+- improve line breaks in some help pages (thanks, B. Ripley)
 
 0.9-9
 - mapPlot() uses ... graphical parameters (e.g. cex) in labelling axes

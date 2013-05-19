@@ -75,16 +75,16 @@
     par(mfrow=c(4,1))
 
     drawPalette(zlim=c(0,1),col=oceColorsJet(5))
-    plot(1:5, 1:5, col=oceColorsJet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y', main='test 1')
+    plot(1:5, 1:5, col=oceColorsJet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y')
 
     ## put space for palette to right of next graph (so x scales line up in stacked plot)
     drawPalette()
-    plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 2')
+    plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y')
 
     drawPalette(zlim=c(0,1),zlab="Image Scale",col=oceColorsPalette)
-    plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10],pch=21,cex=5,col='black',xlab='x', ylab='y', main='test 3')
+    plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10], col='black',xlab='x',ylab='y')
     drawPalette(zlab="Image Scale")
-    plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 4')
+    plot(1:10, 1:10, col=oceColorsPalette(10)[1:10], xlab='x', ylab='y')
 
     # Use layout to mimic the action of imagep(), with the width
     # of the palette region being 14 percent of figure width.

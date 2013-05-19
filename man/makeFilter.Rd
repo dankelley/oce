@@ -99,9 +99,11 @@ plot.fr <- function(x, add=FALSE, xtype="log", ...)
     lines(log10(x$f), 10*log10(x$p), ...)
   } else {
      if (xtype=="log")
-       plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
+       plot(log10(x$f),10*log10(x$p),xlab=expression(log[10](frequency)),
+            ylab="dB",type='l',...)
      else
-       plot(x$f, 10*log10(x$p), xlab=expression(frequency), ylab="dB", type='l', ...)
+       plot(x$f, 10*log10(x$p), xlab=expression(frequency),
+            ylab="dB", type='l', ...)
     grid()
   }
 }
@@ -156,7 +158,7 @@ mtext(paste("Nominal cutoff\n1/", m, "Hz", sep=""), side=3, at=log10(1/m), col="
 mtext("Half power", side=4, at=-3, col="red")
 mtext(attr(bh,"name"), side=3, adj=0)
 abline(-39, -6*log2(10), lwd=1, col="blue") # 6db/octave (Harris Table 1)
-legend("topright", col=c("black", "blue"), lwd=c(2,1), legend=c("Response", "6db/octave"))
+legend("topright",col=c("black","blue"),lwd=c(2,1),legend=c("Response","6db/octave"))
 
 ## 4. Illustrate effect of Butterworth order on frequency response
 par(mfrow=c(2,1))
@@ -199,8 +201,8 @@ ab <- list(a = c(1.0             , -1.8521435375    , 0.862346071863),
 plot(fr(a=ab$a, b=ab$b), add=TRUE, col="red")
 # library(signal)
 # ab <- make.butterworth(n=4, W=0.016668, type="low", sampling.frequency=1)
-ab <- list(a = c(1.0, -3.72640902937, 5.21603324655, -3.25000460109, 0.760485648747),
-           b = c(6.57905243486e-06, 2.63162097395e-05, 3.94743146092e-05, 2.63162097395e-05, 6.57905243486e-06))
+ab <- list(a = c(1.0, -3.72640, 5.2160, -3.2500, 0.7604),
+           b = c(6.5790e-06, 2.6316e-05, 3.9474e-05, 2.6316e-05, 6.5790e-06))
 plot(fr(a=ab$a, b=ab$b), add=TRUE, col="blue")
 legend("topright", lwd=1, col=c("black", "red", "blue", "green"),
        legend=c("BH", "butter 2", "butter 4", "cutoff"))

@@ -56,7 +56,8 @@ plotInset(3, 1, 10, 8,
 data(ctd) 
 plot(ctd, which="TS")
 plotInset(29.9, 2.7, 31, 10,
-          expr=plot(ctd, which='map', coastline="coastlineWorld", span=5000, mar=NULL, cex.axis=3/4))
+          expr=plot(ctd, which='map', coastline="coastlineWorld",
+                    span=5000, mar=NULL, cex.axis=3/4))
 }
 
 \author{Dan Kelley}
