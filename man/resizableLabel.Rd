@@ -10,8 +10,8 @@
 \usage{
 resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "conservative temperature", "absolute salinity",
-  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice", "fluorescence",
-  "p", "z", "distance",
+  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice",
+  "fluorescence", "p", "z", "distance",
   "heading", "pitch", "roll",
   "u", "v", "w", "speed", "direction",
   "eastward", "northward",
