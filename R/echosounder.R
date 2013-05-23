@@ -316,6 +316,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     blankedSamples <- 0
     fileType <- "unknown" 
     range <- NULL
+    bottombin <- NULL
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -424,18 +425,19 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
  
         } else if (code1 == 0x32) {
-            if (print) cat(" bottom pick ")
+            if (print) cat(" bottom pick tuple [sec. 4.12, p25 DT4_format_2010.pdf] ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (foundBottom) {
-                ##binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
+                binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
+                bottombin <- c(bottombin, binBottom)
                 thisRange <- readBin(buf[offset+20+1:4], "numeric", size=4, n=1, signed=TRUE, endian="little")
-                range <- c(range, thisRange)
-                if (print) cat(" thisRange:", thisRange)
             } else {
-                if (print) cat(" could not find bottom\n")
+                thisRange <- NA
             }
+            range <- c(range, thisRange)
+            if (print) cat(" thisRange:", thisRange)
         } else if (code1 == 0x36) {
             if (print) cat(" extended channel descriptor IGNORED\n")
         } else if (code1 == 0x33) {
@@ -486,11 +488,28 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      latitudeSlow=latitudeSlow,
                      longitudeSlow=longitudeSlow,
                      depth=depth,
-                     range=range, # FIXME: need to figure time to match this from the system time
+                     bottombin=bottombin, # FIXME: may remove this later
+                     range=range, # FIXME: is it a coincidence that time is of same length?
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
                      a=a)
+
+    ## TEST BOTTOM 1:
+    if (FALSE) {
+        x11()
+        plot(1:1520, d[['depth']][d[['bottombin']]], type='l')
+        lines(1:1520, d[['depth']][1]-d[['range']], col='red')
+    }
+    ##
+    ## TEST BOTTOM 2:
+    if (FALSE) {
+        x11()
+        plot(d)
+        lines(d[['time']], d[['range']]-d[['depth']][1], col='yellow', lwd=2)
+    }
+    
+    ## -- I don't get why these look so unlike the image.
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
     res

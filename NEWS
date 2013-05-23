@@ -1,4 +1,5 @@
 0.9-11
+- decode bottom-pick in echosounder files
 - improve doc for read.adp (regarding variable orientation of RDI files)
 
 0.9-10
