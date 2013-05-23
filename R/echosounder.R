@@ -259,6 +259,17 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, endian="little")
 
+    ## p9 of DT4_format_2010.pdf "After this comes the main data section of the file.
+    ## This will typically contain some or all of the following tuples:
+    ## ping tuples (type 0x0015, 0x001C or 0x001D),
+    ## time tuples (type 0x000F or 0x0020),
+    ## position tuples (type 0x000E),
+    ## navigation string tuples (type 0x0011 or 0x0030),
+    ## transducer orientation tuples (type 0x0031),
+    ## bottom pick tuples (type 0x0032),
+    ## single echoes tuples (type 0x0033), and
+    ## comment tuples (type 0x0034).
+
     ## Section 3.3 of the Biosonics doc (see ?echosounder-class) describes the
     ## file format.  Note that the files are little endian.
     ##
@@ -268,28 +279,28 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ##   data = N bytes (depends on code)
     ##   N6 = 2 bytes that must equal N+6, or the data are corrupted
     ##
-    ## The codes, from the table in section 3.5 of Biosonics doc (see ?echosounder-class)
+    ## The codes, from the table in section 3.5 of Biosonics doc (see ?"echosounder-class")
     ## are as follows.  The first tuple in a file must have code 0xFFFF, and the
     ## second must have code 001E, 0018, or 0001.
     ##
     ##   0xFFFF Signature (for start of file)
     ##   0x001E V3 File Header
-    ##   0x0018 ￼V2 File Header
-    ##   0x0001 ￼V1 File Header
+    ##   0x0018 V2 File Header
+    ##   0x0001 V1 File Header
     ##   0x0012 Channel Descriptor
     ##   0x0036 Extended Channel Descriptor
-    ##   0x0015 ￼Single-Beam Ping
+    ##   0x0015 Single-Beam Ping
     ##   0x001C Dual-Beam Ping
     ##   0x001D Split-Beam Ping
-    ##   0x000F or 0x0020 ￼ Time
-    ##   0x000E ￼Position
-    ##   0x0011 ￼Navigation String
+    ##   0x000F or 0x0020 Time
+    ##   0x000E Position
+    ##   0x0011 Navigation String
     ##   0x0030 Timestamped Navigation String
     ##   0x0031 Transducer Orientation
     ##   0x0032 Bottom Pick
-    ##   0x0033 ￼Single Echoes
-    ##   0x0034 ￼Comment
-    ##   ￼0xFFFE ￼End of File
+    ##   0x0033 Single Echoes
+    ##   0x0034 Comment
+    ##   0xFFFE End of File
     tuple <- 1
     offset <- 0
     timeSlow <- latitudeSlow <- longitudeSlow <- NULL # accumulate using c() because length unknown
@@ -304,14 +315,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     channelDeltat <- NULL
     blankedSamples <- 0
     fileType <- "unknown" 
-    timeBottom <- rangeBottom <- NULL
+    range <- NULL
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
         code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
-        if (print) cat("buf[", 1+offset, ", ...] (0x", code1, sep="")
+        if (print) cat("buf[", 3+offset, "] = code1 = 0x", code1, sep="")
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
@@ -333,6 +344,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 a[scan, ] <- rev(tmp) # note reversal in time
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
+                if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
            } else {
                if (debug > 0) {
                    cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
@@ -349,22 +361,22 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
             ## centisecond = ss & 0x7F (according to section 4.7)
             timeLast <- timeSec + timeSubSec # used for positioning
-            if (print) cat(sprintf(" time) calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
+            if (print) cat(sprintf(" time calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
         } else if (code1 == 0x0e) { # position
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             latitudeSlow <- c(latitudeSlow, lat)
             longitudeSlow <- c(longitudeSlow, lon)
             timeSlow <- c(timeSlow, timeLast)
-            if (print) cat(" position)", lat, "N", lon, "E\n")
+            if (print) cat(" position", lat, "N", lon, "E\n")
         } else if (code2 == 0xff) {
             if (tuple == 1) {
-                if (print) cat(" file start code)\n")
+                if (print) cat(" file start code\n")
             } else {
                 break
             }
         } else if (code1 == 0x11) {
-            if (print) cat(" navigation string) IGNORED\n")
+            if (print) cat(" navigation string IGNORED\n")
         } else if (code1 == 0x12) {
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res)
             blankedSamples <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -375,7 +387,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (1 == length(channelNumber)) { # get space
                 a <- matrix(1, nrow=pingsInFile, ncol=samplesPerPing)
             }
-            if (print) cat(" channel descriptor)",
+            if (print) cat(" channel descriptor ",
                            " number=", tail(channelNumber, 1),
                            " blankedSamples=", blankedSamples,
                            " dt=", tail(channelDeltat, 1),
@@ -383,11 +395,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                            " samplesPerPing=", samplesPerPing, 
                            "\n")
         } else if (code1 == 0x30) {
-            if (print) cat(" time-stamped navigation string) IGNORED\n")
+            if (print) cat(" time-stamped navigation string IGNORED\n")
         } else if (code1 == 0xff && tuple > 1) {
             if (print) cat("  EOF\n")
         } else if (code1 == 0x1E) {
-            if (print) cat(" V3 file header)\n")
+            if (print) cat(" V3 file header\n")
             fileType <- if (buf[offset + 1] == 0x10 & buf[offset + 2] == 0x00) "DT4 v2.3" else "DT4 pre v2.3"
         } else if (code1 == 0x18) {
             warning("Biosonics file of type 'V2' detected ... errors may crop up")
@@ -395,29 +407,41 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x01) {
             warning("Biosonics file of type 'V1' detected ... errors may crop up")
             fileType <- "V1"
-        } else if (code1 == 0x1c) {
-            warning("cannot handle dual-beam ping")
+        } else if (code1 == 0x1c || code1 == 0x1d) {
+            ## FIXME: test code here, for bottom-track test case
+            if (print) cat(" split-beam tuple (starting to code; see p8 of DT4_format_2010.pdf)")
+            thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            if (print) cat(" channel:", thisChannel)
+            pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
+            if (print) cat(" pingNumber:", pingNumber)
+            pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
+            ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
+            if (print) cat(" ns:", ns)
+            tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
+            a[scan, ] <- rev(tmp) # note reversal in time
+            time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
+            scan <- scan + 1
+            if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
+ 
         } else if (code1 == 0x32) {
-            if (print) cat(" bottom pick) ")
+            if (print) cat(" bottom pick ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (foundBottom) {
-                binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
-                ##timeBottom <- c(timeBottom, readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000)
-                timeBottom <- c(timeBottom, timeLast) ## FIXME: maybe should use the elapsed time (as in prev line)
-                if (print) cat(" bin ", binBottom, "... this value not used in oce package\n")
+                ##binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
+                thisRange <- readBin(buf[offset+20+1:4], "numeric", size=4, n=1, signed=TRUE, endian="little")
+                range <- c(range, thisRange)
+                if (print) cat(" thisRange:", thisRange)
             } else {
                 if (print) cat(" could not find bottom\n")
             }
         } else if (code1 == 0x36) {
-            if (print) cat(" extended channel descriptor) IGNORED\n")
+            if (print) cat(" extended channel descriptor IGNORED\n")
         } else if (code1 == 0x33) {
-            if (print) cat(" single echo tuple) IGNORED ... see p26 of DT4_format_2010.pdf\n")
-        } else if (code1 == 0x1D) {
-            if (print) cat(" split-beam tuple) IGNORED ... see p8 of DT4_format_2010.pdf\n")
+            if (print) cat(" single echo tuple IGNORED ... see p26 of DT4_format_2010.pdf\n")
         } else {
-            if (print) cat(" unknown code) IGNORED\n")
+            if (print) cat(" unknown code IGNORED\n")
         }
         N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
         if (N6 != N + 6)
@@ -432,7 +456,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
-    range  <- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
+    depth<- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
 
     time <- as.numeric(time)
 
@@ -461,15 +485,12 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
                      longitudeSlow=longitudeSlow,
-                     depth=range,
+                     depth=depth,
+                     range=range, # FIXME: need to figure time to match this from the system time
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
                      a=a)
-    if (!is.null(timeBottom) && !is.null(rangeBottom)) { # FIXME: not documented, or used
-        res@data$timeBottom <- timeBottom
-        res@data$rangeBottom <- rangeBottom
-    }
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
     res
