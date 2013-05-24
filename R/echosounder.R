@@ -341,7 +341,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                         " elapsedTime=", pingElapsedTime,
                         "\n", sep="")
                 }
-                tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
                 if (code1 == 0x1c) {
                     tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
                     pingType <- "single-beam"
