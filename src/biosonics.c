@@ -59,6 +59,9 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp)
   int lres = (int)(*sppPtr);
   SEXP res;
   PROTECT(res = allocVector(REALSXP, lres));
+#ifdef DEBUG
+      Rprintf("allocVector(REALSXP, %d)\n", lres);
+#endif
   double *resp = REAL(res);
   for (int i = 0; i < lres; i++) {
     // zero fill at end, if needed
@@ -74,6 +77,12 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp)
     if (bytep[1+2*i] == 0xFF) {
       int zeros = 2 + (int)bytep[2*i];
 #ifdef DEBUG
+      Rprintf(" zeros = %d (lres=%d)\n", zeros, lres);
+#endif
+      if (i + zeros >= lres)
+	zeros = lres - i;
+#ifdef DEBUG
+      Rprintf(" AFTER zeros = %d (lres=%d)\n", zeros, lres);
       Rprintf("  > RLE at i=%d [IGNORED]\n", i);
       Rprintf("  > n=%d\n", zeros);
 #endif

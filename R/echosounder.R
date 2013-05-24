@@ -418,9 +418,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
             if (print) cat(" ns:", ns)
+            if (print) cat(" scan:", scan)
             tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
+            if (print) cat(" < dim(a)=", dim(a), "2*ns=", 2*ns, "samplesPerPing=", samplesPerPing, "length(tmp)=",length(tmp), ">")
+            if (print) cat("\nAAA\n")
             a[scan, ] <- rev(tmp) # note reversal in time
+            if (print) cat("\nBBB\n")
             time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
+            if (print) cat("\nCCC\n")
             scan <- scan + 1
             if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
  
@@ -442,6 +447,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (print) cat(" extended channel descriptor IGNORED\n")
         } else if (code1 == 0x33) {
             if (print) cat(" single echo tuple IGNORED ... see p26 of DT4_format_2010.pdf\n")
+        } else if (code1 == 0x34) {
+            if (print) cat(" comment tuple (sec4.14, p28 of DT_format_2010.pdf)\n")
+            ## FIXME: other info could be gleaned from the comment, if needed
+            numbytes <- .C("uint16_le", buf[offset+34:35], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            if (print) cat('numbytes:', numbytes, ' ... NOTHING ELSE DECODED in this verion of oce.\n')
         } else {
             if (print) cat(" unknown code IGNORED\n")
         }
