@@ -414,31 +414,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x01) {
             warning("Biosonics file of type 'V1' detected ... errors may crop up")
             fileType <- "V1"
-        ##} else if (code1 == 0x1c || code1 == 0x1d) { # dual-beam or split-beam tuple
-        ##    ## FIXME: the c code is definitely wrong; see sec 5.3.2 for dual-beam etc
-        ##    if (print) cat(" split-beam tuple (starting to code; see p8 of DT4_format_2010.pdf)")
-        ##    thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-        ##    if (print) cat(" channel:", thisChannel)
-        ##    pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
-        ##    if (print) cat(" pingNumber:", pingNumber)
-        ##    pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
-        ##    ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
-        ##    if (print) cat(" ns:", ns)
-        ##    if (print) cat(" scan:", scan)
-        ##    if (code1 == 0x1c)
-        ##        tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
-        ##    else if (code1 == 0x1c)
-        ##        tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
-        ##    else 
-        ##        tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
-        ##    if (print) cat(" < dim(a)=", dim(a), "2*ns=", 2*ns, "samplesPerPing=", samplesPerPing, "length(tmp)=",length(tmp), ">")
-        ##    if (print) cat("\nAAA\n")
-        ##    a[scan, ] <- rev(tmp) # note reversal in time
-        ##    if (print) cat("\nBBB\n")
-        ##    time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
-        ##    if (print) cat("\nCCC\n")
-        ##    scan <- scan + 1
-        ##    if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
         } else if (code1 == 0x32) {
             if (print) cat(" bottom pick tuple [sec. 4.12, p25 DT4_format_2010.pdf] ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
