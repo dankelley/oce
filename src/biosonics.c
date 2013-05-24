@@ -49,7 +49,10 @@ double biosonic_float(unsigned char byte1, unsigned char byte2)
 }
  
 
-SEXP biosonics_ping(SEXP bytes, SEXP spp)
+//SEXP biosonics_ping_dual_beam(SEXP bytes, SEXP spp)
+//SEXP biosonics_ping_split_beam(SEXP bytes, SEXP spp)
+
+SEXP biosonics_ping_single_beam(SEXP bytes, SEXP spp)
 {
   PROTECT(bytes = AS_RAW(bytes));
   PROTECT(spp = AS_NUMERIC(spp));

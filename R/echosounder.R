@@ -316,7 +316,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     blankedSamples <- 0
     fileType <- "unknown" 
     range <- NULL
-    bottombin <- NULL
+    pingType <- "unknown"
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -326,7 +326,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         if (print) cat("buf[", 3+offset, "] = code1 = 0x", code1, sep="")
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
-        if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
+        if (code1 == 0x15 || code1 == 0x1c || code1 == 0x1d) {           # single-beam, dual-beam, or split-beam tuple
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
             pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
@@ -341,18 +341,25 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                         " elapsedTime=", pingElapsedTime,
                         "\n", sep="")
                 }
-                tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
+                tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
+                if (code1 == 0x1c) {
+                    tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
+                    pingType <- "single-beam"
+                } else if (code1 == 0x1c) {
+                    tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing) # FIXME: dual-beam
+                    pingType <- "dual-beam"
+                } else {
+                    tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing) # FIXME: split-beam
+                    pingType <- "split-beam"
+                }
                 a[scan, ] <- rev(tmp) # note reversal in time
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
                 if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
            } else {
                if (debug > 0) {
-                   cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
-                       " ping=", pingNumber,
-                       " ns=", ns,
-                        " channel=", thisChannel,
-                        " IGNORED)\n", sep="")
+                   cat("buf[", 1+offset, ", ...] = 0x", code1, 
+                       " ping=", pingNumber, " ns=", ns, " channel=", thisChannel, " IGNORED since wrong channel)\n", sep="")
                 }
             }
         } else if (code1 == 0x0f || code == 0x20) { # time
@@ -399,7 +406,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (print) cat(" time-stamped navigation string IGNORED\n")
         } else if (code1 == 0xff && tuple > 1) {
             if (print) cat("  EOF\n")
-        } else if (code1 == 0x1E) {
+        } else if (code1 == 0x1e) {
             if (print) cat(" V3 file header\n")
             fileType <- if (buf[offset + 1] == 0x10 & buf[offset + 2] == 0x00) "DT4 v2.3" else "DT4 pre v2.3"
         } else if (code1 == 0x18) {
@@ -408,35 +415,37 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x01) {
             warning("Biosonics file of type 'V1' detected ... errors may crop up")
             fileType <- "V1"
-        } else if (code1 == 0x1c || code1 == 0x1d) {
-            ## FIXME: test code here, for bottom-track test case
-            if (print) cat(" split-beam tuple (starting to code; see p8 of DT4_format_2010.pdf)")
-            thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-            if (print) cat(" channel:", thisChannel)
-            pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
-            if (print) cat(" pingNumber:", pingNumber)
-            pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
-            ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
-            if (print) cat(" ns:", ns)
-            if (print) cat(" scan:", scan)
-            tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
-            if (print) cat(" < dim(a)=", dim(a), "2*ns=", 2*ns, "samplesPerPing=", samplesPerPing, "length(tmp)=",length(tmp), ">")
-            if (print) cat("\nAAA\n")
-            a[scan, ] <- rev(tmp) # note reversal in time
-            if (print) cat("\nBBB\n")
-            time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
-            if (print) cat("\nCCC\n")
-            scan <- scan + 1
-            if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
- 
+        ##} else if (code1 == 0x1c || code1 == 0x1d) { # dual-beam or split-beam tuple
+        ##    ## FIXME: the c code is definitely wrong; see sec 5.3.2 for dual-beam etc
+        ##    if (print) cat(" split-beam tuple (starting to code; see p8 of DT4_format_2010.pdf)")
+        ##    thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+        ##    if (print) cat(" channel:", thisChannel)
+        ##    pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
+        ##    if (print) cat(" pingNumber:", pingNumber)
+        ##    pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
+        ##    ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
+        ##    if (print) cat(" ns:", ns)
+        ##    if (print) cat(" scan:", scan)
+        ##    if (code1 == 0x1c)
+        ##        tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
+        ##    else if (code1 == 0x1c)
+        ##        tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
+        ##    else 
+        ##        tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
+        ##    if (print) cat(" < dim(a)=", dim(a), "2*ns=", 2*ns, "samplesPerPing=", samplesPerPing, "length(tmp)=",length(tmp), ">")
+        ##    if (print) cat("\nAAA\n")
+        ##    a[scan, ] <- rev(tmp) # note reversal in time
+        ##    if (print) cat("\nBBB\n")
+        ##    time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
+        ##    if (print) cat("\nCCC\n")
+        ##    scan <- scan + 1
+        ##    if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
         } else if (code1 == 0x32) {
             if (print) cat(" bottom pick tuple [sec. 4.12, p25 DT4_format_2010.pdf] ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (foundBottom) {
-                binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
-                bottombin <- c(bottombin, binBottom)
                 thisRange <- readBin(buf[offset+20+1:4], "numeric", size=4, n=1, signed=TRUE, endian="little")
             } else {
                 thisRange <- NA
@@ -461,6 +470,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
+    res@metadata$pingType <- pingType
     res@metadata$channel <- channel
     res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
@@ -487,41 +497,22 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     latitude <- approx2(timeSlow, latitudeSlow, time)
     longitude <- approx2(timeSlow, longitudeSlow, time)
 
-    ## TEST:
-    ## par(mfrow=c(2,1))
-    ## plot(timeSlow[1:5], latitudeSlow[1:5])
-    ## lines(time, latitude)
-    ## plot(timeSlow[length(latitudeSlow)+(-5:0)], latitudeSlow[length(latitudeSlow)+(-5:0)])
-    ## lines(time, latitude)
-
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
                      longitudeSlow=longitudeSlow,
                      depth=depth,
-                     bottombin=bottombin, # FIXME: may remove this later
                      range=range, # FIXME: is it a coincidence that time is of same length?
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
                      a=a)
 
-    ## TEST BOTTOM 1:
-    if (FALSE) {
-        x11()
-        plot(1:1520, d[['depth']][d[['bottombin']]], type='l')
-        lines(1:1520, d[['depth']][1]-d[['range']], col='red')
-    }
-    ##
-    ## TEST BOTTOM 2:
-    if (FALSE) {
-        x11()
-        plot(d)
-        lines(d[['time']], d[['range']]-d[['depth']][1], col='yellow', lwd=2)
-    }
-    
-    ## -- I don't get why these look so unlike the image.
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
+    if (res@metadata$pingType == "dual-beam")
+        warning("dual-beam echosounder amplitude information is not decoded correctly")
+    if (res@metadata$pingType == "split-beam")
+        warning("split-beam echosounder amplitude information is not decoded correctly")
     res
 }
 
