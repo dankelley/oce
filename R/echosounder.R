@@ -318,7 +318,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     blankedSamples <- 0
     fileType <- "unknown" 
     range <- NULL
-    pingType <- "unknown"
+    beamType <- "unknown"
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -345,13 +345,13 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 }
                 if (code1 == 0x1c) {
                     tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
-                    pingType <- "single-beam"
+                    beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
                     tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
-                    pingType <- "dual-beam"
+                    beamType <- "dual-beam"
                 } else {
                     tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
-                    pingType <- "split-beam"
+                    beamType <- "split-beam"
                 }
                 a[scan, ] <- rev(tmp) # note reversal in time
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
@@ -446,7 +446,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
-    res@metadata$pingType <- pingType
+    res@metadata$beamType <- beamType
     res@metadata$channel <- channel
     res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
@@ -485,9 +485,9 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
-    if (res@metadata$pingType == "dual-beam")
+    if (res@metadata$beamType == "dual-beam")
         warning("dual-beam echosounder amplitude information is not decoded correctly")
-    if (res@metadata$pingType == "split-beam")
+    if (res@metadata$beamType == "split-beam")
         warning("split-beam echosounder amplitude information is not decoded correctly")
     res
 }
@@ -496,6 +496,7 @@ summary.echosounder <- function(object, ...)
 {
     cat("Echosounder Summary\n-------------------\n\n")
     showMetadataItem(object, "filename", "File source:         ", quote=TRUE)
+    metadataNames <- names(object@metadata)
     time <- object[["time"]]
     tz <- attr(time[1], "tzone")
     nt <- length(time)
@@ -507,6 +508,8 @@ summary.echosounder <- function(object, ...)
     cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
     cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
     cat(sprintf("* File type:           \"%s\"\n", object[["fileType"]]))
+    if ("beamType" %in% metadataNames)
+        cat(sprintf("* Beam type:           \"%s\"\n", object[["beamType"]]))
     cat("* Statistics::\n")
     dataNames <- names(object@data)
     ndata <- length(dataNames)

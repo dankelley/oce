@@ -259,6 +259,8 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 
 threenum <- function(x)
 {
+    if (is.character(x) || is.null(x))
+        return(NA)
     if (is.raw(x))
         x <- as.numeric(x)
     if (sum(!is.na(x))) {
