@@ -1,5 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+## REFERENCES:
+##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
+
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
@@ -259,7 +262,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, endian="little")
 
-    ## p9 of DT4_format_2010.pdf "After this comes the main data section of the file.
+    ## [1 p9]: "After this comes the main data section of the file.
     ## This will typically contain some or all of the following tuples:
     ## ping tuples (type 0x0015, 0x001C or 0x001D),
     ## time tuples (type 0x000F or 0x0020),
@@ -270,8 +273,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ## single echoes tuples (type 0x0033), and
     ## comment tuples (type 0x0034).
 
-    ## Section 3.3 of the Biosonics doc (see ?echosounder-class) describes the
-    ## file format.  Note that the files are little endian.
+    ## [1 sec 3.3 ] describes the file format.  NB: files are little endian.
     ##
     ## Data are organized as a sequence of tuples, in the following format:
     ##   N = 2-byte unsigned int that indicates the size of the tuple.
@@ -279,8 +281,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ##   data = N bytes (depends on code)
     ##   N6 = 2 bytes that must equal N+6, or the data are corrupted
     ##
-    ## The codes, from the table in section 3.5 of Biosonics doc (see ?"echosounder-class")
-    ## are as follows.  The first tuple in a file must have code 0xFFFF, and the
+    ## The codes, from the table in [1 sec 3.5] are as follows. 
+    ## The first tuple in a file must have code 0xFFFF, and the
     ## second must have code 001E, 0018, or 0001.
     ##
     ##   0xFFFF Signature (for start of file)
@@ -342,13 +344,13 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                         "\n", sep="")
                 }
                 if (code1 == 0x1c) {
-                    tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing)
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
                     pingType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing) # FIXME: dual-beam
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
                     pingType <- "dual-beam"
                 } else {
-                    tmp <- .Call("biosonics_ping_single_beam", buf[offset+16+1:(2*ns)], samplesPerPing) # FIXME: split-beam
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
                     pingType <- "split-beam"
                 }
                 a[scan, ] <- rev(tmp) # note reversal in time
@@ -366,7 +368,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1), NAOK=TRUE, PACKAGE="oce")$res
             timeFull <- timeSec + timeSubSec
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
-            ## centisecond = ss & 0x7F (according to section 4.7)
+            ## centisecond = ss & 0x7F [1 sec 4.7]
             timeLast <- timeSec + timeSubSec # used for positioning
             if (print) cat(sprintf(" time calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
         } else if (code1 == 0x0e) { # position
@@ -415,7 +417,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             warning("Biosonics file of type 'V1' detected ... errors may crop up")
             fileType <- "V1"
         } else if (code1 == 0x32) {
-            if (print) cat(" bottom pick tuple [sec. 4.12, p25 DT4_format_2010.pdf] ")
+            if (print) cat(" bottom pick tuple [1 sec 4.12] ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -431,7 +433,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x33) {
             if (print) cat(" single echo tuple IGNORED ... see p26 of DT4_format_2010.pdf\n")
         } else if (code1 == 0x34) {
-            if (print) cat(" comment tuple (sec4.14, p28 of DT_format_2010.pdf)\n")
+            if (print) cat(" comment tuple [1 sec 4.14 p28]\n")
             ## FIXME: other info could be gleaned from the comment, if needed
             numbytes <- .C("uint16_le", buf[offset+34:35], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (print) cat('numbytes:', numbytes, ' ... NOTHING ELSE DECODED in this verion of oce.\n')

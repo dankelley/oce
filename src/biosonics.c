@@ -1,11 +1,22 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+//
+// FIXME: this code is wrong for dual- and split-beam data...
+// In single-beam data, the procedure is to work in 2-byte chunks (as
+// is done here) but for the other cases, it should work in 4-byte
+// chunks.  IMPORTANT CONCERN: this may mean that the existing code
+// stretches the depth axis by a factor of 2, so that 100m graphed
+// means 50m in the water.
+
+// REFERENCES:
+//   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
+
 // #define DEBUG 1
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 
 // subsecond time for Biosonic echosounder
-// REF: p19 of Biosonics "DT4 Data File Format Specification" [July, 2010]
+// [1 p19]
 void biosonics_ss(unsigned char *byte, double *out)
 {
   if (!(0x80 & *byte))
@@ -52,10 +63,14 @@ double biosonic_float(unsigned char byte1, unsigned char byte2)
 //SEXP biosonics_ping_dual_beam(SEXP bytes, SEXP spp)
 //SEXP biosonics_ping_split_beam(SEXP bytes, SEXP spp)
 
-SEXP biosonics_ping_single_beam(SEXP bytes, SEXP spp)
+SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
 {
   PROTECT(bytes = AS_RAW(bytes));
   PROTECT(spp = AS_NUMERIC(spp));
+  PROTECT(type = AS_NUMERIC(type));
+  double *typep = REAL(type);
+  int beamType = (int)floor(0.5 + *typep);
+  //Rprintf("beamType=%d\n", beamType);
   unsigned int nbytes = LENGTH(bytes);
   unsigned char *bytep = RAW(bytes);
   double *sppPtr = REAL(spp);
@@ -101,7 +116,7 @@ SEXP biosonics_ping_single_beam(SEXP bytes, SEXP spp)
       resp[i] = biosonic_float(bytep[2*i], bytep[1+2*i]);
     }
   }
-  UNPROTECT(3);
+  UNPROTECT(4);
   return(res);
 }
 
