@@ -1,6 +1,7 @@
 0.9-11
-- decode bottom-pick in echosounder files
-- improve doc for read.adp (regarding variable orientation of RDI files)
+- echosounder: add warnings for dual-beamand split-beam data
+- echosounder: decode bottom-pick 
+- read.adp: improve doc regarding variable orientation of RDI files
 
 0.9-10
 - improve line breaks in some help pages (thanks, B. Ripley)

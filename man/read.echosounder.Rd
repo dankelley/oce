@@ -5,8 +5,7 @@
 
 \description{Read an echosounder data file, producing an object of type \code{echosounder}.}
 
-\usage{
-read.echosounder(file, channel=1, soundSpeed=swSoundSpeed(35,10,50),
+\usage{read.echosounder(file, channel=1, soundSpeed=swSoundSpeed(35,10,50),
                  tz=getOption("oceTz"), debug=getOption("oceDebug"))
 }
 
@@ -28,7 +27,9 @@ read.echosounder(file, channel=1, soundSpeed=swSoundSpeed(35,10,50),
 
 }
 
-\details{Reads a biosonics echosounder file.}
+\details{Reads a single-beam biosonics echosounder file.  This function was
+written for and tested with Biosonics files of type V3, and may not work
+properly with other file formats.}
 
 \value{An object of \code{\link[base]{class}} \code{"echosounder"} with
     standard slots \code{metadata}, \code{data} and \code{processingLog} that
@@ -47,17 +48,15 @@ plot(e)
 }
 }
     
-\section{Notes}{
-    \itemize{
+\section{Bugs}{This function is designed to work with single-beam instruments.
+Dual-beam and split-beam data are not decoded correctly, with every second
+datum in the vertical being incorrect. This means that plots of dual- and
+split-beam data will have a great deal of noise, often so much as to hide any
+patterns of interest.  (There are plans to remove this bug during the summer of
+2013.)
 
-        \item This function was written for and tested with files of type V3,
-        and may not work properly with older Biosonics file formats.
-
-        \item There are several time items in the data format, and it remains
-        to be seen whether the one used here is appropriate.
-
-    }
-}
+Also, there are several time items in the data format, and it remains to be
+seen whether the one used here is appropriate.}
 
 \references{
     Various echousounder instruments provided by BioSonics are described at the

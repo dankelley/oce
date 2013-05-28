@@ -343,16 +343,19 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                         " elapsedTime=", pingElapsedTime,
                         "\n", sep="")
                 }
-                if (code1 == 0x1c) {
+                if (code1 == 0x15) {
                     tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 0) # FIXME: put 1 as last arg
                     beamType <- "dual-beam"
-                } else {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
+                } else if (code1 == 0x1d) {
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 0) # FIXME: put 2 as last arg
                     beamType <- "split-beam"
+                } else {
+                    stop("unknown 'tuple' 0x", code1, sep="")
                 }
+
                 a[scan, ] <- rev(tmp) # note reversal in time
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
@@ -485,10 +488,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
-    if (res@metadata$beamType == "dual-beam")
-        warning("dual-beam echosounder amplitude information is not decoded correctly")
-    if (res@metadata$beamType == "split-beam")
+    ## The following is a kludge to try to get the code to produce *something*
+    if (res@metadata$beamType == "dual-beam") {
+        res@data$depth <- res@data$depth / 2
+        warning("dual-beam echosounder amplitude information is not decoded correctly; every second data point is wrong")
+    } else if (res@metadata$beamType == "split-beam") {
+        res@data$depth <- res@data$depth / 2
         warning("split-beam echosounder amplitude information is not decoded correctly")
+    }
     res
 }
 

@@ -1,11 +1,9 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 //
-// FIXME: this code is wrong for dual- and split-beam data...
+// FIXME: this code should be altered to handle dual- and split-beam data.
 // In single-beam data, the procedure is to work in 2-byte chunks (as
 // is done here) but for the other cases, it should work in 4-byte
-// chunks.  IMPORTANT CONCERN: this may mean that the existing code
-// stretches the depth axis by a factor of 2, so that 100m graphed
-// means 50m in the water.
+// chunks.
 
 // REFERENCES:
 //   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
@@ -27,9 +25,8 @@ void biosonics_ss(unsigned char *byte, double *out)
 
 // SYNOPSIS. handle Biosonics ping data
 //
-// DETAILS.  Assemble bytes into integers, using the
-// Biosonics-defined floating-point type, which uses
-// pairs of bytes, from which we extract an
+// DETAILS. Convert a 2-byte binary data chunk, into an integer,
+// using the  Biosonics-defined floating-point type, which uses
 // 4-bit exponent and a 12-bit mantissa. 
 //  
 // ARGUMENTS
@@ -42,6 +39,7 @@ void biosonics_ss(unsigned char *byte, double *out)
 //   1. not employing run-length-encoding
 //
 // RETURN VALUE. numerical values of type double
+//
 double biosonic_float(unsigned char byte1, unsigned char byte2)
 {
     unsigned int assembled_bytes = ((short)byte2 << 8) | ((short)byte1); // little endian
@@ -59,9 +57,24 @@ double biosonic_float(unsigned char byte1, unsigned char byte2)
     return((double)res);
 }
  
-
-//SEXP biosonics_ping_dual_beam(SEXP bytes, SEXP spp)
-//SEXP biosonics_ping_split_beam(SEXP bytes, SEXP spp)
+// SYNOPSIS. handle Biosonics ping data
+//
+// DETAILS. Analyse binary data, using different methods for different
+// beam types.  The eventual conversion to an integer format
+// is done with biosonics_ss().
+//  
+// ARGUMENTS
+//   bytes
+//      the data ('raw' in R notation)
+//   spp
+//       samples per ping (after RLE expansion), i.e. length of return value
+//  type
+//       0 for single-beam, 1 for split-beam, or 2 for dual-beam
+//
+// BUGS
+//   1. not employing run-length-encoding
+//
+// RETURN VALUE. numerical values of type double
 
 SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
 {
@@ -70,6 +83,13 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   PROTECT(type = AS_NUMERIC(type));
   double *typep = REAL(type);
   int beamType = (int)floor(0.5 + *typep);
+  if (0) {
+    if (beamType == 1) {
+      error("cannot handle dual-beam echosounder data");
+    } else if (beamType == 2) {
+      error("cannot handle split-beam echosounder data");
+    }
+  }
   //Rprintf("beamType=%d\n", beamType);
   unsigned int nbytes = LENGTH(bytes);
   unsigned char *bytep = RAW(bytes);
