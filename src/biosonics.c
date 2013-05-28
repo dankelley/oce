@@ -83,12 +83,13 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   PROTECT(type = AS_NUMERIC(type));
   double *typep = REAL(type);
   int beamType = (int)floor(0.5 + *typep);
-  if (0) {
-    if (beamType == 1) {
-      error("cannot handle dual-beam echosounder data");
-    } else if (beamType == 2) {
-      error("cannot handle split-beam echosounder data");
-    }
+  int datum_length = 2;
+  if (beamType == 1) {
+    datum_length = 4;
+    // error("cannot handle dual-beam echosounder data");
+  } else if (beamType == 2) {
+    datum_length = 4;
+    // error("cannot handle split-beam echosounder data");
   }
   //Rprintf("beamType=%d\n", beamType);
   unsigned int nbytes = LENGTH(bytes);
@@ -101,39 +102,39 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
       Rprintf("allocVector(REALSXP, %d)\n", lres);
 #endif
   double *resp = REAL(res);
-  for (int i = 0; i < lres; i++) {
+  for (int ires = 0; ires < lres; ires++) {
     // zero fill at end, if needed
-    if (nbytes <= (2*i)) {
+    if (nbytes <= (2*ires)) {
 #ifdef DEBUG
       Rprintf("    padding %d data\n", (2*lres - nbytes)/2);
 #endif
-      while (i < lres)
-	resp[i++] = (double)0.0;
+      while (ires < lres)
+	resp[ires++] = (double)0.0;
       break;
     }
     // The RLE starting code is 0xFF in an odd-numbered byte.
-    if (bytep[1+2*i] == 0xFF) {
-      int zeros = 2 + (int)bytep[2*i];
+    if (bytep[1 + datum_length * ires] == 0xFF) {
+      int zeros = 2 + (int)bytep[datum_length * ires];
 #ifdef DEBUG
       Rprintf(" zeros = %d (lres=%d)\n", zeros, lres);
 #endif
-      if (i + zeros >= lres)
-	zeros = lres - i;
+      if (ires + zeros >= lres)
+	zeros = lres - ires;
 #ifdef DEBUG
       Rprintf(" AFTER zeros = %d (lres=%d)\n", zeros, lres);
-      Rprintf("  > RLE at i=%d [IGNORED]\n", i);
+      Rprintf("  > RLE at ires=%d [IGNORED]\n", ires);
       Rprintf("  > n=%d\n", zeros);
 #endif
       for (int z = 0; z < zeros; z++) {
-	resp[i + z] = 0.0;
+	resp[ires + z] = 0.0;
 #ifdef DEBUG
-	Rprintf("  * %d\n", i + z);
+	Rprintf("  * %d\n", ires + z);
 #endif
       }
-      i += zeros - 1;
+      ires += zeros - 1;
     } else {
       // normal 2-byte datum
-      resp[i] = biosonic_float(bytep[2*i], bytep[1+2*i]);
+      resp[ires] = biosonic_float(bytep[datum_length*ires], bytep[1+datum_length*ires]);
     }
   }
   UNPROTECT(4);
