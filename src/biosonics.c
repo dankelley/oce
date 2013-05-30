@@ -97,19 +97,29 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   double *sppPtr = REAL(spp);
   int lres = (int)(*sppPtr);
   SEXP res;
-  PROTECT(res = allocVector(REALSXP, lres));
+  SEXP res_names;
+  PROTECT(res = allocVector(VECSXP, 2));
+  PROTECT(res_names = allocVector(STRSXP, 2));
+  SEXP res_a;
+  PROTECT(res_a = allocVector(REALSXP, lres));
+  SEXP res_b;
+  PROTECT(res_b = allocVector(REALSXP, lres));
 #ifdef DEBUG
       Rprintf("allocVector(REALSXP, %d)\n", lres);
 #endif
-  double *resp = REAL(res);
+  double *resap = REAL(res_a);
+  double *resbp = REAL(res_b);
   for (int ires = 0; ires < lres; ires++) {
     // zero fill at end, if needed
     if (nbytes <= (2*ires)) {
 #ifdef DEBUG
       Rprintf("    padding %d data\n", (2*lres - nbytes)/2);
 #endif
-      while (ires < lres)
-	resp[ires++] = (double)0.0;
+      while (ires < lres) {
+	resap[ires] = (double)0.0;
+	resbp[ires] = (double)0.0;
+	ires++;
+      }
       break;
     }
     // The RLE starting code is 0xFF in an odd-numbered byte.
@@ -126,7 +136,8 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
       Rprintf("  > n=%d\n", zeros);
 #endif
       for (int z = 0; z < zeros; z++) {
-	resp[ires + z] = 0.0;
+	resap[ires + z] = 0.0;
+	resbp[ires + z] = 0.0;
 #ifdef DEBUG
 	Rprintf("  * %d\n", ires + z);
 #endif
@@ -134,10 +145,16 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
       ires += zeros - 1;
     } else {
       // normal 2-byte datum
-      resp[ires] = biosonic_float(bytep[datum_length*ires], bytep[1+datum_length*ires]);
+      resap[ires] = biosonic_float(bytep[datum_length*ires], bytep[1+datum_length*ires]);
+      resbp[ires] = biosonic_float(bytep[datum_length*(1+ires)], bytep[1+datum_length*(1+ires)]);
     }
   }
-  UNPROTECT(4);
+  SET_VECTOR_ELT(res, 0, res_a);
+  SET_VECTOR_ELT(res, 1, res_b);
+  SET_STRING_ELT(res_names, 0, mkChar("a"));
+  SET_STRING_ELT(res_names, 1, mkChar("b"));
+  setAttrib(res, R_NamesSymbol, res_names);
+  UNPROTECT(7);
   return(res);
 }
 

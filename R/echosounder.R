@@ -344,19 +344,23 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                         "\n", sep="")
                 }
                 if (code1 == 0x15) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
+                    a[scan, ] <- rev(t$a) # note reversal in time
+                    b[scan, ] <- rev(t$b) # note reversal in time
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
+                    a[scan, ] <- rev(t$a) # note reversal in time
+                    b[scan, ] <- rev(t$b) # note reversal in time
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
+                    a[scan, ] <- rev(t$a) # note reversal in time
+                    b[scan, ] <- rev(t$b) # note reversal in time
                     beamType <- "split-beam"
                 } else {
                     stop("unknown 'tuple' 0x", code1, sep="")
                 }
-
-                a[scan, ] <- rev(tmp) # note reversal in time
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
                 if (print) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
@@ -397,7 +401,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
             samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (1 == length(channelNumber)) { # get space
-                a <- matrix(1, nrow=pingsInFile, ncol=samplesPerPing)
+                a <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
+                b <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
             }
             if (print) cat(" channel descriptor ",
                            " number=", tail(channelNumber, 1),
@@ -484,7 +489,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
-                     a=a)
+                     a=a, b=b)
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
