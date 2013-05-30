@@ -1,0 +1,12 @@
+library(tools)
+resaveRdaFiles("echosounder.rda", compress="auto")
+q()
+load('echosounder.rda')
+echosounder@metatada
+echosounder@metadata
+echosounder@metadata$beamType <- "single-beam"
+save(echosounder, file='echosounder.rda')
+library(tools)
+resaveRdaFiles('echosounder.rda')
+?read.echosounder
+q()
