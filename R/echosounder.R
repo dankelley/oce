@@ -399,7 +399,23 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE,
                                                       PACKAGE="oce")$res)
             pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
-            samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # ssp [p13 1]
+            sp <- .C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            cat('sp=', pud, '\n', sep='')
+            ## next 2 bytes contain u1, ignored
+            pud <- .C("uint16_le", buf[offset+16+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            cat('pud=', pud, '\n', sep='')
+            pp <- .C("uint16_le", buf[offset+18+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            cat('pp=', pp, '\n', sep='')
+            ib <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            cat('ib=', ib, '\n', sep='')
+            ## next 2 bytes contain u2, ignored
+            th <- .C("int16_le", buf[offset+24+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            cat('th=', th, '\n', sep='')
+            ## FIXME: read rxee, if it proves to be needed
+            corr <- .C("int16_le", buf[offset+282+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p13 1]
+            cat('corr=', corr, '\n', sep='')
+
             if (1 == length(channelNumber)) { # get space
                 a <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
                 b <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
@@ -462,7 +478,16 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
-    depth<- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
+    ## channel info, with names matching [1 p13]
+    res@metadata$sp <- sp
+    res@metadata$pub <- pub
+    res@metadata$pp <- pp
+    res@metadata$ib <- ib
+    res@metadata$th <- th
+    res@metadata$corr <- corr
+
+    depth <- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
+
 
     time <- as.numeric(time)
 
