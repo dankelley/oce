@@ -1,5 +1,5 @@
 0.9-11
-- echosounder: add warnings for dual-beamand split-beam data
+- echosounder: start work on decoding dual-beam and split-beam data
 - echosounder: decode bottom-pick 
 - read.adp: improve doc regarding variable orientation of RDI files
 

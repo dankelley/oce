@@ -473,11 +473,3 @@ void uint16_le(unsigned char *b, int *n, int *out)
   }
 }
 
-void int16_le(unsigned char *b, int *n, int *out)
-{
-  for (int i = 0; i < *n; i++) {
-    out[i] = (int)b[2*i] + 256 * (int)b[1+2*i];
-  }
-}
-
-

@@ -84,14 +84,11 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   double *typep = REAL(type);
   int beamType = (int)floor(0.5 + *typep);
   int datum_length = 2;
-  if (beamType == 1) {
+  if (beamType == 1 || beamType == 2) {
     datum_length = 4;
-    // error("cannot handle dual-beam echosounder data");
-  } else if (beamType == 2) {
-    datum_length = 4;
-    // error("cannot handle split-beam echosounder data");
+  } else {
+    error("unknown biosonics echosounder beam type %d (must be 0, 1, or 2)", beamType);
   }
-  //Rprintf("beamType=%d\n", beamType);
   unsigned int nbytes = LENGTH(bytes);
   unsigned char *bytep = RAW(bytes);
   double *sppPtr = REAL(spp);
