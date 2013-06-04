@@ -579,7 +579,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         warning("split-beam echosounder is not decoded correctly yet; it may work by July 2013")
     }
     cat("about to try cleaning up\n")
-    .Call("biosonics_ping", buf[1], samplesPerPing, type=-1) # clear temporary storage space
+    .C("biosonics_free_storage", package="oce") # clear temporary storage space
     cat("did the cleanup work?\n")
     res
 }

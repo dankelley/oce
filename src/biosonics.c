@@ -13,10 +13,34 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
     
-static unsigned char *buffer1 = NULL;
-static unsigned int *buffer4 = NULL;
+// 1. Routines to maintain static storage to avoid possibly thousands
+// of allocations of identical size, for a fixed purpose.
+// FIXME: see if OK on multicore; if not, use R method (if that's ok).
+static unsigned int *buffer = NULL; // single-beam uses just first 2 bytes of each 4-byte entry
+void biosonics_allocate_storage(n)
+{
+  if (buffer == NULL) {
+#ifdef DEBUG
+    Rprintf("should allocate space for %d data now\n", n);
+#endif
+    buffer = (unsigned int*) calloc(n, sizeof(unsigned int));
+    if (buffer == NULL) {
+      error("cannot allocate space for temporary buffer, of length %d", n);
+    }
+#ifdef DEBUG
+    Rprintf("... allocation was OK; address is %d\n", buffer);
+#endif
+  }
+}
 
-// subsecond time for Biosonic echosounder
+void biosonics_free_storage()
+{
+  if (buffer != NULL)
+    free(buffer);
+  buffer = NULL;
+}
+
+// 2. subsecond time for Biosonic echosounder
 // [1 p19]
 void biosonics_ss(unsigned char *byte, double *out)
 {
@@ -26,24 +50,8 @@ void biosonics_ss(unsigned char *byte, double *out)
     *out = (float)((int)(0x7F & *byte)) / 100;
 }
 
-// SYNOPSIS. handle Biosonics ping data
-//
-// DETAILS. Convert a 2-byte binary data chunk, into an integer,
-// using the  Biosonics-defined floating-point type, which uses
-// 4-bit exponent and a 12-bit mantissa. 
-//  
-// ARGUMENTS
-//   bytes
-//      the data ('raw' in R notation)
-//   spp
-//       samples per ping (after RLE expansion), i.e. length of return value
-//
-// BUGS
-//   1. not employing run-length-encoding
-//
-// RETURN VALUE. numerical values of type double
-//
-double biosonic_float(unsigned char byte1, unsigned char byte2)
+// 3. decode biosonics two-byte floating format
+double biosonic_float2(unsigned char byte1, unsigned char byte2)
 {
     unsigned int assembled_bytes = ((short)byte2 << 8) | ((short)byte1); // little endian
     unsigned int mantissa = (assembled_bytes & 0x0FFF); // rightmost 12 bits (again, little endian)
@@ -60,6 +68,7 @@ double biosonic_float(unsigned char byte1, unsigned char byte2)
     return((double)res);
 }
  
+// 4. handle an individual biosonics profile.
 // SYNOPSIS. handle Biosonics ping data
 //
 // DETAILS. Analyse binary data, using different methods for different
@@ -71,11 +80,8 @@ double biosonic_float(unsigned char byte1, unsigned char byte2)
 //      the data ('raw' in R notation)
 //   spp
 //       samples per ping (after RLE expansion), i.e. length of return value
-//  type
+//   type
 //       0 for single-beam, 1 for split-beam, or 2 for dual-beam
-//
-// BUGS
-//   1. not employing run-length-encoding
 //
 // RETURN VALUE. numerical values of type double
 
@@ -108,56 +114,8 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   PROTECT(res_a = allocVector(REALSXP, lres));
   SEXP res_b;
   PROTECT(res_b = allocVector(REALSXP, lres));
-  // Expand unlength-encoded data
-  if (beamType == 0) {
-    if (buffer1 == NULL) {
-#ifdef DEBUG
-      Rprintf("should allocate space for %d data (1byte) now\n", lres);
-#endif
-      buffer1 = (unsigned char*) calloc(lres, sizeof(unsigned char));
-      if (buffer1 == NULL) {
-	error("cannot allocate space for temporary buffer (named buffer1) of raw bytes, of length %d", lres);
-      }
-#ifdef DEBUG
-      Rprintf("... allocation was OK; address is %lx\n", buffer1);
-#endif
-    } else {
-#ifdef DEBUG
-      Rprintf("using existing buffer1 at address %lx\n", buffer1);
-#endif
-    }
-  }
-  if (beamType == 1 || beamType == 2) {
-    if (buffer4 == NULL) {
-#ifdef DEBUG
-      Rprintf("should allocate space for %d data (4byte) now\n", lres);
-#endif
-      buffer4 = (unsigned int*) calloc(lres, sizeof(unsigned int));
-      if (buffer4 == NULL) {
-	error("cannot allocate space for temporary buffer (named buffer4) of 4-bytes chunks, of length %d", lres);
-      }
-#ifdef DEBUG
-      Rprintf("... allocation was OK; address is %lx\n", buffer4);
-#endif
-    } else {
-#ifdef DEBUG
-      Rprintf("using existing buffer4 at address %lx\n", buffer4);
-#endif
-    }
-  } 
-  if (beamType == -1) {
-#ifdef DEBUG
-    Rprintf("should clear space\n", lres);
-#endif
-    if (buffer1 != NULL)
-      free(buffer1);
-    if (buffer4 != NULL)
-      free(buffer4);
-    buffer1 = NULL;
-    buffer4 = NULL;
-    UNPROTECT(4);
-    return(res);
-  }
+  biosonics_allocate_storage(lres);
+  // Get R type storage (eventually will remove this)
 #ifdef DEBUG
   Rprintf("allocVector(REALSXP, %d)\n", lres);
 #endif
@@ -165,7 +123,7 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   double *resbp = REAL(res_b);
   for (int dan = 0; dan < nbytes / 4; dan++) {
 #ifdef DEBUG
-    Rprintf(" %lx ", (unsigned int)uip[dan]);
+    Rprintf(" %08X ", (unsigned int)uip[dan]);
 #endif
     //if ((uip[dan] & 0xFF000000) == 0xFF000000) {
     //  Rprintf(" A. 4byte match to FF000000 at 4byte index %d or 1byte index %d\n", dan, 4*dan);
@@ -176,8 +134,8 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
     if ((uip[dan] & 0x0000FF00) == 0x0000FF00) {
       int n = (uip[dan] & 0x000000FF) + 2;
 #ifdef DEBUG
-      Rprintf(" 4byte match of %lx to 0000FF00 at 4byte index %d or 1byte index %d; n=%d\n",
-	  (unsigned int)uip[dan], dan, 4*dan, n);
+      Rprintf(" 4byte match of %08X to %08X at 4byte index %d or 1byte index %d; n=%d\n",
+	  (unsigned int)uip[dan], 0x0000FF00, dan, 4*dan, n);
 #endif
     }
     //if ((uip[dan] & 0x000000FF) == 0x000000FF) {
@@ -213,8 +171,8 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
       }
     } else {
       // normal 2-byte datum
-      resap[ires] = biosonic_float(bytep[datum_length*ires], bytep[1+datum_length*ires]);
-      resbp[ires] = biosonic_float(bytep[datum_length*(1+ires)], bytep[1+datum_length*(1+ires)]);
+      resap[ires] = biosonic_float2(bytep[datum_length*ires], bytep[1+datum_length*ires]);
+      resbp[ires] = biosonic_float2(bytep[datum_length*(1+ires)], bytep[1+datum_length*(1+ires)]);
     }
   }
   SET_VECTOR_ELT(res, 0, res_a);
@@ -225,4 +183,5 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   UNPROTECT(7);
   return(res);
 }
+
 
