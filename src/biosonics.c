@@ -17,7 +17,7 @@
 // of allocations of identical size, for a fixed purpose.
 // FIXME: see if OK on multicore; if not, use R method (if that's ok).
 static unsigned int *buffer = NULL; // single-beam uses just first 2 bytes of each 4-byte entry
-void biosonics_allocate_storage(n)
+void biosonics_allocate_storage(int n)
 {
   if (buffer == NULL) {
 #ifdef DEBUG
@@ -76,27 +76,33 @@ double biosonic_float2(unsigned char byte1, unsigned char byte2)
 // is done with biosonics_ss().
 //  
 // ARGUMENTS
-//   bytes
+//   Rbytes
 //      the data ('raw' in R notation)
-//   spp
+//   Rspp
 //       samples per ping (after RLE expansion), i.e. length of return value
-//   type
+//   Rns
+//       number of samples in profile (before runlength expansion)
+//   Rtype
 //       0 for single-beam, 1 for split-beam, or 2 for dual-beam
 //
 // RETURN VALUE. numerical values of type double
 
-SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
+SEXP biosonics_ping(SEXP bytes, SEXP Rspp, SEXP Rns, SEXP Rtype)
 {
   PROTECT(bytes = AS_RAW(bytes));
-  PROTECT(spp = AS_NUMERIC(spp));
-  PROTECT(type = AS_NUMERIC(type));
-  double *typep = REAL(type);
-  int beamType = (int)floor(0.5 + *typep);
+  PROTECT(Rspp = AS_NUMERIC(Rspp));
+  int spp = (int)floor(0.5 + *REAL(Rspp));
+  PROTECT(Rns = AS_NUMERIC(Rns));
+  int ns = (int)floor(0.5 + *REAL(Rns));
+  PROTECT(Rtype = AS_NUMERIC(Rtype));
+  int type = (int)floor(0.5 + *REAL(Rtype));
+  //double *typep = REAL(type);
+  //int beam = (int)floor(0.5 + *typep);
 #ifdef DEBUG
-  Rprintf("biosonics_ping(bytes, spp, type) decoded beamType=%d\n", beamType);
+  Rprintf("biosonics_ping() decoded type:%d, spp:%d, ns:%d\n", type, spp, ns);
 #endif
   int datum_length = 2;
-  if (beamType == 1 || beamType == 2) {
+  if (type == 1 || type == 2) {
     datum_length = 4;
   }
   unsigned int nbytes = LENGTH(bytes);
@@ -104,51 +110,49 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   unsigned int *uip = (unsigned int*)RAW(bytes);
   //Rprintf("unsigned int length %d; unsigned long int length %d; ptr %ld %ld\n", sizeof(unsigned int), sizeof(unsigned long int), bytep, uip);
   //Rprintf("nbytes %d\n", nbytes);
-  double *sppPtr = REAL(spp);
-  int lres = (int)(*sppPtr);
   SEXP res;
   SEXP res_names;
   PROTECT(res = allocVector(VECSXP, 2));
   PROTECT(res_names = allocVector(STRSXP, 2));
   SEXP res_a;
-  PROTECT(res_a = allocVector(REALSXP, lres));
+  PROTECT(res_a = allocVector(REALSXP, spp));
   SEXP res_b;
-  PROTECT(res_b = allocVector(REALSXP, lres));
-  biosonics_allocate_storage(lres);
+  PROTECT(res_b = allocVector(REALSXP, spp));
+  biosonics_allocate_storage(spp);
   // Get R type storage (eventually will remove this)
 #ifdef DEBUG
-  Rprintf("allocVector(REALSXP, %d)\n", lres);
+  Rprintf("allocVector(REALSXP, %d)\n", spp);
 #endif
   double *resap = REAL(res_a);
   double *resbp = REAL(res_b);
-  for (int dan = 0; dan < nbytes / 4; dan++) {
+  for (int d = 0; d < nbytes / datum_length; d++) { // FIXME: use 'ns' here to match docs
 #ifdef DEBUG
-    Rprintf(" %08X ", (unsigned int)uip[dan]);
+    Rprintf(" %08X ", (unsigned int)uip[d]);
 #endif
-    //if ((uip[dan] & 0xFF000000) == 0xFF000000) {
-    //  Rprintf(" A. 4byte match to FF000000 at 4byte index %d or 1byte index %d\n", dan, 4*dan);
+    //if ((uip[d] & 0xFF000000) == 0xFF000000) {
+    //  Rprintf(" A. 4byte match to FF000000 at 4byte index %d or 1byte index %d\n", d, 4*d);
     //}
-    //if ((uip[dan] & 0x00FF0000) == 0x00FF0000) {
-    //  Rprintf(" B. 4byte match to 00FF0000 at 4byte index %d or 1byte index %d\n", dan, 4*dan);
+    //if ((uip[d] & 0x00FF0000) == 0x00FF0000) {
+    //  Rprintf(" B. 4byte match to 00FF0000 at 4byte index %d or 1byte index %d\n", d, 4*d);
     //}
-    if ((uip[dan] & 0x0000FF00) == 0x0000FF00) {
-      int n = (uip[dan] & 0x000000FF) + 2;
+    if ((uip[d] & 0x0000FF00) == 0x0000FF00) {
+      int n = (uip[d] & 0x000000FF) + 2;
 #ifdef DEBUG
       Rprintf(" 4byte match of %08X to %08X at 4byte index %d or 1byte index %d; n=%d\n",
-	  (unsigned int)uip[dan], 0x0000FF00, dan, 4*dan, n);
+	  (unsigned int)uip[d], 0x0000FF00, d, 4*d, n);
 #endif
     }
-    //if ((uip[dan] & 0x000000FF) == 0x000000FF) {
-    //  Rprintf(" D. 4byte match to 000000FF at 4byte index %d or 1byte index %d\n", dan, 4*dan);
+    //if ((uip[d] & 0x000000FF) == 0x000000FF) {
+    //  Rprintf(" D. 4byte match to 000000FF at 4byte index %d or 1byte index %d\n", d, 4*d);
     //}
   }
-  for (int ires = 0; ires < lres; ires++) {
+  for (int ires = 0; ires < spp; ires++) {
     // zero fill at end, if needed
     if (nbytes <= (2*ires)) {
 #ifdef DEBUG
-      Rprintf("    padding %d data\n", (2*lres - nbytes)/2);
+      Rprintf("    padding %d data\n", (2*spp - nbytes)/2);
 #endif
-      while (ires < lres) {
+      while (ires < spp) {
 	resap[ires] = (double)0.0;
 	resbp[ires] = (double)0.0;
 	ires++;
@@ -160,10 +164,10 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
     if (bytep[1 + datum_length * ires] == 0xFF) {
       int zeros = 2 + (int)bytep[datum_length * ires];
 #ifdef DEBUG
-      Rprintf("RLE ires: %d, zeros: %d, lres: %d, flag-at: %d\n", ires, zeros, lres, 1+datum_length*ires);
+      Rprintf("RLE ires: %d, zeros: %d, spp: %d, flag-at: %d\n", ires, zeros, spp, 1+datum_length*ires);
 #endif
-      if (ires + zeros >= lres)
-	zeros = lres - ires;
+      if (ires + zeros >= spp)
+	zeros = spp - ires;
       for (int z = 0; z < zeros; z++) {
 	resap[ires] = 0.0;
 	resbp[ires] = 0.0;
@@ -180,7 +184,7 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp, SEXP type)
   SET_STRING_ELT(res_names, 0, mkChar("a"));
   SET_STRING_ELT(res_names, 1, mkChar("b"));
   setAttrib(res, R_NamesSymbol, res_names);
-  UNPROTECT(7);
+  UNPROTECT(8);
   return(res);
 }
 

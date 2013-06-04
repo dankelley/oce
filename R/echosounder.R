@@ -346,17 +346,17 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 ## Note the time reversal in the assignment to the data matrix 'a'
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
                     a[scan, ] <- rev(t$a)
                     b[scan, ] <- rev(t$b)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
                     a[scan, ] <- rev(t$a)
                     b[scan, ] <- rev(t$b)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
                     a[scan, ] <- rev(t$a)
                     b[scan, ] <- rev(t$b)
                     beamType <- "split-beam"
