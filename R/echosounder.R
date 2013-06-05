@@ -47,6 +47,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
+                              beam="a",
                               newx,
                               xlab, ylab,
                               xlim, ylim, zlim,
@@ -67,6 +68,8 @@ setMethod(f="plot",
               oceDebug(debug, "\b\bplot() { # for echosounder\n")
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
+              if (length(beam) < lw)
+                  beam <- rep(beam, lw)
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
                   adorn <- rep(adorn, lw)
@@ -92,7 +95,7 @@ setMethod(f="plot",
                       xInImage <- time
                       if (!length(time))
                           stop("plot.echosounder() cannot plot, because @data$time has zero length")
-                      a <- x[["a"]]
+                      signal <- x[[beam[w]]]
                       newxGiven <- !missing(newx)
                       if (newxGiven) {
                           t <- as.numeric(time)
@@ -101,8 +104,8 @@ setMethod(f="plot",
                          xInImage <- newx
                       }
                       if (despike)
-                          a <- apply(a, 2, smooth)
-                      z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this '1'
+                          signal <- apply(signal, 2, smooth)
+                      z <- log10(ifelse(signal > 1, signal, 1)) # FIXME: make an argument for this '1'
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "lightgray"
@@ -131,11 +134,7 @@ setMethod(f="plot",
                               polygon(time2, waterDepth, col=drawBottom)
                           }
                       } else {
-                          ## FIXME: debugging split- and dual-beam data
-                          ## par(mfrow=c(2,1))
-                          ## imagep(xInImage, y=-x[['depth']], z=log10(0.01+x[['a']]), col=col)
-                          ## imagep(xInImage, y=-x[['depth']], z=log10(0.01+x[['c']]), col=col)
-                          ## imagep(xInImage, y=-x[['depth']], z=log10(0.01+x[['d']]), col=col)
+                          ## FIXME: should permit examination of extra beams here
                           imagep(xInImage, y=-x[["depth"]], z=z,
                                  xlab=if (missing(xlab)) "" else xlab, # time
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
@@ -352,20 +351,20 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
                     t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
-                    a[scan, ] <- rev(t$a)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
                     t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
-                    a[scan, ] <- rev(t$a)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
                     ## e.g. 01-Fish.dt4 sample file from Biosonics
                     t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
-                    a[scan, ] <- rev(t$a)
                     beamType <- "split-beam"
                 } else {
                     stop("unknown 'tuple' 0x", code1, sep="")
                 }
+                a[scan, ] <- rev(t$a)
+                b[scan, ] <- rev(t$b)
+                c[scan, ] <- rev(t$c)
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
                 if (debug > 3) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
@@ -424,6 +423,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
 
             if (1 == length(channelNumber)) { # get space
                 a <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
+                b <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
+                c <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
             }
             if (debug > 3) cat(" channel descriptor ",
                            " number=", tail(channelNumber, 1),
@@ -568,7 +569,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
-                     a=a)
+                     a=a, b=b, c=c)
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))

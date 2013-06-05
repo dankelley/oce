@@ -168,44 +168,64 @@ SEXP biosonics_ping(SEXP bytes, SEXP Rspp, SEXP Rns, SEXP Rtype)
   unsigned char *bytep = RAW(bytes);
 
   SEXP res;
+  PROTECT(res = allocVector(VECSXP, 3));
   SEXP res_names;
-  PROTECT(res = allocVector(VECSXP, 1));
-  PROTECT(res_names = allocVector(STRSXP, 1));
+  PROTECT(res_names = allocVector(STRSXP, 3));
   SEXP res_a;
   PROTECT(res_a = allocVector(REALSXP, spp));
+  SEXP res_b;
+  PROTECT(res_b = allocVector(REALSXP, spp));
+  SEXP res_c;
+  PROTECT(res_c = allocVector(REALSXP, spp));
+  // Get static storage; FIXME: is this thread-safe?
   biosonics_allocate_storage(spp, byte_per_sample);
-  // Get R type storage (eventually will remove this)
 #ifdef DEBUG
   Rprintf("allocVector(REALSXP, %d)\n", spp);
 #endif
   double *resap = REAL(res_a);
-  if (type == 0) {
+  double *resbp = REAL(res_b);
+  double *rescp = REAL(res_c);
+  if (type == 0) { // single-beam
     rle(bytep, ns, spp, 2);
     for (int k = 0; k < spp; k++) {
       resap[k] = biosonic_float(buffer[byte_per_sample * k], buffer[1 + byte_per_sample * k]);
+      resbp[k] = 0.0;
+      rescp[k] = 0.0;
     }
-  } else if (type == 1 || type == 2) {
+  } else if (type == 1) { // dual-beam
     rle(bytep, ns, spp, 4);
     for (int k = 0; k < spp; k++) {
       // Quote [1 p37 re dual-beam]: "For an RLE-expanded sample x, the low-order
       // word (ie, (USHORT)(x & 0x0000FFFF)) contains the narrow-beam data. The
       // high-order word (ie, (USHORT)((x & 0xFFFF0000) >> 16)) contains the
       // wide beam data."
-      //
+      resap[k] = biosonic_float(buffer[    byte_per_sample * k], buffer[1 + byte_per_sample * k]);
+      resbp[k] = biosonic_float(buffer[2 + byte_per_sample * k], buffer[3 + byte_per_sample * k]);
+      resbp[k] = 0.0;
+    }
+  } else if (type == 2) { // split-beam
+    rle(bytep, ns, spp, 4);
+    for (int k = 0; k < spp; k++) {
       // Quote [1 p38 split-beam e.g. 01-Fish.dt4 example]: "the low-order word
       // (ie, (USHORT)(x & 0x0000FFFF)) contains the amplitude data. The
       // high-order byte (ie, (TINY)((x & 0xFF000000) >> 24)) contains the
       // raw X-axis angle data. The other byte
       // (ie, (TINY)((x & 0x00FF0000) >> 16)) contains the raw Y-axis angle data.
       resap[k] = biosonic_float(buffer[byte_per_sample * k], buffer[1 + byte_per_sample * k]);
+      resbp[k] = (double)buffer[2 + byte_per_sample * k];
+      rescp[k] = (double)buffer[3 + byte_per_sample * k];
     }
   } else {
     error("unknown type, %d", type);
   }
   SET_VECTOR_ELT(res, 0, res_a);
+  SET_VECTOR_ELT(res, 1, res_b);
+  SET_VECTOR_ELT(res, 2, res_c);
   SET_STRING_ELT(res_names, 0, mkChar("a"));
+  SET_STRING_ELT(res_names, 1, mkChar("b"));
+  SET_STRING_ELT(res_names, 2, mkChar("c"));
   setAttrib(res, R_NamesSymbol, res_names);
-  UNPROTECT(7);
+  UNPROTECT(9);
   return(res);
 }
 
