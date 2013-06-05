@@ -31,11 +31,19 @@
         altering the value of the latter will alter the echosounder plots
         provided by \code{\link{plot.echosounder}}.
 
-        \item The echosounder signal amplitude \code{a}, a matrix with number
-        of rows equal to the length of \code{time}, etc., and number of columns
+        \item The echosounder signal amplitude \code{a}, a matrix whose number
+        of rows matches the length of \code{time}, etc., and number of columns
         equal to the length of \code{depth}.  Thus, for example, \code{a[100,]}
         represents the depth-dependent amplitude at the time of the 100th ping.
 
+        \item A matrix named \code{b} that may hold a second signal.  For
+        single-beam data, this is a matrix of zeros.  For dual-beam data, this
+        is the wide-beam data, whereas \code{a} is the narrow-beam data.  For
+        split-beam data, this is the x-angle data.
+
+        \item A matrix named \code{c} that may hold a third signal.  For
+        single-beam data and dual-beam data, this is a matrix of zeros.  For
+        split-beam data, this is the y-angle data.
     }
 }
 
