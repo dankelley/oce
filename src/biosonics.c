@@ -43,14 +43,8 @@ void biosonics_free_storage()
   buffer = NULL;
 }
 
-// 2. handle RLE (run-length encoding) expansion, for 2-byte and
-// 4-byte chunks
-void rle2(unsigned short int *buf)
-{
-  error("rle2 not coded yet\n");
-}
-
-void rle4(unsigned char *samp, int ns, int spp)
+// 2. run-length expansion
+void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
 {
   // This code is patterned on [1 p36-37] for runlength expansion
   // of data stored in 4-byte chunks.  The main difference is 
@@ -61,53 +55,62 @@ void rle4(unsigned char *samp, int ns, int spp)
   // data taken from the 'samp', and the length of that buffer
   // is 4*spp bytes.
 #ifdef DEBUG
-  Rprintf("rle4(0x%02x%02x%02x%02x ..., ns=%d, spp=%d)\n", samp[0], samp[1], samp[2], samp[3], ns, spp);
+  Rprintf("rle(0x%02x%02x%02x%02x ..., ns=%d, spp=%d, byte_per_sample=%d)\n",
+      samp[0], samp[1], samp[2], samp[3], ns, spp, byte_per_sample);
 #endif
   int i = 0, k = 0;
   unsigned char b1, b2, b3, b4;
-  int ns4 = ns * 4;
-  int spp4 = spp * 4;
-  while (i < ns4) {
+  int NS = ns * byte_per_sample;
+  int SPP = spp * byte_per_sample;
+  while (i < NS) {
     //Rprintf("i=%d k=%d\n", i, k);
     b1 = samp[i++];
     b2 = samp[i++];
-    b3 = samp[i++];
-    b4 = samp[i++];
+    if (byte_per_sample == 4) {
+      b3 = samp[i++];
+      b4 = samp[i++];
+    }
     if (b2 == 0xFF) {
       int n = (int)b1 + 2;
 #ifdef DEBUG
       Rprintf("zero-fill %d samples at i=%d k=%d\n", n, i, k);
 #endif
       while (n > 0) {
-	if (k < spp4) {
+	if (k < SPP) {
 	  buffer[k++] = 0x00;
 	  buffer[k++] = 0x00;
-	  buffer[k++] = 0x00;
-	  buffer[k++] = 0x00;
+	  if (byte_per_sample == 4) {
+	    buffer[k++] = 0x00;
+	    buffer[k++] = 0x00;
+	  }
           --n;
 	} else { 
 	  break; // prevent overfill (probably will never happen)
 	}
       }
     } else {
-      if (k < spp4) {
+      if (k < SPP) {
 	buffer[k++] = b1;
 	buffer[k++] = b2;
-	buffer[k++] = b3;
-	buffer[k++] = b4;
+	if (byte_per_sample == 4) {
+	  buffer[k++] = b3;
+	  buffer[k++] = b4;
+	}
       } else {
 	break;
       }
     }
   }
 #ifdef DEBUG
-  Rprintf("zero-fill at end for %d elements\n", (spp4-k)/4);
+  Rprintf("zero-fill at end for %d elements\n", (SPP-k)/4);
 #endif
-  while (k < spp4) {
+  while (k < SPP) {
     buffer[k++] = 0x00;
     buffer[k++] = 0x00;
-    buffer[k++] = 0x00;
-    buffer[k++] = 0x00;
+    if (byte_per_sample == 4) {
+      buffer[k++] = 0x00;
+      buffer[k++] = 0x00;
+    }
   }
 }
 
@@ -163,10 +166,7 @@ SEXP biosonics_ping(SEXP bytes, SEXP Rspp, SEXP Rns, SEXP Rtype)
   Rprintf("nbytes: %d (should be 2*ns for single-beam or 4*ns for split- and dual-beam)\n", nbytes);
 #endif
   unsigned char *bytep = RAW(bytes);
-  unsigned int *uip = (unsigned int*)RAW(bytes);
 
-  //Rprintf("unsigned int length %d; unsigned long int length %d; ptr %ld %ld\n", sizeof(unsigned int), sizeof(unsigned long int), bytep, uip);
-  //Rprintf("nbytes %d\n", nbytes);
   SEXP res;
   SEXP res_names;
   PROTECT(res = allocVector(VECSXP, 1));
@@ -179,8 +179,13 @@ SEXP biosonics_ping(SEXP bytes, SEXP Rspp, SEXP Rns, SEXP Rtype)
   Rprintf("allocVector(REALSXP, %d)\n", spp);
 #endif
   double *resap = REAL(res_a);
-  if (type == 1 || type == 2) {
-    rle4(bytes, ns, spp);
+  if (type == 0) {
+    rle(bytep, ns, spp, 2);
+    for (int k = 0; k < spp; k++) {
+      resap[k] = biosonic_float(buffer[byte_per_sample * k], buffer[1 + byte_per_sample * k]);
+    }
+  } else if (type == 1 || type == 2) {
+    rle(bytep, ns, spp, 4);
     for (int k = 0; k < spp; k++) {
       // Quote [1 p37 re dual-beam]: "For an RLE-expanded sample x, the low-order
       // word (ie, (USHORT)(x & 0x0000FFFF)) contains the narrow-beam data. The
@@ -195,58 +200,7 @@ SEXP biosonics_ping(SEXP bytes, SEXP Rspp, SEXP Rns, SEXP Rtype)
       resap[k] = biosonic_float(buffer[byte_per_sample * k], buffer[1 + byte_per_sample * k]);
     }
   } else {
-    error("cannot handle single-beam data");
-    for (int d = 0; d < nbytes / byte_per_sample; d++) { // FIXME: use 'ns' here to match docs
-#ifdef DEBUG
-      Rprintf(" %08X ", (unsigned int)uip[d]);
-#endif
-      //if ((uip[d] & 0xFF000000) == 0xFF000000) {
-      //  Rprintf(" A. 4byte match to FF000000 at 4byte index %d or 1byte index %d\n", d, 4*d);
-      //}
-      //if ((uip[d] & 0x00FF0000) == 0x00FF0000) {
-      //  Rprintf(" B. 4byte match to 00FF0000 at 4byte index %d or 1byte index %d\n", d, 4*d);
-      //}
-      if ((uip[d] & 0x0000FF00) == 0x0000FF00) {
-	int n = (uip[d] & 0x000000FF) + 2;
-#ifdef DEBUG
-	Rprintf(" 4byte match of %08X to %08X at 4byte index %d or 1byte index %d; n=%d\n",
-	    (unsigned int)uip[d], 0x0000FF00, d, 4*d, n);
-#endif
-      }
-      //if ((uip[d] & 0x000000FF) == 0x000000FF) {
-      //  Rprintf(" D. 4byte match to 000000FF at 4byte index %d or 1byte index %d\n", d, 4*d);
-      //}
-    }
-    for (int ires = 0; ires < spp; ires++) {
-      // zero fill at end, if needed
-      if (nbytes <= (2*ires)) {
-#ifdef DEBUG
-	Rprintf("    padding %d data\n", (2*spp - nbytes)/2);
-#endif
-	while (ires < spp) {
-	  resap[ires] = (double)0.0;
-	  ires++;
-	}
-	break;
-      }
-      // The RLE starting code is 0xFF in an odd-numbered byte.
-      // FIXME: does this work for 4byte data?
-      if (bytep[1 + byte_per_sample * ires] == 0xFF) {
-	int zeros = 2 + (int)bytep[byte_per_sample * ires];
-#ifdef DEBUG
-	Rprintf("RLE ires: %d, zeros: %d, spp: %d, flag-at: %d\n", ires, zeros, spp, 1+byte_per_sample*ires);
-#endif
-	if (ires + zeros >= spp)
-	  zeros = spp - ires;
-	for (int z = 0; z < zeros; z++) {
-	  resap[ires] = 0.0;
-	  ires++;
-	}
-      } else {
-	// normal 2-byte datum
-	resap[ires] = biosonic_float(bytep[byte_per_sample*ires], bytep[1+byte_per_sample*ires]);
-      }
-    }
+    error("unknown type, %d", type);
   }
   SET_VECTOR_ELT(res, 0, res_a);
   SET_STRING_ELT(res_names, 0, mkChar("a"));
