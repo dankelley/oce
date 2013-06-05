@@ -131,6 +131,11 @@ setMethod(f="plot",
                               polygon(time2, waterDepth, col=drawBottom)
                           }
                       } else {
+                          ## FIXME: debugging split- and dual-beam data
+                          ## par(mfrow=c(2,1))
+                          ## imagep(xInImage, y=-x[['depth']], z=log10(0.01+x[['a']]), col=col)
+                          ## imagep(xInImage, y=-x[['depth']], z=log10(0.01+x[['c']]), col=col)
+                          ## imagep(xInImage, y=-x[['depth']], z=log10(0.01+x[['d']]), col=col)
                           imagep(xInImage, y=-x[["depth"]], z=z,
                                  xlab=if (missing(xlab)) "" else xlab, # time
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
@@ -346,19 +351,17 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 ## Note the time reversal in the assignment to the data matrix 'a'
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, 0)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
                     a[scan, ] <- rev(t$a)
-                    b[scan, ] <- rev(t$b)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 1)
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
                     a[scan, ] <- rev(t$a)
-                    b[scan, ] <- rev(t$b)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, 2)
+                    ## e.g. 01-Fish.dt4 sample file from Biosonics
+                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
                     a[scan, ] <- rev(t$a)
-                    b[scan, ] <- rev(t$b)
                     beamType <- "split-beam"
                 } else {
                     stop("unknown 'tuple' 0x", code1, sep="")
@@ -421,7 +424,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
 
             if (1 == length(channelNumber)) { # get space
                 a <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
-                b <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
             }
             if (debug > 3) cat(" channel descriptor ",
                            " number=", tail(channelNumber, 1),
@@ -566,18 +568,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
-                     a=a, b=b)
+                     a=a)
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
-    ## The following is a kludge to try to get the code to produce *something*
-    if (res@metadata$beamType == "dual-beam") {
-        ##res@data$depth <- res@data$depth / 2
-        warning("dual-beam echosounder is not decoded correctly yet; it may work by July 2013")
-    } else if (res@metadata$beamType == "split-beam") {
-        ##res@data$depth <- res@data$depth / 2
-        warning("split-beam echosounder is not decoded correctly yet; it may work by July 2013")
-    }
+    .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }
 
