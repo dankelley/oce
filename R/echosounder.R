@@ -572,14 +572,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
-    ## The following is a kludge to try to get the code to produce *something*
-    if (res@metadata$beamType == "dual-beam") {
-        ##res@data$depth <- res@data$depth / 2
-        warning("dual-beam echosounder is not decoded correctly yet; it may work by July 2013")
-    } else if (res@metadata$beamType == "split-beam") {
-        ##res@data$depth <- res@data$depth / 2
-        warning("split-beam echosounder is not decoded correctly yet; it may work by July 2013")
-    }
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }

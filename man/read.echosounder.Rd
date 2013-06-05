@@ -27,9 +27,17 @@
 
 }
 
-\details{Reads a single-beam biosonics echosounder file.  This function was
-written for and tested with Biosonics files of type V3, and may not work
-properly with other file formats.}
+\details{Reads a biosonics echosounder file.  This function was written for and
+    tested with single-beam, dual-beam, and split-beam Biosonics files of type
+    V3, and may not work properly with other file formats.}
+
+\section{Bugs}{Only the amplitude information (in counts) is determined.  A
+    future version of this funciton may provide conversion to dB, etc.  The
+    handling of dual-beam and split-beam files is limited.  In the dual-beam
+    cse, only the wide beam signal is processed (I think ... it could be the
+    narrow beam, actually, given the confusing endian tricks being played).  In
+    the split-beam case, only amplitude is read, with the x-axis and y-axis
+    angle data being ignored.}
 
 \value{An object of \code{\link[base]{class}} \code{"echosounder"} with
     standard slots \code{metadata}, \code{data} and \code{processingLog} that
@@ -48,26 +56,17 @@ plot(e)
 }
 }
     
-\section{Bugs}{This function is designed to work with single-beam instruments.
-Dual-beam and split-beam data are not decoded correctly, with every second
-datum in the vertical being incorrect. This means that plots of dual- and
-split-beam data will have a great deal of noise, often so much as to hide any
-patterns of interest.  (There are plans to remove this bug during the summer of
-2013.)
-
-Also, there are several time items in the data format, and it remains to be
-seen whether the one used here is appropriate.}
-
 \references{
     Various echousounder instruments provided by BioSonics are described at the
-    company website, \url{http://www.biosonicsinc.com/}.  The following document
-
-    Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics Advanced
+    company website, \url{http://www.biosonicsinc.com/}.  The document listed
+    as [1] below was provided to the author of this function in November 2011,
+    which suggests that the data format was not changed since July 2010.
+    
+    [1] Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics Advanced
     Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING LIBRARY
-    REPORT BS&E-2004-07-0009-2.0.  (This document was provided to the author of
-    this function in November 2011, which suggests that the data format was not
-    changed since July 2010.)}
+    REPORT BS&E-2004-07-0009-2.0.
+}
 
-\author{Dan Kelley}
+\author{Dan Kelley, with help from Clark Richards}
 
 \keyword{misc}
