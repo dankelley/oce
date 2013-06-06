@@ -469,7 +469,7 @@ void dan(int *n, long int *in, unsigned long int *out)
 void uint16_le(unsigned char *b, int *n, int *out)
 {
   for (int i = 0; i < *n; i++) {
-    out[i] = (int)b[2*i] + 256 * (int)b[1+2*i];
+    out[i] = (unsigned int)b[2*i] + 256 * (unsigned int)b[1+2*i];
   }
 }
 
