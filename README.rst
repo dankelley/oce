@@ -22,14 +22,14 @@ In addition to the ``master`` and ``develop`` branches, there is a ``testing``
 branch that is sometimes used to try out variants of new features, and any
 number of temporary branches that are used to address bugs or requests for new
 features.  These bugs and requests are generally made through the GitHub issue
-system, and so the branches are named after the issues, e.g. a branch named
-``issue100`` would address the GitHub issue numbered 100.
+system, and often the code branches that address such issues are named after
+the issues, e.g. branch ``issue100`` addressing issue number 100.
 
 Oce is emphatically an open-source system, and so the participation of users is
 very important.  This is why Git is used for version control of the Oce source
-code, and also why GitHub is the host for that code.  All users are invited to
-take part in the development process, whether by suggesting features, reporting
-bugs, or just watching as others do such things.  Oceanography is a highly
-collaborative discipline, so it makes sense that the evolution of the Oce
-package be similarly collaborative.
+code, and why GitHub is the host for that code.  All users are invited to take
+part in the development process, by suggesting features, by reporting bugs, or
+just by watching as others do such things.  Oceanography is a collaborative
+discipline, so it makes sense that the evolution of the Oce package be
+similarly collaborative.
 
