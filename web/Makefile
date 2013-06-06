@@ -1,15 +1,15 @@
 all: force
 	R --no-save <oce-demo-1.R
-	convert -background white -geometry '200x200' Rplots.pdf oce-demo-1-thumbmail.png
-	convert -background white -density '200x200' Rplots.pdf oce-demo-1.png
+	convert -background white -geometry '150x150' Rplots.pdf oce-demo-1-thumbmail.png
+	convert -background white -density '150x150' Rplots.pdf oce-demo-1.png
 	R --no-save <oce-demo-2.R
-	convert -background white -geometry '200x200' Rplots.pdf oce-demo-2-thumbmail.png
-	convert -background white -density '200x200' Rplots.pdf oce-demo-2.png
+	convert -background white -geometry '150x150' Rplots.pdf oce-demo-2-thumbmail.png
+	convert -background white -density '150x150' Rplots.pdf oce-demo-2.png
 	R --no-save <oce-demo-3.R
-	convert -background white -geometry '200x200' Rplots.pdf oce-demo-3-thumbmail.png
+	convert -background white -geometry '150x150' Rplots.pdf oce-demo-3-thumbmail.png
 	convert -background white -density '150x150' Rplots.pdf oce-demo-3.png
 	R --no-save <oce-demo-4.R
-	convert -background white -geometry '200x200' Rplots.pdf oce-demo-4-thumbmail.png
+	convert -background white -geometry '150x150' Rplots.pdf oce-demo-4-thumbmail.png
 	convert -background white -density '150x150' Rplots.pdf oce-demo-4.png
 	#pygmentize -f html -O full -o oce-demo-3.html oce-demo-3.R
 	#pygmentize -f html -O full -o oce-demo-1.html oce-demo-1.R
