@@ -573,7 +573,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                         }
                     }
                 }
-                #browser()
             } else if (length(grep("distance", subsetString))) {
                 oceDebug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
@@ -778,12 +777,20 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
             rval <- x
             ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
+            dataNames <- names(rval@data)
             rval@data$a <- x@data$a[keep,]
-            dataNames <- names(x@data)
+            if ("b" %in% dataNames)
+                rval@data$b <- x@data$b[keep,]
+            if ("c" %in% dataNames)
+                rval@data$c <- x@data$c[keep,]
             ## lots of debugging in here, in case other data types have other variable names
             oceDebug(debug, "dataNames (orig):", dataNames, "\n")
             if (length(grep('^a$', dataNames)))
                 dataNames <- dataNames[-grep('^a$', dataNames)]
+            if (length(grep('^b$', dataNames)))
+                dataNames <- dataNames[-grep('^b$', dataNames)]
+            if (length(grep('^c$', dataNames)))
+                dataNames <- dataNames[-grep('^c$', dataNames)]
             oceDebug(debug, "dataNames (step 2):", dataNames, "\n")
             if (length(grep('^depth$', dataNames)))
                 dataNames <- dataNames[-grep('^depth$', dataNames)]
@@ -811,7 +818,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             keep <- eval(substitute(subset), x@data, parent.frame())
             rval <- x
             rval[["depth"]] <- rval[["depth"]][keep]
+            dataNames <- names(rval@data)
             rval[["a"]] <- rval[["a"]][,keep]
+            if ("b" %in% dataNames)
+                rval@data$b <- x@data$b[,keep]
+            if ("c" %in% dataNames)
+                rval@data$c <- x@data$c[,keep]
         } else {
             stop("can only subset an echosounder object by 'time' or 'depth'")
         }

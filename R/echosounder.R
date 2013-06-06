@@ -134,7 +134,6 @@ setMethod(f="plot",
                               polygon(time2, waterDepth, col=drawBottom)
                           }
                       } else {
-                          ## FIXME: should permit examination of extra beams here
                           imagep(xInImage, y=-x[["depth"]], z=z,
                                  xlab=if (missing(xlab)) "" else xlab, # time
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
@@ -350,21 +349,21 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 ## Note the time reversal in the assignment to the data matrix 'a'
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
                     ## e.g. 01-Fish.dt4 sample file from Biosonics
-                    t <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
+                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
                     beamType <- "split-beam"
                 } else {
                     stop("unknown 'tuple' 0x", code1, sep="")
                 }
-                a[scan, ] <- rev(t$a)
-                b[scan, ] <- rev(t$b)
-                c[scan, ] <- rev(t$c)
+                a[scan, ] <- rev(tmp$a)
+                b[scan, ] <- rev(tmp$b)
+                c[scan, ] <- rev(tmp$c)
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
                 if (debug > 3) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
@@ -558,7 +557,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     if (debug > 1) cat("psi=", psi, "\n", sep="")
     ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
     ## r = range
-    ##browser()
     ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
