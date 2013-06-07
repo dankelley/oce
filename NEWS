@@ -1,4 +1,5 @@
 0.9-11
+- swSoundAbsorption() added
 - echosounder: handle dual-beam and split-beam data
 - echosounder: decode bottom-pick 
 - read.adp: improve doc regarding variable orientation of RDI files
