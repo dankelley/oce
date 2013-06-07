@@ -425,6 +425,49 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL)
     swRho(salinity, swTheta(salinity, temperature, pressure), ptop) - 1000
 }
 
+swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
+                              formulation=c("fisher-simmons", "francois-garrison"))
+{
+    formulation <- match.arg(formulation)
+    if (formulation == "fisher-simmons") {
+        ## Equation numbers are from Fisher & Simmons (1977); see help page for ref
+        p <- 1 + pressure / 10  # add atmophere, then convert water part from dbar
+        S <- salinity
+        T <- temperature
+        f <- frequency
+        A1 <- 1.03e-8 + 2.36e-10*T - 5.22e-12*T^2                       # (5)
+        f1 <- 1.32e3*(T + 273.1)*exp(-1700/(T + 273.1))                 # (6)
+        A2 <- 5.62e-8 + 7.52e-10 * T                                    # (7)
+        f2 <- 1.55e7 * (T + 273.1)*exp(-3052/(T + 273.1))               # (8)
+        P2 <- 1 - 10.3e-4 * p + 3.7e-7 * p^2                            # (9)
+        A3 <-(55.9 - 2.37 * T + 4.77e-2 * T^2  - 3.48e-4*T^3) * 1e-15   # (10)
+        P3 <- 1 - 3.84e-4 * p + 7.57e-8 * p^2                           # (11)
+        alpha <- (A1*f1*f^2)/(f1^2 + f^2) + (A2*P2*f2*f^2)/(f2^2 + f^2) + A3*P3*f^2 # (3a)
+        alpha <- alpha * 8686 / 1000   # dB/m
+    } else if (formulation == "francois-garrison") {
+        S <- salinity
+        T <- temperature
+        D <- pressure # FIXME: approximation
+        c <- 1412 + 3.21 * T + 1.19 * S + 0.0167 * D # sound speed m/s
+        f <- frequency / 1000          # convert to kHz
+        theta <- 273 + T 
+        f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # kHz
+        ## subscript 1 for boric acid contribution
+        A1 <- 8.86 / c * 10^(0.78 * pH - 5) # dB / km / kHz
+        P1 <- 1
+        ## MgSO4 contribution
+        A2 <- 21.44 * (S / c) * (1 + 0.025 * T) # dB / km / kHz
+        P2 <- 1 - 1.37e-4 * D + 6.2e-9 * D^2
+        f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # kHz
+        ## pure water contribution
+        A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3 # dB / km / kHz^2
+        P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
+        alpha <- (A1 * P1 * f1 * f^2)/(f^2 + f1^2) + (A2 * P2 * f2 * f^2)/(f^2 + f2^2) + A3 * P3 * f^2
+        alpha <- alpha / 1000
+    }
+    alpha
+}
+
 swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))

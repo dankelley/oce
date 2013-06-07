@@ -558,6 +558,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
     ## r = range
     ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
+    range <- rev(depth)
+    absorption <- swSoundAbsorption(35, 10, 100, 1000) # FIXME: just a placeholder
+    Sv <- 20*log10(a) - (res@metadata$sl + res@metadata$rs + res@metadata$tpow)/10.0 + 20*log10(range) + 2*absorption*range -
+    10*log10(soundSpeed*res@metadata$pulseDuration/1000000.0*psi/2) + corr/100
+    browser()
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
