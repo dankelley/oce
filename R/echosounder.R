@@ -560,7 +560,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$bwx <- 0.1 * as.numeric(rxee[1+101]) # [1 p16] offset=101
     if (debug > 1) cat("bwx=", res@metadata$bwx, " (expect 6.5 for 01-Fish.dt4; called BeamWidthX_deg)\n", sep="")
     if (debug > 1) cat("bwy=", res@metadata$bwy, " (expect 6.5 for 01-Fish.dt4; called BeamWidthY_deg)\n", sep="")
-    psi <- res@metadata$bwy / 20.0 * res@metadata$bwx / 20.0 * 10^(-3.16)
+    psi <- res@metadata$bwy / 2 * res@metadata$bwx / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
     if (debug > 1) cat("psi=", psi, "\n", sep="")
     ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
     ## r = range
