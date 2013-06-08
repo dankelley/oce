@@ -105,11 +105,12 @@ setMethod(f="plot",
                       }
                       if (despike)
                           signal <- apply(signal, 2, smooth)
-                      if (beam[w] == "Sv") {
+                      if (beam[w] == "Sv" || beam[w] == "TS") {
                           z <- signal
                       } else {
                           z <- log10(ifelse(signal > 1, signal, 1)) # FIXME: make an argument for this '1'
                       }
+                      z[!is.finite(z)] <- NA # prevent problem in computing range
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "lightgray"
@@ -121,7 +122,7 @@ setMethod(f="plot",
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
                                  tformat=tformat,
@@ -143,7 +144,7 @@ setMethod(f="plot",
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
-                                 zlim=if (missing(zlim)) c(0, max(z, na.rm=TRUE)) else zlim,
+                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
                                  tformat=tformat,
@@ -186,7 +187,7 @@ setMethod(f="plot",
                              xlab=if (missing(xlab)) "Distance [km]" else xlab,
                              ylab=if (missing(ylab)) "z [m]" else ylab,
                              ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                             zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                             zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                              mgp=mgp, mar=mar,
                              tformat=tformat,
                              col=col,
@@ -565,9 +566,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ## r = range
     ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
     range <- rev(depth)
-    absorption <- swSoundAbsorption(35, 10, 100, 1000) # FIXME: just a placeholder
-    Sv <- 20*log10(a) - (res@metadata$sl + res@metadata$rs + res@metadata$tpow)/10.0 + 20*log10(range) + 2*absorption*range - 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr/100
-    Sv[!is.finite(Sv)] <- NA
+    absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range)) # FIXME: just a placeholder
+
+    ## FIXME: the ((10)) cancels the formula's div by 10, prob related to units being 0.1dB in their formula (check this)
+    ## backscattering strength (Sv) in dB [1 p34]
+    Sv <- 20*log10(a) - ((10))*(res@metadata$sl+res@metadata$rs+res@metadata$tpow)/10.0 + 20*log10(range) + 2*absorption*range - 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr/100
+
+    ## target strength (TS) in dB [1 p35]
+    TS <- 20*log10(a) - ((10))*(res@metadata$sl+res@metadata$rs+res@metadata$tpow)/10.0 + 40*log10(range) + 2*absorption*range + corr/100.0;
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
@@ -577,7 +583,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
-                     Sv=Sv, # FIXME: not tested
+                     Sv=Sv, TS=TS, # FIXME: not tested
                      a=a, b=b, c=c)
 
     res@processingLog <- processingLog(res@processingLog,
