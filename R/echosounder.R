@@ -108,7 +108,7 @@ setMethod(f="plot",
                       if (beam[w] == "Sv" || beam[w] == "TS") {
                           z <- signal
                       } else {
-                          z <- log10(ifelse(signal > 1, signal, 1)) # FIXME: make an argument for this '1'
+                          z <- log10(signal)
                       }
                       z[!is.finite(z)] <- NA # prevent problem in computing range
                       if (!missing(drawBottom)) {
