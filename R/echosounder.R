@@ -18,7 +18,7 @@ setMethod(f="[[",
               as(x, "oce")[[i, j, drop]]
           })
 
-as.echosounder <- function(time, depth, a, src="") # FIXME change this, when read.echosounder() finalized
+as.echosounder <- function(time, depth, a, src="") # FIXME add lots of new args, when read.echosounder() finalized
 {
     res <- new('echosounder', filename=src)
     res@metadata$channel <- 1
@@ -105,7 +105,12 @@ setMethod(f="plot",
                       }
                       if (despike)
                           signal <- apply(signal, 2, smooth)
-                      z <- log10(ifelse(signal > 1, signal, 1)) # FIXME: make an argument for this '1'
+                      if (beam[w] == "Sv" || beam[w] == "TS") {
+                          z <- signal
+                      } else {
+                          z <- log10(ifelse(signal > 1, signal, 1)) # FIXME: make an argument for this '1'
+                      }
+                      z[!is.finite(z)] <- NA # prevent problem in computing range
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "lightgray"
@@ -117,7 +122,7 @@ setMethod(f="plot",
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
                                  tformat=tformat,
@@ -139,11 +144,12 @@ setMethod(f="plot",
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
-                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
                                  tformat=tformat,
                                  debug=debug-1,
+                                 zlab=beam[w],
                                  ...)
                       }
                       if (newxGiven) {
@@ -181,7 +187,7 @@ setMethod(f="plot",
                              xlab=if (missing(xlab)) "Distance [km]" else xlab,
                              ylab=if (missing(ylab)) "z [m]" else ylab,
                              ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                             zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                             zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                              mgp=mgp, mar=mar,
                              tformat=tformat,
                              col=col,
@@ -541,37 +547,50 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$sl <- 0.1 * readBin(rxee[58+1:2], "integer", n=1L, size=2L, endian="little") # [p16 1]
     if (debug > 1) cat('sl=', res@metadata$sl, ' (expect 220 for 01-Fish.dt4 source level SourceLevel_dBuPa)\n', sep='')
     #res@metadata$rs <- 0.1 * .C("int16_le", rxee[1+64+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
-    res@metadata$rs <- 0.1 * readBin(rxee[63+1:2], "integer", n=1L, size=2) # [p16 1]
+    res@metadata$rs <- 0.1 * readBin(rxee[64+1:2], "integer", n=1L, size=2) # [p16 1]
     if (debug > 1) cat('rs=', res@metadata$rs, ' receiver sensitivity in dB (counts/micro Pa) (expect -58.8 for 01-Fish.dt4)\n', sep='')
 
     res@metadata$trtype <- .C("uint16_le", rxee[84+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
     if (debug > 1) cat('trtype=', res@metadata$trtype, ' hardware [not deployment] transducer type (0 single, 3 dual, 4 split) expect 1 for 01-Fish.dt4\n', sep='')
-    res@metadata$fq <- readBin(rxee[86+1:4], "numeric", n=1L, size=4) # [p16 1]
+    res@metadata$fq <- readBin(rxee[86+1:4], "integer", n=1L, size=4) # [p16 1]
     if (debug > 1) cat('fq=', res@metadata$fq, ' transducer frequency, Hz (expect 208000 for 01-Fish.dt4)\n', sep='')
 
 
     res@metadata$bwy <- 0.1 * as.numeric(rxee[1+100]) # [1 p16] offset=100
     res@metadata$bwx <- 0.1 * as.numeric(rxee[1+101]) # [1 p16] offset=101
-    if (debug > 1) cat("bwx=", res@metadata$bwx, " bwy=", res@metadata$bwy, " (expect 6.5 for each, for 01-Fish.dt4; called BeamWidthY_deg etc)\n", sep="")
-    psi <- res@metadata$bwy / 20.0 * res@metadata$bwx / 20.0 * 10^(-3.16)
+    if (debug > 1) cat("bwx=", res@metadata$bwx, " (expect 6.5 for 01-Fish.dt4; called BeamWidthX_deg)\n", sep="")
+    if (debug > 1) cat("bwy=", res@metadata$bwy, " (expect 6.5 for 01-Fish.dt4; called BeamWidthY_deg)\n", sep="")
+    psi <- res@metadata$bwy / 2 * res@metadata$bwx / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
     if (debug > 1) cat("psi=", psi, "\n", sep="")
     ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
     ## r = range
     ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
     range <- rev(depth)
-    absorption <- swSoundAbsorption(35, 10, 100, 1000) # FIXME: just a placeholder
-    Sv <- 20*log10(a) - (res@metadata$sl + res@metadata$rs + res@metadata$tpow)/10.0 + 20*log10(range) + 2*absorption*range -
-    10*log10(soundSpeed*res@metadata$pulseDuration/1000000.0*psi/2) + corr/100
-    browser()
+
+    ## NB: In the calculations of Sv and TS, the terms with sl, rs and tpow
+    ## are not not divided by 10, as in [1 p34 and 35], because here those
+    ## quantities  are stored in dB, not 0.1 dB.  Similarly, corr is
+    ## not divided by 100 because it is in dB, not 0.01 dB.
+
+    ## backscattering strength (Sv) in dB [1 p34]
+    absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range))
+    if (debug > 1) cat("sound absorption:", absorption, "dB/m\n")
+    r <- matrix(rev(range), nrow=dim(a)[1], ncol=length(range), byrow=TRUE)
+    Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(r) + 2*absorption*r- 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
+    Sv[!is.finite(Sv)] <- NA
+    ## target strength (TS) in dB [1 p35]
+    TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(r) + 2*absorption*r+ corr
+    TS[!is.finite(TS)] <- NA
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
                      longitudeSlow=longitudeSlow,
                      depth=depth,
-                     range=range, # FIXME: is it a coincidence that time is of same length?
+                     range=range,
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
+                     Sv=Sv, TS=TS, # FIXME: not tested
                      a=a, b=b, c=c)
 
     res@processingLog <- processingLog(res@processingLog,

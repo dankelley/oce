@@ -1,5 +1,6 @@
 0.9-11
 - swSoundAbsorption() added
+- plot.echosounder: add arg 'beam' to e.g. display Sv
 - echosounder: handle dual-beam and split-beam data
 - echosounder: decode bottom-pick 
 - read.adp: improve doc regarding variable orientation of RDI files
