@@ -566,20 +566,27 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ## r = range
     ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
     range <- rev(depth)
-    absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range)) # FIXME: just a placeholder
 
-    ## FIXME: the ((10)) cancels the formula's div by 10, prob related to units being 0.1dB in their formula (check this)
+    ## NB: In the calculations of Sv and TS, the terms with sl, rs and tpow
+    ## are not not divided by 10, as in [1 p34 and 35], because here those
+    ## quantities  are stored in dB, not 0.1 dB.  Similarly, corr is
+    ## not divided by 100 because it is in dB, not 0.01 dB.
+
     ## backscattering strength (Sv) in dB [1 p34]
-    Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(range) + 2*absorption*range - 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
-
+    absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range))
+    if (debug > 1) cat("sound absorption:", absorption, "dB/m\n")
+    r <- matrix(rev(range), nrow=dim(a)[1], ncol=length(range), byrow=TRUE)
+    Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(r) + 2*absorption*r- 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
+    Sv[!is.finite(Sv)] <- NA
     ## target strength (TS) in dB [1 p35]
-    TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(range) + 2*absorption*range + corr
+    TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(r) + 2*absorption*r+ corr
+    TS[!is.finite(TS)] <- NA
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
                      longitudeSlow=longitudeSlow,
                      depth=depth,
-                     range=range, # FIXME: is it a coincidence that time is of same length?
+                     range=range,
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
