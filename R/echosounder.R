@@ -570,10 +570,10 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
 
     ## FIXME: the ((10)) cancels the formula's div by 10, prob related to units being 0.1dB in their formula (check this)
     ## backscattering strength (Sv) in dB [1 p34]
-    Sv <- 20*log10(a) - ((10))*(res@metadata$sl+res@metadata$rs+res@metadata$tpow)/10.0 + 20*log10(range) + 2*absorption*range - 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr/100
+    Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(range) + 2*absorption*range - 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
 
     ## target strength (TS) in dB [1 p35]
-    TS <- 20*log10(a) - ((10))*(res@metadata$sl+res@metadata$rs+res@metadata$tpow)/10.0 + 40*log10(range) + 2*absorption*range + corr/100.0;
+    TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(range) + 2*absorption*range + corr
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
