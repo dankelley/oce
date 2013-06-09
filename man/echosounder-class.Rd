@@ -36,14 +36,18 @@
         equal to the length of \code{depth}.  Thus, for example, \code{a[100,]}
         represents the depth-dependent amplitude at the time of the 100th ping.
 
-        \item A matrix named \code{b} that may hold a second signal.  For
-        single-beam data, this is a matrix of zeros.  For dual-beam data, this
-        is the wide-beam data, whereas \code{a} is the narrow-beam data.  For
-        split-beam data, this is the x-angle data.
+        \item A matrix named \code{b} exists for dual-beam and split-beam
+        cases.  For dual-beam data, this is the wide-beam data, whereas
+        \code{a} is the narrow-beam data.  For split-beam data, this is the
+        x-angle data.
 
-        \item A matrix named \code{c} that may hold a third signal.  For
-        single-beam data and dual-beam data, this is a matrix of zeros.  For
-        split-beam data, this is the y-angle data.
+        \item A matrix named \code{c} exists for split-beam data, containing
+        the y-angle data.
+
+        \item In addition to these matrices, ad-hoc calculated matrices named
+        \code{Sv} and \code{TS} may be accessed as explained in the next
+        section.
+
     }
 }
 
@@ -56,7 +60,8 @@
 
     Derived data are also available: \code{"distance"} calls
     \code{\link{geodDist}} to compute locations, and calculates distance along
-    the ship track.
+    the ship track, \code{"Sv"} returns a matrix of backscatter strength in DB,
+    and \code{"TS"} returns a matrix of target strength in dB.
 
     \emph{Assigning values.} Everything that may be accessed may also be
     assigned, e.g.  \code{echosounder[["time"]] <- 3600 +
