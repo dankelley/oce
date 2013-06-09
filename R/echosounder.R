@@ -36,10 +36,40 @@ setMethod(f="[[",
               }
           })
 
-## FIXME: permit [[<- for Sv and TS (see AllClass.R)
 
-as.echosounder <- function(time, depth, a, src="") # FIXME add lots of new args, when read.echosounder() finalized
+setMethod(f="[[<-",
+          signature="echosounder",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+             } else if (i %in% names(x@data)) {
+                  x@data[[i]] <- value
+             } else if (i == "b") {
+                  x@data$b <- value
+             } else if (i == "c") {
+                  x@data$c <- value
+             } else if (i == "Sv") {
+                  x@data$Sv <- value
+             } else if (i == "TS") {
+                  x@data$TS <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
+              ## Not checking validity because user may want to shorten items one by one, and check validity later.
+              ## validObject(x)
+              invisible(x)
+          })
+
+as.echosounder <- function(time, depth, a, src="")
 {
+    ## FIXME add arg for metadata$sl
+    ## FIXME add arg for metadata$rs
+    ## FIXME add arg for metadata$tpow
+    ## FIXME add arg for data$range
+    ## FIXME add arg for metadata$pulseDuration
+    ## FIXME add arg for metadata$corr
+    ## FIXME .. the above will permit calculation Sv.  For defaults, maybe use data(echosounder)
+
     res <- new('echosounder', filename=src)
     res@metadata$channel <- 1
     res@metadata$soundSpeed <- swSoundSpeed(35, 10, 1)
