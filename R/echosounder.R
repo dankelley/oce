@@ -74,6 +74,7 @@ setMethod(f="plot",
                               type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE,
                               drawBottom, ignore=5,
+                              drawTimeRange=FALSE,
                               radius, coastline,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
@@ -226,6 +227,11 @@ setMethod(f="plot",
                           if (missing(labelsTop))
                               labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
                           axis(side=3, at=at, labels=labelsTop, cex.axis=par('cex'))
+                      } 
+                      if (drawTimeRange) {
+                          timeRange <- range(x[['time']])
+                          label <- paste(timeRange[1], timeRange[2], sep=" to ")
+                          mtext(label, side=3, cex=0.9*par('cex'), adj=0)
                       }
                   } else if (which[w] == 3) {
                       lat <- x[["latitude"]]
