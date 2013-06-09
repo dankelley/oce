@@ -1,4 +1,4 @@
 library(oce)
 data(echosounder)
-plot(echosounder, drawBottom=TRUE)
+plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
 
