@@ -15,8 +15,28 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature="echosounder",
           definition=function(x, i, j, drop) {
-              as(x, "oce")[[i, j, drop]]
+              if (i %in% c("Sv", "TS")) {
+                  range <- rev(x@data$depth)
+                  a <- x@data$a
+                  psi <- x@metadata$bwy / 2 * x@metadata$bwx / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
+                  r <- matrix(rev(range), nrow=nrow(a), ncol=length(range), byrow=TRUE)
+                  absorption <- swSoundAbsorption(x@metadata$fq, 35, 10, mean(range))
+                  soundSpeed <- x@metadata$soundSpeed
+                  if (i == "Sv") {
+                      Sv <- 20*log10(a) - (x@metadata$sl+x@metadata$rs+x@metadata$tpow) + 20*log10(r) + 2*absorption*r- 10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2) + x@metadata$corr
+                      Sv[!is.finite(Sv)] <- NA
+                      Sv
+                  } else if (i == "TS") {
+                      TS <- 20*log10(a) - (x@metadata$sl+x@metadata$rs+x@metadata$tpow) + 40*log10(r) + 2*absorption*r+ x@metadata$corr
+                      TS[!is.finite(TS)] <- NA
+                      TS
+                  }
+              } else {
+                  as(x, "oce")[[i, j, drop]]
+              }
           })
+
+## FIXME: permit [[<- for Sv and TS (see AllClass.R)
 
 as.echosounder <- function(time, depth, a, src="") # FIXME add lots of new args, when read.echosounder() finalized
 {
@@ -560,27 +580,27 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$bwx <- 0.1 * as.numeric(rxee[1+101]) # [1 p16] offset=101
     if (debug > 1) cat("bwx=", res@metadata$bwx, " (expect 6.5 for 01-Fish.dt4; called BeamWidthX_deg)\n", sep="")
     if (debug > 1) cat("bwy=", res@metadata$bwy, " (expect 6.5 for 01-Fish.dt4; called BeamWidthY_deg)\n", sep="")
-    psi <- res@metadata$bwy / 2 * res@metadata$bwx / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
-    if (debug > 1) cat("psi=", psi, "\n", sep="")
-    ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
-    ## r = range
-    ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
-    range <- rev(depth)
+    ##old: psi <- res@metadata$bwy / 2 * res@metadata$bwx / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
+    ##old: if (debug > 1) cat("psi=", psi, "\n", sep="")
+    ##old: ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
+    ##old: ## r = range
+    ##old: ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
+    ##old: range <- rev(depth)
 
-    ## NB: In the calculations of Sv and TS, the terms with sl, rs and tpow
-    ## are not not divided by 10, as in [1 p34 and 35], because here those
-    ## quantities  are stored in dB, not 0.1 dB.  Similarly, corr is
-    ## not divided by 100 because it is in dB, not 0.01 dB.
+    ##old: ## NB: In the calculations of Sv and TS, the terms with sl, rs and tpow
+    ##old: ## are not not divided by 10, as in [1 p34 and 35], because here those
+    ##old: ## quantities  are stored in dB, not 0.1 dB.  Similarly, corr is
+    ##old: ## not divided by 100 because it is in dB, not 0.01 dB.
 
-    ## backscattering strength (Sv) in dB [1 p34]
-    absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range))
-    if (debug > 1) cat("sound absorption:", absorption, "dB/m\n")
-    r <- matrix(rev(range), nrow=dim(a)[1], ncol=length(range), byrow=TRUE)
-    Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(r) + 2*absorption*r- 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
-    Sv[!is.finite(Sv)] <- NA
-    ## target strength (TS) in dB [1 p35]
-    TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(r) + 2*absorption*r+ corr
-    TS[!is.finite(TS)] <- NA
+    ##old: ## backscattering strength (Sv) in dB [1 p34]
+    ##old: absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range))
+    ##old: if (debug > 1) cat("sound absorption:", absorption, "dB/m\n")
+    ##old: r <- matrix(rev(range), nrow=dim(a)[1], ncol=length(range), byrow=TRUE)
+    ##old: Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(r) + 2*absorption*r- 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
+    ##old: Sv[!is.finite(Sv)] <- NA
+    ##old: ## target strength (TS) in dB [1 p35]
+    ##old: TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(r) + 2*absorption*r+ corr
+    ##old: TS[!is.finite(TS)] <- NA
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
@@ -590,8 +610,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
-                     Sv=Sv, TS=TS, # FIXME: not tested
                      a=a, b=b, c=c)
+    if (res@metadata$beamType == "single-beam") {
+        res@data$b <- NULL
+        res@data$c <- NULL
+    }
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
@@ -605,7 +628,7 @@ summary.echosounder <- function(object, ...)
     showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
     showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
     metadataNames <- names(object@metadata)
-    cat(sprintf("* File type:           \"%s\"\n", object[["fileType"]]))
+    cat(sprintf("* File type:           %s\n", object[["fileType"]]))
     if ("beamType" %in% metadataNames)
         cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
     time <- object[["time"]]
@@ -620,13 +643,13 @@ summary.echosounder <- function(object, ...)
     cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
     cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
     cat("* Statistics::\n")
-    dataNames <- names(object@data)
+    dataNames <- c(names(object@data), "Sv", "TS")
     ndata <- length(dataNames)
     threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
     ii <- 1
     for (i in 1:ndata) {
         if (0 == length(grep("^time", dataNames[i]))) {
-            threes[ii,] <- threenum(object@data[[i]])
+            threes[ii,] <- threenum(object[[dataNames[i]]])
             ii <- ii + 1
         }
     }
