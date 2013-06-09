@@ -101,6 +101,10 @@ location of a CTD cast, etc., and (c) \texttt{processingLog}, a list that
 documents how the file was created (often by a \texttt{read} or \texttt{as}
 method) and how it was changed thereafter (e.g. by decimating a CTD cast).
 
+<<echo=false,eval=true>>=
+options(keep.source=TRUE, width=60, prompt=' ', continue=' ')
+@
+
 The uniformity of the various \texttt{oce} objects makes it easy to build skill
 in examining and modifying objects.  The package provides for simple and general
 processing of \texttt{oce} objects.  For example, if \verb@x@ is an \verb@oce@
@@ -311,16 +315,23 @@ the header line), the approach taken with \verb@oce@ is to ignore such issues
 relating to quirky headers.  This frees up time to work on more important
 things, such as plotting the data.
 
-Of course, R provides access to object constituents, so that you are
-free to do such things as
+It is possible to access object constituents directly, e.g.
+\verb+x@data$salinity+ is the salinity stored in a CTD object named \verb@x@,
+but this is not the preferred method of access.  The better scheme is to use the
+\emph{accessor functions} that are provided with all oce objects.  This relies
+on double-square-bracket notation, e.g.  \verb+x[["salinity"]]+ yields salinity
+(from the \verb+data+ slot of the object) and \verb+x[["station"]]+ yields the
+station identifier (from the \verb+metadata+ slot).
+
+But even though it's possible to manipulate object elements directly, it is
+typically not a good idea.  The reason is that the object will be modified
+without having an entry inserted into its processing log.  Thus, it is a bad
+idea to write
 <<ctdfix1,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x@metadata$institute <- "SIO" # bad way
-x@metadata$scientist <- "DAM" # bad way
+x[["institute"]] <- "SIO" # better (using an accessor) but still bad
 @
-but it is \emph{bad practice} to alter metadata in such a way, because
-doing so alters the object without altering its documentation.  The
-preferred scheme is to do as follows.
+and a better idea to write
 \index{changelogs in oce objects}
 \index{oce object changelog}
 \index{logged changes to oce objects}
@@ -329,15 +340,12 @@ preferred scheme is to do as follows.
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
 x <- oceEdit(x, "institute", "SIO") # better way
-x <- oceEdit(x, "scientist", "DAM") # better way
 @
-which will store a note about the changes in the object's log.  Even
-better, provide a reason for the change, and sign the change with your
+Even better, provide a reason for the change, and sign the change with your
 name:
 <<ctdfix3,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oceEdit(x, "institute", "SIO", "human-parsed","Dan Kelley") # best way
-x <- oceEdit(x, "scientist", "DAM", "human-parsed","Dan Kelley") # best way
+x <- oceEdit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
 @
 
 For a real-world example (with warts!), visit
@@ -352,7 +360,7 @@ for (i in 1:length(files)) {
     cat(files[i], "\n")
     x <- read.ctd(files[i])
     if (i == 1) {
-        plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
+        plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type="l", col="red")
     } else {
         lines(x[["salinity"]], x[["temperature"]], col="red")
     }
@@ -612,7 +620,7 @@ then remove the atmospheric pressure from the signal.}
 \index{ADP}
 The commands
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-png("adp.png", width=800, height=400, pointsize=20)
+png("adp.png", width=800, height=400, pointsize=18)
 @
 <<label=adpplot>>=
 library(oce)
@@ -751,13 +759,13 @@ data(a03)
 GS <- subset.oce(a03, indices=124:102)
 dh <- swDynamicHeight(GS)
 par(mfrow=c(2,1))
-plot(dh$distance, dh$height, type='b', xlab="", ylab="Dyn. Height [m]")
+plot(dh$distance, dh$height, type="b", xlab="", ylab="Dyn. Height [m]")
 grid()
 # 1e3 metres per kilometre
 f <- coriolis(GS@data$station[[1]]@metadata$latitude)
 g <- gravity(GS@data$station[[1]]@metadata$latitude)
 v <- diff(dh$height)/diff(dh$distance) * g / f / 1e3
-plot(dh$distance[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+plot(dh$distance[-1], v, type="l", col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
 grid()
 abline(h=0)
 @

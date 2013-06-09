@@ -1,0 +1,42 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Sweave}{}
+
+\RequirePackage{ifthen}
+\newboolean{Sweave@gin}
+\setboolean{Sweave@gin}{true}
+\newboolean{Sweave@ae}
+\setboolean{Sweave@ae}{true}
+
+\DeclareOption{nogin}{\setboolean{Sweave@gin}{false}}
+\DeclareOption{noae}{\setboolean{Sweave@ae}{false}}
+\ProcessOptions
+
+\RequirePackage{graphicx,fancyvrb}
+\IfFileExists{upquote.sty}{\RequirePackage{upquote}}{}
+
+\ifthenelse{\boolean{Sweave@gin}}{\setkeys{Gin}{width=0.8\textwidth}}{}%
+\ifthenelse{\boolean{Sweave@ae}}{%
+  \RequirePackage[T1]{fontenc}  
+  \RequirePackage{ae}
+}{}%
+
+\newenvironment{Schunk}{}{}
+
+\newcommand{\Sconcordance}[1]{%
+  \ifx\pdfoutput\undefined%
+  \csname newcount\endcsname\pdfoutput\fi%
+  \ifcase\pdfoutput\special{#1}%
+  \else\immediate\pdfobj{#1}\fi}
+
+% begin (Ihaka 2009 ``Sweave-customisation.pdf'')
+\definecolor{sinput}{rgb}{0.29,0.098,0.82}
+\definecolor{soutput}{rgb}{0.463,0.098,0.208} 
+\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=0.1em,frame=leftline,formatcom=\color{sinput}}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0.1em,frame=leftline,framerule=0.7mm,formatcom={\vspace{-0.25em}\color{soutput}}}
+%\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em,fontshape=sl,formatcom=\color{soutput}}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{xleftmargin=0.1em,frame=leftline}
+\fvset{listparameters={\setlength{\topsep}{0pt}}}
+%\renewenvironment{Schunk}{\vspace{\topsep}}{\vspace{\topsep}}
+\renewenvironment{Schunk}{\vspace{.25\topsep}}{\vspace{.25\topsep}}
+% end (Ihaka)
+
