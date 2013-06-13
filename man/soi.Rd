@@ -6,7 +6,7 @@
 
 \title{Southern Oscillation Index}
 
-\description{This is the Southern Oscillation Index, downloaded in June 2012.}
+\description{This is the Southern Oscillation Index, downloaded in June 2013.}
 
 \examples{
 library(oce)
