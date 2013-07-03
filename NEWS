@@ -1,4 +1,5 @@
 0.9-11
+- numberAsPOSIXct() now handles types "sas" and "spss"
 - data(turbulence) added
 - plot.echosounder(): use white for below-threshold values
 - plot.echosounder(): add arg 'beam' to e.g. display Sv

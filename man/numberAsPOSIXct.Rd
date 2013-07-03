@@ -6,7 +6,7 @@
 
 \description{Convert a numeric time to a POSIXct time}
 
-\usage{numberAsPOSIXct(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC")}
+\usage{numberAsPOSIXct(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss"), tz="UTC")}
 
 \arguments{
 
@@ -23,13 +23,15 @@
 \details{Unix times, indicated by \code{type="unix"}, are measured in seconds
     since the start of the year 1970.  Matlab times, indicated by
     \code{type="matlab"}, are measured in years since the start of the year
-    1899.  Argos times, indicated by \code{type="argos"}, are measured in days
-    since the start of the twentieth century.   Note that in these cases,
-    \code{t} is a vector.  The GPS case is different, however.  For
-    \code{type="gps"}, \code{t} is a two-column matrix, in which the first
-    column is the GPS "week" (referenced to 1999-08-22) and the second column
-    is GPS "second" (i.e. the second within the week).
-    }
+    1899.  Argo times, indicated by \code{type="argo"}, are measured in days
+    since the start of the twentieth century.   SAS times, indicated by
+    \code{type="sas"}, have origin at the start of 1960.  SPSS times, indicated
+    by \code{type="spss"}, have origin at 1582-10-14.
+    
+    Note that in these cases, \code{t} is a vector.  The GPS case is different,
+    however.  For \code{type="gps"}, \code{t} is a two-column matrix, in which
+    the first column is the GPS "week" (referenced to 1999-08-22) and the
+    second column is GPS "second" (i.e. the second within the week).  }
     
 \value{A \code{\link{POSIXct}} time.}
 
