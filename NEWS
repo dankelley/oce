@@ -1,3 +1,6 @@
+0.9-12
+- move vignette source directory
+
 0.9-11
 - numberAsPOSIXct() now handles types "sas" and "spss"
 - data(turbulence) added
