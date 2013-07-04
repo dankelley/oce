@@ -3,7 +3,7 @@ Version: 0.9-11
 Date: 2013-07-02
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
-Maintainer: Dan E. Kelley <Dan.Kelley@Dal.Ca>
+Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, mapproj
 Suggests: ncdf, foreign
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
