@@ -16,6 +16,7 @@
      type="l", col=oceColorsJet, lwd=2,
      despike=FALSE,
      drawBottom, ignore=5,
+     drawTimeRange=FALSE,
      radius, coastline,
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -94,6 +95,9 @@
       region to be ignored during the bottom-detection process.  This is
       ignored unless \code{drawBottom=TRUE}.}
 
+  \item{drawTimeRange}{if \code{TRUE}, the time range will be drawn at the top.
+      Ignored except for \code{which=2}, i.e. distance-depth plots.}
+ 
   \item{radius}{radius to use for maps; ignored unless \code{which=3} or
       \code{which="map"}.}
 

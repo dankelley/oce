@@ -15,10 +15,68 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature="echosounder",
           definition=function(x, i, j, drop) {
-              as(x, "oce")[[i, j, drop]]
+              if (i %in% c("Sv", "TS")) {
+                  range <- rev(x@data$depth)
+                  a <- x@data$a
+                  psi <- x@metadata$beamwidthX / 2 * x@metadata$beamwidthY / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
+                  r <- matrix(rev(range), nrow=nrow(a), ncol=length(range), byrow=TRUE)
+                  absorption <- swSoundAbsorption(x@metadata$frequency, 35, 10, mean(range))
+                  soundSpeed <- x@metadata$soundSpeed
+                  if (i == "Sv") {
+                      Sv <- 20*log10(a) -
+                      (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
+                      20*log10(r) +
+                      2*absorption*r -
+                      x@metadata$correction +
+                      10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
+                      Sv[!is.finite(Sv)] <- NA
+                      Sv
+                  } else if (i == "TS") {
+                      TS <- 20*log10(a) -
+                      (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
+                      40*log10(r) +
+                      2*absorption*r +
+                      x@metadata$correction
+                      TS[!is.finite(TS)] <- NA
+                      TS
+                  }
+              } else {
+                  as(x, "oce")[[i, j, drop]]
+              }
           })
 
-as.echosounder <- function(time, depth, a, src="") # FIXME change this, when read.echosounder() finalized
+
+setMethod(f="[[<-",
+          signature="echosounder",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+             } else if (i %in% names(x@data)) {
+                  x@data[[i]] <- value
+             } else if (i == "b") {
+                  x@data$b <- value
+             } else if (i == "c") {
+                  x@data$c <- value
+             } else if (i == "Sv") {
+                  x@data$Sv <- value
+             } else if (i == "TS") {
+                  x@data$TS <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
+              ## Not checking validity because user may want to shorten items one by one, and check validity later.
+              ## validObject(x)
+              invisible(x)
+          })
+
+as.echosounder <- function(time, depth, a, src="",
+                           sourceLevel=220,
+                           receiverSensitivity=-55.4,
+                           transmitPower=0,
+                           pulseDuration=400,
+                           beamwidthX=6.5, beamwidthY=6.5,
+                           frequency=41800,
+                           correction=0)
 {
     res <- new('echosounder', filename=src)
     res@metadata$channel <- 1
@@ -27,6 +85,17 @@ as.echosounder <- function(time, depth, a, src="") # FIXME change this, when rea
     dim <- dim(a)
     res@metadata$pingsInFile <- dim[1]
     res@metadata$samplesPerPing <- dim[2]
+
+    ## args
+    res@metadata$sourceLevel <- sourceLevel
+    res@metadata$receiverSensitivity <- receiverSensitivity
+    res@metadata$transmitPower <- transmitPower
+    res@metadata$pulseDuration <- pulseDuration
+    res@metadata$beamwidthX <- beamwidthX
+    res@metadata$beamwidthY <- beamwidthY
+    res@metadata$frequency <- frequency
+    res@metadata$correction <- correction
+
     ## FIXME: what about timeLocation, latitude, and longitude?
     res@data$time <- time
     res@data$depth <- depth
@@ -54,6 +123,7 @@ setMethod(f="plot",
                               type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE,
                               drawBottom, ignore=5,
+                              drawTimeRange=FALSE,
                               radius, coastline,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
@@ -105,7 +175,12 @@ setMethod(f="plot",
                       }
                       if (despike)
                           signal <- apply(signal, 2, smooth)
-                      z <- log10(ifelse(signal > 1, signal, 1)) # FIXME: make an argument for this '1'
+                      if (beam[w] == "Sv" || beam[w] == "TS") {
+                          z <- signal
+                      } else {
+                          z <- log10(signal)
+                      }
+                      z[!is.finite(z)] <- NA # prevent problem in computing range
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "lightgray"
@@ -117,7 +192,7 @@ setMethod(f="plot",
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
                                  tformat=tformat,
@@ -139,11 +214,12 @@ setMethod(f="plot",
                                  ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
-                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                                  col=col,
                                  mgp=mgp, mar=mar,
                                  tformat=tformat,
                                  debug=debug-1,
+                                 zlab=beam[w],
                                  ...)
                       }
                       if (newxGiven) {
@@ -181,7 +257,7 @@ setMethod(f="plot",
                              xlab=if (missing(xlab)) "Distance [km]" else xlab,
                              ylab=if (missing(ylab)) "z [m]" else ylab,
                              ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                             zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                             zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
                              mgp=mgp, mar=mar,
                              tformat=tformat,
                              col=col,
@@ -200,6 +276,11 @@ setMethod(f="plot",
                           if (missing(labelsTop))
                               labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
                           axis(side=3, at=at, labels=labelsTop, cex.axis=par('cex'))
+                      } 
+                      if (drawTimeRange) {
+                          timeRange <- range(x[['time']])
+                          label <- paste(timeRange[1], timeRange[2], sep=" to ")
+                          mtext(label, side=3, cex=0.9*par('cex'), adj=0)
                       }
                   } else if (which[w] == 3) {
                       lat <- x[["latitude"]]
@@ -444,8 +525,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             res@metadata$salinity <- 0.01*.C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (debug > 1) cat("salinity=", res@metadata$salinity, "PSU (expect 30 for 1-Fish.dt4)\n")
             res@metadata$soundSpeed <- swSoundSpeed(res@metadata$salinity, res@metadata$temperature, 30)
-            res@metadata$tpow <- 0.01*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
-            if (debug > 1) cat("tpow=", res@metadata$tpow, "(expect 0 for 1-Fish.dt4; called mTransmitPower)\n")
+            res@metadata$transmitPower <- 0.01*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
+            if (debug > 1) cat("transmitPower=", res@metadata$transmitPower, "(expect 0 for 1-Fish.dt4; called mTransmitPower)\n")
             res@metadata$tz <- readBin(buf[offset+16+1:2],"integer", size=2)
             if (debug > 1) cat("tz=", res@metadata$tz, "(expect -420 for 1-Fish.dt4)\n")
             dst <- readBin(buf[offset+18+1:2],"integer", size=2)
@@ -502,7 +583,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$ib <- ib
     res@metadata$th <- th
     res@metadata$rxee <- rxee
-    res@metadata$corr <- corr
+    res@metadata$correction <- corr
 
     depth <- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
     ## test: for 01-Fish.dt4, have as follows:
@@ -538,36 +619,57 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$calibrationTime <- numberAsPOSIXct(readBin(rxee[36+1:4], 'integer'), tz="UTC") # [1 p16] offset=36
     if (debug > 1) cat("calibrationTime: ", format(res@metadata$calibrationTime), " (expect Thu Apr 13 02:36:38 2000 for 01-Fish.dt4)\n", sep="")
     ##res@metadata$sl <- 0.1 * .C("int16_le", rxee[58+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
-    res@metadata$sl <- 0.1 * readBin(rxee[58+1:2], "integer", n=1L, size=2L, endian="little") # [p16 1]
-    if (debug > 1) cat('sl=', res@metadata$sl, ' (expect 220 for 01-Fish.dt4 source level SourceLevel_dBuPa)\n', sep='')
+    res@metadata$sourceLevel <- 0.1 * readBin(rxee[58+1:2], "integer", n=1L, size=2L, endian="little") # [p16 1]
+    if (debug > 1) cat('sl=', res@metadata$sourceLevel, ' (expect 220 for 01-Fish.dt4 source level SourceLevel_dBuPa)\n', sep='')
     #res@metadata$rs <- 0.1 * .C("int16_le", rxee[1+64+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
-    res@metadata$rs <- 0.1 * readBin(rxee[63+1:2], "integer", n=1L, size=2) # [p16 1]
-    if (debug > 1) cat('rs=', res@metadata$rs, ' receiver sensitivity in dB (counts/micro Pa) (expect -58.8 for 01-Fish.dt4)\n', sep='')
+    res@metadata$receiverSensitivity <- 0.1 * readBin(rxee[64+1:2], "integer", n=1L, size=2) # [p16 1]
+    if (debug > 1) cat('rs=', res@metadata$receiverSensitivity, ' receiver sensitivity in dB (counts/micro Pa) (expect -58.8 for 01-Fish.dt4)\n', sep='')
 
     res@metadata$trtype <- .C("uint16_le", rxee[84+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # [p16 1]
     if (debug > 1) cat('trtype=', res@metadata$trtype, ' hardware [not deployment] transducer type (0 single, 3 dual, 4 split) expect 1 for 01-Fish.dt4\n', sep='')
-    res@metadata$fq <- readBin(rxee[86+1:4], "numeric", n=1L, size=4) # [p16 1]
-    if (debug > 1) cat('fq=', res@metadata$fq, ' transducer frequency, Hz (expect 208000 for 01-Fish.dt4)\n', sep='')
+    res@metadata$frequency <- readBin(rxee[86+1:4], "integer", n=1L, size=4) # [p16 1]
+    if (debug > 1) cat('fq=', res@metadata$frequency, ' transducer frequency, Hz (expect 208000 for 01-Fish.dt4)\n', sep='')
 
 
-    res@metadata$bwy <- 0.1 * as.numeric(rxee[1+100]) # [1 p16] offset=100
-    res@metadata$bwx <- 0.1 * as.numeric(rxee[1+101]) # [1 p16] offset=101
-    if (debug > 1) cat("bwx=", res@metadata$bwx, " bwy=", res@metadata$bwy, " (expect 6.5 for each, for 01-Fish.dt4; called BeamWidthY_deg etc)\n", sep="")
-    psi <- res@metadata$bwy / 20.0 * res@metadata$bwx / 20.0 * 10^(-3.16)
-    if (debug > 1) cat("psi=", psi, "\n", sep="")
-    ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
-    ## r = range
-    ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
+    res@metadata$beamwidthX <- 0.1 * as.numeric(rxee[1+100]) # [1 p16] offset=100
+    res@metadata$beamwidthY <- 0.1 * as.numeric(rxee[1+101]) # [1 p16] offset=101
+    if (debug > 1) cat("beamwidthX=", res@metadata$beamwidthX, " (expect 6.5 for 01-Fish.dt4; called BeamWidthX_deg)\n", sep="")
+    if (debug > 1) cat("beamwidthY=", res@metadata$beamwidthY, " (expect 6.5 for 01-Fish.dt4; called BeamWidthY_deg)\n", sep="")
+    ##old: psi <- res@metadata$bwy / 2 * res@metadata$bwx / 2 * 10^(-3.16) # biosonics has /20 because they have bwx in 0.1deg
+    ##old: if (debug > 1) cat("psi=", psi, "\n", sep="")
+    ##old: ## c = sound speed (inferred from sal and tem FIXME could use pressure I suppose)
+    ##old: ## r = range
+    ##old: ##Sv <- 20*log10(a) -(sl+rs+tpow)/10.0 +20*log10(r) +2*a*r -10*log10(c*pud/1000000.0*psi/2.0) +corr/100.0
+    ##old: range <- rev(depth)
+
+    ##old: ## NB: In the calculations of Sv and TS, the terms with sl, rs and tpow
+    ##old: ## are not not divided by 10, as in [1 p34 and 35], because here those
+    ##old: ## quantities  are stored in dB, not 0.1 dB.  Similarly, corr is
+    ##old: ## not divided by 100 because it is in dB, not 0.01 dB.
+
+    ##old: ## backscattering strength (Sv) in dB [1 p34]
+    ##old: absorption <- swSoundAbsorption(res@metadata$fq, 35, 10, mean(range))
+    ##old: if (debug > 1) cat("sound absorption:", absorption, "dB/m\n")
+    ##old: r <- matrix(rev(range), nrow=dim(a)[1], ncol=length(range), byrow=TRUE)
+    ##old: Sv <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 20*log10(r) + 2*absorption*r- 10*log10(soundSpeed*res@metadata$pulseDuration/1e6*psi/2) + corr
+    ##old: Sv[!is.finite(Sv)] <- NA
+    ##old: ## target strength (TS) in dB [1 p35]
+    ##old: TS <- 20*log10(a) - (res@metadata$sl+res@metadata$rs+res@metadata$tpow) + 40*log10(r) + 2*absorption*r+ corr
+    ##old: TS[!is.finite(TS)] <- NA
 
     res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitudeSlow=latitudeSlow,
                      longitudeSlow=longitudeSlow,
                      depth=depth,
-                     range=range, # FIXME: is it a coincidence that time is of same length?
+                     ##range=range,
                      time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
                      a=a, b=b, c=c)
+    if (res@metadata$beamType == "single-beam") {
+        res@data$b <- NULL
+        res@data$c <- NULL
+    }
 
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
@@ -581,7 +683,7 @@ summary.echosounder <- function(object, ...)
     showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
     showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
     metadataNames <- names(object@metadata)
-    cat(sprintf("* File type:           \"%s\"\n", object[["fileType"]]))
+    cat(sprintf("* File type:           %s\n", object[["fileType"]]))
     if ("beamType" %in% metadataNames)
         cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
     time <- object[["time"]]
@@ -592,17 +694,18 @@ summary.echosounder <- function(object, ...)
     cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
     ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
     if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
+    cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
     cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
     cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
     cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
     cat("* Statistics::\n")
-    dataNames <- names(object@data)
+    dataNames <- c(names(object@data), "Sv", "TS")
     ndata <- length(dataNames)
     threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
     ii <- 1
     for (i in 1:ndata) {
         if (0 == length(grep("^time", dataNames[i]))) {
-            threes[ii,] <- threenum(object@data[[i]])
+            threes[ii,] <- threenum(object[[dataNames[i]]])
             ii <- ii + 1
         }
     }

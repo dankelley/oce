@@ -1332,11 +1332,13 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         rrl[1]$mday <- 1
         rrl[2] <- rrl[2] + 31 * 86400
         rrl[2]$mday <- 1
-        t.start <- trunc(rrl[1], "day")
-        t.end <- trunc(rrl[2], "day")
-        z <- seq(t.start, t.end, by="month")
+        t.start <- trunc(rrl[1], "days")
+        cat("t.start:", format(t.start), "\n")
+        t.end <- trunc(rrl[2], "days")
+        cat("t.end:", format(t.end), "\n")
+        z <- seq(t.start, t.end, by="1 month")
         if (missing(tformat))
-            tformat <- "%b %d"
+            tformat <- "%b %Y"
     } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
@@ -1481,21 +1483,20 @@ oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
     xmiddle
 }
 
-numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC")
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
         return((as.numeric(t) - as.numeric(tref)) + tref)
-    }
-    if (type == "matlab") {
+    } else if (type == "matlab") {
         ## R won't take a day "0", so subtract one
         return(as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1)))
-    }
-    if (type == "argos") {
+    } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
-    }
-    if (type == "gps") {
+    } else if (type == "argo") {
+        return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
+    } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
@@ -1509,10 +1510,14 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC
         for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
         }
-        t
+    } else if (type == "spss") {
+        t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
+    } else if (type == "sas") {
+        t <- as.POSIXct(t, origin="1960-01-01", tz=tz)
     } else {
         stop("type must be \"unix\", \"matlab\" or \"GPS\"")
     }
+    t
 }
 
 plotInset <- function(xleft, ybottom, xright, ytop, expr,

@@ -1,6 +1,12 @@
 # Tests of EOS (equation-of-state) and related seawater properties
 library(oce)
 
+# sound absorption, compared with Table IV of Fisher & Simmons 1977.
+alpha <- swSoundAbsorption(100e3, 35, 4, 4990) # at 500 atm (4990 dbar of water)
+stopifnot(all.equal.numeric(alpha, 0.0175, 0.01)) # 1% test
+alpha <- swSoundAbsorption(10e3, 35, 4, 0) # expect 0.00083 at 1 atm (0dbar of water)
+stopifnot(all.equal.numeric(alpha, 0.000829, 0.01)) # 1% test
+
 lr <- swLapseRate(40, 40, 10000)
 stopifnot(all.equal.numeric(lr, 3.255976e-4, 1e-7))
 

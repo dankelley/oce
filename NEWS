@@ -1,6 +1,11 @@
 0.9-11
-- echosounder: handle dual-beam and split-beam data
-- echosounder: decode bottom-pick 
+- numberAsPOSIXct() now handles types "sas" and "spss"
+- data(turbulence) added
+- plot.echosounder(): use white for below-threshold values
+- plot.echosounder(): add arg 'beam' to e.g. display Sv
+- read.echosounder(): handle dual-beam and split-beam data
+- read.echosounder(): decode bottom-pick 
+- swSoundAbsorption()
 - read.adp: improve doc regarding variable orientation of RDI files
 
 0.9-10
