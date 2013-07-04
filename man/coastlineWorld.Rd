@@ -19,6 +19,10 @@
     coastlineWorld <- read.coastline.shapefile("TM_WORLD_BORDERS-0.3.shp")
     save(coastlineWorld, file="coastlineWorld.rda", compress="xz")
   }
+
+  Unfortunately, this dataset does not contain lakes, and so a search is on for
+  a replacement.
+
 }
 
 \source{\url{http://thematicmapping.org}, which provides the data in a

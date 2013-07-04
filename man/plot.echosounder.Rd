@@ -9,13 +9,14 @@
 \description{Plot echosounder data}
 
 \usage{\S4method{plot}{echosounder}(x,
-     which=1, 
+     which=1, beam="a",
      newx,
      xlab, ylab,
      xlim, ylim, zlim,
      type="l", col=oceColorsJet, lwd=2,
      despike=FALSE,
      drawBottom, ignore=5,
+     drawTimeRange=FALSE,
      radius, coastline,
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -32,11 +33,19 @@
       \code{\link{as.echosounder}}.}
 
   \item{which}{list of desired plot types: \code{which=1} or \code{which="zt
-          image"} gives a z-time image, \code{which=2} or \code{which="zx image"}
-      gives a z-distance image, and \code{which=3} or \code{which="map"} gives
-      a map showing the cruise track.  In the image plots, the display is of
-      \code{\link{log10}} of amplitude, trimmed to zero for any amplitude
-      values less than 1 (including missing values, which equal 0).}
+          image"} gives a z-time image, \code{which=2} or \code{which="zx
+          image"} gives a z-distance image, and \code{which=3} or
+      \code{which="map"} gives a map showing the cruise track.  In the image
+      plots, the display is of \code{\link{log10}} of amplitude, trimmed to
+      zero for any amplitude values less than 1 (including missing values,
+      which equal 0).  Add 10 to the numeric codes to get the secondary data
+      (non-existent for single-beam files, }
+
+  \item{beam}{a more detailed specification of the data to be plotted.  For
+      single-beam data, this may only be \code{"a"}.  For dual-beam data, this
+      may be \code{"a"} for the narrow-beam signal, or \code{"b"} for the
+      wide-beam signal.  For split-beam data, this may be \code{"a"} for
+      amplitude, \code{"b"} for x-angle data, or \code{"c"} for y-angle data.}
 
   \item{newx}{optional vector of values to appear on the horizontal axis if
       \code{which=1}, instead of time.  This must be of the same length as the
@@ -86,6 +95,9 @@
       region to be ignored during the bottom-detection process.  This is
       ignored unless \code{drawBottom=TRUE}.}
 
+  \item{drawTimeRange}{if \code{TRUE}, the time range will be drawn at the top.
+      Ignored except for \code{which=2}, i.e. distance-depth plots.}
+ 
   \item{radius}{radius to use for maps; ignored unless \code{which=3} or
       \code{which="map"}.}
 

@@ -196,6 +196,14 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     corrected later on.}
 }
 
+\section{A warning for RDI files}{The upward/downward orientation is inferred
+from the ``fixed'' header of the first profile in the data file, so it will be
+incorrect if the deployment orientation is different.  This poses a problem
+for data recorded in beam coordinates, because the orientation is used by
+e.g. \code{\link{beamToXyz}} in converting to xyz coordinates.  The solution is
+to alter the value of \code{@metadata$orientation} prior to doing any such
+coordinate transformation.}
+
 \seealso{The documentation for \code{\link{adp-class}} explains the structure
     of ADP objects, and also outlines the other functions dealing with them.}
 
@@ -235,6 +243,6 @@ arise in dealing with data from Nortek instruments.
 
 }
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 \keyword{misc}

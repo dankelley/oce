@@ -290,6 +290,8 @@ imagep <- function(x, y, z,
         if (missing(z))
             stop("must supply z")
     }
+    z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
+    oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
@@ -374,12 +376,10 @@ imagep <- function(x, y, z,
         col <- oceColorsPalette(n=length(breaks)-1)
     if (is.function(col))
         col <- col(n=length(breaks)-1)
-
-    #browser()
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
     } else if (drawPalette) {
-        zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
+        zlim <- if(missing(zlim)) range(z, na.rm=TRUE) else zlim
         drawTriangles <- rep(drawTriangles, length.out=2)
         drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)

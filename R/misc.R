@@ -259,6 +259,8 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 
 threenum <- function(x)
 {
+    if (is.character(x) || is.null(x))
+        return(NA)
     if (is.raw(x))
         x <- as.numeric(x)
     if (sum(!is.na(x))) {
@@ -1197,14 +1199,14 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             if ("time" == name) {
                 res@data[[name]] <- x@data[[name]][select]
             } else if (is.vector(x@data[[name]])) {
-                oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                oceDebug(debug, "decimating x@data$", name, ", which is a vector\n", sep="")
                 if (do.filter)
                     res@data[[name]] <- filterSomething(x@data[[name]], filter)
                 res@data[[name]] <- res@data[[name]][select]
             } else if (is.matrix(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
                 for (j in 1: dim[2]) {
-                    oceDebug(debug, "subsetting x@data[[", name, ",", j, "]], which is a matrix\n", sep="")
+                    oceDebug(debug, "decimating x@data[[", name, ",", j, "]], which is a matrix\n", sep="")
                     if (do.filter) 
                         res@data[[name]][,j] <- filterSomething(x@data[[name]][,j], filter)
                     res@data[[name]][,j] <- res@data[[name]][,j][select]
@@ -1213,7 +1215,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 dim <- dim(x@data[[name]])
                 for (k in 1:dim[2]) {
                     for (j in 1: dim[3]) {
-                        oceDebug(debug, "subsetting x@data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
+                        oceDebug(debug, "decimating x@data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
                         if (do.filter)
                             res@data[[name]][,j,k] <- filterSomething(x@data[[name]][,j,k], filter)
                         res@data[[name]][,j,k] <- res@data[[name]][,j,k][select]
