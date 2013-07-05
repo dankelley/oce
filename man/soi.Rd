@@ -10,6 +10,7 @@
 
 \examples{
 library(oce)
+library(ocedata)
 data(soi)
 plot(soi$year, soi$soi, type='l')
 }
