@@ -192,8 +192,7 @@ been trimmed to just the downcast portion of the sampling.  (See the next
 section to learn how to do this trimming.).  The commands
 <<label=ctdplot,eval=FALSE>>=
 library(oce)
-library(ocedata)
-data(ctd)
+data(ctd, package="ocedata")
 plot(ctd)
 @
 produce Figure~\ref{fig:ctd}. You may also get a summary of the data with
@@ -246,7 +245,7 @@ preceding section was trimmed of equilibration-phase and upcast-phase data. Data
 from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
 <<label=ctdrawplot,eval=FALSE>>=
-data(ctdRaw)
+data(ctdRaw, package="ocedata")
 plotScan(ctdRaw)
 @
 \begin{figure}
@@ -393,8 +392,8 @@ is to highlight how this package can be used with real-world data.
 \subsection{Section plots}
 The commands
 <<label=sectionplot,eval=FALSE>>=
-data(section)
-data(coastlineHalifax)
+data(section, package="ocedata")
+data(coastlineHalifax, package="ocedata")
 plot(section, coastline=coastlineHalifax)
 @
 will plot a summary diagram containing sections of
@@ -418,10 +417,10 @@ jpeg("a03.jpg", quality=75, width=600, height=700, pointsize=12)
 <<>>=
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
-data(a03)
+data(a03, package="ocedata")
 GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
-data(coastlineWorld)
+data(coastlineWorld, package="ocedata")
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-85,-(64+13/60)))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
@@ -470,8 +469,7 @@ jpeg("topo.jpg", quality=70, width=800, height=400, pointsize=13)
 @
 <<>>=
 library(oce)
-library(ocedata)
-data(topoWorld)
+data(topoWorld, package="ocedata")
 plot(topoWorld, clatitude=30, clongitude=370, span=9000)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
@@ -498,9 +496,8 @@ jpeg("sealevel.jpg", quality=70, width=800, height=600, pointsize=20)
 @
 <<>>=
 library(oce)
-library(ocedata)
 #sealevel <- read.oce("../../tests/h275a96.dat")
-data(sealevelHalifax)
+data(sealevelHalifax, package="ocedata")
 plot(sealevelHalifax)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
@@ -586,8 +583,7 @@ png("tdr.png", width=600, height=300, pointsize=13)
 @
 <<>>=
 library(oce)
-library(ocedata)
-data(tdr)
+data(tdr, package="ocedata")
 plot(tdr, useSmoothScatter=TRUE)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
@@ -626,8 +622,7 @@ png("adp.png", width=800, height=400, pointsize=18)
 @
 <<label=adpplot>>=
 library(oce)
-library(ocedata)
-data(adp)
+data(adp, package="ocedata")
 plot(adp, which=1, adorn=expression({lines(x[["time"]], x[["pressure"]])}))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
@@ -712,8 +707,7 @@ plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5bar to 12dbar range.  One way to do this is
 <<>>=
 library(oce)
-library(ocedata)
-data(ctd)
+data(ctd, package="ocedata")
 pycnocline <- ctdTrim(ctd, "range",
                       parameters=list(item="pressure", from=5, to=12))
 plotProfile(pycnocline, which="density+N2")
@@ -722,8 +716,7 @@ and another is
 \index{subset!extracting a portion of a profile}
 <<>>=
 library(oce)
-library(ocedata)
-data(ctd)
+data(ctd, package="ocedata")
 pycnocline <- subset.oce(ctd, 5<=pressure & pressure<=12)
 plotProfile(pycnocline, which="density+N2")
 @
@@ -733,8 +726,7 @@ plotProfile(pycnocline, which="density+N2")
 The simplest way is to use accessor functions to extract salinity, etc.
 <<>>=
 library(oce)
-library(ocedata)
-data(section)
+data(section, package="ocedata")
 ctd <- as.ctd(salinity(section), temperature(section), pressure(section))
 plotTS(ctd)
 @
@@ -742,8 +734,7 @@ but the point of \emph{this} exercise is to do the extraction manually, so a
 more appropriate solution is as follows
 <<>>=
 library(oce)
-library(ocedata)
-data(section)
+data(section, package="ocedata")
 SS <- TT <- pp <- id <- NULL
 n <- length(section@data$station)
 for (stn in section@data$station) {
@@ -762,8 +753,7 @@ plotTS(ctd)
 \index{subset!extracting stations from a section}
 <<>>=
 library(oce)
-library(ocedata)
-data(a03)
+data(a03, package="ocedata")
 GS <- subset.oce(a03, indices=124:102)
 dh <- swDynamicHeight(GS)
 par(mfrow=c(2,1))
@@ -785,8 +775,7 @@ The author can verify that the strongest winds occurred a bit after midnight -- 
 he moved to a room without windows, in fear of flying glass.
 <<>>=
 library(oce)
-library(ocedata)
-data(sealevelHalifax)
+data(sealevelHalifax, package="ocedata")
 # Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
 plot(sealevelHalifax,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
 abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
@@ -798,8 +787,7 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="re
 The first step is to load the data.
 <<>>=
 library(oce)
-library(ocedata)
-data(sealevelHalifax)
+data(sealevelHalifax, package="ocedata")
 @
 Next, we extract the elevation data
 <<>>=
