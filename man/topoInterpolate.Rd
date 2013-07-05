@@ -34,11 +34,10 @@ topoInterpolate(latitude, longitude, topo)
 
 \examples{
 library(oce)
+library(ocedata)
 data(topoWorld)
-data(topoMaritimes)
 # "The Gully", approx. 400m deep, connects Gulf of St Lawrence with North Atlantic
-topoInterpolate(45, 360 - 57, topoWorld)
-topoInterpolate(45, -57, topoMaritimes)
+topoInterpolate(45, -57, topoWorld)
 }
 
 \author{Dan Kelley}

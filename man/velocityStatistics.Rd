@@ -29,7 +29,7 @@
 
 \examples{
 library(oce)
-data(adp)
+data(adp, package="ocedata")
 a <- velocityStatistics(adp)
 print(a)
 t <- seq(0, 2*pi, length.out=100)

@@ -35,6 +35,7 @@
 
 \examples{
 library(oce)
+library(ocedata)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]

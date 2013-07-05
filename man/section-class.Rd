@@ -57,7 +57,7 @@
     overviews are provided by \code{show.section}.  
     
     Two section datasets are provided in the package: \code{\link{a03}},
-    containing data along WOCE line A03, and \code{\link{section}}, containing
+    containing data along WOCE line A03, and \code{\link[ocedata]{section}}, containing
     data in Halifax Harbour.}
 
 \examples{

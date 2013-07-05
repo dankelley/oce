@@ -39,7 +39,7 @@ plot(ctd)
 plot(subset.oce(ctd, pressure>10))
 
 # ADP example, subsetted by time and distance
-data(adp)
+data(adp, package="ocedata")
 adpNear <- subset.oce(adp, distance < 10)
 # Note that the data may be accessed directly, as below
 adpNearEarly <- subset.oce(adpNear, time < mean(adpNear[["time"]]))

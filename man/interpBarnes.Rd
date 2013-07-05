@@ -48,7 +48,7 @@
 library(oce)
 
 # Contouring example, with wind-speed data from Koch et al. (1983)
-data(wind)
+data(wind, package="ocedata")
 u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg, col="red", labcex=1)
 text(wind$x, wind$y, wind$z, cex=0.7, col="blue")
@@ -69,7 +69,7 @@ lines(g$zg, g$xg, col="red")
   satellite and conventional data,'' \emph{J.  Climate Appl.  Met.}, vol
   22, p. 1487-1503.}
 
-\seealso{See \code{\link{wind}}.}
+\seealso{See \code{\link[ocedata]{wind}}.}
 
 \author{Dan Kelley}
 

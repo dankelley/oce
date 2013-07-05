@@ -74,7 +74,7 @@ image(x, col=oceColorsPalette(200), main="oceColorsPalette")
 par(opar)
 
 # real-world example, with acoustic-doppler profiler data
-data(adp)
+data(adp, package="ocedata")
 par(mfrow=c(3,1))
 plot(adp, which='u1')
 plot(adp, which='u1', col=oceColorsJet)

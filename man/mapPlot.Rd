@@ -82,6 +82,7 @@
 \examples{
 \dontrun{
 library(oce)
+library(ocedata)
 data(coastlineWorld)
 
 ## Orthographic projections resemble a globe, making them

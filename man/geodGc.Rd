@@ -24,6 +24,7 @@
 
 \examples{
 library(oce)
+library(ocedata)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
         latitudelim=c(35,80), longitudelim=c(-80,10),

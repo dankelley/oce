@@ -125,6 +125,7 @@
 \examples{
 \dontrun{
 library(oce)
+library(ocedata)
 data(coastlineWorld)
 plot(coastlineWorld)
 plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)

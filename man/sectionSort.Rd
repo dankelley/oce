@@ -39,6 +39,7 @@ has less lateral variation than the input section.}
 \dontrun{
 # Eastern North Atlantic, showing Mediterranean water. 
 library(oce)
+library(ocedata)
 data(a03)
 s <- sectionGrid(subset.oce(a03, indices=90:3), p=seq(00, 2500, 100))
 ss <- sectionSort(s, by="stationId")

@@ -28,12 +28,12 @@ makeSection(item, \dots)
 \value{An object of \code{\link[base]{class}} "\code{section}" (for
   details, see \code{\link{read.section}}).}
 
-\seealso{\code{\link{read.ctd}} reads CTD data.  \code{\link{section}}
+\seealso{\code{\link{read.ctd}} reads CTD data.  \code{\link[ocedata]{section}}
   is a sample data set.}
 
 \examples{
 library(oce)
-data(ctd)
+data(ctd, package="ocedata")
 ctdWarmed <- ctd
 ctdWarmed[["temperature"]] <- ctdWarmed[["temperature"]] + 0.5
 ctdWarmed[["latitude"]] <- ctdWarmed[["latitude"]] + 0.1

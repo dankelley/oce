@@ -52,7 +52,7 @@
 
 \examples{
 library(oce)
-data(adp)
+data(adp, package="ocedata")
 plot(adp)
 early <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
 plot(early)

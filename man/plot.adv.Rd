@@ -175,7 +175,7 @@
 
 \examples{
 library(oce)
-data(adv)
+data(adv, package="ocedata")
 plot(adv)
 }
 

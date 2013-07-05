@@ -34,7 +34,7 @@
 
 \examples{
 library(oce)
-data(adp)
+data(adp, package="ocedata")
 cat("the first time is:", format(time(adp)[1]), "\n")
 }
 

@@ -25,6 +25,7 @@
 
 \examples{
 library(oce)
+library(ocedata)
 data(coastlineWorld)
 plot(coastlineWorld)
 }

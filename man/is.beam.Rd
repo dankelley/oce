@@ -40,7 +40,7 @@ coordinate(x)
   functions.}
 
 \examples{
-data(adp)
+data(adp, package="ocedata")
 print(is.beam(adp))
 print(is.xyz(adp))
 print(is.enu(adp))

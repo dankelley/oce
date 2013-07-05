@@ -53,6 +53,7 @@
 \examples{
 # Gulf Stream
 library(oce)
+library(ocedata)
 # http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)

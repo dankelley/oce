@@ -299,7 +299,8 @@
 
 \examples{
 library(oce)
-data(adp)
+library(ocedata)
+data(adp, package="ocedata")
 plot(adp, which=1:3)
 plot(adp, which=5, missingColor='gray',
      adorn=expression({ lines(x[["time"]], x[["pressure"]], lwd=3, col='blue') }))
