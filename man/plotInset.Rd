@@ -45,7 +45,6 @@
 
 \examples{
 library(oce)
-library(ocedata)
 ## power law in linear and log form
 x<-1:10
 y<-x^2

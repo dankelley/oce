@@ -32,7 +32,6 @@
 \examples{
 \dontrun{
 library(oce)
-library(ocedata)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
         latitudelim=c(40,50), longitudelim=c(-70,-50),

@@ -89,7 +89,7 @@
 
 \examples{
 library(oce)
-data(cm, package="ocedata")
+data(cm)
 summary(cm)
 plot(cm)
 }

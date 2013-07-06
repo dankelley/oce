@@ -36,7 +36,7 @@
 
 \examples{
 library(oce)
-data(adp, package="ocedata")
+data(adp)
 o <- enuToOtherAdp(adp, heading=-31.5)
 plot(o, which=1:3)
 }

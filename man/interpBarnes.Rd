@@ -48,7 +48,7 @@
 library(oce)
 
 # Contouring example, with wind-speed data from Koch et al. (1983)
-data(wind, package="ocedata")
+data(wind)
 u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg, col="red", labcex=1)
 text(wind$x, wind$y, wind$z, cex=0.7, col="blue")

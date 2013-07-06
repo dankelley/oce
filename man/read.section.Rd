@@ -66,7 +66,6 @@ and
 
 \examples{
 library(oce)
-library(ocedata)
 data(a03)
 GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))

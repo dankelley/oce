@@ -73,7 +73,6 @@
 
 \examples{
 library(oce)
-library(ocedata)
 data(drifter)
 data(coastlineWorld)
 plot(drifter, which="trajectory", coastline=coastlineWorld)

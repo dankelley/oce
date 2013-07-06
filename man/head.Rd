@@ -34,7 +34,7 @@
 
 \examples{
 library(oce)
-data(adp, package="ocedata")
+data(adp)
 start <- head(adp)
 plot(start)
 }

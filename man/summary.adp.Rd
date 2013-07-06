@@ -27,7 +27,7 @@
 
 \examples{
 library(oce)
-data(adp, package="ocedata")
+data(adp)
 summary(adp)
 }
 

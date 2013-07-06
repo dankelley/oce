@@ -33,7 +33,7 @@ makeSection(item, \dots)
 
 \examples{
 library(oce)
-data(ctd, package="ocedata")
+data(ctd)
 ctdWarmed <- ctd
 ctdWarmed[["temperature"]] <- ctdWarmed[["temperature"]] + 0.5
 ctdWarmed[["latitude"]] <- ctdWarmed[["latitude"]] + 0.1

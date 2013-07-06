@@ -48,7 +48,6 @@
 \examples{
 \dontrun{
 library(oce)
-library(ocedata)
 data(coastlineWorld)
 data(a03)
 gs <- sectionGrid(subset.oce(a03, indices=124:102), p=seq(0, 5000, 150))

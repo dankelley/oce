@@ -38,7 +38,6 @@ col=par("fg"), lty=par("lty"), lwd=par("lwd"))}
 \examples{
 \dontrun{
 library(oce)
-library(ocedata)
 data(coastlineWorld)
 par(mar=rep(1, 4))
 ## Arctic 100m, 2km, 3km isobaths, showing shelves and ridges.

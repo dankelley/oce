@@ -45,7 +45,7 @@
 
 \examples{
 library(oce)
-data(adp, package="ocedata")
+data(adp)
 plot(adp)
 adp.dec <- decimate(adp,by=2,filter=c(1/4,1/2,1/4))
 plot(adp.dec)

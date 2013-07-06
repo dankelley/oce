@@ -156,7 +156,6 @@
 \examples{
 \dontrun{
 library(oce)
-library(ocedata)
 ## Halifax Harbour
 data(section)
 data(coastlineHalifax)

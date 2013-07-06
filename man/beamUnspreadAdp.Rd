@@ -31,7 +31,7 @@ asMatrix=FALSE, debug=getOption("oceDebug"))}
 
 \examples{
 library(oce)
-data(adp, package="ocedata")
+data(adp)
 plot(adp, which=5) # beam 1 echo intensity
 adp.att <- beamUnspreadAdp(adp)
 plot(adp.att, which=5) # beam 1 echo intensity
