@@ -1,0 +1,6 @@
+data(wilson, package='ocedata')
+wilson
+q()
+library(oce)
+?adp
+q()

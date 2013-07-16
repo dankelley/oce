@@ -1,0 +1,130 @@
+base::source("/tmp/r-plugin-kelley/Rsource-13235-epsilon.R", echo=TRUE)
+range(x)
+length(x)
+turbulence
+x <- seq(min(turbulence$k)/2, 1.5*max(turbulence$k), length.out=10000)
+base::source("/tmp/r-plugin-kelley/Rsource-13235-epsilon.R", echo=TRUE)
+setwd("/Users/kelley/src/R-kelley/oce")
+q()
+library(oce)
+?turbulence
+library(oce)#
+## Recreate Fig 9 of Grant et al. (1962), with intercept#
+## chosen to mimic the published figure#
+data(turbulence)#
+plot(log10(turbulence$k), log10(turbulence$phi),#
+     xlab=expression(log[10]*k), ylab=expression(log[10]*phi), pch=20)#
+grid()#
+power <- -5/3#
+intercept <- -0.3#
+abline(intercept, power)
+q()
+data(coastlineWorld)
+mapPlot(coastlineWorld, type='l',
+latitudelim=c(40,50), longitudelim=c(-70,-50),
+proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+data(topoWorld)
+tlon <- topoWorld[['longitude']][seq(1, 500, 10)]
+tlat <- topoWorld[['latitude']][seq(1, 500, 10)]
+z <- topoWorld[['z']][seq(1, 500, 10), seq(1, 500, 10)]
+mapImage(tlon, tlat, z)
+mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+tlon <- topoWorld[['longitude']][seq(1, 500, 10)]
+tlon
+tlat <- topoWorld[['latitude']][seq(1, 500, 10)]
+tlat
+tlon <- topoWorld[['longitude']][seq(1, 50, 1)]
+tlat <- topoWorld[['latitude']][seq(1, 50, 1)]
+z <- topoWorld[['z']][seq(1, 50, 1), seq(1, 50, 1)]
+mapPlot(coastlineWorld, type='l',
+latitudelim=c(40,50), longitudelim=c(-70,-50),
+proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+data(topoWorld)
+tlon <- topoWorld[['longitude']][seq(1, 50, 1)]
+tlat <- topoWorld[['latitude']][seq(1, 50, 1)]
+z <- topoWorld[['z']][seq(1, 50, 1), seq(1, 50, 1)]
+mapImage(tlon, tlat, z)
+mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+glon
+glon
+tlon
+tlat
+topoWorld[['longitude']]
+360-60
+topoWorld[['latitude']]
+tlon <- topoWorld[['longitude']][600:650]
+tlat <- topoWorld[['latitude']][260:310]
+z <- topoWorld[['z']][600:650, 260:310]
+mapImage(tlon, tlat, z)
+tlon <- topoWorld[['longitude']][590:650]
+tlat <- topoWorld[['latitude']][260:310]
+z <- topoWorld[['z']][590:650, 260:310]
+mapImage(tlon, tlat, z)
+mapPlot(coastlineWorld, type='l',
+latitudelim=c(40,50), longitudelim=c(-70,-50),
+proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+tlon <- topoWorld[['longitude']][550:600]
+tlat <- topoWorld[['latitude']][260:310]
+z <- topoWorld[['z']][550:600, 260:310]
+mapImage(tlon, tlat, z)
+mapPlot(coastlineWorld, type='l',
+latitudelim=c(40,50), longitudelim=c(-70,-50),
+proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+tlon <- topoWorld[['longitude']][550:650]
+tlat <- topoWorld[['latitude']][240:300]
+z <- topoWorld[['z']][550:650, 240:300]
+mapImage(tlon, tlat, z)
+mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+setwd("/Users/kelley/src/R-kelley/oce")
+library(oce)
+library(ocedata)
+data(topoWorld)
+topoInterpolate(45, -57, topoMaritimes)
+setwd("/Users/kelley/src/R-kelley/oce")
+library(oce)
+library(ocedata)
+data(topoWorld)
+plot(topoWorld, clatitude=46, clongitude=-62, span=800,
+water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+topoWorld[['longitude']]
+e60-62
+360-62
+plot(topoWorld, clatitude=46, clongitude=300, span=800,
+water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+plot(topoWorld, clatitude=46, clongitude=300, span=3000,
+water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+plot(topoWorld, clatitude=46, clongitude=300, span=5000,
+water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+plot(topoWorld, clatitude=46, clongitude=300, span=5000,
+water.z=c(  -200, -500, -1000, -2000, -5000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+plot(topoWorld, clatitude=46, clongitude=300, span=5000,
+land.z=0,
+water.z=c(  -200, -500, -1000, -2000, -5000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+plot(topoWorld, clatitude=46, clongitude=300, span=5000,
+land.z=0,
+water.z=c(  -200, -500, -1000, -2000, -3000, -4000, -5000),
+lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+plot(topoWorld, clatitude=46, clongitude=300, span=5000, land.z=0, water.z=-200)
+plot(topoWorld, clatitude=46, clongitude=300, span=5000,
+land.z=0, water.z=c(-200, -5000, -1000))
+plot(topoWorld, clatitude=46, clongitude=300, span=5000,
+land.z=0, water.z=c(-200, -1000, -5000))
+plot(topoWorld, clatitude=46, clongitude=300, span=9000,
+land.z=0, water.z=c(-200, -1000, -5000))
+plot(topoWorld, clatitude=46, clongitude=350, span=9000,
+land.z=0, water.z=c(-200, -1000, -5000))
+plot(topoWorld, clatitude=46, clongitude=350, span=9000,
+water.z=c(-200, -1000, -5000))
+plot(topoWorld, clatitude=46, clongitude=350, span=9000)
+plot(topoWorld, clatitude=46, clongitude=370, span=9000)
+water.z=c(-200, -1000, -5000))
+plot(topoWorld, clatitude=46, clongitude=370, span=9000)
+plot(topoWorld, clatitude=46, clongitude=370, span=9000)
+plot(topoWorld, clatitude=30, clongitude=370, span=9000)
+q()
