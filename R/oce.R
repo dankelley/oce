@@ -1333,9 +1333,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         rrl[2] <- rrl[2] + 31 * 86400
         rrl[2]$mday <- 1
         t.start <- trunc(rrl[1], "days")
-        cat("t.start:", format(t.start), "\n")
         t.end <- trunc(rrl[2], "days")
-        cat("t.end:", format(t.end), "\n")
         z <- seq(t.start, t.end, by="1 month")
         if (missing(tformat))
             tformat <- "%b %Y"
