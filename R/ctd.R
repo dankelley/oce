@@ -65,16 +65,14 @@ setMethod(f="[[",
 as.ctd <- function(salinity, temperature, pressure,
                    SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,
-                   scan,
-                   other,
+                   scan, other,
                    missingValue,
                    quality,
-                   ship="",scientist="",institute="",address="", cruise="",station="",
+                   filename="", type="", model="", serialNumber="",
+                   ship="", scientist="", institute="", address="", cruise="", station="",
                    date="", startTime="", recovery="",
                    latitude=NA, longitude=NA,
-                   waterDepth=NA,
-                   sampleInterval=NA,
-                   src="")
+                   waterDepth=NA, sampleInterval=NA, src="")
 {
     if (!missing(salinity) && class(salinity) == "data.frame") {
         d <- salinity
@@ -92,6 +90,7 @@ as.ctd <- function(salinity, temperature, pressure,
         if (missing(pressure))
             stop("must give pressure")
     }
+    res <- new('ctd')
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     pressure <- as.vector(pressure)
@@ -154,28 +153,18 @@ as.ctd <- function(salinity, temperature, pressure,
     if (!missing(missingValue)) {
         data[data==missingValue] <- NA
     }
-    metadata <- list(
-                     header=NULL,
-                     filename=NULL,
-                     filename.orig=NULL,
+    metadata <- list(header=NULL,
+                     type=type, model=model, filename=filename, serialNumber=serialNumber,
+                     filename.orig=filename,
                      systemUploadTime=NULL,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=address,
-                     cruise=cruise,
-                     station=station,
-                     date=date,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=recovery,
+                     ship=ship,scientist=scientist,institute=institute,address=address,cruise=cruise,station=station,
+                     date=date, startTime=startTime, recovery=recovery,
+                     latitude=latitude, longitude=longitude,
                      waterDepth=if (is.na(waterDepth)) max(abs(data$pressure), na.rm=TRUE) else waterDepth,
                      sampleInterval=sampleInterval,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
                      src=src)
-    res <- new('ctd')
     res@metadata <- metadata
     res@data <- data
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -1710,7 +1699,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 summary.ctd <- function(object, ...)
 {
     cat("CTD Summary\n-----------\n\n")
-    showMetadataItem(object, "type", "Instrument")
+    showMetadataItem(object, "type", "Instrument: ")
     showMetadataItem(object, "model", "Instrument model:  ")
     showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
     showMetadataItem(object, "filename", "File source:        ")
@@ -1726,8 +1715,8 @@ summary.ctd <- function(object, ...)
     cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                      object@metadata$longitude,
                                                      digits=5), "\n")
-    showMetadataItem(object, "waterDepth", "Water depth:")
-    showMetadataItem(object, "levels", "Number of levels:")
+    showMetadataItem(object, "waterDepth", "Water depth: ")
+    showMetadataItem(object, "levels", "Number of levels: ")
     cat("* Statistics of subsample::\n")
     ndata <- length(object@data)
     threes <- matrix(nrow=ndata, ncol=3)

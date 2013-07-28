@@ -9,6 +9,7 @@
        scan, other,
        missingValue,
        quality, 
+       filename="", type="", model="", serialNumber="",
        ship="", scientist="", institute="", address="", cruise="", station="", 
        date="", startTime="", recovery="",
        latitude=NA, longitude=NA, 
@@ -43,6 +44,10 @@
      data.  (In WOCE, \code{quality=2} indicates good data, 
      \code{quality=3} means questionable data, and \code{quality=4}
      means bad data.}
+  \item{filename}{filename to be stored in the object}
+  \item{type}{type of CTD, e.g. "SBE"}
+  \item{model}{model of instrument}
+  \item{serialNumber}{serial number of instrument}
   \item{ship}{optional string containing the ship from which the observations were made.}
   \item{scientist}{optional string containing the chief scientist on the cruise.}
   \item{institute}{optional string containing the institute behind the work.}
