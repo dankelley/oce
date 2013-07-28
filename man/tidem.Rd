@@ -137,7 +137,7 @@
   \code{\link{plot.tidem}} plots one, and \code{\link{predict.tidem}}
   makes predictions from one.  As for the input, sealevel objects may be
   created with \code{\link{as.sealevel}} or \code{\link{read.sealevel}}.  See
-  notes at \code{\link{sealevelTuktoyaktuk}}, which is test data set.
+  notes at \code{\link[ocedata]{sealevelTuktoyaktuk}}, which is test data set.
 }
 
 \examples{

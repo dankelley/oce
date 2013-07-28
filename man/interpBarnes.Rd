@@ -69,7 +69,7 @@ lines(g$zg, g$xg, col="red")
   satellite and conventional data,'' \emph{J.  Climate Appl.  Met.}, vol
   22, p. 1487-1503.}
 
-\seealso{See \code{\link{wind}}.}
+\seealso{See \code{\link[ocedata]{wind}}.}
 
 \author{Dan Kelley}
 

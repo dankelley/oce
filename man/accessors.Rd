@@ -105,7 +105,7 @@ velocity(x)
 
 \examples{
 library(oce)
-data(adp)
+data(adp, package="ocedata")
 print(heading(adp))
 heading(adp) <- 5 + heading(adp) # add 5 degrees to the heading
 print(heading(adp))

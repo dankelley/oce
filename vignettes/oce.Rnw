@@ -469,10 +469,8 @@ jpeg("topo.jpg", quality=70, width=800, height=400, pointsize=13)
 @
 <<>>=
 library(oce)
-data(topoMaritimes)
-plot(topoMaritimes, clatitude=46, clongitude=-62, span=800,
-    water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
-    lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+data(topoWorld)
+plot(topoWorld, clatitude=30, clongitude=370, span=9000)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()

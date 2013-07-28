@@ -36,10 +36,10 @@ data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
         latitudelim=c(40,50), longitudelim=c(-70,-50),
         proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
-data(topoMaritimes)
-tlon <- topoMaritimes[['longitude']][seq(1, 500, 10)]
-tlat <- topoMaritimes[['latitude']][seq(1, 500, 10)]
-z <- topoMaritimes[['z']][seq(1, 500, 10), seq(1, 500, 10)]
+data(topoWorld)
+tlon <- topoWorld[['longitude']][550:650]
+tlat <- topoWorld[['latitude']][240:300]
+z <- topoWorld[['z']][550:650, 240:300]
 mapImage(tlon, tlat, z)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 }

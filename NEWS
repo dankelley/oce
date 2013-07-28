@@ -1,3 +1,7 @@
+0.9-13
+- remove oceBisect(), which merely reproduces uniroot()
+- move all data to library(ocedata)
+
 0.9-12
 - move vignette source directory
 

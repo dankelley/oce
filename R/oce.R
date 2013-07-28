@@ -1333,9 +1333,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         rrl[2] <- rrl[2] + 31 * 86400
         rrl[2]$mday <- 1
         t.start <- trunc(rrl[1], "days")
-        cat("t.start:", format(t.start), "\n")
         t.end <- trunc(rrl[2], "days")
-        cat("t.end:", format(t.end), "\n")
         z <- seq(t.start, t.end, by="1 month")
         if (missing(tformat))
             tformat <- "%b %Y"
@@ -1439,48 +1437,6 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
     invisible()
-}
-
-oceBisect <- function(f, xleft, xright, dx, ..., debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "\b\boceBisect(f, xleft=", xleft, ", xright=", xright, " ...) {\n", sep="")
-    if (xleft >= xright)
-        stop("xright must exceed xleft")
-    oceDebug(debug, "f(xleft)", f(xleft), "\n")
-    oceDebug(debug, "f(xright)", f(xright), "\n")
-    oceDebug(debug, "f(middle)", f(0.5*(xright+xleft)), "\n")
-    if (f(xleft, ...) * f(xright, ...) > 0)
-        ("xleft and xright do not bracket a root")
-    if (missing(dx))
-        dx <- (xright - xleft) / 1e5
-    else {
-        if (dx == 0)
-            stop('cannot have dx == 0')
-    if (dx < 0)
-        stop('cannot have dx < 0')
-    }
-    xmiddle <- 0.5 * (xleft + xright)
-    npass <- 4 + floor(1 + log2((xright - xleft) / dx))
-    oceDebug(debug, "npass=", npass, "\n")
-    for (pass in 1:npass) {
-        if (f(xleft, ...) * f(xmiddle, ...) < 0) { # FIXME: should not need to do f(left)
-            tmp <- xmiddle
-            xmiddle <- 0.5 * (xleft + xmiddle)
-            xright <- tmp
-            oceDebug(debug, xleft, "|", xmiddle, "|", xright, "<\n")
-        } else {
-            tmp <- xmiddle
-            xmiddle <- 0.5 * (xmiddle + xright)
-            xleft <- tmp
-            oceDebug(debug, ">", xleft, "|", xmiddle, "|", xright, "\n")
-        }
-        if ((xright - xleft) < dx){
-            oceDebug(debug, "got root in pass", pass, "\n")
-            break
-        }
-    }
-    oceDebug(debug, "\b\b} # oceBisect()\n", sep="")
-    xmiddle
 }
 
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss"), tz="UTC")
