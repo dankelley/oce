@@ -1282,6 +1282,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         open(file, "r")
         on.exit(close(file))
     }
+    res <- new("ctd")
     ## Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sampleInterval <- NA
@@ -1504,8 +1505,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      recovery=recovery,
                      waterDepth=waterDepth,
                      sampleInterval=sampleInterval,
-                     names=names,
-                     labels=labels,
+                     names=col.names.inferred,
+                     labels=col.names.inferred,
                      filename=filename)
 
     ## Read the data as a table.
@@ -1530,7 +1531,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- new("ctd")
     res@metadata <- metadata
     res@data <- data
     ## Add standard things, if missing
