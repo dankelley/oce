@@ -54,7 +54,8 @@
 
   The editing of CTD objects (e.g. to isolate downcasts) can be done with
   \code{\link{ctdTrim}}, a task made easier when \code{\link{plotScan}} is
-  used to examine the results.  CTD data may be smoothed and/or cast onto
+  used to examine the results.  Towyow data can be split up into descents using
+  \code{\link{ctdFindDescents}}.  CTD data may be smoothed and/or cast onto
   specified pressure levels with \code{\link{ctdDecimate}}.  
   
   Low-level manipulation may be done with functions such as
