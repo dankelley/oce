@@ -305,6 +305,46 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
     res
 }
 
+
+ctdFindDescents <- function(x, dpdtCriterion=0.3, k=21, smallest=10, method=3, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "\b\bctdFindDescents(x, dpdtCriterion=", dpdtCriterion, ", k=", k,
+             "smallest=", smallest, "method=", method, "debug=", debug, "\n")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
+    salinity <- x[["salinity"]]
+    temperature <- x[["temperature"]]
+    pressure <- x[["pressure"]]
+ 
+    ## dpdt = delta p / delta t [dbar/s]
+    dpdt <- diff(pressure) / diff(as.numeric(time))
+    dpdt <- c(dpdt[1], dpdt)
+    if (method == 1) {
+        descending <- dpdt > quantile(dpdt[dpdt>0], dpdtCriterion)
+        start <- which(diff(descending) == 1)
+        end <- which(diff(descending) == -1)
+    } else if (method == 2) {
+        dpdt <- runmed(dpdt, k=k)
+        descending <- dpdt > quantile(dpdt, dpdtCriterion)
+        start <- which(diff(descending) == 1)
+        end <- which(diff(descending) == -1)
+    } else if (method == 3) {
+        dpdt <- smooth(dpdt)
+        descending <- dpdt > quantile(dpdt, dpdtCriterion)
+        start <- which(diff(descending) == 1)
+        end <- which(diff(descending) == -1)
+    }
+    if (start[1] > end[1])
+        start <- start[-1]
+    if (length(end) > length(start))
+        end <- end[1:length(start)]
+    keep <- (end - start) >= smallest 
+    res <- data.frame(start=start[keep], end=end[keep])
+    oceDebug(debug, "} # ctdFindDescents()\n")
+    res
+}
+
+
 ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     inferWaterDepth=TRUE, removeDepthInversions=FALSE, 
                     parameters, debug=getOption("oceDebug"))
