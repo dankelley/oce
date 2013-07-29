@@ -9,7 +9,7 @@
 
 \usage{
 ctdFindDescents(x,
-                dpdtCriterion=0.3,
+                dpCriterion=0.3,
                 k=21,
                 smallest=10,
                 method=3,
@@ -17,7 +17,7 @@ ctdFindDescents(x,
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{dpdtCriterion}{quantile fraction}
+  \item{dpCriterion}{quantile fraction criterion for \code{diff(pressure)}}
   \item{k}{\code{k} used in \code{\link{runmed}} for \code{method=2}}
   \item{smallest}{shortest descent candidates that are kept}
   \item{method}{1 for a simple method, 2 for a method using \code{\link{runmed}}, or 3 for a method using \code{\link{smooth}}.}

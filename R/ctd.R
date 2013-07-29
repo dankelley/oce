@@ -306,7 +306,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 
-ctdFindDescents <- function(x, dpdtCriterion=0.3, k=21, smallest=10, method=3, debug=getOption("oceDebug"))
+ctdFindDescents <- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bctdFindDescents(x, dpdtCriterion=", dpdtCriterion, ", k=", k,
              "smallest=", smallest, "method=", method, "debug=", debug, "\n")
@@ -316,21 +316,20 @@ ctdFindDescents <- function(x, dpdtCriterion=0.3, k=21, smallest=10, method=3, d
     temperature <- x[["temperature"]]
     pressure <- x[["pressure"]]
  
-    ## dpdt = delta p / delta t [dbar/s]
-    dpdt <- diff(pressure) / diff(as.numeric(time))
-    dpdt <- c(dpdt[1], dpdt)
+    dp <- diff(pressure)
+    dp <- c(dp[1], dp)
     if (method == 1) {
-        descending <- dpdt > quantile(dpdt[dpdt>0], dpdtCriterion)
+        descending <- dp > quantile(dp[dp>0], dpCriterion)
         start <- which(diff(descending) == 1)
         end <- which(diff(descending) == -1)
     } else if (method == 2) {
-        dpdt <- runmed(dpdt, k=k)
-        descending <- dpdt > quantile(dpdt, dpdtCriterion)
+        dp <- runmed(dp, k=k)
+        descending <- dp > quantile(dp, dpCriterion)
         start <- which(diff(descending) == 1)
         end <- which(diff(descending) == -1)
     } else if (method == 3) {
-        dpdt <- smooth(dpdt)
-        descending <- dpdt > quantile(dpdt, dpdtCriterion)
+        dp <- smooth(dp)
+        descending <- dp > quantile(dp, dpCriterion)
         start <- which(diff(descending) == 1)
         end <- which(diff(descending) == -1)
     }
