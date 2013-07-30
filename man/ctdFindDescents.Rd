@@ -3,17 +3,19 @@
 
 \alias{ctdFindDescents}
 
-\title{Trim start/end portions of a CTD cast}
+\title{Find descending portions of a CTD towyow}
 
-\description{Trim start/end portions of a CTD cast.}
+\description{Examine the pressure time series to identify intervals times during which a towyowing
+  CTD instrument was descending.  Then either return pointers to the start/end times of the
+  descents, or a vector of CTD objects holding those descents.}
 
-\usage{
-ctdFindDescents(x, dpCriterion=0.3, k=21, smallest=10, method=3,
+\usage{ctdFindDescents(x, dpCriterion=0.3, k=21, smallest=10, method=3,
                 arr.ind=FALSE, debug=getOption("oceDebug"))}
 
 \arguments{
-  \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{dpCriterion}{quantile fraction criterion for \code{diff(pressure)}}
+  \item{x}{A \code{ctd} object, as read by \code{\link{read.ctd}} or created by
+    \code{\link{as.ctd}}.}
+  \item{dpCriterion}{a quantile criterion for \code{diff(pressure)}}
   \item{k}{\code{k} used in \code{\link{runmed}} for \code{method=2}}
   \item{smallest}{shortest descent candidates that are kept}
   \item{method}{1 for a simple method, 2 for a method using \code{\link{runmed}}, or 3 for a method using \code{\link{smooth}}.}
