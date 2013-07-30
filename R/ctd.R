@@ -143,8 +143,7 @@ as.ctd <- function(salinity, temperature, pressure,
         n <- length(names)
         for (i in 1:n) {
             if (names[i] != "") {
-                ##data <- data.frame(data, other)
-                data[[names[i]]] <- data
+                data[[names[i]]] <- other[[names[i]]]
             } else {
                 warning("'other' item number ", i, " has no name")
             }
@@ -306,16 +305,15 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 
-ctdFindDescents <- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, debug=getOption("oceDebug"))
+ctdFindDescents <- function(x, dpCriterion=0.3, k=21, smallest=10, method=3,
+                            arr.ind=FALSE,
+                            debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bctdFindDescents(x, dpdtCriterion=", dpdtCriterion, ", k=", k,
-             "smallest=", smallest, "method=", method, "debug=", debug, "\n")
+    oceDebug(debug, "\b\bctdFindDescents(x, dpCriterion=", dpCriterion, ", k=", k,
+             "smallest=", smallest, "method=", method, "debug=", debug, ") {\n")
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
-    salinity <- x[["salinity"]]
-    temperature <- x[["temperature"]]
     pressure <- x[["pressure"]]
- 
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (method == 1) {
@@ -338,9 +336,21 @@ ctdFindDescents <- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, deb
     if (length(end) > length(start))
         end <- end[1:length(start)]
     keep <- (end - start) >= smallest 
-    res <- data.frame(start=start[keep], end=end[keep])
-    oceDebug(debug, "} # ctdFindDescents()\n")
-    res
+    indices <- data.frame(start=start[keep], end=end[keep])
+    if (is.logical(arr.ind) && arr.ind) {
+        oceDebug(debug, "} # ctdFindDescents()\n")
+        return(indices)
+    } else {
+        ncasts <- length(indices$start)
+        casts <- vector("list", ncasts)
+        for (i in 1:ncasts) {
+            oceDebug(debug, "descent #", i, "of", ncasts, "\n")
+            ii <- seq.int(indices$start[i], indices$end[i])
+            casts[[i]] <- ctdTrim(x, "index", parameters=ii)
+        }
+        oceDebug(debug, "\b\b} # ctdFindDescents()\n")
+        return(casts)
+    }
 }
 
 
