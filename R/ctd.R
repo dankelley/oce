@@ -318,7 +318,6 @@ ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
-        cat("dpC=", dpCriterion, '\n')
         if (method == 1) {
             descending <- dp > quantile(dp[dp>0], dpCriterion)
             start <- which(diff(descending) == 1)
