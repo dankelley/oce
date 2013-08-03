@@ -15,7 +15,7 @@
 \arguments{
   \item{x}{A \code{ctd} object, as read by \code{\link{read.ctd}} or created by
     \code{\link{as.ctd}}.}
-  \item{dpCriterion}{a quantile criterion for \code{diff(pressure)}}
+  \item{dpCriterion}{a criterion for pressure difference; see \sQuote{Details}.}
   \item{k}{\code{k} used in \code{\link{runmed}} for \code{method=2}}
   \item{smallest}{shortest descent candidates that are kept}
   \item{method}{An integer that indicates the preferred method of isolating the ascents or descents,
@@ -32,7 +32,11 @@
   consided to be within a profile.  If \code{method=2}, a running median is first run across
   \code{dp}, using \code{\link{runmed}} with filter length \code{k} as indicated by the argument to
   the present function.  If \code{method=3}, \code{\link{smooth}} is used instead of
-  \code{\link{runmed}}.
+  \code{\link{runmed}}.  If \code{method=4}, \code{\link{smooth.spline}} is used instead of
+  \code{\link{runmed}}, and then \code{dpCriterion} is taken as a fraction of the median
+  positive/negative values of the first difference of the smoothed value, for descending/ascending
+  directions.
+
 
   For all three methods, the next step is to remove any profiles that are of length shorter than
   \code{smallest}, as a way to prevent being misled by short diversions of the instrument from a
@@ -42,9 +46,10 @@
   the downcasts.  Otherwise, a vector of \code{ctd} objects.}
 
 \section{status}{This function was developed in July-August 2013, and needs more testing before it
-  will be complete.  Since method=1 seems quite bad in test cases, it may be removed.  Indeed, it
-  seems a good idea to have a new argument called \code{smoother} or something, and to use
-  \code{...} arguments to give whatever that is some extra args.}
+  will be complete.  Method=4 seems best in some test data, and it seems likely that the other
+  methods will be removed in the week of August 5.  (It is confusing to users to have a lot of
+  methods, and if some are known to be faulty on relevant sample data, they are not worth
+  tweaking.)}
 
 \seealso{The documentation for \code{\link{ctd-class}} explains the structure
     of CTD objects, and also outlines the other functions dealing with them.}

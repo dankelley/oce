@@ -318,6 +318,7 @@ ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
+        cat("dpC=", dpCriterion, '\n')
         if (method == 1) {
             descending <- dp > quantile(dp[dp>0], dpCriterion)
             start <- which(diff(descending) == 1)
@@ -328,10 +329,19 @@ ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.
             start <- which(diff(descending) == 1)
             end <- which(diff(descending) == -1)
         } else if (method == 3) {
-            dp <- smooth(dp)
+            ps <- smooth.spline(pressure)
+            dp <- diff(ps$y)
+            dp <- c(dp[1], dp)
             descending <- dp > quantile(dp, dpCriterion)
             start <- which(diff(descending) == 1)
             end <- which(diff(descending) == -1)
+        } else if (method == 4) {
+            ps <- smooth.spline(pressure)
+            dp <- diff(ps$y)
+            dp <- c(dp[1], dp)
+            look <- dp > dpCriterion * median(dp[dp>0])
+            start <- which(diff(look) == 1)
+            end <- which(diff(look) == -1)
         }
         if (start[1] > end[1])
             start <- start[-1]
@@ -346,8 +356,15 @@ ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.
             start <- which(diff(look) == -1)
             end <- which(diff(look) == 1)
         } else if (method == 3) {
-            dp <- smooth(dp)
             look <- dp < quantile(dp, dpCriterion)
+            look <- dp < quantile(dp[dp<0], dpCriterion)
+            start <- which(diff(look) == -1)
+            end <- which(diff(look) == 1)
+        } else if (method == 4) {
+            ps <- smooth.spline(pressure)
+            dp <- diff(ps$y)
+            dp <- c(dp[1], dp)
+            look <- dp < dpCriterion * median(dp[dp<0])
             start <- which(diff(look) == -1)
             end <- which(diff(look) == 1)
         }
