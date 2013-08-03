@@ -305,52 +305,86 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 
-ctdFindDescents <- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.ind=FALSE, debug=getOption("oceDebug"))
+ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.ind=FALSE, 
+                           direction=c("descending", "ascending"),
+                           debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bctdFindDescents(x, dpCriterion=", dpCriterion, ", k=", k,
-             "smallest=", smallest, "method=", method, "arr.ind=", arr.ind, "debug=", debug, ") {\n")
+    oceDebug(debug, "\b\bctdFindProfiles(x, dpCriterion=", dpCriterion, ", k=", k,
+             "smallest=", smallest, ", method=", method, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
+    direction <- match.arg(direction)
     pressure <- x[["pressure"]]
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
-    if (method == 1) {
-        descending <- dp > quantile(dp[dp>0], dpCriterion)
-        start <- which(diff(descending) == 1)
-        end <- which(diff(descending) == -1)
-    } else if (method == 2) {
-        dp <- runmed(dp, k=k)
-        descending <- dp > quantile(dp, dpCriterion)
-        start <- which(diff(descending) == 1)
-        end <- which(diff(descending) == -1)
-    } else if (method == 3) {
-        dp <- smooth(dp)
-        descending <- dp > quantile(dp, dpCriterion)
-        start <- which(diff(descending) == 1)
-        end <- which(diff(descending) == -1)
+    if (direction == "descending") {
+        if (method == 1) {
+            descending <- dp > quantile(dp[dp>0], dpCriterion)
+            start <- which(diff(descending) == 1)
+            end <- which(diff(descending) == -1)
+        } else if (method == 2) {
+            dp <- runmed(dp, k=k)
+            descending <- dp > quantile(dp, dpCriterion)
+            start <- which(diff(descending) == 1)
+            end <- which(diff(descending) == -1)
+        } else if (method == 3) {
+            dp <- smooth(dp)
+            descending <- dp > quantile(dp, dpCriterion)
+            start <- which(diff(descending) == 1)
+            end <- which(diff(descending) == -1)
+        }
+        if (start[1] > end[1])
+            start <- start[-1]
+    } else if (direction == "ascending") {
+        if (method == 1) {
+            look <- dp < quantile(dp[dp<0], dpCriterion)
+            start <- which(diff(look) == -1)
+            end <- which(diff(look) == 1)
+        } else if (method == 2) {
+            dp <- runmed(dp, k=k)
+            look <- dp < quantile(dp, dpCriterion)
+            start <- which(diff(look) == -1)
+            end <- which(diff(look) == 1)
+        } else if (method == 3) {
+            dp <- smooth(dp)
+            look <- dp < quantile(dp, dpCriterion)
+            start <- which(diff(look) == -1)
+            end <- which(diff(look) == 1)
+        }
+        if (start[1] < end[1])
+            start <- start[-1]
+        tmp <- start
+        start <- end
+        end <- tmp
+    } else {
+        stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
-    if (start[1] > end[1])
-        start <- start[-1]
+    oceDebug(debug, "Before trimming, start:", start, "\n")
+    oceDebug(debug, "Before trimming, end:", end, "\n")
+    start <- subset(start, start<max(end))
+    end <- subset(end, end>min(start))
+    oceDebug(debug, "After trimming, start:", start, "\n")
+    oceDebug(debug, "After trimming, end:", end, "\n")
     if (length(end) > length(start))
         end <- end[1:length(start)]
-    keep <- (end - start) >= smallest 
+    keep <- abs(end - start) >= smallest 
     indices <- data.frame(start=start[keep], end=end[keep])
     if (is.logical(arr.ind) && arr.ind) {
-        oceDebug(debug, "} # ctdFindDescents()\n")
+        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
         return(indices)
     } else {
         ncasts <- length(indices$start)
         casts <- vector("list", ncasts)
         for (i in 1:ncasts) {
-            oceDebug(debug, "descent #", i, "of", ncasts, "\n")
+            oceDebug(debug, "profile #", i, "of", ncasts, "\n")
             ii <- seq.int(indices$start[i], indices$end[i])
             cast <- ctdTrim(x, "index", parameters=ii)
             cast@processingLog <- processingLog(cast@processingLog,
                                                 paste(paste(deparse(match.call()), sep="", collapse=""),
-                                                " # descent ", i, " of ", ncasts))
+                                                " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
-        oceDebug(debug, "\b\b} # ctdFindDescents()\n")
+        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
         return(casts)
     }
 }
