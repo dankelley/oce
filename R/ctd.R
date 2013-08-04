@@ -323,7 +323,11 @@ ctdFindProfiles<- function(x, cutoff=0.5, smallest=10, arr.ind=FALSE,
         dp <- c(dp[1], dp)
         look <- dp > cutoff * median(dp[dp>0])
         start <- which(diff(look) == 1)
+        if (0 == length(start))
+            start <- 1
         end <- which(diff(look) == -1)
+        if (0 == length(end))
+            end <- length(pressure)
         if (start[1] > end[1])
             start <- start[-1]
     } else if (direction == "ascending") {
@@ -331,13 +335,16 @@ ctdFindProfiles<- function(x, cutoff=0.5, smallest=10, arr.ind=FALSE,
         dp <- diff(ps$y)
         dp <- c(dp[1], dp)
         look <- dp < cutoff * median(dp[dp<0])
-        start <- which(diff(look) == -1)
-        end <- which(diff(look) == 1)
-        if (start[1] < end[1])
+        start <- which(diff(look) == 1)
+        if (0 == length(start))
+            start <- 1
+        if (0 == length(end))
+            end <- length(pressure)
+        end <- which(diff(look) == -1)
+        if (0 == length(end))
+            end <- length(pressure)
+        if (start[1] > end[1])
             start <- start[-1]
-        tmp <- start
-        start <- end
-        end <- tmp
     } else {
         stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
