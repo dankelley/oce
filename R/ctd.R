@@ -305,12 +305,12 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 
-ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.ind=FALSE, 
+ctdFindProfiles<- function(x, cutoff=0.5, smallest=10, arr.ind=FALSE, 
                            direction=c("descending", "ascending"),
-                           debug=getOption("oceDebug"))
+                           debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bctdFindProfiles(x, dpCriterion=", dpCriterion, ", k=", k,
-             "smallest=", smallest, ", method=", method, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "\b\bctdFindProfiles(x, cutoff=", cutoff, 
+             "smallest=", smallest, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
     direction <- match.arg(direction)
@@ -318,55 +318,21 @@ ctdFindProfiles<- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
-        if (method == 1) {
-            descending <- dp > quantile(dp[dp>0], dpCriterion)
-            start <- which(diff(descending) == 1)
-            end <- which(diff(descending) == -1)
-        } else if (method == 2) {
-            dp <- runmed(dp, k=k)
-            descending <- dp > quantile(dp, dpCriterion)
-            start <- which(diff(descending) == 1)
-            end <- which(diff(descending) == -1)
-        } else if (method == 3) {
-            ps <- smooth.spline(pressure)
-            dp <- diff(ps$y)
-            dp <- c(dp[1], dp)
-            descending <- dp > quantile(dp, dpCriterion)
-            start <- which(diff(descending) == 1)
-            end <- which(diff(descending) == -1)
-        } else if (method == 4) {
-            ps <- smooth.spline(pressure)
-            dp <- diff(ps$y)
-            dp <- c(dp[1], dp)
-            look <- dp > dpCriterion * median(dp[dp>0])
-            start <- which(diff(look) == 1)
-            end <- which(diff(look) == -1)
-        }
+        ps <- smooth.spline(pressure, ...)
+        dp <- diff(ps$y)
+        dp <- c(dp[1], dp)
+        look <- dp > cutoff * median(dp[dp>0])
+        start <- which(diff(look) == 1)
+        end <- which(diff(look) == -1)
         if (start[1] > end[1])
             start <- start[-1]
     } else if (direction == "ascending") {
-        if (method == 1) {
-            look <- dp < quantile(dp[dp<0], dpCriterion)
-            start <- which(diff(look) == -1)
-            end <- which(diff(look) == 1)
-        } else if (method == 2) {
-            dp <- runmed(dp, k=k)
-            look <- dp < quantile(dp, dpCriterion)
-            start <- which(diff(look) == -1)
-            end <- which(diff(look) == 1)
-        } else if (method == 3) {
-            look <- dp < quantile(dp, dpCriterion)
-            look <- dp < quantile(dp[dp<0], dpCriterion)
-            start <- which(diff(look) == -1)
-            end <- which(diff(look) == 1)
-        } else if (method == 4) {
-            ps <- smooth.spline(pressure)
-            dp <- diff(ps$y)
-            dp <- c(dp[1], dp)
-            look <- dp < dpCriterion * median(dp[dp<0])
-            start <- which(diff(look) == -1)
-            end <- which(diff(look) == 1)
-        }
+        ps <- smooth.spline(pressure, ...)
+        dp <- diff(ps$y)
+        dp <- c(dp[1], dp)
+        look <- dp < cutoff * median(dp[dp<0])
+        start <- which(diff(look) == -1)
+        end <- which(diff(look) == 1)
         if (start[1] < end[1])
             start <- start[-1]
         tmp <- start
