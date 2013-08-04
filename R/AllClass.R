@@ -37,7 +37,8 @@ setMethod(f="[[",
               } else if (i %in% names(x@data)) {
                   return(x@data[[i]])
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                  return(NULL)
               }
           })
 
@@ -56,7 +57,7 @@ setMethod(f="[[<-",
                       x@processingLog$value <- c(x@processingLog$value, value)
                   }
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  warning("there is no item named \"", i, "\" in this ", class(x), " object")
               }
               validObject(x)
               invisible(x)
