@@ -74,6 +74,8 @@ stopifnot(all.equal.numeric(sp, 1.131195, 0.0000015))
 
 depth <- swDepth(10000, 30)
 stopifnot(all.equal.numeric(depth, 9712.653, 0.001))
+pressure <- swPressure(9712.653, 30)
+stopifnot(all.equal.numeric(pressure, 10000., 0.001))
 
 ## TEOS-10
 ## check value from the TEOS-10 supplied program 'gsw_check_functions.c'

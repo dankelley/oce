@@ -39,6 +39,19 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
 }
 
+swPressure <- function(depth, latitude=45)
+{
+    ndepth <- length(depth)
+    if (length(latitude) < ndepth)
+        latitude <- rep(latitude, ndepth)
+    rval <- vector("numeric", ndepth)
+    pdiff  <- function(p)
+        depth[i] - swDepth(p, latitude[i])
+    for (i in ndepth)
+        rval[i] <- uniroot(pdiff, interval=depth[i]*c(0.8, 1.2))$root
+    rval
+}
+
 swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))
 {
      if (missing(conductivity) || missing(temperature))
