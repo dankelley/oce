@@ -305,12 +305,17 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 
-ctdFindProfiles<- function(x, cutoff=0.5, smallest=10, arr.ind=FALSE, 
+ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                            direction=c("descending", "ascending"),
+                           arr.ind=FALSE, 
                            debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "\b\bctdFindProfiles(x, cutoff=", cutoff, 
-             "smallest=", smallest, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
+             ", smallest=", smallest,
+             ", minLength=", minLength,
+             ", minHeight=", minHeight,
+             ", direction=\"", direction, "\"",
+             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
     direction <- match.arg(direction)
@@ -348,16 +353,24 @@ ctdFindProfiles<- function(x, cutoff=0.5, smallest=10, arr.ind=FALSE,
     } else {
         stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
-    oceDebug(debug, "Before trimming, start:", start, "\n")
-    oceDebug(debug, "Before trimming, end:", end, "\n")
+    oceDebug(debug, "start:", start, "(before trimming)\n")
+    oceDebug(debug, "end:", end, "(before trimming)\n")
     start <- subset(start, start<max(end))
     end <- subset(end, end>min(start))
-    oceDebug(debug, "After trimming, start:", start, "\n")
-    oceDebug(debug, "After trimming, end:", end, "\n")
+    oceDebug(debug, "start:", start, "(after trimming)\n")
+    oceDebug(debug, "end:", end, "(after trimming)\n")
     if (length(end) > length(start))
         end <- end[1:length(start)]
-    keep <- abs(end - start) >= smallest 
+    keep <- abs(end - start) >= minLength
+    oceDebug(debug, "start:", start[keep], "(using minLength)\n")
+    oceDebug(debug, "end:", end[keep], "(using minLength)\n")
+    keep <- keep & (abs(ps$y[end] - ps$y[start]) >= minHeight)
+    oceDebug(debug, "heights:", ps$y[end]-ps$y[start], "; compare with minHeight=", minHeight, "\n")
+    oceDebug(debug, "start:", start[keep], "(using minHeight)\n")
+    oceDebug(debug, "end:", end[keep], "(using minHeight)\n")
+    ##browser()
     indices <- data.frame(start=start[keep], end=end[keep])
+    if (debug) print(indices)
     if (is.logical(arr.ind) && arr.ind) {
         oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
         return(indices)
