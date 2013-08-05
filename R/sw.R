@@ -45,10 +45,9 @@ swPressure <- function(depth, latitude=45)
     if (length(latitude) < ndepth)
         latitude <- rep(latitude, ndepth)
     rval <- vector("numeric", ndepth)
-    pdiff  <- function(p)
-        depth[i] - swDepth(p, latitude[i])
-    for (i in ndepth)
-        rval[i] <- uniroot(pdiff, interval=depth[i]*c(0.8, 1.2))$root
+    for (i in 1:ndepth) {
+        rval[i] <- uniroot(function(p) depth[i] - swDepth(p, latitude[i]), interval=depth[i]*c(0.8, 1.2))$root
+    }
     rval
 }
 
