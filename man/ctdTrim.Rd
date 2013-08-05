@@ -16,8 +16,8 @@ parameters, debug=getOption("oceDebug"))}
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
     \describe{
-      \item{"downcast"}{Select only data for which the CTD is descending.  This
-	is done in stages.
+      \item{"downcast"}{Select only data for which the CTD is descending (or ascending, if that is
+        the overall trend).  This is done in stages.
 	\enumerate{
 	  \item{Step 1.}{The pressure data are despiked with a smooth()
 	    filter with method "3R".  This removes wild spikes that arise

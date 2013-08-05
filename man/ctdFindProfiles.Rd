@@ -33,7 +33,12 @@
   negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
   for any given point to be in an ascending profile, a descending profile, or a non-profile.
   Contiguous regions are then found, and those that have fewer than \code{minLength} points are
-  discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.}
+  discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
+
+  It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
+  artifacts such as an equilibration phase, etc.
+
+}
 
 \value{If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices of
   the downcasts.  Otherwise, a vector of \code{ctd} objects.}

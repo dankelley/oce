@@ -311,7 +311,6 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
                            debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "\b\bctdFindProfiles(x, cutoff=", cutoff, 
-             ", smallest=", smallest,
              ", minLength=", minLength,
              ", minHeight=", minHeight,
              ", direction=\"", direction, "\"",
@@ -424,7 +423,14 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             }
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
-            x@data$pressure <- smooth(x@data$pressure,kind="3R")
+            x@data$pressure <- smooth(x@data$pressure, kind="3R")
+            ascending <- 0 > mean(diff(x@data$pressure))
+            oceDebug(debug, "ascending=", ascending, "\n")
+            if (ascending) {
+                for (name in names(x@data)) {
+                    x@data[[name]] <- rev(x@data[[name]])
+                }
+            }
             pmin <- 0
             if (!missing(parameters)) {
                 if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
@@ -434,7 +440,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             delta.p <- diff(x@data$pressure)  # descending
             delta.p <- c(delta.p[1], delta.p) # to get right length
             keep <- keep & (delta.p > 0)
-                                        # 3. trim the upcast and anything thereafter (ignore beginning and end)
+            ## 3. trim the upcast and anything thereafter (ignore beginning and end)
             trim.top <- as.integer(0.1*n)
             trim.bottom <- as.integer(0.9*n)
             max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
@@ -442,7 +448,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             keep[max.location:n] <- FALSE
             oceDebug(debug, "pressure maximum of", x@data$pressure[max.spot], "dbar, at index=", max.spot, "\n")
             if (FALSE) {
-                                        # deleted method: slowly-falling data
+                ## deleted method: slowly-falling data
                 delta.p.sorted <- sort(delta.p)
                 if (!is.null(parameters)) {
                     dp.cutoff <- t.test(delta.p[keep], conf.level=0.5)$conf.int[1]
@@ -484,6 +490,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     }
                     ##} else {
                     ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
+                }
+            }
+            if (ascending) {
+                for (name in names(x@data)) {
+                    x@data[[name]] <- rev(x@data[[name]])
                 }
             }
         } else if (method == "range") {
