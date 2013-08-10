@@ -1,12 +1,14 @@
 \name{subset.ctd}
 
 \alias{subset.ctd}
+\alias{subset,ctd,missing-method}
+\alias{subset,ctd-method}
 
 \title{Subset a ctd object}
 
 \description{Subset a ctd object}
 
-\usage{\method{subset}{ctd}(x, subset, \dots)}
+\usage{\S4method{subset}{ctd}(x, subset, \dots)}
 
 \arguments{
   \item{x}{a \code{ctd} object.}
@@ -27,7 +29,7 @@
 library(oce)
 data(ctd)
 plot(ctd)
-plot(subset.ctd(ctd, pressure<10))
+plot(subset(ctd, pressure<10))
 }
 
 \author{Dan Kelley}

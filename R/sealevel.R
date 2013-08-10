@@ -41,22 +41,6 @@ setValidity("sealevel",
                     return(TRUE)
             })
 
-subset.sealevel <- function (x, subset, ...)
-{
-    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-    if (length(grep("time", subsetString))) {
-        keep <- eval(substitute(subset), x@data, parent.frame())
-        rval <- x
-        n <- length(names(rval@data))
-        for (i in 1:n)
-            rval@data[[i]] <- rval@data[[i]][keep]
-    } else {
-        stop("can only subset sealevel objects by time")
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
-}
-
 
 as.sealevel <- function(elevation,
                         time,

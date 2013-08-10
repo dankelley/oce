@@ -100,24 +100,6 @@ read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
     as.lisst(data, filename, year, tz, latitude, longitude)
 }
 
-
-subset.lisst <- function (x, subset, ...)
-{
-    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-    if (length(grep("time", subsetString))) {
-        keep <- eval(substitute(subset), x@data, parent.frame())
-        rval <- x
-        n <- length(names(rval@data))
-        for (i in 1:n)
-            rval@data[[i]] <- rval@data[[i]][keep]
-    } else {
-        stop("can only subset LISST objects by time")
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
-}
-
-
 summary.lisst <- function(object, ...)
 {
     cat("LISST Summary\n-------------\n\n")

@@ -1,12 +1,14 @@
 \name{subset.sealevel}
 
 \alias{subset.sealevel}
+\alias{subset,sealevel,missing-method}
+\alias{subset,sealevel-method}
 
 \title{Subset a sealevel object}
 
 \description{Subset a sealevel object}
 
-\usage{\method{subset}{sealevel}(x, subset, \dots)}
+\usage{\S4method{subset}{sealevel}(x, subset, \dots)}
 
 \arguments{
   \item{x}{a \code{sealevel} object.}
@@ -24,7 +26,7 @@
 library(oce)
 data(sealevelHalifax)
 plot(sealevelHalifax)
-plot(subset.sealevel(sealevelHalifax, time < mean(range(sealevelHalifax[['time']]))))
+plot(subset(sealevelHalifax, time < mean(range(sealevelHalifax[['time']]))))
 }
 
 \author{Dan Kelley}

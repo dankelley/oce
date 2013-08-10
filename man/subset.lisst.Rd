@@ -1,12 +1,14 @@
 \name{subset.lisst}
 
 \alias{subset.lisst}
+\alias{subset,lisst,missing-method}
+\alias{subset,lisst-method}
 
 \title{Subset a lisst object}
 
 \description{Subset a lisst object}
 
-\usage{\method{subset}{lisst}(x, subset, \dots)}
+\usage{\S4method{subset}{lisst}(x, subset, \dots)}
 
 \arguments{
   \item{x}{a \code{lisst} object.}
@@ -24,7 +26,7 @@
 library(oce)
 data(lisst)
 plot(lisst)
-plot(subset.lisst(lisst, time < mean(range(lisst[['time']]))))
+plot(subset(lisst, time < mean(range(lisst[['time']]))))
 }
 
 \author{Dan Kelley}

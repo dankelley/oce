@@ -493,33 +493,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         stop("method is only for oce objects")
     subsetString <- paste(deparse(substitute(subset)), collapse=" ")
     oceDebug(debug, "subsetString='", subsetString, "'\n")
-    if (inherits(x, "cm")) {
-        if (!is.null(indices)) {
-            oceDebug(debug, vectorShow(keep, "keeping indices"))
-            rval <- x
-            keep <- (1:length(x@data$u))[indices]
-            for (name in names(rval@data)) {
-                rval@data[[name]] <- x@data[[name]][keep]
-            }
-        } else if (!missing(subset)) {
-            ##subsetString <- deparse(substitute(subset))
-            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
-            if (length(grep("time", subsetString))) {
-                oceDebug(debug, "subsetting a cm by time\n")
-                keep <- eval(substitute(subset), x@data, parent.frame())
-                oceDebug(debug, vectorShow(keep, "keeping times at indices:"), "\n")
-            } else {
-                stop("it makes no sense to subset a \"cm\" object by anything other than index or time")
-            }
-        } else {
-            stop("must supply either 'subset' or 'indices'")
-        }
-        rval <- x
-        for (name in names(x@data)) {
-            oceDebug(debug, "subsetting x@data[[", name, "]]", sep="")
-            rval@data[[name]] <- x@data[[name]][keep]
-        }
-    } else if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
+    if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x@metadata$numberOfProfiles)[indices]

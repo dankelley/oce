@@ -23,6 +23,22 @@ setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
+
+setMethod(f="subset",
+          signature="oce",
+          definition=function(x, subset, ...) {
+              if (missing(subset))
+                  stop("must give 'subset'")
+              keep <- eval(substitute(subset), x@data, parent.frame())
+              rval <- x
+              for (i in seq_along(x@data))
+                  rval@data[[i]] <- rval@data[[i]][keep]
+              rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              rval
+          })
+
+
+
 setMethod(f="[[",
           signature="oce",
           definition=function(x, i, j, drop) {

@@ -1,4 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+## cm.R current-meter support (interocean S4)
+
 setMethod(f="initialize",
           signature="cm",
           definition=function(.Object) {
@@ -6,11 +8,7 @@ setMethod(f="initialize",
               .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
           })
-## the default 'oce' object is sufficient for other methods
 
-
-
-## cm.R current-meter support (interocean S4)
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     latitude=NA, longitude=NA,

@@ -60,18 +60,6 @@ setMethod(f="[[",
               }
           })
 
-subset.ctd <- function (x, subset, ...)
-{
-    rval <- x
-    r <- eval(substitute(subset), x@data, parent.frame())
-    r <- r & !is.na(r)
-    for (i in seq_along(x@data)) {
-        rval@data[[i]] <- x@data[[i]][r]
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
-}
-
 as.ctd <- function(salinity, temperature, pressure,
                    SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,

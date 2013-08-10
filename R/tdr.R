@@ -11,21 +11,17 @@ setMethod(f="initialize",
           })
 ## the default 'oce' object is sufficient for other methods
 
-subset.tdr <- function (x, subset, ...)
-{
-    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-    if (length(grep("time", subsetString))) {
-        keep <- eval(substitute(subset), x@data, parent.frame())
-        rval <- x
-        n <- length(names(rval@data))
-        for (i in 1:n)
-            rval@data[[i]] <- rval@data[[i]][keep]
-    } else {
-        stop("can only subset tdr objects by time")
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
-}
+#subset.tdr <- function (x, subset, ...)
+#{
+#    if (missing(subset))
+#        stop("must give 'subset'")
+#    keep <- eval(substitute(subset), x@data, parent.frame())
+#    rval <- x
+#    for (i in seq_along(x@data))
+#        rval@data[[i]] <- rval@data[[i]][keep]
+#    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+#    rval
+#}
 
 as.tdr <- function(time, temperature, pressure,
                    filename="",

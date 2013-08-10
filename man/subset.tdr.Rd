@@ -1,12 +1,14 @@
 \name{subset.tdr}
 
 \alias{subset.tdr}
+\alias{subset,tdr,missing-method}
+\alias{subset,tdr-method}
 
 \title{Subset a tdr object}
 
-\description{Subset a tdr object}
+\description{Subset a tdr (temperature-depth recorder) object}
 
-\usage{\method{subset}{tdr}(x, subset, \dots)}
+\usage{\S4method{subset}{tdr}(x, subset, \dots)}
 
 \arguments{
   \item{x}{a \code{tdr} object.}
@@ -24,9 +26,10 @@
 library(oce)
 data(tdr)
 plot(tdr)
-plot(subset.tdr(tdr, time < mean(range(tdr[['time']]))))
+plot(subset(tdr, time < mean(range(tdr[['time']]))))
 }
 
 \author{Dan Kelley}
 
 \keyword{misc}
+
