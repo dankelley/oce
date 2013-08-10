@@ -47,8 +47,7 @@
     the \code{time} entry of the \code{data} slot (and the \code{timeSlow}, if
     it exists).}
 
-\seealso{\code{\link{subset.oce}} provides more flexible selection of
-    subsets.}
+\seealso{\code{\link{subset}} provides more flexible selection of subsets.}
 
 \examples{
 library(oce)

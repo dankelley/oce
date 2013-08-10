@@ -154,7 +154,6 @@
 }
 
 \examples{
-\dontrun{
 library(oce)
 ## Halifax Harbour
 data(section)
@@ -163,24 +162,15 @@ plot(section, coastline=coastlineHalifax)
 
 ## Gulf Stream
 data(a03)
-GS <- subset.oce(a03, indices=124:102)
+GS <- subset(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
-                                        # Illustate adornment
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
-     adorn=expression({abline(v=200,col='blue')}))
-
-plot(GSg, which='sigmaTheta', ylim=c(1000,0),
-     contourLevel=seq(24, 29, 0.5),
-     contourLabel=c("24", "", "25","","26","","27","","28","","29"))
+plot(GSg, which=c(1,99), map.ylim=c(34,42))
 
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
 col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
 points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
 points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
-}
 }
 
 \author{Dan Kelley}

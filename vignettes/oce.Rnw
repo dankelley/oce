@@ -418,10 +418,9 @@ jpeg("a03.jpg", quality=75, width=600, height=700, pointsize=12)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-GS <- subset.oce(a03, indices=124:102)
+GS <- subset(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-85,-(64+13/60)))
+plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
@@ -717,7 +716,7 @@ and another is
 <<>>=
 library(oce)
 data(ctd)
-pycnocline <- subset.oce(ctd, 5<=pressure & pressure<=12)
+pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
 plotProfile(pycnocline, which="density+N2")
 @
 
@@ -727,7 +726,7 @@ The simplest way is to use accessor functions to extract salinity, etc.
 <<>>=
 library(oce)
 data(section)
-ctd <- as.ctd(salinity(section), temperature(section), pressure(section))
+ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
 plotTS(ctd)
 @
 but the point of \emph{this} exercise is to do the extraction manually, so a
@@ -738,9 +737,9 @@ data(section)
 SS <- TT <- pp <- id <- NULL
 n <- length(section@data$station)
 for (stn in section@data$station) {
-    SS <- c(SS, stn@data$salinity)
-    TT <- c(TT, stn@data$temperature)
-    pp <- c(pp, stn@data$pressure)
+    SS <- c(SS, stn[["salinity"]])
+    TT <- c(TT, stn[["temperature"]])
+    pp <- c(pp, stn[["pressure"]])
 }
 ctd <- as.ctd(SS, TT, pp)
 plotTS(ctd)
@@ -754,7 +753,7 @@ plotTS(ctd)
 <<>>=
 library(oce)
 data(a03)
-GS <- subset.oce(a03, indices=124:102)
+GS <- subset(a03, indices=124:102)
 dh <- swDynamicHeight(GS)
 par(mfrow=c(2,1))
 plot(dh$distance, dh$height, type="b", xlab="", ylab="Dyn. Height [m]")

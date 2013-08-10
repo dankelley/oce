@@ -485,321 +485,90 @@ oce.write.table <- function (x, file="", ...)
 }
 
 
-subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
-{
-    debug <- max(0, min(debug, 1), na.rm=TRUE)
-    oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-    oceDebug(debug, "subsetString='", subsetString, "'\n")
-    if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
-        if (!is.null(indices)) {
-            rval <- x
-            keep <- (1:x@metadata$numberOfProfiles)[indices]
-            oceDebug(debug, vectorShow(keep, "keeping indices"))
-            stop("this version of oce cannot subset adp data by index")
-        } else if (!missing(subset)) {
-            ##subsetString <- deparse(substitute(subset))
-            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
-            if (length(grep("time", subsetString))) {
-                oceDebug(debug, "subsetting an adp by time\n")
-                keep <- eval(substitute(subset), x@data, parent.frame())
-                names <- names(x@data)
-                haveDia <- "timeDia" %in% names
-                if (haveDia) {
-                    subsetDiaString <- gsub("time", "timeDia", subsetString)
-                    keepDia <- eval(parse(text=subsetDiaString), x@data)
-                    oceDebug(debug, "for diagnostics, keeping ", 100*sum(keepDia) / length(keepDia), "% of data\n")
-                }
-                oceDebug(debug, vectorShow(keep, "keeping bins:"))
-                oceDebug(debug, "number of kept bins:", sum(keep), "\n")
-                if (sum(keep) < 2)
-                    stop("must keep at least 2 profiles")
-                rval <- x
-                ## FIXME: are we handling slow timescale data?
-                for (name in names(x@data)) {
-                    if (length(grep("Dia$", name))) {
-                        if ("distance" == name)
-                            next
-                        if (name == "timeDia" || is.vector(x@data[[name]])) {
-                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keepDia]
-                        } else if (is.matrix(x@data[[name]])) {
-                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keepDia,]
-                        } else if (is.array(x@data[[name]])) {
-                            oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
-                        }
-                    } else {
-                        if (name == "time" || is.vector(x@data[[name]])) {
-                            if ("distance" == name)
-                                next
-                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
-                        } else if (is.matrix(x@data[[name]])) {
-                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keep,]
-                        } else if (is.array(x@data[[name]])) {
-                            oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                            rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
-                        }
-                    }
-                }
-            } else if (length(grep("distance", subsetString))) {
-                oceDebug(debug, "subsetting an adp by distance\n")
-                keep <- eval(substitute(subset), x@data, parent.frame())
-                oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
-                if (sum(keep) < 2)
-                    stop("must keep at least 2 bins")
-                rval <- x
-                rval@data$distance <- x@data$distance[keep]
-                for (name in names(x@data)) {
-                    if (name == "time")
-                        next
-                    if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
-                        oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
-                        rval@data[[name]] <- x@data[[name]][,keep,]
-                    }
-                }
-            } else if (length(grep("pressure", subsetString))) {
-                keep <- eval(substitute(subset), x@data, parent.frame())
-                rval <- x
-                rval@data$v <- rval@data$v[keep,,]
-                rval@data$a <- rval@data$a[keep,,]
-                rval@data$q <- rval@data$q[keep,,]
-                rval@data$time <- rval@data$time[keep]
-                ## the items below may not be in the dataset
-                names <- names(rval@data)
-                if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
-                if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
-                if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
-                if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
-                if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
-                if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
-                if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
-                if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
-            } else {
-                stop("should express the subset in terms of distance or time")
-            }
-        } else {
-            stop("must supply either 'subset' or 'indices'")
-        }
-    } else if (inherits(x, "section")) {
-        if (!is.null(indices)) {        # select a portion of the stations
-            n <- length(indices)
-            if (is.logical(indices))
-                indices <- (1:n)[indices]
-            station <- vector("list", n)
-            stn <- vector("character", n)
-            lon <- vector("numeric", n)
-            lat <- vector("numeric", n)
-            for (i in 1:n) {
-                ii <- indices[i]
-                stn[i] <- x@metadata$stationId[ii]
-                lat[i] <- x@metadata$latitude[ii]
-                lon[i] <- x@metadata$longitude[ii]
-                station[[i]] <- x@data$station[[ii]]
-            }
-            data <- list(station=station)
-            metadata <- list(header=x@metadata$header,sectionId=x@metadata$sectionId,stationId=stn,latitude=lat,longitude=lon)
-            rval <- new("section")
-            rval@metadata <- metadata
-            rval@data <- data
-            rval@processingLog <- unclass(x@processingLog)
-        } else {                        # subset within the stations
-            ##subsetString <- deparse(substitute(subset))
-            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
-            rval <- x
-            if (length(grep("distance", subsetString))) {
-                l <- list(distance=geodDist(rval))
-                keep <- eval(substitute(subset), l, parent.frame())
-                rval@metadata$latitude <- rval@metadata$latitude[keep]
-                rval@metadata$longitude <- rval@metadata$longitude[keep]
-                rval@metadata$stationId <- rval@metadata$stationId[keep]
-                rval@data$station <- rval@data$station[keep]
-            } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
-                n <- length(x@data$station)
-                keep <- vector(length=n)
-                for (i in 1:n)
-                    keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame())
-                nn <- sum(keep)
-                station <- vector("list", nn)
-                stn <- vector("character", nn)
-                lon <- vector("numeric", nn)
-                lat <- vector("numeric", nn)
-                j <- 1
-                for (i in 1:n) {
-                    if (keep[i]) {
-                        stn[j] <- x@metadata$stationId[i]
-                        lat[j] <- x@metadata$latitude[i]
-                        lon[j] <- x@metadata$longitude[i]
-                        station[[j]] <- x@data$station[[i]]
-                        j <- j + 1
-                    }
-                }
-                data <- list(station=station)
-                metadata <- list(header=x@metadata$header,
-                                 sectionId=x@metadata$sectionId,
-                                 stationId=stn,
-                                 latitude=lat,
-                                 longitude=lon)
-                rval <- new('section')
-                rval@data <- data
-                rval@metadata <- metadata
-                rval@processingLog <- x@processingLog
-            } else {
-                n <- length(x@data$station)
-                r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
-                for (i in 1:n) {
-                    rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
-                }
-            }
-        }
-    } else if (inherits(x, "adv")) {
-        if (!is.null(indices))
-            stop("cannot specify 'indices' for adv objects (not coded yet)")
-        if (missing(subset))
-            stop("must specify a 'subset'")
-        ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-        ##oceDebug(debug, "subsetString='", subsetString, "'\n")
-        if (length(grep("time", subsetString))) {
-            oceDebug(debug, "subsetting an adv object by time\n")
-            keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
-            sum.keep <- sum(keep)
-            if (sum.keep < 2)
-                stop("must keep at least 2 profiles")
-            oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
-            oceDebug(debug, vectorShow(keep, "keeping bins:"))
-            rval <- x
-            names <- names(x@data)
-            haveSlow <- "timeSlow" %in% names
-            keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
-            if (haveSlow) {
-                subsetStringSlow <- gsub("time", "timeSlow", subsetString)
-                keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
-            }
-            if ("timeBurst" %in% names) {
-                subsetStringBurst <- gsub("time", "timeBurst", subsetString)
-                keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
-            }
-            for (name in names(x@data)) {
-                if ("distance" == name)
-                    next
-                if (length(grep("Burst$", name))) {
-                    rval@data[[name]] = x@data[[name]][keepBurst]
-                } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
-                    if (1 == length(agrep("Slow$", name))) {
-                        oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keepSlow]
-                    } else {
-                        oceDebug(debug, "subsetting data$", name, "\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep]
-                    }
-                } else if (is.matrix(rval@data[[name]])) {
-                    oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
-                    rval@data[[name]] <- x@data[[name]][keep,]
-                } else if (is.array(rval@data[[name]])) {
-                    oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
-                    rval@data[[name]] <- x@data[[name]][keep,,]
-                }
-            }
-        } else {
-            stop("only 'time' is permitted for subsetting")
-        }
-    } else if (inherits(x, "echosounder")) {
-        ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-        ##oceDebug(debug, "subsetString='", subsetString, "'\n")
-        if (length(grep("time", subsetString))) {
-            oceDebug(debug, "subsetting an echosounder object by time\n")
-            keep <- eval(substitute(subset), x@data, parent.frame())
-            oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
-            rval <- x
-            ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
-            dataNames <- names(rval@data)
-            rval@data$a <- x@data$a[keep,]
-            if ("b" %in% dataNames)
-                rval@data$b <- x@data$b[keep,]
-            if ("c" %in% dataNames)
-                rval@data$c <- x@data$c[keep,]
-            ## lots of debugging in here, in case other data types have other variable names
-            oceDebug(debug, "dataNames (orig):", dataNames, "\n")
-            if (length(grep('^a$', dataNames)))
-                dataNames <- dataNames[-grep('^a$', dataNames)]
-            if (length(grep('^b$', dataNames)))
-                dataNames <- dataNames[-grep('^b$', dataNames)]
-            if (length(grep('^c$', dataNames)))
-                dataNames <- dataNames[-grep('^c$', dataNames)]
-            oceDebug(debug, "dataNames (step 2):", dataNames, "\n")
-            if (length(grep('^depth$', dataNames)))
-                dataNames <- dataNames[-grep('^depth$', dataNames)]
-            oceDebug(debug, "dataNames (step 3):", dataNames, "\n")
-            if (length(grep('Slow', dataNames)))
-                dataNames <- dataNames[-grep('Slow', dataNames)]
-            oceDebug(debug, "dataNames (final), i.e. fast dataNames to be trimmed by time:", dataNames, "\n")
-            for (dataName in dataNames) {
-                oceDebug(debug, "fast variable:", dataName, "orig length", length(x@data[[dataName]]), "\n")
-                rval@data[[dataName]] <- x@data[[dataName]][keep]
-                oceDebug(debug, "fast variable:", dataName, "new length", length(rval@data[[dataName]]), "\n")
-            }
-            ## trim slow variables
-            subsetStringSlow <- gsub("time", "timeSlow", subsetString)
-            oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
-            keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
-            oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
-            for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
-                oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
-                rval@data[[slowName]] <- x@data[[slowName]][keepSlow]
-                oceDebug(debug, "slow variable:", slowName, "new length", length(rval@data[[slowName]]), "\n")
-            }
-        } else if (length(grep("depth", subsetString))) {
-            oceDebug(debug, "subsetting an echosounder object by depth\n")
-            keep <- eval(substitute(subset), x@data, parent.frame())
-            rval <- x
-            rval[["depth"]] <- rval[["depth"]][keep]
-            dataNames <- names(rval@data)
-            rval[["a"]] <- rval[["a"]][,keep]
-            if ("b" %in% dataNames)
-                rval@data$b <- x@data$b[,keep]
-            if ("c" %in% dataNames)
-                rval@data$c <- x@data$c[,keep]
-        } else {
-            stop("can only subset an echosounder object by 'time' or 'depth'")
-        }
-    } else if (inherits(x, "coastline")) {
-        if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
-            stop("can only subset a coastline by 'latitude' or 'longitude'")
-        oceDebug(debug, "subsetting a coastline object\n")
-        keep <- eval(substitute(subset), x@data, parent.frame())
-        rval <- x
-        rval@data$latitude[!keep] <- NA
-        rval@data$longitude[!keep] <- NA
-    } else {
-        if (isS4(x)) {
-            r <- eval(substitute(subset), x@data, parent.frame())
-        } else {
-            r <- eval(substitute(subset), x@data, parent.frame())
-        }
-        r <- r & !is.na(r)
-        rval <- x
-        if (isS4(x)) {
-            for (i in seq_along(x@data))
-                rval@data[[i]] <- x@data[[i]][r]
-        } else {
-            rval@data <- x@data[r,]
-        }
-        names(rval@data) <- names(x@data)
-    }
-    ## fix up metadata
-    if (inherits(x, "adp") || inherits(x, "adv")) {
-        rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
-        rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # subset.oce\n")
-    rval
-}
+##subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
+##{
+##    debug <- max(0, min(debug, 1), na.rm=TRUE)
+##    oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
+##    if (!inherits(x, "oce"))
+##        stop("method is only for oce objects")
+##    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+##    oceDebug(debug, "subsetString='", subsetString, "'\n")
+##    #if (inherits(x, "adv")) {
+##    #    if (!is.null(indices))
+##    #        stop("cannot specify 'indices' for adv objects (not coded yet)")
+##    #    if (missing(subset))
+##    #        stop("must specify a 'subset'")
+##    #    ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+##    #    ##oceDebug(debug, "subsetString='", subsetString, "'\n")
+##    #    if (length(grep("time", subsetString))) {
+##    #        oceDebug(debug, "subsetting an adv object by time\n")
+##    #        keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+##    #        sum.keep <- sum(keep)
+##    #        if (sum.keep < 2)
+##    #            stop("must keep at least 2 profiles")
+##    #        oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
+##    #        oceDebug(debug, vectorShow(keep, "keeping bins:"))
+##    #        rval <- x
+##    #        names <- names(x@data)
+##    #        haveSlow <- "timeSlow" %in% names
+##    #        keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+##    #        if (haveSlow) {
+##    #            subsetStringSlow <- gsub("time", "timeSlow", subsetString)
+##    #            keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+##    #        }
+##    #        if ("timeBurst" %in% names) {
+##    #            subsetStringBurst <- gsub("time", "timeBurst", subsetString)
+##    #            keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
+##    #        }
+##    #        for (name in names(x@data)) {
+##    #            if ("distance" == name)
+##    #                next
+##    #            if (length(grep("Burst$", name))) {
+##    #                rval@data[[name]] = x@data[[name]][keepBurst]
+##    #            } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
+##    #                if (1 == length(agrep("Slow$", name))) {
+##    #                    oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
+##    #                    rval@data[[name]] <- x@data[[name]][keepSlow]
+##    #                } else {
+##    #                    oceDebug(debug, "subsetting data$", name, "\n", sep="")
+##    #                    rval@data[[name]] <- x@data[[name]][keep]
+##    #                }
+##    #            } else if (is.matrix(rval@data[[name]])) {
+##    #                oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
+##    #                rval@data[[name]] <- x@data[[name]][keep,]
+##    #            } else if (is.array(rval@data[[name]])) {
+##    #                oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
+##    #                rval@data[[name]] <- x@data[[name]][keep,,]
+##    #            }
+##    #        }
+##    #    } else {
+##    #        stop("only 'time' is permitted for subsetting")
+##    #    }
+##    #} else {
+##        if (isS4(x)) {
+##            r <- eval(substitute(subset), x@data, parent.frame())
+##        } else {
+##            r <- eval(substitute(subset), x@data, parent.frame())
+##        }
+##        r <- r & !is.na(r)
+##        rval <- x
+##        if (isS4(x)) {
+##            for (i in seq_along(x@data))
+##                rval@data[[i]] <- x@data[[i]][r]
+##        } else {
+##            rval@data <- x@data[r,]
+##        }
+##        names(rval@data) <- names(x@data)
+##    }
+##    ## fix up metadata
+##    if (inherits(x, "adp") || inherits(x, "adv")) {
+##        rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+##        rval@metadata$numberOfCells <- dim(rval@data$v)[2]
+##    }
+##    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##    oceDebug(debug, "\b\b} # subset.oce\n")
+##    rval
+##}
 
 summary.oce <- function(object, ...)
 {

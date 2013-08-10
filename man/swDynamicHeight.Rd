@@ -44,6 +44,7 @@
 }
 
 \examples{
+    \dontrun{
 library(oce)
 data(a03)
 
@@ -53,7 +54,7 @@ par(mar=c(4.5,4.5,2,1))
 
 # Left-hand column: whole section
 # (The smoothing lowers Gulf Stream speed greatly)
-a03WestToEast <- subset.oce(a03, indices=123:1)
+a03WestToEast <- subset(a03, indices=123:1)
 dh <- swDynamicHeight(a03WestToEast)
 plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
 ok <- !is.na(dh$height)
@@ -66,7 +67,7 @@ plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity [m
 abline(h=0)
 
 # right-hand column: gulf stream region, unsmoothed
-gs <- subset.oce(a03, indices=124:102)
+gs <- subset(a03, indices=124:102)
 dh.gs <- swDynamicHeight(gs)
 plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
 grid()
@@ -75,6 +76,7 @@ plot(dh.gs$distance[-1], v, type='l', col="blue",
   xlab="distance [km]", ylab="velocity [m/s]")
 grid()
 abline(h=0)
+}
 }
 
 \references{Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic

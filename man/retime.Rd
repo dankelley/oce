@@ -39,7 +39,7 @@ the start or end.  The new time will be as given by the formula above.
 Note that if the drift is large enough, the sampling rate will be
 changed.  It is a good idea to start with an object that has an
 extended time range, so that, after this is called,
-\code{\link{subset.oce}} can be used to trim to a desired time range.}
+\code{\link{subset}} can be used to trim to a desired time range.}
 
 \value{A new object, with time and other data adjusted.}
 

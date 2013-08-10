@@ -95,6 +95,70 @@ setMethod(f="[[<-",
           })
 
 
+setMethod(f="subset",
+          signature="adv",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              if (missing(subset))
+                  stop("must give 'subset'")
+
+              if (missing(subset))
+                  stop("must specify a 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting an adv object by time\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  sum.keep <- sum(keep)
+                  if (sum.keep < 2)
+                      stop("must keep at least 2 profiles")
+                  oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  rval <- x
+                  names <- names(x@data)
+                  haveSlow <- "timeSlow" %in% names
+                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  if (haveSlow) {
+                      subsetStringSlow <- gsub("time", "timeSlow", subsetString)
+                      keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+                  }
+                  if ("timeBurst" %in% names) {
+                      subsetStringBurst <- gsub("time", "timeBurst", subsetString)
+                      keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
+                  }
+                  for (name in names(x@data)) {
+                      if ("distance" == name)
+                          next
+                      if (length(grep("Burst$", name))) {
+                          rval@data[[name]] = x@data[[name]][keepBurst]
+                      } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
+                          if (1 == length(agrep("Slow$", name))) {
+                              oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepSlow]
+                          } else {
+                              oceDebug(debug, "subsetting data$", name, "\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep]
+                          }
+                      } else if (is.matrix(rval@data[[name]])) {
+                          oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
+                          rval@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(rval@data[[name]])) {
+                          oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
+                          rval@data[[name]] <- x@data[[name]][keep,,]
+                      }
+                  }
+              } else {
+                  stop("only 'time' is permitted for subsetting")
+              }
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
+
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,

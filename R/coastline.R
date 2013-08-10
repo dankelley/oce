@@ -9,7 +9,25 @@ setMethod(f="initialize",
               .Object@processingLog$value <- "create 'coastline' object"
               return(.Object)
           })
-## the default 'oce' object is sufficient for other methods
+
+
+setMethod(f="subset",
+          signature="oce",
+          definition=function(x, subset, ...) {
+              if (missing(subset))
+                  stop("must give 'subset'")
+              ## FIXME: need the stuff that's below??
+              ###   subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
+              ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
+              keep <- eval(substitute(subset), x@data, parent.frame())
+              rval <- x
+              rval@data$latitude[!keep] <- NA
+              rval@data$longitude[!keep] <- NA
+              rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              rval
+          })
+
 
 as.coastline <- function(latitude, longitude, fillable=FALSE)
 {

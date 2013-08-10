@@ -84,6 +84,106 @@ setMethod(f="show",
               }
           })
 
+
+
+setMethod(f="subset",
+          signature="section",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              dotsNames <- names(dots)
+              indicesGiven <- length(dots) && ("indices" %in% dotsNames)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (indicesGiven) {        # select a portion of the stations
+                  if (!missing(subset))
+                      stop("cannot give both 'subset' and 'indices'")
+                  oceDebug(debug, "subsetting by indices\n")
+                  rval <- new("section")
+                  indices <- dots$indices
+                  n <- length(indices)
+                  if (is.logical(indices))
+                      indices <- (1:n)[indices]
+                  station <- vector("list", n)
+                  stn <- vector("character", n)
+                  lon <- vector("numeric", n)
+                  lat <- vector("numeric", n)
+                  for (i in 1:n) {
+                      ii <- indices[i]
+                      stn[i] <- x@metadata$stationId[ii]
+                      lat[i] <- x@metadata$latitude[ii]
+                      lon[i] <- x@metadata$longitude[ii]
+                      station[[i]] <- x@data$station[[ii]]
+                  }
+                  data <- list(station=station)
+                  metadata <- x@metadata
+                  metadata$stationId <- stn
+                  metadata$latitude=lat
+                  metadata$lonitude=lon
+                  rval@metadata <- metadata
+                  rval@data <- data
+                  rval@processingLog <- x@processingLog
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+              } else {                        # subset within the stations
+                  if ("indices" %in% dotsNames)
+                      stop("2. cannot give both 'subset' and 'indices'")
+                  oceDebug(debug, "subsetting by 'subset'\n")
+                  ##subsetString <- deparse(substitute(subset))
+                  ##oceDebug(debug, "subsetString='", subsetString, "'\n")
+                  rval <- x
+                  if (length(grep("distance", subsetString))) {
+                      l <- list(distance=geodDist(rval))
+                      keep <- eval(substitute(subset), l, parent.frame())
+                      rval@metadata$latitude <- rval@metadata$latitude[keep]
+                      rval@metadata$longitude <- rval@metadata$longitude[keep]
+                      rval@metadata$stationId <- rval@metadata$stationId[keep]
+                      rval@data$station <- rval@data$station[keep]
+                  } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
+                      n <- length(x@data$station)
+                      keep <- vector(length=n)
+                      for (i in 1:n)
+                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame())
+                      nn <- sum(keep)
+                      station <- vector("list", nn)
+                      stn <- vector("character", nn)
+                      lon <- vector("numeric", nn)
+                      lat <- vector("numeric", nn)
+                      j <- 1
+                      for (i in 1:n) {
+                          if (keep[i]) {
+                              stn[j] <- x@metadata$stationId[i]
+                              lat[j] <- x@metadata$latitude[i]
+                              lon[j] <- x@metadata$longitude[i]
+                              station[[j]] <- x@data$station[[i]]
+                              j <- j + 1
+                          }
+                      }
+                      data <- list(station=station)
+                      metadata <- list(header=x@metadata$header,
+                                       sectionId=x@metadata$sectionId,
+                                       stationId=stn,
+                                       latitude=lat,
+                                       longitude=lon)
+                      rval <- new('section')
+                      rval@data <- data
+                      rval@metadata <- metadata
+                      rval@processingLog <- x@processingLog
+                  } else {
+                      n <- length(x@data$station)
+                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
+                      for (i in 1:n) {
+                          rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
+                      }
+                  }
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+              }
+              rval
+          })
+
+ 
+
 sectionSort <- function(section, by=c("stationId", "distance"))
 {
     by <- match.arg(by)
@@ -1154,7 +1254,7 @@ summary.section <- function(object, ...)
     } else {
         cat("* No stations\n")
     }
-    ##processingLogShow(object)
+    processingLogShow(object)
 }
 
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station) # FIXME: code this

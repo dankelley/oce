@@ -83,11 +83,10 @@
   Echosounder objects may be plotted with \code{\link{plot.echosounder}}.
 
   The contents of \code{echosounder} objects may be altered with
-  \code{\link{subset.oce}}, or with the the \code{[[]]} scheme discussed in the
-  previous section; skilled users may also manipulate the contents directly,
-  but this is not recommended because it is brittle to changes in the data
-  structure.
-
+  \code{\link{subset.echosounder}}, or with the the \code{[[]]} scheme
+  discussed in the previous section; skilled users may also manipulate the
+  contents directly, but this is not recommended because it is brittle to
+  changes in the data structure.
 }
 
 \author{Dan Kelley}

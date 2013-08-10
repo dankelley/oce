@@ -1822,6 +1822,7 @@ summary.ctd <- function(object, ...)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes, indent='  ')
     processingLogShow(object)
+    invisible()
 } 
 
 

@@ -50,7 +50,7 @@
 library(oce)
 data(coastlineWorld)
 data(a03)
-gs <- sectionGrid(subset.oce(a03, indices=124:102), p=seq(0, 5000, 150))
+gs <- sectionGrid(subset(a03, indices=124:102), p=seq(0, 5000, 150))
 gss1 <- sectionSmooth(gs, "spline", df=16)
 plot(gss1, coastline=coastlineWorld, map.xlim=c(-80,-55))
 gss2 <- sectionSmooth(gs, "barnes", xr=24, yr=100)
