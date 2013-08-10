@@ -612,16 +612,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         } else {
             stop("must supply either 'subset' or 'indices'")
         }
-    ##} else if (inherits(x, "lisst")) {
-    ##    if (length(grep("time", subsetString))) {
-    ##        keep <- eval(substitute(subset), x@data, parent.frame())
-    ##        rval <- x
-    ##        n <- length(names(rval@data))
-    ##        for (i in 1:n)
-    ##            rval@data[[i]] <- rval@data[[i]][keep]
-    ##    } else {
-    ##        stop("can only subset LISST objects by time")
-    ##    }
     } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
@@ -693,13 +683,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 }
             }
         }
-    } else if (inherits(x, "pt")) {
-        r <- eval(substitute(subset), x@data, parent.frame())
-        r <- r & !is.na(r)
-        rval <- x
-        for (name in names(rval@data)) {
-            rval@data[[name]] <- x@data[[name]][r]
-        }
+    ##} else if (inherits(x, "pt")) {
+    ##    r <- eval(substitute(subset), x@data, parent.frame())
+    ##    r <- r & !is.na(r)
+    ##    rval <- x
+    ##    for (name in names(rval@data)) {
+    ##        rval@data[[name]] <- x@data[[name]][r]
+    ##    }
     } else if (inherits(x, "sealevel")) {
         r <- eval(substitute(subset), x@data, parent.frame())
         r <- r & !is.na(r)
