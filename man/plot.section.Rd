@@ -162,7 +162,7 @@ plot(section, coastline=coastlineHalifax)
 
 ## Gulf Stream
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset(a03, 102<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 plot(GSg, which=c(1,99), map.ylim=c(34,42))
 

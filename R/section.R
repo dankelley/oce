@@ -126,6 +126,15 @@ setMethod(f="subset",
                   rval@data <- data
                   rval@processingLog <- x@processingLog
                   rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+              } else if (length(grep("stationId", subsetString))) {
+                  keep <- eval(substitute(subset),
+                               envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
+                  rval@metadata$stationId <- x@metadata$stationId[keep]
+                  rval@metadata$longitude <- x@metadata$longitude[keep]
+                  rval@metadata$latitude <- x@metadata$latitude[keep]
+                  rval@metadata$date <- x@metadata$date[keep]
+                  rval@data$station <- x@data$station[keep]
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
               } else {                        # subset within the stations
                   if ("indices" %in% dotsNames)
                       stop("2. cannot give both 'subset' and 'indices'")

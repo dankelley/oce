@@ -40,10 +40,10 @@ has less lateral variation than the input section.}
 # Eastern North Atlantic, showing Mediterranean water. 
 library(oce)
 data(a03)
-s <- sectionGrid(subset(a03, indices=90:3), p=seq(00, 2500, 100))
-ss <- sectionSort(s, by="stationId")
-data(coastlineWorld)
-plot(ss,coastline=coastlineWorld,map.xlim=c(-75,0))
+s <- subset(a03, 1<=stationId&stationId<=60)
+ss <- sectionGrid(s, p=seq(00, 5000, 100))
+ss <- sectionSort(ss, by="stationId")
+plot(ss, which=c(2,99), map.xlim=c(-75,0))
 }
 }
 

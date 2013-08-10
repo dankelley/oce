@@ -418,7 +418,7 @@ jpeg("a03.jpg", quality=75, width=600, height=700, pointsize=12)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset(a03, 102<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 @
@@ -753,7 +753,7 @@ plotTS(ctd)
 <<>>=
 library(oce)
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset(a03, 102<=stationId&stationId<=124)
 dh <- swDynamicHeight(GS)
 par(mfrow=c(2,1))
 plot(dh$distance, dh$height, type="b", xlab="", ylab="Dyn. Height [m]")

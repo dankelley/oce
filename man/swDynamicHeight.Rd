@@ -54,7 +54,7 @@ par(mar=c(4.5,4.5,2,1))
 
 # Left-hand column: whole section
 # (The smoothing lowers Gulf Stream speed greatly)
-a03WestToEast <- subset(a03, indices=123:1)
+a03WestToEast <- subset(a03, 1<=stationId&stationId<=123)
 dh <- swDynamicHeight(a03WestToEast)
 plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
 ok <- !is.na(dh$height)
@@ -64,18 +64,14 @@ f <- coriolis(a03[["station", 1]][["latitude"]])
 g <- gravity(a03[["station", 1]][["latitude"]])
 v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
 plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity [m/s]")
-abline(h=0)
 
 # right-hand column: gulf stream region, unsmoothed
-gs <- subset(a03, indices=124:102)
+gs <- subset(a03, 102<=stationId&stationId<=124)
 dh.gs <- swDynamicHeight(gs)
 plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
-grid()
 v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
 plot(dh.gs$distance[-1], v, type='l', col="blue",
   xlab="distance [km]", ylab="velocity [m/s]")
-grid()
-abline(h=0)
 }
 }
 

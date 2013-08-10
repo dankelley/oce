@@ -14,19 +14,22 @@
   \item{x}{a \code{section} object.}
   \item{subset}{a condition to be applied to the \code{data} portion of
     \code{x}.  See \sQuote{Details}.}
-  \item{\dots}{may include \code{indices}, to hold a vector of stations to be
-      kept; if so, \code{subset} may not be supplied.}
+  \item{\dots}{may include \code{debug}, to set a debugging level.}
 }
 
 \details{This function is somewhat analogous to
-    \code{\link{subset.data.frame}}.}
+    \code{\link{subset.data.frame}}.  The condition set by \code{subset} may be
+    in terms of \code{stationId} or any combination of \code{longitude},
+    \code{latitude} and \code{time}.  However, \code{stationId} may not be
+    combined with the others; to get that effect, call this function more than
+    once.}
 
 \value{A new \code{section} object.}
 
 \examples{
 library(oce)
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset(a03, 102<=stationId&stationId<=124)
 }
 
 \author{Dan Kelley}
