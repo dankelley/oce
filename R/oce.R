@@ -683,20 +683,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 }
             }
         }
-    ##} else if (inherits(x, "pt")) {
-    ##    r <- eval(substitute(subset), x@data, parent.frame())
-    ##    r <- r & !is.na(r)
-    ##    rval <- x
-    ##    for (name in names(rval@data)) {
-    ##        rval@data[[name]] <- x@data[[name]][r]
-    ##    }
-    } else if (inherits(x, "sealevel")) {
-        r <- eval(substitute(subset), x@data, parent.frame())
-        r <- r & !is.na(r)
-        rval <- x
-        for (name in names(rval@data)) {
-            rval@data[[name]] <- x@data[[name]][r]
-        }
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")
@@ -748,16 +734,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         } else {
             stop("only 'time' is permitted for subsetting")
         }
-    ##} else if (inherits(x, "ctd")) {
-    ##    rval <- new("ctd")
-    ##    rval@metadata <- x@metadata
-    ##    for (i in seq_along(x@data)) {
-    ##        ##cat("i=", i, "name=", names(x@data)[i], "\n")
-    ##        r <- eval(substitute(subset), x@data, parent.frame())
-    ##        r <- r & !is.na(r)
-    ##        rval@data[[i]] <- x@data[[i]][r]
-    ##    }
-    ##    names(rval@data) <- names(x@data)
     } else if (inherits(x, "echosounder")) {
         ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
         ##oceDebug(debug, "subsetString='", subsetString, "'\n")
