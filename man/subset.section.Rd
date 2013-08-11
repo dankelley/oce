@@ -29,7 +29,7 @@
 \examples{
 library(oce)
 data(a03)
-GS <- subset(a03, 102<=stationId&stationId<=124)
+GS <- subset(a03, 109<=stationId&stationId<=129)
 }
 
 \author{Dan Kelley}
