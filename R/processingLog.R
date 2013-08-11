@@ -38,5 +38,6 @@ processingLogShow <- function(x)
         cat("  * ", format(x@processingLog$time[i]), " UTC: ``",
             x@processingLog$value[i], "``\n", sep="")
     }
+    invisible()
 }
 
