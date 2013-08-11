@@ -1,4 +1,5 @@
 0.9-13
+- plot.section() now chooses best coastline file
 - swPressure() added
 - ctdFindProfiles() added
 - as.ctd(): new arguments filename etc

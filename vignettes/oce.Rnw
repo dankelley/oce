@@ -393,8 +393,7 @@ is to highlight how this package can be used with real-world data.
 The commands
 <<label=sectionplot,eval=FALSE>>=
 data(section)
-data(coastlineHalifax)
-plot(section, coastline=coastlineHalifax)
+plot(section, which=c(1, 2, 3, 99))
 @
 will plot a summary diagram containing sections of
 $T$, $S$, and $\sigma_\theta$, along with a chart indicating station

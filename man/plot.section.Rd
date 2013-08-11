@@ -17,7 +17,7 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline="coastlineWorld",
+     coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
@@ -69,8 +69,9 @@
     \item{stationIndices}{optional list of the indices of stations to
         use.  Note that an index is \emph{not} a station number, e.g. to
         show the first 4 stations, use \code{station.indices=1:4}.}
-    \item{coastline}{optional \code{coastline} to be used in a station
-        map}
+    \item{coastline}{string giving the coastline to be used in a
+        station map, or \code{"best"} to pick the one with highest
+        resolution, or \code{"none"} to avoid drawing the coastline.}
     \item{xlim}{optional limit for x axis (only in sections, not map)}
     \item{ylim}{optional limit for y axis (only in sections, not map)}
     \item{map.xlim}{optional xlim for station location, which can be
@@ -157,8 +158,7 @@
 library(oce)
 ## Halifax Harbour
 data(section)
-data(coastlineHalifax)
-plot(section, coastline=coastlineHalifax)
+plot(section, which=c(1, 2, 3, 99))
 
 ## Gulf Stream
 data(a03)
