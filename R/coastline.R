@@ -581,3 +581,32 @@ summary.coastline <- function(object, ...)
     processingLogShow(object)
 }
 
+
+bestCoastline <- function(lonRange, latRange, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "\bbestCoastline(lonRange=", paste(round(lonRange, 2), collapse=","),
+             "), latRange=c(", paste(round(latRange, 2), collapse=","), ")) {\n", sep="")
+    if (any(lonRange > 180)) {
+        lonRange <- lonRange - 360 # FIXME: does this always work?
+        oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
+    }
+    data(coastlineHalifax, envir=environment())
+    if (lonRange[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
+        lonRange[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
+        latRange[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
+        latRange[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
+        oceDebug(debug, "\b\b} # using coastlineHalifax\n")
+        return(coastlineHalifax)
+    }
+    data(coastlineMaritimes, envir=environment())
+    if (lonRange[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
+        lonRange[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
+        latRange[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
+        latRange[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
+        oceDebug(debug, "\b\b} # using coastlineMaritimes\n")
+        return(coastlineMaritimes)
+    } 
+    data(coastlineWorld, envir=environment())
+    oceDebug(debug, "\b\b} # using coastlineWorld\n")
+    return(coastlineWorld)
+}

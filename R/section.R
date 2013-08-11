@@ -340,7 +340,7 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              debug <- if (debug > 2) 2 else floor(0.5 + debug)
+              debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(which))
                   which <- "temperature"
               xtype <- match.arg(xtype)
@@ -389,35 +389,40 @@ setMethod(f="plot",
                       data(coastlineWorld, envir=environment())
                       data(coastlineMaritimes, envir=environment())
                       data(coastlineHalifax, envir=environment())
+                      bestCoastline(lonr, latr, debug=debug-1)
                       ## TESTING: lonr[1] <- lonr[1] - 1
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
-                          if (any(lonr > 180))
-                              lonr <- lonr - 360
-                          ##cat("TEST: autoshrink to best coastline file\n")
-                          ##cat("lonr:", lonr, "\n")
-                          ##cat("latr:", latr, "\n")
-                          ##cat("lon range hfs:", range(coastlineHalifax[['longitude']],na.rm=TRUE), '\n')
-                          ##cat("lat range hfs:", range(coastlineHalifax[['latitude']],na.rm=TRUE), '\n')
-                          if (lonr[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-                              lonr[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-                              latr[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
-                              latr[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
-                              coastline <- coastlineHalifax
-                              haveCoastline <- TRUE 
-                              oceDebug(debug, "using coastlineHalifax\n")
-                          } else if (lonr[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-                              lonr[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-                              latr[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
-                              latr[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
-                              coastline <- coastlineMaritimes
-                              haveCoastline <- TRUE 
-                              oceDebug(debug, "using coastlineMaritimes\n")
-                          } else {
-                              oceDebug(debug, "using coastlineWorld\n")
-                              coastline <- coastlineWorld
-                              haveCoastline <- TRUE 
+                          coastline <- bestCoastline(lonr, latr, debug=debug-1)
+                          haveCoastline <- TRUE
+                          if (FALSE) {
+                              if (any(lonr > 180))
+                                  lonr <- lonr - 360
+                              ##cat("TEST: autoshrink to best coastline file\n")
+                              ##cat("lonr:", lonr, "\n")
+                              ##cat("latr:", latr, "\n")
+                              ##cat("lon range hfs:", range(coastlineHalifax[['longitude']],na.rm=TRUE), '\n')
+                              ##cat("lat range hfs:", range(coastlineHalifax[['latitude']],na.rm=TRUE), '\n')
+                              if (lonr[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
+                                  lonr[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
+                                  latr[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
+                                  latr[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
+                                  coastline <- coastlineHalifax
+                                  haveCoastline <- TRUE 
+                                  oceDebug(debug, "using coastlineHalifax\n")
+                              } else if (lonr[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
+                                         lonr[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
+                                         latr[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
+                                         latr[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
+                                  coastline <- coastlineMaritimes
+                                  haveCoastline <- TRUE 
+                                  oceDebug(debug, "using coastlineMaritimes\n")
+                              } else {
+                                  oceDebug(debug, "using coastlineWorld\n")
+                                  coastline <- coastlineWorld
+                                  haveCoastline <- TRUE 
+                              }
                           }
                       } else {
                           if (coastline != "none") {

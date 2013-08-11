@@ -590,11 +590,11 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = 1:4,
+          definition=function(x, which = c(1, 2, 3, 5),
                               eos=getOption("eos", default='unesco'),
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE, col.grid="lightgray", lty.grid="dotted",
-                              coastline="coastlineWorld",
+                              coastline="best",
                               Slim, Tlim, plim, densitylim, N2lim,
                               dpdtlim, timelim,
                               lonlim, latlim, span,

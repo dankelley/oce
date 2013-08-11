@@ -8,7 +8,7 @@
 
 \description{Plot CTD data}
 
-\usage{\S4method{plot}{ctd}(x, which=1:4, 
+\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), 
      eos=getOption("eos", default='unesco'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE, col.grid="lightgray", lty.grid="dotted",
