@@ -12,7 +12,7 @@
      eos=getOption("eos", default='unesco'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE, col.grid="lightgray", lty.grid="dotted",
-     coastline="coastlineWorld",
+     coastline="best",
      Slim, Tlim, plim, densitylim, N2lim,
      dpdtlim, timelim,
      lonlim, latlim, span,
@@ -79,6 +79,7 @@
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
   \item{col.grid}{colour for the grid.}
   \item{lty.grid}{line type for grid.}
+  %% FIXME: below is wrong now
   \item{coastline}{a \code{coastline} object, or a character string naming one.
       There are several built-in datasets: \code{coastlineWorld} (the default),
       \code{coastlineMaritimes}, \code{coastlineHalifax}, and

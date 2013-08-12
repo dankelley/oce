@@ -881,93 +881,101 @@ setMethod(f="plot",
                           yloc <- yloc - d.yloc
                       }
                   } else if (which[w] == 5) {
-                      oceDebug(debug, "draw(ctd, ...) of type MAP\n")
-                      ## get coastline file
-                      if (is.character(coastline)) {
-                          if (coastline == "none") {
-                              if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="", cex.axis=cex.axis,
-                                       inset=inset)
-                              } else {
-                                  warning("no latitude or longitude in object's metadata, so cannot draw map")
-                              }
-                          } else { # named coastline
-                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                  if (coastline == "coastlineWorld") {
-                                      data(coastlineWorld, envir=environment())
-                                      coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineMaritimes") {
-                                      data(coastlineMaritimes, envir=environment())
-                                      coastline <- coastlineMaritimes
-                                  } else if (coastline == "coastlineHalifax") {
-                                      data(coastlineHalifax, envir=environment())
-                                      coastline <- coastlineHalifax
-                                  } else if (coastline == "coastlineSLE") {
-                                      data(coastlineSLE, envir=environment())
-                                      coastline <- coastlineSLE
+                      if (is.finite(x[["latitude"]]) && is.finite(x[["longitude"]])) {
+                          oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                          ## FIXME: will caching still work?
+                          if (is.character(coastline)) {
+                              if (coastline == "none") {
+                                  if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
+                                      plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="", cex.axis=cex.axis,
+                                           inset=inset)
                                   } else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                      warning("no latitude or longitude in object's metadata, so cannot draw map")
+                                  }
+                              } else { # named coastline
+                                  coastline <- "coastlineWorld" # FIXME: delete when working
+                                  if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
+                                      oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
+                                      if (coastline == "coastlineWorld") {
+                                          data(coastlineWorld, envir=environment())
+                                          coastline <- coastlineWorld
+                                      } else if (coastline == "coastlineMaritimes") {
+                                          data(coastlineMaritimes, envir=environment())
+                                          coastline <- coastlineMaritimes
+                                      } else if (coastline == "coastlineHalifax") {
+                                          data(coastlineHalifax, envir=environment())
+                                          coastline <- coastlineHalifax
+                                      } else if (coastline == "coastlineSLE") {
+                                          data(coastlineSLE, envir=environment())
+                                          coastline <- coastlineSLE
+                                      } else {
+                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                      }
                                   }
                               }
                           }
-                      }
-                      ## FIXME: perhaps use water depth to get default chart span (not used yet, though)
-                      if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
-                          waterDepth <- x[["waterDepth"]]
-                      else 
-                          waterDepth <- max(x[["pressure"]], na.rm=TRUE)
-                      if (missing(span)) {
-                          if (waterDepth < 50)
-                              span <- 150
-                          else if (waterDepth < 200)
-                              span <- 500
-                          else if (waterDepth < 2000)
-                              span <- 1000
-                          else
-                              span <- 10000
-                      }
-                      oceDebug(debug, "span=", span, "\n")
-                      if (missing(lonlim)) {
-                          lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
-                          clon <- mean(lonlim.c)
-                          if (missing(latlim)) {
-                              oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
-                              latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
-                              plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
-                          } else {
-                              oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
-                              clat <- mean(latlim)
-                              plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                          ## FIXME: perhaps use water depth to get default chart span (not used yet, though)
+                          if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
+                              waterDepth <- x[["waterDepth"]]
+                          else 
+                              waterDepth <- max(x[["pressure"]], na.rm=TRUE)
+                          if (missing(span)) {
+                              if (waterDepth < 50)
+                                  span <- 100
+                              else if (waterDepth < 200)
+                                  span <- 500
+                              else if (waterDepth < 2000)
+                                  span <- 1000
+                              else
+                                  span <- 10000
                           }
-                          if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
-                              mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
-                      } else {
-                          oceDebug(debug, "lonlim was provided\n")
-                          clon <- mean(lonlim)
-                          if (missing(latlim)) {
-                              oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                              latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
-                              clat <- mean(latlim.c)
-                              plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                          oceDebug(debug, "span=", span, "km\n")
+
+                          coastline <- coastlineBest(x[["longitude"]]+c(-1,1)*span/111,
+                                                     x[["latitude"]]+c(-1,1)*span/111,
+                                                     debug=debug-1)
+
+                          if (missing(lonlim)) {
+                              lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
+                              clon <- mean(lonlim.c)
+                              if (missing(latlim)) {
+                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
+                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              } else {
+                                  oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
+                                  clat <- mean(latlim)
+                                  plot(coastline, clatitude=clat, clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              }
+                              if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
+                                  mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
                           } else {
-                              oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
-                              clat <- mean(latlim)
-                              plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              oceDebug(debug, "lonlim was provided\n")
+                              clon <- mean(lonlim)
+                              if (missing(latlim)) {
+                                  oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
+                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  clat <- mean(latlim.c)
+                                  plot(coastline, clatitude=clat, clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              } else {
+                                  oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
+                                  clat <- mean(latlim)
+                                  plot(coastline, clatitude=clat, clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              }
                           }
+                          oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
+                          points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                          if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
+                              mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                          if (!is.null(x@metadata$startTime))
+                              mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                          ##if (!is.null(x@metadata$scientist))
+                          ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                       }
-                      oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
-                      points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-                      if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                          mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
-                      if (!is.null(x@metadata$startTime))
-                          mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
-                      ##if (!is.null(x@metadata$scientist))
-                      ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }

@@ -386,15 +386,13 @@ setMethod(f="plot",
                           plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       }
                       haveCoastline <- FALSE
-                      data(coastlineWorld, envir=environment())
-                      data(coastlineMaritimes, envir=environment())
-                      data(coastlineHalifax, envir=environment())
-                      bestCoastline(lonr, latr, debug=debug-1)
-                      ## TESTING: lonr[1] <- lonr[1] - 1
+                      ##data(coastlineWorld, envir=environment())
+                      ##data(coastlineMaritimes, envir=environment())
+                      ##data(coastlineHalifax, envir=environment())
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
-                          coastline <- bestCoastline(lonr, latr, debug=debug-1)
+                          coastline <- coastlineBest(lonr, latr, debug=debug-1)
                           haveCoastline <- TRUE
                           if (FALSE) {
                               if (any(lonr > 180))
