@@ -19,7 +19,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
             depths <- length(pressure)
             ##df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
             if (missing(df))
-               df <- min(floor(length(pressure)/5), 10)
+               df <- floor(depths / 10)
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
