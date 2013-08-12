@@ -18,8 +18,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
             args <- list(...)
             depths <- length(pressure)
             ##df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
-            if (missing(df))
-               df <- floor(depths / 10)
+            if (missing(df)) {
+                if (depths > 20)
+                    df <- floor(depths / 10)
+                else if (depths > 10)
+                    df <- floor(depths / 3)
+                else
+                    df <- floor(depths / 2)
+                oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
+            }
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))

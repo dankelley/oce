@@ -79,18 +79,19 @@
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
   \item{col.grid}{colour for the grid.}
   \item{lty.grid}{line type for grid.}
-  %% FIXME: below is wrong now
-  \item{coastline}{a \code{coastline} object, or a character string naming one.
-      There are several built-in datasets: \code{coastlineWorld} (the default),
-      \code{coastlineMaritimes}, \code{coastlineHalifax}, and
-      \code{coastlineSLE}, and any other coastline object (e.g. as read by
-      \code{\link{read.coastline}}) may be used also.  There is a speed penalty
-      for providing \code{coastline} as a character string, because it forces
-      \code{plot.coastline} to load it on every call.  So, if
+  \item{coastline}{a specification of the coastline to be used for
+      \code{which="map"}.  This may be a coastline object, whether built-in or
+      supplied by the user, or a character string.  If the later, it may be the
+      name of a built-in coastline (\code{"coastlineWorld"},
+      \code{"coastlineMaritimes"}, \code{"coastlineSLE"}, or
+      \code{"coastlineHalifax"}), or \code{"best"}, to choose the
+      highest-resolution coastline for the locale, or \code{"none"} to prevent
+      the drawing of a coastline.  There is a speed penalty for providing
+      \code{coastline} as a character string, because it forces
+      \code{\link{plot.coastline}} to load it on every call.  So, if
       \code{plot.coastline} is to be called several times for a given
       coastline, it makes sense to load it in before the first call, and to
-      supply the object as an argument, as opposed to the name of the object.
-      If no coastline is desired, use \code{coastline="none"}.}
+      supply the object as an argument, as opposed to the name of the object.}
   \item{Slim}{optional limits of salinity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}

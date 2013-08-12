@@ -614,7 +614,8 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "teos"))
-              oceDebug(debug, "\b\bplot.ctd(..., which=", which, ", eos=\"", eos, "\", inset=", inset, ", ...) {\n")
+              oceDebug(debug, "\b\bplot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="")
               dots <- list(...)
               opar <- par(no.readonly = TRUE)
               if (add && length(which) > 1) {
@@ -680,7 +681,7 @@ setMethod(f="plot",
                       x@data[[nc]] <- x@data[[nc]][1:last.good]
               }
 
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which:", which, "(before matching character strings)\n")
               which <- ocePmatch(which,
                                  list("temperature+salinity"=1,
                                       "density+N2"=2,
@@ -696,7 +697,7 @@ setMethod(f="plot",
                                       N2=12,
                                       spice=13,
                                       tritium=14))
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which:", which, "(after matching character strings)\n")
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
@@ -883,38 +884,7 @@ setMethod(f="plot",
                   } else if (which[w] == 5) {
                       if (is.finite(x[["latitude"]]) && is.finite(x[["longitude"]])) {
                           oceDebug(debug, "draw(ctd, ...) of type MAP\n")
-                          ## FIXME: will caching still work?
-                          if (is.character(coastline)) {
-                              if (coastline == "none") {
-                                  if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                                      plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="", cex.axis=cex.axis,
-                                           inset=inset)
-                                  } else {
-                                      warning("no latitude or longitude in object's metadata, so cannot draw map")
-                                  }
-                              } else { # named coastline
-                                  coastline <- "coastlineWorld" # FIXME: delete when working
-                                  if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                      oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                      if (coastline == "coastlineWorld") {
-                                          data(coastlineWorld, envir=environment())
-                                          coastline <- coastlineWorld
-                                      } else if (coastline == "coastlineMaritimes") {
-                                          data(coastlineMaritimes, envir=environment())
-                                          coastline <- coastlineMaritimes
-                                      } else if (coastline == "coastlineHalifax") {
-                                          data(coastlineHalifax, envir=environment())
-                                          coastline <- coastlineHalifax
-                                      } else if (coastline == "coastlineSLE") {
-                                          data(coastlineSLE, envir=environment())
-                                          coastline <- coastlineSLE
-                                      } else {
-                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                      }
-                                  }
-                              }
-                          }
-                          ## FIXME: perhaps use water depth to get default chart span (not used yet, though)
+                          ## FIXME: use waterdepth to guess a reasonable span, if not supplied
                           if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
                               waterDepth <- x[["waterDepth"]]
                           else 
@@ -930,11 +900,28 @@ setMethod(f="plot",
                                   span <- 10000
                           }
                           oceDebug(debug, "span=", span, "km\n")
-
-                          coastline <- coastlineBest(x[["longitude"]]+c(-1,1)*span/111,
-                                                     x[["latitude"]]+c(-1,1)*span/111,
-                                                     debug=debug-1)
-
+                          if (is.character(coastline)) {
+                              if (coastline == "best") {
+                                  coastline <- coastlineBest(x[["longitude"]]+c(-1,1)*span/111,
+                                                             x[["latitude"]]+c(-1,1)*span/111,
+                                                             debug=debug-1)
+                              } else if (coastline == "coastlineWorld") {
+                                  data(coastlineWorld, envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (coastline == "coastlineMaritimes") {
+                                  data(coastlineMaritimes, envir=environment())
+                                  coastline <- coastlineMaritimes
+                              } else if (coastline == "coastlineHalifax") {
+                                  data(coastlineHalifax, envir=environment())
+                                  coastline <- coastlineHalifax
+                              } else if (coastline == "coastlineSLE") {
+                                  data(coastlineSLE, envir=environment())
+                                  coastline <- coastlineSLE
+                              } else if (coastline == "none") {
+                              } else {
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
+                              }
+                          }
                           if (missing(lonlim)) {
                               lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                               clon <- mean(lonlim.c)

@@ -590,33 +590,61 @@ coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
         lonRange <- lonRange - 360 # FIXME: does this always work?
         oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
     }
-    data(coastlineHalifax, envir=environment())
-    data(coastlineMaritimes, envir=environment())
-    data(coastlineWorld, envir=environment())
 
-    oceDebug(debug, "Halifax: lon range", range(coastlineHalifax[["longitude"]], na.rm=TRUE), "\n")
-    oceDebug(debug, "Halifax: lat range", range(coastlineHalifax[["latitude"]], na.rm=TRUE), "\n")
+    ## data(coastlineHalifax, envir=environment())
+    ## data(coastlineMaritimes, envir=environment())
+    ## data(coastlineSLE, envir=environment())
+    ## data(coastlineWorld, envir=environment())
+    ## range(coastlineHalifax[["longitude"]], na.rm=TRUE)
+    ## [1] -63.70000 -63.36807
+    ## range(coastlineHalifax[["latitude"]], na.rm=TRUE)
+    ## [1] 44.55496 44.75000
+    ## data(coastlineMaritimes, envir=environment())
+    ## range(coastlineMaritimes[["longitude"]], na.rm=TRUE)
+    ## [1] -66.8000 -59.6897
+    ## range(coastlineMaritimes[["latitude"]], na.rm=TRUE)
+    ## [1] 43.39973 47.20000
+    ## data(coastlineSLE, envir=environment())
+    ## range(coastlineSLE[["longitude"]], na.rm=TRUE)
+    ## [1] -71.50000 -67.31163
+    ## range(coastlineSLE[["latitude"]], na.rm=TRUE)
+    ## [1] 46.80000 49.38621
+    ## data(coastlineWorld, envir=environment())
+    ## range(coastlineWorld[["longitude"]], na.rm=TRUE)
+    ## [1] -180  180
+    ## range(coastlineWorld[["latitude"]], na.rm=TRUE)
+    ## [1] -90.0000  83.6236
 
-    oceDebug(debug, "Maritimes: lon range", range(coastlineMaritimes[["longitude"]], na.rm=TRUE), "\n")
-    oceDebug(debug, "Maritimes: lat range", range(coastlineMaritimes[["latitude"]], na.rm=TRUE), "\n")
+    lonrHalifax <- c(-63.70000, -63.36807)
+    latrHalifax <- c(44.55496, 44.75000)
 
-    oceDebug(debug, "World: lon range", range(coastlineWorld[["longitude"]], na.rm=TRUE), "\n")
-    oceDebug(debug, "World: lat range", range(coastlineWorld[["latitude"]], na.rm=TRUE), "\n")
+    lonrMaritimes <- c(-66.8000, -59.6897)
+    latrMaritimes <- c(43.39973, 47.20000)
 
-    if (lonRange[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-        lonRange[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-        latRange[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
-        latRange[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
+    lonrSLE <- c(-71.50000, -67.31163)
+    latrSLE <- c(46.80000, 49.38621)
+
+    lonrWorld <- c(-180, 180)
+    latrWorld <- c(-90.0000, 83.6236)
+
+    if (lonRange[1] >= lonrHalifax[1] && lonRange[2] <= lonrHalifax[2] &&
+        latRange[1] >= latrHalifax[1] && latRange[2] <= latrHalifax[2]) {
         oceDebug(debug, "\b\b} # using coastlineHalifax\n")
+        data(coastlineHalifax, envir=environment())
         return(coastlineHalifax)
-    }
-    if (lonRange[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-        lonRange[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-        latRange[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
-        latRange[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
+    } else if (lonRange[1] >= lonrSLE[1] && lonRange[2] <= lonrSLE[2] &&
+               latRange[1] >= latrSLE[1] && latRange[2] <= latrSLE[2]) {
+        oceDebug(debug, "\b\b} # using coastlineSLE\n")
+        data(coastlineSLE, envir=environment())
+        return(coastlineSLE)
+    } else if (lonRange[1] >= lonrMaritimes[1] && lonRange[2] <= lonrMaritimes[2] &&
+               latRange[1] >= latrMaritimes[1] && latRange[2] <= latrMaritimes[2]) {
         oceDebug(debug, "\b\b} # using coastlineMaritimes\n")
+        data(coastlineMaritimes, envir=environment())
         return(coastlineMaritimes)
-    } 
-    oceDebug(debug, "\b\b} # using coastlineWorld\n")
-    return(coastlineWorld)
+    } else {
+        data(coastlineWorld, envir=environment())
+        oceDebug(debug, "\b\b} # using coastlineWorld\n")
+        return(coastlineWorld)
+    }
 }
