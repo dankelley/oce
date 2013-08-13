@@ -677,8 +677,11 @@ setMethod(f="plot",
               last.good <- which(rev(is.na(x@data$salinity))==FALSE)[1]
               if (length(last.good) > 0) {
                   last.good <- length(x@data$temperature) - last.good + 1
-                  for (nc in seq_along(x@data))
-                      x@data[[nc]] <- x@data[[nc]][1:last.good]
+                  for (nc in seq_along(x@data)) {
+                      if (!is.null(x@data[[nc]])) {
+                          x@data[[nc]] <- x@data[[nc]][1:last.good]
+                      }
+                  }
               }
 
               oceDebug(debug, "which:", which, "(before matching character strings)\n")
