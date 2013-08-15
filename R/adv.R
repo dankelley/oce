@@ -519,13 +519,14 @@ setMethod(f="plot",
                       }
                       rm(y)                       # space may be tight
                   } else if (which[w] == 13 || which[w] == "salinity") {
-                      if ("salinitySlow" %in% names(x@data)) {
-                          if ("timeSlow" %in% names(x@data) && "salinitySlow" %in% names(x@data)) {
-                              oce.plot.ts(x@data$timeSlow, x@data$salinitySlow, ylab=resizableLabel("S", "y"),
+                      if ("salinity" %in% names(x@metadata)) {
+                          if ("timeSlow" %in% names(x@data)) {
+                              salinity <- rep(x@metadata$salinity, length(x@data$temperatureSlow))
+                              oce.plot.ts(x@data$timeSlow, salinity, ylab=resizableLabel("S", "y"),
                                           drawTimeRange=drawTimeRange,
                                           adorn=adorn[w],
                                           xlim=if (gave.xlim) xlim[w,] else tlim,
-                                          ylim=if (gave.ylim) ylim[w,] else range(x@data$salinity, na.rm=TRUE),
+                                          ylim=if (gave.ylim) ylim[w,] else x@metadata$salinity+c(0.5, -0.5),
                                           type=type,
                                           cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                           mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -534,11 +535,12 @@ setMethod(f="plot",
                                           tformat=tformat,
                                           debug=debug-1)
                           } else {
-                              oce.plot.ts(x@data$time, x@data$salinity, ylab=resizableLabel("S", "y"),
+                              salinity <- rep(x@metadata$salinity, length(x@data$temperature))
+                              oce.plot.ts(x@data$time, salinity, ylab=resizableLabel("S", "y"),
                                           drawTimeRange=drawTimeRange,
                                           adorn=adorn[w],
                                           xlim=if (gave.xlim) xlim[w,] else tlim,
-                                          ylim=if (gave.ylim) ylim[w,] else range(x@data$salinity, na.rm=TRUE),
+                                          ylim=if (gave.ylim) ylim[w,] else x@metadata$salinity+c(0.5, -0.5),
                                           type=type,
                                           cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                           mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
