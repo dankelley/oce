@@ -6,8 +6,8 @@
 \description{Decode data in a Nortek ADV or ADP header.}
 
 \usage{decodeHeaderNortek(buf,
-                       type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"),
-                       debug=getOption("oceDebug"), \dots)}
+                  type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"),
+                  debug=getOption("oceDebug"), \dots)}
 \arguments{
   \item{buf}{a ``raw'' buffer containing the header}
   \item{type}{type of device}
