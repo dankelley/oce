@@ -331,6 +331,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, vectorShow(roll, "roll"))
     temperature <- 0.01 * readBin(buf[vsdStart2 + 20], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
     oceDebug(debug, vectorShow(temperature, "temperature"))
+    salinity <- rep(header$user$salinity, length(temperature))
+    oceDebug(debug, vectorShow(salinity, "salinity"))
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsdStart[floor(0.5*length(vsdStart))] + 23]
@@ -442,7 +444,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  headingSlow=heading,
                  pitchSlow=pitch,
                  rollSlow=roll,
-                 temperatureSlow=temperature)
+                 temperatureSlow=temperature,
+                 salinitySlow=salinity)
     if (haveAnalog1)
         data$analog1 <- analog1
     if (haveAnalog2)

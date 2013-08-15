@@ -381,7 +381,7 @@ setMethod(f="plot",
                       else if (ww == "q2") which2[w] <- 10
                       else if (ww == "q3") which2[w] <- 11
                       ## 4 not allowed since ADV is 3-beam
-                      ## 13 not allowed since ADV do not measure salinity
+                      else if (ww == "salinity") which2[w] <- 13
                       else if (ww == "temperature") which2[w] <- 14
                       else if (ww == "pressure") which2[w] <- 15
                       else if (ww == "heading") which2[w] <- 16
@@ -518,6 +518,38 @@ setMethod(f="plot",
                                       debug=debug-1)
                       }
                       rm(y)                       # space may be tight
+                  } else if (which[w] == 13 || which[w] == "salinity") {
+                      if ("salinitySlow" %in% names(x@data)) {
+                          if ("timeSlow" %in% names(x@data) && "salinitySlow" %in% names(x@data)) {
+                              oce.plot.ts(x@data$timeSlow, x@data$salinitySlow, ylab=resizableLabel("S", "y"),
+                                          drawTimeRange=drawTimeRange,
+                                          adorn=adorn[w],
+                                          xlim=if (gave.xlim) xlim[w,] else tlim,
+                                          ylim=if (gave.ylim) ylim[w,] else range(x@data$salinity, na.rm=TRUE),
+                                          type=type,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          lwd=lwd[w], col=if(col.per.point) col else col[w],
+                                          main=main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                          } else {
+                              oce.plot.ts(x@data$time, x@data$salinity, ylab=resizableLabel("S", "y"),
+                                          drawTimeRange=drawTimeRange,
+                                          adorn=adorn[w],
+                                          xlim=if (gave.xlim) xlim[w,] else tlim,
+                                          ylim=if (gave.ylim) ylim[w,] else range(x@data$salinity, na.rm=TRUE),
+                                          type=type,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          lwd=lwd[w], col=if(col.per.point) col else col[w],
+                                          main=main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                          }
+                      } else {
+                          warning("no salinity in this ADV object")
+                      }
                   } else if (which[w] == 14 || which[w] == "temperature") {
                       if ("timeSlow" %in% names(x@data) && "temperatureSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$temperatureSlow, ylab=resizableLabel("T", "y"),
