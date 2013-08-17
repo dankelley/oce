@@ -365,7 +365,6 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
     oceDebug(debug, "heights:", ps$y[end]-ps$y[start], "; compare with minHeight=", minHeight, "\n")
     oceDebug(debug, "start:", start[keep], "(using minHeight)\n")
     oceDebug(debug, "end:", end[keep], "(using minHeight)\n")
-    ##browser()
     indices <- data.frame(start=start[keep], end=end[keep])
     if (debug) print(indices)
     if (is.logical(arr.ind) && arr.ind) {
@@ -2065,6 +2064,9 @@ plotProfile <- function (x,
         } else if (type == 's') {
             lines(x, y, col = col, lwd=lwd, type='s')
         } else if (type == 'p') {
+            points(x, y, col = col, cex=cex, pch=pch)
+        } else if (type == 'o') {
+            lines(x, y, col = col, lwd=lwd)
             points(x, y, col = col, cex=cex, pch=pch)
         } else if (type == 'b') {
             lines(x, y, col = col, lwd=lwd)
