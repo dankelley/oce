@@ -95,6 +95,70 @@ setMethod(f="[[<-",
           })
 
 
+setMethod(f="subset",
+          signature="adv",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              if (missing(subset))
+                  stop("must give 'subset'")
+
+              if (missing(subset))
+                  stop("must specify a 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting an adv object by time\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  sum.keep <- sum(keep)
+                  if (sum.keep < 2)
+                      stop("must keep at least 2 profiles")
+                  oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  rval <- x
+                  names <- names(x@data)
+                  haveSlow <- "timeSlow" %in% names
+                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  if (haveSlow) {
+                      subsetStringSlow <- gsub("time", "timeSlow", subsetString)
+                      keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+                  }
+                  if ("timeBurst" %in% names) {
+                      subsetStringBurst <- gsub("time", "timeBurst", subsetString)
+                      keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
+                  }
+                  for (name in names(x@data)) {
+                      if ("distance" == name)
+                          next
+                      if (length(grep("Burst$", name))) {
+                          rval@data[[name]] = x@data[[name]][keepBurst]
+                      } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
+                          if (1 == length(agrep("Slow$", name))) {
+                              oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepSlow]
+                          } else {
+                              oceDebug(debug, "subsetting data$", name, "\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep]
+                          }
+                      } else if (is.matrix(rval@data[[name]])) {
+                          oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
+                          rval@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(rval@data[[name]])) {
+                          oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
+                          rval@data[[name]] <- x@data[[name]][keep,,]
+                      }
+                  }
+              } else {
+                  stop("only 'time' is permitted for subsetting")
+              }
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
+
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
@@ -317,7 +381,7 @@ setMethod(f="plot",
                       else if (ww == "q2") which2[w] <- 10
                       else if (ww == "q3") which2[w] <- 11
                       ## 4 not allowed since ADV is 3-beam
-                      ## 13 not allowed since ADV do not measure salinity
+                      else if (ww == "salinity") which2[w] <- 13
                       else if (ww == "temperature") which2[w] <- 14
                       else if (ww == "pressure") which2[w] <- 15
                       else if (ww == "heading") which2[w] <- 16
@@ -454,6 +518,40 @@ setMethod(f="plot",
                                       debug=debug-1)
                       }
                       rm(y)                       # space may be tight
+                  } else if (which[w] == 13 || which[w] == "salinity") {
+                      if ("salinity" %in% names(x@metadata)) {
+                          if ("timeSlow" %in% names(x@data)) {
+                              salinity <- rep(x@metadata$salinity, length(x@data$temperatureSlow))
+                              oce.plot.ts(x@data$timeSlow, salinity, ylab=resizableLabel("S", "y"),
+                                          drawTimeRange=drawTimeRange,
+                                          adorn=adorn[w],
+                                          xlim=if (gave.xlim) xlim[w,] else tlim,
+                                          ylim=if (gave.ylim) ylim[w,] else x@metadata$salinity+c(0.5, -0.5),
+                                          type=type,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          lwd=lwd[w], col=if(col.per.point) col else col[w],
+                                          main=main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                          } else {
+                              salinity <- rep(x@metadata$salinity, length(x@data$temperature))
+                              oce.plot.ts(x@data$time, salinity, ylab=resizableLabel("S", "y"),
+                                          drawTimeRange=drawTimeRange,
+                                          adorn=adorn[w],
+                                          xlim=if (gave.xlim) xlim[w,] else tlim,
+                                          ylim=if (gave.ylim) ylim[w,] else x@metadata$salinity+c(0.5, -0.5),
+                                          type=type,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          lwd=lwd[w], col=if(col.per.point) col else col[w],
+                                          main=main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                          }
+                      } else {
+                          warning("no salinity in this ADV object")
+                      }
                   } else if (which[w] == 14 || which[w] == "temperature") {
                       if ("timeSlow" %in% names(x@data) && "temperatureSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$temperatureSlow, ylab=resizableLabel("T", "y"),

@@ -357,12 +357,12 @@ summary.topo <- function(object, ...)
     zRange <- range(object[["z"]], na.rm=TRUE)
     cat("\nTopo dataset\n------------\n")
     cat("* Source:          ", object[["filename"]], "\n")
-    cat("* Latitude range:  ", format(latRange[1], digits),
-        " to ", format(latRange[2], digits), "\n")
-    cat("* Longitude range: ", format(lonRange[1], digits),
-        " to ", format(lonRange[2], digits), "\n")
-    cat("* Elevation range: ", format(zRange[1], digits=digits),
-        " to ", format(zRange[2], digits), "\n")
+    cat("* Latitude range:   ", format(latRange[1], digits),
+        " to ", format(latRange[2], digits), ", in steps of ", format(diff(object[["latitude"]][1:2]), digits), " deg\n", sep="")
+    cat("* Longitude range:  ", format(lonRange[1], digits),
+        " to ", format(lonRange[2], digits), ", in steps of ", format(diff(object[["longitude"]][1:2]), digits), " deg\n", sep="")
+    cat("* Elevation range:  ", format(zRange[1], digits=digits),
+        " to ", format(zRange[2], digits), " m\n", sep="")
     processingLogShow(object)
 }
 

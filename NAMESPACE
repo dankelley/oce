@@ -2,8 +2,9 @@ useDynLib(oce)
 import(methods)
 ##importFrom("methods", show)
 importFrom("graphics", plot)
-importFrom(utils, head, tail)
+importFrom("utils", head, tail)
 exportMethods(plot)
+exportMethods(subset)
 export("+.section",
        abbreviateTimeLabels,
        approx3d,
@@ -31,15 +32,17 @@ export("+.section",
        binAverage,
        bcdToInteger,
        byteToBinary,
+       coastlineBest,
        coordinate,
        coriolis,
        ctdAddColumn,
        ctdDecimate,
-       ctdFindDescents,
+       ctdFindProfiles,
        ctdTrim,
        ctdUpdateHeader,
        ctimeToSeconds,
        decimate,
+       decodeHeaderNortek,
        despike,
        detrend,
        distance,
@@ -200,14 +203,14 @@ export("+.section",
        sigmaTheta,
        silicate,
        "silicate<-",
-       subset.oce,
-       summary.ctd,
-       summary.echosounder,
-       summary.lisst,
-       summary.met,
-       summary.sealevel,
+       # TEST subset.oce,
+       # TEST summary.ctd,
+       # TEST summary.echosounder,
+       # TEST summary.lisst,
+       # TEST summary.met,
+       # TEST summary.sealevel,
        sunAngle,
-       swAbsoluteSalinity, # TEOS-10b
+       swAbsoluteSalinity, # TEOS-10
        swAlpha,
        swAlphaOverBeta,
        swBeta,
@@ -218,6 +221,7 @@ export("+.section",
        swDynamicHeight,
        swLapseRate,
        swN2,
+       swPressure,
        swRho,
        swSCTp,
        swSigma,
@@ -265,12 +269,12 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
-## Note: comment out items as they are made into S4, and remove the block when done
+## FIXME: comment out items as they are made into S4, and remove the block when done
 S3method(predict, tidem)
-S3method(summary, adp)
-S3method(summary, adv)
-S3method(summary, cm)
-S3method(summary, coastline)
+# TEST S3method(summary, adp)
+# TEST S3method(summary, adv)
+# TEST S3method(summary, cm)
+# TEST S3method(summary, coastline)
 ##S3method(summary, ctd)
 S3method(summary, drifter)
 ##S3method(summary, lisst)

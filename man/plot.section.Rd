@@ -17,7 +17,7 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline="coastlineWorld",
+     coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
@@ -69,8 +69,9 @@
     \item{stationIndices}{optional list of the indices of stations to
         use.  Note that an index is \emph{not} a station number, e.g. to
         show the first 4 stations, use \code{station.indices=1:4}.}
-    \item{coastline}{optional \code{coastline} to be used in a station
-        map}
+    \item{coastline}{string giving the coastline to be used in a
+        station map, or \code{"best"} to pick the one with highest
+        resolution, or \code{"none"} to avoid drawing the coastline.}
     \item{xlim}{optional limit for x axis (only in sections, not map)}
     \item{ylim}{optional limit for y axis (only in sections, not map)}
     \item{map.xlim}{optional xlim for station location, which can be
@@ -154,33 +155,22 @@
 }
 
 \examples{
-\dontrun{
 library(oce)
 ## Halifax Harbour
 data(section)
-data(coastlineHalifax)
-plot(section, coastline=coastlineHalifax)
+plot(section, which=c(1, 2, 3, 99))
 
 ## Gulf Stream
 data(a03)
-GS <- subset.oce(a03, indices=124:102)
+GS <- subset(a03, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
-                                        # Illustate adornment
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
-     adorn=expression({abline(v=200,col='blue')}))
-
-plot(GSg, which='sigmaTheta', ylim=c(1000,0),
-     contourLevel=seq(24, 29, 0.5),
-     contourLabel=c("24", "", "25","","26","","27","","28","","29"))
+plot(GSg, which=c(1,99), map.ylim=c(34,42))
 
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
 col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
 points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
 points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
-}
 }
 
 \author{Dan Kelley}

@@ -1,6 +1,6 @@
 library(oce)
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset(a03, 102<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 10))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld)

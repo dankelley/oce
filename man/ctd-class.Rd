@@ -52,16 +52,18 @@
   its work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both
   of which can also be called by the user, to get fine control over the plots.
 
-  The editing of CTD objects (e.g. to isolate downcasts) can be done with
-  \code{\link{ctdTrim}}, a task made easier when \code{\link{plotScan}} is
-  used to examine the results.  Towyow data can be split up into descents using
-  \code{\link{ctdFindDescents}}.  CTD data may be smoothed and/or cast onto
-  specified pressure levels with \code{\link{ctdDecimate}}.  
+  A CTD profile can be isolated from a larger record with
+  \code{\link{ctdTrim}}, a task made easier when \code{\link{plotScan}} is used
+  to examine the results.  Towyow data can be split up into sets of profiles
+  (ascending or descending) with \code{\link{ctdFindProfiles}}.  CTD data may
+  be smoothed and/or cast onto specified pressure levels with
+  \code{\link{ctdDecimate}}.  
   
   Low-level manipulation may be done with functions such as
   \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
-  many of the contents of CTD objects may be altered with the \code{[[]]} scheme
-  discussed above, and skilled uses may also manipulate the contents directly.
+  many of the contents of CTD objects may be altered with the \code{[[]]}
+  scheme discussed above, and skilled uses may also manipulate the contents
+  directly.
 
 }
 

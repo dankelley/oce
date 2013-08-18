@@ -1,5 +1,10 @@
 0.9-13
-- ctdFindDescents() added
+- plotProfile() now accepts type="o"
+- read.adv.nortek(): read salinity
+- ctdDecimate(): fix bug for NULL columns [issue 327]
+- plot.section() now chooses best coastline file
+- swPressure() added
+- ctdFindProfiles() added
 - as.ctd(): new arguments filename etc
 - remove oceBisect(), which merely reproduces uniroot()
 - move all data to library(ocedata)

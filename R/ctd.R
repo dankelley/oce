@@ -60,8 +60,6 @@ setMethod(f="[[",
               }
           })
 
-
-
 as.ctd <- function(salinity, temperature, pressure,
                    SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,
@@ -305,52 +303,86 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 
-ctdFindDescents <- function(x, dpCriterion=0.3, k=21, smallest=10, method=3, arr.ind=FALSE, debug=getOption("oceDebug"))
+ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
+                           direction=c("descending", "ascending"),
+                           arr.ind=FALSE, 
+                           debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bctdFindDescents(x, dpCriterion=", dpCriterion, ", k=", k,
-             "smallest=", smallest, "method=", method, "arr.ind=", arr.ind, "debug=", debug, ") {\n")
+    oceDebug(debug, "\b\bctdFindProfiles(x, cutoff=", cutoff, 
+             ", minLength=", minLength,
+             ", minHeight=", minHeight,
+             ", direction=\"", direction, "\"",
+             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
+    direction <- match.arg(direction)
     pressure <- x[["pressure"]]
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
-    if (method == 1) {
-        descending <- dp > quantile(dp[dp>0], dpCriterion)
-        start <- which(diff(descending) == 1)
-        end <- which(diff(descending) == -1)
-    } else if (method == 2) {
-        dp <- runmed(dp, k=k)
-        descending <- dp > quantile(dp, dpCriterion)
-        start <- which(diff(descending) == 1)
-        end <- which(diff(descending) == -1)
-    } else if (method == 3) {
-        dp <- smooth(dp)
-        descending <- dp > quantile(dp, dpCriterion)
-        start <- which(diff(descending) == 1)
-        end <- which(diff(descending) == -1)
+    if (direction == "descending") {
+        ps <- smooth.spline(pressure, ...)
+        dp <- diff(ps$y)
+        dp <- c(dp[1], dp)
+        look <- dp > cutoff * median(dp[dp>0])
+        start <- which(diff(look) == 1)
+        if (0 == length(start))
+            start <- 1
+        end <- which(diff(look) == -1)
+        if (0 == length(end))
+            end <- length(pressure)
+        if (start[1] > end[1])
+            start <- start[-1]
+    } else if (direction == "ascending") {
+        ps <- smooth.spline(pressure, ...)
+        dp <- diff(ps$y)
+        dp <- c(dp[1], dp)
+        look <- dp < cutoff * median(dp[dp<0])
+        start <- which(diff(look) == 1)
+        if (0 == length(start))
+            start <- 1
+        if (0 == length(end))
+            end <- length(pressure)
+        end <- which(diff(look) == -1)
+        if (0 == length(end))
+            end <- length(pressure)
+        if (start[1] > end[1])
+            start <- start[-1]
+    } else {
+        stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
-    if (start[1] > end[1])
-        start <- start[-1]
+    oceDebug(debug, "start:", start, "(before trimming)\n")
+    oceDebug(debug, "end:", end, "(before trimming)\n")
+    start <- subset(start, start<max(end))
+    end <- subset(end, end>min(start))
+    oceDebug(debug, "start:", start, "(after trimming)\n")
+    oceDebug(debug, "end:", end, "(after trimming)\n")
     if (length(end) > length(start))
         end <- end[1:length(start)]
-    keep <- (end - start) >= smallest 
+    keep <- abs(end - start) >= minLength
+    oceDebug(debug, "start:", start[keep], "(using minLength)\n")
+    oceDebug(debug, "end:", end[keep], "(using minLength)\n")
+    keep <- keep & (abs(ps$y[end] - ps$y[start]) >= minHeight)
+    oceDebug(debug, "heights:", ps$y[end]-ps$y[start], "; compare with minHeight=", minHeight, "\n")
+    oceDebug(debug, "start:", start[keep], "(using minHeight)\n")
+    oceDebug(debug, "end:", end[keep], "(using minHeight)\n")
     indices <- data.frame(start=start[keep], end=end[keep])
+    if (debug) print(indices)
     if (is.logical(arr.ind) && arr.ind) {
-        oceDebug(debug, "} # ctdFindDescents()\n")
+        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
         return(indices)
     } else {
         ncasts <- length(indices$start)
         casts <- vector("list", ncasts)
         for (i in 1:ncasts) {
-            oceDebug(debug, "descent #", i, "of", ncasts, "\n")
+            oceDebug(debug, "profile #", i, "of", ncasts, "\n")
             ii <- seq.int(indices$start[i], indices$end[i])
             cast <- ctdTrim(x, "index", parameters=ii)
             cast@processingLog <- processingLog(cast@processingLog,
                                                 paste(paste(deparse(match.call()), sep="", collapse=""),
-                                                " # descent ", i, " of ", ncasts))
+                                                " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
-        oceDebug(debug, "\b\b} # ctdFindDescents()\n")
+        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
         return(casts)
     }
 }
@@ -388,7 +420,14 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             }
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
-            x@data$pressure <- smooth(x@data$pressure,kind="3R")
+            x@data$pressure <- smooth(x@data$pressure, kind="3R")
+            ascending <- 0 > mean(diff(x@data$pressure))
+            oceDebug(debug, "ascending=", ascending, "\n")
+            if (ascending) {
+                for (name in names(x@data)) {
+                    x@data[[name]] <- rev(x@data[[name]])
+                }
+            }
             pmin <- 0
             if (!missing(parameters)) {
                 if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
@@ -398,7 +437,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             delta.p <- diff(x@data$pressure)  # descending
             delta.p <- c(delta.p[1], delta.p) # to get right length
             keep <- keep & (delta.p > 0)
-                                        # 3. trim the upcast and anything thereafter (ignore beginning and end)
+            ## 3. trim the upcast and anything thereafter (ignore beginning and end)
             trim.top <- as.integer(0.1*n)
             trim.bottom <- as.integer(0.9*n)
             max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
@@ -406,7 +445,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             keep[max.location:n] <- FALSE
             oceDebug(debug, "pressure maximum of", x@data$pressure[max.spot], "dbar, at index=", max.spot, "\n")
             if (FALSE) {
-                                        # deleted method: slowly-falling data
+                ## deleted method: slowly-falling data
                 delta.p.sorted <- sort(delta.p)
                 if (!is.null(parameters)) {
                     dp.cutoff <- t.test(delta.p[keep], conf.level=0.5)$conf.int[1]
@@ -448,6 +487,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     }
                     ##} else {
                     ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
+                }
+            }
+            if (ascending) {
+                for (name in names(x@data)) {
+                    x@data[[name]] <- rev(x@data[[name]])
                 }
             }
         } else if (method == "range") {
@@ -545,11 +589,11 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = 1:4,
+          definition=function(x, which = c(1, 2, 3, 5),
                               eos=getOption("eos", default='unesco'),
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE, col.grid="lightgray", lty.grid="dotted",
-                              coastline="coastlineWorld",
+                              coastline="best",
                               Slim, Tlim, plim, densitylim, N2lim,
                               dpdtlim, timelim,
                               lonlim, latlim, span,
@@ -569,7 +613,8 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "teos"))
-              oceDebug(debug, "\b\bplot.ctd(..., which=", which, ", eos=\"", eos, "\", inset=", inset, ", ...) {\n")
+              oceDebug(debug, "\b\bplot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="")
               dots <- list(...)
               opar <- par(no.readonly = TRUE)
               if (add && length(which) > 1) {
@@ -631,11 +676,14 @@ setMethod(f="plot",
               last.good <- which(rev(is.na(x@data$salinity))==FALSE)[1]
               if (length(last.good) > 0) {
                   last.good <- length(x@data$temperature) - last.good + 1
-                  for (nc in seq_along(x@data))
-                      x@data[[nc]] <- x@data[[nc]][1:last.good]
+                  for (nc in seq_along(x@data)) {
+                      if (!is.null(x@data[[nc]])) {
+                          x@data[[nc]] <- x@data[[nc]][1:last.good]
+                      }
+                  }
               }
 
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which:", which, "(before matching character strings)\n")
               which <- ocePmatch(which,
                                  list("temperature+salinity"=1,
                                       "density+N2"=2,
@@ -651,7 +699,7 @@ setMethod(f="plot",
                                       N2=12,
                                       spice=13,
                                       tritium=14))
-              oceDebug(debug, "which:", which, "\n")
+              oceDebug(debug, "which:", which, "(after matching character strings)\n")
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
@@ -836,93 +884,87 @@ setMethod(f="plot",
                           yloc <- yloc - d.yloc
                       }
                   } else if (which[w] == 5) {
-                      oceDebug(debug, "draw(ctd, ...) of type MAP\n")
-                      ## get coastline file
-                      if (is.character(coastline)) {
-                          if (coastline == "none") {
-                              if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="", cex.axis=cex.axis,
-                                       inset=inset)
+                      if (is.finite(x[["latitude"]]) && is.finite(x[["longitude"]])) {
+                          oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                          ## FIXME: use waterdepth to guess a reasonable span, if not supplied
+                          if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
+                              waterDepth <- x[["waterDepth"]]
+                          else 
+                              waterDepth <- max(x[["pressure"]], na.rm=TRUE)
+                          if (missing(span)) {
+                              if (waterDepth < 50)
+                                  span <- 100
+                              else if (waterDepth < 200)
+                                  span <- 500
+                              else if (waterDepth < 2000)
+                                  span <- 1000
+                              else
+                                  span <- 10000
+                          }
+                          oceDebug(debug, "span=", span, "km\n")
+                          if (is.character(coastline)) {
+                              if (coastline == "best") {
+                                  coastline <- coastlineBest(x[["longitude"]]+c(-1,1)*span/111,
+                                                             x[["latitude"]]+c(-1,1)*span/111,
+                                                             debug=debug-1)
+                              } else if (coastline == "coastlineWorld") {
+                                  data(coastlineWorld, envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (coastline == "coastlineMaritimes") {
+                                  data(coastlineMaritimes, envir=environment())
+                                  coastline <- coastlineMaritimes
+                              } else if (coastline == "coastlineHalifax") {
+                                  data(coastlineHalifax, envir=environment())
+                                  coastline <- coastlineHalifax
+                              } else if (coastline == "coastlineSLE") {
+                                  data(coastlineSLE, envir=environment())
+                                  coastline <- coastlineSLE
+                              } else if (coastline == "none") {
                               } else {
-                                  warning("no latitude or longitude in object's metadata, so cannot draw map")
-                              }
-                          } else { # named coastline
-                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                  if (coastline == "coastlineWorld") {
-                                      data(coastlineWorld, envir=environment())
-                                      coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineMaritimes") {
-                                      data(coastlineMaritimes, envir=environment())
-                                      coastline <- coastlineMaritimes
-                                  } else if (coastline == "coastlineHalifax") {
-                                      data(coastlineHalifax, envir=environment())
-                                      coastline <- coastlineHalifax
-                                  } else if (coastline == "coastlineSLE") {
-                                      data(coastlineSLE, envir=environment())
-                                      coastline <- coastlineSLE
-                                  } else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                  }
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                           }
-                      }
-                      ## FIXME: perhaps use water depth to get default chart span (not used yet, though)
-                      if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
-                          waterDepth <- x[["waterDepth"]]
-                      else 
-                          waterDepth <- max(x[["pressure"]], na.rm=TRUE)
-                      if (missing(span)) {
-                          if (waterDepth < 50)
-                              span <- 150
-                          else if (waterDepth < 200)
-                              span <- 500
-                          else if (waterDepth < 2000)
-                              span <- 1000
-                          else
-                              span <- 10000
-                      }
-                      oceDebug(debug, "span=", span, "\n")
-                      if (missing(lonlim)) {
-                          lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
-                          clon <- mean(lonlim.c)
-                          if (missing(latlim)) {
-                              oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
-                              latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
-                              plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                          if (missing(lonlim)) {
+                              lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
+                              clon <- mean(lonlim.c)
+                              if (missing(latlim)) {
+                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
+                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              } else {
+                                  oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
+                                  clat <- mean(latlim)
+                                  plot(coastline, clatitude=clat, clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              }
+                              if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
+                                  mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
                           } else {
-                              oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
-                              clat <- mean(latlim)
-                              plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              oceDebug(debug, "lonlim was provided\n")
+                              clon <- mean(lonlim)
+                              if (missing(latlim)) {
+                                  oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
+                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  clat <- mean(latlim.c)
+                                  plot(coastline, clatitude=clat, clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              } else {
+                                  oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
+                                  clat <- mean(latlim)
+                                  plot(coastline, clatitude=clat, clongitude=clon,
+                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                              }
                           }
-                          if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
-                              mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
-                      } else {
-                          oceDebug(debug, "lonlim was provided\n")
-                          clon <- mean(lonlim)
-                          if (missing(latlim)) {
-                              oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                              latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
-                              clat <- mean(latlim.c)
-                              plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
-                          } else {
-                              oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
-                              clat <- mean(latlim)
-                              plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
-                          }
+                          oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
+                          points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                          if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
+                              mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                          if (!is.null(x@metadata$startTime))
+                              mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                          ##if (!is.null(x@metadata$scientist))
+                          ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                       }
-                      oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
-                      points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-                      if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                          mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
-                      if (!is.null(x@metadata$startTime))
-                          mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
-                      ##if (!is.null(x@metadata$scientist))
-                      ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
@@ -1777,6 +1819,7 @@ summary.ctd <- function(object, ...)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes, indent='  ')
     processingLogShow(object)
+    invisible()
 } 
 
 
@@ -2021,6 +2064,9 @@ plotProfile <- function (x,
         } else if (type == 's') {
             lines(x, y, col = col, lwd=lwd, type='s')
         } else if (type == 'p') {
+            points(x, y, col = col, cex=cex, pch=pch)
+        } else if (type == 'o') {
+            lines(x, y, col = col, lwd=lwd)
             points(x, y, col = col, cex=cex, pch=pch)
         } else if (type == 'b') {
             lines(x, y, col = col, lwd=lwd)

@@ -18,8 +18,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
             args <- list(...)
             depths <- length(pressure)
             ##df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
-            if (missing(df))
-               df <- min(floor(length(pressure)/5), 10)
+            if (missing(df)) {
+                if (depths > 20)
+                    df <- floor(depths / 10)
+                else if (depths > 10)
+                    df <- floor(depths / 3)
+                else
+                    df <- floor(depths / 2)
+                oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
+            }
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
@@ -37,6 +44,18 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
         sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
     }
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
+}
+
+swPressure <- function(depth, latitude=45)
+{
+    ndepth <- length(depth)
+    if (length(latitude) < ndepth)
+        latitude <- rep(latitude, ndepth)
+    rval <- vector("numeric", ndepth)
+    for (i in 1:ndepth) {
+        rval[i] <- uniroot(function(p) depth[i] - swDepth(p, latitude[i]), interval=depth[i]*c(0.8, 1.2))$root
+    }
+    rval
 }
 
 swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))

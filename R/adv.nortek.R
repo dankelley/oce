@@ -331,6 +331,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, vectorShow(roll, "roll"))
     temperature <- 0.01 * readBin(buf[vsdStart2 + 20], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
     oceDebug(debug, vectorShow(temperature, "temperature"))
+    salinity <- header$user$salinity
+    oceDebug(debug, "salinity (in metadata):", salinity, "\n")
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsdStart[floor(0.5*length(vsdStart))] + 23]
@@ -428,6 +430,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
     metadata$velocityResolution <- metadata$velocityScale / 2^15
+    metadata$salinity <- salinity
 
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
     data <- list(v=v, a=a, q=q,

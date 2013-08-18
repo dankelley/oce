@@ -13,7 +13,7 @@ help the author in the development of Oce.  The easy way to install the
 ``develop`` branch is to execute the following commands in R::
 
     library(devtools)
-    install_github('ocedata', 'dankelley', 'develop')
+    install_github('ocedata', 'dankelley', 'master')
     install_github('oce', 'dankelley', 'develop')
 
 This uses the ``devtools`` package, which is one of many powerful tools written

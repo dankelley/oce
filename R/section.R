@@ -84,6 +84,115 @@ setMethod(f="show",
               }
           })
 
+
+
+setMethod(f="subset",
+          signature="section",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              dotsNames <- names(dots)
+              indicesGiven <- length(dots) && ("indices" %in% dotsNames)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (indicesGiven) {        # select a portion of the stations
+                  if (!missing(subset))
+                      stop("cannot give both 'subset' and 'indices'")
+                  oceDebug(debug, "subsetting by indices\n")
+                  rval <- new("section")
+                  indices <- dots$indices
+                  n <- length(indices)
+                  if (is.logical(indices))
+                      indices <- (1:n)[indices]
+                  station <- vector("list", n)
+                  stn <- vector("character", n)
+                  lon <- vector("numeric", n)
+                  lat <- vector("numeric", n)
+                  for (i in 1:n) {
+                      ii <- indices[i]
+                      stn[i] <- x@metadata$stationId[ii]
+                      lat[i] <- x@metadata$latitude[ii]
+                      lon[i] <- x@metadata$longitude[ii]
+                      station[[i]] <- x@data$station[[ii]]
+                  }
+                  data <- list(station=station)
+                  metadata <- x@metadata
+                  metadata$stationId <- stn
+                  metadata$latitude=lat
+                  metadata$lonitude=lon
+                  rval@metadata <- metadata
+                  rval@data <- data
+                  rval@processingLog <- x@processingLog
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+              } else if (length(grep("stationId", subsetString))) {
+                  keep <- eval(substitute(subset),
+                               envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
+                  rval@metadata$stationId <- x@metadata$stationId[keep]
+                  rval@metadata$longitude <- x@metadata$longitude[keep]
+                  rval@metadata$latitude <- x@metadata$latitude[keep]
+                  rval@metadata$date <- x@metadata$date[keep]
+                  rval@data$station <- x@data$station[keep]
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+              } else {                        # subset within the stations
+                  if ("indices" %in% dotsNames)
+                      stop("2. cannot give both 'subset' and 'indices'")
+                  oceDebug(debug, "subsetting by 'subset'\n")
+                  ##subsetString <- deparse(substitute(subset))
+                  ##oceDebug(debug, "subsetString='", subsetString, "'\n")
+                  rval <- x
+                  if (length(grep("distance", subsetString))) {
+                      l <- list(distance=geodDist(rval))
+                      keep <- eval(substitute(subset), l, parent.frame())
+                      rval@metadata$latitude <- rval@metadata$latitude[keep]
+                      rval@metadata$longitude <- rval@metadata$longitude[keep]
+                      rval@metadata$stationId <- rval@metadata$stationId[keep]
+                      rval@data$station <- rval@data$station[keep]
+                  } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
+                      n <- length(x@data$station)
+                      keep <- vector(length=n)
+                      for (i in 1:n)
+                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame())
+                      nn <- sum(keep)
+                      station <- vector("list", nn)
+                      stn <- vector("character", nn)
+                      lon <- vector("numeric", nn)
+                      lat <- vector("numeric", nn)
+                      j <- 1
+                      for (i in 1:n) {
+                          if (keep[i]) {
+                              stn[j] <- x@metadata$stationId[i]
+                              lat[j] <- x@metadata$latitude[i]
+                              lon[j] <- x@metadata$longitude[i]
+                              station[[j]] <- x@data$station[[i]]
+                              j <- j + 1
+                          }
+                      }
+                      data <- list(station=station)
+                      metadata <- list(header=x@metadata$header,
+                                       sectionId=x@metadata$sectionId,
+                                       stationId=stn,
+                                       latitude=lat,
+                                       longitude=lon)
+                      rval <- new('section')
+                      rval@data <- data
+                      rval@metadata <- metadata
+                      rval@processingLog <- x@processingLog
+                  } else {
+                      n <- length(x@data$station)
+                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
+                      for (i in 1:n) {
+                          rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
+                      }
+                  }
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+              }
+              rval
+          })
+
+ 
+
 sectionSort <- function(section, by=c("stationId", "distance"))
 {
     by <- match.arg(by)
@@ -215,7 +324,7 @@ setMethod(f="plot",
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline="coastlineWorld",
+                              coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               xtype=c("distance", "track", "latitude", "longitude"),
@@ -231,12 +340,13 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              debug <- if (debug > 2) 2 else floor(0.5 + debug)
+              debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(which))
                   which <- "temperature"
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
+              coastline <- match.arg(coastline)
               legend.loc <- match.arg(legend.loc)
               oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n", sep="")
               plotSubsection <- function(variable="temperature", vtitle="T",
@@ -275,31 +385,61 @@ setMethod(f="plot",
                       } else {
                           plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       }
-                      if (!is.null(coastline)) {
-                          if (is.character(coastline)) {
-                              if (coastline == "none") {
-                                  next
-                              } else { # named coastline
-                                  if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                      oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                      if (coastline == "coastlineWorld") {
-                                          data(coastlineWorld, envir=environment())
-                                          coastline <- coastlineWorld
-                                      } else if (coastline == "coastlineMaritimes") {
-                                          data(coastlineMaritimes, envir=environment())
-                                          coastline <- coastlineMaritimes
-                                      } else if (coastline == "coastlineHalifax") {
-                                          data(coastlineHalifax, envir=environment())
-                                          coastline <- coastlineHalifax
-                                      } else if (coastline == "coastlineSLE") {
-                                          data(coastlineSLE, envir=environment())
-                                          coastline <- coastlineSLE
-                                      } else {
-                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                      }
-                                  }
+                      haveCoastline <- FALSE
+                      ##data(coastlineWorld, envir=environment())
+                      ##data(coastlineMaritimes, envir=environment())
+                      ##data(coastlineHalifax, envir=environment())
+                      if (!is.character(coastline)) 
+                          stop("coastline must be a character string")
+                      if (coastline == "best") {
+                          coastline <- coastlineBest(lonr, latr, debug=debug-1)
+                          haveCoastline <- TRUE
+                          if (FALSE) {
+                              if (any(lonr > 180))
+                                  lonr <- lonr - 360
+                              ##cat("TEST: autoshrink to best coastline file\n")
+                              ##cat("lonr:", lonr, "\n")
+                              ##cat("latr:", latr, "\n")
+                              ##cat("lon range hfs:", range(coastlineHalifax[['longitude']],na.rm=TRUE), '\n')
+                              ##cat("lat range hfs:", range(coastlineHalifax[['latitude']],na.rm=TRUE), '\n')
+                              if (lonr[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
+                                  lonr[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
+                                  latr[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
+                                  latr[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
+                                  coastline <- coastlineHalifax
+                                  haveCoastline <- TRUE 
+                                  oceDebug(debug, "using coastlineHalifax\n")
+                              } else if (lonr[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
+                                         lonr[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
+                                         latr[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
+                                         latr[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
+                                  coastline <- coastlineMaritimes
+                                  haveCoastline <- TRUE 
+                                  oceDebug(debug, "using coastlineMaritimes\n")
+                              } else {
+                                  oceDebug(debug, "using coastlineWorld\n")
+                                  coastline <- coastlineWorld
+                                  haveCoastline <- TRUE 
                               }
                           }
+                      } else {
+                          if (coastline != "none") {
+                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
+                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
+                                  if (coastline == "coastlineWorld") {
+                                      coastline <- coastlineWorld
+                                  } else if (coastline == "coastlineMaritimes") {
+                                      coastline <- coastlineMaritimes
+                                  } else if (coastline == "coastlineHalifax") {
+                                      coastline <- coastlineHalifax
+                                  } else {
+                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  }
+                              }
+                              haveCoastline <- TRUE
+                          }
+                      }
+                      if (haveCoastline) {
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
@@ -308,6 +448,8 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
+
+                      ## add station data
                       lines(lon, lat, col="lightgray")
                       ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
@@ -1154,7 +1296,7 @@ summary.section <- function(object, ...)
     } else {
         cat("* No stations\n")
     }
-    ##processingLogShow(object)
+    processingLogShow(object)
 }
 
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station) # FIXME: code this

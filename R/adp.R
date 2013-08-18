@@ -101,6 +101,113 @@ setValidity("adp",
                 }
             })
 
+
+setMethod(f="subset",
+          signature="adp",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (missing(subset))
+                  stop("must give 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting an adp by time\n")
+                  if (length(grep("distance", subsetString)))
+                      stop("cannot subset by both time and distance; split into multiple calls")
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  names <- names(x@data)
+                  haveDia <- "timeDia" %in% names
+                  if (haveDia) {
+                      subsetDiaString <- gsub("time", "timeDia", subsetString)
+                      keepDia <- eval(parse(text=subsetDiaString), x@data)
+                      oceDebug(debug, "for diagnostics, keeping ", 100*sum(keepDia) / length(keepDia), "% of data\n")
+                  }
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  oceDebug(debug, "number of kept bins:", sum(keep), "\n")
+                  if (sum(keep) < 2)
+                      stop("must keep at least 2 profiles")
+                  rval <- x
+                  ## FIXME: are we handling slow timescale data?
+                  for (name in names(x@data)) {
+                      if (length(grep("Dia$", name))) {
+                          if ("distance" == name)
+                              next
+                          if (name == "timeDia" || is.vector(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepDia]
+                          } else if (is.matrix(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepDia,]
+                          } else if (is.array(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
+                          }
+                      } else {
+                          if (name == "time" || is.vector(x@data[[name]])) {
+                              if ("distance" == name)
+                                  next
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                          } else if (is.matrix(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep,]
+                          } else if (is.array(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                          }
+                      }
+                  }
+              } else if (length(grep("distance", subsetString))) {
+                  oceDebug(debug, "subsetting an adp by distance\n")
+                  if (length(grep("time", subsetString)))
+                      stop("cannot subset by both time and distance; split into multiple calls")
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
+                  if (sum(keep) < 2)
+                      stop("must keep at least 2 bins")
+                  rval <- x
+                  rval@data$distance <- x@data$distance[keep]
+                  for (name in names(x@data)) {
+                      if (name == "time")
+                          next
+                      if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
+                          oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
+                          oceDebug(debug, "before, dim(", name, ") =", dim(rval@data[[name]]), "\n")
+                          rval@data[[name]] <- x@data[[name]][,keep,, drop=FALSE]
+                          oceDebug(debug, "after, dim(", name, ") =", dim(rval@data[[name]]), "\n")
+                      }
+                  }
+              } else if (length(grep("pressure", subsetString))) {
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  rval <- x
+                  rval@data$v <- rval@data$v[keep,,]
+                  rval@data$a <- rval@data$a[keep,,]
+                  rval@data$q <- rval@data$q[keep,,]
+                  rval@data$time <- rval@data$time[keep]
+                  ## the items below may not be in the dataset
+                  names <- names(rval@data)
+                  if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
+                  if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
+                  if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
+                  if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
+                  if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
+                  if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
+                  if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
+                  if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
+              } else {
+                  stop("should express the subset in terms of distance or time")
+              }
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
+
 head.adp <- function(x, n = 6L, ...)
 {
     numberOfProfiles <- dim(x@data$v)[1]

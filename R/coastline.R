@@ -9,7 +9,25 @@ setMethod(f="initialize",
               .Object@processingLog$value <- "create 'coastline' object"
               return(.Object)
           })
-## the default 'oce' object is sufficient for other methods
+
+
+setMethod(f="subset",
+          signature="oce",
+          definition=function(x, subset, ...) {
+              if (missing(subset))
+                  stop("must give 'subset'")
+              ## FIXME: need the stuff that's below??
+              ###   subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
+              ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
+              keep <- eval(substitute(subset), x@data, parent.frame())
+              rval <- x
+              rval@data$latitude[!keep] <- NA
+              rval@data$longitude[!keep] <- NA
+              rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              rval
+          })
+
 
 as.coastline <- function(latitude, longitude, fillable=FALSE)
 {
@@ -563,3 +581,70 @@ summary.coastline <- function(object, ...)
     processingLogShow(object)
 }
 
+
+coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "\bcoastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
+             "), latRange=c(", paste(round(latRange, 2), collapse=","), "), debug=", debug, ") {\n", sep="")
+    if (any(lonRange > 180)) {
+        lonRange <- lonRange - 360 # FIXME: does this always work?
+        oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
+    }
+
+    ## data(coastlineHalifax, envir=environment())
+    ## data(coastlineMaritimes, envir=environment())
+    ## data(coastlineSLE, envir=environment())
+    ## data(coastlineWorld, envir=environment())
+    ## range(coastlineHalifax[["longitude"]], na.rm=TRUE)
+    ## [1] -63.70000 -63.36807
+    ## range(coastlineHalifax[["latitude"]], na.rm=TRUE)
+    ## [1] 44.55496 44.75000
+    ## data(coastlineMaritimes, envir=environment())
+    ## range(coastlineMaritimes[["longitude"]], na.rm=TRUE)
+    ## [1] -66.8000 -59.6897
+    ## range(coastlineMaritimes[["latitude"]], na.rm=TRUE)
+    ## [1] 43.39973 47.20000
+    ## data(coastlineSLE, envir=environment())
+    ## range(coastlineSLE[["longitude"]], na.rm=TRUE)
+    ## [1] -71.50000 -67.31163
+    ## range(coastlineSLE[["latitude"]], na.rm=TRUE)
+    ## [1] 46.80000 49.38621
+    ## data(coastlineWorld, envir=environment())
+    ## range(coastlineWorld[["longitude"]], na.rm=TRUE)
+    ## [1] -180  180
+    ## range(coastlineWorld[["latitude"]], na.rm=TRUE)
+    ## [1] -90.0000  83.6236
+
+    lonrHalifax <- c(-63.70000, -63.36807)
+    latrHalifax <- c(44.55496, 44.75000)
+
+    lonrMaritimes <- c(-66.8000, -59.6897)
+    latrMaritimes <- c(43.39973, 47.20000)
+
+    lonrSLE <- c(-71.50000, -67.31163)
+    latrSLE <- c(46.80000, 49.38621)
+
+    lonrWorld <- c(-180, 180)
+    latrWorld <- c(-90.0000, 83.6236)
+
+    if (lonRange[1] >= lonrHalifax[1] && lonRange[2] <= lonrHalifax[2] &&
+        latRange[1] >= latrHalifax[1] && latRange[2] <= latrHalifax[2]) {
+        oceDebug(debug, "\b\b} # using coastlineHalifax\n")
+        data(coastlineHalifax, envir=environment())
+        return(coastlineHalifax)
+    } else if (lonRange[1] >= lonrSLE[1] && lonRange[2] <= lonrSLE[2] &&
+               latRange[1] >= latrSLE[1] && latRange[2] <= latrSLE[2]) {
+        oceDebug(debug, "\b\b} # using coastlineSLE\n")
+        data(coastlineSLE, envir=environment())
+        return(coastlineSLE)
+    } else if (lonRange[1] >= lonrMaritimes[1] && lonRange[2] <= lonrMaritimes[2] &&
+               latRange[1] >= latrMaritimes[1] && latRange[2] <= latrMaritimes[2]) {
+        oceDebug(debug, "\b\b} # using coastlineMaritimes\n")
+        data(coastlineMaritimes, envir=environment())
+        return(coastlineMaritimes)
+    } else {
+        data(coastlineWorld, envir=environment())
+        oceDebug(debug, "\b\b} # using coastlineWorld\n")
+        return(coastlineWorld)
+    }
+}

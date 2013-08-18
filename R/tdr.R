@@ -11,6 +11,18 @@ setMethod(f="initialize",
           })
 ## the default 'oce' object is sufficient for other methods
 
+#subset.tdr <- function (x, subset, ...)
+#{
+#    if (missing(subset))
+#        stop("must give 'subset'")
+#    keep <- eval(substitute(subset), x@data, parent.frame())
+#    rval <- x
+#    for (i in seq_along(x@data))
+#        rval@data[[i]] <- rval@data[[i]][keep]
+#    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+#    rval
+#}
+
 as.tdr <- function(time, temperature, pressure,
                    filename="",
                    instrumentType="rbr",

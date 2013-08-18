@@ -23,6 +23,24 @@ setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
+
+setMethod(f="subset",
+          signature="oce",
+          definition=function(x, subset, ...) {
+              if (missing(subset))
+                  stop("must give 'subset'")
+              keep <- eval(substitute(subset), x@data, parent.frame())
+              rval <- x
+              for (i in seq_along(x@data))
+                  rval@data[[i]] <- rval@data[[i]][keep]
+              rval@processingLog <- processingLog(rval@processingLog,
+                                                  paste(deparse(match.call(call=sys.call(sys.parent(1)))),
+                                                                sep="", collapse=""))
+              rval
+          })
+
+
+
 setMethod(f="[[",
           signature="oce",
           definition=function(x, i, j, drop) {
@@ -37,7 +55,8 @@ setMethod(f="[[",
               } else if (i %in% names(x@data)) {
                   return(x@data[[i]])
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                  return(NULL)
               }
           })
 
@@ -56,7 +75,7 @@ setMethod(f="[[<-",
                       x@processingLog$value <- c(x@processingLog$value, value)
                   }
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  warning("there is no item named \"", i, "\" in this ", class(x), " object")
               }
               validObject(x)
               invisible(x)
