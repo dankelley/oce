@@ -65,6 +65,8 @@
                 a \code{time} column in the \code{data} slot, or a \code{sample.rate}
                 in the \code{metadata} slot. }
             \item{\code{"spice"}}{Profile of spice}
+            \item{\code{"Rrho"}}{Profile of Rrho, defined in the diffusive sense}
+            \item{\code{"RrhoSF"}}{Profile of Rrho, defined in the salt-finger sense}
             \item{an expression}{an expression to be evaluated, in the calling
                 environment, for some quantity; in this case, it makes sense to
                 specify also \code{xlab}.}

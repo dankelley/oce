@@ -700,7 +700,9 @@ setMethod(f="plot",
                                       density=11,
                                       N2=12,
                                       spice=13,
-                                      tritium=14))
+                                      tritium=14,
+                                      Rrho=15,
+                                      RrhoSF=16))
               oceDebug(debug, "which:", which, "(after matching character strings)\n")
 
               for (w in 1:length(which)) {
@@ -807,6 +809,24 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 14) {
                       plotProfile(x, xtype="tritium",
+                                  ylim=plim,
+                                  eos=eos,
+                                  useSmoothScatter=useSmoothScatter,
+                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  debug=debug-1,
+                                  ...)
+                  } else if (which[w] == 15) {
+                      plotProfile(x, xtype="Rrho",
+                                  ylim=plim,
+                                  eos=eos,
+                                  useSmoothScatter=useSmoothScatter,
+                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  debug=debug-1,
+                                  ...)
+                  } else if (which[w] == 16) {
+                      plotProfile(x, xtype="RrhoSF",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -2294,6 +2314,31 @@ plotProfile <- function (x,
             }
             plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
         }
+    } else if (xtype == "Rrho" || xtype == "RrhoSF") {
+        Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger", ...)
+        look <- if (keepNA) 1:length(y) else !is.na(Rrho) & !is.na(y)
+        if (!add) {
+            if (ylimGiven) {
+                plot(Rrho, y[look],
+                     ylim=ylim,
+                     type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            } else {
+                plot(Rrho, y[look],
+                     ylim=rev(range(y[look])),
+                     type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            }
+            mtext(expression(R[rho]), side = 3, line = axis.name.loc, cex=par("cex"))
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+        }
+        plotJustProfile(Rrho, y[look], type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
         if (missing(Tlim)) {

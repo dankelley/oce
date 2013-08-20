@@ -2,7 +2,6 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df)
 {
     if (!inherits(ctd, "ctd"))
         stop("first argument must be of class \"ctd\"")
-    cat("smoothingLength=", smoothingLength, "\n")
     sense <- match.arg(sense)
     pressure <- ctd[['pressure']]
     salinity <- ctd[['salinity']]

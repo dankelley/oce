@@ -40,8 +40,11 @@
 
 \examples{
 library(oce)
-data(ctd)
-plot(swRrho(ctd), ctd[["depth"]])
+stn <- a03[["station"]][[20]]
+par(mfrow=c(1,3))
+plotProfile(stn,"salinity")
+plotProfile(stn,"temperature")
+plotProfile(stn, "RrhoSF")
 }
 
 \author{Dan Kelley and Chantelle Layton}
