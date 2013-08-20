@@ -19,6 +19,8 @@ setMethod(f="[[",
                   swN2(x)
               } else if (i == "theta" || i == "potential temperature") {
                   swTheta(x)
+              } else if (i == "Rrho") {
+                  swRrho(x)
               } else if (i == "spice") {
                   swSpice(x)
               } else if (i == "absoluteSalinity" || i == "SA") {

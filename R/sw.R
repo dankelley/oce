@@ -1,3 +1,33 @@
+swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df)
+{
+    if (!inherits(ctd, "ctd"))
+        stop("first argument must be of class \"ctd\"")
+    cat("smoothingLength=", smoothingLength, "\n")
+    sense <- match.arg(sense)
+    pressure <- ctd[['pressure']]
+    salinity <- ctd[['salinity']]
+    theta <- ctd[['theta']]
+    alpha <- swAlpha(ctd)
+    beta <- swBeta(ctd)
+    A <- smoothingLength / mean(diff(pressure), na.rm=TRUE) 
+    n <- length(pressure)
+    ## infer d(theta)/dp and d(salinity)/dp from smoothing splines
+    if (missing(df)) {
+        thetaSpline <- smooth.spline(pressure, theta, df=n/A)
+        salinitySpline <- smooth.spline(pressure, salinity, df=n/A)
+    } else {
+        thetaSpline <- smooth.spline(pressure, theta, df=df)
+        salinitySpline <- smooth.spline(pressure, salinity, df=df)
+    }
+    dthetadp <- predict(thetaSpline, pressure, deriv=1)$y
+    dsalinitydp <- predict(salinitySpline, pressure, deriv=1)$y
+    if (sense == "diffusive")
+        Rrho <- (beta * dsalinitydp)/ (alpha * dthetadp)
+    else
+        Rrho <- (alpha * dthetadp) / (beta * dsalinitydp)
+    Rrho
+}
+
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
 {
     ##cat("swN2(..., df=", df, ")\n",sep="")
