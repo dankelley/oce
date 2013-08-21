@@ -1,4 +1,5 @@
 0.9-13
+- read.ctd.woce() now accepts a format used once by Arctic scientists
 - swRrho() added
 - plotProfile() now accepts type="o"
 - read.adv.nortek(): read salinity
