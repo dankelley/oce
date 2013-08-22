@@ -1,4 +1,5 @@
 library(mapproj)
+
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -33,6 +34,22 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     }
     ## FIXME: labels, using labcex and vfont
 }
+
+mapLongitudeLatitudeXY <- function(longitude, latitude)
+{
+    if (missing(longitude))
+        stop("must give 'longitude' and possibly 'latitude'")
+    if (!missing(longitude) && ("data" %in% slotNames(longitude))) {
+        tmp <- longitude@data
+        if (("longitude" %in% names(tmp)) && ("latitude" %in% names(tmp))) {
+            latitude <- tmp$latitude
+            longitude <- tmp$longitude
+        }
+    }
+    proj <- mapproject(longitude, latitude)
+    list(x=proj$x, y=proj$y) # if other properties prove helpful, may add them
+} 
+
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
@@ -213,6 +230,7 @@ mapMeridians <- function(lat, lty='dotted', lwd=par('lwd'), col='lightgray', ...
         }
     }
 }
+
 
 mapZones <- function(lon, polarCircle=0, lty='dotted', lwd=par('lwd'), col='lightgray', ...)
 {
