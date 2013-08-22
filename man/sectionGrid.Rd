@@ -19,8 +19,9 @@
       \code{section}.  If a single numerical value is provided, it is taken as
       a step for a seq() running from 0 to the maximum pressure (rounded to
       that step).  If \code{p="levitus"}, then the levels are set to be those
-      of Levitus atlas, trimmed to the maximum pressure in \code{section}.  If
-      a list of numerical values is provided, then it is used as is.}
+      of Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
+      maximum pressure in \code{section}.  If a list of numerical values is
+      provided, then it is used as is.}
 
   \item{method}{the algorithm to use for interpolation to the pressure levels;
       see Details below for a sketch, and see \code{\link{ctdDecimate}} for a
