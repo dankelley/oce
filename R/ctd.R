@@ -1183,9 +1183,17 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             stationRow <- grep("CASTNO", header[i])
             if (length(stationRow)) station <- sub("CASTNO[ ]*=[ ]*", "", header[i])
             latitudeRow <- grep("LATITUDE", header[i])
-            if (length(latitudeRow)) latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
+            if (length(latitudeRow)) {
+                latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
+                if (length(grep(".*S.*", header[i])))
+                    latitude <- -latitude
+            }
             longitudeRow <- grep("LONGITUDE", header[i])
-            if (length(longitudeRow)) longitude <- as.numeric(sub("LONGITUDE.*=[ ]*", "", header[i]))
+            if (length(longitudeRow)) {
+                longitude <- as.numeric(sub("LONGITUDE.*=[ ]*", "", header[i]))
+                if (length(grep(".*W.*", header[i])))
+                    longitude <- -longitude
+            }
             dateRow <- grep("DATE", header[i])
             if (length(dateRow)) {
                 d <- sub("[ ]*DATE[ ]*=[ ]*", "", header[i])
