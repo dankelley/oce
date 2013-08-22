@@ -48,36 +48,47 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
   \item{\dots}{additional arguments, passed to called routines.}
 }
 
-\details{These functions read CTD datasets that have been stored in
-  common formats, and could be extended to accommodate other formats if
-  needed.  \code{read.ctd} is a dispatch function that analyzes some of
-  the file contents, and then calls either \code{read.ctd.sbe} (for
-  files created by Seabird CTD instruments) or \code{read.ctd.woce} (for
-  files stored in the exchange format used by the World Ocean
-  Circulation Experiment.)
+\details{These functions read CTD datasets that have been stored in common
+    formats, and could be extended to accommodate other formats if needed.  The
+    basic function is \code{read.ctd}, which analyzes some of the file
+    contents, and then calls one of the following, any of which can be called
+    directly.
+    \itemize{
+        \item \code{read.ctd.sbe()} reads files files created by Seabird CTD
+        instruments.  These are recognized by a first line with first ten
+        characters ``\code{* Sea-Bird}.''
+        \item \code{read.ctd.woce()} reads files stored in the exchange format
+        used by the World Ocean Circulation Experiment (WOCE) (first 4
+        characters of the first line being ``\code{CTD,}''), and also in a
+        rarer format with the first 3 characters being \code{CTD}'' followed by
+        a blank or the end of the line).
+        \item \code{read.ctd.odf()} reads files stored in Ocean Data Format,
+        used in some Canadian hydrographic databases.
+    }
 
-  The functions attempt to infer a wide range of meta-information from
-  file headers, but variations in these headers impose some limitations
-  on the process.  For example, in the first file tested during
-  development, the sampling rate was written as \code{* sample rate = 1
-  scan every 0.5 seconds}, while the second test file had \code{*
-  Real-Time Sample Interval = 0.125 seconds}; dealing with such
-  variations is not easy.  Similarly, the functions can be challenged in
-  parsing latitudes and longitudes in the wide variety of ways that
-  humans choose (decimal versus degree-minute-second, signed versus
-  "east" and "west", or "e" and "w".).  The solution to the challenge is
-  simple: do a reasonable job with common file formats, and provide
-  users with the tools to correct (or insert) information that would
-  ideally be gleaned from the headers.  This can be done by direct
-  manipulation of the entries in the object's \code{metadata},
-  e.g. writing \code{object@metadata$latitude <- 33 + 1/3}.
+    The functions attempt to infer a wide range of meta-information from
+    file headers, but variations in these headers impose some limitations
+    on the process.  For example, in the first file tested during
+    development, the sampling rate was written as ``\code{* sample rate = 1
+        scan every 0.5 seconds}'' while the second test file had ``\code{*
+        Real-Time Sample Interval = 0.125 seconds}'' and dealing with such
+    variations is not easy.  Similarly, the functions can be challenged in
+    parsing latitudes and longitudes in the wide variety of ways that humans
+    choose (decimal versus degree-minute-second, signed versus "east" and
+    "west", or "e" and "w".).  Users should keep in mind that incorrect
+    inferences can generally be corrected by direct manipulation of the
+    object's contents.
+    
+    Importantly, different file types provide different meta-information.  For
+    example, the WOCE exchange format binds together the institute name and the
+    initials of the chief scientist into a single string that \code{read.ctd}
+    cannot parse, so both \code{object@metadata$institute} and
+    \code{object@metadata$scientist} are left blank for WOCE files.
 
-  It should be noted that different file types provide different
-  meta-information.  For example, the WOCE exchange format binds
-  together the institute name and the initials of the chief scientist
-  into a single string that \code{read.ctd} cannot parse, so both
-  \code{object@metadata$institute} and \code{object@metadata$scientist} are
-  left blank for WOCE files.}
+    Users interested in understanding the decoding process should consult the
+    code, because including full documentation here would essentially involve
+    translating the code into words, which is errorr prone and which would
+    invite code-documentation mismatch.  }
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
   list with elements detailed below. 

@@ -1095,7 +1095,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
     } else {
         if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
         else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
-        else stop("type must be SBE19 or WOCE, not ", type)
+        else stop("type must be SBE19, WOCE or ODF, not ", type)
     }                                   # FIXME: should just use oceMagic() here
     rval <- switch(type,
                    SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
@@ -1150,20 +1150,16 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     conductivity.standard <- 4.2914
     ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
     ## First line
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
+    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     oceDebug(debug, paste("examining header line '",line,"'\n", sep=""))
     header <- line
-    ## CTD, 20000718WHPOSIOSCD
-    isCTD <- "CTD" == substr(line, 1, 3)
-    isBOTTLE <- "BOTTLE" == substr(line, 1, 6)
-    if (!isCTD && !isBOTTLE)
-        warning("Can only read WOCE files of type CTD or BOTTLE (the latter being largely untested)")
-    traditional <- isBOTTLE || ',' == substr(line, 4, 4) # permits a whackadoodle format found in Beaufort Sea
-    if (!traditional) { # a format used in a 2003 survey of the Canada Basin
+    ## Handle a format used in a 2003 survey of the Canada Basin
+    if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
+        oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
         ##CTD 
         ##CRUISE NAME = LSSL 2003-21 
         ##AREA = Arctic Ocean, Canada Basin 
-        ##SHIP = CCGS Louis S St.Laurent 
+        ##SHIP = CCGS Louis S St.Laurent
         ##CASTNO = 1 
         ##DATE = 11-Aug-2003 
         ##LATITUDE (N)= 71.391 
@@ -1172,10 +1168,13 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %      
         ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
         lines <- readLines(file)
+        oceDebug(debug, "file has", length(lines), "lines\n")
         headerEnd <- grep("[ ]*DB[ ]*,", lines)
         if (is.na(headerEnd))
             stop("cannot decode the header in this CTD file")
         header <- lines[1:headerEnd]
+        oceDebug(debug, "headerEnd:", headerEnd, "\n")
+        names <- c("pressure", "temperature", "salinity", "oxygen", "fluorescence", "transmission") # may get updated
         for (i in seq_along(header)) {
             cruiseRow <- grep("CRUISE NAME", header[i])
             if (length(cruiseRow)) cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i])
@@ -1192,25 +1191,35 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                 d <- sub("[ ]*DATE[ ]*=[ ]*", "", header[i])
                 date <- as.POSIXct(d, format="%d-%b-%Y", tz="UTC")
             }
+            namesRow <- grep("^[ ]*Pressure,", header[i])
+            if (length(namesRow)) {
+                names <- strsplit(tolower(header[i]), ",")[[1]]
+            }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
-        res@metadata <- list(header=header,
-                             filename=filename,
-                             cruise=cruise,
-                             station=station,
-                             sampleInterval=NA,
-                             names=names,
-                             latitude=latitude,
-                             longitude=longitude)
-
-        names <- c("pressure", "temperature", "salinity", "oxygen", "fluorescence", "transmission")
-        res@data <- read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names)
-        if (missing(processingLog))
-            processingLog <- paste(deparse(match.call()), sep="", collapse="")
-        res@processingLog <- processingLog(res@processingLog, processingLog)
-        oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
-        return(res)
-    } else {
+        metadata <- list(header=header,
+                         filename=filename, # provided to this routine
+                         filename.orig=filename.orig, # from instrument
+                         systemUploadTime=systemUploadTime,
+                         ship=ship,
+                         scientist=scientist,
+                         institute=institute,
+                         address=address,
+                         cruise=NULL,
+                         station=station,
+                         date=date,
+                         startTime=startTime,
+                         latitude=latitude,
+                         longitude=longitude,
+                         recovery=recovery,
+                         waterDepth=NA, #if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
+                         sampleInterval=sampleInterval,
+                         names=names,
+                         labels=labels,
+                         src=filename)
+        data <- read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names)
+        metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+    } else {                           # CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
         ##cat("DATE '", date, "'\n", sep="")
@@ -1321,70 +1330,67 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         var.units <- strsplit(line, split=",")[[1]]
         lines <- readLines(file)
         nlines <- length(lines)
-
-    } 
-    pressure <- vector("numeric", nlines)
-    temperature <- vector("numeric", nlines)
-    salinity <- vector("numeric", nlines)
-    oxygen <- vector("numeric", nlines)
-    b <- 0
-    for (iline in 1:nlines) {
-        if (0 < (length(grep("END_DATA", lines[iline]))))
-            break
-        items <- strsplit(lines[iline], ",")[[1]]
-        pressure[iline] <- as.numeric(items[pcol])
-        salinity[iline] <- as.numeric(items[Scol])
-        temperature[iline] <- as.numeric(items[Tcol])
-        oxygen[iline] <- as.numeric(items[Ocol])
-        if (monitor) {
-            cat(".")
-            if (!((b+1) %% 50))
-                cat(b+1, "\n")
+        pressure <- vector("numeric", nlines)
+        temperature <- vector("numeric", nlines)
+        salinity <- vector("numeric", nlines)
+        oxygen <- vector("numeric", nlines)
+        b <- 0
+        for (iline in 1:nlines) {
+            if (0 < (length(grep("END_DATA", lines[iline]))))
+                break
+            items <- strsplit(lines[iline], ",")[[1]]
+            pressure[iline] <- as.numeric(items[pcol])
+            salinity[iline] <- as.numeric(items[Scol])
+            temperature[iline] <- as.numeric(items[Tcol])
+            oxygen[iline] <- as.numeric(items[Ocol])
+            if (monitor) {
+                cat(".")
+                if (!((b+1) %% 50))
+                    cat(b+1, "\n")
+            }
+            b <- b + 1
         }
-        b <- b + 1
+        pressure <- pressure[1:b]
+        temperature <- temperature[1:b]
+        salinity <- salinity[1:b]
+        oxygen <- oxygen[1:b]
+        if (monitor)
+            cat("\nRead", b-1, "lines of data\n")
+        pressure[pressure == missing.value] <- NA
+        salinity[salinity == missing.value] <- NA
+        temperature[temperature == missing.value] <- NA
+        sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
+        data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
+        names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
+        labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
+        if (length(oxygen) > 0) {
+            oxygen[oxygen == missing.value] <- NA
+            data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
+        }
+        ## catch e.g. -999 sometimes used for water depth's missing value
+        if (is.finite(waterDepth) && waterDepth <= 0)
+            waterDepth <- NA
+        metadata <- list(header=header,
+                         filename=filename, # provided to this routine
+                         filename.orig=filename.orig, # from instrument
+                         systemUploadTime=systemUploadTime,
+                         ship=ship,
+                         scientist=scientist,
+                         institute=institute,
+                         address=address,
+                         cruise=NULL,
+                         station=station,
+                         date=date,
+                         startTime=startTime,
+                         latitude=latitude,
+                         longitude=longitude,
+                         recovery=recovery,
+                         waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
+                         sampleInterval=sampleInterval,
+                         names=names,
+                         labels=labels,
+                         src=filename)
     }
-    pressure <- pressure[1:b]
-    temperature <- temperature[1:b]
-    salinity <- salinity[1:b]
-    oxygen <- oxygen[1:b]
-    if (monitor)
-        cat("\nRead", b-1, "lines of data\n")
-    pressure[pressure == missing.value] <- NA
-    salinity[salinity == missing.value] <- NA
-    temperature[temperature == missing.value] <- NA
-    sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
-
-    ##data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
-    data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
-    names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
-    labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
-    if (length(oxygen) > 0) {
-        oxygen[oxygen == missing.value] <- NA
-        data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
-    }
-    ## catch e.g. -999 sometimes used for water depth's missing value
-    if (is.finite(waterDepth) && waterDepth <= 0)
-        waterDepth <- NA
-    metadata <- list(header=header,
-                     filename=filename, # provided to this routine
-                     filename.orig=filename.orig, # from instrument
-                     systemUploadTime=systemUploadTime,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=address,
-                     cruise=NULL,
-                     station=station,
-                     date=date,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=recovery,
-                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
-                     sampleInterval=sampleInterval,
-                     names=names,
-                     labels=labels,
-                     src=filename)
     res@metadata <- metadata
     res@data <- data
     if (missing(processingLog))
