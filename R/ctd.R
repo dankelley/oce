@@ -1185,13 +1185,13 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             latitudeRow <- grep("LATITUDE", header[i])
             if (length(latitudeRow)) {
                 latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
-                if (length(grep(".*S.*", header[i])))
+                if (length(grep(".*S.*", header[i], ignore.case=TRUE)))
                     latitude <- -latitude
             }
             longitudeRow <- grep("LONGITUDE", header[i])
             if (length(longitudeRow)) {
                 longitude <- as.numeric(sub("LONGITUDE.*=[ ]*", "", header[i]))
-                if (length(grep(".*W.*", header[i])))
+                if (length(grep(".*W.*", header[i], ignore.case=TRUE)))
                     longitude <- -longitude
             }
             dateRow <- grep("DATE", header[i])
