@@ -53,7 +53,6 @@ SEXP gradient(SEXP m, SEXP x, SEXP y)
   SEXP gx;
   PROTECT(gx = allocMatrix(REALSXP, nrow, ncol));
   double *gxp = REAL(gx);
-  for (i = 0; i < nrow; i++) { for (j = 0; j < ncol; j++) { gxp[ix(i, j)] = 100.00; } }
   for (j = 0; j < ncol; j++) {
     gxp[ix(0, j)] = (mp[ix(1,j)] - mp[ix(0,j)]) / (xp[1] - xp[0]);
     gxp[ix(nrow - 1, j)] = (mp[ix(nrow - 1, j)] - mp[ix(nrow - 2, j)]) / (xp[nrow-1] - xp[nrow-2]);
@@ -70,7 +69,6 @@ SEXP gradient(SEXP m, SEXP x, SEXP y)
   SEXP gy;
   PROTECT(gy = allocMatrix(REALSXP, nrow, ncol));
   double *gyp = REAL(gy);
-  for (i = 0; i < nrow; i++) { for (j = 0; j < ncol; j++) { gyp[ix(i, j)] = 100.00; } }
   for (i = 0; i < nrow; i++) {
     gyp[ix(i, 0)] = (mp[ix(i,1)] - mp[ix(i,0)]) / (yp[1] - yp[0]);
     gyp[ix(i, ncol - 1)] = (mp[ix(i, ncol - 1)] - mp[ix(i, ncol - 2)]) / (yp[ncol-1] - yp[ncol-2]);
