@@ -952,6 +952,7 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
 interpBarnes <- function(x, y, z, w,
                          xg, yg, xgl, ygl,
                          xr, yr, gamma=0.5, iterations=2, trim=0,
+                         interpolateToData=FALSE,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
@@ -1007,7 +1008,8 @@ interpBarnes <- function(x, y, z, w,
     g <- .Call("interp_barnes",
                as.double(x[ok]), as.double(y[ok]), as.double(z[ok]), as.double(w[ok]),
                as.double(xg), as.double(yg), as.double(xr), as.double(yr),
-               as.double(gamma), as.integer(iterations))
+               as.double(gamma), as.integer(iterations),
+               as.integer(interpolateToData))
     oceDebug(debug, "\b\b} # interpBarnes(...)\n")
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim)
