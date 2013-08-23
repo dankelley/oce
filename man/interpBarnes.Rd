@@ -72,11 +72,13 @@ data(wind)
 u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg, labcex=1)
 text(wind$x, wind$y, wind$z, cex=0.7, col="blue")
+title("Numbers are the data")
 
 # 2. As 1, but blank out spots where data are sparse
 u <- interpBarnes(wind$x, wind$y, wind$z, trim=0.1)
 contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1)) 
 points(wind$x, wind$y, cex=1.5, pch=20, col="blue")
+
 
 # 3. As 1, but interpolate back to points, and display the percent mismatch
 u <- interpBarnes(wind$x, wind$y, wind$z)
@@ -84,6 +86,7 @@ contour(u$xg, u$yg, u$zg, labcex=1)
 upoints <- interpBarnes(wind$x, wind$y, wind$z, interpolateToData=TRUE)
 mismatch <- 100 * (wind$z - upoints$zg) / wind$z
 text(wind$x, wind$y, round(mismatch), col="blue")
+title("Numbers are percent mismatch between grid and data")
 
 # 4. One-dimensional example, smoothing a salinity profile
 data(ctd)
