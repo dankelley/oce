@@ -91,8 +91,7 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
     SEXP xg, SEXP yg,		   /* grid */
     SEXP xr, SEXP yr, /* influence radii */
     SEXP gamma,	     /* radius-reduction factor */
-    SEXP iterations, /* number of iterations */
-    SEXP interpolateToData)  /* flag */
+    SEXP iterations) /* number of iterations */
 {
   double *rx, *ry, *rz, *rw; /* data */
   double *rxg, *ryg;	   /* grid */
@@ -100,172 +99,118 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   double *rgamma;		   /* gamma */
   int *niter;		   /* num iterations */
   int nx, nxg, nyg, i, j, k, it;
-  double *z_last, *z_last2;
+  double *z_last;
   double *zz, *nn;	  /* matrices */
-  double *rzg;		  /* resultant gridded z */
-  double *rwg;		  /* resultant weight at final iteration */
+  double *rzg;		  /* resultant matrix of interpolated value at grid*/
+  double *rwg;		  /* resultant matrix of weight at grid */
+  double *rzd;		  /* resultant vector of interpolated value at data */
   double xr2, yr2;	  /* radii, adjusting */
-  SEXP zg, ng;
+  SEXP zg, wg, zd;
   SEXP rval, rval_names;
-  PROTECT(rval = allocVector(VECSXP, 2));
-  PROTECT(rval_names = allocVector(STRSXP, 2));
-
   nx = length(x);
+  nxg = length(xg);
+  nyg = length(yg);
+  PROTECT(rval = allocVector(VECSXP, 3));
+  PROTECT(rval_names = allocVector(STRSXP, 3));
+  PROTECT(zg = allocMatrix(REALSXP, nxg, nyg));
+  PROTECT(wg = allocMatrix(REALSXP, nxg, nyg));
+  PROTECT(zd = allocVector(REALSXP, nx));
+
   rx = REAL(x);
   ry = REAL(y);
   rz = REAL(z);
   rw = REAL(w);
-
-  nxg = length(xg);
-  nyg = length(yg);
+  
   rxg = REAL(xg);
   ryg = REAL(yg);
   rgamma = REAL(gamma);
   niter = INTEGER(iterations);
   if (*niter < 0) error("cannot have a negative number of iterations");
   if (*niter > 20) error("cannot have more than 20 iterations.  Got %d", *niter);
-  int *interpolate_to_data = INTEGER(interpolateToData);
   rxr = REAL(xr);
   ryr = REAL(yr);
   xr2 = *rxr;
   yr2 = *ryr;
 
   /* previous values */
-  //z_last = (double*)malloc(nx * sizeof(double));
-  //z_last2 = (double*)malloc(nx * sizeof(double));
-  //zz = (double*)malloc(nxg * nyg * sizeof(double));
   z_last = (double*)R_alloc(nx, sizeof(double));
-  z_last2 = (double*)R_alloc(nx, sizeof(double));
+  /* working matrices */
   zz = (double*)R_alloc(nxg * nyg, sizeof(double));
   nn = (double*)R_alloc(nxg * nyg, sizeof(double));
 
-  SEXP wg;
-  if (*interpolate_to_data) {
-    for (i = 0; i < nx; i++) {
-      zz[i] = z_last[i] = z_last2[i] = 0.0;
-    }
-    PROTECT(zg = allocVector(REALSXP, nx));
-    PROTECT(wg = allocVector(REALSXP, nx));
-    rzg = REAL(zg);
-    rwg = REAL(wg);
-    for (it = 0; it < *niter; it++) {
-      R_CheckUserInterrupt();
-      /* update grid */
-      for (k = 0; k < nx; k++) {
-	zz[k] = interpolate_barnes(rx[k], ry[k], zz[k],
+  rzg = REAL(zg);
+  rwg = REAL(wg);
+  rzd = REAL(zd);  // used to be called z_last2
+
+  for (i = 0; i < nxg; i++)
+    for (j = 0; j < nyg; j++) 
+      zz[i + nxg*j] = 0.0;
+  for (k = 0; k < nx; k++)
+    z_last[k] = rzd[k] = 0.0;
+  for (it = 0; it < *niter; it++) {
+    /* update grid */
+    for (i = 0; i < nxg; i++) {
+      for (j = 0; j < nyg; j++) {
+	zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
 	    -1, /* no skip */
 	    nx,
 	    rx, ry, rz, rw,
 	    z_last,
 	    xr2, yr2);
       }
-      //Rprintf("interpolate_to_data step 1 (iteration %d of %d)\n", it, *niter-1);
       R_CheckUserInterrupt();
-      /* interpolate grid back to data locations */
-      for (k = 0; k < nx; k++) {
-	z_last2[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
-	    -1, /* BUG: why not skip? */
-	    nx,
-	    rx, ry, rz, rw,
-	    z_last,
-	    xr2, yr2);
-      }
-      R_CheckUserInterrupt();
-      //Rprintf("interpolate_to_data step 2 (iteration %d)\n", it);
-      for (k = 0; k < nx; k++)
-	z_last[k] = z_last2[k];
-      if (*rgamma > 0.0) {
-	/* refine search range for next iteration */
-	xr2 *= sqrt(*rgamma);
-	yr2 *= sqrt(*rgamma);
-      }
-      //Rprintf("interpolate_to_data step 3 (iteration %d)\n", it);
     }
-    //Rprintf("OK?\n");
-    for (i = 0; i < nx; i++) {
-      //Rprintf("in loop i=%d nx=%d\n", i, nx);
-      rzg[i] = zz[i];
+    /* interpolate grid back to data locations */
+    for (k = 0; k < nx; k++) {
+      rzd[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
+	  -1, /* BUG: why not skip? */
+	  nx,
+	  rx, ry, rz, rw,
+	  z_last,
+	  xr2, yr2);
     }
-    //Rprintf("interpolate_to_data step 4\n");
     R_CheckUserInterrupt();
-    // weights at final region-of-influence radii
-    for (i = 0; i < nx; i++) {
-      rwg[i] = weight_barnes(rx[i], ry[i],
+    for (k = 0; k < nx; k++)
+      z_last[k] = rzd[k];
+    if (*rgamma > 0.0) {
+      /* refine search range for next iteration */
+      xr2 *= sqrt(*rgamma);
+      yr2 *= sqrt(*rgamma);
+    }
+  }
+
+  // copy matrix to return value
+  for (i = 0; i < nxg; i++) {
+    for (j = 0; j < nyg; j++) {
+      rzg[i + nxg * j] = zz[i + nxg * j];
+    }
+    R_CheckUserInterrupt();
+  }
+
+  // weights at final region-of-influence radii
+  for (i = 0; i < nxg; i++) {
+    for (j = 0; j < nyg; j++) {
+      rwg[i + nxg*j] = weight_barnes(rxg[i], ryg[j],
 	  -1, /* no skip */
 	  nx,
 	  rx, ry, rz, rw,
 	  xr2, yr2);
     }
-    //Rprintf("interpolate_to_data step 5\n");
-  } else { // not interpolate_to_grid
-    for (i = 0; i < nxg; i++)
-      for (j = 0; j < nyg; j++) 
-	zz[i + nxg*j] = 0.0;
-    for (k = 0; k < nx; k++)
-      z_last[k] = z_last2[k] = 0.0;
-    PROTECT(zg = allocMatrix(REALSXP, nxg, nyg));
-    PROTECT(wg = allocMatrix(REALSXP, nxg, nyg));
-    rzg = REAL(zg);
-    rwg = REAL(wg);
-    for (it = 0; it < *niter; it++) {
-      R_CheckUserInterrupt();
-      /* update grid */
-      for (i = 0; i < nxg; i++) {
-	for (j = 0; j < nyg; j++) {
-	  zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
-	      -1, /* no skip */
-	      nx,
-	      rx, ry, rz, rw,
-	      z_last,
-	      xr2, yr2);
-	}
-	R_CheckUserInterrupt();
-      }
-      /* interpolate grid back to data locations */
-      for (k = 0; k < nx; k++) {
-	z_last2[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
-	    -1, /* BUG: why not skip? */
-	    nx,
-	    rx, ry, rz, rw,
-	    z_last,
-	    xr2, yr2);
-      }
-      R_CheckUserInterrupt();
-      for (k = 0; k < nx; k++)
-	z_last[k] = z_last2[k];
-      if (*rgamma > 0.0) {
-	/* refine search range for next iteration */
-	xr2 *= sqrt(*rgamma);
-	yr2 *= sqrt(*rgamma);
-      }
-    }
-    for (i = 0; i < nxg; i++) {
-      for (j = 0; j < nyg; j++) {
-	rzg[i + nxg * j] = zz[i + nxg * j];
-      }
-      R_CheckUserInterrupt();
-    }
-
-    // weights at final region-of-influence radii
-    for (i = 0; i < nxg; i++) {
-      for (j = 0; j < nyg; j++) {
-	rwg[i + nxg*j] = weight_barnes(rxg[i], ryg[j],
-	    -1, /* no skip */
-	    nx,
-	    rx, ry, rz, rw,
-	    xr2, yr2);
-      }
-      R_CheckUserInterrupt();
-    }
+    R_CheckUserInterrupt();
   }
 
+  // zg = interpolated values at grid points (matrix)
   SET_VECTOR_ELT(rval, 0, zg);
   SET_STRING_ELT(rval_names, 0, mkChar("zg"));
-
+  // wg = weights at grid points (matrix)
   SET_VECTOR_ELT(rval, 1, wg);
   SET_STRING_ELT(rval_names, 1, mkChar("wg"));
+  // zd = interpolated values at data (vector of same length as x)
+  SET_VECTOR_ELT(rval, 2, zd);
+  SET_STRING_ELT(rval_names, 2, mkChar("zd")); 
+  // save the names
   setAttrib(rval, R_NamesSymbol, rval_names);
 
-  UNPROTECT(4);
+  UNPROTECT(5);
   return(rval);
 }

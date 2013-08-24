@@ -9,7 +9,6 @@
 \usage{interpBarnes(x, y, z, w,
     xg, yg, xgl, ygl,
     xr, yr, gamma=0.5, iterations=2, trim=0,
-    interpolateToData=FALSE,
     debug=getOption("oceDebug"))}
 
 \arguments{
@@ -34,10 +33,6 @@
   \item{gamma}{grid-focussing parameter.  At each iteration, \code{xr}
     and \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
   \item{iterations}{number of iterations.}
-  \item{interpolateToData}{if \code{TRUE}, interpolation is not done to a
-      grid, but rather to the (\code{x}, \code{y}) data points, and in this
-      case, the returned \code{zg} is not a matrix, but rather a vector, and
-      the returned \code{xg} and \code{yg} equal \code{x} and \code{y}.}
   \item{trim}{a number between 0 and 1, indicating the quantile of data weight
       to be used as a criterion for blanking out the gridded value (using
       \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any
@@ -53,16 +48,11 @@
     sparse, using the \code{trim} argument.
 }
 
-\value{If \code{interpolateToData} is \code{FALSE}, the return value is a
-    list containing \code{xg} (a vector holding the x-grid), \code{yg}) (a
-    vector holding the y-grid), \code{zg} (a matrix holding the gridded values)
-    and \code{wg} (a matrix holding the weights used in the interpolation at
-    its final iteration).  
-    
-    If \code{interpolateToData} is \code{TRUE}, the interpolation is
-    done at the (\code{x}, \code{y}) data points, and then the returned values
-    \code{xg} and \code{yg} equal \code{x} and \code{y} respectively, and
-    \code{zg} is a vector of the same length, instead of a matrix.}
+\value{A list containing: \code{xg}, a vector holding the x-grid); \code{yg}, a
+    vector holding the y-grid; \code{zg}, a matrix holding the gridded values;
+    \code{wg}, a matrix holding the weights used in the interpolation at its
+    final iteration; and \code{zd}, a vector of the same length as \code{x},
+    which holds the interpolated values at the data points.}
 
 \examples{
 library(oce)
@@ -79,16 +69,19 @@ u <- interpBarnes(wind$x, wind$y, wind$z, trim=0.1)
 contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1)) 
 points(wind$x, wind$y, cex=1.5, pch=20, col="blue")
 
-
 # 3. As 1, but interpolate back to points, and display the percent mismatch
 u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg, labcex=1)
-upoints <- interpBarnes(wind$x, wind$y, wind$z, interpolateToData=TRUE)
-mismatch <- 100 * (wind$z - upoints$zg) / wind$z
+mismatch <- 100 * (wind$z - u$zd) / wind$z
 text(wind$x, wind$y, round(mismatch), col="blue")
 title("Numbers are percent mismatch between grid and data")
 
-# 4. One-dimensional example, smoothing a salinity profile
+
+# 4. As 3, but contour the mismatch
+mismatchGrid <- interpBarnes(wind$x, wind$y, mismatch)
+contour(mismatchGrid$xg, mismatchGrid$yg, mismatchGrid$zg, labcex=1)
+
+# 5. One-dimensional example, smoothing a salinity profile
 data(ctd)
 p <- pressure(ctd)
 y <- rep(1, length(p)) # fake y data, with arbitrary value
