@@ -1010,7 +1010,7 @@ interpBarnes <- function(x, y, z, w,
                as.double(gamma), as.integer(iterations))
     oceDebug(debug, "\b\b} # interpBarnes(...)\n")
     if (trim >= 0 && trim <= 1) {
-        bad <- g$wg < quantile(g$wg, trim)
+        bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
         g$zg[bad] <- NA
     }
     list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
