@@ -60,35 +60,58 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
         \item \code{read.ctd.woce()} reads files stored in the exchange format
         used by the World Ocean Circulation Experiment (WOCE) (first 4
         characters of the first line being ``\code{CTD,}''), and also in a
-        rarer format with the first 3 characters being \code{CTD}'' followed by
+        rarer format with the first 3 characters being ``\code{CTD}'' followed by
         a blank or the end of the line).
         \item \code{read.ctd.odf()} reads files stored in Ocean Data Format,
         used in some Canadian hydrographic databases.
     }
 
-    The functions attempt to infer a wide range of meta-information from
-    file headers, but variations in these headers impose some limitations
-    on the process.  For example, in the first file tested during
-    development, the sampling rate was written as ``\code{* sample rate = 1
-        scan every 0.5 seconds}'' while the second test file had ``\code{*
-        Real-Time Sample Interval = 0.125 seconds}'' and dealing with such
-    variations is not easy.  Similarly, the functions can be challenged in
-    parsing latitudes and longitudes in the wide variety of ways that humans
-    choose (decimal versus degree-minute-second, signed versus "east" and
-    "west", or "e" and "w".).  Users should keep in mind that incorrect
-    inferences can generally be corrected by direct manipulation of the
-    object's contents.
-    
-    Importantly, different file types provide different meta-information.  For
-    example, the WOCE exchange format binds together the institute name and the
-    initials of the chief scientist into a single string that \code{read.ctd}
-    cannot parse, so both \code{object@metadata$institute} and
+    Different file types provide different meta-information.  For example, the
+    WOCE exchange format binds together the institute name and the initials of
+    the chief scientist into a single string that \code{read.ctd} cannot parse,
+    so both \code{object@metadata$institute} and
     \code{object@metadata$scientist} are left blank for WOCE files.
+}
 
-    Users interested in understanding the decoding process should consult the
-    code, because including full documentation here would essentially involve
-    translating the code into words, which is errorr prone and which would
-    invite code-documentation mismatch.  }
+\section{Implementation and extension}{The functions attempt to infer a wide range of
+    meta-information from file headers, but variations in these headers limit
+    general application.  For example, \code{read.ctd.sbe} handles water depths
+    in any of the following forms, but ostensibly similar forms may not work.
+    \itemize{
+        \item \preformatted{"** DEPTH = 100"}
+        \item \preformatted{"** Water Depth:   40 m"}
+        \item \preformatted{"** Depth (m): 3447 "}
+        \item \preformatted{"** Depth: 16"}
+        \item \preformatted{"** Profondeur: 92"}
+    }
+    If water depth cannot be inferred from the header, \code{read.ctd} sets it
+    to the maximum recorded pressure, and issues a warning to that effect.
+
+    Similar issues come up for essentially everything stored in CTD headers,
+    and so if odd values are found (e.g. a station in the wrong hemisphere),
+    there is a good chance that the format is not being handled correctly.
+    Given the expense of collecting data, users are well-advised to check
+    inferred values against the values in the data files, for at least on
+    profile within a given cruise.  Modifying the \code{read.ctd} code is not
+    particularly difficult, and users are encouraged to examine the source code
+    (in \code{R/ctd.R}) to see whether modification can help.  Some experience
+    with regular expressions and string manipulation may be needed; see
+    \code{\link{regexpr}} and \code{\link{sub}}.
+    Three sample files are provided with the package, in
+    \itemize{\item \code{system.file("extdata", "ctd.cnv", package="oce")}
+    \item \code{system.file("extdata", "d200321-001.ctd", package="oce")}
+    \item \code{system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce")}}
+    and an examination of these in relationship with the existing code should help
+    users to understand the present implementation, providing insights on extending it
+    for their own data.
+
+    In many cases, CTD instruments are set up to report dates in English.  This
+    can cause a problem for users running in different locales, since e.g month
+    names differ.  Therefore, if you know your datafile is written in
+    American-English notation, you might want to do
+    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.
+
+}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
   list with elements detailed below. 
@@ -140,12 +163,6 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
 \seealso{The documentation for \code{\link{ctd-class}} explains the structure
     of \code{ctd} objects, and also outlines the other functions dealing with
     them.}
-
-\section{note}{In many cases, CTD instruments are set up to report dates in
-    English.  This can cause a problem for users running in different locales,
-    since e.g month names differ.  Therefore, if you know your datafile is
-    written in American-English notation, you might want to do
-    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.}
 
 \examples{
 library(oce)

@@ -152,6 +152,10 @@ as.ctd <- function(salinity, temperature, pressure,
     if (!missing(missingValue)) {
         data[data==missingValue] <- NA
     }
+    if (is.na(waterDepth)) {
+        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+        warning("inferred water depth from maximum pressure")
+    }
     metadata <- list(header=NULL,
                      type=type, model=model, filename=filename, serialNumber=serialNumber,
                      filename.orig=filename,
@@ -159,7 +163,7 @@ as.ctd <- function(salinity, temperature, pressure,
                      ship=ship,scientist=scientist,institute=institute,address=address,cruise=cruise,station=station,
                      date=date, startTime=startTime, recovery=recovery,
                      latitude=latitude, longitude=longitude,
-                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure), na.rm=TRUE) else waterDepth,
+                     waterDepth=waterDepth,
                      sampleInterval=sampleInterval,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
@@ -1205,6 +1209,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
+        data <- read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names)
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
@@ -1220,13 +1225,11 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          latitude=latitude,
                          longitude=longitude,
                          recovery=recovery,
-                         waterDepth=NA, #if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
+                         waterDepth=max(abs(data$pressure), na.rm=TRUE), # not in header
                          sampleInterval=sampleInterval,
                          names=names,
                          labels=labels,
                          src=filename)
-        data <- read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names)
-        metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE)
     } else {                           # CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
@@ -1375,6 +1378,11 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             oxygen[oxygen == missing.value] <- NA
             data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
         }
+
+        if (is.na(waterDepth)) {
+            waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+            warning("inferred water depth from maximum pressure")
+        }
         ## catch e.g. -999 sometimes used for water depth's missing value
         if (is.finite(waterDepth) && waterDepth <= 0)
             waterDepth <- NA
@@ -1393,7 +1401,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          latitude=latitude,
                          longitude=longitude,
                          recovery=recovery,
-                         waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
+                         waterDepth=waterDepth,
                          sampleInterval=sampleInterval,
                          names=names,
                          labels=labels,
@@ -1408,7 +1416,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
-
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
@@ -1416,38 +1423,29 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     ## ** Latitude:      47 53.27 N
     x <- line
     positive <- TRUE
-    oceDebug(debug, paste("parseLatLon() processing stages\n0. [", x, "]\n", sep=""))
-    x <- sub("(.*)latitude", "", ignore.case=TRUE, x)
-    x <- sub("(.*)longitude", "", ignore.case=TRUE, x)
-    x <- sub("[:=]", "", ignore.case=TRUE, x)
-    oceDebug(debug, paste("1. [", x, "]\n", sep=""))
-    if (0 < (r <- regexpr("[NnEe]", x)))
-        x <- sub("[NnEe]", "", ignore.case=TRUE, x)
-    oceDebug(debug, paste("2. [", x, "]\n", sep=""))
-    if (0 < (r <- regexpr("[SsWw]", x))) {
-        positive <- FALSE
-        x <- sub("[SsWw]", "", ignore.case=TRUE, x)
-    }
-    oceDebug(debug, paste("3. [", x, "]\n", sep=""))
-    x <- sub("^[ \t]*", "", ignore.case=TRUE, x)
-    oceDebug(debug, paste("4. [", x, "]\n", sep=""))
-    x <- sub("[ \t]*$", "", ignore.case=TRUE, x)
-    oceDebug(debug, paste("5. [", x, "]\n", sep=""))
-    if (0 == nchar(x)) {
-        x <- NA
+    oceDebug(debug, "parseLatLon(\"", line, "\") {\n", sep="")
+    oceDebug(debug, "  step 1. \"", x, "\" (as provided)\n", sep="")
+    x <- sub("^[ =a-z*:]*", "", x, ignore.case=TRUE)
+    oceDebug(debug, "  step 2. \"", x, "\" (now should have no header text or symbols)\n", sep="")
+    sign <- 1
+    if (length(grep("[sSwW]", line)))
+        sign <- -1
+    x <- sub("[ =a-z:*]*$", "", x, ignore.case=TRUE) # trim anything not a number
+    oceDebug(debug, "  step 3. \"", x, "\" (now should have no trailing text or symbols)\n", sep="")
+    ## if single number, it's decimal degrees; if two numbers, degrees and then decimal minutes
+    xx <- strsplit(x, '[ \\t]+')[[1]]
+    if (1 == length(xx)) {
+        rval <- as.numeric(xx)
+        oceDebug(debug, "  step 4a. \"", rval, "\" (inferred from single #, decimal degrees)\n", sep="")
+    } else if (2 == length(xx)) {
+        rval <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
+        oceDebug(debug, "  step 4b. \"", rval, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
     } else {
-        x <- strsplit(x, " ")
-        if (length(x[[1]]) == 2) {
-            x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
-            if (!positive)
-                x <- (-x)
-        } else {
-            if (debug > 0)
-                warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
-        }
+        stop("cannot decode latitude or longitude from \"", line, "\"")
     }
-    oceDebug(debug, sprintf("6. x = %f\n", x))
-    x
+    rval <- rval * sign
+    oceDebug(debug, "\b} # parseLatLon()\n")
+    rval
 }
 
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
@@ -1488,7 +1486,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     serialNumber <- ""
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug, paste("examining header line '",line,"'\n"))
+        oceDebug(debug, "examining header line '",line,"'\n", sep="")
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
@@ -1568,11 +1566,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         ## * NMEA Latitude = 47 54.760 N
         ## ** Latitude:      47 53.27 N
         if (!found.header.latitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
-            latitude <- parseLatLon(lline)
+            latitude <- parseLatLon(lline, debug=debug-1)
             found.header.latitude <- TRUE
         }
         if (!found.header.longitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
-            longitude <- parseLatLon(lline)
+            longitude <- parseLatLon(lline, debug=debug-1)
             found.header.longitude <- TRUE
         }
         if (0 < (r<-regexpr("start_time =", lline))) {
@@ -1676,14 +1674,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (!found.pressure && !found.depth)
         stop("no column named 'pressure', 'depth' or 'depSM'")
 
-    ## If no water depth found, guess it from the maximum depth
-    ##
-    ##    if (is.na(water.depth)) {
-    ##        water.depth <- max(data$pressure, na.rm=TRUE)
-    ##        print(data$pressure)
-    ##        oceDebug(debug, "file header has no water depth, so inferring", water.depth, "from the pressure")
-    ##    }
-    ##
     metadata <- list(header=header,
                      type="SBE",
                      hexfilename=hexfilename, # from instrument
@@ -1700,7 +1690,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      latitude=latitude,
                      longitude=longitude,
                      recovery=recovery,
-                     waterDepth=waterDepth,
+                     waterDepth=waterDepth, # if NA, will update later
                      sampleInterval=sampleInterval,
                      names=col.names.inferred,
                      labels=col.names.inferred,
@@ -1752,8 +1742,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     }
-    if (is.na(res@metadata$waterDepth)) 
+    if (is.na(res@metadata$waterDepth)) {
         res@metadata$waterDepth <- max(abs(data$pressure))
+        warning("inferred water depth from maximum pressure")
+    }
+
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1814,8 +1807,15 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     waterDepth <- as.numeric(fromHeader("SOUNDING"))
     station <- fromHeader("EVENT_NUMBER")
-    if (!is.na(waterDepth) && waterDepth < 0)                # catch -999
+
+    ## water depth could be missing or e.g. -999
+    if (is.na(waterDepth)) {
+        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+        warning("inferred water depth from maximum pressure")
+    }
+    if (!is.na(waterDepth) && waterDepth < 0)
         waterDepth <- NA
+
     type <- fromHeader("INST_TYPE")
     if (length(grep("sea", type, ignore.case=TRUE)))
         type <- "SBE"
@@ -1838,7 +1838,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                      latitude=latitude,
                      longitude=longitude,
                      recovery=NULL,
-                     waterDepth=if (is.na(waterDepth)) max(abs(data$pressure)) else waterDepth,
+                     waterDepth=waterDepth,
                      sampleInterval=NA,
                      filename=filename)
     fff <- textConnection(lines)
@@ -1879,7 +1879,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!("pressure" %in% names)) warning("missing data$pressure")
     if (!("temperature" %in% names)) warning("missing data$temperature")
     metadata$names <- names
-    metadata$labels <- labels 
+    metadata$labels <- names
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
