@@ -1600,6 +1600,16 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline)
+        if (0 < (r<-regexpr("depth", lline))) { # "** Depth (m): 3447 "
+            look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
+            look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
+            look <- gsub("[ ]*", "", look, ignore.case=TRUE)
+            oceDebug(debug, " trying to get water depth from '", lline, "', reduced to '", look, "'\n", sep="")
+            if (!length(grep('[a-zA-Z]', look))) {
+                waterDepth<- as.numeric(look)
+                oceDebug(debug, "got waterDepth: ", waterDepth, "\n")
+            }
+        }
         if (0 < (r<-regexpr("water depth:", lline))
             || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
             ## Examples from files in use by author:
