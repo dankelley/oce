@@ -1590,8 +1590,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
         if (0 < (r<-regexpr("address:", lline)))
             address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("cruise:", lline)))
+        if (0 < (r<-regexpr("cruise:", lline))) {
             cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
+            cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
+        }
         if (is.null(station)) {
             if (0 < (r<-regexpr("station:", lline)))
                 station <- sub("(.*)station:([ ])*", "", ignore.case=TRUE, line) # full string
