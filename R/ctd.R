@@ -1555,6 +1555,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             d <- sub("(.*)date:([ ])*", "", lline)
             date <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
         }
+        ##* NMEA UTC (Time) = Jul 28 2011  04:17:53 
+        if (length(grep("^\\* .*time.*=.*$", lline))) {
+            d <- sub(".*=", "", lline)
+            d <- sub("^ *", "", d)
+            d <- sub(" *$", "", d)
+            date <- decodeTime(d)
+        }
         if (0 < (r<-regexpr("filename", lline)))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
         if (0 < (r<-regexpr("system upload time", lline))) {

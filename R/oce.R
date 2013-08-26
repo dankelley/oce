@@ -1280,7 +1280,12 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     invisible()
 }
 
-decodeTime <- function(time, time.formats=c("%b %d %Y %H:%M:%s", "%Y%m%d"), tz="UTC")
+decodeTime <- function(time,
+                       time.formats=c("%b %d %Y %H:%M:%s",
+                                      "%Y%m%d",
+                                      "%b %d %Y %H:%M:%S" # Jul 28 2011  04:17:53 
+                                      ),
+                       tz="UTC")
 {
     rval <- NA
     for (format in time.formats) {
