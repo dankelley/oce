@@ -6,7 +6,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df)
     pressure <- ctd[['pressure']]
     salinity <- ctd[['salinity']]
     theta <- ctd[['theta']]
-    if (length(pressure) < 2)
+    if (length(pressure) < 4)
         return(NA)
     alpha <- swAlpha(ctd)
     beta <- swBeta(ctd)

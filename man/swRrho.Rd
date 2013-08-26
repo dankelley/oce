@@ -33,6 +33,10 @@
     If the default arguments are acceptable, \code{ctd[["Rrho"]]} may be used
     instead of \code{swRrho(ctd)}.
 
+    The function returns \code{NA} if there are fewer than 4 depths in the
+    profile, because it is not reasonable to fit a spline to such short
+    profiles of salinity and temperature.
+
 } 
 
 \value{Density ratio defined in either the \code{"diffusive"} or
