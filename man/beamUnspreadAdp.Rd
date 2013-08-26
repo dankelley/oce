@@ -2,7 +2,7 @@
 
 \alias{beamUnspreadAdp}
 
-\title{Compensate ADP signal strength for spherical spreading}
+\title{Adjust ADP signal for spherical spreading}
 
 \description{Compensate ADP signal strength for spherical spreading}
 

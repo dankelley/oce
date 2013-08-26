@@ -3,12 +3,11 @@
 \alias{head.adp}
 \alias{tail}
 \alias{tail.adp}
-\title{
-  Returns the first or last parts of an \code{oce} object.
-}
-\description{
-  Returns the first or last parts of an \code{oce} object.
-}
+
+\title{Ends of \code{oce} objects.}
+
+\description{Returns the first or last parts of an \code{oce} object.}
+
 \usage{
 \method{head}{adp}(x, n = 6L, \dots)
 

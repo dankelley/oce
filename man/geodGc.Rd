@@ -2,7 +2,7 @@
 
 \alias{geodGc}
 
-\title{Find great-circle segments between two points on earth}
+\title{Great-circle segments between points on earth}
 
 \description{Find great-circle segments between two points on earth}
 

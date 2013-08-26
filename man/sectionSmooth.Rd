@@ -2,7 +2,7 @@
 
 \alias{sectionSmooth}
 
-\title{Smooth a section (preliminary version that may change)}
+\title{Smooth a section}
 
 \description{Smooth a section in the lateral (alpha version that may change)}
 

@@ -2,7 +2,7 @@
 
 \alias{matchBytes}
 
-\title{Find spots in a raw vector that match a given byte sequence.}
+\title{Locate byte sequences in a raw vector}
 
 \description{Find spots in a raw vector that match a given byte sequence.}
 

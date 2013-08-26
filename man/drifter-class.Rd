@@ -5,7 +5,7 @@
 \alias{drifter-class}
 \alias{[[,drifter-method}
 
-\title{Class to store drifter data, e.g. from an ARGOS float}
+\title{Class for drifter data}
 
 \description{Class to store drifter data, with standard slots \code{metadata},
     \code{data} and \code{processingLog}.}

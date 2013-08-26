@@ -2,7 +2,7 @@
 
 \alias{formatPosition}
 
-\title{Format geographical positions to degrees, minutes, and hemispheres}
+\title{Geographical position in degrees and minutes}
 
 \description{Format geographical positions to degrees, minutes, and hemispheres}
 

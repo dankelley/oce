@@ -2,8 +2,7 @@
 
 \alias{julianCenturyAnomaly}
 
-\title{Convert a Julian-Day number to a time in julian centuries since noon on
-    January 1, 1900.}
+\title{Julian-Day number to Julian centurie}
 
 \description{Convert a Julian-Day number to a time in julian centuries since
     noon on January 1, 1900.}

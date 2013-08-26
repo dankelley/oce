@@ -2,7 +2,7 @@
 
 \alias{angleRemap}
 
-\title{Convert an angle from the 0:360 range to -180:180}
+\title{Convert angles from 0:360 to -180:180}
 
 \description{Convert an angle from the 0:360 range to -180:180}
 

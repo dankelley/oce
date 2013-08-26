@@ -2,7 +2,7 @@
 
 \alias{plotTS}
 
-\title{Plot temperature-salinity diagram for seawater (CTD) data}
+\title{Plot temperature-salinity diagram}
 
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 

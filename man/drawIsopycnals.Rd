@@ -1,6 +1,9 @@
 \name{drawIsopycnals}
+
 \alias{drawIsopycnals}
-\title{Draw isopycnal curves on an existing temperature-salinity plot}
+
+\title{Add isopycnal curves to TS plot}
+
 \description{Draw isopycnal curves on an existing temperature-salinity plot}
 
 \usage{

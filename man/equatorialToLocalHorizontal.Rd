@@ -2,7 +2,7 @@
 
 \alias{equatorialToLocalHorizontal}
 
-\title{Convert from equatorial coordinates to local horizontal coordinates}
+\title{Convert equatorial to local horizontal coordinate}
 
 \description{Convert from equatorial coordinates to local horizontal
     coordinates, i.e. azimuth and altitude.}

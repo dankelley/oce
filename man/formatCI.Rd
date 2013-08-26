@@ -1,6 +1,8 @@
 \name{formatCI}
 \alias{formatCI}
-\title{Format a confidence interval in parenthetic notation}
+
+\title{Confidence interval in parenthetic notation}
+
 \description{Format a confidence interval in parenthetic notation}
 
 \usage{formatCI(ci, style=c("+/-", "parentheses"), model, digits=NULL)}

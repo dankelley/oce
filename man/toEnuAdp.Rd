@@ -2,7 +2,7 @@
 
 \alias{toEnuAdp}
 
-\title{Convert ADP to enu coordinates, from any other coordinates}
+\title{Convert from ENU coordinates}
 
 \description{Convert ADP velocities to enu coordinates, from any other
 coordinates}

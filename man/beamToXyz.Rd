@@ -5,7 +5,7 @@
 \alias{enuToOther}
 \alias{toEnu}
 
-\title{Convert ADV or ADP data between various coordinate systems}
+\title{Change ADV or ADP coordinate systems}
 
 \description{Convert velocity data from an acoustic-doppler velocimeter or
     acoustic-doppler profiler from one coordinate system to another.}

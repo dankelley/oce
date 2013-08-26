@@ -2,7 +2,7 @@
 
 \alias{drawPalette}
 
-\title{Draw a palette on the right-hand side of plot device}
+\title{Draw palette on RHS of plot device}
 
 \description{Draw a palette on the right-hand side of plot device}
 
