@@ -1280,15 +1280,20 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     invisible()
 }
 
-decodeTime <- function(time,
-                       time.formats=c("%b %d %Y %H:%M:%s",
-                                      "%Y%m%d",
-                                      "%b %d %Y %H:%M:%S" # Jul 28 2011  04:17:53 
-                                      ),
-                       tz="UTC")
+decodeTime <- function(time, timeFormats, tz="UTC")
 {
+    if (missing(timeFormats))
+        timeFormats <- c("%b %d %Y %H:%M:%S",
+                         "%B %d %Y %H:%M:%S",
+                         "%d %B %Y %H:%M:%S",
+                         "%d %b %Y %H:%M:%S",
+                         "%Y-%m-%d %H:%M:%S",
+                         "%Y/%m/%d %H:%M:%S",
+                         "%Y/%m/%d")
+    ## FIXME: permit time to be a vector
     rval <- NA
-    for (format in time.formats) {
+    for (format in timeFormats) {
+        ##cat("TRYING FORMAT:", format, "\n")
         if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
             break
         }

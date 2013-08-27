@@ -1562,7 +1562,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline)
-            date <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
+            date <- as.POSIXct(d, format="%Y%m%d", tz="UTC") # FIXME: try decodeTime() here
         }
         ##* NMEA UTC (Time) = Jul 28 2011  04:17:53 
         if (length(grep("^\\* .*time.*=.*$", lline))) {

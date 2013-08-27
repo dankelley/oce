@@ -1,4 +1,5 @@
 0.9-13
+- decodeTime() improvements
 - interpBarnes() has new arg 'trim'
 - standardDepths() added
 - mapLongitudeLatitudeXY() added
