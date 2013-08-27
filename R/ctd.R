@@ -1183,38 +1183,24 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
                 cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i], ignore.case=TRUE)
                 cruise <- sub("[ ]*$", "", cruise)
-            }
-            if (length(grep("SHIP", header[i], ignore.case=TRUE))) {
+            } else if (length(grep("SHIP", header[i], ignore.case=TRUE))) {
                 ship <- header[i]
                 ship <- sub("^[ ]*SHIP[ ]*=[ ]*", "", ship, ignore.case=TRUE)
                 ship <- sub(" *$", "", ship)
-                print(header[i])
-                print(ship)
-            }
-            if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
-                station <- sub("CASTNO[ ]*=[ ]*", "", header[i])
-                station <- sub("[ ]*$", "", station)
-            }
-            latitudeRow <- grep("LATITUDE", header[i])
-            if (length(latitudeRow)) {
+            } else if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
+                station <- sub("[ ]*$", "", sub("CASTNO[ ]*=[ ]*", "", header[i]))
+            } else if (length(grep("^[ ]*Pressure,", header[i]))) {
+                names <- strsplit(tolower(header[i]), ",")[[1]]
+            } else if (length(grep("LATITUDE", header[i]))) {
                 latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
                 if (length(grep(".*S.*", header[i], ignore.case=TRUE)))
                     latitude <- -latitude
-            }
-            longitudeRow <- grep("LONGITUDE", header[i])
-            if (length(longitudeRow)) {
+            } else if (length(grep("LONGITUDE", header[i]))) {
                 longitude <- as.numeric(sub("LONGITUDE.*=[ ]*", "", header[i]))
                 if (length(grep(".*W.*", header[i], ignore.case=TRUE)))
                     longitude <- -longitude
-            }
-            dateRow <- grep("DATE", header[i])
-            if (length(dateRow)) {
-                d <- sub("[ ]*DATE[ ]*=[ ]*", "", header[i])
-                date <- as.POSIXct(d, format="%d-%b-%Y", tz="UTC")
-            }
-            namesRow <- grep("^[ ]*Pressure,", header[i])
-            if (length(namesRow)) {
-                names <- strsplit(tolower(header[i]), ",")[[1]]
+            } else if (length(grep("DATE", header[i]))) {
+                date <- decodeTime(sub("[ ]*$", "", sub("[ ]*DATE[ ]*=[ ]*", "", header[i])), "%d-%b-%Y") # e.g. 01-Jul-2013 Canada Day
             }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
@@ -1281,23 +1267,20 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                         oceDebug(debug, line)
                         if ((0 < (r<-regexpr("LATITUDE",  line))))
                             latitude  <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        if ((0 < (r<-regexpr("LONGITUDE", line))))
+                        else if ((0 < (r<-regexpr("LONGITUDE", line))))
                             longitude <- as.numeric(sub("(.*) =","", line))
-                        if ((0 < (r<-regexpr("DATE", line)))) {
-                            d <- sub("[ ]*DATE[ ]*=[ ]*", "", line)
-                            date <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
-                        }
-                        if ((0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE))))
+                        else if ((0 < (r<-regexpr("DATE", line))))
+                            date <- decodeTime(sub(" *$", "", sub("[ ]*DATE[ ]*=[ ]*", "", line)), "%Y%m%d") # e.g. 20130701 Canada Day
+                        else if ((0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE))))
                             waterDepth <- as.numeric(sub("[a-zA-Z =:]*","", line))
-                        if ((0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE))))
+                        else if ((0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE))))
                             waterDepth <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        if ((0 < (r<-regexpr(pattern="STNNBR", text=line, ignore.case=TRUE))))
+                        else if ((0 < (r<-regexpr(pattern="STNNBR", text=line, ignore.case=TRUE))))
                             station <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        if ((0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE))))
+                        else if ((0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE))))
                             station <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        if ((0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE)))) {
+                        else if ((0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE))))
                             scientist <- sub(".*:", "", line)
-                        }
                     }
                     break
                 } else {
@@ -1562,7 +1545,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline)
-            date <- as.POSIXct(d, format="%Y%m%d", tz="UTC") # FIXME: try decodeTime() here
+            date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
         }
         ##* NMEA UTC (Time) = Jul 28 2011  04:17:53 
         if (length(grep("^\\* .*time.*=.*$", lline))) {

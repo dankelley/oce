@@ -1283,13 +1283,19 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
 decodeTime <- function(time, timeFormats, tz="UTC")
 {
     if (missing(timeFormats))
-        timeFormats <- c("%b %d %Y %H:%M:%S",
-                         "%B %d %Y %H:%M:%S",
-                         "%d %B %Y %H:%M:%S",
-                         "%d %b %Y %H:%M:%S",
-                         "%Y-%m-%d %H:%M:%S",
-                         "%Y/%m/%d %H:%M:%S",
-                         "%Y/%m/%d")
+        timeFormats <- c("%b %d %Y %H:%M:%S", "%b %d %Y", # Jul 1 2013
+                         "%B %d %Y %H:%M:%S", "%B %d %Y", # July 1 2013
+                         "%d %b %Y %H:%M:%S", "%d %b %Y", # 1 Jul 2013
+                         "%d %B %Y %H:%M:%S", "%d %B %Y", # 1 July 2013
+                         "%Y-%m-%d %H:%M:%S", "%Y-%m-%d", # 2013-07-01
+                         "%Y-%b-%d %H:%M:%S", "%Y-%b-%d", # 2013-Jul-01
+                         "%Y-%B-%d %H:%M:%S", "%Y-%B-%d", # 2013-July-01
+                         "%d-%b-%Y %H:%M:%S", "%d-%b-%Y", # 01-Jul-2013
+                         "%d-%B-%Y %H:%M:%S", "%d-%B-%Y", # 01-July-2013
+                         "%Y/%m/%d %H:%M:%S", "%Y/%m/%d", # 2013/07/01
+                         "%Y/%b/%d %H:%M:%S", "%Y/%b/%d", # 2013/Jul/01
+                         "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
+                         "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
     ## FIXME: permit time to be a vector
     rval <- NA
     for (format in timeFormats) {
