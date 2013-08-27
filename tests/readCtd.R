@@ -50,7 +50,7 @@ stopifnot(all.equal.numeric(d2[["longitude"]], -134.001, 0.0001))
 ##'* NMEA Latitude = 71 20.70 N'
 ##'* NMEA Longitude = 151 47.26 W'
 ##'* NMEA UTC (Time) = Aug 09 2012 06:34:34'
-d3 <- read.oce(system.file("extdata", "d201211_0011.ctd", package="oce"))
+d3 <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
 stopifnot(d3[["ship"]] == "CCGS Louis St-Laurent")
 stopifnot(d3[["station"]] == "BL1")
 stopifnot(all.equal.numeric(d3[["date"]], as.POSIXct("2012-08-09 06:34:34", tz="UTC"), 0.01))
