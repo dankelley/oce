@@ -1180,12 +1180,21 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         oceDebug(debug, "headerEnd:", headerEnd, "\n")
         names <- c("pressure", "temperature", "salinity", "oxygen", "fluorescence", "transmission") # may get updated
         for (i in seq_along(header)) {
-            cruiseRow <- grep("CRUISE NAME", header[i])
-            if (length(cruiseRow)) cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i])
-            shipRow <- grep("SHIP", header[i])
-            if (length(shipRow)) ship <- sub("SHIP[ ]*=[ ]*", "", header[i])
-            stationRow <- grep("CASTNO", header[i])
-            if (length(stationRow)) station <- sub("CASTNO[ ]*=[ ]*", "", header[i])
+            if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
+                cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i], ignore.case=TRUE)
+                cruise <- sub("[ ]*$", "", cruise)
+            }
+            if (length(grep("SHIP", header[i], ignore.case=TRUE))) {
+                ship <- header[i]
+                ship <- sub("^[ ]*SHIP[ ]*=[ ]*", "", ship, ignore.case=TRUE)
+                ship <- sub(" *$", "", ship)
+                print(header[i])
+                print(ship)
+            }
+            if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
+                station <- sub("CASTNO[ ]*=[ ]*", "", header[i])
+                station <- sub("[ ]*$", "", station)
+            }
             latitudeRow <- grep("LATITUDE", header[i])
             if (length(latitudeRow)) {
                 latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
