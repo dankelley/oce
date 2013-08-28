@@ -1004,6 +1004,21 @@ setMethod(f="plot",
               invisible()
           })
 
+setMethod(f="subset",
+          signature="ctd",
+          definition=function(x, subset, ...) {
+              rval <- new("ctd")
+              rval@metadata <- x@metadata
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              names(rval@data) <- names(x@data)
+              rval
+          })
+ 
+
 plotScan <- function(x,
                      name = "scan",
                      adorn=NULL,
