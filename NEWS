@@ -1,4 +1,5 @@
 0.9-13
+- detrend() returns list with detrend vector and coefs
 - decodeTime() improvements
 - interpBarnes() has new arg 'trim'
 - standardDepths() added

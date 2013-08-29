@@ -279,19 +279,23 @@ normalize <- function(x)
         (x - mean(x, na.rm=TRUE)) / sqrt(var)
 }
 
-detrend <- function(x,y)
+detrend <- function(x, y)
 {
     if (missing(x))
         stop("must give x")
     n <- length(x)
     if (missing(y)) {
         y <- x
-        x <- 1:length(y)
+        x <- seq_along(y)
     } else {
         if (length(y) != n)
             stop("x and y must be of same length, but they are ", n, " and ", length(y))
     }
-    y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
+    if (x[1] == x[n])
+        stop("cannot have x[1] == x[n]")
+    b <- (y[1] - y[n]) / (x[1] - x[n])
+    a <- y[1] - b * x[1]
+    list(Y=y-(a+b*x), a=a, b=b)
 }
 
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,

@@ -108,7 +108,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         args$detrend <- TRUE
     while (TRUE) {
         oceDebug(debug, "  calculating subspectrum at indices ", start, "to", end, "\n")
-        xx <- ts(window * detrend(x[start:end]), frequency=fs)
+        xx <- ts(window * detrend(x[start:end])$Y, frequency=fs)
         args$x <- xx                   # before issue 242, wrapped RHS in as.vector()
         s <- do.call(spectrum, args=args)
         if (nrow == 0)
