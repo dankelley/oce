@@ -2651,8 +2651,10 @@ plotProfile <- function (x,
                  type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
             mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
-            label <- xtype
-            if (label == "sigmaTheta")
+            label <- x@metadata$labels[w]
+            if (is.null(label))
+                label <- as.character(xtype)
+            if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x")
             mtext(label, side=3, line=axis.name.loc, cex=par("cex"))
             axis(2)
