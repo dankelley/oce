@@ -1295,7 +1295,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                         else if ((0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE))))
                             station <- as.numeric(sub("[a-zA-Z =]*","", line))
                         else if ((0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE))))
-                            scientist <- sub(".*:", "", line)
+                            scientist <- sub("[ ]*$", "", sub(".*:", "", line))
                     }
                     break
                 } else {
@@ -1610,7 +1610,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (is.null(station)) {
             if (0 < (r<-regexpr("station:", lline)))
-                station <- sub("(.*)station:([ ])*", "", ignore.case=TRUE, line) # full string
+                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line)) # full string
         }
         if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline)
