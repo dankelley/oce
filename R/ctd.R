@@ -1014,7 +1014,7 @@ setMethod(f="subset",
                   rval@data[[i]] <- x@data[[i]][r]
               }
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
