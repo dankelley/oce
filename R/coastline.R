@@ -158,8 +158,9 @@ setMethod(f="plot",
                       oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
                   }
                   ## Trim lat or lon, to avoid empty margin space
-                  asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
+                  asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
                   oceDebug(debug, "par('pin')=", par('pin'), "\n")
+                  oceDebug(debug, "par('fin')=", par('fin'), "\n")
                   oceDebug(debug, "asp=", asp, "\n")
                   oceDebug(debug, "asp.page=", asp.page, "\n")
                   if (!is.finite(asp))
@@ -217,16 +218,19 @@ setMethod(f="plot",
                           res
                       }
                       oceDebug(debug, "xr:", xr, ", yr:", yr, ", xr0:", xr0, ", yr0:", yr0, "\n")
-                      xr.pretty <- prettyLon(xr, n=if (geographical)3 else 5, high.u.bias=20)
-                      yr.pretty <- prettyLat(yr, n=if (geographical)3 else 5, high.u.bias=20)
+                      ##xr.pretty <- prettyLon(xr, n=if (geographical)3 else 5, high.u.bias=20)
+                      xr.pretty <- prettyLon(par('usr')[1:2], n=if (geographical)3 else 5, high.u.bias=20)
+                      ##yr.pretty <- prettyLat(yr, n=if (geographical)3 else 5, high.u.bias=20)
+                      yr.pretty <- prettyLat(par('usr')[3:4], n=if (geographical)3 else 5, high.u.bias=20)
                       oceDebug(debug, "xr.pretty=", xr.pretty, "\n")
                       oceDebug(debug, "yr.pretty=", yr.pretty, "\n")
+                      oceDebug(debug, "usrTrimmed", usrTrimmed, "(original)\n")
                       usrTrimmed[1] <- max(-180, usrTrimmed[1])
                       usrTrimmed[2] <- min( 180, usrTrimmed[2])
                       usrTrimmed[3] <- max( -90, usrTrimmed[3])
                       usrTrimmed[4] <- min(  90, usrTrimmed[4])
-                      oceDebug(debug, "par('usr')", par('usr'), "\n")
                       oceDebug(debug, "usrTrimmed", usrTrimmed, "\n")
+                      oceDebug(debug, "par('usr')", par('usr'), "\n")
                       xlabels <- format(xr.pretty)
                       ylabels <- format(yr.pretty)
                       if (geographical >= 1) {
@@ -240,9 +244,9 @@ setMethod(f="plot",
                           ylabels <- formatPosition(yr.pretty, type='expression')
                       }
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
-                      oceDebug(debug, "putting bottom y axis at", usrTrimmed[3], "\n")
+                      oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
-                      oceDebug(debug, "putting left x axis at", usrTrimmed[1], "\n")
+                      oceDebug(debug, "putting left y axis at", usrTrimmed[1], "\n")
                       axis(3, at=xr.pretty, labels=rep("", length.out=length(xr.pretty)), pos=usrTrimmed[4], cex.axis=cex.axis)
                       ##axis(3, at=xr.pretty, pos=usrTrimmed[4], labels=FALSE)
                       ##oceDebug(debug, "putting top x axis at", usrTrimmed[4], "\n")
