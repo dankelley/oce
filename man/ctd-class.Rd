@@ -42,11 +42,12 @@
 }
 
 \seealso{A file containing CTD profile data may be read with
-  \code{\link{read.ctd}}, and a CTD object can also be created with
-  \code{\link{as.ctd}}.
+    \code{\link{read.ctd}}, and a CTD object can also be created with
+    \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
+    formats used in CTD files.
   
-  Statistical summaries are provided by \code{\link{summary.ctd}},
-  while \code{\link{show}} displays an overview.
+    Statistical summaries are provided by \code{\link{summary.ctd}}, while
+    \code{\link{show}} displays an overview.
   
   CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of
   its work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both
@@ -68,6 +69,8 @@
 }
 
 \author{Dan Kelley}
+
 \keyword{classes}
+
 \keyword{oce}
 

@@ -2374,7 +2374,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(salinity, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(salinity, y, type=type, lwd=lwd, cex=cex, pch=pch, col=col, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
         if (!(xtype %in% names(x@data)))
@@ -2410,7 +2410,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
         Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger", ...)
@@ -2436,7 +2436,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(Rrho, y[look], type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(Rrho, y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
         if (missing(Tlim)) {
@@ -2472,7 +2472,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(temperature, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(temperature, y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
         theta <- swTheta(x, method=eos)
@@ -2509,7 +2509,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "density") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
@@ -2533,7 +2533,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
@@ -2585,7 +2585,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
@@ -2604,7 +2604,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
@@ -2658,7 +2658,16 @@ plotProfile <- function (x,
             axis(2)
             box()
         }
-        lines(x@data[[w]], y, lwd=lwd)
+        if (type == "l") {
+            lines(x@data[[w]], y, lwd=lwd, col=col)
+        } else if (type == "p") {
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+        } else if (type == "b" || type == "o") {
+            lines(x@data[[w]], y, lwd=lwd, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+        } else {
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+        }
     }
 }
 
