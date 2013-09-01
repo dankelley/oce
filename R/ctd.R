@@ -2170,8 +2170,7 @@ plotProfile <- function (x,
     oceDebug(debug, "\bplotProfile(x, xtype=\"", if(is.vector(xtype)) "(a vector)" else xtype,
              "\", ...) {\n", sep="")
     eos <- match.arg(eos, c("unesco", "teos"))
-    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE,
-                                debug=getOption("oceDebug"))
+    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
         oceDebug(debug, "\b    plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="")
         if (!keepNA) {
@@ -2533,7 +2532,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
@@ -2585,7 +2584,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
