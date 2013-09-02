@@ -9,20 +9,21 @@ setMethod(f="initialize",
               .Object@processingLog$value <- "create 'tdr' object"
               return(.Object)
           })
-## the default 'oce' object is sufficient for other methods
 
-#subset.tdr <- function (x, subset, ...)
-#{
-#    if (missing(subset))
-#        stop("must give 'subset'")
-#    keep <- eval(substitute(subset), x@data, parent.frame())
-#    rval <- x
-#    for (i in seq_along(x@data))
-#        rval@data[[i]] <- rval@data[[i]][keep]
-#    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-#    rval
-#}
-
+setMethod(f="subset",
+          signature="tdr",
+          definition=function(x, subset, ...) {
+              rval <- x
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.tdr(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+ 
 as.tdr <- function(time, temperature, pressure,
                    filename="",
                    instrumentType="rbr",
