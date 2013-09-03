@@ -6,7 +6,10 @@
 
 \title{Plot seawater CTD data}
 
-\description{Plot CTD data}
+\description{Plot CTD data, by default in a four-panel display showing (a)
+    profiles of salinity and temperature, (b) profiles of density and the
+    square of buoyancy frequency, (c) a TS diagram and (d) a coastline diagram
+    indicating the station location.}
 
 \usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), 
      eos=getOption("eos", default='unesco'),
@@ -166,7 +169,6 @@
 library(oce)
 data(ctd) 
 plot(ctd)
-plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
 }
 \author{Dan Kelley}
 \keyword{hplot}

@@ -9,7 +9,7 @@
 \description{Plot a CTD section.}
 
 \usage{\S4method{plot}{section}(x,
-     which,
+     which=c(1, 2, 3, 99),
      eos=getOption("eos", default='unesco'),
      at=NULL,
      labels=TRUE,
@@ -40,13 +40,11 @@
     \item{x}{a \code{section} object, e.g. as created by
         \code{\link{makeSection}}.}
 
-    \item{which}{list of desired plot types.  If not supplied, the value
-        \code{"temperature"} is assumed.  There may be up to four panels in
-        total, and the desired plots are placed in these panels, in reading
-        order.  The codes for the plot types are explained in the
-        \dQuote{Details} section.  If only one panel is plotted, \code{par} is
-        not adjusted, which makes it easy to add to the plot with subsequent
-        plotting commands.}
+    \item{which}{a list of desired plot types, as explained in
+        \dQuote{Details}.  There may be up to four panels in total, and the
+        desired plots are placed in these panels, in reading order.  If only
+        one panel is plotted, \code{par} is not adjusted, which makes it easy
+        to add to the plot with subsequent plotting commands.}
 
     \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
         computer must have the TEOS library installed; see \code{\link{teos}}.
@@ -158,7 +156,7 @@
 library(oce)
 ## Halifax Harbour
 data(section)
-plot(section, which=c(1, 2, 3, 99))
+plot(section)
 
 ## Gulf Stream
 data(a03)

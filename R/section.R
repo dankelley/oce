@@ -316,7 +316,7 @@ makeSection <- function(item, ...)
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
-                              which,
+                              which=c(1, 2, 3, 99),
                               eos=getOption("eos", default='unesco'),
                               at=NULL,
                               labels=TRUE,
@@ -341,8 +341,6 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
-              if (missing(which))
-                  which <- "temperature"
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
