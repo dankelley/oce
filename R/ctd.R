@@ -624,6 +624,9 @@ setMethod(f="plot",
               lw <- length(which)
               dots <- list(...)
               dotsNames <- names(dots)
+              ## FIXME: In the below, we could be more clever for single-panel plots
+              ## but it may be better to get users out of the habit of supplying xlim
+              ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
                   stop("in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
               if ("ylim" %in% dotsNames)

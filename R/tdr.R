@@ -76,6 +76,14 @@ setMethod(f="plot",
                   stop("no good temperatures to plot")
               if (0 == sum(!is.na(x@data$pressure)))
                   stop("no good pressures to plot")
+              dotsNames <- names(list(...))
+              ## FIXME: In the below, we could be more clever for single-panel plots
+              ## but it may be better to get users out of the habit of supplying xlim
+              ## etc (which will yield errors in plot.lm(), for example).
+              if ("xlim" %in% dotsNames)
+                  stop("in plot.tdr() : 'xlim' argument not allowed; use e.g. tlim for time", call.=FALSE)
+              if ("ylim" %in% dotsNames)
+                  stop("in plot.tdr() : 'ylim' argument not allowed; use e.g. Tlim for temperature", call.=FALSE)
               nw <- length(which)
               opar <- par(no.readonly = TRUE)
               if (nw > 1)
