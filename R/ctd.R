@@ -621,13 +621,18 @@ setMethod(f="plot",
               eos <- match.arg(eos, c("unesco", "teos"))
               oceDebug(debug, "\b\bplot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
                        "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="")
+              lw <- length(which)
               dots <- list(...)
+              dotsNames <- names(dots)
+              if ("xlim" %in% dotsNames)
+                  stop("in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
+              if ("ylim" %in% dotsNames)
+                  stop("in plot.ctd() : 'ylim' argument not allowed; use plim for a profile, Tlim for a TS plot, etc", call.=FALSE)
               opar <- par(no.readonly = TRUE)
-              if (add && length(which) > 1) {
+              if (add && lw > 1) {
                   warning("ignoring add=TRUE because length(which) > 1")
                   add <- FALSE
               }
-              lw <- length(which)
               if (lw > 1) on.exit(par(opar))
               if (length(type) < lw)
                   type <- rep(type, lw) # FIXME: recycle more sensibly
