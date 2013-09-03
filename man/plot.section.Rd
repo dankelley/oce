@@ -167,8 +167,8 @@ plot(GSg, which=c(1,99), map.ylim=c(34,42))
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
 col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
-points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
-points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
+points(GS[['distance']], GS[['depth']], pch=20, cex=3, col='white')
+points(GS[['distance']], GS[['depth']], pch=20, cex=2.5, col=col)
 }
 
 \author{Dan Kelley}
