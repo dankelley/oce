@@ -189,7 +189,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
-mapMeridians <- function(lat, lty='dotted', lwd=par('lwd'), col='lightgray', ...)
+mapMeridians <- function(lat, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
 {
     if (missing(lat))
         lat <- TRUE
@@ -225,6 +225,7 @@ mapMeridians <- function(lat, lty='dotted', lwd=par('lwd'), col='lightgray', ...
         bad <- d > dc
         x[bad] <- NA                   # FIXME: add, don't replace
         y[bad] <- NA                   # FIXME: add, don't replace
+        lty <- "solid"
         if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
             lines(x, y, lty=lty, lwd=lwd, col=col, ...)
         }
@@ -232,7 +233,7 @@ mapMeridians <- function(lat, lty='dotted', lwd=par('lwd'), col='lightgray', ...
 }
 
 
-mapZones <- function(lon, polarCircle=0, lty='dotted', lwd=par('lwd'), col='lightgray', ...)
+mapZones <- function(lon, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
 {
     if (missing(lon))
         lon <- TRUE
