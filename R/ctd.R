@@ -2650,7 +2650,7 @@ plotProfile <- function (x,
     } else {
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
-            stop("unknown which value (\"", xtype, "\")")
+            stop("unknown xtype value (\"", xtype, "\")")
         look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         if (!add) {
             plot(x@data[[xtype]][look], y[look],
