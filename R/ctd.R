@@ -2043,15 +2043,16 @@ plotTS <- function (x,
                       ...)
     } else {
         if (add) {
-            if (type == 'p')
+            if (type == 'p') {
                 points(salinity, y, cex=cex, pch=pch, col=col)
-            else if (type == 'l')
+            } else if (type == 'l') {
                 lines(salinity, y, col=col, ...)
-            else if (type == 'o') {
+            } else if (type == 'o') {
                 points(salinity, y, cex=cex, pch=pch, col=col)
                 lines(salinity, y, col=col, ...)
-            } else 
+            } else if (type != 'n') {
                 points(salinity, y, cex=cex, pch=pch, col=col)
+            }
         } else {
             plot(Slim, Tlim,
                  xlab = xlab, ylab=ylab,
@@ -2063,16 +2064,16 @@ plotTS <- function (x,
                 usr <- par('usr')
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
-            if (type == 'p')
+            if (type == 'p') {
                 points(salinity, y, cex=cex, pch=pch, col=col, ...)
-            else if (type == 'l')
+            } else if (type == 'l') {
                 lines(salinity, y, col=col, ...)
-            else if (type == 'o') {
+            } else if (type == 'o') {
                 points(salinity, y, cex=cex, pch=pch, col=col, ...)
                 lines(salinity, y, col=col, ...)
-            } else
+            } else if (type != 'n') {
                 points(salinity, y, cex=cex, pch=pch, col=col, ...)
-
+            }
         }
     }
     ## grid, isopycnals, then freezing-point line
