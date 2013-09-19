@@ -473,8 +473,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
         if (missing(zlim)) {
             if (missing(col)) {
                 breaks <- pretty(zrange, n=10)
-                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
-                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
+                ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1] - sqrt(.Machine$double.eps)
+                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2] + sqrt(.Machine$double.eps)
             } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
             }

@@ -17,7 +17,7 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
+     coastline=c("best","coastlineWorld","coastlineMaritimes","coastlineHalifax","none"),
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
