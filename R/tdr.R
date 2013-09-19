@@ -81,9 +81,9 @@ setMethod(f="plot",
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.tdr() : 'xlim' argument not allowed; use e.g. tlim for time", call.=FALSE)
+                  stop("in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
               if ("ylim" %in% dotsNames)
-                  stop("in plot.tdr() : 'ylim' argument not allowed; use e.g. Tlim for temperature", call.=FALSE)
+                  stop("in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
               nw <- length(which)
               opar <- par(no.readonly = TRUE)
               if (nw > 1)
