@@ -46,8 +46,7 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
   \item{missing.value}{optional missing-value flag; data matching this value will
     be set to \code{NA} upon reading.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
-    of line of data read.  (This may be useful in debugging problems in
-    reading files that are misconfigured.)}
+    of progress.  This is useful if \code{filename} is a wildcard.}
   \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
@@ -176,6 +175,18 @@ library(oce)
 woce <- read.oce(
   "http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
 plot(woce)
+
+## Labrador Sea data, file 0001919.tar.gz from website
+## http://www.nodc.noaa.gov/cgi-bin/OAS/prd/accession/download
+d <- read.ctd.woce("*.csv")
+data(coastlineWrold)
+plot(coastlineWorld, clat=55, clon=-50, span=5000)
+longitude<-unlist(lapply(d, function(stn) stn[['longitude']]))
+latitude<-unlist(lapply(d, function(stn) stn[['latitude']]))
+points(longitude, latitude, col='red')
+
+
+ustations <- read.ctd.woce("*.csv")o
 }
 }
 

@@ -1147,9 +1147,14 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n")
         files <- list.files(pattern=file)
         nfiles <- length(files)
+        if (monitor)
+            pb <- txtProgressBar(1, nfiles, style=3)
         rval <- vector("list", nfiles)
-        for (i in 1:nfiles)
+        for (i in 1:nfiles) {
             rval[[i]] <- read.ctd.woce(files[i], debug=debug-1)
+            if (monitor)
+                setTxtProgressBar(pb, i)
+        }
         oceDebug(debug, "} # read.ctd.woce() {\n")
         return(rval)
     }
@@ -1483,9 +1488,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") { # will read a series of files\n")
         files <- list.files(pattern=file)
         nfiles <- length(files)
+        if (monitor)
+            pb <- txtProgressBar(1, nfiles, style=3)
         rval <- vector("list", nfiles)
-        for (i in 1:nfiles)
+        for (i in 1:nfiles) {
             rval[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
+            if (monitor)
+                setTxtProgressBar(pb, i)
+        }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
         return(rval)
     }
