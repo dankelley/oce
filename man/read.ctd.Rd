@@ -3,6 +3,7 @@
 \alias{read.ctd}
 \alias{read.ctd.sbe}
 \alias{read.ctd.woce}
+\alias{read.ctd.woce.other}
 \alias{read.ctd.odf}
 
 \title{Read a CTD data file}
@@ -15,6 +16,8 @@ read.ctd(file, type=NULL, columns=NULL, station=NULL,
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.woce.other(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
@@ -67,6 +70,15 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
         characters of the first line being ``\code{CTD,}''), and also in a
         rarer format with the first 3 characters being ``\code{CTD}'' followed by
         a blank or the end of the line).
+        \item \code{read.ctd.woce.other()} reads the format called ``CTD''
+        in the section of the archive websites named ``Other formats.''  These
+        data are stored in filenames ending \code{.WCT}, and they do not have 
+        a great deal of metadata (e.g. longitude), so the user is forced to infer
+        such things from a separate file.  Support for this data type is limited,
+        e.g. requiring a header of a certain length and data columns in a certain order. 
+        Improvements are unlikely to be added to the function, since
+        this data type seems to offer no advantages
+        over the type handled by \code{read.ctd.woce()}.
         \item \code{read.ctd.odf()} reads files stored in Ocean Data Format,
         used in some Canadian hydrographic databases.
     }

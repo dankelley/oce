@@ -1448,6 +1448,46 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
+read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+                                debug=getOption("oceDebug"), processingLog, ...)
+{
+    ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
+    ##STNNBR    558 CASTNO   1 NO.RECORDS=   83       
+    ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ      
+    ##  CTDPRS  CTDTMP  CTDSAL  CTDOXY  NUMBER  QUALT1
+    ##    DBAR  ITS-90  PSS-78 UMOL/KG    OBS.       *
+    ## ******* ******* ******* *******               *
+    ##     4.0  6.7068 34.7032   327.8      -9    2222
+    ##     6.0  6.7059 34.7035   328.1      -9    2222
+    ##     8.0  6.6928 34.7041   328.8      -9    2222
+    examineHeaderLines <- 10
+    header <- readLines(file, n=examineHeaderLines)
+    station <- ""
+    for (i in 1: examineHeaderLines) {
+        if (1 == length(grep("STNNBR.*", header[i]))) {
+            station <- gsub(" .*", "", gsub("STNNBR[ ]*", "", header[i]))
+        } else if (1 == length(grep(".*DATE.*", header[i]))) {
+            date <- gsub(" .*", "", gsub(".*DATE[ ]*", "", header[i]))
+            month <- as.numeric(substr(date, 1, 2))
+            day <- as.numeric(substr(date, 3, 4))
+            year <- 1900 + as.numeric(substr(date, 5, 6))
+            date <- ISOdatetime(year,month,day,0,0,0, tz="UTC")
+        }
+    }
+    data <- read.table(file, skip=6, header=FALSE)
+    pressure <- data$V1
+    temperature <- data$V2
+    salinity <- data$V3
+    oxygen <- data$V4
+    salinity[salinity == missing.value] <- NA
+    temperature[temperature == missing.value] <- NA
+    pressure[pressure == missing.value] <- NA
+    oxygen[oxygen == missing.value] <- NA
+    as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
+}
+
+
+
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)

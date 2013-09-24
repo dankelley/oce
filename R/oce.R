@@ -535,6 +535,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
             return(paste(subtype, "odf", sep="/"))
+        } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
+            return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
             if (substr(filename, 1, 5) == "http:")
                 stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
@@ -717,6 +719,8 @@ read.oce <- function(file, ...)
         return(read.tdr(file, processingLog=processingLog, type='rsk'))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
+    if (type == "ctd/woce/other")
+        return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 
