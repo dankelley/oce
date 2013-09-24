@@ -1143,6 +1143,16 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (length(grep("\\*", file))) {
+        oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n")
+        files <- list.files(pattern=file)
+        nfiles <- length(files)
+        rval <- vector("list", nfiles)
+        for (i in 1:nfiles)
+            rval[[i]] <- read.ctd.woce(files[i], debug=debug-1)
+        oceDebug(debug, "} # read.ctd.woce() {\n")
+        return(rval)
+    }
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
     oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="")
     if (is.character(file)) {
@@ -1469,7 +1479,18 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "\b\bread.ctd.sbe() {\n")
+    if (length(grep("\\*", file))) {
+        oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") { # will read a series of files\n")
+        files <- list.files(pattern=file)
+        nfiles <- length(files)
+        rval <- vector("list", nfiles)
+        for (i in 1:nfiles)
+            rval[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
+        oceDebug(debug, "} # read.ctd.sbe() {\n")
+        return(rval)
+    }
+    oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") {\n")
+
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
     filename <- ""
