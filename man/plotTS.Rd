@@ -77,9 +77,10 @@
         also for \code{par(mar)}, computed from this.  The default is
         tighter than the R default, in order to use more space for the data
         and less for the axes.}
-    \item{mar}{value to be used with \code{\link{par}("mar")}.  If set to \code{NULL},
-        then the margins are left as they are, which can be useful for e.g.
-        drawing a TS diagram with a colour palette.}
+    \item{mar}{value to be used with \code{\link{par}("mar")}.  If set to
+        \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS
+        diagram with a palette to the right is \code{mar=par("mar")+c(0, 0, 0,
+            1))}.} 
     \item{lwd.rho}{line width for density lines.}
     \item{lty.rho}{line type for density lines.}
     \item{add}{a flag that controls whether to add to an existing plot.  (It
