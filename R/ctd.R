@@ -1144,7 +1144,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                           debug=getOption("oceDebug"), processingLog, ...)
 {
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
-    oceDebug(debug, "\b\bread.ctd.woce() {\n")
+    oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -1287,7 +1287,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                     for (i in 2:nh) {
                         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
                         header <- c(header, line)
-                        oceDebug(debug, line)
+                        oceDebug(debug, line, "\n")
                         if ((0 < (r<-regexpr("LATITUDE",  line))))
                             latitude  <- as.numeric(sub("[a-zA-Z =]*","", line))
                         else if ((0 < (r<-regexpr("LONGITUDE", line))))
@@ -1323,37 +1323,39 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ## 2 more header lines, one giving quantities, the next units, e.g.
         ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
         ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
-        var.names <- strsplit(line, split=",")[[1]]
-        oceDebug(debug, "var.names=", paste(var.names, collapse=" "), "\n")
+        varNames <- strsplit(line, split=",")[[1]]
+        varNames <- gsub("^ *", "", gsub(" *$", "", varNames)) # trim whitespace
+        ## catch some typos that have occured in files processed by oce
+        oceDebug(debug, paste("before trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
+        varNames <- gsub("FLAW", "FLAG", varNames) # Meteor39/4 cruise in Lab Sea had CTDSAL_FLAW_W for all 248 stations
+        oceDebug(debug, paste("after trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # skip the units line
-        var.units <- strsplit(line, split=",")[[1]]
-        pcol <- pmatch("CTDPRS", var.names)
+        varUnits <- strsplit(line, split=",")[[1]]
+        pcol <- pmatch("CTDPRS", varNames)
         if (is.na(pcol)) {
-            pcol <- pmatch("DB", var.names)
+            pcol <- pmatch("DB", varNames)
             if (is.na(pcol))
-                stop("cannot find pressure column in list c(\"", paste(var.names, '","'), "\"); need 'DB' or 'CTDPRS'")
+                stop("cannot find pressure column in list c(\"", paste(varNames, '","'), "\"); need 'DB' or 'CTDPRS'")
         }
-        Scol <- pmatch("CTDSAL", var.names)
+        Scol <- pmatch("CTDSAL", varNames)
         if (is.na(Scol)) {
-            Scol <- pmatch("SALNTY", var.names)
+            Scol <- pmatch("SALNTY", varNames)
             if (is.na(Scol))
-                stop("cannot find salinity column in list c(\"", paste(var.names, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
+                stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
         }
-        Sflagcol <- pmatch("CTDSAL_FLAG_W", var.names)
+        Sflagcol <- pmatch("CTDSAL_FLAG_W", varNames)
         if (is.na(Sflagcol)) {
-            Sflagcol <- pmatch("SALNTY_FLAG_W", var.names)
+            Sflagcol <- pmatch("SALNTY_FLAG_W", varNames)
             if (is.na(Sflagcol))
-                stop("cannot find salinity-flag column ('CTDSAL_FLAG_W' or 'SALNTY_FLAG_W') in list", paste(var.names,","))
+                stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'")
         }
-        Tcol <- pmatch("CTDTMP", var.names)
+        Tcol <- pmatch("CTDTMP", varNames)
         if (is.na(Tcol))
-            stop("cannot find temperature column in list", paste(var.names,","))
-        Ocol <- pmatch("CTDOXY", var.names)
+            stop("cannot find temperature column in list", paste(varNames,","))
+        Ocol <- pmatch("CTDOXY", varNames)
         oceDebug(debug, "pcol=", pcol, "Scol=", Scol, "Tcol=", Tcol, "Ocol=", Ocol, "\n")
-        ##var.names <- strsplit(line, split=",")[[1]]
-        ##oceDebug(debug, "var.names=", paste(var.names, collapse=" "), "[line737]\n")
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        var.units <- strsplit(line, split=",")[[1]]
+        varUnits <- strsplit(line, split=",")[[1]]
         lines <- readLines(file)
         nlines <- length(lines)
         pressure <- vector("numeric", nlines)
