@@ -1,4 +1,5 @@
 useDynLib(oce)
+import(ocedata)
 import(methods)
 ##importFrom("methods", show)
 importFrom("graphics", plot)
