@@ -221,6 +221,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
+    finite <- is.finite(x)
     r <- range(x, na.rm=TRUE)
     if (missing(xlow))
         xlow <- min(x, na.rm=TRUE)
@@ -231,6 +232,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
         rval <- ifelse(rval < min(rlow, rhigh), rlow, rval)
         rval <- ifelse(rval > max(rlow, rhigh), rhigh, rval)
     }
+    rval[!finite] <- NA
     rval
 }
 
