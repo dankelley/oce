@@ -100,7 +100,7 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   int *niter;		   /* num iterations */
   int nx, nxg, nyg, i, j, k, it;
   double *z_last;
-  double *zz, *nn;	  /* matrices */
+  double *zz;	          /* matrices */
   double *rzg;		  /* resultant matrix of interpolated value at grid*/
   double *rwg;		  /* resultant matrix of weight at grid */
   double *rzd;		  /* resultant vector of interpolated value at data */
@@ -136,7 +136,6 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   z_last = (double*)R_alloc(nx, sizeof(double));
   /* working matrices */
   zz = (double*)R_alloc(nxg * nyg, sizeof(double));
-  nn = (double*)R_alloc(nxg * nyg, sizeof(double));
 
   rzg = REAL(zg);
   rwg = REAL(wg);

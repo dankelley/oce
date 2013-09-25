@@ -63,10 +63,10 @@ SEXP oce_convolve(SEXP x, SEXP f, SEXP end)
     } else if (endflag == 2) {
         for (i = nf; i < nx; i++) {
             resp[i] = 0.0;
-            ij = i - j;
             for (j = 0; j < nf; j++) {
+                ij = i - j;
                 if (ij >= 0)
-                    resp[i] += fp[j] * xp[i - j];
+                    resp[i] += fp[j] * xp[ij];
             }
         }
     } else {

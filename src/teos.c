@@ -64,7 +64,7 @@ void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval
     first_teos_call = 0;
   }
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
-  double (*f2)(double, double) = GetProcAddress(teos_handle, *name);
+  double (*f2)(double, double) = (void*)GetProcAddress(teos_handle, *name);
 #else
   double (*f2)(double, double) = dlsym(teos_handle, *name);
 #endif
@@ -99,7 +99,7 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
     first_teos_call = 0;
   }
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
-  double (*f3)(double, double, double) = GetProcAddress(teos_handle, *name);
+  double (*f3)(double, double, double) = (void*)GetProcAddress(teos_handle, *name);
 #else
   double (*f3)(double, double, double) = dlsym(teos_handle, *name);
 #endif
