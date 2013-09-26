@@ -1,7 +1,7 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rinternals.h>
-
+#define DEBUG
 /*
 library(oce)
 data(wind)
@@ -39,14 +39,18 @@ inline double exp_approx(double x)
 #endif
 
 static double interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
-    int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
+    long int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
     unsigned int n, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
     double *z_last, /* last estimate of z at (x,y) */
-    double xr, double yr) /* influence radii */
+    double xr, double yr, int debug) /* influence radii */
 {
   double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
-  for (int k = 0; k < n; k++) {
-    //if (ISNA(x[k]) || ISNA(y[k]) || ISNA(z[k]) || ISNA(w[k])) continue;
+  if (debug)
+    Rprintf("in interpolate_barnes with n=%d [%d] [%d]\n", n, sizeof(int), sizeof(long int));
+  for (long int k = 0; k < n; k++) {
+    if (debug)
+      Rprintf(" k=%d (max %d)\n", k, n-1);
+    // R trims NA (x,y values so no need to check here
     if (k != skip) {
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
@@ -65,12 +69,13 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
 
 // next is modelled on interpolate_barnes()
 static double weight_barnes(double xx, double yy,
-    int skip,
+    long int skip,
     unsigned int n, double *x, double *y, double *z, double *w,
     double xr, double yr)
 {
-  double sum_w = 0.0, dx, dy, d, weight;
-  for (int k = 0; k < n; k++) {
+  double sum_w, dx, dy, d, weight;
+  sum_w = 0.0;
+  for (long int k = 0; k < n; k++) {
     if (k != skip) {
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
@@ -98,7 +103,7 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   double *rxr, *ryr;	   /* radii */
   double *rgamma;		   /* gamma */
   int *niter;		   /* num iterations */
-  int nx, nxg, nyg, i, j, k, it;
+  long int nx, nxg, nyg, i, j, k, it;
   double *z_last;
   double *zz;	          /* matrices */
   double *rzg;		  /* resultant matrix of interpolated value at grid*/
@@ -125,7 +130,7 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   ryg = REAL(yg);
   rgamma = REAL(gamma);
   niter = INTEGER(iterations);
-  if (*niter < 0) error("cannot have a negative number of iterations");
+  if (*niter < 0) error("cannot have a negative number of iterations.  Got %d", *niter);
   if (*niter > 20) error("cannot have more than 20 iterations.  Got %d", *niter);
   rxr = REAL(xr);
   ryr = REAL(yr);
@@ -133,9 +138,9 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   yr2 = *ryr;
 
   /* previous values */
-  z_last = (double*)R_alloc(nx, sizeof(double));
+  z_last = (double*)R_alloc((size_t)nx, sizeof(double));
   /* working matrices */
-  zz = (double*)R_alloc(nxg * nyg, sizeof(double));
+  zz = (double*)R_alloc((size_t)(nxg * nyg), sizeof(double));
 
   rzg = REAL(zg);
   rwg = REAL(wg);
@@ -148,31 +153,43 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
     z_last[k] = rzd[k] = 0.0;
   for (it = 0; it < *niter; it++) {
     /* update grid */
+#ifdef DEBUG
+    Rprintf("# updating grid\ni=");
+#endif
     for (i = 0; i < nxg; i++) {
+#ifdef DEBUG
+      Rprintf(" %d", i);
+#endif
       for (j = 0; j < nyg; j++) {
 	zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
 	    -1, /* no skip */
 	    nx,
 	    rx, ry, rz, rw,
 	    z_last,
-	    xr2, yr2);
+	    xr2, yr2, i==(nxg-1)&&j==(nyg-1));
       }
       R_CheckUserInterrupt();
     }
+#ifdef DEBUG
+      Rprintf("\n");
+#endif
     /* interpolate grid back to data locations */
+#ifdef DEBUG
+    Rprintf("\n\n# interpolating grid back to data locations\n");
+#endif
     for (k = 0; k < nx; k++) {
       rzd[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
 	  -1, /* BUG: why not skip? */
 	  nx,
 	  rx, ry, rz, rw,
 	  z_last,
-	  xr2, yr2);
+	  xr2, yr2, i==(nxg-1)&&j==(nyg-1));
     }
     R_CheckUserInterrupt();
     for (k = 0; k < nx; k++)
       z_last[k] = rzd[k];
     if (*rgamma > 0.0) {
-      /* refine search range for next iteration */
+      // refine search range for next iteration
       xr2 *= sqrt(*rgamma);
       yr2 *= sqrt(*rgamma);
     }
