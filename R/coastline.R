@@ -107,9 +107,9 @@ setMethod(f="plot",
               dotsNames <- names(dots)
               gave.center <- !missing(clatitude) && !missing(clongitude)
               if ("center" %in% dotsNames)
-                  stop("please use 'clatitude' and 'clongitude' instead of 'center'")
-              if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
-              if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
+                  stop("use 'clatitude' and 'clongitude' instead of 'center'")
+              if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
+              if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; use 'clatitude' and 'span' instead")
               if (!inset)
                   par(mar=mar)
               par(mgp=mgp)
@@ -125,7 +125,7 @@ setMethod(f="plot",
                   gaveSpan <- !missing(span)
                   if (!missing(clatitude) && !missing(clongitude)) {
                       if (!missing(asp))
-                          warning("argument 'asp' being ignored, because argument 'center' was given")
+                          warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
                       asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
                       xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
                       yr <- clatitude + span * c(-1/2, 1/2) / 111.11
