@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-boxcarAverage <- function(x, y, xout)
+boxcarAverage <- function(x, y, xout=pretty(x))
 {
     if (missing(x) || missing(y))
         stop("must supply x and y")
@@ -10,8 +10,6 @@ boxcarAverage <- function(x, y, xout)
         stop("y must be a vector (for now)")
     if (length(x) != length(y))
         stop("lengths of x and y must match")
-    if (missing(xout))
-        xout <- pretty(x)
     if (!is.vector(xout))
         stop("xout must be a vector (for now)")
     if (is.vector(xout) && length(xout) == 1)

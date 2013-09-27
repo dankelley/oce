@@ -28,9 +28,6 @@ SEXP boxcar_average(SEXP x, SEXP y, SEXP xout)
     int ny = LENGTH(y);
     int nxout = LENGTH(xout);
 
-    Rprintf("nx: %d\n", nx);
-    Rprintf("ny: %d\n", ny);
-    Rprintf("nxout: %d\n", nxout);
     if (!IS_VECTOR(x)) {
         int xRank = LENGTH(GET_DIM(x));
         Rprintf("xRank: %d\n", xRank);
@@ -64,22 +61,14 @@ SEXP boxcar_average(SEXP x, SEXP y, SEXP xout)
     for (int i=0; i < nx; i++) {
         // FIXME: assuming regular grid
         int which = (int)floor(0.5 + (xp[i] - xoutMin) / xoutInc);
-        Rprintf("x[%d]=%f which=%d\n", i, xp[i], which);
         if (0 < which && which < nxout) {
             avgp[which] += yp[i];
             countp[which] += 1.0;
-            Rprintf("  now avgp[%d]=%f  and countp[%d]=%f\n\n", which, avgp[which], which, countp[which]);
         } else {
-            Rprintf("  offscale!\n");
         }
     }
     for (int i=0; i < nxout; i++) {
         if (countp[i] > 0.0) {
-            Rprintf("sum[%i] %f (count %f) ", i, avgp[i], countp[i]);
-            avgp[i] = avgp[i] / countp[i];
-            Rprintf("  so avg[%i] %f\n", i, avgp[i]);
-        } else {
-            Rprintf("no data in box %d\n", i);
         }
     }
     // create return value, a list
