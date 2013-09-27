@@ -39,6 +39,8 @@ inline double exp_approx(double x)
 }
 #endif
 
+static time_t start;
+
 static double interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
     int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
     unsigned int nx, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
@@ -46,14 +48,7 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
     double xr, double yr, int debug) /* influence radii */
 {
   double sum = 0.0, sum_w = 0.0;
-  time_t start = time(NULL);
-  if (debug)
-    Rprintf("\nin interpolate_barnes with nx=%d start=%d\n", nx, start);
   for (int k = 0; k < nx; k++) {
-    if (debug && k > 20000) {
-      time_t now = time(NULL);
-      Rprintf(" k=%d/%d elapsed=%ld now=%ld start=%ld\n", k, nx-1, now - start, now, start);
-    }
     // R trims NA (x,y values so no need to check here
     if (k != skip) {
       double dx, dy, d, weight;
@@ -69,6 +64,8 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
       sum_w += weight;
     }
   }
+  time_t now = time(NULL);
+  Rprintf("[%d]", now - start);
   return ((sum_w > 0.0) ? (zz + sum / sum_w) : NA_REAL);
 }
 
@@ -103,6 +100,7 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
     SEXP gamma,	     /* radius-reduction factor */
     SEXP iterations) /* number of iterations */
 {
+  start = time(NULL);
   int nx = length(x);
   int nxg = length(xg);
   int nyg = length(yg);
@@ -168,9 +166,6 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
       Rprintf("\n");
 #endif
     }
-#ifdef DEBUG
-      Rprintf("\n");
-#endif
     /* interpolate grid back to data locations */
 #ifdef DEBUG
     Rprintf("\n\n# interpolating grid back to data locations\n");
