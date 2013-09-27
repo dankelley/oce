@@ -1012,8 +1012,10 @@ interpBarnes <- function(x, y, z, w,
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     g <- .Call("interp_barnes",
                as.double(x[ok]), as.double(y[ok]), as.double(z[ok]), as.double(w[ok]),
-               as.double(xg), as.double(yg), as.double(xr), as.double(yr),
-               as.double(gamma), as.integer(iterations))
+               as.double(xg), as.double(yg),
+               as.double(xr), as.double(yr),
+               as.double(gamma),
+               as.integer(iterations))
     oceDebug(debug, "\b\b} # interpBarnes(...)\n")
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)

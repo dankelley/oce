@@ -1,6 +1,7 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rinternals.h>
+#include <time.h>
 #define DEBUG
 /*
 library(oce)
@@ -39,19 +40,23 @@ inline double exp_approx(double x)
 #endif
 
 static double interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
-    long int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
-    unsigned int n, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
+    int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
+    unsigned int nx, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
     double *z_last, /* last estimate of z at (x,y) */
     double xr, double yr, int debug) /* influence radii */
 {
-  double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
+  double sum = 0.0, sum_w = 0.0;
+  time_t start = time(NULL);
   if (debug)
-    Rprintf("in interpolate_barnes with n=%d [%d] [%d]\n", n, sizeof(int), sizeof(long int));
-  for (long int k = 0; k < n; k++) {
-    if (debug)
-      Rprintf(" k=%d (max %d)\n", k, n-1);
+    Rprintf("\nin interpolate_barnes with nx=%d start=%d\n", nx, start);
+  for (int k = 0; k < nx; k++) {
+    if (debug && k > 20000) {
+      time_t now = time(NULL);
+      Rprintf(" k=%d/%d elapsed=%ld now=%ld start=%ld\n", k, nx-1, now - start, now, start);
+    }
     // R trims NA (x,y values so no need to check here
     if (k != skip) {
+      double dx, dy, d, weight;
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
       d = dx*dx + dy*dy;
@@ -69,13 +74,13 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
 
 // next is modelled on interpolate_barnes()
 static double weight_barnes(double xx, double yy,
-    long int skip,
+    int skip,
     unsigned int n, double *x, double *y, double *z, double *w,
     double xr, double yr)
 {
   double sum_w, dx, dy, d, weight;
   sum_w = 0.0;
-  for (long int k = 0; k < n; k++) {
+  for (int k = 0; k < n; k++) {
     if (k != skip) {
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
@@ -98,77 +103,70 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
     SEXP gamma,	     /* radius-reduction factor */
     SEXP iterations) /* number of iterations */
 {
-  double *rx, *ry, *rz, *rw; /* data */
-  double *rxg, *ryg;	   /* grid */
-  double *rxr, *ryr;	   /* radii */
-  double *rgamma;		   /* gamma */
-  int *niter;		   /* num iterations */
-  long int nx, nxg, nyg, i, j, k, it;
-  double *z_last;
-  double *zz;	          /* matrices */
-  double *rzg;		  /* resultant matrix of interpolated value at grid*/
-  double *rwg;		  /* resultant matrix of weight at grid */
-  double *rzd;		  /* resultant vector of interpolated value at data */
-  double xr2, yr2;	  /* radii, adjusting */
-  SEXP zg, wg, zd;
-  SEXP rval, rval_names;
-  nx = length(x);
-  nxg = length(xg);
-  nyg = length(yg);
-  PROTECT(rval = allocVector(VECSXP, 3));
-  PROTECT(rval_names = allocVector(STRSXP, 3));
+  int nx = length(x);
+  int nxg = length(xg);
+  int nyg = length(yg);
+  SEXP zg;
   PROTECT(zg = allocMatrix(REALSXP, nxg, nyg));
+  SEXP wg;
   PROTECT(wg = allocMatrix(REALSXP, nxg, nyg));
+  SEXP zd;
   PROTECT(zd = allocVector(REALSXP, nx));
 
-  rx = REAL(x);
-  ry = REAL(y);
-  rz = REAL(z);
-  rw = REAL(w);
+  double *rx = REAL(x);  // x data
+  double *ry = REAL(y);  // y data
+  double *rz = REAL(z);  // z data
+  double *rw = REAL(w);  // w (weight) data
   
-  rxg = REAL(xg);
-  ryg = REAL(yg);
-  rgamma = REAL(gamma);
-  niter = INTEGER(iterations);
-  if (*niter < 0) error("cannot have a negative number of iterations.  Got %d", *niter);
-  if (*niter > 20) error("cannot have more than 20 iterations.  Got %d", *niter);
-  rxr = REAL(xr);
-  ryr = REAL(yr);
-  xr2 = *rxr;
-  yr2 = *ryr;
+  double *rxg = REAL(xg); // x grid
+  double *ryg = REAL(yg); // y grid
+  double *rgamma = REAL(gamma); // gamma
+  int *niter = INTEGER(iterations); // number of iterations
+  if (*niter < 0) error("cannot have a negative number of iterations.  Got %d ", *niter);
+  if (*niter > 20) error("cannot have more than 20 iterations.  Got %d ", *niter);
+  double *rxr = REAL(xr); // x radius
+  double *ryr = REAL(yr); // y radius
+  double xr2 = *rxr; // local radius, which will vary with iteration
+  double yr2 = *ryr; // local radius, which will vary with iteration
 
   /* previous values */
-  z_last = (double*)R_alloc((size_t)nx, sizeof(double));
-  /* working matrices */
-  zz = (double*)R_alloc((size_t)(nxg * nyg), sizeof(double));
+  double *z_last = (double*)R_alloc((size_t)nx+100000, sizeof(double));
+  /* working matrix */
+  double *zz = (double*)R_alloc((size_t)(nxg * nyg)+100000, sizeof(double));
 
-  rzg = REAL(zg);
-  rwg = REAL(wg);
-  rzd = REAL(zd);  // used to be called z_last2
+  double *rzg = REAL(zg);
+  double *rwg = REAL(wg);
+  double *rzd = REAL(zd);  // used to be called z_last2
 
-  for (i = 0; i < nxg; i++)
-    for (j = 0; j < nyg; j++) 
-      zz[i + nxg*j] = 0.0;
-  for (k = 0; k < nx; k++)
-    z_last[k] = rzd[k] = 0.0;
-  for (it = 0; it < *niter; it++) {
+  for (int ij = 0; ij < nxg * nyg; ij++)
+    zz[ij] = 0.0;
+  for (int k = 0; k < nx; k++) {
+    z_last[k] = 0.0;
+    rzd[k] = 0.0;
+  }
+  for (int iter = 0; iter < *niter; iter++) {
     /* update grid */
 #ifdef DEBUG
-    Rprintf("# updating grid\ni=");
+    Rprintf("# updating grid (iter=%d niter=%d)", iter, niter);
 #endif
-    for (i = 0; i < nxg; i++) {
+    for (int i = 0; i < nxg; i++) {
 #ifdef DEBUG
-      Rprintf(" %d", i);
+      Rprintf(" i:%d; j:", i);
 #endif
-      for (j = 0; j < nyg; j++) {
+      for (int j = 0; j < nyg; j++) {
+#ifdef DEBUG
+	Rprintf(" %d", j);
+#endif
 	zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
 	    -1, /* no skip */
-	    nx,
-	    rx, ry, rz, rw,
+	    nx, rx, ry, rz, rw,
 	    z_last,
 	    xr2, yr2, i==(nxg-1)&&j==(nyg-1));
+	R_CheckUserInterrupt();
       }
-      R_CheckUserInterrupt();
+#ifdef DEBUG
+      Rprintf("\n");
+#endif
     }
 #ifdef DEBUG
       Rprintf("\n");
@@ -177,16 +175,15 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 #ifdef DEBUG
     Rprintf("\n\n# interpolating grid back to data locations\n");
 #endif
-    for (k = 0; k < nx; k++) {
+    for (int k = 0; k < nx; k++) {
       rzd[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
 	  -1, /* BUG: why not skip? */
-	  nx,
-	  rx, ry, rz, rw,
+	  nx, rx, ry, rz, rw,
 	  z_last,
-	  xr2, yr2, i==(nxg-1)&&j==(nyg-1));
+	  xr2, yr2, 0);
     }
     R_CheckUserInterrupt();
-    for (k = 0; k < nx; k++)
+    for (int k = 0; k < nx; k++)
       z_last[k] = rzd[k];
     if (*rgamma > 0.0) {
       // refine search range for next iteration
@@ -196,25 +193,27 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   }
 
   // copy matrix to return value
-  for (i = 0; i < nxg; i++) {
-    for (j = 0; j < nyg; j++) {
-      rzg[i + nxg * j] = zz[i + nxg * j];
-    }
-    R_CheckUserInterrupt();
+  for (int ij = 0; ij < nxg * nyg; ij++) {
+      rzg[ij] = zz[ij];
   }
+  R_CheckUserInterrupt();
 
   // weights at final region-of-influence radii
-  for (i = 0; i < nxg; i++) {
-    for (j = 0; j < nyg; j++) {
+  for (int i = 0; i < nxg; i++) {
+    for (int j = 0; j < nyg; j++) {
       rwg[i + nxg*j] = weight_barnes(rxg[i], ryg[j],
 	  -1, /* no skip */
-	  nx,
-	  rx, ry, rz, rw,
+	  nx, rx, ry, rz, rw,
 	  xr2, yr2);
     }
     R_CheckUserInterrupt();
   }
 
+  // Prepare output list
+  SEXP rval;
+  PROTECT(rval = allocVector(VECSXP, 3));
+  SEXP rval_names;
+  PROTECT(rval_names = allocVector(STRSXP, 3));
   // zg = interpolated values at grid points (matrix)
   SET_VECTOR_ELT(rval, 0, zg);
   SET_STRING_ELT(rval_names, 0, mkChar("zg"));
