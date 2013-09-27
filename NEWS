@@ -1,4 +1,5 @@
 0.9-13
+- boxcarAverage() added
 - mapPlot(): zones and meridians aesthetics improved
 - detrend() returns list with detrend vector and coefs
 - decodeTime() improvements
