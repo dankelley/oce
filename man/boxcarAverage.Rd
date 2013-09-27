@@ -27,6 +27,12 @@ plot(x, y)
 ba <- boxcarAverage(x, y)
 ## Note that right-most xout point is biased low
 points(ba$xout, ba$average, col='red')
+
+# data
+data(ctd)
+ba <- boxcarAverage(ctd[['pressure']], ctd[['temperature']], seq(0, 50, 5))
+plotProfile(ctd, "temperature")
+points(ba$average, ba$xout, col='red')
 }
 
 \author{Dan Kelley}

@@ -69,6 +69,7 @@ SEXP boxcar_average(SEXP x, SEXP y, SEXP xout)
     }
     for (int i=0; i < nxout; i++) {
         if (countp[i] > 0.0) {
+            avgp[i] /= countp[i];
         }
     }
     // create return value, a list
