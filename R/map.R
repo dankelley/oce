@@ -513,6 +513,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
     ymin <- usr[3]
     ymax <- usr[4]
     allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
+    small <- sqrt(.Machine$double.eps)
     if (zclip) {
         oceDebug(debug, "using missingColour for out-of-range values\n")
         z[z < zlim[1]] <- NA
@@ -520,7 +521,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
     } else {
         if (!missing(zlim)) {
             oceDebug(debug, "using range colours for out-of-range values\n")
-            small <- sqrt(.Machine$double.eps)
             z[z <= zlim[1]] <- zlim[1] + small
             z[z >= zlim[2]] <- zlim[2] - small
         }
@@ -546,7 +546,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
                 next
             zz <- z[i, j]
             if (is.finite(zz)) {
-                thiscol <- col[-1 + which(zz < breaks)[1]]
+                thiscol <- col[-1 + which(zz < breaks + small)[1]]
                 polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
             } else if (!is.null(missingColor)) {
                 polygon(xy$x, xy$y, col=missingColor, lty=lty, border=NA, fillOddEven=FALSE)
