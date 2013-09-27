@@ -2,124 +2,86 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 /*
+ 
 setwd('~/src/R-kelley/oce/src')
 system("R CMD SHLIB boxcar_average.c")
 dyn.load("boxcar_average.so")
-x <- rnorm(100)
+x <- seq(0, 10, length.out=100)
+y <- 1 + x + x*x
 source('~/src/R-kelley/oce/R/misc.R')
-boxcarAverage(x)
+plot(x, y)
+ba <- boxcarAverage(x, y, seq(0, 10, 2))
+points(ba$xout, ba$average, col='red')
+
 */
 
 
-SEXP boxcar_average(SEXP x, SEXP g)
+SEXP boxcar_average(SEXP x, SEXP y, SEXP xout)
 {
     PROTECT(x = AS_NUMERIC(x));
-    PROTECT(g = AS_NUMERIC(g));
-    int nx = LENGTH(x);
-    int ng = LENGTH(g);
-    Rprintf("nx: %d\n", nx);
-    Rprintf("ng: %d\n", ng);
-    int xRank = LENGTH(GET_DIM(x));
-    int gRank = LENGTH(GET_DIM(g));
-    Rprintf("xRank: %d\n", xRank);
-    Rprintf("gRank: %d\n", gRank);
-    SEXP res;
-    PROTECT(res = allocVector(REALSXP, 1));
-    double *resp = REAL(res);
-    resp[0] = 1.23;
-#if 0
-    int rank = LENGTH(GET_DIM(f));
-    if (3 != rank)
-        error("grid must be 3D but it is %dD\n", rank);
-#ifdef debug
-    Rprintf("nx=%d ny=%d nz=%d\n", nx, ny, nz);
-    Rprintf("DIM=%d x %d x %d\n", dim[0], dim[1], dim[2]);
-#endif
-    if (nx != dim[0])
-        error("grid mismatch; length(x) is %d but first dimension of grid is %d\n", nx, dim[0]);
-    if (ny != dim[1])
-        error("grid mismatch; length(y) is %d but first dimension of grid is %d\n", ny, dim[1]);
-    if (nz != dim[2])
-        error("grid mismatch; length(z) is %d but first dimension of grid is %d\n", nz, dim[2]);
-    int nxout = LENGTH(xout);
-    int nyout = LENGTH(yout);
-    if (nxout != nyout)
-        error("grid mismatch; length(x) must match length(y) but they are %d and %d\n", nxout, nyout);
-    int nzout = LENGTH(zout);
-    if (nxout != nzout)
-        error("grid mismatch; length(x) must match length(z) but they are %d and %d\n", nxout, nzout);
-    // FIXME: figure out how array is done (i.e. which index goes first?)
-    SEXP res;
-    PROTECT(res = allocVector(REALSXP, nxout));
+    PROTECT(y = AS_NUMERIC(y));
+    PROTECT(xout = AS_NUMERIC(xout));
     double *xp = REAL(x);
     double *yp = REAL(y);
-    double *zp = REAL(z);
-    double *fp = REAL(f);
     double *xoutp = REAL(xout);
-    double *youtp = REAL(yout);
-    double *zoutp = REAL(zout);
-    double *resp = REAL(res);
-    double dx = xp[1] - xp[0]; // FIXME: R code should check that grid is regular
-    double dy = yp[1] - yp[0];
-    double dz = zp[1] - zp[0];
-#ifdef debug
-    Rprintf("dx=%f dy=%f dz=%f\n", dx, dy, dz);
-#endif
-#ifdef debug2
-    for (int iz = 0; iz < nz; iz++) {
-        for (int iy = 0; iy < ny; iy++) {
-            for (int ix = 0; ix < nx; ix++) {
-                int ii = ijk(ix, iy, iz);
-                Rprintf("fg[%d, %d, %d (AKA %3d)] = %10f (indices in R notation)\n",
-                        ix+1, iy+1, iz+1, ii+1, fp[ii]);
-            }
-        }
+    int nx = LENGTH(x);
+    int ny = LENGTH(y);
+    int nxout = LENGTH(xout);
+
+    if (!IS_VECTOR(x)) {
+        int xRank = LENGTH(GET_DIM(x));
+        Rprintf("xRank: %d\n", xRank);
+        Rprintf("should not be able to get here in code; see src/boxcar_average.c and R/misc.R[boxcarAverage]\n");
     }
-#endif
+    if (!IS_VECTOR(y)) {
+        int yRank = LENGTH(GET_DIM(y));
+        Rprintf("yRank: %d\n", yRank);
+        Rprintf("should not be able to yet here in code; see src/boxcar_averaye.c and R/misc.R[boxcarAveraye]\n");
+    }
+    if (!IS_VECTOR(xout)) {
+        int xoutRank = LENGTH(GET_DIM(xout));
+        Rprintf("xoutRank: %d\n", xoutRank);
+        Rprintf("should not be able to xoutet here in code; see src/boxcar_averaxoute.c and R/misc.R[boxcarAveraxoute]\n");
+    }
+
+    SEXP avg; // first holds sum, then (divided by count), the average
+    PROTECT(avg = allocVector(REALSXP, nxout));
+    double *avgp = REAL(avg);
+    SEXP count;
+    PROTECT(count = allocVector(REALSXP, nxout));
+    double *countp = REAL(count);
     for (int i = 0; i < nxout; i++) {
-        int ix = (int)floor((xoutp[i] - xp[0]) / dx);
-        int iy = (int)floor((youtp[i] - yp[0]) / dy);
-        int iz = (int)floor((zoutp[i] - zp[0]) / dz);
-        // FIXME: could add arg 'rule' like in approx(), but what if offbounds in more than 1 direction?
-        if (ix < 0 || ix >= (nx-1) || iy < 0 || iy >= (ny-1) || iz < 0 || iz >= (nz-1)) {
-#ifdef debug
-            Rprintf("  point %d at xyz=(%f %f %f) maps to indices [%d %d %d] in R notation, which is outside the array bounds;      result is NA\n",
-                    i, xoutp[i], youtp[i], zoutp[i], 1+ix, 1+iy, 1+iz);
-#endif
-            resp[i] = NA_REAL;
+        avgp[i] = 0.0;
+        countp[i] = 0.0;
+    }
+    // FIXME: what if dg < 0 or dg == 0?  (check in R code)
+    double xoutMin = xoutp[0];
+    double xoutMax = xoutp[nxout-1];
+    double xoutInc = xoutp[1] - xoutp[0];
+    for (int i=0; i < nx; i++) {
+        // FIXME: assuming regular grid
+        int which = (int)floor(0.5 + (xp[i] - xoutMin) / xoutInc);
+        if (0 < which && which < nxout) {
+            avgp[which] += yp[i];
+            countp[which] += 1.0;
         } else {
-            // Now, for the guts of the interpolation.  Note the construction of the formula,
-            // with terms proportional to xx or (1-xx), etc., which reveals the roots
-            // The names for the "f..." tems is by location e.g. 010, means x=min_bin_x,
-            // y=max_bin_y and z=min_bin_z.
-            double f000 = fp[ijk(ix  , iy  , iz  )];
-            double f001 = fp[ijk(ix  , iy  , iz+1)];
-            double f010 = fp[ijk(ix  , iy+1, iz  )];
-            double f011 = fp[ijk(ix  , iy+1, iz+1)];
-            double f100 = fp[ijk(ix+1, iy  , iz  )];
-            double f101 = fp[ijk(ix+1, iy  , iz+1)];
-            double f110 = fp[ijk(ix+1, iy+1, iz  )];
-            double f111 = fp[ijk(ix+1, iy+1, iz+1)];
-            double xx = (xoutp[i] - xp[ix]) / dx;
-            double yy = (youtp[i] - yp[iy]) / dy;
-            double zz = (zoutp[i] - zp[iz]) / dz;
-            double ff  = f000 * (1 - xx) * (1 - yy) * (1 - zz) +
-                f100 * xx * (1 - yy) * (1 - zz) + 
-                f010 * (1 - xx) * yy * (1 - zz) + 
-                f001 * (1 - xx) * (1 - yy) * zz +
-                f101 * xx * (1 - yy) * zz + 
-                f011 * (1 - xx) * yy * zz + 
-                f110 * xx * yy * (1 - zz) + 
-                f111 * xx * yy * zz;
-            resp[i] = ff;
-#ifdef debug
-            Rprintf("  point %d at xyz=(%f %f %f) maps to indices [%d %d %d] in R notation, where xyz=(%f %f %f); result is %f\n",
-                    i, xoutp[i], youtp[i], zoutp[i], 1+ix, 1+iy, 1+iz, xp[ix], yp[iy], zp[iz], resp[i]);
-#endif
         }
     }
-#endif
-    UNPROTECT(3);
+    for (int i=0; i < nxout; i++) {
+        if (countp[i] > 0.0) {
+        }
+    }
+    // create return value, a list
+    SEXP res;
+    SEXP res_names;
+    PROTECT(res = allocVector(VECSXP, 2));
+    PROTECT(res_names = allocVector(STRSXP, 2));
+    SET_VECTOR_ELT(res, 0, avg);
+    SET_STRING_ELT(res_names, 0, mkChar("average"));
+    SET_VECTOR_ELT(res, 1, xout);
+    SET_STRING_ELT(res_names, 1, mkChar("xout"));
+    setAttrib(res, R_NamesSymbol, res_names);
+    UNPROTECT(7);
     return(res);
 }
 

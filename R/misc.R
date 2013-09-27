@@ -1,18 +1,20 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-boxcarAverage <- function(x, g)
+boxcarAverage <- function(x, y, xout=pretty(x))
 {
-    if (missing(x))
-        stop("must supply x")
-    if (missing(g))
-        g <- pretty(x)
+    if (missing(x) || missing(y))
+        stop("must supply x and y")
     if (!is.vector(x))
         stop("x must be a vector (for now)")
-    if (!is.vector(g))
-        stop("g must be a vector (for now)")
-    if (is.vector(g) && length(g) == 1)
-        stop("g must be of length > 1")
-    .Call("boxcar_average", x, g);
+    if (!is.vector(y))
+        stop("y must be a vector (for now)")
+    if (length(x) != length(y))
+        stop("lengths of x and y must match")
+    if (!is.vector(xout))
+        stop("xout must be a vector (for now)")
+    if (is.vector(xout) && length(xout) == 1)
+        stop("xout must be of length > 1")
+    .Call("boxcar_average", x, y, xout);
 }
 
 approx3d <- function(x, y, z, f, xout, yout, zout) {
