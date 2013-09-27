@@ -15,7 +15,7 @@
 }
 
 \details{Performs boxcar averaging of vector data, with bins centred on the
-    \code{xout} values.}
+    \code{xout} values.  Any bin with no data is assigned the value \code{NA}.}
 
 \value{A list containing \code{average} and \code{xout}.}
 
@@ -32,7 +32,7 @@ points(ba$xout, ba$average, col='red')
 data(ctd)
 ba <- boxcarAverage(ctd[['pressure']], ctd[['temperature']], seq(0, 50, 5))
 plotProfile(ctd, "temperature")
-points(ba$average, ba$xout, col='red')
+lines(ba$average, ba$xout, col='red')
 }
 
 \author{Dan Kelley}
