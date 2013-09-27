@@ -1,5 +1,20 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+boxcarAverage <- function(x, g)
+{
+    if (missing(x))
+        stop("must supply x")
+    if (missing(g))
+        g <- pretty(x)
+    if (!is.vector(x))
+        stop("x must be a vector (for now)")
+    if (!is.vector(g))
+        stop("g must be a vector (for now)")
+    if (is.vector(g) && length(g) == 1)
+        stop("g must be of length > 1")
+    .Call("boxcar_average", x, g);
+}
+
 approx3d <- function(x, y, z, f, xout, yout, zout) {
     equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
     if (missing(x)) stop("must provide x")
