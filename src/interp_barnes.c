@@ -2,7 +2,8 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <time.h>
-#define DEBUG
+//#define DEBUG
+
 /*
 library(oce)
 data(wind)
@@ -65,7 +66,6 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
     }
   }
   time_t now = time(NULL);
-  Rprintf("[%d]", now - start);
   return ((sum_w > 0.0) ? (zz + sum / sum_w) : NA_REAL);
 }
 
@@ -144,17 +144,8 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   }
   for (int iter = 0; iter < *niter; iter++) {
     /* update grid */
-#ifdef DEBUG
-    Rprintf("# updating grid (iter=%d niter=%d)", iter, niter);
-#endif
     for (int i = 0; i < nxg; i++) {
-#ifdef DEBUG
-      Rprintf(" i:%d; j:", i);
-#endif
       for (int j = 0; j < nyg; j++) {
-#ifdef DEBUG
-	Rprintf(" %d", j);
-#endif
 	zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
 	    -1, /* no skip */
 	    nx, rx, ry, rz, rw,
@@ -162,14 +153,8 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	    xr2, yr2, i==(nxg-1)&&j==(nyg-1));
 	R_CheckUserInterrupt();
       }
-#ifdef DEBUG
-      Rprintf("\n");
-#endif
     }
     /* interpolate grid back to data locations */
-#ifdef DEBUG
-    Rprintf("\n\n# interpolating grid back to data locations\n");
-#endif
     for (int k = 0; k < nx; k++) {
       rzd[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
 	  -1, /* BUG: why not skip? */
