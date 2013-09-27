@@ -2,8 +2,9 @@
 \alias{oceApprox}
 \title{Interpolate with Reiniger-Ross algorithm}
 
-\description{Interpolate with weighted-parabola method developed by
-  Reiniger and Ross (1968).} 
+\description{Interpolate with weighted-parabola method developed by Reiniger
+    and Ross (1968).  (A modified version of this used in the NODC world ocean
+    atlas, as explained on pages 48-50 of Johnson et al. 2011.)} 
 
 \usage{oceApprox(x, y, xout, method=c("reiniger-ross"))}
 
@@ -47,7 +48,13 @@ lines(TT, zz)
 
 \references{R.F. Reiniger and C.K. Ross, 1968.  A method of
 interpolation with application to oceanographic data.  \emph{Deep Sea
-Research}, \bold{15}, 185-193.}
+Research}, \bold{15}, 185-193.
+
+Daphne R. Johnson, Tim P. Boyer, Hernan E. Garcia, Ricardo A. Locarnini, Olga
+K. Baranova, and Melissa M. Zweng, 2011. World Ocean Database 2009
+Documentation.  NODC Internal report 20.  Ocean Climate Laboratory, National
+Oceanographic Data Center.  Silver Spring, Maryland.
+}
 
 \author{Dan Kelley}
 
