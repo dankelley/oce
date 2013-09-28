@@ -17,6 +17,16 @@ boxcarAverage2D <- function(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
     .Call("boxcar_average_2d", x1, x2, y, x1out, x2out);
 }
 
+ungrid <- function(x, y, grid)
+{
+    nrow <- nrow(grid)
+    ncol <- ncol(grid)
+    grid <- as.vector(grid) # by columns
+    x <- rep(x, times=ncol)
+    y <- rep(y, each=nrow)
+    ok <- !is.na(grid)
+    list(x=x[ok], y=y[ok], grid=grid[ok])
+}
 
 approx3d <- function(x, y, z, f, xout, yout, zout) {
     equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
