@@ -86,13 +86,13 @@ x <- runif(1000)
 y <- runif(1000)
 z <- x - y
 plot(x, y, pch=20, col='gray')
-ba <- boxcarAverageMatrix(x, y, z, seq(0, 1, 0.2), seq(0, 1, 0.2))
+ba <- boxcarAverage2D(x, y, z, seq(0, 1, 0.2), seq(0, 1, 0.2))
 contour(ba$x1out, ba$x2out, ba$average, add=TRUE, labcex=1)
 
 */
 
 
-SEXP boxcar_average_matrix(SEXP x1, SEXP x2, SEXP y, SEXP x1out, SEXP x2out)
+SEXP boxcar_average_2d(SEXP x1, SEXP x2, SEXP y, SEXP x1out, SEXP x2out)
 {
 
     // array lookup
