@@ -1,7 +1,7 @@
 \name{boxcarAverage}
 
 \alias{boxcarAverage}
-\alias{boxcarAverageMatrix}
+\alias{boxcarAverage2D}
 
 \title{Boxcar averaging}
 
@@ -9,7 +9,7 @@
 
 \usage{
 boxcarAverage(x, y, xout=pretty(x))
-boxcarAverageMatrix(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
+boxcarAverage2D(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
 }
 
 \arguments{
@@ -47,7 +47,7 @@ x <- runif(n)
 y <- runif(n)
 z <- x - y
 plot(x, y, pch=20, col='gray')
-ba <- boxcarAverageMatrix(x, y, z)
+ba <- boxcarAverage2D(x, y, z)
 contour(ba$x1out, ba$x2out, ba$average, add=TRUE, labcex=1)
 }
 

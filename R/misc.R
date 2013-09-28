@@ -9,12 +9,12 @@ boxcarAverage <- function(x, y, xout=pretty(x))
     .Call("boxcar_average_vector", x, y, xout);
 }
 
-boxcarAverageMatrix <- function(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
+boxcarAverage2D <- function(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
 {
     if (missing(x1) || missing(x2) || missing(y)) stop("must give x1, x2 and y")
     if (length(x1) != length(x2)) stop("lengths of x1 and x2 must match")
     if (length(x1) != length(y)) stop("lengths of x1 and y must match")
-    .Call("boxcar_average_matrix", x1, x2, y, x1out, x2out);
+    .Call("boxcar_average_2d", x1, x2, y, x1out, x2out);
 }
 
 
