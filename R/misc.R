@@ -2,20 +2,21 @@
 
 boxcarAverage <- function(x, y, xout=pretty(x))
 {
-    if (missing(x) || missing(y))
-        stop("must supply x and y")
-    if (!is.vector(x))
-        stop("x must be a vector (for now)")
-    if (!is.vector(y))
-        stop("y must be a vector (for now)")
-    if (length(x) != length(y))
-        stop("lengths of x and y must match")
-    if (!is.vector(xout))
-        stop("xout must be a vector (for now)")
-    if (is.vector(xout) && length(xout) == 1)
-        stop("xout must be of length > 1")
-    .Call("boxcar_average", x, y, xout);
+    if (missing(x) || missing(y)) stop("must supply x and y")
+    if (!is.vector(x)) stop("x must be a vector")
+    if (!is.vector(y)) stop("y must be a vector")
+    if (length(x) != length(y)) stop("lengths of x and y must agree")
+    .Call("boxcar_average_vector", x, y, xout);
 }
+
+boxcarAverageMatrix <- function(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
+{
+    if (missing(x1) || missing(x2) || missing(y)) stop("must give x1, x2 and y")
+    if (length(x1) != length(x2)) stop("lengths of x1 and x2 must match")
+    if (length(x1) != length(y)) stop("lengths of x1 and y must match")
+    .Call("boxcar_average_matrix", x1, x2, y, x1out, x2out);
+}
+
 
 approx3d <- function(x, y, z, f, xout, yout, zout) {
     equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
