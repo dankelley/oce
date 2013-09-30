@@ -126,16 +126,16 @@ as.ctd <- function(salinity, temperature, pressure,
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     scan <- as.vector(scan)
-    nSalinity <- length(salinity)
+    n <- length(salinity)
     data <- list(salinity=salinity,
                  temperature=temperature,
                  pressure=pressure,
                  scan=scan,
-                 oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, nSalinity),
-                 nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, nSalinity),
-                 nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, nSalinity),
-                 phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, nSalinity),
-                 silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, nSalinity),
+                 oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, n),
+                 nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, n),
+                 nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, n),
+                 phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, n),
+                 silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, n),
                  quality=quality,
                  sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
     if (!missing(other)) {
@@ -152,9 +152,11 @@ as.ctd <- function(salinity, temperature, pressure,
     if (!missing(missingValue)) {
         data[data==missingValue] <- NA
     }
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (is.na(waterDepth)) {
         waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        warning("inferred water depth from maximum pressure")
+        res@processingLog <- processingLog(res@processingLog,
+                                           "inferred water depth from maximum pressure")
     }
     metadata <- list(header=NULL,
                      type=type, model=model, filename=filename, serialNumber=serialNumber,
@@ -170,7 +172,6 @@ as.ctd <- function(salinity, temperature, pressure,
                      src=src)
     res@metadata <- metadata
     res@data <- data
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
