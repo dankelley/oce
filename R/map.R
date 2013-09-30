@@ -474,8 +474,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
             if (missing(col)) {
                 breaks <- pretty(zrange, n=10)
                 ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1] - sqrt(.Machine$double.eps)
-                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2] + sqrt(.Machine$double.eps)
+                if (breaks[1] < zrange[1])
+                    breaks[1] <- zrange[1] - .Machine$double.eps
+                if (breaks[length(breaks)] > zrange[2])
+                    breaks[length(breaks)] <- zrange[2] + .Machine$double.eps
             } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
             }
@@ -513,7 +515,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
     ymin <- usr[3]
     ymax <- usr[4]
     allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
-    small <- sqrt(.Machine$double.eps)
+    small <- .Machine$double.eps
     if (zclip) {
         oceDebug(debug, "using missingColour for out-of-range values\n")
         z[z < zlim[1]] <- NA
