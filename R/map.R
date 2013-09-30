@@ -474,10 +474,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
             if (missing(col)) {
                 breaks <- pretty(zrange, n=10)
                 ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                small <- .Machine$double.eps
                 if (breaks[1] < zrange[1])
-                    breaks[1] <- zrange[1] - .Machine$double.eps
+                    breaks[1] <- zrange[1] * (1 - small)
                 if (breaks[length(breaks)] > zrange[2])
-                    breaks[length(breaks)] <- zrange[2] + .Machine$double.eps
+                    breaks[length(breaks)] <- zrange[2] * (1 + small)
             } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
             }
@@ -523,8 +524,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
     } else {
         if (!missing(zlim)) {
             oceDebug(debug, "using range colours for out-of-range values\n")
-            z[z <= zlim[1]] <- zlim[1] + small
-            z[z >= zlim[2]] <- zlim[2] - small
+            z[z <= zlim[1]] <- zlim[1] * (1 + small)
+            z[z >= zlim[2]] <- zlim[2] * (1 - small)
         }
     }
     for (i in 1:ni) {
@@ -548,7 +549,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
                 next
             zz <- z[i, j]
             if (is.finite(zz)) {
-                thiscol <- col[-1 + which(zz < breaks + small)[1]]
+                thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
                 polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
             } else if (!is.null(missingColor)) {
                 polygon(xy$x, xy$y, col=missingColor, lty=lty, border=NA, fillOddEven=FALSE)
