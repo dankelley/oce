@@ -10,9 +10,10 @@
     border=NULL, col=NA, lty=par('lty'), \dots, fillOddEven=FALSE)}
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted, or a coastline object
-        from which longitude and latitude are to be taken (see e.g.
-        \code{\link{read.coastline}}).}
+    \item{longitude}{longitudes of points to be plotted, or an object from
+        which latitude and longitude can be inferred (e.g. a coastline file, or
+        the return value from \code{\link{mapLocator}}), in which case the
+        following two arguments are ignored.}
     \item{latitude}{latitudes of points to be plotted}
     \item{density}{as for \code{\link{polygon}}}
     \item{angle}{as for \code{\link{polygon}}}
