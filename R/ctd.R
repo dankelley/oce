@@ -524,9 +524,10 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             res@data[[i]] <- res@data[[i]][keep]
         }
     }
+    waterDepthWarning <- FALSE
     if (inferWaterDepth && !is.finite(res@metadata$waterDepth)) {
         res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
-        oceDebug(debug, "inferred water depth of", res@metadata$waterDepth, "from pressure\n")
+        waterDepthWarning <- TRUE
     }
     if (removeDepthInversions) {
         badDepths <- c(FALSE, diff(res@data$pressure) <= 0)
@@ -543,6 +544,8 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     }
     res@metadata$waterDepth <- max(abs(res@data$pressure)) # the bad data sometimes have high p
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (waterDepthWarning)
+        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "\b\b} # ctdTrim()\n")
     res
 }
@@ -1196,6 +1199,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     oceDebug(debug, paste("examining header line '",line,"'\n", sep=""))
     header <- line
+    waterDepthWarning <- FALSE
     ## Handle a format used in a 2003 survey of the Canada Basin
     if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
         oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
@@ -1411,10 +1415,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             oxygen[oxygen == missing.value] <- NA
             data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
         }
-
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-            warning("inferred water depth from maximum pressure")
+            waterDepthWarning <- TRUE 
         }
         ## catch e.g. -999 sometimes used for water depth's missing value
         if (is.finite(waterDepth) && waterDepth <= 0)
@@ -1445,6 +1448,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
+    if (waterDepthWarning)
+        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
     res
 }
@@ -1840,13 +1845,16 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     }
+    waterDepthWarning <- FALSE
     if (is.na(res@metadata$waterDepth)) {
         res@metadata$waterDepth <- max(abs(data$pressure))
-        warning("inferred water depth from maximum pressure")
+        waterDepthWarning <- TRUE
     }
 
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (waterDepthWarning)
+        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
     res
 }
 
@@ -1907,9 +1915,10 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     station <- fromHeader("EVENT_NUMBER")
 
     ## water depth could be missing or e.g. -999
+    waterDepthWarning <- FALSE
     if (is.na(waterDepth)) {
         waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        warning("inferred water depth from maximum pressure")
+        waterDepthWarning <- TRUE
     }
     if (!is.na(waterDepth) && waterDepth < 0)
         waterDepth <- NA
@@ -1980,6 +1989,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     metadata$labels <- names
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    if (waterDepthWarning)
+        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
     hitem <- processingLogItem(processingLog)
     res <- new("ctd")
     res@data <- data
