@@ -398,9 +398,14 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
         error("lengths of x and y must match")
     lon <- rep(NA, n)
     lat <- rep(NA, n)
-    ## FIXME: will this trick with the .Last.projection always work??
-    ##or <- get(".Last.projection", envir = globalenv())$orientation # lat lon somethingElse
-    or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
+    ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
+    ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
+    t <- try({
+            or <- get(".Last.projection", envir = globalenv())$orientation
+    }, silent=TRUE)
+    if (class(t) == "try-error") {
+        or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
+    }
     for (i in 1:n) {
         t <- try({
             error <- FALSE
