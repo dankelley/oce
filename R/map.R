@@ -436,9 +436,14 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
-    if (inherits(longitude, "coastline")) {
-        latitude <- longitude[['latitude']]
-        longitude <- longitude[['longitude']]
+    if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
+        2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
+        latitude <- longitude@data$latitude
+        longitude <- longitude@data$longitude
+    }
+    if (2 == sum(c("longitude", "latitude") %in% names(longitude))) {
+        latitude <- longitude$latitude
+        longitude <- longitude$longitude
     }
     n <- length(longitude)
     xy <- mapproject(longitude, latitude)
