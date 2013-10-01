@@ -292,7 +292,7 @@ to smooth the data and interpolate the smoothed results to uniformly-spaced
 pressure values. For example, a quick examination of a file might be done by the
 following:
 <<ctddectrim,eval=false>>=
-plot(ctd.decimate(ctdTrim(read.ctd("stn123.cnv"))))
+plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
 @
 
 \subsection{Example with WOCE archive data}
