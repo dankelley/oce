@@ -399,7 +399,8 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
     lon <- rep(NA, n)
     lat <- rep(NA, n)
     ## FIXME: will this trick with the .Last.projection always work??
-    or <- get(".Last.projection", envir = globalenv())$orientation # lat lon somethingElse
+    ##or <- get(".Last.projection", envir = globalenv())$orientation # lat lon somethingElse
+    or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
     for (i in 1:n) {
         t <- try({
             error <- FALSE
