@@ -2306,6 +2306,13 @@ plotProfile <- function (x,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
                        z = range(swZ(x), na.rm=TRUE),
                        sigmaTheta = rev(range(x@data$sigmaTheta, na.rm=TRUE)))
+    examineIndices <- switch(ytype,
+                       pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
+                       z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
+                       sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
+    dataNames <- names(x@data)
+    for (dataName in dataNames)
+        x@data[[dataName]] <- x@data[[dataName]][examineIndices]
     axis.name.loc <- mgp[1]
     know.time.unit <- FALSE
     if ("time" %in% names(x@data)) {
@@ -2700,7 +2707,7 @@ plotProfile <- function (x,
         plotJustProfile(x=spice, y=y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
         if (add)
-            warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
+            warning("argument 'add' is ignored for xtype=\"salinity+temperature\"")
         salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
         if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
