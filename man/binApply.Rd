@@ -42,18 +42,15 @@
     returned by \code{binApply}.}
 
 \examples{
-## temperature excess over freezing point
+## profile of conf. interval about temperature mean
 library(oce)
-data(ctd90)
-ctd <- subset(ctd90, pressure < 100)
-Te <- function(d)
-{
-    Tf <<- swTFreeze(d[['salinity']], 0) # at surface
-    mean(d[['temperature']] - Tf)
-}
-b <- binApply(ctd, "pressure", seq(0, 5000, 10), Te)
-plot(b[,2], b[,1], type='l', ylim=rev(range(ctd[["pressure"]])), 
-     xlab="T - Tfreeze", ylab="Pressure")
+data(tdr)
+f <- function(d)
+    t.test(d$temperature)$conf.int
+b <- binApply(tdr, "pressure", seq(0,20,2.5), f)
+plot(0.5*(b[,2]+b[,3]), b[,1], xlab="T", ylab="p",
+     xlim=range(b[,2:3]), ylim=c(20,0), type='p')
+segments(b[,2], b[,1], b[,3], b[,1])
 }
 
 \author{Dan Kelley}
