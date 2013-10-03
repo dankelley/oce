@@ -32,25 +32,29 @@
     \code{b} to define the intervals.  Then, the function \code{f} is applied
     to the subsets of \code{x} corresponding to the intervals.  The values
     returned by the calls to \code{f} are collected as the rows of a matrix.
-    Finally, the mean values of \code{x[[v]]} are computed for each interval,
-    and the resultant vector is attached as the first column of the matrix, and
-    this matrix is returned.}
+    Finally, the midpoints of the bins are attached as the first column of the
+    matrix, and the resultant matrix is returned.}
     
 \value{A matrix with first column equal to the mean values of \code{x[[v]]} in
     each subdivision, followed by columns for the return value from \code{f}.
     For example, if \code{f} returns a single value, a two-column result is
-    returned by \code{binApply}.}
+    returned by \code{binApply}.  The number of rows in the return value is one
+    less than \code{length(b)}.}
 
 \examples{
-## profile of conf. interval about temperature mean
+## confidence interval about TDR temperature mean, binned by depth
+## Note that c.i. tightens with more data, hence narrow segment
+## in the top box.
 library(oce)
 data(tdr)
-f <- function(d)
-    t.test(d$temperature)$conf.int
-b <- binApply(tdr, "pressure", seq(0,20,2.5), f)
-plot(0.5*(b[,2]+b[,3]), b[,1], xlab="T", ylab="p",
-     xlim=range(b[,2:3]), ylim=c(20,0), type='p')
-segments(b[,2], b[,1], b[,3], b[,1])
+f <- function(d) {
+    c(mean(d$temperature), t.test(d$temperature)$conf.int)
+}
+b <- binApply(tdr, "pressure", seq(0,20,5), f)
+plot(tdr, which=4, col='darkgray')
+grid()
+points(b[,2], b[,1], pch=20) 
+segments(b[,3], b[,1], b[,4], b[,1])
 }
 
 \author{Dan Kelley}

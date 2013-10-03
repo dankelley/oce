@@ -184,6 +184,8 @@ setMethod(f="plot",
                       if (!("axes" %in% a))
                           args <- c(args, axes=FALSE)
                       np <- length(x@data$pressure)
+                      if (nw == 1)
+                          par(mar=c(1, 3.5, 4, 1))
                       if (useSmoothScatter) {
                           args <- args[names(args) != "type"]
                           do.call(smoothScatter, args)

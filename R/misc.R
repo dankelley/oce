@@ -40,15 +40,13 @@ binApply <- function(x, v, b, f, ...)
     if (missing(b))
         b <- pretty(v)
     bi <- findInterval(v, b)
-    nb <- diff(range(bi, na.rm=TRUE)) + 1
-    rval <- vector("list", nb)
-    for (b in 1:nb) {
-        rval[[b]] <- f(x[b==bi,], ...) # can index because a data.frame
+    ncentres <- length(b) - 1
+    rval <- vector("list", ncentres)
+    for (ci in 1:ncentres) {
+        rval[[ci]] <- f(x[ci==bi,], ...) # can index because a data.frame
     }
-    var <- vector("numeric", nb)
-    for (b in 1:nb) 
-        var[b] <- median(v[b==bi], na.rm=TRUE)
-    cbind(as.vector(var), matrix(unlist(rval), nrow=nb, byrow=TRUE))
+    bincentres <- b[1:ncentres] + diff(b)/2 # centers
+    cbind(bincentres, matrix(unlist(rval), nrow=ncentres, byrow=TRUE))
 }
 
 
