@@ -1,4 +1,5 @@
 0.9-13
+- binApply() added
 - ungrid() added
 - boxcarAverage() and boxcarAverage2d() added
 - mapPlot(): zones and meridians aesthetics improved

@@ -1,5 +1,57 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+binAverage <- function(x, y, xmin, xmax, xinc)
+{
+    if (missing(y))
+        stop("must supply 'y'")
+    if (missing(xmin))
+        xmin <- min(as.numeric(x), na.rm=TRUE)
+    if (missing(xmax))
+        xmax <- max(as.numeric(x), na.rm=TRUE)
+    if (missing(xinc))
+        xinc  <- (xmax - xmin) / 10 
+    if (xmax <= xmin)
+        stop("must have xmax > xmin")
+    if (xinc <= 0)
+        stop("must have xinc > 0")
+    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
+    #cat("xx:", xx, "\n")
+    nb <- length(xx)
+    ##dyn.load("bin_average.so") # include this whilst debugging
+    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
+             as.double(xmin), as.double(xmax), as.double(xinc),
+             ##means=double(nb), NAOK=TRUE)$means
+             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
+    list(x=xx, y=yy)
+}
+
+binApply <- function(x, v, b, f, ...)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(f)) stop("must supply 'f'")
+    if (!is.function(f)) stop("'f' must be a ftion")
+    if (missing(v)) stop("must supply 'v', the name of an element in 'data'")
+    if ("data" %in% slotNames(x)) # oce objects have this
+        x <- x@data
+    t <- try(x <- data.frame(x), silent=TRUE)
+    if (class(t) == "try-error")
+        stop("cannot coerce 'data' into a data.frame")
+    v <- x[[v]]
+    if (missing(b))
+        b <- pretty(v)
+    bi <- findInterval(v, b)
+    nb <- diff(range(bi, na.rm=TRUE)) + 1
+    rval <- vector("list", nb)
+    for (b in 1:nb) {
+        rval[[b]] <- f(x[b==bi,], ...) # can index because a data.frame
+    }
+    var <- vector("numeric", nb)
+    for (b in 1:nb) 
+        var[b] <- median(v[b==bi], na.rm=TRUE)
+    cbind(as.vector(var), matrix(unlist(rval), nrow=nb, byrow=TRUE))
+}
+
+
 boxcarAverage <- function(x, y, xout=pretty(x))
 {
     if (missing(x) || missing(y)) stop("must supply x and y")
@@ -221,30 +273,6 @@ smoothSomething <- function(x, ...)
     res
 }
 
-binAverage <- function(x, y, xmin, xmax, xinc)
-{
-    if (missing(y))
-        stop("must supply 'y'")
-    if (missing(xmin))
-        xmin <- min(as.numeric(x), na.rm=TRUE)
-    if (missing(xmax))
-        xmax <- max(as.numeric(x), na.rm=TRUE)
-    if (missing(xinc))
-        xinc  <- (xmax - xmin) / 10 
-    if (xmax <= xmin)
-        stop("must have xmax > xmin")
-    if (xinc <= 0)
-        stop("must have xinc > 0")
-    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
-    #cat("xx:", xx, "\n")
-    nb <- length(xx)
-    ##dyn.load("bin_average.so") # include this whilst debugging
-    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
-             as.double(xmin), as.double(xmax), as.double(xinc),
-             ##means=double(nb), NAOK=TRUE)$means
-             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
-    list(x=xx, y=yy)
-}
 
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
