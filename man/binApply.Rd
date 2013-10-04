@@ -42,9 +42,8 @@
     less than \code{length(b)}.}
 
 \examples{
-## confidence interval about TDR temperature mean, binned by depth
-## Note that c.i. tightens with more data, hence narrow segment
-## in the top box.
+## Show TDR temperature profile, with 95% confidence intervals on
+## the mean (binned by pressure), calculated with t.test().
 library(oce)
 data(tdr)
 f <- function(d) {
