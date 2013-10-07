@@ -6,14 +6,16 @@
 
 \description{Earth magnetic declination, inclination, and intensity}
 
-\usage{magneticField(lat, lon, date)}
+\usage{magneticField(longitude, latitude, time)}
 
 \arguments{
-  \item{lat}{latitude in degrees north, a number, vector, or matrix.}
-  \item{lon}{longitude in degrees east (negative for degrees west).  The
-    dimensions must conform to lat.}
 
-  \item{date}{either a decimal year or a POSIX time corresponding to the
+  \item{longitude}{longitude in degrees east (negative for degrees west).  The
+      dimensions must conform to lat.}
+
+  \item{latitude}{latitude in degrees north, a number, vector, or matrix.}
+
+  \item{time}{either a decimal year or a POSIX time corresponding to the
       \code{lat} and \code{lon} values, or a vector or matrix matching these
       location values.}
 }
@@ -38,16 +40,18 @@ finally, values for dates 1945 to 2005.0 are said to be
 \examples{
 library(oce)
 # Halifax NS
-magneticField(44+39/60, -(63+36/60), 2013)
+magneticField(-(63+36/60), 44+39/60, 2013)
 }
 
 \references{
-1. The underlying Fortran code is from http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html
+
+1. The underlying Fortran code is from a NOAA website
+(\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}).
 
 2. A website with a calculator for these fields is at
-http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html, and it
-is from that site that test values (used in checking the Oce package) were
-found.
+\url{http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html},
+and, as of October 7 2013, this site produces values that agree with those
+calculated by the present function to three digits after the decimal.
 
 }
 

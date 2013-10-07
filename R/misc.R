@@ -1560,38 +1560,42 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
     rval
 }
 
-magneticField <- function(lat, lon, date)
+magneticField <- function(longitude, latitude, time)
 {
-    if (missing(lat) || missing(lon) || missing(date))
-        stop("must provide lat, lon, and date")
-    dim <- dim(lat)
-    if (!all(dim == dim(lon)))
-        stop("dimensions of lat and lon must agree")
-    n <- length(lat)
-    if (inherits(date, "POSIXt")) {
-        d <- as.POSIXlt(date)
+    if (missing(longitude) || missing(latitude) || missing(time))
+        stop("must provide longitude, latitude, and time")
+    dim <- dim(latitude)
+    if (!all(dim == dim(longitude)))
+        stop("dimensions of longitude and latitude must agree")
+    n <- length(latitude)
+    if (inherits(time, "POSIXt")) {
+        d <- as.POSIXlt(time)
         year <- d$year+1900
         yearday <- d$yday
-        date <- year + yearday / 365.25 # ignore leap year issue (formulae not daily)
+        time <- year + yearday / 365.25 # ignore leap year issue (formulae not daily)
     }
-    if (length(date) == 1) {
-        date <- rep(date, n)
+    if (length(time) == 1) {
+        time <- rep(time, n)
     } else {
-        if (!all(dim == dim(date)))
-            stop("dimensions of lat and date must agree")
+        if (!all(dim == dim(time)))
+            stop("dimensions of latitude and time must agree")
     }
     if (!is.null(dim)) {
-        dim(lat) <- n
-        dim(lon) <- n
-        dim(date) <- n
+        dim(longitude) <- n
+        dim(latitude) <- n
+        dim(time) <- n
     }
     isv <- 0
     itype <- 1                          # geodetic
     alt <- 0.0                          # altitude in km
-    colat <- 90 - lat
-    elong <- ifelse(lon < 0, 360 + lon, lon)
-    r <- .Fortran("md_driver", as.double(colat), as.double(elong), as.double(date),
-                  as.integer(n), declination=double(n), inclination=double(n), intensity=double(n))
+    elong <- ifelse(longitude < 0, 360 + longitude, longitude)
+    colat <- 90 - latitude
+    r <- .Fortran("md_driver",
+                  as.double(colat), as.double(elong), as.double(time),
+                  as.integer(n),
+                  declination=double(n),
+                  inclination=double(n),
+                  intensity=double(n))
     declination <- r$declination
     inclination <- r$inclination
     intensity <- r$intensity
