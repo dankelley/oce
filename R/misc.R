@@ -1560,7 +1560,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
     rval
 }
 
-magneticDeclination <- function(lat, lon, date)
+magneticField <- function(lat, lon, date)
 {
     if (missing(lat) || missing(lon) || missing(date))
         stop("must provide lat, lon, and date")
@@ -1568,6 +1568,12 @@ magneticDeclination <- function(lat, lon, date)
     if (!all(dim == dim(lon)))
         stop("dimensions of lat and lon must agree")
     n <- length(lat)
+    if (inherits(date, "POSIXt")) {
+        d <- as.POSIXlt(date)
+        year <- d$year+1900
+        yearday <- d$yday
+        date <- year + yearday / 365.25 # ignore leap year issue (formulae not daily)
+    }
     if (length(date) == 1) {
         date <- rep(date, n)
     } else {
@@ -1585,11 +1591,16 @@ magneticDeclination <- function(lat, lon, date)
     colat <- 90 - lat
     elong <- ifelse(lon < 0, 360 + lon, lon)
     r <- .Fortran("md_driver", as.double(colat), as.double(elong), as.double(date),
-                  as.integer(n), dev=double(n))
-    rval <- r$dev
-    if (!is.null(dim))
-        dim(rval) <- dim
-    rval
+                  as.integer(n), declination=double(n), inclination=double(n), intensity=double(n))
+    declination <- r$declination
+    inclination <- r$inclination
+    intensity <- r$intensity
+    if (!is.null(dim)) {
+        dim(declination) <- dim
+        dim(inclination) <- dim
+        dim(intensity) <- dim
+    }
+    list(declination=declination, inclination=inclination, intensity=intensity)
 }
 
 secondsToCtime <- function(sec)

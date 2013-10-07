@@ -1,15 +1,18 @@
-      subroutine md_driver(colat, elong, date, n, dev)
+      subroutine md_driver(colat, elong, date, n,
+     1 declination, inclination, intensity)
+
       implicit double precision (a-h,o-z)
       double precision colat(n), elong(n), date(n)
-      double precision dev(n)
-      double precision xx, yy, zz
+      double precision declination(n), inclination(n), intensity(n)
+      double precision x, y, z
       isv = 0
       itype = 1
       alt = 0.0
       do i = 1, n
-         call igrf11syn(isv,date(i),itype,alt,colat(i),elong(i),
-     1        xx,yy,zz,f)
-         dev(i) = 57.2957795130823 * atan2(yy, xx)
+         call igrf11syn(isv,date(i),itype,alt,colat(i),elong(i),x,y,z,f)
+         declination(i) = 57.2957795130823*atan2(y,x)
+         inclination(i) = 57.2957795130823*atan2(z,sqrt(x**2+y**2))
+         intensity(i) = f
       end do
       return
       end

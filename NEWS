@@ -1,4 +1,5 @@
 0.9-13
+- magneticField() replaces magneticDeclination()
 - binApply() added
 - ungrid() added
 - boxcarAverage() and boxcarAverage2d() added

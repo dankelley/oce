@@ -24,8 +24,8 @@
 \value{Object, with velocity components ajusted to be aligned with
   geographic north and east.}
 
-\seealso{Use \code{\link{magneticDeclination}} to determine the
-  declination at a given spot on the world, at a given time.}
+\seealso{Use \code{\link{magneticField}} to determine the declination,
+    inclination and intensity at a given spot on the world, at a given time.}
 
 \examples{
 library(oce)
