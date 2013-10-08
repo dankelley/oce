@@ -3,13 +3,13 @@
 \title{Convert lat/lon to x/y on earth}
 \description{Convert lat/lon to x/y on earth}
 
-\usage{geodXy(lat, lon, lat.ref, lon.ref, rotate=0)}
+\usage{geodXy(lon, lat, lon.ref, lat.ref, rotate=0)}
 
 \arguments{
-  \item{lat}{vector of latitudes}
   \item{lon}{vector of longitudes}
-  \item{lat.ref}{numeric, reference latitude}
+  \item{lat}{vector of latitudes}
   \item{lon.ref}{numeric, reference longitude}
+  \item{lat.ref}{numeric, reference latitude}
   \item{rotate}{numeric, counterclockwise angle, in degrees, by which to
     rotate the (\code{x}, \code{y}) coordinates about the reference
     point.  This is useful in rotating the coordinate system to align

@@ -1,5 +1,6 @@
 0.9-13
-- switch the arg order to lon-then-lat in:
+- switch the argument order to put longitude before latitude in: geodDist(),
+  geodXy()
 - magneticField() replaces magneticDeclination()
 - binApply() added
 - ungrid() added

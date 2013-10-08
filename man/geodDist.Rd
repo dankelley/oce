@@ -6,21 +6,21 @@
 
 \description{ Compute geodesic distance on surface of earth.}
 
-\usage{geodDist(lat1, lon1, lat2, lon2, alongPath=FALSE)}
+\usage{geodDist(lon1, lat1, lon2, lat2, alongPath=FALSE)}
 
 \arguments{
 
-    \item{lat1}{latitude or a vector of latitudes, \strong{or} a \code{section}
-        object, from which latitude and longitude are extracted and used instead
-        of the next three arguments}
+    \item{lon1}{longitude or a vector of longitudes, \strong{or} a
+        \code{section} object, from which latitude and longitude are extracted
+        and used instead of the next three arguments}
 
-    \item{lon1}{longitude or vector of longitudes (ignored if \code{lat1} is a
+    \item{lat1}{latitude or vector of latitudes (ignored if \code{lon1} is a
         \code{section} object)}
 
-    \item{lat2}{optional latitude or vector of latitudes (ignored if
+    \item{lon2}{optional longitude or vector of longitudes (ignored if
         \code{alongPath=TRUE}}
 
-    \item{lon2}{optional longitude or vector of longitudes (ignored if
+    \item{lat2}{optional latitude or vector of latitudes (ignored if
         \code{alongPath=TRUE}}
 
     \item{alongPath}{boolean indicating whether to compute distance along the
@@ -37,25 +37,26 @@
 
     The function may be used in several different ways.
 
-    Case 1: \code{lat1} is a \code{section} object. The values of
-    \code{lon1}, \code{lat2}, and \code{lon2} arguments are ignored, and the
-    behaviour depends on the value of the \code{alongPath} argument.  If
+    Case 1: \code{lon1} is a \code{section} object. The values of \code{lat1},
+    \code{lon2}, and \code{lat2} arguments are ignored, and the behaviour
+    depends on the value of the \code{alongPath} argument.  If
     \code{alongPath=FALSE}, the return value contains the geodetic distances of
-    each station from the first one.  If \code{alongPath=TRUE}, the return value
-    is the geodetic distance along the path connecting the stations, in the order
-    in which they are stored in the section.
+    each station from the first one.  If \code{alongPath=TRUE}, the return
+    value is the geodetic distance along the path connecting the stations, in
+    the order in which they are stored in the section.
 
-    Case 2: \code{lat1} is a vector.  If \code{lat2} and \code{lon2} are
+    Case 2: \code{lon1} is a vector.  If \code{lon2} and \code{lat2} are
     not given, then the return value is a vector containing the distances of each
     point from the first one, \emph{or} the distancce along the path connecting
     the points, according to the value of \code{alongPath}.  On the other hand,
-    if if \code{lat2} and \code{lon2} are specified, then the return result
-    depends on the length of these arguments.  If they are each of length 1, then
-    they are taken as a reference point, from which the distances to \code{lat1}
-    and \code{lon1} are calculated (ignoring the value of \code{alongPath}).
-    However, if they are of the same length as \code{lat1} and \code{lon1}, then
-    the return value is the distance between corresponding
-    (\code{lat1},\code{lon1}) and (\code{lat2},\code{lon2}) values. 
+    if both \code{lon2} and \code{lat2} are specified, then the return result
+    depends on the length of these arguments.  If they are each of length 1,
+    then they are taken as a reference point, from which the distances to
+    \code{lon1} and \code{lat1} are calculated (ignoring the value of
+    \code{alongPath}).  However, if they are of the same length as \code{lon1}
+    and \code{lat1}, then the return value is the distance between
+    corresponding (\code{lon1},\code{lat1}) and (\code{lon2},\code{lat2})
+    values. 
 
 }
 
@@ -65,7 +66,7 @@
 
 \examples{
 library(oce)
-km <- geodDist(45, 100, 46, 100)
+km <- geodDist(100, 45, 100, 46)
 data(section)
 geodDist(section)
 geodDist(section, alongPath=TRUE)

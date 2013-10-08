@@ -915,7 +915,7 @@ setMethod(f="plot",
                           yloc <- yloc - d.yloc
                       }
                       if (!is.na(ref.lat) && !is.na(ref.lon)) {
-                          dist <- geodDist(xm$latitude, xm$longitude, ref.lat, ref.lon)
+                          dist <- geodDist(xm$longitude, xm$latitude, ref.lon, ref.lat)
                           kms <- sprintf("%.2f km", dist/1000)
                           rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon),
                                                          ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)

@@ -921,25 +921,18 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 ## The answer is returned in the same units as a; here in meters.
 ##
 ## Patterned after R code donated by Darren Gillis
-geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
+geodXy <- function(lon, lat, lon.ref, lat.ref, rotate=0)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(lat))
-        stop("must provide lat")
-    if (missing(lon))
-        stop("must provide lat")
-    if (missing(lat.ref))
-        stop("must provide lat.ref")
-    if (missing(lon.ref))
-        stop("must provide lon.ref")
-    if (!is.finite(lat.ref))
-        stop("lat.ref must be finite")
-    if (!is.finite(lon.ref))
-        stop("lat.ref must be finite")
+    if (missing(lon)) stop("must provide lat")
+    if (missing(lat)) stop("must provide lat")
+    if (missing(lat.ref)) stop("must provide lat.ref")
+    if (missing(lon.ref)) stop("must provide lon.ref")
+    if (!is.finite(lat.ref)) stop("lat.ref must be finite")
+    if (!is.finite(lon.ref)) stop("lat.ref must be finite")
     n <- length(lat)
-    if (length(lon) != n)
-        stop("lat and lon must be vectors of the same length")
+    if (length(lon) != n) stop("lat and lon must be vectors of the same length")
     x <- y <- vector("numeric", n)
     xy  <- .C("geod_xy",
               as.integer(n),
@@ -965,12 +958,12 @@ geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     data.frame(x, y)
 }
 
-geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
+geodDist <- function (lon1, lat1=NULL, lon2=NULL, lat2=NULL, alongPath=FALSE)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (inherits(lat1, "section")) {
-        section <- lat1
+    if (inherits(lon1, "section")) {
+        section <- lon1
         lat <- section[["latitude", "byStation"]]
         lon <- section[["longitude", "byStation"]]
         if (alongPath) {

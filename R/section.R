@@ -48,10 +48,10 @@ setMethod(f="[[",
               } else if ("distance" == i) {
                   rval <- NULL
                   for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]]@metadata$latitude,
-                                           x@data$station[[stn]]@metadata$longitude,
-                                           x@data$station[[1]]@metadata$latitude,
-                                           x@data$station[[1]]@metadata$longitude)
+                      distance <- geodDist(x@data$station[[stn]]@metadata$longitude,
+                                           x@data$station[[stn]]@metadata$latitude,
+                                           x@data$station[[1]]@metadata$longitude,
+                                           x@data$station[[1]]@metadata$latitude)
                       rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
                   }
               } else if ("depth" == i) {
@@ -734,15 +734,17 @@ setMethod(f="plot",
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) {
-                          xx[ix] <- geodDist(lat0, lon0, x@data$station[[j]]@metadata$latitude, x@data$station[[j]]@metadata$longitude)
+                          xx[ix] <- geodDist(lon0, lat0,
+                                             x@data$station[[j]]@metadata$longitude,
+                                             x@data$station[[j]]@metadata$latitude)
                       } else if (which.xtype == 2) {
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {
-                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
-                                                            x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
-                                                            x@data$station[[j]]@metadata$latitude,
-                                                            x@data$station[[j]]@metadata$longitude)
+                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
+                                                            x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
+                                                            x@data$station[[j]]@metadata$longitude,
+                                                            x@data$station[[j]]@metadata$latitude)
                           }
                       } else if (which.xtype == 3) {
                           xx[ix] <- x@data$station[[j]]@metadata$latitude
@@ -1283,7 +1285,7 @@ summary.section <- function(object, ...)
                 wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
                 stn.sum[i, 4] <- stn@data$pressure[wdi]
             }
-            stn.sum[i, 5] <- geodDist(lat1, lon1, stn@metadata$latitude, stn@metadata$longitude)
+            stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
         }
         colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
         rownames(stn.sum) <- object@metadata$stationId
