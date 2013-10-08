@@ -1,14 +1,15 @@
 setMethod(f="initialize",
           signature="lisst",
-          definition=function(.Object, filename="", latitude=NA, longitude=NA) {
+          definition=function(.Object, filename="", longitude=NA, latitude=NA) {
               .Object@metadata$filename <- filename
-              .Object@metadata$latitude <- latitude
               .Object@metadata$longitude <- longitude
+              .Object@metadata$latitude <- latitude
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- paste("create 'lisst' object with", 
                                                    " filename=\"", filename, "\"", 
-                                                   ", latitude=", latitude,
-                                                   ", longitude=", longitude, sep="")
+                                                   ", longitude=", longitude,
+                                                   ", latitude=",
+                                                   latitude, sep="")
               return(.Object)
           })
 
@@ -80,7 +81,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude
     rval
 }
 
-read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
+read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
 

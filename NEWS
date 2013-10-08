@@ -1,6 +1,7 @@
 0.9-13
-- switch the argument order to put longitude before latitude in: geodDist(),
-  geodXy()
+- switch the argument order to put longitude before latitude in:
+  as.coastline(), equatorialToLocalHorizontal(), geodDist(), geodXy(),
+  moonAngle(), read.lisst(), sunAngle(), and webtide().
 - magneticField() replaces magneticDeclination()
 - binApply() added
 - ungrid() added

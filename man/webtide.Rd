@@ -7,7 +7,7 @@
 
 \description{Get a tidal prediction from a WebTide database}
 
-\usage{webtide(action=c("map", "predict"), latitude, longitude, time,
+\usage{webtide(action=c("map", "predict"), longitude, latitude, time,
         basedir="/usr/local/WebTide", region="nwatl", plot=TRUE,
         tformat)}
 
@@ -17,9 +17,9 @@
     coordinates of a point the user clicks on that map, or \code{predict} to predict time-series for
     a specific location.}
     
-  \item{latitude}{latitude at which prediction is required.}
-
   \item{longitude}{longitude at which prediction is required.}
+
+  \item{latitude}{latitude at which prediction is required.}
 
   \item{time}{times at which prediction is to be made.}
 
@@ -58,7 +58,7 @@ library(oce)
 tStart <- ISOdate(2008, 7, 1, 0, 0, 0, tz="UTC")
 tEnd <- ISOdate(2008, 7, 5, 0, 0, 0, tz="UTC")
 time<-seq(tStart, tEnd, by=15, units="minutes")
-prediction <- webtide("predict", 48.14, -69.61, time)
+prediction <- webtide("predict", -69.61, 48.14, time)
 }
 }
 

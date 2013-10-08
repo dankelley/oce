@@ -22,7 +22,7 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
     data.frame(rightAscension=alpha/RPD, declination=delta/RPD)
 }
 
-equatorialToLocalHorizontal <- function(rightAscension, declination, t, latitude, longitude)
+equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## sidereal Greenwich time (in hours)
@@ -79,7 +79,7 @@ julianCenturyAnomaly <- function(jd)
     (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
 }
 
-moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
+moonAngle <- function(t, longitude, latitude, useRefraction=TRUE)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"

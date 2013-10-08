@@ -6,13 +6,13 @@
 
 \description{Solar angle as function of space and time.}
 
-\usage{sunAngle(t, latitude, longitude, useRefraction=FALSE)}
+\usage{sunAngle(t, longitude, latitude, useRefraction=FALSE)}
 
 \arguments{
     \item{t}{Time, a POSIXt object (must be in timezone UTC), or a numeric value that corresponds to
         such a time.}
-    \item{latitude}{observer latitude in degrees north}
     \item{longitude}{observer longitude in degrees east}
+    \item{latitude}{observer latitude in degrees north}
     \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for atmospheric
         refraction}
 }
@@ -35,17 +35,16 @@
 \examples{
 rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
 set <- as.POSIXct("2011-03-03 18:04:00", tz="UTC") + 4*3600
-mismatch <- function(latlon) 
+mismatch <- function(lonlat) 
 {
-    sunAngle(rise, latlon[1], latlon[2])$altitude^2 +
-    sunAngle(set, latlon[1], latlon[2])$altitude^2
+    sunAngle(rise, lonlat[1], lonlat[2])$altitude^2 + sunAngle(set, lonlat[1], lonlat[2])$altitude^2
 }
 result <- optim(c(1,1), mismatch)
-lat.hfx <- 44.65
 lon.hfx <- (-63.55274)
-dist <- geodDist(result$par[1], result$par[2], lat.hfx, lon.hfx)
+lat.hfx <- 44.65
+dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
 cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km", 
-            result$par[1], result$par[2], dist))
+            result$par[2], result$par[1], dist))
 }
 
 \references{Based on Fortran code retrieved from

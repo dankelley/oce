@@ -29,7 +29,7 @@ setMethod(f="subset",
           })
 
 
-as.coastline <- function(latitude, longitude, fillable=FALSE)
+as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (class(latitude) == "data.frame") {
         names <- names(latitude)

@@ -615,7 +615,7 @@ predict.tidem <- function(object, newdata, ...)
     as.numeric(rval)
 }
 
-webtide <- function(action=c("map", "predict"), latitude, longitude, time,
+webtide <- function(action=c("map", "predict"), longitude, latitude, time,
                     basedir="/usr/local/WebTide", region="nwatl",
                     plot=TRUE, tformat)
 {
