@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{topo}(x, 
      xlab="", ylab="",
      asp,
-     clatitude, clongitude, span,
+     clongitude, clatitude, span,
      expand=1.5,
      water.z,
      col.water,
@@ -39,17 +39,17 @@
       \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric
       about the equator, so to get good world views you should set \code{asp=1}
       or set \code{ylim} to be symmetric about zero.  Any given value of
-      \code{asp} is ignored, if \code{clatitude} and \code{clongitude} are
+      \code{asp} is ignored, if \code{clongitude} and \code{clatitude} are
       given.}
   \item{clatitude}{optional center latitude of map, in degrees north.  If this
       and \code{clongitude} are provided, then any provided value of \code{asp}
       is ignored, and instead the plot aspect ratio is computed based on the
-      center latitude.  Also, if \code{clatitude} and \code{clongitude} are
+      center latitude.  Also, if \code{clongitude} and \code{clatitude} are
       provided, then \code{span} must be, also.}
   \item{clongitude}{optional center longitude of map, in degrees east; see
       \code{clatitude}.}
   \item{span}{optional suggested span of plot, in kilometers (must be
-    supplied, if \code{clatitude} and \code{clongitude} are supplied).}
+    supplied, if \code{clongitude} and \code{clatitude} are supplied).}
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
@@ -101,7 +101,7 @@
 library(oce)
 data(topoWorld)
 plot(topoWorld)
-plot(topoWorld, clatitude=45, clongitude=300, span=10000)
+plot(topoWorld, clongitude=300, clatitude=45, span=10000)
 }
 
 \author{Dan Kelley}

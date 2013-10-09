@@ -22,7 +22,7 @@
      ylim=NULL,
      map.xlim=NULL,
      map.ylim=NULL,
-     xtype=c("distance", "track", "latitude", "longitude"),
+     xtype=c("distance", "track", "longitude", "latitude"),
      ytype=c("depth", "pressure"),
      ztype=c('contour', 'image'),
      legend.loc="bottomright",

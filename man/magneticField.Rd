@@ -16,8 +16,8 @@
   \item{latitude}{latitude in degrees north, a number, vector, or matrix.}
 
   \item{time}{either a decimal year or a POSIX time corresponding to the
-      \code{lat} and \code{lon} values, or a vector or matrix matching these
-      location values.}
+      \code{longitude} and \code{latitude} values, or a vector or matrix
+      matching these location values.}
 }
 
 \details{Implements the International geomagnetic reference field, based

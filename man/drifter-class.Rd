@@ -11,7 +11,7 @@
     \code{data} and \code{processingLog}.}
 
 \section{Methods}{Data may be accessed as e.g. \code{pt[["time"]]}, where the
-    string could also be \code{"latitude"} or \code{"longitude"}.  The profile
+    string could also be \code{"longitude"} or \code{"latitude"}.  The profile
     data are available in \code{"salinity"}, \code{"temperature"} and
     \code{"pressure"}, each of which is a matrix with first index corresponding
     to depth and second index corresponding to profile number.  Assignment to

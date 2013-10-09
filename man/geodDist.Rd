@@ -11,7 +11,7 @@
 \arguments{
 
     \item{lon1}{longitude or a vector of longitudes, \strong{or} a
-        \code{section} object, from which latitude and longitude are extracted
+        \code{section} object, from which longitude and latitude are extracted
         and used instead of the next three arguments}
 
     \item{lat1}{latitude or vector of latitudes (ignored if \code{lon1} is a

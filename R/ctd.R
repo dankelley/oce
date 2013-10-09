@@ -71,7 +71,7 @@ as.ctd <- function(salinity, temperature, pressure,
                    filename="", type="", model="", serialNumber="",
                    ship="", scientist="", institute="", address="", cruise="", station="",
                    date="", startTime="", recovery="",
-                   latitude=NA, longitude=NA,
+                   longitude=NA, latitude=NA,
                    waterDepth=NA, sampleInterval=NA, src="")
 {
     if (!missing(salinity) && class(salinity) == "data.frame") {

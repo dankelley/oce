@@ -37,7 +37,7 @@ data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
 mapPlot(longitude, latitude, type='l',
-        latitudelim=c(30,60), longitudelim=c(-130,-50),
+        longitudelim=c(-130,-50), latitudelim=c(30,60),
         proj="polyconic", orientation=c(90, -90, 0))
 mapMeridians()
 }

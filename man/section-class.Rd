@@ -27,7 +27,7 @@
         is present in the constituent profiles.   
 
         Since it is often useful to pair such quantities with locations,
-        \code{section[["latitude"]]} and \code{section[["longitude"]]} return
+        \code{section[["longitude"]]} and \code{section[["latitude"]]} return
         vectors with values repeated for each level in each CTD (see the
         \code{pairs()} call in the example section).  If just one latitude or
         longitude is desired per station, e.g. \code{section[["latitude",

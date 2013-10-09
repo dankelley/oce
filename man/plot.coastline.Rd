@@ -28,7 +28,7 @@
   \item{x}{A \code{coastline} object, as read by
     \code{\link{read.coastline}} or created by
     \code{\link{as.coastline}}, or a list containing items named
-    \code{latitude} and \code{longitude}.} 
+    \code{longitude} and \code{latitude}.} 
   \item{xlab}{label for x axis}
   \item{ylab}{label for y axis}
   \item{asp}{Aspect ratio for plot.  The default is for \code{plot.coastline}
@@ -49,7 +49,7 @@
   \item{span}{optional suggested span of plot, in kilometers.  The suggestion
       is an upper limit on the scale; depending on the aspect ratio of the
       plotting device, the radius may be smaller than \code{span}.  A value for
-      \code{span} must be supplied, if \code{clatitude} and \code{clongitude}
+      \code{span} must be supplied, if \code{clongitude} and \code{clatitude}
       are supplied.}
 
   \item{projection}{optional map projection to use (see \code{\link{mapPlot}});
@@ -126,10 +126,10 @@
 library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
-plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
+plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
 
 ## Canada in Lambert projection
-plot(coastlineWorld, clatitude=60, clongitude=-90, span=3000, fill=NULL, grid=10,
+plot(coastlineWorld, clongitude=-90, clatitude=60, span=3000, fill=NULL, grid=10,
      projection='lambert', parameters=c(lat0=50,lat1=70), orientation=c(90,-90,0))
 }
 }

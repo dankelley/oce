@@ -15,7 +15,7 @@
 }
 
 \details{Pertinent summary information is presented, including the
-  latitude and longitude range, and the range of elevation.}
+  longitude and latitude range, and the range of elevation.}
 
 \value{An object of class \code{"summary.lobo"}, which contains
   pertinent information about the Lobo record and its processing.}
