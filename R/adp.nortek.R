@@ -273,13 +273,13 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 }
 
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                          latitude=NA, longitude=NA,
+                          longitude=NA, latitude=NA,
                           orientation, distance,
                           monitor=FALSE, despike=FALSE, processingLog,
                           debug=getOption("oceDebug"), ...)
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           latitude=latitude, longitude=longitude,
+                           longitude=longitude, latitude=latitude,
                            type="aquadopp",
                            orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
@@ -287,13 +287,13 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             orientation=orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"), ...)
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           latitude=latitude, longitude=longitude,
+                           longitude=longitude, latitude=latitude,
                            type="aquadoppHR",
                            orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
@@ -301,13 +301,13 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                  latitude=NA, longitude=NA,
+                                  longitude=NA, latitude=NA,
                                   orientation, distance,
                                   monitor=FALSE, despike=FALSE, processingLog,
                                   debug=getOption("oceDebug"), ...)
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           latitude=latitude, longitude=longitude,
+                           longitude=longitude, latitude=latitude,
                            type="aquadoppProfiler",
                            orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
@@ -316,7 +316,7 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
                             orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,

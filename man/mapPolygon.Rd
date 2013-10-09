@@ -35,7 +35,7 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-        latitudelim=c(40,50), longitudelim=c(-70,-50),
+        longitudelim=c(-70,-50), latitudelim=c(40,50),
         proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
 data(topoWorld)
 tlon <- topoWorld[['longitude']][550:650]

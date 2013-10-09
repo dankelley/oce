@@ -45,7 +45,7 @@ setMethod(f="plot",
 
 
 
-as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude=NA)
+as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
