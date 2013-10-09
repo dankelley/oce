@@ -8,16 +8,16 @@
 
 
 \usage{
-topoInterpolate(latitude, longitude, topo)
+topoInterpolate(longitude, latitude, topo)
 }
 
 \arguments{
 
-  \item{latitude}{latitude, or vector of latitudes (in the same sign convention
-      as used in \code{topo}).}
-
   \item{longitude}{longitude, or vector of longitudes (in the same sign
       convention as used in \code{topo}).}
+  
+  \item{latitude}{latitude, or vector of latitudes (in the same sign convention
+      as used in \code{topo}).}
   
   \item{topo}{topography object, as e.g. loaded with \code{data(topoWorld)}.}
 

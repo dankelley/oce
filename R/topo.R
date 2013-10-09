@@ -24,16 +24,12 @@ setMethod(f="[[",
           })
 
 
-topoInterpolate <- function(latitude, longitude, topo)
+topoInterpolate <- function(longitude, latitude, topo)
 {
-    if (missing(latitude))
-        stop("must supply latitude")
-    if (missing(longitude))
-        stop("must supply longitude")
-    if (missing(topo))
-        stop("must supply topo")
-    if (length(latitude) != length(longitude))
-        stop("lengths of latitude and longitude must match")
+    if (missing(longitude)) stop("must supply longitude")
+    if (missing(latitude)) stop("must supply latitude")
+    if (missing(topo)) stop("must supply topo")
+    if (length(latitude) != length(longitude)) stop("lengths of latitude and longitude must match")
     .Call("topo_interpolate", latitude, longitude, topo[["latitude"]], topo[["longitude"]], topo[["z"]])
 }
 

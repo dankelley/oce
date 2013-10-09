@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{coastline}(x,
      xlab="", ylab="",
      asp,
-     clatitude, clongitude, span,
+     clongitude, clatitude, span,
      projection, parameters=NULL, orientation=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 

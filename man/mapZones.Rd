@@ -6,10 +6,10 @@
 
 \description{Plot zones (lines of constant longitude) on a existing map}
 
-\usage{mapZones(lon, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', \dots)}
+\usage{mapZones(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', \dots)}
 
 \arguments{
-    \item{lon}{either a boolean indicating whether to draw a zonal grid, or a
+    \item{longitude}{either a boolean indicating whether to draw a zonal grid, or a
         single number to indicate the increment in zone longitudes, or a vector 
         of longitudes at which to draw zones.}
 

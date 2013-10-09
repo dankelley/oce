@@ -189,20 +189,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
-mapMeridians <- function(lat, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
+mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
 {
-    if (missing(lat))
-        lat <- TRUE
-    if (is.logical(lat)) {
-        if (!lat)
+    if (missing(latitude))
+        latitude <- TRUE
+    if (is.logical(latitude)) {
+        if (!latitude)
             return()
-        lat <- 15
+        latitude <- 15
     }
-    if (length(lat) == 1)
-        lat <- seq(-90, 90, lat)
+    if (length(latitude) == 1)
+        latitude <- seq(-90, 90, latitude)
     usr <- par('usr')
     n <- 360                           # number of points on line
-    for (l in lat) {
+    for (l in latitude) {
         ## FIXME: should use mapLines here
         line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
         x <- line$x
@@ -233,24 +233,23 @@ mapMeridians <- function(lat, lty='solid', lwd=0.5*par('lwd'), col='lightgray', 
 }
 
 
-mapZones <- function(lon, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
+mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
 {
-    if (missing(lon))
-        lon <- TRUE
-    if (is.logical(lon)) {
-        if (!lon)
+    if (missing(longitude))
+        longitude <- TRUE
+    if (is.logical(longitude)) {
+        if (!longitude)
             return()
-        lon <- 15
+        longitude <- 15
     }
-    if (length(lon) == 1)
+    if (length(longitude) == 1)
         ##lon <- rep(seq(-180, 180, lon), each=360/lon)
-        lon <- seq(-180, 180, lon)
+        longitude <- seq(-180, 180, longitude)
     if (polarCircle < 0 || polarCircle > 90)
         polarCircle <- 0
-
     usr <- par('usr')
     n <- 360                           # number of points on line
-    for (l in lon) {
+    for (l in longitude) {
         ## FIXME: should use mapLines here
         line <- mapproject(rep(l, n), seq(-90+polarCircle, 90-polarCircle, length.out=n))
         x <- line$x

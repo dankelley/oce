@@ -1,7 +1,7 @@
 \name{geodXy}
 \alias{geodXy}
-\title{Convert lat/lon to x/y on earth}
-\description{Convert lat/lon to x/y on earth}
+\title{Convert lon/lat to x/y on earth}
+\description{Convert lon/lat to x/y on earth}
 
 \usage{geodXy(lon, lat, lon.ref, lat.ref, rotate=0)}
 
