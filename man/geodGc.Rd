@@ -26,7 +26,7 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-        latitudelim=c(35,80), longitudelim=c(-80,10),
+        longitudelim=c(-80,10), latitudelim=c(35,80),
         projection="orthographic", orientation=c(35, -35, 0))
 ## Airplanes travelling between New York and London 
 ## pass over Newfoundland and Nova Scotia.

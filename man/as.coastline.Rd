@@ -4,7 +4,7 @@
 
 \title{Coerce data into coastline dataset}
 
-\description{Coerces a sequence of latitudes and longitudes into a coastline dataset.}
+\description{Coerces a sequence of longitudes and latitudes into a coastline dataset.}
 
 \usage{as.coastline(longitude, latitude, fillable)}
 

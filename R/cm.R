@@ -11,7 +11,7 @@ setMethod(f="initialize",
 
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
-                    latitude=NA, longitude=NA,
+                    longitude=NA, latitude=NA,
                     debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 2)
@@ -24,14 +24,14 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     type <- match.arg(type)
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
-                   latitude=latitude, longitude=longitude,
+                   longitude=longitude, latitude=latitude,
                    debug=debug-1, monitor=monitor, processingLog=processingLog, ...)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                       latitude=NA, longitude=NA,
+                       longitude=NA, latitude=NA,
                        debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 1)

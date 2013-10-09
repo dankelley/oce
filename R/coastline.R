@@ -31,12 +31,14 @@ setMethod(f="subset",
 
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
-    if (class(latitude) == "data.frame") {
-        names <- names(latitude)
+    if (missing(longitude)) stop("must provide longitude")
+    if (missing(latitude)) stop("must provide latitude")
+    if (class(longitude) == "data.frame") {
+        names <- names(longitude)
         if (!("longitude" %in% names)) stop("list must contain a column named 'longitude'")
         if (!("latitude" %in% names)) stop("list must contain a column named 'latitude'")
-        longitude <- latitude$longitude
-        latitude <- latitude$latitude
+        latitude <- longitude$latitude
+        longitude <- longitude$longitude
     }
     n <- length(latitude)
     if (n != length(longitude))
@@ -66,8 +68,8 @@ setMethod(f="plot",
                                ...)
           {
               oceDebug(debug, "\bplot.coastline(...",
-                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
+                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
                        ", cex.axis=", cex.axis, 
@@ -105,9 +107,9 @@ setMethod(f="plot",
               latitude <- x[["latitude"]]
               dots <- list(...)
               dotsNames <- names(dots)
-              gave.center <- !missing(clatitude) && !missing(clongitude)
+              gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
-                  stop("use 'clatitude' and 'clongitude' instead of 'center'")
+                  stop("use 'clongitude' and 'clatitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
               if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; use 'clatitude' and 'span' instead")
               if (!inset)

@@ -38,15 +38,14 @@
       \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric
       about the equator, so to get good world views you should set \code{asp=1}
       or set \code{ylim} to be symmetric about zero. Any given value of
-      \code{asp} is ignored, if \code{clatitude} and \code{clongitude} are
+      \code{asp} is ignored, if \code{clongitude} and \code{clatitude} are
       given.}
-  \item{clatitude}{optional center latitude of map, in degrees north.  If this
-      and \code{clongitude} are provided, then any provided value of \code{asp}
-      is ignored, and instead the plot aspect ratio is computed based on the
-      center latitude.  Also, if \code{clatitude} and \code{clongitude} are
-      provided, then \code{span} must be, also.}
-  \item{clongitude}{optional center longitude of map, in degrees east; see
-      \code{clatitude}.}
+  \item{clongitude,clatitude}{optional center latitude of map, in decimal
+      degrees.  If both \code{clongitude} and \code{clatitude} are provided,
+      then any provided value of \code{asp} is ignored, and instead the plot
+      aspect ratio is computed based on the center latitude.  If
+      \code{clongitude} and \code{clatitude} are provided, then \code{span}
+      must also be provided.}
   \item{span}{optional suggested span of plot, in kilometers.  The suggestion
       is an upper limit on the scale; depending on the aspect ratio of the
       plotting device, the radius may be smaller than \code{span}.  A value for

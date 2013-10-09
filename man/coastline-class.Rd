@@ -11,7 +11,7 @@
 
 \description{Class to store coastline data, with standard slots \code{metadata}
     (containing \code{fillable} and \code{filename}),  \code{data} (containing
-    \code{latitude} and \code{longitude}) and \code{processingLog}.}
+    \code{longitude}), \code{latitude} and \code{processingLog}.}
 
 \section{Methods}{
     \subsection{Extracting values}{Data may be accessed as e.g.
