@@ -261,7 +261,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 }                                       # read.header.rdi()
 
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                         latitude=NA, longitude=NA,
+                         longitude=NA, latitude=NA,
                          type=c("workhorse"),
                          monitor=FALSE, despike=FALSE, processingLog,
                          testing=FALSE,
@@ -521,8 +521,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       isVmdas <- TRUE
                       if (i == 1) {
                         navTime <- NULL
-                        slatitude <- NULL
                         slongitude <- NULL
+                        slatitude <- NULL
                         elatitude <- NULL
                         elongitude <- NULL                      
                       }
@@ -634,8 +634,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$manufacturer <- "rdi"
             metadata$instrumentType <- "adcp"
             metadata$filename <- filename
-            metadata$latitude <- latitude
             metadata$longitude <- longitude
+            metadata$latitude <- latitude
             metadata$velocityResolution <- velocityScale
             metadata$velocityMaximum <- velocityScale * 2^15
             metadata$numberOfSamples <- dim(v)[1]
@@ -746,10 +746,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              attitude=attitude,
                              contaminationSensor=contaminationSensor,
                              navTime=navTime,
-                             slatitude=slatitude,
                              slongitude=slongitude,
-                             elatitude=elatitude,
-                             elongitude=elongitude)
+                             slatitude=slatitude,
+                             elongitude=elongitude,
+                             elatitude=elatitude)
             } else {
                 data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),

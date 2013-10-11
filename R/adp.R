@@ -309,7 +309,7 @@ beamName <- function(x, which)
 }
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                     latitude=NA, longitude=NA,
+                     longitude=NA, latitude=NA, 
                      manufacturer=c("rdi", "nortek", "sontek"),
                      monitor=FALSE, despike=FALSE, processingLog,
                      debug=getOption("oceDebug"),
@@ -321,17 +321,17 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat(file, "\n", ...)
     if (manufacturer == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
-                     latitude=latitude, longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      debug=debug-1, monitor=monitor, despike=despike,
                      processingLog=processingLog, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
 }

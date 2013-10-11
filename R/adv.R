@@ -162,7 +162,7 @@ setMethod(f="subset",
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
-                     latitude=NA, longitude=NA,
+                     longitude=NA, latitude=NA,
                      start, deltat,
                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -171,20 +171,20 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug, monitor=monitor, processingLog=processingLog)
     else if (type == "sontek") # guess
         read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
-                               latitude=latitude, longitude=longitude,
+                               longitude=longitude, latitude=latitude,
                                start=start, deltat=deltat,
                                debug=debug, monitor=monitor, processingLog=processingLog)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
-                            latitude=latitude, longitude=longitude,
+                            longitude=longitude, latitude=latitude,
                             debug=debug, processingLog=processingLog)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
-                             latitude=latitude, longitude=longitude,
+                             longitude=longitude, latitude=latitude,
                              debug=debug, processingLog=processingLog)
     else
         stop("read.adv() cannot understand type = \"", type, "\"")

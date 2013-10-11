@@ -11,7 +11,7 @@
 \arguments{
 
     \item{longitude}{longitudes of points to be plotted, or an object from
-        which latitude and longitude can be inferred (e.g. a coastline file, or
+        which longitude and latitude can be inferred (e.g. a coastline file, or
         the return value from \code{\link{mapLocator}}), in which case the
         following two arguments are ignored.}
     

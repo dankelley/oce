@@ -343,7 +343,7 @@ swDynamicHeight <- function(x, referencePressure=2000)
         h <- vector("numeric", ns)
         for (i in 1:ns) {               # FIXME: avoid loops
 ##            cat("i=",i,"\n")
-            d[i] <- geodDist(x@data$station[[i]]@metadata$latitude, x@data$station[[i]]@metadata$longitude, lat0, lon0)
+            d[i] <- geodDist(x@data$station[[i]]@metadata$longitude, x@data$station[[i]]@metadata$latitude, lon0, lat0)
             h[i] <- height(x@data$station[[i]], referencePressure)
         }
         return(list(distance=d, height=h))

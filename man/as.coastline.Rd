@@ -4,16 +4,16 @@
 
 \title{Coerce data into coastline dataset}
 
-\description{Coerces a sequence of latitudes and longitudes into a coastline dataset.}
+\description{Coerces a sequence of longitudes and latitudes into a coastline dataset.}
 
-\usage{as.coastline(latitude, longitude, fillable)}
+\usage{as.coastline(longitude, latitude, fillable)}
 
 \arguments{
-  \item{latitude}{the latitude in decimal degrees, positive north of the
-      equator, or a data frame with columns named \code{latitude} and
+  \item{longitude}{the longitude in decimal degrees, positive east of
+      Greenwich, or a data frame with columns named \code{latitude} and
       \code{longitude}, in which case these values are extracted from the data
       frame and the second argument is ignored.}
-  \item{longitude}{the longitude in decimal degrees, positive north of Greenwich.}
+  \item{latitude}{the latitude in decimal degrees, positive north of the Equator.}
   \item{fillable}{boolean indicating whether the coastline can be drawn as a filled polygon.}
 }
 
@@ -35,7 +35,7 @@
     georges <- 44.63632 < lat & lat < 44.64784 & -63.56681 < lon & lon < -63.55452
     lat <- lat[!georges]
     lon <- lon[!georges]
-    coastlineNew <- as.coastline(lat, lon, fillable=TRUE)
+    coastlineNew <- as.coastline(lon, lat, fillable=TRUE)
     par(mfrow=c(2,1))
     plot(coastlineHalifax)
     plot(coastlineNew)

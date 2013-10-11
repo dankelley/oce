@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{coastline}(x,
      xlab="", ylab="",
      asp,
-     clatitude, clongitude, span,
+     clongitude, clatitude, span,
      projection, parameters=NULL, orientation=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
@@ -28,7 +28,7 @@
   \item{x}{A \code{coastline} object, as read by
     \code{\link{read.coastline}} or created by
     \code{\link{as.coastline}}, or a list containing items named
-    \code{latitude} and \code{longitude}.} 
+    \code{longitude} and \code{latitude}.} 
   \item{xlab}{label for x axis}
   \item{ylab}{label for y axis}
   \item{asp}{Aspect ratio for plot.  The default is for \code{plot.coastline}
@@ -38,19 +38,18 @@
       \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric
       about the equator, so to get good world views you should set \code{asp=1}
       or set \code{ylim} to be symmetric about zero. Any given value of
-      \code{asp} is ignored, if \code{clatitude} and \code{clongitude} are
+      \code{asp} is ignored, if \code{clongitude} and \code{clatitude} are
       given.}
-  \item{clatitude}{optional center latitude of map, in degrees north.  If this
-      and \code{clongitude} are provided, then any provided value of \code{asp}
-      is ignored, and instead the plot aspect ratio is computed based on the
-      center latitude.  Also, if \code{clatitude} and \code{clongitude} are
-      provided, then \code{span} must be, also.}
-  \item{clongitude}{optional center longitude of map, in degrees east; see
-      \code{clatitude}.}
+  \item{clongitude,clatitude}{optional center latitude of map, in decimal
+      degrees.  If both \code{clongitude} and \code{clatitude} are provided,
+      then any provided value of \code{asp} is ignored, and instead the plot
+      aspect ratio is computed based on the center latitude.  If
+      \code{clongitude} and \code{clatitude} are provided, then \code{span}
+      must also be provided.}
   \item{span}{optional suggested span of plot, in kilometers.  The suggestion
       is an upper limit on the scale; depending on the aspect ratio of the
       plotting device, the radius may be smaller than \code{span}.  A value for
-      \code{span} must be supplied, if \code{clatitude} and \code{clongitude}
+      \code{span} must be supplied, if \code{clongitude} and \code{clatitude}
       are supplied.}
 
   \item{projection}{optional map projection to use (see \code{\link{mapPlot}});
@@ -127,10 +126,10 @@
 library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
-plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
+plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
 
 ## Canada in Lambert projection
-plot(coastlineWorld, clatitude=60, clongitude=-90, span=3000, fill=NULL, grid=10,
+plot(coastlineWorld, clongitude=-90, clatitude=60, span=3000, fill=NULL, grid=10,
      projection='lambert', parameters=c(lat0=50,lat1=70), orientation=c(90,-90,0))
 }
 }

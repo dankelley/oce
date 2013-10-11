@@ -86,7 +86,7 @@ velocity(x)
       \code{x} are returned.)}
 
   \item{byDepth}{flag usd only for \code{"section"} objects, which indicates
-      whether to repeat the \code{latitude} or \code{longitude} values so that
+      whether to repeat the \code{longitude} or \code{latitude} values so that
       there is a value for each depth in each profile.}
 
   \item{value}{value to assign to the relevant item in the \code{x} object.}

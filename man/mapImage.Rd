@@ -51,7 +51,7 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-        latitudelim=c(40,50), longitudelim=c(-70,-50),
+        longitudelim=c(-70,-50), latitudelim=c(40,50),
         proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
 data(topoWorld)
 mapImage(topoWorld, col=oceColorsGebco)
@@ -62,7 +62,7 @@ mapLines(coastlineWorld)
 ## Northern polar region, with colour-coded bathymetry
 drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
 mapPlot(coastlineWorld, type='l',
-         latitudelim=c(60,120), longitudelim=c(-180,180),
+         longitudelim=c(-180,180), latitudelim=c(60,120),
          proj="stereographic", grid=TRUE)
 data(topoWorld)
 mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)

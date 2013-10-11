@@ -11,7 +11,7 @@
 
 \arguments{
     \item{longitude}{longitudes of points to be plotted, or an object from
-        which latitude and longitude can be inferred (e.g. a coastline file, or
+        which longitude and latitude can be inferred (e.g. a coastline file, or
         the return value from \code{\link{mapLocator}}), in which case the
         following two arguments are ignored.}
     \item{latitude}{latitudes of points to be plotted}
@@ -35,7 +35,7 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-        latitudelim=c(40,50), longitudelim=c(-70,-50),
+        longitudelim=c(-70,-50), latitudelim=c(40,50),
         proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
 data(topoWorld)
 tlon <- topoWorld[['longitude']][550:650]

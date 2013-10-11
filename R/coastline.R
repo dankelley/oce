@@ -1,8 +1,8 @@
 setMethod(f="initialize",
           signature="coastline",
-          definition=function(.Object, latitude=NULL, longitude=NULL, filename="", fillable=FALSE) {
-              .Object@data$latitude <- latitude
+          definition=function(.Object, longitude=NULL, latitude=NULL, filename="", fillable=FALSE) {
               .Object@data$longitude <- longitude
+              .Object@data$latitude <- latitude
               .Object@metadata$filename <- filename
               .Object@metadata$fillable <- fillable
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -29,19 +29,21 @@ setMethod(f="subset",
           })
 
 
-as.coastline <- function(latitude, longitude, fillable=FALSE)
+as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
-    if (class(latitude) == "data.frame") {
-        names <- names(latitude)
+    if (missing(longitude)) stop("must provide longitude")
+    if (missing(latitude)) stop("must provide latitude")
+    if (class(longitude) == "data.frame") {
+        names <- names(longitude)
         if (!("longitude" %in% names)) stop("list must contain a column named 'longitude'")
         if (!("latitude" %in% names)) stop("list must contain a column named 'latitude'")
-        longitude <- latitude$longitude
-        latitude <- latitude$latitude
+        latitude <- longitude$latitude
+        longitude <- longitude$longitude
     }
     n <- length(latitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
-    rval <- new("coastline", latitude=latitude, longitude=longitude, fillable=fillable)
+    rval <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -51,7 +53,7 @@ setMethod(f="plot",
           definition=function (x,
                                xlab="", ylab="",
                                asp,
-                               clatitude, clongitude, span,
+                               clongitude, clatitude, span,
                                projection, parameters=NULL, orientation=NULL,
                                ## center, span,
                                expand=1,
@@ -66,8 +68,8 @@ setMethod(f="plot",
                                ...)
           {
               oceDebug(debug, "\bplot.coastline(...",
-                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
+                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
                        ", cex.axis=", cex.axis, 
@@ -105,9 +107,9 @@ setMethod(f="plot",
               latitude <- x[["latitude"]]
               dots <- list(...)
               dotsNames <- names(dots)
-              gave.center <- !missing(clatitude) && !missing(clongitude)
+              gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
-                  stop("use 'clatitude' and 'clongitude' instead of 'center'")
+                  stop("use 'clongitude' and 'clatitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
               if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; use 'clatitude' and 'span' instead")
               if (!inset)
@@ -317,7 +319,7 @@ read.coastline <- function(file,
             on.exit(close(file))
         }
         data <- read.table(file, col.names=c("longitude", "latitude"))
-        res <- new("coastline", latitude=data$latitude, longitude=data$longitude, fillable=FALSE, filename=filename)
+        res <- new("coastline", longitude=data$longitude, latitude=data$latitude, fillable=FALSE, filename=filename)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
@@ -345,7 +347,7 @@ read.coastline <- function(file,
                 }
             }
         }
-        res <- new("coastline", latitude=lonlat[,2], longitude=lonlat[,1], fillable=FALSE)
+        res <- new("coastline", longitude=lonlat[,1], latitude=lonlat[,2], fillable=FALSE)
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }

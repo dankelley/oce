@@ -1,11 +1,8 @@
-sunAngle <- function(t, latitude, longitude, useRefraction=FALSE)
+sunAngle <- function(t, longitude, latitude, useRefraction=FALSE)
 {
-    if (missing(t))
-        stop("must provide t")
-    if (missing(latitude))
-        stop("must provide latitude")
-    if (missing(longitude))
-        stop("must provide longitude")
+    if (missing(t)) stop("must provide t")
+    if (missing(longitude)) stop("must provide longitude")
+    if (missing(latitude)) stop("must provide latitude")
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -15,16 +12,14 @@ sunAngle <- function(t, latitude, longitude, useRefraction=FALSE)
         }
     }
     nt <- length(t)
-    nlat <- length(latitude)
     nlon <- length(longitude)
-    if (nlon != nlat)
-        stop("lengths of longitude and latitude must match")
+    nlat <- length(latitude)
+    if (nlon != nlat) stop("lengths of longitude and latitude must match")
     if (nlon == 1) {
         longitude <- rep(longitude, nt) # often, give a time vector but just one location
         latitude <- rep(latitude, nt)
     } else {
-        if (nt != nlon)
-            stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
+        if (nt != nlon) stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
     }
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f

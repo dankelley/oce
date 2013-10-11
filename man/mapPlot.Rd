@@ -89,7 +89,7 @@ data(coastlineWorld)
 ## nor equal-area, so they are somewhat limited for serious
 ## use on large scales.  There is no distortion at the centre.
 ## See Snyder (1987 section 20).
-mapPlot(coastlineWorld, latitudelim=c(0,120), longitudelim=c(-80,10),
+mapPlot(coastlineWorld, longitudelim=c(-80,10), latitudelim=c(0,120),
         projection="orthographic", orientation=c(45,-100,0))
 
 ## The Lambert conformal conic projection is an equal-area
@@ -97,12 +97,12 @@ mapPlot(coastlineWorld, latitudelim=c(0,120), longitudelim=c(-80,10),
 ## east-west extent away from the equator, here illustrated 
 ## for the USA and Canada.  Readers should compare the results
 ## with those with a polygonic projection, which is also popular.
-mapPlot(coastlineWorld, latitudelim=c(35,60), longitudelim=c(-130,-55),
+mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
 
 ## Arctic view with a stereographic projection.
 par(mar=rep(1, 4))
-mapPlot(coastlineWorld, latitudelim=c(60,120), longitudelim=c(-130,-50), 
+mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(60,120),
         proj="stereographic", orientation=c(90, -90, 0), 
         axes=FALSE, fill='lightgray')
 }

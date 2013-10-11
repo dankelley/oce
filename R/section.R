@@ -10,7 +10,7 @@ setMethod(f="[[",
           signature="section",
           definition=function(x, i, j, drop) {
               if (i %in% names(x@metadata)) {
-                  if (i %in% c("latitude", "longitude")) {
+                  if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && "byStation" == j) {
                           return(x@metadata[[i]])
                       } else {
@@ -48,10 +48,10 @@ setMethod(f="[[",
               } else if ("distance" == i) {
                   rval <- NULL
                   for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]]@metadata$latitude,
-                                           x@data$station[[stn]]@metadata$longitude,
-                                           x@data$station[[1]]@metadata$latitude,
-                                           x@data$station[[1]]@metadata$longitude)
+                      distance <- geodDist(x@data$station[[stn]]@metadata$longitude,
+                                           x@data$station[[stn]]@metadata$latitude,
+                                           x@data$station[[1]]@metadata$longitude,
+                                           x@data$station[[1]]@metadata$latitude)
                       rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
                   }
               } else if ("depth" == i) {
@@ -120,8 +120,8 @@ setMethod(f="subset",
                   data <- list(station=station)
                   metadata <- x@metadata
                   metadata$stationId <- stn
-                  metadata$latitude=lat
                   metadata$lonitude=lon
+                  metadata$latitude=lat
                   rval@metadata <- metadata
                   rval@data <- data
                   rval@processingLog <- x@processingLog
@@ -145,8 +145,8 @@ setMethod(f="subset",
                   if (length(grep("distance", subsetString))) {
                       l <- list(distance=geodDist(rval))
                       keep <- eval(substitute(subset), l, parent.frame())
-                      rval@metadata$latitude <- rval@metadata$latitude[keep]
                       rval@metadata$longitude <- rval@metadata$longitude[keep]
+                      rval@metadata$latitude <- rval@metadata$latitude[keep]
                       rval@metadata$stationId <- rval@metadata$stationId[keep]
                       rval@data$station <- rval@data$station[keep]
                   } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
@@ -163,8 +163,8 @@ setMethod(f="subset",
                       for (i in 1:n) {
                           if (keep[i]) {
                               stn[j] <- x@metadata$stationId[i]
-                              lat[j] <- x@metadata$latitude[i]
                               lon[j] <- x@metadata$longitude[i]
+                              lat[j] <- x@metadata$latitude[i]
                               station[[j]] <- x@data$station[[i]]
                               j <- j + 1
                           }
@@ -173,8 +173,7 @@ setMethod(f="subset",
                       metadata <- list(header=x@metadata$header,
                                        sectionId=x@metadata$sectionId,
                                        stationId=stn,
-                                       latitude=lat,
-                                       longitude=lon)
+                                       longitude=lon, latitude=lat)
                       rval <- new('section')
                       rval@data <- data
                       rval@metadata <- metadata
@@ -200,8 +199,8 @@ sectionSort <- function(section, by=c("stationId", "distance"))
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
 	rval@metadata$stationId <- rval@metadata$stationId[o]
-	rval@metadata$latitude <- rval@metadata$latitude[o]
 	rval@metadata$longitude <- rval@metadata$longitude[o]
+	rval@metadata$latitude <- rval@metadata$latitude[o]
 	rval@data$station <- rval@data$station[o]
     } else if (by == "distance") {
 	warning("sort.section() cannot yet handle argument by=\"distance\"")
@@ -222,16 +221,16 @@ makeSection <- function(item, ...)
 	lon <- vector("numeric", numStations)
 	lat <- vector("numeric", numStations)
 	stn[1] <- item@metadata$station
-	lat[1] <- item@metadata$latitude
 	lon[1] <- item@metadata$longitude
+	lat[1] <- item@metadata$latitude
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
                 ##cat("adding station i=", i, "\n")
                 thisStn <- extra.args[[i-1]]
 		stn[i] <- thisStn@metadata$station
-		lat[i] <- thisStn@metadata$latitude
 		lon[i] <- thisStn@metadata$longitude
+		lat[i] <- thisStn@metadata$latitude
 		station[[i]] <- thisStn
 	    }
 	}
@@ -245,8 +244,8 @@ makeSection <- function(item, ...)
 	    for (i in 1:numStations) {
                 thisItem <- item[[i]]
 		stn[i] <- thisItem@metadata$station
-		lat[i] <- thisItem@metadata$latitude
 		lon[i] <- thisItem@metadata$longitude
+		lat[i] <- thisItem@metadata$latitude
 		station[[i]] <- thisItem
 	    }
 	} else {
@@ -266,8 +265,8 @@ makeSection <- function(item, ...)
 	    for (i in 1:numStations) {
                 thisItem <- get(item[[i]])
 		stn[i] <- thisItem@metadata$station
-		lat[i] <- thisItem@metadata$latitude
 		lon[i] <- thisItem@metadata$longitude
+		lat[i] <- thisItem@metadata$latitude
 		station[[i]] <- thisItem
 	    }
 	} else {
@@ -277,16 +276,16 @@ makeSection <- function(item, ...)
 		##oceDebug(1, "file named", item[i], "\n")
 		ctd <- read.ctd(item[i])
 		stn[i] <- ctd@metadata$station
-		lat[i] <- ctd@metadata$latitude
 		lon[i] <- ctd@metadata$longitude
-		station[[i]] <- ctd
+                lat[i] <- ctd@metadata$latitude
+                station[[i]] <- ctd
 	    }
 	}
     } else {
 	stop("first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
     }
     res <- new("section")
-    res@metadata <- list(sectionId="", stationId=stn, latitude=lat, longitude=lon)
+    res@metadata <- list(sectionId="", stationId=stn, longitude=lon, latitude=lat)
     res@data <- list(station=station)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -306,8 +305,8 @@ makeSection <- function(item, ...)
 	s[[i]] <- section@data$station[[i]]
     s[[n.orig + 1]] <- station
     res@data$station <- s
-    res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$longitude <- c(res@metadata$longitude, station@metadata$longitude)
+    res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$stationId <- c(res@metadata$stationId, station@metadata$station)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -327,7 +326,7 @@ setMethod(f="plot",
                               coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
-                              xtype=c("distance", "track", "latitude", "longitude"),
+                              xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
                               ztype=c("contour", "image"),
                               legend.loc="bottomright",
@@ -365,8 +364,8 @@ setMethod(f="plot",
                       lon <- array(NA, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
-                          lat[i] <- thisStation[["latitude"]]
                           lon[i] <- thisStation[["longitude"]]
+                          lat[i] <- thisStation[["latitude"]]
                       }
                       lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -463,15 +462,13 @@ setMethod(f="plot",
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
                       }
                       if (indicate.stations) {
-                          dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           dy <- 5 * mean(diff(sort(x@metadata$latitude)),na.rm=TRUE)
-                          xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
+                          dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
+                          xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
                           text(xlab, ylab, x@metadata$stationId[1])
-                          xlab <- x@metadata$longitude[numStations] -
-                          dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
-                          ylab <- x@metadata$latitude[numStations]  -
-                          dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
+                          xlab <- x@metadata$longitude[numStations] - dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
+                          ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                           text(xlab, ylab, x@metadata$stationId[numStations])
                       }
                  } else {                        # not a map
@@ -699,10 +696,10 @@ setMethod(f="plot",
                   stop("method is only for section objects")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
-              which.xtype <- pmatch(xtype, c("distance", "track", "latitude", "longitude"), nomatch=0)
+              which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude"), nomatch=0)
               if (0 == which.xtype)
-                  stop('xtype must be one of: "distance", "track", "latitude", or "longitude"')
-              xtype <- c("distance", "track", "latitude", "longitude")[which.xtype]
+                  stop('xtype must be one of: "distance", "track", "longitude", or "latitude"')
+              xtype <- c("distance", "track", "longitude", "latitude")[which.xtype]
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -729,27 +726,29 @@ setMethod(f="plot",
               xx <- array(NA, numStations)
               yy <- array(NA, num.depths)
               if (is.null(at)) {
-                  lat0 <- firstStation@metadata$latitude
                   lon0 <- firstStation@metadata$longitude
+                  lat0 <- firstStation@metadata$latitude
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) {
-                          xx[ix] <- geodDist(lat0, lon0, x@data$station[[j]]@metadata$latitude, x@data$station[[j]]@metadata$longitude)
+                          xx[ix] <- geodDist(lon0, lat0,
+                                             x@data$station[[j]]@metadata$longitude,
+                                             x@data$station[[j]]@metadata$latitude)
                       } else if (which.xtype == 2) {
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {
-                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
-                                                            x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
-                                                            x@data$station[[j]]@metadata$latitude,
-                                                            x@data$station[[j]]@metadata$longitude)
+                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
+                                                            x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
+                                                            x@data$station[[j]]@metadata$longitude,
+                                                            x@data$station[[j]]@metadata$latitude)
                           }
                       } else if (which.xtype == 3) {
                           xx[ix] <- x@data$station[[j]]@metadata$latitude
                       } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$longitude
                       } else {
-                          stop('unkown xtype; it must be one of: "distance", "track", "latitude", or "longitude"')
+                          stop('unkown xtype; it must be one of: "distance", "track", "longitude", or "latitude"')
                       }
                   }
               } else {
@@ -1027,8 +1026,8 @@ read.section <- function(file, directory, sectionId="", flags,
 
     waterDepth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
-    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
     longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - col.start + 1])
+    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
     stationId <- data[,which(var.names=="STNNBR") - col.start + 1]
     stationId <- sub(" *$","",sub("^ *","",stationId)) #remove blanks
     stationList <- unique(stationId)
@@ -1048,8 +1047,8 @@ read.section <- function(file, directory, sectionId="", flags,
 	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""),
 				       "%Y%m%d%H%M", tz="UTC")) - trefn
 	stn[i] <- sub("^ *", "", stationId[select[1]])
-	lat[i] <- latitude[select[1]]
 	lon[i] <- longitude[select[1]]
+	lat[i] <- latitude[select[1]]
 	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
 	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], NA)
 	ok <- !is.na(goodSalinity)
@@ -1069,8 +1068,7 @@ read.section <- function(file, directory, sectionId="", flags,
 			       date=time[i] + tref,
 			       scientist=scientist,
 			       institute=institute,
-			       latitude=lat[i],
-			       longitude=lon[i],
+			       longitude=lon[i], latitude=lat[i],
 			       cruise=stnSectionId[select[1]],
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
@@ -1079,7 +1077,7 @@ read.section <- function(file, directory, sectionId="", flags,
 	station[[i]] <- thisStation
     }
     data <- list(station=station)
-    metadata <- list(header=header,sectionId=sectionId,stationId=stn,latitude=lat,longitude=lon,date=time+tref,filename=filename)
+    metadata <- list(header=header,sectionId=sectionId,stationId=stn,longitude=lon,latitude=lat,date=time+tref,filename=filename)
     if (missing(processingLog))
 	processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -1164,8 +1162,8 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         ## to 10 etc but 1 to 10 etc.
         x <- geodDist(section)
         o <- order(x)
-        res@metadata$latitude <- section@metadata$latitude[o]
         res@metadata$longitude <- section@metadata$longitude[o]
+        res@metadata$latitude <- section@metadata$latitude[o]
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
         x <- geodDist(res)
@@ -1263,8 +1261,8 @@ summary.section <- function(object, ...)
     if (!inherits(object, "section"))
         stop("method is only for section objects")
     numStations <- length(object@data$station)
-    lon1 <- object@data$station[[1]]@metadata$longitude
     lat1 <- object@data$station[[1]]@metadata$latitude
+    lon1 <- object@data$station[[1]]@metadata$longitude
     cat("Section Summary\n---------------\n\n")
     cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
     cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
@@ -1283,7 +1281,7 @@ summary.section <- function(object, ...)
                 wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
                 stn.sum[i, 4] <- stn@data$pressure[wdi]
             }
-            stn.sum[i, 5] <- geodDist(lat1, lon1, stn@metadata$latitude, stn@metadata$longitude)
+            stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
         }
         colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
         rownames(stn.sum) <- object@metadata$stationId
@@ -1294,7 +1292,7 @@ summary.section <- function(object, ...)
     processingLogShow(object)
 }
 
-as.section <- function(salinity, temperature, pressure, longitude, latitude, station) # FIXME: code this
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station)
 {
     stationFactor <- factor(station)
     stationLevels <- levels(stationFactor)

@@ -7,7 +7,7 @@
 
 \description{Get a tidal prediction from a WebTide database}
 
-\usage{webtide(action=c("map", "predict"), latitude, longitude, time,
+\usage{webtide(action=c("map", "predict"), longitude, latitude, time,
         basedir="/usr/local/WebTide", region="nwatl", plot=TRUE,
         tformat)}
 
@@ -17,9 +17,9 @@
     coordinates of a point the user clicks on that map, or \code{predict} to predict time-series for
     a specific location.}
     
-  \item{latitude}{latitude at which prediction is required.}
-
   \item{longitude}{longitude at which prediction is required.}
+
+  \item{latitude}{latitude at which prediction is required.}
 
   \item{time}{times at which prediction is to be made.}
 
@@ -37,9 +37,9 @@
 \details{The \code{action="map"} method plots a map with a dot for the lower-left corner of each
   triangle used in the finite-element tidal simulation upon which WebTide predictions are based.
   \code{\link{locator}} is called within this method, so that the user can indicate a spot of
-  interest on the map, and the latitude and longitude of this point are provided in the return value.
+  interest on the map, and the longitude and latitude of this point are provided in the return value.
   This is a crude emulation of the WebTide interface, without the ability to zoom or slide reference
-  points around with the mouse.  The \code{action="predict"} method uses a latitude and longitude,
+  points around with the mouse.  The \code{action="predict"} method uses a longitude and latitude,
   possibly discovered from clicking the mouse, and calculates elevation and velocity time-series at
   the specified times.  In the first case, a plot is drawn irrespective of the value of \code{plot},
   but in the second case, a plot is only made if \code{plot=TRUE}.  Naturally, none of this works
@@ -58,7 +58,7 @@ library(oce)
 tStart <- ISOdate(2008, 7, 1, 0, 0, 0, tz="UTC")
 tEnd <- ISOdate(2008, 7, 5, 0, 0, 0, tz="UTC")
 time<-seq(tStart, tEnd, by=15, units="minutes")
-prediction <- webtide("predict", 48.14, -69.61, time)
+prediction <- webtide("predict", -69.61, 48.14, time)
 }
 }
 

@@ -615,7 +615,7 @@ predict.tidem <- function(object, newdata, ...)
     as.numeric(rval)
 }
 
-webtide <- function(action=c("map", "predict"), latitude, longitude, time,
+webtide <- function(action=c("map", "predict"), longitude, latitude, time,
                     basedir="/usr/local/WebTide", region="nwatl",
                     plot=TRUE, tformat)
 {
@@ -629,7 +629,7 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
             point <- locator(1)
-            node <- which.min(geodDist(triangles$latitude, triangles$longitude, point$y, point$x))
+            node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
             longitude <- triangles$longitude[node]
             latitude <- triangles$latitude[node]
             points(longitude, latitude, pch=20, cex=2, col='red')
@@ -642,7 +642,7 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
     } else {
         if (missing(time))
             stop("must supply list of times in 'time'")
-        node <- which.min(geodDist(triangles$latitude, triangles$longitude, latitude, longitude))
+        node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
         constituentse <- dir(path=subdir, pattern="*.s2c")
         abbrev <- substr(constituentse, 1, 2)
         constituentsuv <- dir(path=subdir, pattern="*.v2c")

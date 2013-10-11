@@ -1,4 +1,5 @@
 0.9-13
+- various functions: reorder arguments putting longitude before latitude
 - magneticField() replaces magneticDeclination()
 - binApply() added
 - ungrid() added
