@@ -2311,6 +2311,8 @@ plotProfile <- function (x,
                        z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
                        sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
     dataNames <- names(x@data)
+    if (length(xtype) == length(x@data$pressure))
+        xtype <- xtype[examineIndices]
     for (dataName in dataNames)
         x@data[[dataName]] <- x@data[[dataName]][examineIndices]
     axis.name.loc <- mgp[1]
