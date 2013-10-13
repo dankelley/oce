@@ -2261,7 +2261,7 @@ plotProfile <- function (x,
                          debug=getOption("oceDebug"),
                          ...)
 {
-    oceDebug(debug, "\bplotProfile(x, xtype=\"", if(is.vector(xtype)) "(a vector)" else xtype,
+    oceDebug(debug, "\bplotProfile(x, xtype[1]=\"", xtype[1],
              "\", ...) {\n", sep="")
     eos <- match.arg(eos, c("unesco", "teos"))
     plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE, debug=getOption("oceDebug"))
@@ -2337,7 +2337,7 @@ plotProfile <- function (x,
     if (!add)
         par(mar=mar, mgp=mgp)
 
-    if (is.vector(xtype) && length(xtype) == length(y)) {
+    if (length(xtype) == length(y)) {
         if ('axes' %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, ...)
             if (list(...)$axes) {
