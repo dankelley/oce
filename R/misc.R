@@ -654,7 +654,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Spice [", kg/m^3, "]"))
         abbreviated <- full
     } else if (item == "S") {
-        full <- "Practical Salinity [PSU]"
+        full <- "Practical Salinity"
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
         full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
