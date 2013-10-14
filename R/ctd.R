@@ -1019,12 +1019,15 @@ setMethod(f="plot",
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              rval <- x
+              rval <- new("ctd") # start afresh in case x@data is a data.frame
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
                   r <- eval(substitute(subset), x@data, parent.frame())
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
+              names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               rval
