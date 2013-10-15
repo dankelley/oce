@@ -1250,7 +1250,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
-        data <- read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names)
+        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
