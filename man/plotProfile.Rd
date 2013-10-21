@@ -21,7 +21,7 @@
     grid=TRUE,
     col.grid="lightgray",
     lty.grid="dotted",
-    Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
+    Slim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
     lwd=par("lwd"),
     xaxs="r", yaxs="r",
     cex=1, pch=1,
@@ -92,6 +92,7 @@
     \item{Tlim}{Optional limit for T axis}
     \item{densitylim}{Optional limit for density axis}
     \item{N2lim}{Optional limit for N2 axis}
+    \item{Rrholim}{Optional limit for Rrho axis}
     \item{dpdtlim}{Optional limit for dp/dt axis}
     \item{timelim}{Optional limit for delta-time axis}
     \item{ylim}{Optional limit for y axis}

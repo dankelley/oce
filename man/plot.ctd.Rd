@@ -16,7 +16,7 @@
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE, col.grid="lightgray", lty.grid="dotted",
      coastline="best",
-     Slim, Tlim, plim, densitylim, N2lim,
+     Slim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
      lonlim, latlim, span,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -100,6 +100,7 @@
   \item{plim}{optional limits of pressure axes}
   \item{densitylim}{optional limits of density axis}
   \item{N2lim}{optional limits of \eqn{N^2}{N^2} axis}
+  \item{Rrholim}{optional limits of \eqn{R_rho}{R_rho} axis}
   \item{dpdtlim}{optional limits of dP/dt axis}
   \item{timelim}{optional limits of delta-time axis}
   \item{lonlim}{optional limits of longitude axis of map (ignored if no

@@ -604,7 +604,7 @@ setMethod(f="plot",
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE, col.grid="lightgray", lty.grid="dotted",
                               coastline="best",
-                              Slim, Tlim, plim, densitylim, N2lim,
+                              Slim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, span,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -834,6 +834,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 15) {
                       plotProfile(x, xtype="Rrho",
+                                  xlim=Rrholim,
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -2248,7 +2249,7 @@ plotProfile <- function (x,
                          grid = TRUE,
                          col.grid = "lightgray",
                          lty.grid = "dotted",
-                         Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
+                         Slim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
                          lwd=par("lwd"),
                          xaxs="r",
                          yaxs="r",
@@ -2313,11 +2314,13 @@ plotProfile <- function (x,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
                        z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
                        sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
+    x@data <- as.list(x@data)
     dataNames <- names(x@data)
     if (length(xtype) == length(x@data$pressure))
         xtype <- xtype[examineIndices]
-    for (dataName in dataNames)
+    for (dataName in dataNames) {
         x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+    }
     axis.name.loc <- mgp[1]
     know.time.unit <- FALSE
     if ("time" %in% names(x@data)) {
@@ -2518,16 +2521,16 @@ plotProfile <- function (x,
             plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
-        Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger", ...)
+        Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger")
         look <- if (keepNA) 1:length(y) else !is.na(Rrho) & !is.na(y)
         if (!add) {
             if (ylimGiven) {
                 plot(Rrho, y[look],
-                     ylim=ylim,
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             } else {
                 plot(Rrho, y[look],
-                     ylim=rev(range(y[look])),
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])),
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
             mtext(expression(R[rho]), side = 3, line = axis.name.loc, cex=par("cex"))
