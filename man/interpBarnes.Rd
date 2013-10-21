@@ -12,24 +12,20 @@
     debug=getOption("oceDebug"))}
 
 \arguments{
-  \item{x}{a vector of x locations.}
-  \item{y}{a vector of y locations.}
+  \item{x, y}{a vector of x and ylocations.}
   \item{z}{a vector of z values, one at each (x,y) location.}
   \item{w}{a optional vector of weights at the (x,y) location.  If not
       supplied, then a weight of 1 is used for each point, which means equal
       weighting.  Higher weights give data points more influence.}
-  \item{xg}{optional vector defining the x grid.  If not supplied, this will be
-      determined from the x data, using \code{pretty(x, n=50)}.}
-  \item{yg}{analogous to \code{xg}.}
-  \item{xgl}{optional length of x grid, to be constructed with
-      \code{\link{seq}} spanning the range of \code{x}.  The 
-      value of \code{xgl} is only examined if \code{xg} is not
-      supplied.}
-  \item{ygl}{analogous to \code{xgl}.}
-  \item{xr}{a optional value defining the width of the radius ellipse in
-    the x direction.  If not supplied, }
-  \item{yr}{an optional value defining the height of the radius ellipse
-    in the y direction.}
+  \item{xg, yg}{optional vectors defining the x and y grids.  If not supplied,
+      these values are inferred from the data, using e.g. \code{pretty(x,
+          n=50)}.}
+  \item{xgl, ygl}{optional lengths of the x and y grids, to be constructed with
+      \code{\link{seq}} spanning the data range.  These values \code{xgl} are
+      only examined if \code{xg} and \code{yg} are not supplied.}
+  \item{xr,yr}{optional values defining the width of the radius ellipse in
+    the x and y directions.  If not supplied, these are calculated as the span
+    of x and y over the square root of the number of data.}
   \item{gamma}{grid-focussing parameter.  At each iteration, \code{xr}
     and \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
   \item{iterations}{number of iterations.}
