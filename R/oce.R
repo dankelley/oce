@@ -549,6 +549,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return("openstreetmap")
         } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
+        } else if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
+            return("gpx")
         }
         file <- file(file, "r")
     }
@@ -701,6 +703,8 @@ read.oce <- function(file, ...)
         return(read.ctd.woce(file, processingLog=processingLog, ...))
     if (type == "ctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "gpx")
+        return(read.gps(file, type="gpx", processingLog=processingLog, ...))
     if (type == "mvctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (type == "coastline")
