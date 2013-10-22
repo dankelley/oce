@@ -33,12 +33,9 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
     if (missing(latitude)) stop("must provide latitude")
-    if (class(longitude) == "data.frame") {
-        names <- names(longitude)
-        if (!("longitude" %in% names)) stop("list must contain a column named 'longitude'")
-        if (!("latitude" %in% names)) stop("list must contain a column named 'latitude'")
-        latitude <- longitude$latitude
-        longitude <- longitude$longitude
+    if ("longitude" %in% names && "latitude" %in% names) {
+        latitude <- longitude[["latitude"]]
+        longitude <- longitude[["longitude"]]
     }
     n <- length(latitude)
     if (n != length(longitude))
