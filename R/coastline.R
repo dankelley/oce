@@ -33,6 +33,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
     if (missing(latitude)) stop("must provide latitude")
+    names <- names(longitude)
     if ("longitude" %in% names && "latitude" %in% names) {
         latitude <- longitude[["latitude"]]
         longitude <- longitude[["longitude"]]
