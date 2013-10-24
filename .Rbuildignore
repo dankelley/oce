@@ -3,4 +3,5 @@ README.rst
 .gitignore
 inst/doc/.gitignore
 inst/doc/ctd-object.svg
+vignettes/.build.timestamp
 
