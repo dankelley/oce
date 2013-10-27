@@ -41,6 +41,8 @@ cat("In Matlab, time=1 (days) means ", format(numberAsPOSIXct(1, type="matlab"))
 cat("Canada Day 2001 was", format(numberAsPOSIXct(cbind(566,345615), type="gps")), "\n")
 }
 
+\seealso{\code{\link{numberAsHMS}}}
+
 \author{Dan Kelley}
 
 \keyword{misc}

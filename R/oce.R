@@ -1078,6 +1078,34 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     invisible()
 }
 
+numberAsHMS <- function(t, default=0)
+{
+    if ("factor" == class(t))
+        t <- as.character(t)
+    if (!is.character(t))
+        stop("can only handle strings or factors")
+    nc <- nchar(t)
+    t[nc == 0] <- "0000"
+    nc <- nchar(t)
+    t[nc==1] <- paste("000", t[nc==1], sep="")
+    t[nc==2] <- paste("00", t[nc==2], sep="")
+    t[nc==3] <- paste("0", t[nc==3], sep="")
+    nc <- nchar(t)
+    warn <- options('warn')$warn
+    options(warn=-1)
+    try({
+        hour <- as.numeric(substr(t, 1, 2))
+        minute <- as.numeric(substr(t, 3, 4))
+        second <- rep(0, length(hour))
+    }, silent=TRUE)
+    options(warn=warn)
+    bad <- nc > 4 | grepl('[^[0-9]]*', t)
+    hour[bad] <- default
+    minute[bad] <- default
+    second[bad] <- default
+    list(hour=hour, minute=minute, second=second)
+}
+
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss"), tz="UTC")
 {
     type <- match.arg(type)
