@@ -555,7 +555,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
                 next
             if (max(xy$y, na.rm=TRUE) < ymin)
                 next
-            if (abs(xy$x[1] - xy$x[2]) > allowedSpan)
+            if (abs(xy$x[1] - xy$x[2]) > allowedSpan) 
                 next
             zz <- z[i, j]
             if (is.finite(zz)) {
