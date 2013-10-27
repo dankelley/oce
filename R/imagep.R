@@ -92,10 +92,11 @@ drawPalette <- function(zlim, zlab="", breaks, col,
     if (!maiGiven)
         mai <- c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0)
     pc <- paletteCalculations(mai=mai)
-    contours <- NULL
+    contours <- if (breaksGiven) breaks else NULL
     if (zlimGiven) {
         if (breaksGiven) {
             breaksOrig <- breaks
+            contours <- breaks
         } else {
             zrange <- zlim
             if (missing(col)) {
