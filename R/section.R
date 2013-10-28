@@ -490,7 +490,7 @@ setMethod(f="plot",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               xlab=switch(which.xtype, "Distance [ km ]", "Along-track Distance [km]", "Latitude", "Longitude"),
+                               xlab=switch(which.xtype, "Distance [ km ]", "Along-track Distance [km]", "Longitude", "Latitude"),
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)
@@ -744,9 +744,9 @@ setMethod(f="plot",
                                                             x@data$station[[j]]@metadata$latitude)
                           }
                       } else if (which.xtype == 3) {
-                          xx[ix] <- x@data$station[[j]]@metadata$latitude
-                      } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$longitude
+                      } else if (which.xtype == 4) {
+                          xx[ix] <- x@data$station[[j]]@metadata$latitude
                       } else {
                           stop('unkown xtype; it must be one of: "distance", "track", "longitude", or "latitude"')
                       }
