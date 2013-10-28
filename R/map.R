@@ -50,6 +50,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
     list(x=proj$x, y=proj$y) # if other properties prove helpful, may add them
 } 
 
+##mapLegend <- function(longitude, latitude, ...)
+##{
+##    proj <- mapproject(longitude, latitude)
+##    legend(x=proj$x, y=proj$y, ...)
+##}
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
@@ -453,7 +458,9 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
-mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
+mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
+                     col, border=NA,
+                     lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bmapImage(..., ",
@@ -519,7 +526,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
     zmin <- min(z, na.rm=TRUE)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
-    lty <- par('lty')
     usr <- par('usr')
     xmin <- usr[1]
     xmax <- usr[2]
@@ -560,9 +566,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
             zz <- z[i, j]
             if (is.finite(zz)) {
                 thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
-                polygon(xy$x, xy$y, col=thiscol, lty=lty, border=NA, fillOddEven=FALSE)
+                polygon(xy$x, xy$y, col=thiscol, border=border,
+                        lwd=lwd, lty=lty, fillOddEven=FALSE)
             } else if (!is.null(missingColor)) {
-                polygon(xy$x, xy$y, col=missingColor, lty=lty, border=NA, fillOddEven=FALSE)
+                polygon(xy$x, xy$y, col=missingColor, border=border,
+                        lwd=lwd, lty=lty, fillOddEven=FALSE)
             }
         }
     }

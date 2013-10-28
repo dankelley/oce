@@ -6,7 +6,9 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE, breaks, col,
+\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE, breaks,
+         col, border=NA,
+         lwd=par("lwd"), lty=par("lty"),
          filledContour=FALSE, missingColor=NULL, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -31,6 +33,13 @@
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
   
+    \item{border}{colour used for borders of patches (passed to
+        \code{\link{polygon}}); the default \code{NA} means no border.}
+
+    \item{lwd}{line width, used if borders are drawn}
+    
+    \item{lty}{line type, used if borders are drawn}
+
     \item{filledContour}{boolean value indicating whether to use filled
         contours to plot the image.  This is ignored at present.}
 
