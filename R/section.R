@@ -1113,13 +1113,11 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	    if (p=="levitus") {
 		pt <- standardDepths()
                 pt <- pt[pt < max(section[["pressure"]])]
-	    } else { # FIXME should insist numeric
-		p.max <- 0
-		for (i in 1:n) {
-		    p <- section@data$station[[i]]@data$pressure
-		    p.max <- max(c(p.max, p))
-		}
-		pt <- seq(0, p.max, p)
+	    } else {
+                if (!is.numeric(p))
+                    stop("p must be numeric")
+                pMax <- max(section[["pressure"]])
+		pt <- seq(0, pMax, p)
 	    }
 	} else {
 	    pt <- p
