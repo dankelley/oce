@@ -32,7 +32,7 @@
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
   
     \item{filledContour}{boolean value indicating whether to use filled
-        contours to plot the image.}
+        contours to plot the image.  This is ignored at present.}
 
     \item{missingColor}{a color to be used to indicate missing data, or
         \code{NULL} to simply skip the drawing of such regions.}
