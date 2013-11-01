@@ -16,10 +16,10 @@
     The examples given below use \code{s} to represent the name of a section.
 
     \subsection{Extracting values}{A \code{\link{list}} of stations is
-        retrieved by \code{s[["section"]]}.  Individual stations are retrieved
+        retrieved by \code{s[["station"]]}.  Individual stations are retrieved
         by providing a station number as a second argument in the index, e.g.
-        the first station is \code{s[["section", 1]]} (which is a 
-        \code{\link{ctd-class}} object).  
+        the first station is \code{s[["station", 1]]} (which is a
+        \code{\link{ctd-class}} object).
         
         Aggregated values of the quantities measured at each level of the CTD
         profiles contained within the section may be accessed as e.g.
