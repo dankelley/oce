@@ -492,7 +492,6 @@ setMethod(f="plot",
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
                       ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [m]" }
-                      print(list(...)$ylab)
 
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
