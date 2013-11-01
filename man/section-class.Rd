@@ -49,16 +49,17 @@
     \code{\link{makeSection}} or by combining an existing section with a CTD
     object with the \code{+} operator.  
     
-    Sections may be sorted with \code{\link{sectionSort}}, smoothed with
-    \code{\link{sectionSmooth}}, and gridded with \code{\link{sectionGrid}}.
-    Gridded sections may be plotted with \code{\link{plot.section}}.  
+    Sections may be sorted with \code{\link{sectionSort}}, subsetted with
+    \code{\link{subset.section}}, smoothed with \code{\link{sectionSmooth}},
+    and gridded with \code{\link{sectionGrid}}.  Gridded sections may be
+    plotted with \code{\link{plot.section}}.  
     
     Statistical summaries are provided by \code{\link{summary.section}}, while
     overviews are provided by \code{show.section}.  
     
     Two section datasets are provided in the package: \code{\link{a03}},
-    containing data along WOCE line A03, and \code{\link[ocedata]{section}}, containing
-    data in Halifax Harbour.}
+    containing data along WOCE line A03, and \code{\link[ocedata]{section}},
+    containing data in Halifax Harbour.}
 
 \examples{
 library(oce)
