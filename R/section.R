@@ -346,6 +346,14 @@ setMethod(f="plot",
               coastline <- match.arg(coastline)
               legend.loc <- match.arg(legend.loc)
               oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n", sep="")
+              ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
+              haveData <- unlist(lapply(x@data$station, function(stn) 0 < length(stn[['pressure']])))
+              x@data$station <- x@data$station[haveData]
+              x@metadata$stationId <- x@metadata$stationId[haveData]
+              x@metadata$latitude <- x@metadata$latitude[haveData]
+              x@metadata$longitude <- x@metadata$longitude[haveData]
+              x@metadata$date <- x@metadata$date[haveData]
+
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
@@ -359,6 +367,7 @@ setMethod(f="plot",
               {
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
                   ztype <- match.arg(ztype)
+
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
@@ -716,10 +725,12 @@ setMethod(f="plot",
               ## Check that pressures coincide
               if (length(which) > 1 || (which != "data" && which != 'map')) {
                   p1 <- firstStation@data$pressure
+                  np1 <- length(p1)
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[stationIndices[ix]]]
-                      if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
-                          stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+                      thisPressure <- thisStation[["pressure"]]
+                      if (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
+                          stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.", call.=FALSE)
                   }
               }
               zz <- matrix(nrow=numStations, ncol=num.depths)
@@ -962,18 +973,29 @@ read.section <- function(file, directory, sectionId="", flags,
     ## has a bad flag value, we try SALNTY as a second option.  But
     ## if both CTDSAL and SALNTY are flagged, we just give up on the
     ## depth.
+    oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
+    haveSalinity <- FALSE
     if (length(which(var.names=="CTDSAL"))) {
+        haveSalinity <- TRUE
 	ctdsal <- as.numeric(data[,which(var.names=="CTDSAL") - col.start + 1])
-    } else if (length(which(var.names=="SALNTY"))) {
-        ctdsal <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
-    } else {
+    } 
+    if (length(which(var.names=="SALNTY"))) {
+        haveSalinity <- TRUE
+        salnty <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1]) # spelling not a typo
+    }
+    if (!haveSalinity) {
         stop("no column named \"CTDSAL\" or \"SALNTY\"; have:", paste(var.names, collapse=", "))
     }
+    haveSalinityFlag <- FALSE
     if (length(which(var.names=="CTDSAL_FLAG_W"))) {
+        haveSalinityFlag <- TRUE
 	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
-    } else if (length(which(var.names=="SALNTY_FLAG_W"))) {
-        ctdsal.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
-    } else {
+    } 
+    if (length(which(var.names=="SALNTY_FLAG_W"))) {
+        haveSalinityFlag <- TRUE
+        salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1]) # spelling not a typo
+    }
+    if (!haveSalinityFlag) {
         stop("no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:", paste(var.names, collapse=", "))
     }
     if (length(which(var.names=="DATE")))
@@ -1040,7 +1062,7 @@ read.section <- function(file, directory, sectionId="", flags,
     tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
     trefn <- as.numeric(tref)
     for (i in 1:numStations) {
-	oceDebug(debug, "processing station ", i, "\n")
+	oceDebug(debug, "reading station", i, "... ")
 	select <- which(stationId == stationList[i])
 	# "199309232222"
 	# "1993-09-23 22:22:00"
@@ -1050,7 +1072,8 @@ read.section <- function(file, directory, sectionId="", flags,
 	lon[i] <- longitude[select[1]]
 	lat[i] <- latitude[select[1]]
 	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
-	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], NA)
+	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], 
+                               ifelse(salnty.flag[select] %in% flags, salnty[select], NA))
 	ok <- !is.na(goodSalinity)
 	ok <- ok & pressure[select] >= 0
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
@@ -1073,7 +1096,9 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
-	oceDebug(debug, "  ", length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
+	if (debug) cat(length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
+        if (sum(ok) == 0)
+            warning("station ", i, " has no data\n")
 	station[[i]] <- thisStation
     }
     data <- list(station=station)
@@ -1231,7 +1256,6 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
             if (FALSE) {
                 for (istn in 1:nstn) {
                     oceDebug(debug, "station", istn, "\n")
-                                        #browser()
                     stn <- section[["station", istn]]
                     v <- c(v, stn[[var]])
                 }
