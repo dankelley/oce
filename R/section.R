@@ -492,6 +492,7 @@ setMethod(f="plot",
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
                       ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [m]" }
+                      print(list(...)$ylab)
 
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
@@ -844,7 +845,7 @@ setMethod(f="plot",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          debug=debug-1, ...)
                       } else if (which[w] == 2) {
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          debug=debug-1, ...)
                       } else if (which[w] == 3) {
