@@ -13,7 +13,7 @@ library(oce)
 system("R CMD SHLIB testing.cpp")
 dyn.load("testing.so")
 set.seed(123)
-x <- rnorm(20, sd=1)
+x <- rnorm(10, sd=1)
 y <- 2*x
 breaks <- seq(-1, 1, 0.5)
 nbreaks <- length(breaks)
@@ -33,7 +33,7 @@ void bin_mean_1d(int *nx, double *x, double *y, int *nbreaks, double *breaks, do
     if (*nbreaks < 1)
         error("cannot have fewer than 1 break");
     std::vector<double> b(breaks, breaks + *nbreaks);
-    std::sort (b.begin(), b.end()); // STL wants breaks ordered
+    std::sort(b.begin(), b.end()); // STL wants breaks ordered
 
 #ifdef DEBUG
     Rprintf("%d breaks:\n", *nbreaks);
