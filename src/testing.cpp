@@ -1,8 +1,9 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+#include <algorithm>
 #include <vector>
-using namespace std;
+//using namespace std;
 
 /*
  
