@@ -9,19 +9,19 @@
 /*
 
 
+library(oce)
 system("R CMD SHLIB testing.cpp")
 dyn.load("testing.so")
 set.seed(123)
-x <- rnorm(10, sd=1)
+x <- rnorm(20, sd=1)
 y <- 2*x
 breaks <- seq(-1, 1, 0.5)
 nbreaks <- length(breaks)
 test <- .C("bin_mean_1d", length(x), as.double(x), as.double(y),
-           length(breaks), breaks=as.double(breaks), rval=double(nbreaks))
-data.frame(breaks=test$breaks, mean=test$rval)           
+           length(breaks), breaks=as.double(breaks), rval=double(nbreaks-1))
+mids <- breaks[-1] - 0.5 * diff(breaks)
 old <- binAverage(x, y, -1, 1, 0.5)
-data.frame(old$x, old$y)
-cat("Q: length should be nb-1, right??\n")
+data.frame(mids=mids, mean=test$rval, oldMethod=old$y)
 
 
 */
@@ -30,6 +30,8 @@ extern "C" {
 void bin_mean_1d(int *nx, double *x, double *y, int *nbreaks, double *breaks, double *rval)
 {
 
+    if (*nbreaks < 1)
+        error("cannot have fewer than 1 break");
     std::vector<double> b(breaks, breaks + *nbreaks);
     std::sort (b.begin(), b.end()); // STL wants breaks ordered
 
@@ -40,7 +42,7 @@ void bin_mean_1d(int *nx, double *x, double *y, int *nbreaks, double *breaks, do
     }
 #endif
 
-    int *num = (int*)R_alloc(*nbreaks, sizeof(int)); // R will clean up memory after .C() returns
+    int *num = (int*)R_alloc(*nbreaks-1, sizeof(int)); // R will clean up memory after .C() returns
     for (int i = 0; i < (*nbreaks); i++) {
         num[i] = 0;
         rval[i] = 0.0;
