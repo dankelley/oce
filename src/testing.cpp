@@ -30,7 +30,7 @@ extern "C" {
 void bin_mean_1d(int *nx, double *x, double *y, int *nbreaks, double *breaks, double *rval)
 {
 
-    if (*nbreaks < 1)
+    if (*nbreaks < 2)
         error("cannot have fewer than 1 break");
     std::vector<double> b(breaks, breaks + *nbreaks);
     std::sort(b.begin(), b.end()); // STL wants breaks ordered
