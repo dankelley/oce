@@ -3,43 +3,80 @@
 #include <Rinternals.h>
 #include <algorithm>
 #include <vector>
-//using namespace std;
+
+//#define DEBUG
 
 /*
- 
+
+
 system("R CMD SHLIB testing.cpp")
 dyn.load("testing.so")
+set.seed(123)
 x <- rnorm(10, sd=1)
 y <- 2*x
 breaks <- seq(-1, 1, 0.5)
-junk <- .C("bin_mean_1d", length(x), as.double(x), as.double(y), length(breaks), as.double(breaks))
+nbreaks <- length(breaks)
+test <- .C("bin_mean_1d", length(x), as.double(x), as.double(y),
+           length(breaks), breaks=as.double(breaks), rval=double(nbreaks))
+data.frame(breaks=test$breaks, mean=test$rval)           
+old <- binAverage(x, y, -1, 1, 0.5)
+data.frame(old$x, old$y)
+cat("Q: length should be nb-1, right??\n")
+
 
 */
 
 extern "C" {
-void bin_mean_1d(int *nx, double *x, double *y, int *nbreaks, double *breaks)
+void bin_mean_1d(int *nx, double *x, double *y, int *nbreaks, double *breaks, double *rval)
 {
 
     std::vector<double> b(breaks, breaks + *nbreaks);
     std::sort (b.begin(), b.end()); // STL wants breaks ordered
 
+#ifdef DEBUG
     Rprintf("%d breaks:\n", *nbreaks);
     for (int i = 0; i < (*nbreaks); i++) {
         Rprintf("   %f\n", breaks[i]);
     }
+#endif
+
+    int *num = (int*)R_alloc(*nbreaks, sizeof(int)); // R will clean up memory after .C() returns
+    for (int i = 0; i < (*nbreaks); i++) {
+        num[i] = 0;
+        rval[i] = 0.0;
+    }
 
     std::vector<double>::iterator lower_bound;
     for (int i = 0; i < (*nx); i++) {
-        lower_bound = std::lower_bound(b.begin(), b.end(), x[i]); // smallest break exceeding x[i], or rightmost if too large
+        // lower_bound is the the index of the smallest break exceeding x[i];
+        // data above the top break yield index nbreak.
+        lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
         int right_index = lower_bound - b.begin();
         if (right_index == *nbreaks) {
-            Rprintf("x: %6.3f   right_index: %d    (outside range to right)\n", x[i], right_index);
+#ifdef DEBUG
+            Rprintf("x: %6.3f   right_index: %d    >>>\n", x[i], right_index);
+#endif
         } else if (right_index == 0) {
-            Rprintf("x: %6.3f   right_index: %d    (outside range to left)\n", x[i], right_index);
+#ifdef DEBUG
+            Rprintf("x: %6.3f   right_index: %d    <<<\n", x[i], right_index);
+#endif
         } else {
+#ifdef DEBUG
             Rprintf("x: %6.3f   right_index: %d    (%f to %f)\n", x[i], right_index, breaks[right_index-1], breaks[right_index]);
+#endif
+            num[right_index-1]++;
+            rval[right_index-1] += y[i];
         }
     }
+    for (int i = 0; i < (*nbreaks); i++) {
+        if (num[i] > 0) {
+            rval[i] = rval[i] / num[i];
+        } else {
+            rval[i] = NA_REAL;
+        }
+    }
+
+
 #if 0
     if (*nx < 1)
         error("invalid vector length (%d)", *nx);
