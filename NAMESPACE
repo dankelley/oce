@@ -36,7 +36,7 @@ export("+.section",
        binmapAdp,
        binAverage,
        binMean1D,
-       #binMean2D, # FIXME add this
+       binMean2D,
        binApply,
        bcdToInteger,
        byteToBinary,

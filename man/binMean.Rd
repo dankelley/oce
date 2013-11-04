@@ -2,11 +2,11 @@
 
 \alias{binMean}
 \alias{binMean1D}
-\alias{binMean1D}
+\alias{binMean2D}
 
-\title{Bin-average a vector f=f(x), based on x values}
+\title{Bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
 
-\description{Bin-average a vector f=f(x), based on x values}
+\description{Bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
 
 \usage{
 binMean1D(x, f, breaks)

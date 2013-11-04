@@ -17,6 +17,34 @@ binMean1D <- function(x, f, breaks)
     list(breaks=breaks, mids=breaks[-1]-0.5*diff(breaks), mean=rval$mean)
 }
 
+binMean2D <- function(x, y, f, xbreaks, ybreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (missing(f)) stop("must supply 'f'")
+    if (length(x) != length(y)) stop("lengths of x and y must agree")
+    if (length(x) != length(f)) stop("lengths of x and f must agree")
+    if (missing(xbreaks)) xbreaks <- pretty(x)
+    if (missing(ybreaks)) ybreaks <- pretty(y)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    nybreaks <- length(ybreaks)
+    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    cat("xbreaks:", xbreaks, "\n")
+    cat("ybreaks:", ybreaks, "\n")
+    rval <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+               length(xbreaks), as.double(xbreaks),
+               length(ybreaks), as.double(ybreaks),
+               mean=double((nxbreaks-1)*(nybreaks-1)))
+    list(xbreaks=xbreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         mean=matrix(rval$mean, ncol=nxbreaks-1))
+}
+
+
+
+
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
