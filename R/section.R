@@ -613,6 +613,7 @@ setMethod(f="plot",
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               axes=FALSE, add=TRUE, labcex=0.8,
                                               levels=contourLevels, labels=contourLabels,
+                                              col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == 'image') {
@@ -627,6 +628,7 @@ setMethod(f="plot",
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE, add=TRUE,
                                           levels=contourLevels, labels=contourLabels,
+                                          col=col,
                                           xaxs="i", yaxs="i",
                                           ...)
                                   } else if (ztype == 'image') {
@@ -644,6 +646,7 @@ setMethod(f="plot",
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               axes=FALSE, labcex=0.8,
                                               add=TRUE,
+                                              col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == 'image') {
@@ -658,6 +661,7 @@ setMethod(f="plot",
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               axes=FALSE,
                                               add=TRUE,
+                                              col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == 'image') {
@@ -808,15 +812,15 @@ setMethod(f="plot",
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate", "nitrate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
@@ -828,48 +832,59 @@ setMethod(f="plot",
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen", "oxygen",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate", "phosphate",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate", "silicate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         col=col,
                                          debug=debug-1, ...) 
                       }
                   } else {
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate",     "nitrate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite",     "nitrite",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen",      "oxygen",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate",   "phosphate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate",    "silicate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         col=col,
                                          debug=debug-1, ...)
                       }
                   }
