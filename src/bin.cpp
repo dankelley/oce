@@ -107,10 +107,10 @@ extern "C" {
             double *rval)
     {
         // array lookup
-#define ij(i, j) ((i) + (*nxbreaks) * (j))
+#define ij(i, j) ((i) + (*nxbreaks-1) * (j))
         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
-        if (*nxbreaks < 2) error("cannot have fewer than 1 break"); // already checked in R but be safe
-        if (*nybreaks < 2) error("cannot have fewer than 1 break"); // already checked in R but be safe
+        if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
+        if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
         std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
         std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
         std::vector<double> by(ybreaks, ybreaks + *nybreaks);
@@ -124,10 +124,8 @@ extern "C" {
         }
         for (int i = 0; i < (*nx); i++) {
             if (!ISNA(f[i])) {
-                std::vector<double>::iterator lower_bound;
                 // lower_bound is the the index of the smallest break exceeding x[i];
                 // data above the top break yield index nbreak.
-                lower_bound = std::lower_bound(bx.begin(), bx.end(), x[i]);
                 int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
                 int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
                 if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
