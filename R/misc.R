@@ -1,5 +1,20 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+binMean <- function(x, y, breaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (missing(breaks)) {
+        breaks <- pretty(x)
+    }
+    nbreaks <- length(breaks)
+    if (nbreaks < 2)
+        stop("must have more than 1 break")
+    rval <- .C("bin_mean_1d", length(x), as.double(x), as.double(y),
+               length(breaks), as.double(breaks), mean=double(nbreaks-1))
+    list(breaks=breaks, mids=breaks[-1]-0.5*diff(breaks), mean=rval$mean)
+}
+
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
