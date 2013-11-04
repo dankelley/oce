@@ -38,7 +38,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
                mean=double((nxbreaks-1)*(nybreaks-1)))
     list(xbreaks=xbreaks,
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
-         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         ymids=ybreaks[-1]-0.5*diff(ybreaks),
          mean=matrix(rval$mean, ncol=nxbreaks-1))
 }
 
