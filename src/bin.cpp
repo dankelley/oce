@@ -92,9 +92,12 @@ extern "C" {
    source('../R/misc.R')
    m <- binMean2D(x, y, f)
    a <- boxcarAverage2D(x, y, f, m$xmids, m$ymids)
-   m$mean
-   a$average
-   cat("note mismatch above\n")
+   cat("mismatch to old code:", sum((a$average-m$mean)^2, na.rm=TRUE), "\n")
+   str(m)
+   str(a)
+   plot(x, y)
+   contour(m$xmids, m$ymids, m$mean, add=TRUE, lwd=4, col='pink')
+   contour(a$x1out, a$x2out, a$average, add=TRUE, lwd=1)
 
 
 */

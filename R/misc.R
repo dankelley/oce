@@ -42,8 +42,8 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
          ybreaks=ybreaks,
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ymids=ybreaks[-1]-0.5*diff(ybreaks),
-         number=matrix(rval$number, ncol=nxbreaks-1),
-         mean=matrix(rval$mean, ncol=nxbreaks-1))
+         number=matrix(rval$number, nrow=nxbreaks-1),
+         mean=matrix(rval$mean, nrow=nxbreaks-1))
 }
 
 
