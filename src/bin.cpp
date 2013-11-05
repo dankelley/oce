@@ -115,7 +115,9 @@ extern "C" {
         std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
         std::vector<double> by(ybreaks, ybreaks + *nybreaks);
         std::sort(by.begin(), by.end()); // STL wants breaks ordered
+#ifdef DEBUG
         Rprintf("getting space for %d data\n", (*nxbreaks-1)*(*nybreaks-1));
+#endif
         int *num = (int*)R_alloc((*nxbreaks-1)*(*nybreaks -1), sizeof(int)); // memory cleaned at return time
         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
             //Rprintf("bij: %d, zero fill\n", bij);
@@ -129,9 +131,11 @@ extern "C" {
                 int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
                 int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
                 if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
+#ifdef DEBUG
                     Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
-                    num[ij(bi, bj)]++;
-                    rval[ij(bi, bj)] += f[i];
+#endif
+                    num[ij(bi-1, bj-1)]++;
+                    rval[ij(bi-1, bj-1)] += f[i];
                 }
             }
         }

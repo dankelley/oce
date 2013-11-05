@@ -55,6 +55,15 @@ data(co2)
 plot(co2, col='gray')
 m <- binMean1D(time(co2), co2)
 lines(m$mids, m$mean, type='o')
+
+## D. 2D
+x <- runif(500)
+y <- runif(500)
+f <- x - y
+m <- binMean2D(x, y, f)
+plot(x, y)
+grid()
+contour(m$xmids, m$ymids, m$mean, add=TRUE)
 }
 
 \author{Dan Kelley}
