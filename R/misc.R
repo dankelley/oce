@@ -1,5 +1,54 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+binMean1D <- function(x, f, xbreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(f)) stop("must supply 'f'")
+    if (length(x) != length(f))
+        stop("lengths of x and f must agree")
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2)
+        stop("must have more than 1 break")
+    rval <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
+               length(xbreaks), as.double(xbreaks),
+               number=integer(nxbreaks-1),
+               mean=double(nxbreaks-1))
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), mean=rval$mean)
+}
+
+binMean2D <- function(x, y, f, xbreaks, ybreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (missing(f)) stop("must supply 'f'")
+    if (length(x) != length(y)) stop("lengths of x and y must agree")
+    if (length(x) != length(f)) stop("lengths of x and f must agree")
+    if (missing(xbreaks)) xbreaks <- pretty(x)
+    if (missing(ybreaks)) ybreaks <- pretty(y)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    nybreaks <- length(ybreaks)
+    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    cat("xbreaks:", xbreaks, "\n")
+    cat("ybreaks:", ybreaks, "\n")
+    rval <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+               length(xbreaks), as.double(xbreaks),
+               length(ybreaks), as.double(ybreaks),
+               number=integer((nxbreaks-1)*(nybreaks-1)),
+               mean=double((nxbreaks-1)*(nybreaks-1)))
+    list(xbreaks=xbreaks,
+         ybreaks=ybreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         ymids=ybreaks[-1]-0.5*diff(ybreaks),
+         number=matrix(rval$number, nrow=nxbreaks-1),
+         mean=matrix(rval$mean, nrow=nxbreaks-1))
+}
+
+
+
+
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
@@ -29,7 +78,7 @@ binApply <- function(x, v, b, f, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(f)) stop("must supply 'f'")
-    if (!is.function(f)) stop("'f' must be a ftion")
+    if (!is.function(f)) stop("'f' must be a function")
     if (missing(v)) stop("must supply 'v', the name of an element in 'data'")
     if ("data" %in% slotNames(x)) # oce objects have this
         x <- x@data
@@ -47,24 +96,6 @@ binApply <- function(x, v, b, f, ...)
     }
     bincentres <- b[1:ncentres] + diff(b)/2 # centers
     cbind(bincentres, matrix(unlist(rval), nrow=ncentres, byrow=TRUE))
-}
-
-
-boxcarAverage <- function(x, y, xout=pretty(x))
-{
-    if (missing(x) || missing(y)) stop("must supply x and y")
-    if (!is.vector(x)) stop("x must be a vector")
-    if (!is.vector(y)) stop("y must be a vector")
-    if (length(x) != length(y)) stop("lengths of x and y must agree")
-    .Call("boxcar_average_vector", x, y, xout);
-}
-
-boxcarAverage2D <- function(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
-{
-    if (missing(x1) || missing(x2) || missing(y)) stop("must give x1, x2 and y")
-    if (length(x1) != length(x2)) stop("lengths of x1 and x2 must match")
-    if (length(x1) != length(y)) stop("lengths of x1 and y must match")
-    .Call("boxcar_average_2d", x1, x2, y, x1out, x2out);
 }
 
 ungrid <- function(x, y, grid)
