@@ -9,7 +9,7 @@
 \description{Bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
 
 \usage{
-binMean1D(x, f, breaks)
+binMean1D(x, f, xbreaks)
 binMean2D(x, y, f, xbreaks, ybreaks)}
 
 \arguments{
@@ -20,20 +20,24 @@ binMean2D(x, y, f, xbreaks, ybreaks)}
   \item{f}{a vector of numerical values, f=f(x) for the 1D function and
       f=f(x,y) for the 2D function.}
 
-  \item{breaks}{values of x at the boundaries between bins.  If not supplied,
-      this will be calculated using \code{\link{pretty}}.}
-  
-  \item{xbreaks,ybreaks}{values of x and y at the boundaries between bins.  If
-      not supplied, this will be calculated using \code{\link{pretty}}.}
+  \item{xbreaks}{values of x at the boundaries between bins; calculated using
+      \code{\link{pretty}} if not supplied.}
+
+  \item{ybreaks}{values of y at the boundaries between bins; calculated using
+      \code{\link{pretty}} if not supplied.}
 
 }
 
 \details{The \code{f} vector is averaged in bins defined for \code{x}.  Missing
     values in \code{f} are ignored.}
 
-\value{A list with the following elements: \code{breaks}, \code{mids}, the
-    midpoints of the bins, and \code{mean}, the average \code{y} value in the
-    bins.  Note that the lengths of }
+\value{A list with the following elements: the breaks (\code{xbreaks}, along
+    with \code{ybreaks} for the 2D case), the break mid-points (\code{xmids}
+    along with \code{ymids} for the 2D case), the number of data points in each
+    bin, \code{number}, and the mean value of \code{f} value in the bins,
+    \code{mean}.  For the 1D case, \code{number} and \code{mean} are vectors,
+    whereas they are matrices for the 2D case.  For plotting, the midpoints are
+    more useful than the breaks, as shown in the examples.}
 
 \examples{
 library(oce)
@@ -42,19 +46,19 @@ x <- seq(0, 100, 1)
 f <- 1 + 2 * x
 plot(x, f, pch=1)
 m <- binMean1D(x, f)
-points(m$mids, m$mean, pch=3, col='red', cex=3)
+points(m$xmids, m$mean, pch=3, col='red', cex=3)
 
 ## B. fake quadratic data
 f <- 1 + x ^2
 plot(x, f, pch=1)
 m <- binMean1D(x, f)
-points(m$mids, m$mean, pch=3, col='red', cex=3)
+points(m$xmids, m$mean, pch=3, col='red', cex=3)
 
 ## C. natural data
 data(co2)
 plot(co2, col='gray')
 m <- binMean1D(time(co2), co2)
-lines(m$mids, m$mean, type='o')
+lines(m$xmids, m$mean, type='o')
 
 ## D. 2D
 x <- runif(500)

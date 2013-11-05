@@ -1,20 +1,21 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-binMean1D <- function(x, f, breaks)
+binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(f)) stop("must supply 'f'")
     if (length(x) != length(f))
         stop("lengths of x and f must agree")
-    if (missing(breaks)) {
-        breaks <- pretty(x)
-    }
-    nbreaks <- length(breaks)
-    if (nbreaks < 2)
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2)
         stop("must have more than 1 break")
     rval <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-               length(breaks), as.double(breaks), mean=double(nbreaks-1))
-    list(breaks=breaks, mids=breaks[-1]-0.5*diff(breaks), mean=rval$mean)
+               length(xbreaks), as.double(xbreaks),
+               number=integer(nxbreaks-1),
+               mean=double(nxbreaks-1))
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), mean=rval$mean)
 }
 
 binMean2D <- function(x, y, f, xbreaks, ybreaks)
@@ -35,10 +36,13 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
     rval <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
                length(xbreaks), as.double(xbreaks),
                length(ybreaks), as.double(ybreaks),
+               number=integer((nxbreaks-1)*(nybreaks-1)),
                mean=double((nxbreaks-1)*(nybreaks-1)))
     list(xbreaks=xbreaks,
+         ybreaks=ybreaks,
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ymids=ybreaks[-1]-0.5*diff(ybreaks),
+         number=matrix(rval$number, ncol=nxbreaks-1),
          mean=matrix(rval$mean, ncol=nxbreaks-1))
 }
 
