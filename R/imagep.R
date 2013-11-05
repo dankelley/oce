@@ -415,13 +415,8 @@ imagep <- function(x, y, z,
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
-            if (!breaksGiven) {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            }
+            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
+                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
         }
         if (axes) {
             box()
