@@ -78,7 +78,7 @@ binApply <- function(x, v, b, f, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(f)) stop("must supply 'f'")
-    if (!is.function(f)) stop("'f' must be a ftion")
+    if (!is.function(f)) stop("'f' must be a function")
     if (missing(v)) stop("must supply 'v', the name of an element in 'data'")
     if ("data" %in% slotNames(x)) # oce objects have this
         x <- x@data
@@ -96,24 +96,6 @@ binApply <- function(x, v, b, f, ...)
     }
     bincentres <- b[1:ncentres] + diff(b)/2 # centers
     cbind(bincentres, matrix(unlist(rval), nrow=ncentres, byrow=TRUE))
-}
-
-
-boxcarAverage <- function(x, y, xout=pretty(x))
-{
-    if (missing(x) || missing(y)) stop("must supply x and y")
-    if (!is.vector(x)) stop("x must be a vector")
-    if (!is.vector(y)) stop("y must be a vector")
-    if (length(x) != length(y)) stop("lengths of x and y must agree")
-    .Call("boxcar_average_vector", x, y, xout);
-}
-
-boxcarAverage2D <- function(x1, x2, y, x1out=pretty(x1), x2out=pretty(x2))
-{
-    if (missing(x1) || missing(x2) || missing(y)) stop("must give x1, x2 and y")
-    if (length(x1) != length(x2)) stop("lengths of x1 and x2 must match")
-    if (length(x1) != length(y)) stop("lengths of x1 and y must match")
-    .Call("boxcar_average_2d", x1, x2, y, x1out, x2out);
 }
 
 ungrid <- function(x, y, grid)

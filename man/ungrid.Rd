@@ -15,7 +15,7 @@
 }
 
 \details{This is useful for e.g. gridding large datasets, in which the first
-    step might be to use \code{\link{boxcarAverage2D}}, followed by
+    step might be to use \code{\link{binMean2D}}, followed by
     \code{\link{interpBarnes}}.}
 
 \value{A list containing three vectors: \code{x}, the grid x values, \code{y},
