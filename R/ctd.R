@@ -923,7 +923,7 @@ setMethod(f="plot",
                           yloc <- yloc - d.yloc
                       }
                   } else if (which[w] == 5) {
-                      if (is.finite(x[["latitude"]]) && is.finite(x[["longitude"]])) {
+                      if (is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
                           oceDebug(debug, "draw(ctd, ...) of type MAP\n")
                           ## FIXME: use waterdepth to guess a reasonable span, if not supplied
                           if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
@@ -996,7 +996,8 @@ setMethod(f="plot",
                               }
                           }
                           oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
-                          points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                          points(x@metadata$longitude, x@metadata$latitude,
+                                 cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                               mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                           if (!is.null(x@metadata$startTime))
