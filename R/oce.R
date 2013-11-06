@@ -1340,10 +1340,12 @@ oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, debug=getOption("oceDebu
             contour(x, y, z, axes=FALSE, ...)
             ## see src/library/graphics/R/contour.R 
             xaxp <- par('xaxp')
-            xat <- seq(xaxp[1], xaxp[2], length.out=-1+xaxp[3])
+            xat <- seq(xaxp[1], xaxp[2], length.out=xaxp[3])
             xlabels <- format(xat)
             yaxp <- par('yaxp')
-            yat <- seq(yaxp[1], yaxp[2], length.out=-1+yaxp[3])
+            yat <- seq(yaxp[1], yaxp[2], length.out=yaxp[3])
+            oceDebug(debug, "xat:", xat, "\n")
+            oceDebug(debug, "yat:", yat, "\n")
             ylabels <- format(yat)
             if (mustReverseY)
                 revy <- !revy
