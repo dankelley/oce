@@ -67,7 +67,7 @@ extern "C" {
                 }
             }
         }
-        for (int i = 0; i < (*nbreaks); i++) {
+        for (int i = 0; i < (*nbreaks-1); i++) {
             if (number[i] > 0) {
                 mean[i] = mean[i] / number[i];
             } else {
