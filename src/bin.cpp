@@ -6,8 +6,13 @@
 
 //#define DEBUG
 
-/*
 
+// These functions use the STL function lower_bound to find the index of the
+// smallest break exceeding x[i].  Data exceeding the top break get index equal
+// to nbreak.
+
+
+/*
 
    library(oce)
    system("R CMD SHLIB bin.cpp")
@@ -24,50 +29,33 @@
 */
 
 extern "C" {
-    void bin_mean_1d(int *nx, double *x, double *f, int *nbreaks, double *breaks,
+    void bin_mean_1d(int *nx, double *x, double *f, int *nxbreaks, double *xbreaks,
             int *number, double *mean)
     {
 
-        if (*nbreaks < 2)
+        if (*nxbreaks < 2)
             error("cannot have fewer than 1 break"); // already checked in R but be safe
-        std::vector<double> b(breaks, breaks + *nbreaks);
+        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
         std::sort(b.begin(), b.end()); // STL wants breaks ordered
-#ifdef DEBUG
-        Rprintf("%d breaks:\n", *nbreaks);
-        for (int i = 0; i < (*nbreaks); i++) {
-            Rprintf("   %f\n", breaks[i]);
-        }
-#endif
-        for (int i = 0; i < (*nbreaks); i++) {
+        for (int i = 0; i < (*nxbreaks-1); i++) {
             number[i] = 0;
             mean[i] = 0.0;
         }
         for (int i = 0; i < (*nx); i++) {
             if (!ISNA(f[i])) {
                 std::vector<double>::iterator lower_bound;
-                // lower_bound is the the index of the smallest break exceeding x[i];
-                // data above the top break yield index nbreak.
                 lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
-                int ii = lower_bound - b.begin();
-                if (ii == *nbreaks) {
+                int bi = lower_bound - b.begin();
+                if (bi > 0 && bi < (*nxbreaks)) {
 #ifdef DEBUG
-                    Rprintf("x: %6.3f   ii: %d    >>>\n", x[i], ii);
+                    Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, breaks[bi-1], breaks[bi]);
 #endif
-                } else if (ii == 0) {
-#ifdef DEBUG
-                    Rprintf("x: %6.3f   ii: %d    <<<\n", x[i], ii);
-#endif
-                } else {
-#ifdef DEBUG
-                    Rprintf("x: %6.3f   ii: %d    (%f to %f)\n",
-                            x[i], ii, breaks[ii-1], breaks[ii]);
-#endif
-                    number[ii-1]++;
-                    mean[ii-1] += f[i];
+                    number[bi-1]++;
+                    mean[bi-1] += f[i];
                 }
             }
         }
-        for (int i = 0; i < (*nbreaks-1); i++) {
+        for (int i = 0; i < (*nxbreaks-1); i++) {
             if (number[i] > 0) {
                 mean[i] = mean[i] / number[i];
             } else {
@@ -76,6 +64,51 @@ extern "C" {
         }
     }
 }
+
+/*
+
+   
+   library(oce)
+   system("R CMD SHLIB bin.cpp")
+   dyn.load("bin.so")
+   set.seed(123)
+   x <- rnorm(10, sd=1)
+   source('../R/misc.R')
+   bi <- binWhich1D(x, seq(-1.5, 1.5, 0.5))
+   data.frame(x=x, bi=bi)
+
+   xbreaks <- seq(-1.5, 1.5, 0.5)
+
+system("R CMD SHLIB bin.cpp");dyn.load("bin.so");rval <- .C("bin_which_1d", length(x), as.double(x), length(xbreaks), as.double(xbreaks),bi=integer(length(x)))
+
+
+
+*/
+
+// /* keep below in case .bincode() proves to be slow for binApply1D() and binApply2D() */
+//extern "C" {
+//    void bin_which_1d(int *nx, double *x, int *nxbreaks, double *xbreaks, int *bi)
+//    {
+//        if (*nxbreaks < 2)
+//            error("cannot have fewer than 1 break"); // already checked in R but be safe
+//        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
+//        std::sort(b.begin(), b.end()); // STL wants breaks ordered
+//        for (int i = 0; i < (*nx); i++) {
+//            if (ISNA(x[i])) {
+//                bi[i] = NA_REAL;
+//            } else{
+//                std::vector<double>::iterator lower_bound;
+//                lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
+//                int which = lower_bound - b.begin();
+//                if (which > 0 && which < (*nxbreaks))
+//                    bi[i] = which;
+//                else
+//                    bi[i] = NA_REAL;
+//            }
+//        }
+//    }
+//}
+
 
 
 
@@ -101,9 +134,6 @@ extern "C" {
 
 
 */
-
-
-
 extern "C" {
     void bin_mean_2d(int *nx, double *x, double *y, double *f,
             int *nxbreaks, double *xbreaks,
@@ -123,14 +153,11 @@ extern "C" {
         Rprintf("getting space for %d data\n", (*nxbreaks-1)*(*nybreaks-1));
 #endif
         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
-            //Rprintf("bij: %d, zero fill\n", bij);
             number[bij] = 0;
             mean[bij] = 0.0;
         }
         for (int i = 0; i < (*nx); i++) {
             if (!ISNA(f[i])) {
-                // lower_bound is the the index of the smallest break exceeding x[i];
-                // data above the top break yield index nbreak.
                 int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
                 int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
                 if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {

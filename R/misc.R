@@ -19,6 +19,22 @@ binMean1D <- function(x, f, xbreaks)
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), mean=rval$mean)
 }
 
+##binWhich1D <- function(x, xbreaks)
+##{
+##    if (missing(x)) stop("must supply 'x'")
+##    if (missing(xbreaks))
+##        xbreaks <- pretty(x)
+##    nxbreaks <- length(xbreaks)
+##    if (nxbreaks < 2)
+##        stop("must have more than 1 break")
+##    rval <- .C("bin_which_1d", length(x), as.double(x),
+##               length(xbreaks), as.double(xbreaks),
+##               bi=integer(length(x)),
+##               NAOK=TRUE, PACKAGE="oce")
+##    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), bi=rval$bi)
+##}
+
+
 binMean2D <- function(x, y, f, xbreaks, ybreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -47,9 +63,6 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
          number=matrix(rval$number, nrow=nxbreaks-1),
          mean=matrix(rval$mean, nrow=nxbreaks-1))
 }
-
-
-
 
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
