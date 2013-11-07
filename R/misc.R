@@ -14,7 +14,8 @@ binMean1D <- function(x, f, xbreaks)
     rval <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
                length(xbreaks), as.double(xbreaks),
                number=integer(nxbreaks-1),
-               mean=double(nxbreaks-1))
+               mean=double(nxbreaks-1),
+               NAOK=TRUE, PACKAGE="oce")
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), mean=rval$mean)
 }
 
@@ -37,7 +38,8 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
                length(xbreaks), as.double(xbreaks),
                length(ybreaks), as.double(ybreaks),
                number=integer((nxbreaks-1)*(nybreaks-1)),
-               mean=double((nxbreaks-1)*(nybreaks-1)))
+               mean=double((nxbreaks-1)*(nybreaks-1)),
+               NAOK=TRUE, PACKAGE="oce")
     list(xbreaks=xbreaks,
          ybreaks=ybreaks,
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
