@@ -1,4 +1,5 @@
 0.9-13
+- binApply2D() added
 - numberAsHMS() added
 - gps data type added (provisionally)
 - various functions: reorder arguments putting longitude before latitude

@@ -1,60 +1,63 @@
 \name{binApply}
 
 \alias{binApply}
+\alias{binApply2D}
 
-\title{Divide an oce object or a data frame into bins, and apply a
-    user-supplied function in each}
+\title{Apply a function to binned matrix data}
 
-\description{Divide an oce object or a data frame into bins, and apply a
-    user-supplied function in each}
+\description{Apply a function to binned matrix data}
 
-\usage{binApply(x, v, b, f, \dots)}
+\usage{binApply2D(x, y, data, xbreaks, ybreaks, func)}
 
 \arguments{
+  \item{x}{a vector of numerical values.}
+  
+  \item{y}{a vector of numerical values.}
 
-  \item{x}{an oce object, a data frame, or something that can be coerced into a
-      data frame.}
+  \item{data}{a vector of data to which the the function is to be applied}
 
-  \item{v}{name of a variable in \code{x}.}
+  \item{xbreaks}{values of x at the boundaries between bins; calculated using
+      \code{\link{pretty}} if not supplied.}
 
-  \item{b}{sequence of bins into which categorize \code{v}.}
+  \item{ybreaks}{values of y at the boundaries between bins; calculated using
+      \code{\link{pretty}} if not supplied.}
 
-  \item{f}{a function that is to be applied to the subdivided \code{x}.}
-
-  \item{\dots}{optional arguments passed to \code{f}.}
+  \item{func}{function to apply to data}
 
 }
 
-\details{First, a data frame is extracted from \code{x}.  If \code{x} is an Oce
-    object, this is done by coercing \code{x@data} as a data frame.  If not,
-    then \code{x} itself is coerced.  An error results if coercion is not
-    possible.  Next, \code{\link{findInterval}} is used on \code{x[[v]]}, using
-    \code{b} to define the intervals.  Then, the function \code{f} is applied
-    to the subsets of \code{x} corresponding to the intervals.  The values
-    returned by the calls to \code{f} are collected as the rows of a matrix.
-    Finally, the midpoints of the bins are attached as the first column of the
-    matrix, and the resultant matrix is returned.}
-    
-\value{A matrix with first column equal to the mean values of \code{x[[v]]} in
-    each subdivision, followed by columns for the return value from \code{f}.
-    For example, if \code{f} returns a single value, a two-column result is
-    returned by \code{binApply}.  The number of rows in the return value is one
-    less than \code{length(b)}.}
+\details{The function \code{func} is applied to \code{data} in bins specified
+    by \code{xbreaks} and \code{ybreaks}.  Warning: this function is slow; if
+    all that is required is an average value, use \code{\link{binMean2D}}.}
+
+\value{A list with the following elements: the breaks in x and y
+    (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
+    \code{ymids}), and a matrix containing the result of applying function
+    \code{func} to data subsetted by these breaks.}
 
 \examples{
-## Show TDR temperature profile, with 95% confidence intervals on
-## the mean (binned by pressure), calculated with t.test().
+\dontrun{
 library(oce)
-data(tdr)
-f <- function(d) {
-    c(mean(d$temperature), t.test(d$temperature)$conf.int)
+mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
+        grid=5, fill='gray', proj="lambert",
+        parameters=c(lat0=50, lat1=65))
+data(secchi)
+
+col <- rev(oceColorsJet(100))[rescale(secchi$depth,xlow=0,xhigh=20,rlow=1,rhigh=100)]
+#mapPolygon(coastlineWorld, col='gray')
+
+zlim <- c(0, 20)
+breaksPalette <- seq(min(zlim), max(zlim), 1)
+colPalette <- rev(oceColorsJet(length(breaksPalette)-1))
+bc <- binApply2D(secchi$longitude, secchi$latitude,
+                 pretty(secchi$longitude, 80),
+                 pretty(secchi$latitude, 40),
+                 data=secchi$depth, func=mean)
+mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
+mapPolygon(coastlineWorld, col='gray')
 }
-b <- binApply(tdr, "pressure", seq(0,20,5), f)
-plot(tdr, which=4, col='darkgray')
-grid()
-points(b[,2], b[,1], pch=20) 
-segments(b[,3], b[,1], b[,4], b[,1])
 }
+
 
 \author{Dan Kelley}
 

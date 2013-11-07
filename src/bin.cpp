@@ -6,7 +6,6 @@
 
 //#define DEBUG
 
-
 // These functions use the STL function lower_bound to find the index of the
 // smallest break exceeding x[i].  Data exceeding the top break get index equal
 // to nbreak.
@@ -24,7 +23,6 @@
    m <- binMean1D(x, f, seq(-1.5, 1.5, 0.5))
    old <- binAverage(x, f, -1.5, 1.5, 0.5)
    data.frame(mids=m$xmids, mean=m$mean, oldMethod=old$y)
-
 
 */
 
@@ -65,75 +63,7 @@ extern "C" {
     }
 }
 
-/*
 
-   
-   library(oce)
-   system("R CMD SHLIB bin.cpp")
-   dyn.load("bin.so")
-   set.seed(123)
-   x <- rnorm(10, sd=1)
-   source('../R/misc.R')
-   bi <- binWhich1D(x, seq(-1.5, 1.5, 0.5))
-   data.frame(x=x, bi=bi)
-
-   xbreaks <- seq(-1.5, 1.5, 0.5)
-
-system("R CMD SHLIB bin.cpp");dyn.load("bin.so");rval <- .C("bin_which_1d", length(x), as.double(x), length(xbreaks), as.double(xbreaks),bi=integer(length(x)))
-
-
-
-*/
-
-// /* keep below in case .bincode() proves to be slow for binApply1D() and binApply2D() */
-//extern "C" {
-//    void bin_which_1d(int *nx, double *x, int *nxbreaks, double *xbreaks, int *bi)
-//    {
-//        if (*nxbreaks < 2)
-//            error("cannot have fewer than 1 break"); // already checked in R but be safe
-//        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
-//        std::sort(b.begin(), b.end()); // STL wants breaks ordered
-//        for (int i = 0; i < (*nx); i++) {
-//            if (ISNA(x[i])) {
-//                bi[i] = NA_REAL;
-//            } else{
-//                std::vector<double>::iterator lower_bound;
-//                lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
-//                int which = lower_bound - b.begin();
-//                if (which > 0 && which < (*nxbreaks))
-//                    bi[i] = which;
-//                else
-//                    bi[i] = NA_REAL;
-//            }
-//        }
-//    }
-//}
-
-
-
-
-/*
- 
-
-   library(oce)
-   system("R CMD SHLIB bin.cpp") # must be in oce/src
-   dyn.load("bin.so")
-   set.seed(123)
-   x <- rnorm(100, sd=1)
-   y <- rnorm(100, sd=1)
-   f <- x + y
-   source('../R/misc.R')
-   m <- binMean2D(x, y, f)
-   a <- boxcarAverage2D(x, y, f, m$xmids, m$ymids)
-   cat("mismatch to old code:", sum((a$average-m$mean)^2, na.rm=TRUE), "\n")
-   str(m)
-   str(a)
-   plot(x, y)
-   contour(m$xmids, m$ymids, m$mean, add=TRUE, lwd=4, col='pink')
-   contour(a$x1out, a$x2out, a$average, add=TRUE, lwd=1)
-
-
-*/
 extern "C" {
     void bin_mean_2d(int *nx, double *x, double *y, double *f,
             int *nxbreaks, double *xbreaks,
@@ -149,9 +79,6 @@ extern "C" {
         std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
         std::vector<double> by(ybreaks, ybreaks + *nybreaks);
         std::sort(by.begin(), by.end()); // STL wants breaks ordered
-#ifdef DEBUG
-        Rprintf("getting space for %d data\n", (*nxbreaks-1)*(*nybreaks-1));
-#endif
         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
             number[bij] = 0;
             mean[bij] = 0.0;
@@ -178,4 +105,29 @@ extern "C" {
         }
     }
 }
+
+
+// /* keep below in case .bincode() proves to be slow for binApply1D() and binApply2D() */
+//extern "C" {
+//    void bin_which_1d(int *nx, double *x, int *nxbreaks, double *xbreaks, int *bi)
+//    {
+//        if (*nxbreaks < 2)
+//            error("cannot have fewer than 1 break"); // already checked in R but be safe
+//        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
+//        std::sort(b.begin(), b.end()); // STL wants breaks ordered
+//        for (int i = 0; i < (*nx); i++) {
+//            if (ISNA(x[i])) {
+//                bi[i] = NA_REAL;
+//            } else{
+//                std::vector<double>::iterator lower_bound;
+//                lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
+//                int which = lower_bound - b.begin();
+//                if (which > 0 && which < (*nxbreaks))
+//                    bi[i] = which;
+//                else
+//                    bi[i] = NA_REAL;
+//            }
+//        }
+//    }
+//}
 
