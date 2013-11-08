@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-binApply2D <- function(x, y, data, xbreaks, ybreaks, func)
+binApply2D <- function(x, y, data, xbreaks, ybreaks, FUN)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -18,7 +18,7 @@ binApply2D <- function(x, y, data, xbreaks, ybreaks, func)
     rval <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
     for (i in 1:nxbreaks-1) {
         for (j in 1:nybreaks-1) {
-            rval[i, j] <- func(data[i==bi & j==bj])
+            rval[i, j] <- FUN(data[i==bi & j==bj])
         }
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 

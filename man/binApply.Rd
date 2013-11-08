@@ -7,14 +7,15 @@
 
 \description{Apply a function to binned matrix data}
 
-\usage{binApply2D(x, y, data, xbreaks, ybreaks, func)}
+\usage{binApply2D(x, y, data, xbreaks, ybreaks, FUN)}
 
 \arguments{
   \item{x}{a vector of numerical values.}
   
   \item{y}{a vector of numerical values.}
 
-  \item{data}{a vector of data to which the the function is to be applied}
+  \item{data}{a vector of data to which the elements of \code{FUN} may be
+      supplied}
 
   \item{xbreaks}{values of x at the boundaries between bins; calculated using
       \code{\link{pretty}} if not supplied.}
@@ -22,18 +23,18 @@
   \item{ybreaks}{values of y at the boundaries between bins; calculated using
       \code{\link{pretty}} if not supplied.}
 
-  \item{func}{function to apply to data}
+  \item{FUN}{function to apply to data}
 
 }
 
-\details{The function \code{func} is applied to \code{data} in bins specified
+\details{The function \code{FUN} is applied to \code{data} in bins specified
     by \code{xbreaks} and \code{ybreaks}.  Warning: this function is slow; if
     all that is required is an average value, use \code{\link{binMean2D}}.}
 
 \value{A list with the following elements: the breaks in x and y
     (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
     \code{ymids}), and a matrix containing the result of applying function
-    \code{func} to data subsetted by these breaks.}
+    \code{FUN} to data subsetted by these breaks.}
 
 \examples{
 \dontrun{
