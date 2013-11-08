@@ -38,7 +38,9 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
     A <- split(f, cut(y, ybreaks))
     B <- split(x, cut(y, ybreaks))
     for (i in 1:length(A)) {
-        rval[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
+        fSplit <- split(A[[i]], cut(B[[i]], xbreaks))
+        ##rval[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
+        rval[,i] <- unlist(lapply(fSplit, FUN))
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),

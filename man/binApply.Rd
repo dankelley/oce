@@ -70,9 +70,7 @@ bc <- binApply2D(secchi$longitude, secchi$latitude,
                  f=secchi$depth, FUN=mean)
 mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
 mapPolygon(coastlineWorld, col='gray')
-
 }
-
 
 \author{Dan Kelley}
 
