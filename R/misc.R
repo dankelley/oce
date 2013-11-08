@@ -13,7 +13,7 @@ binApply1D <- function(x, data, xbreaks, FUN)
     ##t <- try(x <- data.frame(x), silent=TRUE)
     ##if (class(t) == "try-error")
     ##    stop("cannot coerce 'data' into a data.frame")
-    dataSplit <- split(data, factor(cut(x, xbreaks)))
+    dataSplit <- split(data, cut(x, xbreaks))
     rval <- unlist(lapply(dataSplit, FUN))
     names(rval) <- NULL
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=rval)

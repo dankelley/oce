@@ -39,19 +39,21 @@ binApply2D(x, y, data, xbreaks, ybreaks, FUN)}
     \code{FUN} to data subsetted by these breaks.}
 
 \examples{
-\dontrun{
 library(oce)
-## (a) 1D: salinity profile with mean +- standard deviation in bins
+## (a) 1D: salinity profile with median and quartile 1 and 3
 data(ctd)
 p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]
-Sstddev <- binApply1D(p, S, pretty(p, 30), sd)
-Smean <- binApply1D(p, S, pretty(p, 30), mean)
+S1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
+S3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
+Smedian <- binApply1D(p, S, pretty(p, 30), median)
 plotProfile(ctd, "salinity", col='gray', type='p')
-lines(Smean$result, Smean$xmids, col='blue')
-lines(Smean$result+Sstddev$result, Smean$xmids, col='red')
-lines(Smean$result-Sstddev$result, Smean$xmids, col='red')
+lines(Smedian$result, Smedian$xmids, col='blue')
+lines(S1$result, Smedian$xmids, col='red')
+lines(S3$result, Smedian$xmids, col='red')
+segments(S1$result, Smedian$xmids, S3$result, Smedian$xmids, col='red')
 
+\dontrun{
 ## (b) 2D: secchi depths in lat and lon bins
 mapPlot(coastlineWorld, longitudelim=c(-5,20), latitudelim=c(50,66),
         grid=5, fill='gray', proj="lambert",
