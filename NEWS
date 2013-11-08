@@ -1,13 +1,12 @@
 0.9-13
-- binApply2D() added
+- binApply1D() and binApply2D() added
+- binMean1D() and binMean2D() added
 - numberAsHMS() added
 - gps data type added (provisionally)
 - various functions: reorder arguments putting longitude before latitude
 - magneticField() replaces magneticDeclination()
-- binApply() added
 - ungrid() added
-- binMean1D() and binMean2D() added
-- mapPlot(): zones and meridians aesthetics improved
+- mapPlot(): improve zone and meridian aesthetics
 - detrend() returns list with detrend vector and coefs
 - decodeTime() improvements
 - interpBarnes() has new arg 'trim'

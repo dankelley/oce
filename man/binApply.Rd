@@ -1,13 +1,15 @@
 \name{binApply}
 
 \alias{binApply}
+\alias{binApply1D}
 \alias{binApply2D}
 
 \title{Apply a function to binned matrix data}
 
 \description{Apply a function to binned matrix data}
 
-\usage{binApply2D(x, y, data, xbreaks, ybreaks, FUN)}
+\usage{binApply1D(x, data, xbreaks, FUN)
+binApply2D(x, y, data, xbreaks, ybreaks, FUN)}
 
 \arguments{
   \item{x}{a vector of numerical values.}
@@ -39,14 +41,25 @@
 \examples{
 \dontrun{
 library(oce)
-mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
+## (a) 1D: salinity profile with mean +- standard deviation in bins
+data(ctd)
+p <- ctd[["pressure"]]
+S <- ctd[["salinity"]]
+Sstddev <- binApply1D(p, S, pretty(p, 30), sd)
+Smean <- binApply1D(p, S, pretty(p, 30), mean)
+plotProfile(ctd, "salinity", col='gray', type='p')
+lines(Smean$result, Smean$xmids, col='blue')
+lines(Smean$result+Sstddev$result, Smean$xmids, col='red')
+lines(Smean$result-Sstddev$result, Smean$xmids, col='red')
+
+## (b) 2D: secchi depths in lat and lon bins
+mapPlot(coastlineWorld, longitudelim=c(-5,20), latitudelim=c(50,66),
         grid=5, fill='gray', proj="lambert",
         parameters=c(lat0=50, lat1=65))
 data(secchi)
-
-col <- rev(oceColorsJet(100))[rescale(secchi$depth,xlow=0,xhigh=20,rlow=1,rhigh=100)]
-#mapPolygon(coastlineWorld, col='gray')
-
+col <- rev(oceColorsJet(100))[rescale(secchi$depth,
+                                      xlow=0, xhigh=20,
+                                      rlow=1, rhigh=100)]
 zlim <- c(0, 20)
 breaksPalette <- seq(min(zlim), max(zlim), 1)
 colPalette <- rev(oceColorsJet(length(breaksPalette)-1))

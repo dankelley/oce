@@ -1,5 +1,24 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+binApply1D <- function(x, data, xbreaks, FUN)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(data)) stop("must supply 'data'")
+    if (missing(xbreaks)) xbreaks <- pretty(x, 20)
+    if (missing(FUN)) stop("must supply 'FUN'")
+    if (!is.function(FUN)) stop("'FUN' must be a function")
+    ## FIXME: maybe employ the code below to get data from oce objects
+    ##if ("data" %in% slotNames(x)) # oce objects have this
+    ##    x <- x@data
+    ##t <- try(x <- data.frame(x), silent=TRUE)
+    ##if (class(t) == "try-error")
+    ##    stop("cannot coerce 'data' into a data.frame")
+    dataSplit <- split(data, factor(cut(x, xbreaks)))
+    rval <- unlist(lapply(dataSplit, FUN))
+    names(rval) <- NULL
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=rval)
+}
+
 binApply2D <- function(x, y, data, xbreaks, ybreaks, FUN)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -9,6 +28,8 @@ binApply2D <- function(x, y, data, xbreaks, ybreaks, FUN)
     if (nx != length(y)) stop("lengths of x and y must agree")
     if (missing(xbreaks)) xbreaks <- pretty(x, 20)
     if (missing(ybreaks)) ybreaks <- pretty(y, 20)
+    if (missing(FUN)) stop("must supply 'FUN'")
+    if (!is.function(FUN)) stop("'FUN' must be a function")
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
@@ -116,29 +137,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     list(x=xx, y=yy)
 }
 
-binApply <- function(x, v, b, f, ...)
-{
-    if (missing(x)) stop("must supply 'x'")
-    if (missing(f)) stop("must supply 'f'")
-    if (!is.function(f)) stop("'f' must be a function")
-    if (missing(v)) stop("must supply 'v', the name of an element in 'data'")
-    if ("data" %in% slotNames(x)) # oce objects have this
-        x <- x@data
-    t <- try(x <- data.frame(x), silent=TRUE)
-    if (class(t) == "try-error")
-        stop("cannot coerce 'data' into a data.frame")
-    v <- x[[v]]
-    if (missing(b))
-        b <- pretty(v)
-    bi <- findInterval(v, b)
-    ncentres <- length(b) - 1
-    rval <- vector("list", ncentres)
-    for (ci in 1:ncentres) {
-        rval[[ci]] <- f(x[ci==bi,], ...) # can index because a data.frame
-    }
-    bincentres <- b[1:ncentres] + diff(b)/2 # centers
-    cbind(bincentres, matrix(unlist(rval), nrow=ncentres, byrow=TRUE))
-}
+
 
 ungrid <- function(x, y, grid)
 {
