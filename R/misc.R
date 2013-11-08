@@ -1,9 +1,9 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-binApply1D <- function(x, data, xbreaks, FUN)
+binApply1D <- function(x, f, xbreaks, FUN)
 {
     if (missing(x)) stop("must supply 'x'")
-    if (missing(data)) stop("must supply 'data'")
+    if (missing(f)) stop("must supply 'f'")
     if (missing(xbreaks)) xbreaks <- pretty(x, 20)
     if (missing(FUN)) stop("must supply 'FUN'")
     if (!is.function(FUN)) stop("'FUN' must be a function")
@@ -13,17 +13,17 @@ binApply1D <- function(x, data, xbreaks, FUN)
     ##t <- try(x <- data.frame(x), silent=TRUE)
     ##if (class(t) == "try-error")
     ##    stop("cannot coerce 'data' into a data.frame")
-    dataSplit <- split(data, cut(x, xbreaks))
-    rval <- unlist(lapply(dataSplit, FUN))
+    fSplit <- split(f, cut(x, xbreaks))
+    rval <- unlist(lapply(fSplit, FUN))
     names(rval) <- NULL
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=rval)
 }
 
-binApply2D <- function(x, y, data, xbreaks, ybreaks, FUN)
+binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
-    if (missing(data)) stop("must supply 'data'")
+    if (missing(f)) stop("must supply 'f'")
     nx <- length(x)
     if (nx != length(y)) stop("lengths of x and y must agree")
     if (missing(xbreaks)) xbreaks <- pretty(x, 20)
@@ -34,13 +34,11 @@ binApply2D <- function(x, y, data, xbreaks, ybreaks, FUN)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    bi <- .bincode(x, xbreaks)
-    bj <- .bincode(y, ybreaks)
     rval <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
-    for (i in 1:nxbreaks-1) {
-        for (j in 1:nybreaks-1) {
-            rval[i, j] <- FUN(data[i==bi & j==bj])
-        }
+    A <- split(f, cut(y, ybreaks))
+    B <- split(x, cut(y, ybreaks))
+    for (i in 1:length(A)) {
+        rval[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
@@ -59,12 +57,12 @@ binMean1D <- function(x, f, xbreaks)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
-    rval <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-               length(xbreaks), as.double(xbreaks),
-               number=integer(nxbreaks-1),
-               mean=double(nxbreaks-1),
-               NAOK=TRUE, PACKAGE="oce")
-    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), mean=rval$mean)
+    result <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
+                 length(xbreaks), as.double(xbreaks),
+                 number=integer(nxbreaks-1),
+                 result=double(nxbreaks-1),
+                 NAOK=TRUE, PACKAGE="oce")$result
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
 }
 
 ##binWhich1D <- function(x, xbreaks)
@@ -96,8 +94,6 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    cat("xbreaks:", xbreaks, "\n")
-    cat("ybreaks:", ybreaks, "\n")
     rval <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
                length(xbreaks), as.double(xbreaks),
                length(ybreaks), as.double(ybreaks),
@@ -109,7 +105,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ymids=ybreaks[-1]-0.5*diff(ybreaks),
          number=matrix(rval$number, nrow=nxbreaks-1),
-         mean=matrix(rval$mean, nrow=nxbreaks-1))
+         result=matrix(rval$mean, nrow=nxbreaks-1))
 }
 
 binAverage <- function(x, y, xmin, xmax, xinc)
