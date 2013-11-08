@@ -44,14 +44,11 @@ library(oce)
 data(ctd)
 p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]
-S1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
-S3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
-Smedian <- binApply1D(p, S, pretty(p, 30), median)
-plotProfile(ctd, "salinity", col='gray', type='p')
-lines(Smedian$result, Smedian$xmids, col='blue')
-lines(S1$result, Smedian$xmids, col='red')
-lines(S3$result, Smedian$xmids, col='red')
-segments(S1$result, Smedian$xmids, S3$result, Smedian$xmids, col='red')
+q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
+q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
+plotProfile(ctd, "salinity", col='gray', type='n')
+polygon(c(q1$result, rev(q3$result)), c(q1$xmids, rev(q1$xmids)), col='gray')
+points(S, p, pch=20)
 
 \dontrun{
 ## (b) 2D: secchi depths in lat and lon bins
