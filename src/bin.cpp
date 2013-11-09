@@ -72,7 +72,9 @@ extern "C" {
     {
         // array lookup
 #define ij(i, j) ((i) + (*nxbreaks-1) * (j))
+#ifdef DEBUG
         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
+#endif
         if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
         if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
         std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
