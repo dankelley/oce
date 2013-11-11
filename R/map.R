@@ -546,9 +546,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
     }
     for (i in 1:ni) {
         for (j in 1:nj) {
-            ##col <- cols[100 * (z[i,j] - zmin)/ zrange]
-            ## Speed improvement by 1.5X: avoid calling mapPolygon()
-            ##OLD# xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
             xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
                              latitude[j]+dlatitude*c(-0.5, -0.5, 0.5, 0.5))
             ## avoid lines crossing whole domain

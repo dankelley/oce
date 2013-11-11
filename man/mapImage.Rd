@@ -79,20 +79,22 @@ mapMeridians()
 mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
-# Levitus July SST (requires dataset from http://www.esrl.noaa.gov)
+# Levitus SST (requires dataset from http://www.esrl.noaa.gov)
 library(ncdf)
-con <- open.ncdf("/data/oar/levitus/otemp.mnltm.nc")
+#con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
+con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
 lon <- get.var.ncdf(con, "lon")
 lat <- get.var.ncdf(con, "lat")
-SSTjuly <- get.var.ncdf(con, "otemp")[,,1,7]
+#SST <- get.var.ncdf(con, "t_an")[,,1]
+SST <- get.var.ncdf(con, "t_mn")[,,1]
 x11(width=8, height=4) # x11 is fast, so use for tests
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SSTjuly, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
-mapLines(coastlineWorld)
-mtext("July SST", side=3, line=-1, adj=1)
+ystem.time(mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray'))
+mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
+mapPolygon(coastlineWorld, col='gray')
 }
 }
 
