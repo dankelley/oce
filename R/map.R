@@ -544,11 +544,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             z[z >= zlim[2]] <- zlim[2] * (1 - small)
         }
     }
-    ## for test, patches not centred
-    if (!TRUE) {
-        lonlat <- expand.grid(list(longitude=longitude, latitude=latitude))
-        xy <- mapproject(lonlat$longitude, lonlat$latitude)
-        points(xy$x, xy$y, col='blue')
+    if (debug == 99) {                 # test new method (much faster)
+        poly <- .Call("map_assemble_polygons", longitude, latitude, NAOK=TRUE, PACKAGE="oce")
+        xy <- mapproject(poly$longitude, poly$latitude)
+        xNew <- .Call("map_find_bad_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
+        Z <- as.vector(z)
+        col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
+        polygon(xNew, xy$y, col=col, border=NA)
     } else {
         for (i in 1:ni) {
             for (j in 1:nj) {

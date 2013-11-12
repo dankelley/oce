@@ -47,7 +47,10 @@
         \code{NULL} to simply skip the drawing of such regions.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-        moderate amount of debugging information, or to 2 to get more.} 
+        moderate amount of debugging information, or to 2 to get more.
+        TEMPORARY NOTE: SET TO 99 TO TRY OUT THE EXPERIMENTAL METHOD
+        OF SPEEDING UP PLOTTING (FACTOR OF 60 ON THE WORLD SST
+        EXAMPLE, ON AUTHOR'S MACHINE)} 
 }
 
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
@@ -87,14 +90,11 @@ lon <- get.var.ncdf(con, "lon")
 lat <- get.var.ncdf(con, "lat")
 SST <- get.var.ncdf(con, "t_an")[,,1]
 #SST <- get.var.ncdf(con, "t_mn")[,,1]
-x11(width=8, height=4) # x11 is fast, so use for tests
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-source('~/src/R-kelley/oce/R/map.R')
-system.time(mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray'))
-mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
+mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, debug=99)
 mapPolygon(coastlineWorld, col='gray')
 }
 }
