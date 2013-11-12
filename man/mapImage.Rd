@@ -47,7 +47,10 @@
         \code{NULL} to simply skip the drawing of such regions.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-        moderate amount of debugging information, or to 2 to get more.} 
+        moderate amount of debugging information, or to 2 to get more.
+        TEMPORARY NOTE: SET TO 99 TO TRY OUT THE EXPERIMENTAL METHOD
+        OF SPEEDING UP PLOTTING (FACTOR OF 60 ON THE WORLD SST
+        EXAMPLE, ON AUTHOR'S MACHINE)} 
 }
 
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
@@ -79,20 +82,20 @@ mapMeridians()
 mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
-# Levitus July SST (requires dataset from http://www.esrl.noaa.gov)
+# Levitus SST (requires dataset from http://www.esrl.noaa.gov)
 library(ncdf)
-con <- open.ncdf("/data/oar/levitus/otemp.mnltm.nc")
+con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
+#con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
 lon <- get.var.ncdf(con, "lon")
 lat <- get.var.ncdf(con, "lat")
-SSTjuly <- get.var.ncdf(con, "otemp")[,,1,7]
-x11(width=8, height=4) # x11 is fast, so use for tests
+SST <- get.var.ncdf(con, "t_an")[,,1]
+#SST <- get.var.ncdf(con, "t_mn")[,,1]
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SSTjuly, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
-mapLines(coastlineWorld)
-mtext("July SST", side=3, line=-1, adj=1)
+mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, debug=99)
+mapPolygon(coastlineWorld, col='gray')
 }
 }
 

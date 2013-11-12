@@ -544,33 +544,39 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             z[z >= zlim[2]] <- zlim[2] * (1 - small)
         }
     }
-    for (i in 1:ni) {
-        for (j in 1:nj) {
-            ##col <- cols[100 * (z[i,j] - zmin)/ zrange]
-            ## Speed improvement by 1.5X: avoid calling mapPolygon()
-            ##OLD# xy <- mapproject(longitude[i]+dlongitude*c(0, 1, 1, 0, 0), latitude[j]+dlatitude*c(0, 0, 1, 1, 0))
-            xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
-                             latitude[j]+dlatitude*c(-0.5, -0.5, 0.5, 0.5))
-            ## avoid lines crossing whole domain
-            ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
-            if (xmax < min(xy$x, na.rm=TRUE))
-                next
-            if (max(xy$x, na.rm=TRUE) < xmin)
-                next
-            if (ymax < min(xy$y, na.rm=TRUE))
-                next
-            if (max(xy$y, na.rm=TRUE) < ymin)
-                next
-            if (abs(xy$x[1] - xy$x[2]) > allowedSpan) 
-                next
-            zz <- z[i, j]
-            if (is.finite(zz)) {
-                thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
-                polygon(xy$x, xy$y, col=thiscol, border=border,
-                        lwd=lwd, lty=lty, fillOddEven=FALSE)
-            } else if (!is.null(missingColor)) {
-                polygon(xy$x, xy$y, col=missingColor, border=border,
-                        lwd=lwd, lty=lty, fillOddEven=FALSE)
+    if (debug == 99) {                 # test new method (much faster)
+        poly <- .Call("map_assemble_polygons", longitude, latitude, NAOK=TRUE, PACKAGE="oce")
+        xy <- mapproject(poly$longitude, poly$latitude)
+        xNew <- .Call("map_find_bad_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
+        Z <- as.vector(z)
+        col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
+        polygon(xNew, xy$y, col=col, border=NA)
+    } else {
+        for (i in 1:ni) {
+            for (j in 1:nj) {
+                xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
+                                 latitude[j]+dlatitude*c(-0.5, -0.5, 0.5, 0.5))
+                ## avoid lines crossing whole domain
+                ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
+                if (xmax < min(xy$x, na.rm=TRUE))
+                    next
+                if (max(xy$x, na.rm=TRUE) < xmin)
+                    next
+                if (ymax < min(xy$y, na.rm=TRUE))
+                    next
+                if (max(xy$y, na.rm=TRUE) < ymin)
+                    next
+                if (abs(xy$x[1] - xy$x[2]) > allowedSpan) 
+                    next
+                zz <- z[i, j]
+                if (is.finite(zz)) {
+                    thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
+                    polygon(xy$x, xy$y, col=thiscol, border=border,
+                            lwd=lwd, lty=lty, fillOddEven=FALSE)
+                } else if (!is.null(missingColor)) {
+                    polygon(xy$x, xy$y, col=missingColor, border=border,
+                            lwd=lwd, lty=lty, fillOddEven=FALSE)
+                }
             }
         }
     }
