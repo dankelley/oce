@@ -544,30 +544,37 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             z[z >= zlim[2]] <- zlim[2] * (1 - small)
         }
     }
-    for (i in 1:ni) {
-        for (j in 1:nj) {
-            xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
-                             latitude[j]+dlatitude*c(-0.5, -0.5, 0.5, 0.5))
-            ## avoid lines crossing whole domain
-            ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
-            if (xmax < min(xy$x, na.rm=TRUE))
-                next
-            if (max(xy$x, na.rm=TRUE) < xmin)
-                next
-            if (ymax < min(xy$y, na.rm=TRUE))
-                next
-            if (max(xy$y, na.rm=TRUE) < ymin)
-                next
-            if (abs(xy$x[1] - xy$x[2]) > allowedSpan) 
-                next
-            zz <- z[i, j]
-            if (is.finite(zz)) {
-                thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
-                polygon(xy$x, xy$y, col=thiscol, border=border,
-                        lwd=lwd, lty=lty, fillOddEven=FALSE)
-            } else if (!is.null(missingColor)) {
-                polygon(xy$x, xy$y, col=missingColor, border=border,
-                        lwd=lwd, lty=lty, fillOddEven=FALSE)
+    ## for test, patches not centred
+    if (!TRUE) {
+        lonlat <- expand.grid(list(longitude=longitude, latitude=latitude))
+        xy <- mapproject(lonlat$longitude, lonlat$latitude)
+        points(xy$x, xy$y, col='blue')
+    } else {
+        for (i in 1:ni) {
+            for (j in 1:nj) {
+                xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
+                                 latitude[j]+dlatitude*c(-0.5, -0.5, 0.5, 0.5))
+                ## avoid lines crossing whole domain
+                ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
+                if (xmax < min(xy$x, na.rm=TRUE))
+                    next
+                if (max(xy$x, na.rm=TRUE) < xmin)
+                    next
+                if (ymax < min(xy$y, na.rm=TRUE))
+                    next
+                if (max(xy$y, na.rm=TRUE) < ymin)
+                    next
+                if (abs(xy$x[1] - xy$x[2]) > allowedSpan) 
+                    next
+                zz <- z[i, j]
+                if (is.finite(zz)) {
+                    thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
+                    polygon(xy$x, xy$y, col=thiscol, border=border,
+                            lwd=lwd, lty=lty, fillOddEven=FALSE)
+                } else if (!is.null(missingColor)) {
+                    polygon(xy$x, xy$y, col=missingColor, border=border,
+                            lwd=lwd, lty=lty, fillOddEven=FALSE)
+                }
             }
         }
     }

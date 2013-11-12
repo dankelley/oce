@@ -81,18 +81,19 @@ mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
 library(ncdf)
-#con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
-con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
+con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
+#con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
 lon <- get.var.ncdf(con, "lon")
 lat <- get.var.ncdf(con, "lat")
-#SST <- get.var.ncdf(con, "t_an")[,,1]
-SST <- get.var.ncdf(con, "t_mn")[,,1]
+SST <- get.var.ncdf(con, "t_an")[,,1]
+#SST <- get.var.ncdf(con, "t_mn")[,,1]
 x11(width=8, height=4) # x11 is fast, so use for tests
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-ystem.time(mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray'))
+source('~/src/R-kelley/oce/R/map.R')
+system.time(mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray'))
 mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
 mapPolygon(coastlineWorld, col='gray')
 }
