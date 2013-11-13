@@ -4,7 +4,7 @@
 #include <Rinternals.h>
 #include <math.h>
 
-//#define DEBUG
+#define DEBUG
 
 /*
    
@@ -46,9 +46,6 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
     PROTECT(lat = AS_NUMERIC(lat));
     int nlat = length(lat);
     int nlon = length(lon);
-#ifdef DEBUG
-    Rprintf("nlon: %d, nlat: %d\n", nlon, nlat);
-#endif
     if (nlon < 1) error("must have at least 2 longitudes");
     if (nlat < 1) error("must have at least 2 latitudes");
     int n = nlon * nlat;
@@ -63,11 +60,14 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
     int k = 0;
     double latstep = 0.5 * (latp[1] - latp[0]);
     double lonstep = 0.5 * (lonp[1] - lonp[0]);
-    //Rprintf("latstep: %f, lonstep: %f\n", latstep, lonstep);
+#ifdef DEBUG
+    Rprintf("nlon: %d, nlat: %d, latstep: %f, lonstep: %f\n", nlon, nlat, latstep, lonstep);
+#endif
     for (int j = 0; j < nlat; j++) {
         for (int i = 0; i < nlon; i++) {
 #ifdef DEBUG
-            Rprintf("i: %d, j: %d, lon: %.1f, lat:%.1f, k: %d\n", i, j, lonp[i], latp[j], k);
+            if (j == 0 && i < 3)
+                Rprintf("i: %d, j: %d, lon: %.4f, lat:%.4f, k: %d\n", i, j, lonp[i], latp[j], k);
 #endif
             // Lower left
             polylonp[k] = lonp[i] - lonstep;
@@ -84,6 +84,11 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
             // end
             polylonp[k] = NA_REAL;
             polylatp[k++] = NA_REAL;
+#ifdef DEBUG
+            if (j == 0 && i < 3)
+                for (int kk=k-5; kk<k-1; kk++)
+                    Rprintf("k: %d, lon: %.4f, lat:%.4f\n", kk, polylonp[kk], polylatp[kk]);
+#endif
         }
         if (k > 5 * n)
             error("coding error (assigned insufficient memory); k: %d,  5*n: %d", k, 5*n);

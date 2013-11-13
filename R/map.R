@@ -78,6 +78,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         grid <- rep(15, 2)
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
+    if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
+    if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
@@ -545,10 +547,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         }
     }
     if (debug == 99) {                 # test new method (much faster)
-        poly <- .Call("map_assemble_polygons", longitude, latitude, NAOK=TRUE, PACKAGE="oce")
+        cat("lat range:", range(latitude), "\n")
+        cat("lon range:", range(longitude), "\n")
+        poly <- .Call("map_assemble_polygons", longitude, latitude);#, NAOK=TRUE, PACKAGE="oce")
         xy <- mapproject(poly$longitude, poly$latitude)
         xNew <- .Call("map_find_bad_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
         Z <- as.vector(z)
+        Z <- matrix(z)
         col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
         polygon(xNew, xy$y, col=col, border=NA)
     } else {
