@@ -32,7 +32,7 @@ mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
 xy <- mapproject(poly$longitude, poly$latitude)
 pal <- oceColorsJet(100)
 plot(range(xy$x, na.rm=TRUE), range(xy$y, na.rm=TRUE), type='n', asp=1, xlab="", ylab="", axes=FALSE)
-ok <- .Call("map_find_bad_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
+ok <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
 i<-20702+seq(-10,10); data.frame(i=i,ok=ok[i],x=xy$x[i],y=xy$y[i])
 polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=NA)
 
@@ -43,19 +43,19 @@ polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=
 SEXP map_assemble_polygons(SEXP lon, SEXP lat)
 {
     PROTECT(lon = AS_NUMERIC(lon));
+    double *lonp = REAL(lon);
     PROTECT(lat = AS_NUMERIC(lat));
+    double *latp = REAL(lat);
     int nlat = length(lat);
     int nlon = length(lon);
     if (nlon < 1) error("must have at least 2 longitudes");
     if (nlat < 1) error("must have at least 2 latitudes");
     int n = nlon * nlat;
     SEXP polylon; 
-    SEXP polylat;
     PROTECT(polylon = allocVector(REALSXP, 5*n));
-    PROTECT(polylat = allocVector(REALSXP, 5*n));
-    double *lonp = REAL(lon);
-    double *latp = REAL(lat);
     double *polylonp = REAL(polylon);
+    SEXP polylat;
+    PROTECT(polylat = allocVector(REALSXP, 5*n));
     double *polylatp = REAL(polylat);
     int k = 0;
     double latstep = 0.5 * (latp[1] - latp[0]);
@@ -110,7 +110,7 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
 }
 
 
-SEXP map_find_bad_polygons(SEXP x, SEXP y, SEXP xokspan)
+SEXP map_repair_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
