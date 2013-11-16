@@ -59,12 +59,13 @@ binMean1D <- function(x, f, xbreaks)
     nxbreaks <- length(xbreaks)
     if (nxbreaks < 2)
         stop("must have more than 1 break")
-    result <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
-                 length(xbreaks), as.double(xbreaks),
-                 number=integer(nxbreaks-1),
-                 result=double(nxbreaks-1),
-                 NAOK=TRUE, PACKAGE="oce")$result
-    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
+    res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
+              length(xbreaks), as.double(xbreaks),
+              number=integer(nxbreaks-1),
+              result=double(nxbreaks-1),
+              NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
+         number=res$number, result=res$result)
 }
 
 ##binWhich1D <- function(x, xbreaks)
