@@ -5,3 +5,5 @@ inst/doc/.gitignore
 inst/doc/ctd-object.svg
 vignettes/.build.timestamp
 
+^.*\.Rproj$
+^\.Rproj\.user$
