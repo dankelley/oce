@@ -428,7 +428,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
             x@data$pressure <- smooth(x@data$pressure, kind="3R")
-            ascending <- 0 > mean(diff(x@data$pressure))
+            ascending <- 0 > mean(diff(x@data$pressure[1:min(3, 0.2*length(x@data$pressure))]))
             oceDebug(debug, "ascending=", ascending, "\n")
             if (ascending) {
                 for (name in names(x@data)) {
