@@ -547,22 +547,28 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         }
     }
     if (debug == 99) {                 # test new method (much faster)
-        cat("lat range:", range(latitude), "\n")
-        cat("lon range:", range(longitude), "\n")
+        ## Construct polygons centred on the specified longitudes and latitudes.  Each
+        ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
+        ## to signal the end of the polygon.  The z values (and hence the colours)
+        ## map one per polygon.
         poly <- .Call("map_assemble_polygons", longitude, latitude, NAOK=TRUE, PACKAGE="oce")
+        DANpoly<<-poly                 # FIXME: global value for debugging
         ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
         ##if (max(poly$longitude, na.rm=TRUE) > 180) {
         ##    warning("shifting longitude\n")
         ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
         ##}
-        print(.Last.projection())
         xy <- mapproject(poly$longitude, poly$latitude)
-        print(.Last.projection())
+        ## map_repair_polygons tries to fix up longitude cut-point problem, which
+        ## otherwise leads to lines crossing the graph horizontally because the
+        ## x value can sometimes alternate from one end of the domain to the otherr
+        ## because (I suppose) of a numerical error.
         xNew <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
-        cat("length(latitude):", length(latitude), ", length(x):", length(xy$x), length(xNew), "\n")
-        Z <- as.vector(z)
+        DANz<<-z                       # FIXME: global value for debugging
+        Z <- matrix(z, byrow=TRUE, nrow=1)
         col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
-        polygon(xNew, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+        #polygon(xNew, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+        polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     } else {
         for (i in 1:ni) {
             for (j in 1:nj) {

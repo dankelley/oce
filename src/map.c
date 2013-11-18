@@ -103,7 +103,6 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
     SET_STRING_ELT(res_names, 0, mkChar("longitude"));
     SET_VECTOR_ELT(res, 1, polylat);
     SET_STRING_ELT(res_names, 1, mkChar("latitude"));
-    SET_VECTOR_ELT(res, 1, polylat);
     setAttrib(res, R_NamesSymbol, res_names);
     UNPROTECT(6);
     return(res);
