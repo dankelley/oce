@@ -566,8 +566,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         xNew <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
         DANz<<-z                       # FIXME: global value for debugging
         Z <- matrix(t(z))
-        cat("TESTING\n")
-        DANZ <- Z
+        DANZ <<- Z
         col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
         #polygon(xNew, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)

@@ -63,8 +63,8 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
 #ifdef DEBUG
     Rprintf("nlon: %d, nlat: %d, latstep: %f, lonstep: %f\n", nlon, nlat, latstep, lonstep);
 #endif
-    for (int j = 0; j < nlat; j++) {
-        for (int i = 0; i < nlon; i++) {
+    for (int i = 0; i < nlon; i++) {
+        for (int j = 0; j < nlat; j++) {
 #ifdef DEBUG
             if (j == 0 && i < 3)
                 Rprintf("i: %d, j: %d, lon: %.4f, lat:%.4f, k: %d\n", i, j, lonp[i], latp[j], k);
