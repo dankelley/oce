@@ -17,3 +17,5 @@ man/figures/*png
 inst/doc/oce.R
 .DS_Store
 .Rproj.user
+.Rdata
+
