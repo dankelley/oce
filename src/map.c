@@ -141,7 +141,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
     // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
     double dxPermitted = fabs(*xokspanp);
     Rprintf("dxPermitted: %f\n", dxPermitted);
-    int count = 0, ncount=10;
+    int count = 0, ncount=10; // FIXME: remove when working
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         int badPolygon;
         int start = 5 * ipoly;
@@ -158,20 +158,20 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
                 break;
             }
         }
-        // Discard polygons with excessive x spans [FIXME: maybe can alter them somehow]
-        if (!badPolygon) {
-            for (int j = 1; j < 4; j++) {
-                if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
-                    if (count < ncount) {
-                        Rprintf("ipoly: %d, j: %d, span: %f (limit to span: %f)\n", ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
-                    }
-                    for (int k = 0; k < 5; k++) {
-                        xoutp[start + k] = 0.0; // just give up
-                        okPointp[start + k] = 0;
-                    }
-                    okPolygonp[ipoly] = 0;
-                    break;
+        if (badPolygon)
+            continue;
+        for (int j = 1; j < 4; j++) {
+            if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
+                if (count < ncount) { // FIXME: remove when working
+                    Rprintf("ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                            ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                 }
+                for (int k = 0; k < 5; k++) {
+                    xoutp[start + k] = 0.0;
+                    okPointp[start + k] = 0;
+                }
+                okPolygonp[ipoly] = 0;
+                break;
             }
         }
     }

@@ -552,7 +552,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ## to signal the end of the polygon.  The z values (and hence the colours)
         ## map one per polygon.
         poly <- .Call("map_assemble_polygons", longitude, latitude, NAOK=TRUE, PACKAGE="oce")
-        DANpoly<<-poly                 # FIXME: global value for debugging
+        DANpoly<<-poly
         ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
         ##if (max(poly$longitude, na.rm=TRUE) > 180) {
         ##    warning("shifting longitude\n")
@@ -564,13 +564,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ## x value can sometimes alternate from one end of the domain to the otherr
         ## because (I suppose) of a numerical error.
         r <- .Call("map_check_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/50)#, NAOK=TRUE, PACKAGE="oce")
-        ##DANr <<- r
-        ##DANz<<-z                       # FIXME: global value for debugging
+        DANr<<-r
         Z <- matrix(t(z))
-        ##DANZ <<- Z
         col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
         ##polygon(r$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
-        str(r)
         polygon(r$x[r$okPoint], xy$y[r$okPoint], col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         ##polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     } else {
