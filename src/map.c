@@ -109,56 +109,87 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
 }
 
 
-SEXP map_repair_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
+SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(xokspan = AS_NUMERIC(xokspan));
     double *xp = REAL(x);
+    double *yp = REAL(y);
     double *xokspanp = REAL(xokspan);
     int nx = length(x);
     int ny = length(y);
     if (nx < 1) error("must have at least 2 x values");
     if (ny < 1) error("must have at least 2 y values");
-    SEXP res;
-    PROTECT(res = allocVector(REALSXP, nx)); // new x
-    double *resp = REAL(res);
-    int lastNA = -1;
-    resp[0] = 1;
-    int examples = 0;
-    for (int i = 0; i < nx; i++)
-        resp[i] = NA_REAL;
-    for (int i = 1; i < nx; i++) {
-        if (ISNA(xp[i])) {
-            resp[i] = NA_REAL;
-            lastNA = i;
-        } else {
-            double dx = fabs(xp[i] - xp[i-1]);
-            if (dx > *xokspanp) {
-                // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
-                // Use sign from first element
-                int sign = xp[lastNA+1] > 0.0;
-                i = lastNA + 1;
-                for (int j = lastNA + 1; j < lastNA + 5; j++) {
-                    resp[j] = sign * fabs(xp[j]);
-#ifdef DEBUG
-                    if (examples < 1)
-                        Rprintf("i: %d, j: %d, x: %f set to NA (lastNA was %d); sign %d res %f\n",
-                                i, j, xp[j], lastNA, sign, resp[j]);
-#endif
-                    i++;
+    SEXP xout;
+    PROTECT(xout = allocVector(REALSXP, nx));
+    double *xoutp = REAL(xout);
+    int npoly = nx / 5;
+
+    SEXP okPoint, okPolygon;
+    PROTECT(okPolygon = allocVector(LGLSXP, npoly)); 
+    PROTECT(okPoint = allocVector(LGLSXP, nx)); 
+    int *okPointp = INTEGER(okPoint);
+    int *okPolygonp = INTEGER(okPolygon);
+    for (int ipoly = 0; ipoly < npoly; ipoly++) {
+        okPolygonp[ipoly] = 1;
+    }
+    for (int ix = 0; ix < nx; ix++) {
+        xoutp[ix] = xp[ix];
+        okPointp[ix] = 1;
+    }
+    // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
+    double dxPermitted = fabs(*xokspanp);
+    Rprintf("dxPermitted: %f\n", dxPermitted);
+    int count = 0, ncount=10;
+    for (int ipoly = 0; ipoly < npoly; ipoly++) {
+        int badPolygon;
+        int start = 5 * ipoly;
+        badPolygon = 0;
+        // Discard polygons containing NA for x or y
+        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+            if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
+                for (int k = 0; k < 5; k++) {
+                    xoutp[start + k] = 0.0;
+                    okPointp[start + k] = 0;
                 }
-                lastNA = i;
-#ifdef DEBUG
-                if (examples++ < 1)
-                    Rprintf("set lastNA to %d\n", lastNA);
-#endif
-            } else {
-                resp[i] = xp[i];
+                okPolygonp[ipoly] = 0;
+                badPolygon = 1;
+                break;
+            }
+        }
+        // Discard polygons with excessive x spans [FIXME: maybe can alter them somehow]
+        if (!badPolygon) {
+            for (int j = 1; j < 4; j++) {
+                if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
+                    if (count < ncount) {
+                        Rprintf("ipoly: %d, j: %d, span: %f (limit to span: %f)\n", ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                    }
+                    for (int k = 0; k < 5; k++) {
+                        xoutp[start + k] = 0.0; // just give up
+                        okPointp[start + k] = 0;
+                    }
+                    okPolygonp[ipoly] = 0;
+                    break;
+                }
             }
         }
     }
-    UNPROTECT(4);
+    SEXP res;
+    SEXP res_names;
+    PROTECT(res = allocVector(VECSXP, 3));
+    PROTECT(res_names = allocVector(STRSXP, 3));
+    SET_VECTOR_ELT(res, 0, xout);
+    SET_STRING_ELT(res_names, 0, mkChar("x"));
+
+    SET_VECTOR_ELT(res, 1, okPoint);
+    SET_STRING_ELT(res_names, 1, mkChar("okPoint"));
+    setAttrib(res, R_NamesSymbol, res_names);
+
+    SET_VECTOR_ELT(res, 2, okPolygon);
+    SET_STRING_ELT(res_names, 2, mkChar("okPolygon"));
+    setAttrib(res, R_NamesSymbol, res_names);
+    UNPROTECT(8);
     return(res);
 }
 
