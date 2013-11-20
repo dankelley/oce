@@ -40,30 +40,43 @@ polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=
 
 */
 
-SEXP map_assemble_polygons(SEXP lon, SEXP lat)
+// macro to index an array
+#define ij(i, j) ((i) + (nrow) * (j))
+
+SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
 {
     PROTECT(lon = AS_NUMERIC(lon));
     double *lonp = REAL(lon);
     PROTECT(lat = AS_NUMERIC(lat));
     double *latp = REAL(lat);
+    PROTECT(z = AS_NUMERIC(z));
+    double *zp = REAL(z);
     int nlat = length(lat);
     int nlon = length(lon);
     if (nlon < 1) error("must have at least 2 longitudes");
     if (nlat < 1) error("must have at least 2 latitudes");
+
+    // Note that first dimension of z is for y (here, lat) and second for x (here, lon)
+
+    int nrow = INTEGER(GET_DIM(z))[0];
+    int ncol = INTEGER(GET_DIM(z))[1];
+    if (nlat != ncol) error("mismatch; length(lat)=%d must equal nrow(z)=%d", nlat, ncol);
+    if (nlon != nrow) error("mismatch; length(lon)=%d must equal ncol(z)=%d", nlon, nrow);
+
     int n = nlon * nlat;
-    SEXP polylon; 
+    SEXP polylon, polylat, polyz; 
     PROTECT(polylon = allocVector(REALSXP, 5*n));
-    double *polylonp = REAL(polylon);
-    SEXP polylat;
     PROTECT(polylat = allocVector(REALSXP, 5*n));
-    double *polylatp = REAL(polylat);
-    int k = 0;
+    PROTECT(polyz = allocMatrix(REALSXP, nlon, nlat));
+    double *polylonp = REAL(polylon), *polylatp = REAL(polylat), *polyzp = REAL(polyz);
+
     double latstep = 0.5 * fabs(latp[1] - latp[0]);
     double lonstep = 0.5 * fabs(lonp[1] - lonp[0]);
 #ifdef DEBUG
     Rprintf("nlon: %d, nlat: %d, latstep: %f, lonstep: %f\n", nlon, nlat, latstep, lonstep);
 #endif
-    for (int j = nlat-1; j > -1; j--) {
+    int k = 0, l=0; // indices for points and polygons
+    for (int j = 0; j < nlat; j++) {
         for (int i = 0; i < nlon; i++) {
 #ifdef DEBUG
             if (j == 0 && i < 3)
@@ -84,6 +97,7 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
             // end
             polylonp[k] = NA_REAL;
             polylatp[k++] = NA_REAL;
+            polyzp[l++] = zp[ij(i, j)];
 #ifdef DEBUG
             if (j == 0 && i < 3)
                 for (int kk=k-5; kk<k-1; kk++)
@@ -97,20 +111,25 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
         error("coding error (assigned surplus memory); k: %d,  5*n: %d", k, 5*n);
     SEXP res;
     SEXP res_names;
-    PROTECT(res = allocVector(VECSXP, 2));
-    PROTECT(res_names = allocVector(STRSXP, 2));
+    PROTECT(res = allocVector(VECSXP, 3));
+    PROTECT(res_names = allocVector(STRSXP, 3));
     SET_VECTOR_ELT(res, 0, polylon);
     SET_STRING_ELT(res_names, 0, mkChar("longitude"));
     SET_VECTOR_ELT(res, 1, polylat);
     SET_STRING_ELT(res_names, 1, mkChar("latitude"));
+    SET_VECTOR_ELT(res, 2, polyz);
+    SET_STRING_ELT(res_names, 2, mkChar("z"));
     setAttrib(res, R_NamesSymbol, res_names);
-    UNPROTECT(6);
+    UNPROTECT(8);
     return(res);
 }
 
 
 SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x vector
 {
+    int nrow = INTEGER(GET_DIM(z))[0];
+    int ncol = INTEGER(GET_DIM(z))[1];
+    Rprintf("nrow: %d, ncol: %d (ok?)\n", nrow, ncol);
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(z = AS_NUMERIC(z));
@@ -211,5 +230,6 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
     setAttrib(res, R_NamesSymbol, res_names);
     UNPROTECT(9);
     return(res);
+#undef ij
 }
 
