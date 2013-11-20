@@ -58,13 +58,13 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
     PROTECT(polylat = allocVector(REALSXP, 5*n));
     double *polylatp = REAL(polylat);
     int k = 0;
-    double latstep = 0.5 * (latp[1] - latp[0]);
-    double lonstep = 0.5 * (lonp[1] - lonp[0]);
+    double latstep = 0.5 * fabs(latp[1] - latp[0]);
+    double lonstep = 0.5 * fabs(lonp[1] - lonp[0]);
 #ifdef DEBUG
     Rprintf("nlon: %d, nlat: %d, latstep: %f, lonstep: %f\n", nlon, nlat, latstep, lonstep);
 #endif
-    for (int i = 0; i < nlon; i++) {
-        for (int j = 0; j < nlat; j++) {
+    for (int j = nlat-1; j > -1; j--) {
+        for (int i = 0; i < nlon; i++) {
 #ifdef DEBUG
             if (j == 0 && i < 3)
                 Rprintf("i: %d, j: %d, lon: %.4f, lat:%.4f, k: %d\n", i, j, lonp[i], latp[j], k);

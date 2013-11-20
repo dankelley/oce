@@ -564,6 +564,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ## otherwise leads to lines crossing the graph horizontally because the
         ## x value can sometimes alternate from one end of the domain to the otherr
         ## because (I suppose) of a numerical error.
+        #OLD# Z <- matrix(t(z))
         Z <- matrix(t(z))
         r <- .Call("map_check_polygons", xy$x, xy$y, Z,
                    diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
