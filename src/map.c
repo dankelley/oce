@@ -145,53 +145,53 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
     }
     // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
     double dxPermitted = fabs(*xokspanp);
-    int count = 0, ncount=100; // FIXME: remove when working
+    int count = 0, ncount=100000; // FIXME: remove when working
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         int badPolygon;
+        badPolygon = 0;
         int start = 5 * ipoly;
-        // Discard polygons with NA for z
-        if (ISNA(zp[ipoly])) {
+        if (ISNA(zp[ipoly])) { // Discard polygons with NA for z
             if (count++ < ncount) { // FIXME: remove when working
-                Rprintf("z is NA -- ipoly: %d, start: %d\n", ipoly, start);
+                Rprintf("z is NA -- ipoly: %d, start: %d (%f %f)\n", ipoly, start, xp[start], yp[start]);
             }
             for (int k = 0; k < 5; k++) {
                 xoutp[start + k] = 0.0; // unused, except for testing
                 okPointp[start + k] = 0;
             }
             okPolygonp[ipoly] = 0;
-            continue;
-        }
-        // Discard polygons containing NA for x or y
-        badPolygon = 0;
-        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
-            if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
-                if (count++ < ncount) { // FIXME: remove when working
-                    Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
-                            ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+            badPolygon = 1;
+        } else { // Discard polygons containing NA for x or y
+            for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+                if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
+                    if (count++ < ncount) { // FIXME: remove when working
+                        Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                                ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                    }
+                    for (int k = 0; k < 5; k++) {
+                        xoutp[start + k] = 0.0; // unused, except for testing
+                        okPointp[start + k] = 0;
+                    }
+                    okPolygonp[ipoly] = 0;
+                    badPolygon = 1;
+                    break;
                 }
-                for (int k = 0; k < 5; k++) {
-                    xoutp[start + k] = 0.0; // unused, except for testing
-                    okPointp[start + k] = 0;
-                }
-                okPolygonp[ipoly] = 0;
-                badPolygon = 1;
-                break;
             }
         }
-        if (badPolygon)
-            continue;
-        for (int j = 1; j < 4; j++) {
-            if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
-                if (count++ < ncount) { // FIXME: remove when working
-                    Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
-                            ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+        if (!badPolygon) {
+            // Discard polygons with excessive x range
+            for (int j = 1; j < 4; j++) {
+                if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
+                    if (count++ < ncount) { // FIXME: remove when working
+                        Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                                ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                    }
+                    for (int k = 0; k < 5; k++) {
+                        xoutp[start + k] = 0.0; // unused, except for testing
+                        okPointp[start + k] = 0;
+                    }
+                    okPolygonp[ipoly] = 0;
+                    break;
                 }
-                for (int k = 0; k < 5; k++) {
-                    xoutp[start + k] = 0.0; // unused, except for testing
-                    okPointp[start + k] = 0;
-                }
-                okPolygonp[ipoly] = 0;
-                break;
             }
         }
     }

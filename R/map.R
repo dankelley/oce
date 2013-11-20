@@ -559,6 +559,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
         ##}
         xy <- mapproject(poly$longitude, poly$latitude)
+        DANxy<<-xy
         ## map_check_polygons tries to fix up longitude cut-point problem, which
         ## otherwise leads to lines crossing the graph horizontally because the
         ## x value can sometimes alternate from one end of the domain to the otherr
