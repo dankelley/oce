@@ -109,18 +109,23 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
 }
 
 
-SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
+SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x vector
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
+    PROTECT(z = AS_NUMERIC(z));
     PROTECT(xokspan = AS_NUMERIC(xokspan));
     double *xp = REAL(x);
     double *yp = REAL(y);
+    double *zp = REAL(z);
     double *xokspanp = REAL(xokspan);
     int nx = length(x);
     int ny = length(y);
-    if (nx < 1) error("must have at least 2 x values");
-    if (ny < 1) error("must have at least 2 y values");
+    int nz = length(z);
+    if (nx < 2) error("must have at least 2 x values");
+    if (ny < 2) error("must have at least 2 y values");
+    if (nz < 1) error("must have at least 1 z value");
+    Rprintf("nz: %d (should be %d)\n", nz, nx/5);
     SEXP xout;
     PROTECT(xout = allocVector(REALSXP, nx));
     double *xoutp = REAL(xout);
@@ -140,17 +145,32 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
     }
     // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
     double dxPermitted = fabs(*xokspanp);
-    Rprintf("dxPermitted: %f\n", dxPermitted);
-    int count = 0, ncount=10; // FIXME: remove when working
+    int count = 0, ncount=100; // FIXME: remove when working
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         int badPolygon;
         int start = 5 * ipoly;
-        badPolygon = 0;
+        // Discard polygons with NA for z
+        if (ISNA(zp[ipoly])) {
+            if (count++ < ncount) { // FIXME: remove when working
+                Rprintf("z is NA -- ipoly: %d, start: %d\n", ipoly, start);
+            }
+            for (int k = 0; k < 5; k++) {
+                xoutp[start + k] = 0.0; // unused, except for testing
+                okPointp[start + k] = 0;
+            }
+            okPolygonp[ipoly] = 0;
+            continue;
+        }
         // Discard polygons containing NA for x or y
+        badPolygon = 0;
         for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
             if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
+                if (count++ < ncount) { // FIXME: remove when working
+                    Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                            ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                }
                 for (int k = 0; k < 5; k++) {
-                    xoutp[start + k] = 0.0;
+                    xoutp[start + k] = 0.0; // unused, except for testing
                     okPointp[start + k] = 0;
                 }
                 okPolygonp[ipoly] = 0;
@@ -162,12 +182,12 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
             continue;
         for (int j = 1; j < 4; j++) {
             if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
-                if (count < ncount) { // FIXME: remove when working
-                    Rprintf("ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                if (count++ < ncount) { // FIXME: remove when working
+                    Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
                             ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                 }
                 for (int k = 0; k < 5; k++) {
-                    xoutp[start + k] = 0.0;
+                    xoutp[start + k] = 0.0; // unused, except for testing
                     okPointp[start + k] = 0;
                 }
                 okPolygonp[ipoly] = 0;
@@ -189,7 +209,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP xokspan) // returns new x vector
     SET_VECTOR_ELT(res, 2, okPolygon);
     SET_STRING_ELT(res_names, 2, mkChar("okPolygon"));
     setAttrib(res, R_NamesSymbol, res_names);
-    UNPROTECT(8);
+    UNPROTECT(9);
     return(res);
 }
 
