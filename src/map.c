@@ -141,9 +141,9 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
     int nx = length(x);
     int ny = length(y);
     int nz = length(z);
-    if (nx < 2) error("must have at least 2 x values");
-    if (ny < 2) error("must have at least 2 y values");
-    if (nz < 1) error("must have at least 1 z value");
+    if (nx < 2) error("must have at least two x values");
+    if (ny < 2) error("must have at least two y values");
+    if (nz < 1) error("must have at least one z value");
     Rprintf("nz: %d (should be %d)\n", nz, nx/5);
     SEXP xout;
     PROTECT(xout = allocVector(REALSXP, nx));
@@ -155,6 +155,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
     PROTECT(okPoint = allocVector(LGLSXP, nx)); 
     int *okPointp = INTEGER(okPoint);
     int *okPolygonp = INTEGER(okPolygon);
+    // Initialize (not be needed if below catches all cases)
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         okPolygonp[ipoly] = 1;
     }
