@@ -76,8 +76,8 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
     Rprintf("nlon: %d, nlat: %d, latstep: %f, lonstep: %f\n", nlon, nlat, latstep, lonstep);
 #endif
     int k = 0, l=0; // indices for points and polygons
-    for (int j = 0; j < nlat; j++) {
-        for (int i = 0; i < nlon; i++) {
+    for (int j = 0; j < ncol; j++) {
+        for (int i = 0; i < nrow; i++) {
 #ifdef DEBUG
             if (j == 0 && i < 3)
                 Rprintf("i: %d, j: %d, lon: %.4f, lat:%.4f, k: %d\n", i, j, lonp[i], latp[j], k);

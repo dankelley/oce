@@ -568,11 +568,16 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         Z <- matrix(t(z), nrow=1)
         Z <- matrix(z)
         Z <- as.matrix(z, nrow=1, byRow=TRUE)
+        Z <- matrix(t(z))
+        Z <- matrix(z)
+        DANz <<- z
+        DANZ <<- Z
         #Z <- matrix(z, nrow=1)
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
         DANr<<-r
         col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
+        DANcol<<-col
         ##polygon(r$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         polygon(r$x[r$okPoint], xy$y[r$okPoint], col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         ##polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
