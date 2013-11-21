@@ -52,7 +52,11 @@ setMethod(f="[[",
                                            x@data$station[[stn]]@metadata$latitude,
                                            x@data$station[[1]]@metadata$longitude,
                                            x@data$station[[1]]@metadata$latitude)
-                      rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+                      if (j == "byStation")
+                          rval <- c(rval, distance)
+                      else
+                          rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+
                   }
               } else if ("depth" == i) {
                   rval <- NULL
