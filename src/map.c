@@ -172,10 +172,11 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
         int start = 5 * ipoly;
         if (ISNA(zp[ipoly])) { // Discard polygons with NA for z
             if (count++ < ncount) { // FIXME: remove when working
-                Rprintf("z is NA -- ipoly: %d, start: %d (%f %f)\n", ipoly, start, xp[start], yp[start]);
+                Rprintf("z NA @ ipoly: %d, start: %d, loc: %6.2f %6.2f\n",
+                        ipoly, start, xp[start], yp[start]);
             }
             for (int k = 0; k < 5; k++) {
-                xoutp[start + k] = 0.0; // unused, except for testing
+                //?? xoutp[start + k] = 0.0; // unused, except for testing
                 okPointp[start + k] = 0;
             }
             okPolygonp[ipoly] = 0;
@@ -188,7 +189,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
                                 ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                     }
                     for (int k = 0; k < 5; k++) {
-                        xoutp[start + k] = 0.0; // unused, except for testing
+                        //?? xoutp[start + k] = 0.0; // unused, except for testing
                         okPointp[start + k] = 0;
                     }
                     okPolygonp[ipoly] = 0;
@@ -206,7 +207,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
                                 ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                     }
                     for (int k = 0; k < 5; k++) {
-                        xoutp[start + k] = 0.0; // unused, except for testing
+                        //?? xoutp[start + k] = 0.0; // unused, except for testing
                         okPointp[start + k] = 0;
                     }
                     okPolygonp[ipoly] = 0;

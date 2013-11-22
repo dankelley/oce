@@ -578,9 +578,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
                    diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
         DANr<<-r
         col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
+        browser()
+        col[is.na(col)] <- col2rgb(missingColor)
         DANcol<<-col
         ##polygon(r$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
-        polygon(r$x[r$okPoint], xy$y[r$okPoint], col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+        polygon(r$x[r$okPoint], xy$y[r$okPoint],
+                col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         ##polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     } else {
         for (i in 1:ni) {
