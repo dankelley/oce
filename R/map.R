@@ -577,9 +577,20 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
         DANr<<-r
-        col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
-        browser()
-        col[is.na(col)] <- col2rgb(missingColor)
+        DANbreaks<<-breaks
+        DANni<<-ni
+        DANnj<<-nj
+        cat("ni*nj", ni*nj, "\n")
+        ##col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
+        mc <- if (!missing(missingColor)) missingColor else "white"
+        colorLookup <- function (ij) {
+            w <- which(Z[ij] < breaks * (1 + small))
+            if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
+        }
+        col <- unlist(lapply(1:(ni*nj), colorLookup))
+        cat("length(col):", length(col), "\n")
+        ##browser()
+        ##col[is.na(col)] <- if (missing(missingColor)) "white" else missingColor
         DANcol<<-col
         ##polygon(r$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         polygon(r$x[r$okPoint], xy$y[r$okPoint],
