@@ -584,6 +584,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ##col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
         mc <- if (!missing(missingColor)) missingColor else "white"
         colorLookup <- function (ij) {
+            if (is.na(Z[ij]))
+                return(mc)
             w <- which(Z[ij] < breaks * (1 + small))
             if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
         }
@@ -595,6 +597,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ##polygon(r$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         polygon(r$x[r$okPoint], xy$y[r$okPoint],
                 col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+
+
         ##polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     } else {
         for (i in 1:ni) {
