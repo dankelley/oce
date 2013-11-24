@@ -125,7 +125,7 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
 }
 
 
-SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x vector
+SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // returns new x vector
 {
     int nrow = INTEGER(GET_DIM(z))[0];
     int ncol = INTEGER(GET_DIM(z))[1];
@@ -136,6 +136,10 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(z = AS_NUMERIC(z));
     PROTECT(xokspan = AS_NUMERIC(xokspan));
+    PROTECT(usr = AS_NUMERIC(usr));
+    int nusr = LENGTH(usr);
+    if (nusr != 4) error("'usr' must hold 4 values");
+    double *usrp = REAL(usr); // left right bottom top
     double *xp = REAL(x);
     double *yp = REAL(y);
     double *zp = REAL(z);
@@ -149,23 +153,26 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
 #ifdef DEBUG
     Rprintf("nz: %d (should be %d)\n", nz, nx/5);
 #endif
-    SEXP xout;
-    PROTECT(xout = allocVector(REALSXP, nx));
-    double *xoutp = REAL(xout);
     int npoly = nx / 5;
 
-    SEXP okPoint, okPolygon;
+    SEXP okPoint, okPolygon, clippedPoint, clippedPolygon;
     PROTECT(okPolygon = allocVector(LGLSXP, npoly)); 
     PROTECT(okPoint = allocVector(LGLSXP, nx)); 
+    PROTECT(clippedPoint = allocVector(LGLSXP, nx)); 
+    PROTECT(clippedPolygon = allocVector(LGLSXP, npoly)); 
+
     int *okPointp = INTEGER(okPoint);
     int *okPolygonp = INTEGER(okPolygon);
+    int *clippedPointp = INTEGER(clippedPoint);
+    int *clippedPolygonp = INTEGER(clippedPolygon);
     // Initialize (not be needed if below catches all cases)
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         okPolygonp[ipoly] = 1;
+        clippedPolygonp[ipoly] = 0;
     }
     for (int ix = 0; ix < nx; ix++) {
-        xoutp[ix] = xp[ix];
         okPointp[ix] = 1;
+        clippedPointp[ix] = 0;
     }
     // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
     double dxPermitted = fabs(*xokspanp);
@@ -174,75 +181,66 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x v
         int badPolygon;
         badPolygon = 0;
         int start = 5 * ipoly;
-#if 0
-        if (ISNA(zp[ipoly])) { // Discard polygons with NA for z
+        // Check for bad polygons, in three phases.
+        // 1. Find polygons that have some NA values for vertices
+        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+            // Check for x or y being NA
+            if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
 #ifdef DEBUG
-            if (count++ < ncount) { // FIXME: remove when working
-                Rprintf("z NA @ ipoly: %d, start: %d, loc: %6.2f %6.2f\n",
-                        ipoly, start, xp[start], yp[start]);
-            }
-#endif
-            for (int k = 0; k < 5; k++) {
-                //?? xoutp[start + k] = 0.0; // unused, except for testing
-                okPointp[start + k] = 0;
-            }
-            okPolygonp[ipoly] = 0;
-            badPolygon = 1;
-        } else { // Discard polygons containing NA for x or y
-#endif
-            for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
-                if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
-#ifdef DEBUG
-                    if (count++ < ncount) { // FIXME: remove when working
-                        Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
-                                ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
-                    }
-#endif
-                    for (int k = 0; k < 5; k++) {
-                        //?? xoutp[start + k] = 0.0; // unused, except for testing
-                        okPointp[start + k] = 0;
-                    }
-                    okPolygonp[ipoly] = 0;
-                    badPolygon = 1;
-                    break;
+                if (count++ < ncount) { // FIXME: remove when working
+                    Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                            ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                 }
-            }
-//        }
-        if (!badPolygon) {
-            // Discard polygons with excessive x range
-            for (int j = 1; j < 4; j++) {
-                if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
-#ifdef DEBUG
-                    if (count++ < ncount) { // FIXME: remove when working
-                        Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
-                                ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
-                    }
 #endif
-                    for (int k = 0; k < 5; k++) {
-                        //?? xoutp[start + k] = 0.0; // unused, except for testing
-                        okPointp[start + k] = 0;
-                    }
-                    okPolygonp[ipoly] = 0;
-                    break;
+                for (int k = 0; k < 5; k++)
+                    okPointp[start + k] = 0;
+                okPolygonp[ipoly] = 0;
+                break;
+            }
+        }
+        // 2. Find polygons with vertices outside the plot region
+        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+            if (xp[start + j] < usrp[0] || xp[start + j] > usrp[1] ||
+                    yp[start + j] < usrp[2] || yp[start + j] > usrp[3]) {
+                for (int k = 0; k < 5; k++) {
+                    clippedPointp[start + k] = 1;
                 }
+                clippedPolygonp[ipoly] = 1;
+                break;
+            }
+        }
+        // 3. Find polygons with excessive x range (an error in projection)
+        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+            if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
+#ifdef DEBUG
+                if (count++ < ncount) { // FIXME: remove when working
+                    Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                            ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                }
+#endif
+                for (int k = 0; k < 5; k++) {
+                    okPointp[start + k] = 0;
+                }
+                okPolygonp[ipoly] = 0;
+                break;
             }
         }
     }
     SEXP res;
     SEXP res_names;
-    PROTECT(res = allocVector(VECSXP, 3));
-    PROTECT(res_names = allocVector(STRSXP, 3));
-    SET_VECTOR_ELT(res, 0, xout);
-    SET_STRING_ELT(res_names, 0, mkChar("x"));
-
-    SET_VECTOR_ELT(res, 1, okPoint);
-    SET_STRING_ELT(res_names, 1, mkChar("okPoint"));
-    setAttrib(res, R_NamesSymbol, res_names);
-
+    PROTECT(res = allocVector(VECSXP, 4));
+    PROTECT(res_names = allocVector(STRSXP, 4));
+    SET_VECTOR_ELT(res, 0, okPoint);
+    SET_STRING_ELT(res_names, 0, mkChar("okPoint"));
+    SET_VECTOR_ELT(res, 1, clippedPoint);
+    SET_STRING_ELT(res_names, 1, mkChar("clippedPoint"));
     SET_VECTOR_ELT(res, 2, okPolygon);
     SET_STRING_ELT(res_names, 2, mkChar("okPolygon"));
+    SET_VECTOR_ELT(res, 3, clippedPolygon);
+    SET_STRING_ELT(res_names, 3, mkChar("clippedPolygon"));
     setAttrib(res, R_NamesSymbol, res_names);
-    UNPROTECT(9);
+
+    UNPROTECT(11);
     return(res);
 #undef ij
 }

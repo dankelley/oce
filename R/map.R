@@ -552,7 +552,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
         ## to signal the end of the polygon.  The z values (and hence the colours)
         ## map one per polygon.
-        poly <- .Call("map_assemble_polygons", longitude, latitude, z , NAOK=TRUE, PACKAGE="oce")
+        poly <- .Call("map_assemble_polygons", longitude, latitude, z,
+                      NAOK=TRUE, PACKAGE="oce")
         ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
         ##if (max(poly$longitude, na.rm=TRUE) > 180) {
         ##    warning("shifting longitude\n")
@@ -565,7 +566,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ## because (I suppose) of a numerical error.
         Z <- matrix(z)
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
-                   diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
+                   diff(par('usr'))[1:2]/5, par('usr'),
+                   NAOK=TRUE, PACKAGE="oce")
         mc <- if (!missing(missingColor)) missingColor else "white"
         colorLookup <- function (ij) {
             if (is.na(Z[ij]))
@@ -574,8 +576,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
         }
         col <- unlist(lapply(1:(ni*nj), colorLookup))
-        polygon(r$x[r$okPoint], xy$y[r$okPoint],
-                col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+        print(system.time(
+        polygon(xy$x[r$okPoint&!r$clippedPoint], xy$y[r$okPoint&!r$clippedPoint],
+                col=col[r$okPolygon&!r$clippedPolygon],
+                border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+        ))
     } else {
         for (i in 1:ni) {
             for (j in 1:nj) {
