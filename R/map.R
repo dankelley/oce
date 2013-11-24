@@ -553,35 +553,19 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         ## to signal the end of the polygon.  The z values (and hence the colours)
         ## map one per polygon.
         poly <- .Call("map_assemble_polygons", longitude, latitude, z , NAOK=TRUE, PACKAGE="oce")
-        DANpoly<<-poly
         ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
         ##if (max(poly$longitude, na.rm=TRUE) > 180) {
         ##    warning("shifting longitude\n")
         ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
         ##}
         xy <- mapproject(poly$longitude, poly$latitude)
-        DANxy<<-xy
         ## map_check_polygons tries to fix up longitude cut-point problem, which
         ## otherwise leads to lines crossing the graph horizontally because the
         ## x value can sometimes alternate from one end of the domain to the otherr
         ## because (I suppose) of a numerical error.
-        #OLD# Z <- matrix(t(z))
-        Z <- matrix(t(z), nrow=1)
         Z <- matrix(z)
-        Z <- as.matrix(z, nrow=1, byRow=TRUE)
-        Z <- matrix(t(z))
-        Z <- matrix(z)
-        DANz <<- z
-        DANZ <<- Z
-        #Z <- matrix(z, nrow=1)
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
-        DANr<<-r
-        DANbreaks<<-breaks
-        DANni<<-ni
-        DANnj<<-nj
-        cat("ni*nj", ni*nj, "\n")
-        ##col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
         mc <- if (!missing(missingColor)) missingColor else "white"
         colorLookup <- function (ij) {
             if (is.na(Z[ij]))
@@ -590,16 +574,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
         }
         col <- unlist(lapply(1:(ni*nj), colorLookup))
-        cat("length(col):", length(col), "\n")
-        ##browser()
-        ##col[is.na(col)] <- if (missing(missingColor)) "white" else missingColor
-        DANcol<<-col
-        ##polygon(r$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
         polygon(r$x[r$okPoint], xy$y[r$okPoint],
                 col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
-
-
-        ##polygon(xy$x, xy$y, col=col, border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     } else {
         for (i in 1:ni) {
             for (j in 1:nj) {
