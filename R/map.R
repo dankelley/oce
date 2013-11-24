@@ -78,6 +78,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         grid <- rep(15, 2)
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
+    if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
+    if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
@@ -486,18 +488,19 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
     }
     breaksGiven <- !missing(breaks)
     if (!breaksGiven) {
+        small <- .Machine$double.eps
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
             if (missing(col)) {
-                breaks <- pretty(zrange, n=10)
+                breaks <- pretty(zrange+small*c(-1,1), n=10)
                 ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                small <- .Machine$double.eps
                 if (breaks[1] < zrange[1])
                     breaks[1] <- zrange[1] * (1 - small)
                 if (breaks[length(breaks)] > zrange[2])
                     breaks[length(breaks)] <- zrange[2] * (1 + small)
             } else {
-                breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+                breaks <- seq(zrange[1]-small, zrange[2]+small,
+                              length.out=if(is.function(col))128 else 1+length(col))
             }
             breaksOrig <- breaks
         } else {
@@ -545,12 +548,34 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         }
     }
     if (debug == 99) {                 # test new method (much faster)
-        poly <- .Call("map_assemble_polygons", longitude, latitude, NAOK=TRUE, PACKAGE="oce")
+        ## Construct polygons centred on the specified longitudes and latitudes.  Each
+        ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
+        ## to signal the end of the polygon.  The z values (and hence the colours)
+        ## map one per polygon.
+        poly <- .Call("map_assemble_polygons", longitude, latitude, z , NAOK=TRUE, PACKAGE="oce")
+        ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
+        ##if (max(poly$longitude, na.rm=TRUE) > 180) {
+        ##    warning("shifting longitude\n")
+        ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
+        ##}
         xy <- mapproject(poly$longitude, poly$latitude)
-        xNew <- .Call("map_find_bad_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
-        Z <- as.vector(z)
-        col <- unlist(lapply(1:(ni*nj), function(ij) col[-1 + which(Z[ij] < breaks * (1 + small))[1]]))
-        polygon(xNew, xy$y, col=col, border=NA)
+        ## map_check_polygons tries to fix up longitude cut-point problem, which
+        ## otherwise leads to lines crossing the graph horizontally because the
+        ## x value can sometimes alternate from one end of the domain to the otherr
+        ## because (I suppose) of a numerical error.
+        Z <- matrix(z)
+        r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
+                   diff(par('usr'))[1:2]/5, NAOK=TRUE, PACKAGE="oce")
+        mc <- if (!missing(missingColor)) missingColor else "white"
+        colorLookup <- function (ij) {
+            if (is.na(Z[ij]))
+                return(mc)
+            w <- which(Z[ij] < breaks * (1 + small))
+            if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
+        }
+        col <- unlist(lapply(1:(ni*nj), colorLookup))
+        polygon(r$x[r$okPoint], xy$y[r$okPoint],
+                col=col[r$okPolygon], border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     } else {
         for (i in 1:ni) {
             for (j in 1:nj) {

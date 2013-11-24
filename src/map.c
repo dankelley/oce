@@ -32,7 +32,7 @@ mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
 xy <- mapproject(poly$longitude, poly$latitude)
 pal <- oceColorsJet(100)
 plot(range(xy$x, na.rm=TRUE), range(xy$y, na.rm=TRUE), type='n', asp=1, xlab="", ylab="", axes=FALSE)
-ok <- .Call("map_find_bad_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
+ok <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
 i<-20702+seq(-10,10); data.frame(i=i,ok=ok[i],x=xy$x[i],y=xy$y[i])
 polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=NA)
 
@@ -40,34 +40,47 @@ polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=
 
 */
 
-SEXP map_assemble_polygons(SEXP lon, SEXP lat)
+// macro to index an array
+#define ij(i, j) ((i) + (nrow) * (j))
+
+SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
 {
     PROTECT(lon = AS_NUMERIC(lon));
+    double *lonp = REAL(lon);
     PROTECT(lat = AS_NUMERIC(lat));
+    double *latp = REAL(lat);
+    PROTECT(z = AS_NUMERIC(z));
+    double *zp = REAL(z);
     int nlat = length(lat);
     int nlon = length(lon);
-#ifdef DEBUG
-    Rprintf("nlon: %d, nlat: %d\n", nlon, nlat);
-#endif
     if (nlon < 1) error("must have at least 2 longitudes");
     if (nlat < 1) error("must have at least 2 latitudes");
+
+    // Note that first dimension of z is for y (here, lat) and second for x (here, lon)
+
+    int nrow = INTEGER(GET_DIM(z))[0];
+    int ncol = INTEGER(GET_DIM(z))[1];
+    if (nlat != ncol) error("mismatch; length(lat)=%d must equal nrow(z)=%d", nlat, ncol);
+    if (nlon != nrow) error("mismatch; length(lon)=%d must equal ncol(z)=%d", nlon, nrow);
+
     int n = nlon * nlat;
-    SEXP polylon; 
-    SEXP polylat;
+    SEXP polylon, polylat, polyz; 
     PROTECT(polylon = allocVector(REALSXP, 5*n));
     PROTECT(polylat = allocVector(REALSXP, 5*n));
-    double *lonp = REAL(lon);
-    double *latp = REAL(lat);
-    double *polylonp = REAL(polylon);
-    double *polylatp = REAL(polylat);
-    int k = 0;
-    double latstep = 0.5 * (latp[1] - latp[0]);
-    double lonstep = 0.5 * (lonp[1] - lonp[0]);
-    //Rprintf("latstep: %f, lonstep: %f\n", latstep, lonstep);
-    for (int j = 0; j < nlat; j++) {
-        for (int i = 0; i < nlon; i++) {
+    PROTECT(polyz = allocMatrix(REALSXP, nlon, nlat));
+    double *polylonp = REAL(polylon), *polylatp = REAL(polylat), *polyzp = REAL(polyz);
+
+    double latstep = 0.5 * fabs(latp[1] - latp[0]);
+    double lonstep = 0.5 * fabs(lonp[1] - lonp[0]);
 #ifdef DEBUG
-            Rprintf("i: %d, j: %d, lon: %.1f, lat:%.1f, k: %d\n", i, j, lonp[i], latp[j], k);
+    Rprintf("nlon: %d, nlat: %d, latstep: %f, lonstep: %f\n", nlon, nlat, latstep, lonstep);
+#endif
+    int k = 0, l=0; // indices for points and polygons
+    for (int j = 0; j < ncol; j++) {
+        for (int i = 0; i < nrow; i++) {
+#ifdef DEBUG
+            if (j == 0 && i < 3)
+                Rprintf("i: %d, j: %d, lon: %.4f, lat:%.4f, k: %d\n", i, j, lonp[i], latp[j], k);
 #endif
             // Lower left
             polylonp[k] = lonp[i] - lonstep;
@@ -84,6 +97,12 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
             // end
             polylonp[k] = NA_REAL;
             polylatp[k++] = NA_REAL;
+            polyzp[l++] = zp[ij(i, j)];
+#ifdef DEBUG
+            if (j == 0 && i < 3)
+                for (int kk=k-5; kk<k-1; kk++)
+                    Rprintf("k: %d, lon: %.4f, lat:%.4f\n", kk, polylonp[kk], polylatp[kk]);
+#endif
         }
         if (k > 5 * n)
             error("coding error (assigned insufficient memory); k: %d,  5*n: %d", k, 5*n);
@@ -92,69 +111,139 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat)
         error("coding error (assigned surplus memory); k: %d,  5*n: %d", k, 5*n);
     SEXP res;
     SEXP res_names;
-    PROTECT(res = allocVector(VECSXP, 2));
-    PROTECT(res_names = allocVector(STRSXP, 2));
+    PROTECT(res = allocVector(VECSXP, 3));
+    PROTECT(res_names = allocVector(STRSXP, 3));
     SET_VECTOR_ELT(res, 0, polylon);
     SET_STRING_ELT(res_names, 0, mkChar("longitude"));
     SET_VECTOR_ELT(res, 1, polylat);
     SET_STRING_ELT(res_names, 1, mkChar("latitude"));
-    SET_VECTOR_ELT(res, 1, polylat);
+    SET_VECTOR_ELT(res, 2, polyz);
+    SET_STRING_ELT(res_names, 2, mkChar("z"));
     setAttrib(res, R_NamesSymbol, res_names);
-    UNPROTECT(6);
+    UNPROTECT(8);
     return(res);
 }
 
 
-SEXP map_find_bad_polygons(SEXP x, SEXP y, SEXP xokspan)
+SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan) // returns new x vector
 {
+    int nrow = INTEGER(GET_DIM(z))[0];
+    int ncol = INTEGER(GET_DIM(z))[1];
+#ifdef DEBUG
+    Rprintf("nrow: %d, ncol: %d (ok?)\n", nrow, ncol);
+#endif
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
+    PROTECT(z = AS_NUMERIC(z));
     PROTECT(xokspan = AS_NUMERIC(xokspan));
     double *xp = REAL(x);
+    double *yp = REAL(y);
+    double *zp = REAL(z);
     double *xokspanp = REAL(xokspan);
     int nx = length(x);
     int ny = length(y);
-    if (nx < 1) error("must have at least 2 x values");
-    if (ny < 1) error("must have at least 2 y values");
-    SEXP res;
-    PROTECT(res = allocVector(REALSXP, nx)); // new x
-    double *resp = REAL(res);
-    int lastNA = -1;
-    resp[0] = 1;
-    int examples = 0;
-    for (int i = 0; i < nx; i++)
-        resp[i] = NA_REAL;
-    for (int i = 1; i < nx; i++) {
-        if (ISNA(xp[i])) {
-            resp[i] = NA_REAL;
-            lastNA = i;
-        } else {
-            double dx = fabs(xp[i] - xp[i-1]);
-            if (dx > *xokspanp) {
-                // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
-                // Use sign from first element
-                int sign = xp[lastNA+1] > 0.0;
-                i = lastNA + 1;
-                for (int j = lastNA + 1; j < lastNA + 5; j++) {
-                    resp[j] = sign * fabs(xp[j]);
+    int nz = length(z);
+    if (nx < 2) error("must have at least two x values");
+    if (ny < 2) error("must have at least two y values");
+    if (nz < 1) error("must have at least one z value");
 #ifdef DEBUG
-                    if (examples < 1)
-                        Rprintf("i: %d, j: %d, x: %f set to NA (lastNA was %d); sign %d res %f\n",
-                                i, j, xp[j], lastNA, sign, resp[j]);
+    Rprintf("nz: %d (should be %d)\n", nz, nx/5);
 #endif
-                    i++;
+    SEXP xout;
+    PROTECT(xout = allocVector(REALSXP, nx));
+    double *xoutp = REAL(xout);
+    int npoly = nx / 5;
+
+    SEXP okPoint, okPolygon;
+    PROTECT(okPolygon = allocVector(LGLSXP, npoly)); 
+    PROTECT(okPoint = allocVector(LGLSXP, nx)); 
+    int *okPointp = INTEGER(okPoint);
+    int *okPolygonp = INTEGER(okPolygon);
+    // Initialize (not be needed if below catches all cases)
+    for (int ipoly = 0; ipoly < npoly; ipoly++) {
+        okPolygonp[ipoly] = 1;
+    }
+    for (int ix = 0; ix < nx; ix++) {
+        xoutp[ix] = xp[ix];
+        okPointp[ix] = 1;
+    }
+    // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
+    double dxPermitted = fabs(*xokspanp);
+    int count = 0, ncount=100000; // FIXME: remove when working
+    for (int ipoly = 0; ipoly < npoly; ipoly++) {
+        int badPolygon;
+        badPolygon = 0;
+        int start = 5 * ipoly;
+#if 0
+        if (ISNA(zp[ipoly])) { // Discard polygons with NA for z
+#ifdef DEBUG
+            if (count++ < ncount) { // FIXME: remove when working
+                Rprintf("z NA @ ipoly: %d, start: %d, loc: %6.2f %6.2f\n",
+                        ipoly, start, xp[start], yp[start]);
+            }
+#endif
+            for (int k = 0; k < 5; k++) {
+                //?? xoutp[start + k] = 0.0; // unused, except for testing
+                okPointp[start + k] = 0;
+            }
+            okPolygonp[ipoly] = 0;
+            badPolygon = 1;
+        } else { // Discard polygons containing NA for x or y
+#endif
+            for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+                if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
+#ifdef DEBUG
+                    if (count++ < ncount) { // FIXME: remove when working
+                        Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                                ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                    }
+#endif
+                    for (int k = 0; k < 5; k++) {
+                        //?? xoutp[start + k] = 0.0; // unused, except for testing
+                        okPointp[start + k] = 0;
+                    }
+                    okPolygonp[ipoly] = 0;
+                    badPolygon = 1;
+                    break;
                 }
-                lastNA = i;
+            }
+//        }
+        if (!badPolygon) {
+            // Discard polygons with excessive x range
+            for (int j = 1; j < 4; j++) {
+                if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
 #ifdef DEBUG
-                if (examples++ < 1)
-                    Rprintf("set lastNA to %d\n", lastNA);
+                    if (count++ < ncount) { // FIXME: remove when working
+                        Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                                ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
+                    }
 #endif
-            } else {
-                resp[i] = xp[i];
+                    for (int k = 0; k < 5; k++) {
+                        //?? xoutp[start + k] = 0.0; // unused, except for testing
+                        okPointp[start + k] = 0;
+                    }
+                    okPolygonp[ipoly] = 0;
+                    break;
+                }
             }
         }
     }
-    UNPROTECT(4);
+    SEXP res;
+    SEXP res_names;
+    PROTECT(res = allocVector(VECSXP, 3));
+    PROTECT(res_names = allocVector(STRSXP, 3));
+    SET_VECTOR_ELT(res, 0, xout);
+    SET_STRING_ELT(res_names, 0, mkChar("x"));
+
+    SET_VECTOR_ELT(res, 1, okPoint);
+    SET_STRING_ELT(res_names, 1, mkChar("okPoint"));
+    setAttrib(res, R_NamesSymbol, res_names);
+
+    SET_VECTOR_ELT(res, 2, okPolygon);
+    SET_STRING_ELT(res_names, 2, mkChar("okPolygon"));
+    setAttrib(res, R_NamesSymbol, res_names);
+    UNPROTECT(9);
     return(res);
+#undef ij
 }
 
