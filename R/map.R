@@ -576,11 +576,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
         }
         col <- unlist(lapply(1:(ni*nj), colorLookup))
-        print(system.time(
         polygon(xy$x[r$okPoint&!r$clippedPoint], xy$y[r$okPoint&!r$clippedPoint],
                 col=col[r$okPolygon&!r$clippedPolygon],
                 border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
-        ))
     } else {
         for (i in 1:ni) {
             for (j in 1:nj) {
