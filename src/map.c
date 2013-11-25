@@ -129,9 +129,6 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
 {
     int nrow = INTEGER(GET_DIM(z))[0];
     int ncol = INTEGER(GET_DIM(z))[1];
-#ifdef DEBUG
-    Rprintf("nrow: %d, ncol: %d (ok?)\n", nrow, ncol);
-#endif
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(z = AS_NUMERIC(z));
@@ -150,9 +147,6 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     if (nx < 2) error("must have at least two x values");
     if (ny < 2) error("must have at least two y values");
     if (nz < 1) error("must have at least one z value");
-#ifdef DEBUG
-    Rprintf("nz: %d (should be %d)\n", nz, nx/5);
-#endif
     int npoly = nx / 5;
 
     SEXP okPoint, okPolygon, clippedPoint, clippedPolygon;
@@ -177,6 +171,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
     double dxPermitted = fabs(*xokspanp);
     int count = 0, ncount=100000; // FIXME: remove when working
+    int show = 0;
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         int badPolygon;
         badPolygon = 0;
@@ -188,7 +183,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
             if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
 #ifdef DEBUG
                 if (count++ < ncount) { // FIXME: remove when working
-                    Rprintf("x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                    Rprintf("(1.) x or y is NA -- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
                             ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                 }
 #endif
@@ -198,23 +193,32 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
                 break;
             }
         }
-        // 2. Find polygons with vertices outside the plot region
-        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
-            if (xp[start + j] < usrp[0] || xp[start + j] > usrp[1] ||
-                    yp[start + j] < usrp[2] || yp[start + j] > usrp[3]) {
-                for (int k = 0; k < 5; k++) {
-                    clippedPointp[start + k] = 1;
-                }
-                clippedPolygonp[ipoly] = 1;
-                break;
+        // 2. Find polygons with all vertices outside the plot region
+        double xmin = xp[start], xmax = xp[start], ymin = yp[start], ymax=yp[start];
+        for (int j = 1; j < 4; j++) {
+            if (xp[start + j] < xmin) xmin = xp[start + j];
+            if (yp[start + j] < ymin) ymin = yp[start + j];
+            if (xp[start + j] > xmax) xmax = xp[start + j];
+            if (yp[start + j] > ymax) ymax = yp[start + j];
+        }
+#ifdef DEBUG
+        if (count < ncount && !ISNA(xp[start])) {
+            count++;
+            Rprintf("xrange: %.10f %.10f yrange: %.10f %.10f\n", xmin, xmax, ymin, ymax);
+        }
+#endif
+        if (xmax < usrp[0] || usrp[1] < xmin || ymax < usrp[2] || usrp[3] < ymin) {
+            for (int k = 0; k < 5; k++) {
+                clippedPointp[start + k] = 1;
             }
+            clippedPolygonp[ipoly] = 1;
         }
         // 3. Find polygons with excessive x range (an error in projection)
         for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
             if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
 #ifdef DEBUG
                 if (count++ < ncount) { // FIXME: remove when working
-                    Rprintf("JUMP-- ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
+                    Rprintf("(3.) ipoly: %d, j: %d, span: %f (limit to span: %f)\n",
                             ipoly, j, fabs(xp[start+j]-xp[start+j-1]), dxPermitted);
                 }
 #endif
