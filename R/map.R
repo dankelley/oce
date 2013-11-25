@@ -537,7 +537,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
     allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
     small <- .Machine$double.eps
     if (zclip) {
-        oceDebug(debug, "using missingColour for out-of-range values\n")
+        oceDebug(debug, "using missingColor for out-of-range values\n")
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     } else {
@@ -568,12 +568,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, par('usr'),
                    NAOK=TRUE, PACKAGE="oce")
-        mc <- missingColor
         colorLookup <- function (ij) {
             if (is.na(Z[ij]))
-                return(mc)
+                return(missingColor)
             w <- which(Z[ij] < breaks * (1 + small))
-            if (length(w) && w[1] > 1) col[-1 + w[1]] else mc
+            if (length(w) && w[1] > 1) col[-1 + w[1]] else missingColor
         }
         col <- unlist(lapply(1:(ni*nj), colorLookup))
         polygon(xy$x[r$okPoint&!r$clippedPoint], xy$y[r$okPoint&!r$clippedPoint],

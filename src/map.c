@@ -7,34 +7,34 @@
 //#define DEBUG
 
 /*
-   
-
-system("R CMD SHLIB map.c") 
-dyn.load("map.so")
-D <- .Call("assemble_polygons", c(0, 1, 2), c(10, 11, 12))
-plot(D$longitude, D$latitude)
-polygon(D$longitude, D$latitude, col=rainbow(4))
 
 
-library(oce)
-library(ncdf)
-con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
-lon <- get.var.ncdf(con, "lon")
-lat <- get.var.ncdf(con, "lat")
-SST <- get.var.ncdf(con, "t_an")[,,1]
-Tlim <- c(-2, 30)
+   system("R CMD SHLIB map.c") 
+   dyn.load("map.so")
+   D <- .Call("assemble_polygons", c(0, 1, 2), c(10, 11, 12))
+   plot(D$longitude, D$latitude)
+   polygon(D$longitude, D$latitude, col=rainbow(4))
 
-system("R CMD SHLIB map.c") 
-dyn.load("map.so")
-poly <- .Call("map_assemble_polygons", lon, lat)
-drawPalette(Tlim, col=oceColorsJet)
-mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-xy <- mapproject(poly$longitude, poly$latitude)
-pal <- oceColorsJet(100)
-plot(range(xy$x, na.rm=TRUE), range(xy$y, na.rm=TRUE), type='n', asp=1, xlab="", ylab="", axes=FALSE)
-ok <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
-i<-20702+seq(-10,10); data.frame(i=i,ok=ok[i],x=xy$x[i],y=xy$y[i])
-polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=NA)
+
+   library(oce)
+   library(ncdf)
+   con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
+   lon <- get.var.ncdf(con, "lon")
+   lat <- get.var.ncdf(con, "lat")
+   SST <- get.var.ncdf(con, "t_an")[,,1]
+   Tlim <- c(-2, 30)
+
+   system("R CMD SHLIB map.c") 
+   dyn.load("map.so")
+   poly <- .Call("map_assemble_polygons", lon, lat)
+   drawPalette(Tlim, col=oceColorsJet)
+   mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
+   xy <- mapproject(poly$longitude, poly$latitude)
+   pal <- oceColorsJet(100)
+   plot(range(xy$x, na.rm=TRUE), range(xy$y, na.rm=TRUE), type='n', asp=1, xlab="", ylab="", axes=FALSE)
+   ok <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
+   i<-20702+seq(-10,10); data.frame(i=i,ok=ok[i],x=xy$x[i],y=xy$y[i])
+   polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=NA)
 
 
 
@@ -173,11 +173,13 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     int count = 0, ncount=100000; // FIXME: remove when working
     int show = 0;
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
-        int badPolygon;
-        badPolygon = 0;
         int start = 5 * ipoly;
         // Check for bad polygons, in three phases.
         // 1. Find polygons that have some NA values for vertices
+#ifdef DEBUG
+        if (ipoly < 3)
+            Rprintf("start: %d; okPointp= %d %d ...\n", start, okPointp[start], okPointp[start+1]);
+#endif
         for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
             // Check for x or y being NA
             if (ISNA(xp[start + j]) || ISNA(yp[start + j])) {
@@ -201,20 +203,20 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
             if (xp[start + j] > xmax) xmax = xp[start + j];
             if (yp[start + j] > ymax) ymax = yp[start + j];
         }
-#ifdef DEBUG
-        if (count < ncount && !ISNA(xp[start])) {
-            count++;
-            Rprintf("xrange: %.10f %.10f yrange: %.10f %.10f\n", xmin, xmax, ymin, ymax);
-        }
-#endif
         if (xmax < usrp[0] || usrp[1] < xmin || ymax < usrp[2] || usrp[3] < ymin) {
+#ifdef DEBUG
+            if (count < ncount) {
+                count++;
+                Rprintf("clipping points %d to %d\n", start, start+4);
+            }
+#endif
             for (int k = 0; k < 5; k++) {
                 clippedPointp[start + k] = 1;
             }
             clippedPolygonp[ipoly] = 1;
         }
         // 3. Find polygons with excessive x range (an error in projection)
-        for (int j = 0; j < 4; j++) { // skip 5th point which is surely NA
+        for (int j = 1; j < 4; j++) { // skip 5th point which is surely NA
             if (dxPermitted < fabs(xp[start + j] - xp[start + j - 1])) {
 #ifdef DEBUG
                 if (count++ < ncount) { // FIXME: remove when working
