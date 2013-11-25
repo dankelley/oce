@@ -44,7 +44,8 @@
         contours to plot the image.  This is ignored at present.}
 
     \item{missingColor}{a color to be used to indicate missing data, or
-        \code{NA} to skip the drawing of such regions.}
+        \code{NA} to skip the drawing of such regions (which will retain
+        whatever material has already been drawn at the regions).}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.
