@@ -49,11 +49,12 @@
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.
-        TEMPORARY NOTE: SET TO 99 TO TRY OUT THE EXPERIMENTAL METHOD
-        OF SPEEDING UP PLOTTING (FACTOR OF 60 ON THE WORLD SST
-        EXAMPLE, ON AUTHOR'S MACHINE)} 
-}
-
+        (Temporary note: setting this to 99 forces the use of a drawing method
+        that draws polygons one by one, which is possibly less error prone in
+        terms of pruning data, but is much slower than the default method.
+        This 99 option will be removed without notice, as it is really to be
+        used mainly by the developers and testers.}
+    
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,

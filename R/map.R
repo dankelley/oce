@@ -547,7 +547,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             z[z >= zlim[2]] <- zlim[2] * (1 - small)
         }
     }
-    if (debug == 99) {                 # test new method (much faster)
+    if (debug != 99) {                 # test new method (much faster)
         ## Construct polygons centred on the specified longitudes and latitudes.  Each
         ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
         ## to signal the end of the polygon.  The z values (and hence the colours)
