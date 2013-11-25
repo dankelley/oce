@@ -53,7 +53,8 @@
         that draws polygons one by one, which is possibly less error prone in
         terms of pruning data, but is much slower than the default method.
         This 99 option will be removed without notice, as it is really to be
-        used mainly by the developers and testers.}
+        used mainly by the developers and testers.)}
+}
     
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
 
