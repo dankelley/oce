@@ -463,7 +463,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
                      col, border=NA,
                      lwd=par("lwd"), lty=par("lty"),
-                     filledContour=FALSE, missingColor=NULL, debug=getOption("oceDebug"))
+                     filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bmapImage(..., ",
              " missingColor='", missingColor, "', ",
@@ -568,7 +568,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, par('usr'),
                    NAOK=TRUE, PACKAGE="oce")
-        mc <- if (!missing(missingColor)) missingColor else "white"
+        mc <- missingColor
         colorLookup <- function (ij) {
             if (is.na(Z[ij]))
                 return(mc)

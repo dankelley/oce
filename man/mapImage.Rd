@@ -9,7 +9,7 @@
 \usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE, breaks,
          col, border=NA,
          lwd=par("lwd"), lty=par("lty"),
-         filledContour=FALSE, missingColor=NULL, debug=getOption("oceDebug"))}
+         filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -44,7 +44,7 @@
         contours to plot the image.  This is ignored at present.}
 
     \item{missingColor}{a color to be used to indicate missing data, or
-        \code{NULL} to simply skip the drawing of such regions.}
+        \code{NA} to skip the drawing of such regions.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.
