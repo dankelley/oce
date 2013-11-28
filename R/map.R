@@ -286,7 +286,13 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     xy <- mapproject(longitude, latitude)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
+    DX <- usr[2] - usr[1]
     if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
+        dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
+        bad <- dx / DX > 0.5
+        if (any(bad)) { # FIXME: a kludge that may be problematic
+            xy$x[bad] <- NA
+        }
         lines(xy$x, xy$y, ...)
     }
 }
