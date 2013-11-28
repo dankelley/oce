@@ -410,7 +410,7 @@ imagep <- function(x, y, z,
             if (!is.double(z))
                 storage.mode(z) <- "double"
             plot.new()
-            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
@@ -429,7 +429,7 @@ imagep <- function(x, y, z,
         if (filledContour) {
             storage.mode(z) <- "double"
             plot.new()
-            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(xlab, side=1, line=mgp[1])
