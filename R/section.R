@@ -63,7 +63,9 @@ setMethod(f="[[",
                   for (stn in seq_along(x@data$station))
                       rval <- c(rval, x@data$station[[stn]]@data$pressure)
               } else {
-                  stop("cannot access item named \"", i, "\" in this section object")
+                  rval <- unlist(lapply(a03@data$station, function(x) x[[i]]))
+              #} else {
+              #    stop("cannot access item named \"", i, "\" in this section object")
               }
               rval
           })

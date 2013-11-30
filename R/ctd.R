@@ -58,7 +58,10 @@ setMethod(f="[[",
                   teos("gsw_ct_from_t", Sp, t, p)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  as(x, "oce")[[i, j, drop]]
+                  rval <- as(x, "oce")[[i, j, drop]]
+                  if (is.null(rval))
+                      stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
+                  rval
               }
           })
 
