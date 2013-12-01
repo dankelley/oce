@@ -2635,9 +2635,9 @@ plotProfile <- function (x,
             } else {
                 plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"))
             axis(2)
-            axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+            axis(3, col = col, col.axis = col, col.lab = col)
             box()
             if (grid) {
                 at <- par("yaxp")
@@ -2646,7 +2646,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(st, y, col = col, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
