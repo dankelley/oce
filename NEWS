@@ -1,4 +1,5 @@
 0.9-13
+- read.ctd.itp() added
 - mapImage() speeded up (60X in 1deg SST example)
 - binApply1D() and binApply2D() added
 - binMean1D() and binMean2D() added

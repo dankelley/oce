@@ -5,6 +5,7 @@
 \alias{read.ctd.woce}
 \alias{read.ctd.woce.other}
 \alias{read.ctd.odf}
+\alias{read.ctd.itf}
 
 \title{Read a CTD data file}
 
@@ -21,6 +22,8 @@ read.ctd.woce.other(file, columns=NULL, station=NULL, missing.value=-999,
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.itf(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
 \arguments{
@@ -35,7 +38,8 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
   \item{type}{if \code{NULL}, then the first line is studied, in order to
       determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird
           19} (or similar) CTD format is assumed. If \code{type="WOCE"} then a
-      WOCE-exchange file is assumed.}
+      WOCE-exchange file is assumed.  If \code{type="ITP"} then an ice-tethered
+      profiler file is assumed.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column names from the

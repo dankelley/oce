@@ -638,6 +638,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
+    if ("%ITP" == substr(line, 1, 4)) {
+        oceDebug(debug, "this is ice-tethered profile\n")
+        return("ctd/itp")
+    }
     if ("# -b" == substr(line, 1, 4)) {
         oceDebug(debug, "this is coastline\n")
         return("coastline")
@@ -703,6 +707,8 @@ read.oce <- function(file, ...)
         return(read.ctd.woce(file, processingLog=processingLog, ...))
     if (type == "ctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "ctd/itp")
+        return(read.ctd.itp(file, processingLog=processingLog, ...))
     if (type == "gpx")
         return(read.gps(file, type="gpx", processingLog=processingLog, ...))
     if (type == "mvctd/odf")
