@@ -5,7 +5,7 @@
 \alias{read.ctd.woce}
 \alias{read.ctd.woce.other}
 \alias{read.ctd.odf}
-\alias{read.ctd.itf}
+\alias{read.ctd.itp}
 
 \title{Read a CTD data file}
 
@@ -22,7 +22,7 @@ read.ctd.woce.other(file, columns=NULL, station=NULL, missing.value=-999,
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
-read.ctd.itf(file, columns=NULL, station=NULL, missing.value=-999, 
+read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
@@ -227,6 +227,10 @@ ustations <- read.ctd.woce("*.csv")o
     names of the data columns.  If anything odd happens with ODF files (e.g. if
     they cannot be plotted), the first thing to do is to reread the files with
     \code{debug=1}, to see if column names were converted properly.
+
+    Ice-tethered profile (ITF) data are available at \url{www.whoi.edu/itf};
+    note that the present version only handles data in profiler-mode, not
+    fixed-depth mode.
 
 }
 
