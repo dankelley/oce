@@ -368,26 +368,43 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ##     http://en.wikipedia.org/wiki/Shapefile#Shapefile_shape_format_.28.shp.29
     ## Shapefile for Canada:
     ## http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm
-    oceDebug(debug, "\b\bread.coastline.shapefile() {\n")
-    shapeTypeList <- c("nullshape",
-                       "point", "not used",
-                       "polyline", "not used",
-                       "polygon", "not used", "not used",
-                       "multipoint", "not used", "not used",
-                       "pointz", "not used",
-                       "polylinez", "not used",
-                       "polygonz", "not used", "not used",
-                       "multipointz", "not used", "not used",
-                       "pointm", "not used",
-                       "polylinem", "not used",
-                       "polygonm", "not used", "not used",
-                       "multipointm", "not used", "not used",
-                       "multipatch")
+    oceDebug(debug, "\b\bread.shapefile(file=\"", file, "\", ...) {\n", sep="")
+    shapeTypeList <- c("nullshape",    # 0
+                       "point",        # 1
+                       "not used",     # 2
+                       "polyline",     # 3
+                       "not used",     # 4
+                       "polygon",      # 5
+                       "not used",     # 6
+                       "not used",     # 7
+                       "multipoint",   # 8
+                       "not used",     # 9
+                       "not used",     # 10
+                       "pointz",       # 11
+                       "not used",     # 12
+                       "polylinez",    # 13
+                       "not used",     # 14
+                       "polygonz",     # 15
+                       "not used",     # 16
+                       "not used",     # 17
+                       "multipointz",  # 18
+                       "not used",     # 19
+                       "not used",     # 20
+                       "pointm",       # 21
+                       "not used",     # 22
+                       "polylinem",    # 23
+                       "not used",     # 24
+                       "polygonm",     # 25
+                       "not used",     # 26
+                       "not used",     # 27
+                       "multipointm",  # 28
+                       "not used",     # 29
+                       "not used",     # 30
+                       "multipatch")   # 31
 
     lonlim <- sort(lonlim)
     latlim <- sort(latlim)
 
-    oceDebug(debug, "\b\bread.shapefile(file=\"", file, "\", ...) {\n", sep="")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -402,7 +419,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     seek(file, 0, "end")
     fileSize <- seek(file, 0, "start")
-    oceDebug(debug, "file.size=", fileSize, "as determined from the operating system\n")
+    oceDebug(debug, "file.size:", fileSize, "as determined from the operating system\n")
     buf <- readBin(file, "raw", fileSize)
     ## main header is always 100 bytes [ESRI White paper page 3]
     header <- buf[1:100]
@@ -410,13 +427,17 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     if (fieldCode != 9994)
         stop("first four bytes of file must yield 9994 (as a big-endian integer) but yield ", fieldCode, "\n")
     fileSizeHeader <- 2*readBin(buf[25:28], "integer", n=1, size=4, endian="big") # it's in 2-byte words
-    oceDebug(debug, "fileSizeHeader=", fileSizeHeader, "as interpreted from header\n")
+    oceDebug(debug, "fileSizeHeader:", fileSizeHeader, "as interpreted from header\n")
     if (fileSizeHeader != fileSize)
         warning("file size is ", fileSize, " but the header suggests it to be ", fileSizeHeader, "; using the former")
     shapeTypeFile <- readBin(buf[33:36], "integer", n=1, size=4, endian="little")
-    oceDebug(debug, "shapeTypeFile=", shapeTypeFile, "\n")
-    if (shapeTypeFile != 5 && shapeTypeFile != 3)
-        stop("can only deal with shape-type 3 (polyline) and 5 (polygon) in this version of the software\n")
+    oceDebug(debug, "shapeTypeFile:", shapeTypeFile, "(", shapeTypeList[shapeTypeFile+1], ")\n")
+    if (shapeTypeFile != 5 && shapeTypeFile != 3 && shapeTypeFile != 15) {
+        warning("can handle shape-type 3 (", shapeTypeList[4], ") and 5 (",
+             shapeTypeList[6], "), but not ", shapeTypeFile, " (",
+            shapeTypeList[shapeTypeFile+1], ")\n")
+        return(NULL)
+    }
     if (shapeTypeFile == 3) {
         oceDebug(debug, "shapeTypeFile == 3, so assuming a depth-contour file\n")
         warning("shapefile of type 3 (polyline) requires library(foreign) to work")
@@ -441,55 +462,63 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     res <- new("coastline", fillable=shapeTypeFile==5)
     while (TRUE) {
         record <- record + 1
-        if ((o + 53) > fileSize)       # FIXME could be more clever on eof
+        if ((o + 53) > fileSize) {      # FIXME could be more clever on eof
+            oceDebug(debug, "o:", o, ", fileSize:", fileSize, " ... so finished\n")
             break
-        ## each record has an 8-byte header followed by data
+        }
+        ## each record has an 8-byte header followed by data [1 table 2] BIG endian
         recordNumber <- readBin(buf[o + 1:4], "integer", n=1, size=4, endian="big")
         recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
+        ## first part of data is shape type [1 table 3 for null, etc] LITTLE endian
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
-        if (shapeType == 0)
-            break                       # all done
-        if (shapeType != shapeTypeFile)
-            stop("record ", record, " has shape type ", shapeType, ", which does not match file value ", shapeTypeFile)
-        ##print(data.frame(0:31, shape.type.list))
-        ## minimum bounding rectangle, number of parts, number of points, parts, points
-        ## MBR is xmin ymin xmax ymax
-        mbr <- readBin(buf[o + 13:44], "double", n=4, size=8, endian="little", signed=TRUE)
-        ##oceDebug(debug, "mbr=", paste(mbr, collapse=" "), "\n")
-        ## ignore if not in focus box
-        intersectsBox <- !(mbr[1] > lonlim[2] | mbr[2] > latlim[2] | mbr[3] < lonlim[1] | mbr[4] < latlim[1])
-        ##oceDebug(debug, "intersects.box=", intersects.box, "\n")
-        numberParts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
-        numberPoints <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little")
-        oceDebug(debug, "recordNUmber:", recordNumber,
-                 ", shapeType:", shapeType,
-                 "(", shapeTypeList[1+shapeType], ")",
-                 ", numberPoints:", numberPoints,
-                 ", numberParts:", numberParts,
-                 ", intersectsBox:", intersectsBox,
-                 "\n")
-        if (intersectsBox) {
-            partOffset <- readBin(buf[o + 53+0:(-1+4*numberParts)],
-                                   "integer", n=numberParts, size=4, endian="little")
-            xy <- matrix(readBin(buf[o + 53 + 4 * numberParts + 0:(-1 + 2 * numberPoints * 8)],
-                                 "double", n=numberPoints*2, size=8), ncol=2, byrow=TRUE)
-            look <- c(1 + partOffset, numberPoints)
-            for (part in 1:numberParts) {
-                segment <- segment + 1
-                if (monitor){
+        oceDebug(debug, " recordNumber:", recordNumber, ", recordLength:", recordLength, 
+                 ", shapeType:", shapeType, " (", shapeTypeList[1+shapeType], ")\n", sep="")
+        if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
+        if (shapeType > 31) stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
+        if (shapeType == 0) { # NULL record; just skip 4 bytes (I guess; [1] table 3)
+            o <- o + 12
+        } else {
+            if (shapeType != shapeTypeFile)
+                stop("record ", record, " has shape type ", shapeType, ", which does not match file value ", shapeTypeFile)
+            ##print(data.frame(0:31, shape.type.list))
+            ## minimum bounding rectangle, number of parts, number of points, parts, points
+            ## MBR is xmin ymin xmax ymax
+            mbr <- readBin(buf[o + 13:44], "double", n=4, size=8, endian="little", signed=TRUE)
+            ##oceDebug(debug, "mbr=", paste(mbr, collapse=" "), "\n")
+            ## ignore if not in focus box
+            intersectsBox <- !(mbr[1] > lonlim[2] | mbr[2] > latlim[2] | mbr[3] < lonlim[1] | mbr[4] < latlim[1])
+            ##oceDebug(debug, "intersects.box=", intersects.box, "\n")
+            numberParts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
+            numberPoints <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little")
+            oceDebug(debug, " recordNUmber:", recordNumber,
+                     ", shapeType:", shapeType,
+                     " (", shapeTypeList[1+shapeType], ")",
+                     ", numberPoints:", numberPoints,
+                     ", numberParts:", numberParts,
+                     ", intersectsBox:", intersectsBox,
+                     "\n", sep="")
+            if (intersectsBox) {
+                partOffset <- readBin(buf[o + 53+0:(-1+4*numberParts)],
+                                      "integer", n=numberParts, size=4, endian="little")
+                xy <- matrix(readBin(buf[o + 53 + 4 * numberParts + 0:(-1 + 2 * numberPoints * 8)],
+                                     "double", n=numberPoints*2, size=8), ncol=2, byrow=TRUE)
+                look <- c(1 + partOffset, numberPoints)
+                for (part in 1:numberParts) {
                     segment <- segment + 1
-                    cat(".")
-                    if (!(segment %% 50))
-                        cat(segment, "\n")
+                    if (monitor){
+                        segment <- segment + 1
+                        cat(".")
+                        if (!(segment %% 50))
+                            cat(segment, "\n")
+                    }
+                    rows <- seq.int(look[part], -1 + look[part+1])
+                    latitude <- c(latitude, NA, xy[rows,2]) # FIXME: this is slow; can we know size at start?
+                    longitude <- c(longitude, NA, xy[rows,1])
                 }
-                rows <- seq.int(look[part], -1 + look[part+1])
-                latitude <- c(latitude, NA, xy[rows,2]) # FIXME: this is slow; can we know size at start?
-                longitude <- c(longitude, NA, xy[rows,1])
             }
+            o <- o + 53 + 4 * numberParts + 2 * numberPoints * 8 - 1
         }
-        o <- o + 53 + 4 * numberParts + 2 * numberPoints * 8 - 1
-        ##if (record == 1) browser()
-        ##if (record > 1) break
+        oceDebug(debug, "at bottom of loop, o:", o, "\n")
     }
     res@data$latitude <- latitude
     res@data$longitude <- longitude
