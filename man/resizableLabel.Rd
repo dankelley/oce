@@ -16,11 +16,13 @@ resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "u", "v", "w", "speed", "direction",
   "eastward", "northward",
   "depth", "elevation"),
-  axis=c("x", "y"))}
+  axis=c("x", "y"),
+  bracket=c('[', '('))}
 
 \arguments{
   \item{item}{code for the label.}
   \item{axis}{which axis to use.}
+  \item{bracket}{bracketing notation for units, e.g. \code{[m]} or \code{(m)}.}
 }
 
 \value{A character string or expression, in either a long or a shorter

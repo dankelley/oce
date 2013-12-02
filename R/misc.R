@@ -684,94 +684,232 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward",
-                                  "depth", "elevation"), axis=c("x", "y"))
+                                  "depth", "elevation"),
+                           axis=c("x", "y"),
+                           bracket = c("[", "("))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
+    bracket <- match.arg(bracket)
     if (item == "T") {
-        full <- expression(paste("Temperature, T [", degree, "C]"))
-        abbreviated <- expression(paste("T [", degree, "C]"))
+        if (bracket == '[') {
+            full <- expression(paste("Temperature [", degree, "C]"))
+            abbreviated <- expression(paste("T [", degree, "C]"))
+        } else {
+            full <- expression(paste("Temperature (", degree, "C)"))
+            abbreviated <- expression(paste("T (", degree, "C)"))
+        }
     } else if (item == "conservative temperature") {
-        full <- expression(paste("Conservative Temperature, ", Theta, " [", degree, "C]"))
-        abbreviated <- expression(paste(Theta, "[", degree, "C]"))
+        if (bracket == '[') {
+            full <- expression(paste("Conservative Temperature [", degree, "C]"))
+            abbreviated <- expression(paste(Theta, "[", degree, "C]"))
+        } else {
+            full <- expression(paste("Conservative Temperature (", degree, "C)"))
+            abbreviated <- expression(paste(Theta, "(", degree, "C)"))
+        }
     } else if (item == "sigmaTheta") {
-        full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
-        abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
+        if (bracket == '[') {
+            full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
+            abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
+        } else {
+            full <- expression(paste("Potential density anomaly (", kg/m^3, ")"))
+            abbreviated <- expression(paste(sigma[theta], " (", kg/m^3, ")"))
+        }
     } else if (item == "theta") {
-        full <- expression(paste("Potential Temperature [", degree, "C]"))
-        abbreviated <- expression(paste(theta, " [", degree, "C]"))
+        if (bracket == '[') {
+            full <- expression(paste("Potential Temperature [", degree, "C]"))
+            abbreviated <- expression(paste(theta, " [", degree, "C]"))
+        } else {
+            full <- expression(paste("Potential Temperature (", degree, "C)"))
+            abbreviated <- expression(paste(theta, " (", degree, "C)"))
+        }
     } else if (item == "tritium") {
-        full <- "Tritium Concentration [Tu]"
-        abbreviated <- "Tritium [Tu]"
+        if (bracket == '[') {
+            full <- "Tritium Concentration [Tu]"
+            abbreviated <- "Tritium [Tu]"
+        } else {
+            full <- "Tritium Concentration (Tu)"
+            abbreviated <- "Tritium (Tu)"
+        }
     } else if (item ==  "nitrate") {
-        full <- "Nitrate Concentration [umol/kg]"
-        abbreviated <- "NO3 [umol/kg]"
+        if (bracket == '[') {
+            full <- "Nitrate Concentration [umol/kg]"
+            abbreviated <- "NO3 [umol/kg]"
+        } else {
+            full <- "Nitrate Concentration (umol/kg)"
+            abbreviated <- "NO3 (umol/kg)"
+        }
     } else if (item ==  "nitrite") {
-        full <- "Nitrite Concentration [umol/kg]"
-        abbreviated <- "NO2 [umol/kg]"
+        if (bracket == '[') {
+            full <- "Nitrite Concentration [umol/kg]"
+            abbreviated <- "NO2 [umol/kg]"
+        } else {
+            full <- "Nitrite Concentration (umol/kg)"
+            abbreviated <- "NO2 (umol/kg)"
+        }
     } else if (item ==  "oxygen") {
-        full <- "Oxygen Concentration [ml/l]"
-        abbreviated <- "O2 [ml/l]"
+        if (bracket == '[') {
+            full <- "Oxygen Concentration [ml/l]"
+            abbreviated <- "O2 [ml/l]"
+        } else {
+            full <- "Oxygen Concentration (ml/l)"
+            abbreviated <- "O2 (ml/l)"
+        }
     } else if (item ==  "phosphate") {
-        full <- "Phosphate Concentration [umol/kg]"
-        abbreviated <- "PO4 [umol/kg]"
+        if (bracket == '[') {
+            full <- "Phosphate Concentration [umol/kg]"
+            abbreviated <- "PO4 [umol/kg]"
+        } else {
+            full <- "Phosphate Concentration (umol/kg)"
+            abbreviated <- "PO4 (umol/kg)"
+        }
     } else if (item ==  "silicate") {
-        full <- "Silicate Concentration [umol/kg]"
-        abbreviated <- "Si [umol/kg]"
+        if (bracket == '[') {
+            full <- "Silicate Concentration [umol/kg]"
+            abbreviated <- "Si [umol/kg]"
+        } else {
+            full <- "Silicate Concentration (umol/kg)"
+            abbreviated <- "Si (umol/kg)"
+        }
     } else if (item == "fluorescence") {
-        full <- expression(paste("Fluorescence"))
-        abbreviated <- full
+        if (bracket == '[') {
+            full <- expression(paste("Fluorescence"))
+            abbreviated <- full
+        } else {
+            full <- expression(paste("Fluorescence"))
+            abbreviated <- full
+        }
     } else if (item == "spice") {
-        full <- expression(paste("Spice [", kg/m^3, "]"))
-        abbreviated <- full
+        if (bracket == '[') {
+            full <- expression(paste("Spice [", kg/m^3, "]"))
+            abbreviated <- full
+        } else {
+            full <- expression(paste("Spice (", kg/m^3, ")"))
+            abbreviated <- full
+        }
     } else if (item == "S") {
         full <- "Practical Salinity"
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
-        full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
-        abbreviated <- expression(paste(S[A], " [g/kg]"))
+        if (bracket == '[') {
+            full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
+            abbreviated <- expression(paste(S[A], " [g/kg]"))
+        } else {
+            full <- expression(paste("Absolute Salinity, ", S[A], " (g/kg)"))
+            abbreviated <- expression(paste(S[A], " (g/kg)"))
+        }
     } else if (item == "p") {
-        full <- expression(paste("Pressure, ", P, " [dbar]"))
-        abbreviated <- expression(paste(P, " [dbar]"))
+        if (bracket == '[') {
+            full <- expression(paste("Pressure [dbar]"))
+            abbreviated <- expression(paste(P, " [dbar]"))
+        } else {
+            full <- expression(paste("Pressure (dbar)"))
+            abbreviated <- expression(paste(P, " (dbar)"))
+        }
     } else if (item == "z") {
-        abbreviated <- expression(paste(z, " [m]"))
-        full <- expression(paste(z, " [m]"))
+        if (bracket == '[') {
+            abbreviated <- expression(paste(z, " [m]"))
+            full <- expression(paste(z, " [m]"))
+        } else {
+            abbreviated <- expression(paste(z, " (m)"))
+            full <- expression(paste(z, " (m)"))
+        }
     } else if (item == "distance") {
-        full <- "Distance [m]"
-        abbreviated <- "Dist. [m]"
+        if (bracket == '[') {
+            full <- "Distance [m]"
+            abbreviated <- "Dist. [m]"
+        } else {
+            full <- "Distance (m)"
+            abbreviated <- "Dist. (m)"
+        }
     } else if (item == "heading") {
-        full <- "Heading [deg]"
-        abbreviated <- "Heading"
+        if (bracket == '[') {
+            full <- "Heading [deg]"
+            abbreviated <- "Heading"
+        } else {
+            full <- "Heading (deg)"
+            abbreviated <- "Heading"
+        }
     } else if (item == "pitch") {
-        full <- "Pitch [deg]"
-        abbreviated <- "Pitch"
+        if (bracket == '[') {
+            full <- "Pitch [deg]"
+            abbreviated <- "Pitch"
+        } else {
+            full <- "Pitch (deg)"
+            abbreviated <- "Pitch"
+        }
     } else if (item == "roll") {
-        full <- "Roll [deg]"
-        abbreviated <- "Roll"
+        if (bracket == '[') {
+            full <- "Roll [deg]"
+            abbreviated <- "Roll"
+        } else {
+            full <- "Roll (deg)"
+            abbreviated <- "Roll"
+        }
     } else if (item == "u") {
-        full <- "u [m/s]"
-        abbreviated <- "u [m/s]"
+        if (bracket == '[') {
+            full <- "u [m/s]"
+            abbreviated <- "u [m/s]"
+        } else {
+            full <- "u (m/s)"
+            abbreviated <- "u (m/s)"
+        }
     } else if (item == "v") {
-        full <- "v [m/s]"
-        abbreviated <- "v [m/s]"
+        if (bracket == '[') {
+            full <- "v [m/s]"
+            abbreviated <- "v [m/s]"
+        } else {
+            full <- "v (m/s)"
+            abbreviated <- "v (m/s)"
+        }
     } else if (item == "w") {
-        full <- "w [m/s]"
-        abbreviated <- "w [m/s]"
+        if (bracket == '[') {
+            full <- "w [m/s]"
+            abbreviated <- "w [m/s]"
+        } else {
+            full <- "w (m/s)"
+            abbreviated <- "w (m/s)"
+        }
     } else if (item == "eastward") {
-        full <- "Eastward wind [m/s]"
-        abbreviated <- "u [m/s]"
+        if (bracket == '[') {
+            full <- "Eastward wind [m/s]"
+            abbreviated <- "u [m/s]"
+        } else {
+            full <- "Eastward wind (m/s)"
+            abbreviated <- "u (m/s)"
+        }
     } else if (item == "northward") {
-        full <- "Northward wind [m/s]"
-        abbreviated <- "v [m/s]"
+        if (bracket == '[') {
+            full <- "Northward wind [m/s]"
+            abbreviated <- "v [m/s]"
+        } else {
+            full <- "Northward wind (m/s)"
+            abbreviated <- "v (m/s)"
+        }
     } else if (item == "depth") {
-        full <- "Depth [m]"
-        abbreviated <- "Depth [m]"
+        if (bracket == '[') {
+            full <- "Depth [m]"
+            abbreviated <- "Depth [m]"
+        } else {
+            full <- "Depth (m)"
+            abbreviated <- "Depth (m)"
+        }
     } else if (item == "elevation") {
-        full <- "Elevation [m]"
-        abbreviated <- "Elevation [m]"
+        if (bracket == '[') {
+            full <- "Elevation [m]"
+            abbreviated <- "Elevation [m]"
+        } else {
+            full <- "Elevation (m)"
+            abbreviated <- "Elevation (m)"
+        }
     } else if (item ==  "speed") {
-        full <- "Speed [m/s]"
-        abbreviated <- "Speed [m/s]"
+        if (bracket == '[') {
+            full <- "Speed [m/s]"
+            abbreviated <- "Speed [m/s]"
+        } else {
+            full <- "Speed (m/s)"
+            abbreviated <- "Speed (m/s)"
+        }
     }
     spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
