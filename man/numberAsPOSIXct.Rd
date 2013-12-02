@@ -6,7 +6,8 @@
 
 \description{Convert a numeric time to a POSIXct time}
 
-\usage{numberAsPOSIXct(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss"), tz="UTC")}
+\usage{numberAsPOSIXct(t, type=c("unix", "matlab", "gps", "argo",
+                          "sas", "spss", "yearday"), tz="UTC")}
 
 \arguments{
 
@@ -28,17 +29,20 @@
     \code{type="sas"}, have origin at the start of 1960.  SPSS times, indicated
     by \code{type="spss"}, have origin at 1582-10-14.
     
-    Note that in these cases, \code{t} is a vector.  The GPS case is different,
-    however.  For \code{type="gps"}, \code{t} is a two-column matrix, in which
-    the first column is the GPS "week" (referenced to 1999-08-22) and the
-    second column is GPS "second" (i.e. the second within the week).  }
+    Note that in these cases, \code{t} is a vector.  In the yearday and GPS
+    cases, however, \code{t} must be a two-column matrix.  For
+    \code{type="gps"}, the first column is the GPS "week" (referenced to
+    1999-08-22) and the second column is GPS "second" (i.e. the second within
+    the week).  For \code{type="yearday"}, the first column is the year, and
+    the second is the yearday (starting at 0 for the first second of January 1).}
     
 \value{A \code{\link{POSIXct}} time.}
 
 \examples{
-cat("In Unix, time=0 (seconds) means ", format(numberAsPOSIXct(0)), "\n")
-cat("In Matlab, time=1 (days) means ", format(numberAsPOSIXct(1, type="matlab")), "\n")
-cat("Canada Day 2001 was", format(numberAsPOSIXct(cbind(566,345615), type="gps")), "\n")
+numberAsPOSIXct(0)                     # unix time 0
+numberAsPOSIXct(1, type="matlab")      # matlab time 1
+numberAsPOSIXct(cbind(566,345615), type="gps") # Canada Day
+numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 }
 
 \seealso{\code{\link{numberAsHMS}}}
