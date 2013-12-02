@@ -76,8 +76,9 @@
     \item{eos}{name of equation of state to be used, either \code{"unesco"} or
         \code{"teos"}.  If the latter, then the computer must have the TEOS
         library installed; see \code{\link{teos}}.}
-    \item{xlab}{optional label for x axis}
-    \item{ylab}{optional label for y axis}
+    \item{xlab}{optional label for x axis (at top of plot).}
+    \item{ylab}{optional label for y axis.  Set to \code{""} to prevent labelling
+    the axis.}
     \item{col}{colour for a general profile.}
     \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
     \item{col.temperature}{color for temperature (see \dQuote{Details}).}

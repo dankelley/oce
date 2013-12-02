@@ -2305,11 +2305,14 @@ plotProfile <- function (x,
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
     ytype <- match.arg(ytype)
-    yname <- switch(ytype,
-                    pressure=resizableLabel("p", "y"),
-                    z=resizableLabel("z", "y"),
-                    sigmaTheta=resizableLabel("sigmaTheta", "y"))
-##    par(mgp=mgp, mar=mar)
+    if (!is.null(ylab) && ylab == "") {
+        yname <- "" 
+    } else {
+        yname <- switch(ytype,
+                        pressure=resizableLabel("p", "y"),
+                        z=resizableLabel("z", "y"),
+                        sigmaTheta=resizableLabel("sigmaTheta", "y"))
+    }
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
