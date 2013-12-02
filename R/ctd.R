@@ -2825,6 +2825,8 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         year <- d[1]
         yearday <- d[2]
         longitude <- d[3]
+        if (longitude < 0)
+            longitude <- 360 + longitude
         latitude <- d[4]
         d <- read.table(text=lines[4:nlines])
         items <- scan(text=lines[3], what="character", quiet=TRUE)
