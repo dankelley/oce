@@ -126,8 +126,8 @@ setMethod(f="subset",
                   data <- list(station=station)
                   metadata <- x@metadata
                   metadata$stationId <- stn
-                  metadata$lonitude=lon
-                  metadata$latitude=lat
+                  metadata$longitude <- lon
+                  metadata$latitude <- lat
                   rval@metadata <- metadata
                   rval@data <- data
                   rval@processingLog <- x@processingLog

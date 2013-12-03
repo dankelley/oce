@@ -37,7 +37,7 @@ SEXP geoddist_alongpath(SEXP lat, SEXP lon, SEXP a, SEXP f)
     int n = GET_LENGTH(lat);
     int nlon = GET_LENGTH(lon);
     if (n != nlon)
-        error("lengths of latitude and longitude vectors must match, but they are ", n, " and ", nlon, ", respectively");
+        error("lengths of latitude and longitude vectors must match, but they are %d and %d, respectively", n, nlon);
     double *latp = REAL(lat);
     double *lonp = REAL(lon);
     double *ap = REAL(a);
@@ -62,11 +62,11 @@ SEXP geoddist(SEXP lat1, SEXP lon1, SEXP lat2, SEXP lon2, SEXP a, SEXP f)
     if (!isReal(lon2)) error("lon2 must be a numeric (floating-point) vector");
     int n = GET_LENGTH(lat1);
     if (n != GET_LENGTH(lon1))
-        error("lengths of lat1 and lon1 must match, but they are ", n, " and ", GET_LENGTH(lon1), ", respectively");
+        error("lengths of lat1 and lon1 must match, but they are %d and %d respectively.", n, GET_LENGTH(lon1));
     if (n != GET_LENGTH(lat2))
-        error("lengths of lat1 and lat2 must match, but they are ", n, " and ", GET_LENGTH(lat2), ", respectively");
+        error("lengths of lat2 and lat2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lat2));
     if (n != GET_LENGTH(lon2))
-        error("lengths of lon2 and lon2 must match, but they are ", n, " and ", GET_LENGTH(lon2), ", respectively");
+        error("lengths of lon1 and lon2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lon2));
     double *lat1p = REAL(lat1);
     double *lon1p = REAL(lon1);
     double *lat2p = REAL(lat2);

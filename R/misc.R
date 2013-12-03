@@ -1175,6 +1175,7 @@ geodDist <- function (lon1, lat1=NULL, lon2=NULL, lat2=NULL, alongPath=FALSE)
         section <- lon1
         lat <- section[["latitude", "byStation"]]
         lon <- section[["longitude", "byStation"]]
+        browser()
         if (alongPath) {
             res <- .Call("geoddist_alongpath", lat, lon, a, f) / 1000
         } else {
