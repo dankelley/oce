@@ -5,3 +5,4 @@ src-*
 R
 src
 *.swp
+.Rproj.user
