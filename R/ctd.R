@@ -2299,8 +2299,8 @@ plotProfile <- function (x,
             lines(x, y, col = col, lwd=lwd)
         }
         oceDebug(debug, "} # plotJustProfile\n")
-    }
-    ##if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    }                                  # plotJustProfile
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
@@ -2322,6 +2322,10 @@ plotProfile <- function (x,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
                        z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
                        sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
+    if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
+        warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
+        return(invisible())
+    }
     x@data <- as.list(x@data)
     dataNames <- names(x@data)
     if (length(xtype) == length(x@data$pressure))
