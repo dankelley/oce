@@ -497,15 +497,29 @@ setMethod(f="plot",
 
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
-                      ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [m]" }
-
+                      ylab <- if ("ylab" %in% names(list(...))) {
+                          list(...)$ylab 
+                      } else {
+                          if (which.ytype==1) {
+                              resizableLabel("p")
+                          } else {
+                              if (getOption("oceUnitBracket") == "[")
+                                  "Depth [m]"
+                              else
+                                  "Depth (m)"
+                          }
+                      }
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               xlab=switch(which.xtype, "Distance [ km ]", "Along-track Distance [km]", "Longitude", "Latitude"),
+                               xlab=switch(which.xtype, 
+                                           if (getOption("oceUnitBracket") == "[") "Distance [km]" else "Distance (km)",
+                                           if (getOption("oceUnitBracket") == "[") "Along-track Distance [km]" else "Along-track Distance (km)",
+                                           "Longitude",
+                                           "Latitude"),
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)

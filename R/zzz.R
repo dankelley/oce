@@ -8,6 +8,7 @@
                   oceDrawTimeRange=TRUE,
                   oceAbbreviateTimeRange=TRUE,
                   oceTimeFormat="%Y-%m-%d %H:%M:%S",
+                  oceUnitBracket="[",
                   ##oceFlag1 = 1,
                   eos="unesco",
                   libteos=libteos,
