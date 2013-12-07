@@ -58,7 +58,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
                     df <- floor(depths / 2)
                 oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
             }
-            df <- min(df, length(unique(depths))/2)
+            df <- min(df, length(unique(pressure))/2)
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
