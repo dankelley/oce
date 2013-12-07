@@ -58,13 +58,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
                     df <- floor(depths / 2)
                 oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
             }
+            df <- min(df, length(unique(depths))/2)
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
                 sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
             } else {
                 sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
-                sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
+                sigmaThetaDeriv <- rep(NA, length(pressure))
+                sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
             }
         } else {
             stop("derivs must be 'simple', 'smoothing', or a function")

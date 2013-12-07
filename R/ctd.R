@@ -2703,7 +2703,9 @@ plotProfile <- function (x,
         if (type == 'l') lines(st, y, col = col.rho, lwd=lwd) else points(st, y, col = col.rho, pch=pch)
         par(new = TRUE)
         N2 <- swN2(x@data$pressure, st, df=df)
-        if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
+        N2[!is.finite(N2)] <- NA
+        if (missing(N2lim))
+            N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         plot(N2[look], y[look],
              xlim=N2lim, ylim=ylim,
