@@ -560,6 +560,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    line2 <- scan(file, what='char', sep="\n", skip=1, n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
@@ -654,6 +655,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
+    if ("%" == line && length(line2) && regexpr("^Observatory", line2)) {
+        oceDebug(debug, "this is observatory\n")
+        return("observatory")
+    }
     if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
@@ -731,6 +736,8 @@ read.oce <- function(file, ...)
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
+    if (type == "observatory")
+        return(read.observatory(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 
