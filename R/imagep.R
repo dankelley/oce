@@ -396,6 +396,8 @@ imagep <- function(x, y, z,
                     drawTriangles=drawTriangles,
                     mai=mai.palette, debug=debug-1)
     }
+    z[z < zlim[1]] <- zlim[1]
+    z[z > zlim[2]] <- zlim[2]
 
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
