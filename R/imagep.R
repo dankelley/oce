@@ -396,12 +396,15 @@ imagep <- function(x, y, z,
                     drawTriangles=drawTriangles,
                     mai=mai.palette, debug=debug-1)
     }
-    z[z < zlim[1]] <- zlim[1]
-    z[z > zlim[2]] <- zlim[2]
 
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+
+    ## trim image to limits, so endpoint colours will indicate outliers
+    z[z < zlim[1]] <- zlim[1]
+    z[z > zlim[2]] <- zlim[2]
+
     if (flipy) {
         ## nc <- ncol(z)
         ## z[, seq.int(nc, 1L)] <- z[, seq.int(1L, nc)]
