@@ -5,7 +5,7 @@
 
 \title{Read observatory data file}
 
-\description{Read observatory data file, e.g. produces by VENUS}
+\description{Read observatory data file, e.g. produced by VENUS}
 
 \usage{read.observatory(file, type=c("ctd"),
                 debug=getOption("oceDebug"), processingLog, ...)
