@@ -356,16 +356,21 @@ imagep <- function(x, y, z,
             }
             breaksOrig <- breaks
         } else {
-            if (missing(col))
+            ## zlim given, but breaks not given
+            if (missing(col)) {
                 breaks <- c(zlim[1], pretty(zlim), zlim[2])
-            else
-                breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+                oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+            } else {
+                breaks <- seq(zlim[1], zlim[2],
+                              length.out=if(is.function(col))128 else 1+length(col))
+                oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+            }
             breaksOrig <- breaks
-            ##cat('range(z):', zrange, '\n')
-            ##cat('ORIG  range(breaks):', range(breaks), '\n')
-            breaks[1] <- min(zrange[1], breaks[1])
-            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
-            ##cat('later range(breaks):', range(breaks), '\n')
+            oceDebug(debug, 'range(z):', zrange, '\n')
+            oceDebug(debug, 'ORIG  range(breaks):', range(breaks), '\n')
+            breaks[1] <- min(max(zlim[1], zrange[1]), breaks[1])
+            breaks[length(breaks)] <- max(breaks[length(breaks)], min(zlim[2], zrange[2]))
+            oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
         }
     } else {
         breaksOrig <- breaks
