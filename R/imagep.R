@@ -104,7 +104,7 @@ drawPalette <- function(zlim, zlab="", breaks, col,
                 contours <- breaks
             } else {
                 if (is.function(col)) {
-                    breaks <- seq(zlim[1], zlim[2], length.out=256) # smooth image colorscale
+                    breaks <- seq(zlim[1], zlim[2], length.out=128) # smooth image colorscale
                     contours <- pretty(zlim)
                 } else {
                     breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
@@ -345,10 +345,11 @@ imagep <- function(x, y, z,
     par(mgp=mgp, mar=mar, cex=cex)
     breaksGiven <- !missing(breaks)
     if (!breaksGiven) {
+        nbreaks <- 128                 # smooth image colorscale
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
             if (missing(col)) {
-                breaks <- pretty(zrange, n=10)
+                breaks <- pretty(zrange, n=nbreaks)
                 if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
                 if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
             } else {
@@ -358,7 +359,7 @@ imagep <- function(x, y, z,
         } else {
             ## zlim given, but breaks not given
             if (missing(col)) {
-                breaks <- c(zlim[1], pretty(zlim), zlim[2])
+                breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
                 oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
             } else {
                 breaks <- seq(zlim[1], zlim[2],
