@@ -385,7 +385,14 @@ imagep <- function(x, y, z,
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
     } else if (drawPalette) {
-        zlim <- if(missing(zlim)) range(z, na.rm=TRUE) else zlim
+        if(missing(zlim)) {
+            ## use range of breaks preferably; otherwise use range z
+            if (missing(breaks)) {
+                zlim <- range(z, na.rm=TRUE)
+            } else {
+                zlim <- range(breaks, na.rm=TRUE)
+            }
+        }
         drawTriangles <- rep(drawTriangles, length.out=2)
         drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
