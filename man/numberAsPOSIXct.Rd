@@ -34,7 +34,8 @@
     \code{type="gps"}, the first column is the GPS "week" (referenced to
     1999-08-22) and the second column is GPS "second" (i.e. the second within
     the week).  For \code{type="yearday"}, the first column is the year, and
-    the second is the yearday (starting at 0 for the first second of January 1).}
+    the second is the yearday (starting at 1 for the first second of January 1,
+    to match the convention used by Sea-Bird CTD software).}
     
 \value{A \code{\link{POSIXct}} time.}
 

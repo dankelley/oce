@@ -114,7 +114,7 @@ setMethod(f="plot",
                   par(mar=mar)
               par(mgp=mgp)
               if (add) {
-                  if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
+                  if ((is.logical(fill) && fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                       polygon(longitude, latitude, col=fill, ...)
                       if (axes)
                           box()                      # clean up edges
@@ -260,13 +260,13 @@ setMethod(f="plot",
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
                       yscale <- 180 / (yaxp[2] - yaxp[1])
-                      if (!is.null(fill) && ("fillable" %in% names(x@metadata)) && x[["fillable"]]) {
+                      if ((is.logical(fill) && fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                           polygon(x[["longitude"]], x[["latitude"]], col=fill, ...)
                       } else {
                           lines(x[["longitude"]], x[["latitude"]], ...)
                       }
                   } else {
-                      if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
+                      if ((is.logical(fill) && fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                           polygon(longitude, latitude, col=fill, ...)
                           if (axes)
                               rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
@@ -438,12 +438,15 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
             shapeTypeList[shapeTypeFile+1], ")\n")
         return(NULL)
     }
-    if (shapeTypeFile == 3) {
+    if (3 == shapeTypeFile) {
         oceDebug(debug, "shapeTypeFile == 3, so assuming a depth-contour file\n")
-        warning("shapefile of type 3 (polyline) requires library(foreign) to work")
         dbfName <- paste(gsub(".shp$", "", filename), ".dbf", sep="")
-        oceDebug(debug, "reading DBF file '", dbfName, "'\n", sep="")
-        depths <- foreign::read.dbf(dbfName)[[1]]
+        oceDebug(debug, " reading DBF file '", dbfName, "'\n", sep="")
+        if (require("foreign")) {
+            depths <- foreign::read.dbf(dbfName)[[1]]
+        } else {
+            stop("cannot read shapeFile element of type 3 without the 'foreign' package being installed")
+        }
     }
     xmin <- readBin(buf[37+0:7], "double", n=1, size=8, endian="little")
     ymin <- readBin(buf[45+0:7], "double", n=1, size=8, endian="little")
@@ -471,8 +474,6 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
         ## first part of data is shape type [1 table 3 for null, etc] LITTLE endian
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
-        oceDebug(debug, " recordNumber:", recordNumber, ", recordLength:", recordLength, 
-                 ", shapeType:", shapeType, " (", shapeTypeList[1+shapeType], ")\n", sep="")
         if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
         if (shapeType > 31) stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
         if (shapeType == 0) { # NULL record; just skip 4 bytes (I guess; [1] table 3)
@@ -480,14 +481,11 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         } else {
             if (shapeType != shapeTypeFile)
                 stop("record ", record, " has shape type ", shapeType, ", which does not match file value ", shapeTypeFile)
-            ##print(data.frame(0:31, shape.type.list))
             ## minimum bounding rectangle, number of parts, number of points, parts, points
             ## MBR is xmin ymin xmax ymax
             mbr <- readBin(buf[o + 13:44], "double", n=4, size=8, endian="little", signed=TRUE)
-            ##oceDebug(debug, "mbr=", paste(mbr, collapse=" "), "\n")
             ## ignore if not in focus box
             intersectsBox <- !(mbr[1] > lonlim[2] | mbr[2] > latlim[2] | mbr[3] < lonlim[1] | mbr[4] < latlim[1])
-            ##oceDebug(debug, "intersects.box=", intersects.box, "\n")
             numberParts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
             numberPoints <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little")
             oceDebug(debug, " recordNUmber:", recordNumber,
@@ -518,7 +516,6 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
             }
             o <- o + 53 + 4 * numberParts + 2 * numberPoints * 8 - 1
         }
-        oceDebug(debug, "at bottom of loop, o:", o, "\n")
     }
     res@data$latitude <- latitude
     res@data$longitude <- longitude
