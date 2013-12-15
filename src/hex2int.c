@@ -63,7 +63,7 @@ SEXP hex2int(SEXP C)
   int *resp = INTEGER_POINTER(res);
   int resi = 0;
   for (int i = 0; i < n; i++) {
-      Rprintf("i: %d\n", i);
+      //Rprintf("i: %d\n", i);
       Cp = CHAR(STRING_ELT(C, i));
       //Rprintf("(%s) len %d\n", Cp, nchar);
       for (int c = 0; c < nchar; c+=2) {
