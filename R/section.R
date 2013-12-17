@@ -497,7 +497,7 @@ setMethod(f="plot",
                           stop("this section does not contain a variable named '", variable, "'")
                       }
 
-                      if (drawPoints) {
+                      if (drawPoints || ztype == "image") {
                           if (is.null(zbreaks)) {
                               zbreaks <- pretty(x[[variable]], 128)
                           }
@@ -663,6 +663,8 @@ setMethod(f="plot",
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == 'image') {
+                                      zz[zz < zrange[1]] <- zrange[1]
+                                      zz[zz > zrange[2]] <- zrange[2]
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
@@ -677,7 +679,9 @@ setMethod(f="plot",
                                           col=col,
                                           xaxs="i", yaxs="i",
                                           ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < zrange[1]] <- zrange[1]
+                                      zz[zz > zrange[2]] <- zrange[2]
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
@@ -695,10 +699,12 @@ setMethod(f="plot",
                                               col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < zrange[1]] <- zrange[1]
+                                      zz[zz > zrange[2]] <- zrange[2]
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      ##levels=seq(zrange[1], zrange[2], length.out=100),
+                                                      levels=zbreaks, col=zcol)
                                   } else if (ztype == "points") {
                                       ## nothing to do now
                                   } else {

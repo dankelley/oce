@@ -176,6 +176,7 @@ plot(a03, which="salinity", ztype="points", pch=20, cex=1.5)
 GS <- subset(a03, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 plot(GSg, which=c(1,99), map.ylim=c(34,42))
+plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
