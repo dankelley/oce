@@ -325,7 +325,7 @@ setMethod(f="plot",
                               eos=getOption("eos", default='unesco'),
                               at=NULL,
                               labels=TRUE,
-                              grid = FALSE,
+                              grid=FALSE,
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
@@ -334,7 +334,8 @@ setMethod(f="plot",
                               map.xlim=NULL, map.ylim=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
-                              ztype=c("contour", "image"),
+                              ztype=c("contour", "image", "points"),
+                              zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
@@ -349,9 +350,11 @@ setMethod(f="plot",
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
+              drawPoints <- ztype == "points"
               coastline <- match.arg(coastline)
               legend.loc <- match.arg(legend.loc)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n", sep="")
+              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ztype=\"",
+                       ztype, "\", ...) {\n", sep="")
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
               haveData <- unlist(lapply(x@data$station, function(stn) 0 < length(stn[['pressure']])))
               x@data$station <- x@data$station[haveData]
@@ -365,7 +368,8 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
-                                         ztype=c("contour", "image"),
+                                         zbreaks=NULL, zcol=NULL,
+                                         ztype=c("contour", "image", "points"),
                                          legend=TRUE,
                                          debug=0,
                                          col=par("col"),
@@ -373,6 +377,7 @@ setMethod(f="plot",
               {
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
                   ztype <- match.arg(ztype)
+                  drawPoints <- "points" == ztype
 
                   if (variable == "map") {
                       lat <- array(NA, numStations)
@@ -486,10 +491,24 @@ setMethod(f="plot",
                           ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                           text(xlab, ylab, x@metadata$stationId[numStations])
                       }
-                 } else {                        # not a map
-                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient" && variable != "data") {
+                  } else {                        
+                      ## not a map
+                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "data") {
                           stop("this section does not contain a variable named '", variable, "'")
                       }
+
+                      if (drawPoints) {
+                          if (is.null(zbreaks)) {
+                              zbreaks <- pretty(x[[variable]], 128)
+                          }
+                          nbreaks <- length(zbreaks)
+                          if (is.null(zcol)) 
+                              zcol <- oceColorsJet(nbreaks - 1)
+                          zlim <- range(zbreaks)
+                          drawPalette(zlim=range(zbreaks), zlab=variable, breaks=zbreaks, col=zcol)
+                      }
+
+
                       ## FIXME: contours don't get to plot edges
                       xxrange <- range(xx, na.rm=TRUE)
                       yyrange <- range(yy, na.rm=TRUE)
@@ -543,25 +562,32 @@ setMethod(f="plot",
                       usr <- par("usr")
                       graph.bottom <- usr[3]
                       waterDepth <- NULL
+                      ## For ztype == "points", plot the points.  Otherwise, collect them in zz
+                      ## for the contour or image plot.
                       for (i in 1:numStations) {
-                          if (variable == "salinity gradient") {
-                              dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
-                                          / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
-                              zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
-                          } else if (variable != "data") {
-                              if (eos == "teos") {
-                                  if (variable == "salinity") {
-                                      zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
-                                  } else if (variable == "temperature") {
-                                      zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
-                                  } else {
-                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
-                                  }
+                          if (variable != "data") {
+                              if (drawPoints) {
+                                  p <- x@data$station[[stationIndices[i]]]@data$pressure
+                                  if (eos == "teos" && variable == "temperature")
+                                      v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
+                                  else if (eos == "teos" && variable == "salinity")
+                                      v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
+                                  else
+                                      v <- x@data$station[[stationIndices[i]]]@data[[variable]]
+                                  points(rep(xx[i], length(p)), -p,
+                                         pch=pch, cex=cex,
+                                         col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
-                                  zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                                  if (eos == "teos" && variable == "temperature")
+                                      zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
+                                  else if (eos == "teos" && variable == "salinity")
+                                      zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                  else
+                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
                               }
                           }
-                          if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
+                          if (grid && !drawPoints)
+                              points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                           temp <- x@data$station[[stationIndices[i]]]@data$temperature
                           len <- length(temp)
                           if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
@@ -624,7 +650,7 @@ setMethod(f="plot",
                                   points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               }
                           }
-                      } else {
+                      } else if (!drawPoints) {
                           zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
@@ -673,6 +699,8 @@ setMethod(f="plot",
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=seq(zrange[1], zrange[2], length.out=100),
                                                       col=oceColorsJet(100))
+                                  } else if (ztype == "points") {
+                                      ## nothing to do now
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [3]")
                                   }
@@ -693,24 +721,24 @@ setMethod(f="plot",
                                   }
                               }
                           }
-                          if (is.character(showBottom) || showBottom) {
-                              type <- "polygon"
-                              if (is.character(showBottom))
-                                  type <- showBottom
-                              if (length(bottom.x) == length(bottom.y)) {
-                                  bottom <- par('usr')[3]
-                                  if (type == "polygon") {
-                                      polygon(bottom.x, bottom.y, col="lightgray")
-                                  } else if (type == "lines") {
-                                      for (s in seq_along(bottom.x))
-                                          lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
-                                  } else if (type == "points") {
-                                      for (s in seq_along(bottom.x))
-                                          points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
-                                  }
+                      }
+                      if (is.character(showBottom) || showBottom) {
+                          type <- "polygon"
+                          if (is.character(showBottom))
+                              type <- showBottom
+                          if (length(bottom.x) == length(bottom.y)) {
+                              bottom <- par('usr')[3]
+                              if (type == "polygon") {
+                                  polygon(bottom.x, bottom.y, col="lightgray")
+                              } else if (type == "lines") {
+                                  for (s in seq_along(bottom.x))
+                                      lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                              } else if (type == "points") {
+                                  for (s in seq_along(bottom.x))
+                                      points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
                               }
-                              box()
                           }
+                          box()
                       }
                       ##axis(1, pretty(xxOrig))
                       axis(1)
@@ -753,8 +781,9 @@ setMethod(f="plot",
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[stationIndices[ix]]]
                       thisPressure <- thisStation[["pressure"]]
-                      if (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
-                          stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.", call.=FALSE)
+                      if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
+                          stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
+                      }
                   }
               }
               zz <- matrix(nrow=numStations, ncol=num.depths)
@@ -792,15 +821,17 @@ setMethod(f="plot",
 
               ## Grid is regular (so need only first station) unless which=="data"
               if (which.ytype == 1) {
-                  if (which[1] == "data") # FIXME: why checking just first?
+                  if (which[1] == "data" || ztype == "points") { # FIXME: why checking just first which[] value?
                       yy <- c(0, -max(x[["pressure"]]))
-                  else
+                  } else {
                       yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+                  }
               } else if (which.ytype == 2) {
-                  if (which[1] == "data") # FIXME: why checking just first?
+                  if (which[1] == "data" || ztype == "points") { # FIXME: why checking just first which[] value?
                       yy <- c(-max(x[["pressure"]]), 0)
-                  else
+                  } else {
                       yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                  }
               } else {
                   stop("unknown ytype")
               }
@@ -844,68 +875,65 @@ setMethod(f="plot",
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate", "nitrate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite", "nitrite",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen", "oxygen",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate", "phosphate",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate", "silicate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col,
-                                         debug=debug-1, ...) 
+                                         col=col, debug=debug-1, ...) 
                       }
                   } else {
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate",     "nitrate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite",     "nitrite",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen",      "oxygen",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate",   "phosphate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate",    "silicate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       }
                   }
                   if (which[w] == 20)

@@ -24,7 +24,8 @@
      map.ylim=NULL,
      xtype=c("distance", "track", "longitude", "latitude"),
      ytype=c("depth", "pressure"),
-     ztype=c('contour', 'image'),
+     ztype=c("contour", "image", "points"),
+     zbreaks=NULL, zcol=NULL,
      legend.loc="bottomright",
      adorn=NULL,
      showStations=FALSE,
@@ -88,8 +89,17 @@
         \code{"pressure"} for pressure (in dbar, with zero at the surface)
         or \code{"depth"} for depth (in m below the surface, calculated
         from pressure with \code{\link{swDepth}}).}
-    \item{ztype}{string indicating whether to use contours or an image.}
+
+    \item{ztype}{string indicating whether to use contours, an image, or
+        points.  In the first two cases, the data must be gridded, with
+        identical pressures at each station.}
+    
+    \item{zbreaks, zcol}{breaks and colours to be used if
+        \code{ztype="points"}.  If not provided, a reasonable default is
+        chosen.}
+
     \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number of
         panels, then the strings are applied to the appropriate panels, as
@@ -158,8 +168,11 @@ library(oce)
 data(section)
 plot(section)
 
-## Gulf Stream
+## AO3 section
 data(a03)
+plot(a03, which="salinity", ztype="points", pch=20, cex=1.5) 
+
+## Gulf Stream
 GS <- subset(a03, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 plot(GSg, which=c(1,99), map.ylim=c(34,42))
