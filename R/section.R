@@ -662,12 +662,11 @@ setMethod(f="plot",
                                               col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
-                                  } else if (ztype == 'image') {
-                                      zz[zz < zrange[1]] <- zrange[1]
-                                      zz[zz > zrange[2]] <- zrange[2]
+                                  } else if (ztype == "image") {
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [1]")
                                   }
@@ -680,11 +679,10 @@ setMethod(f="plot",
                                           xaxs="i", yaxs="i",
                                           ...)
                                   } else if (ztype == "image") {
-                                      zz[zz < zrange[1]] <- zrange[1]
-                                      zz[zz > zrange[2]] <- zrange[2]
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [2]")
                                   }
@@ -700,10 +698,9 @@ setMethod(f="plot",
                                               xaxs="i", yaxs="i",
                                               ...)
                                   } else if (ztype == "image") {
-                                      zz[zz < zrange[1]] <- zrange[1]
-                                      zz[zz > zrange[2]] <- zrange[2]
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      ##levels=seq(zrange[1], zrange[2], length.out=100),
                                                       levels=zbreaks, col=zcol)
                                   } else if (ztype == "points") {
                                       ## nothing to do now
@@ -718,10 +715,11 @@ setMethod(f="plot",
                                               col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [4]")
                                   }
