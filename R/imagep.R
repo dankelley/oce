@@ -376,7 +376,7 @@ imagep <- function(x, y, z,
     } else {
         breaksOrig <- breaks
         if (1 == length(breaks)) {
-            breaks <- pretty(z, n=breaks)
+            breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
         }
     }
     if (missing(col))
