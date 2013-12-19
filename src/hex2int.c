@@ -68,8 +68,7 @@ SEXP hex2int(SEXP C)
       //Rprintf("(%s) len %d\n", Cp, nchar);
       for (int c = 0; c < nchar; c+=2) {
           int I = 16 * char2int(Cp[c]) + char2int(Cp[c+1]);
-          if (i < 2)
-              Rprintf("  [%c %c | %d]\n", Cp[c], Cp[c+1], I); //int)Cp[c]);
+          //if (i < 2) Rprintf("  [%c %c | %d]\n", Cp[c], Cp[c+1], I); //int)Cp[c]);
           resp[resi++] = I;
       }
       //Rprintf("\n");
