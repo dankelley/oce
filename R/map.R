@@ -232,7 +232,6 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgr
         bad <- d > dc
         x[bad] <- NA                   # FIXME: add, don't replace
         y[bad] <- NA                   # FIXME: add, don't replace
-        lty <- "solid"
         if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
             lines(x, y, lty=lty, lwd=lwd, col=col, ...)
         }
