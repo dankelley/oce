@@ -9,9 +9,8 @@
 \usage{mapMeridians(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgray', \dots)}
 
 \arguments{
-    \item{latitude}{either a boolean indicating whether to draw a meridian grid, or
-        a single number to indicate the increment in meridian latitudes, or a
-        vector of latitudes at which to draw meridians.}
+    \item{latitude}{either a boolean indicating whether to draw a meridian
+        grid, or a vector of latitudes at which to draw meridians.}
 
     \item{lty}{line type}
 

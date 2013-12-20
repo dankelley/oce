@@ -9,9 +9,9 @@
 \usage{mapZones(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', \dots)}
 
 \arguments{
-    \item{longitude}{either a boolean indicating whether to draw a zonal grid, or a
-        single number to indicate the increment in zone longitudes, or a vector 
-        of longitudes at which to draw zones.}
+
+    \item{longitude}{either a boolean indicating whether to draw a zonal grid,
+        or a vector of longitudes at which to draw zones.}
 
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}

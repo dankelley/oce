@@ -117,8 +117,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
-    mapMeridians(grid[2])
-    mapZones(grid[1], polarCircle=polarCircle)
+    if (grid[2])
+        mapMeridians(seq(-90, 90, grid[2]))
+    if (grid[1])
+        mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
@@ -203,10 +205,8 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgr
     if (is.logical(latitude)) {
         if (!latitude)
             return()
-        latitude <- 15
+        latitude <- seq(-90, 90, 15)
     }
-    if (length(latitude) == 1)
-        latitude <- seq(-90, 90, latitude)
     usr <- par('usr')
     n <- 360                           # number of points on line
     for (l in latitude) {
@@ -246,11 +246,8 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     if (is.logical(longitude)) {
         if (!longitude)
             return()
-        longitude <- 15
+        longitude <- seq(-180, 180, 15)
     }
-    if (length(longitude) == 1)
-        ##lon <- rep(seq(-180, 180, lon), each=360/lon)
-        longitude <- seq(-180, 180, longitude)
     if (polarCircle < 0 || polarCircle > 90)
         polarCircle <- 0
     usr <- par('usr')
