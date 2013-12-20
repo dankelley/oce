@@ -7,7 +7,7 @@
 \description{This provides something analagous to \code{\link{contour}}, but
     with the ability to flip x and y.}
 
-\usage{oceContour(x, y, z, revx=FALSE, revy=FALSE,
+\usage{oceContour(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
 debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -19,6 +19,8 @@ debug=getOption("oceDebug"), \dots)}
       the x axis are drawn}
   \item{revy}{set to \code{TRUE} to reverse the order in which the labels on
       the y axis are drawn}
+  \item{add}{logical value indicating whether the contours should be
+      added to a pre-existing plot.}
   \item{debug}{a flag that turns on debugging; set to 1 to information 
       about the processing.}
   \item{\dots}{optional arguments passed to plotting functions.}
