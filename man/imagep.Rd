@@ -74,7 +74,7 @@
     \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
         plot types that call that function.  (See \code{\link{strptime}} for the
         format used.)}
-    \item{drawTimeRange}{boolean, only used if the \code{x} axis is a
+    \item{drawTimeRange}{logical, only used if the \code{x} axis is a
         time.  If \code{TRUE}, then an indication of the time range of the
         data (not the axis) is indicated at the top-left margin of the
         graph.  This is useful because the labels on time axes only indicate

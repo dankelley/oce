@@ -304,7 +304,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       xlim=if(missing(xlim)) range(x) else xlim,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       tformat=tformat,
-                                      debug=debug-1)#, ...)
+                                      debug=debug-1)
         }
         if (grid) {
             lwd <- par("lwd")
@@ -1315,7 +1315,9 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     oceDebug(debug, "\b\b} # drawDirectionField\n")
 }
 
-oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE, debug=getOption("oceDebug"), ...)
+oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+                       tformat, drawTimeRange=getOption("oceDrawTimeRange"),
+                       debug=getOption("oceDebug"), ...)
 {
     dots <- list(...)
     dotsNames <- names(dots)
@@ -1341,6 +1343,7 @@ oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE, debug=getOpti
         x <- x$x
     }
     zdim <- dim(z)
+
 
     ## store local values for the tricky cases of reversing axes etc
     xx <- x
@@ -1371,10 +1374,26 @@ oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE, debug=getOpti
         yaxp <- par('yaxp')
         yat <- seq(yaxp[1], yaxp[2], length.out=yaxp[3])
         ylabels <- format(yat)
+        xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
+
         if (revx) {
-            Axis(xx, side=1, at=xat, labels=rev(xlabels))
+            if (xIsTime) {
+                oce.axis.POSIXct(side=1, x=x,
+                                 drawTimeRange=drawTimeRange,
+                                 #mar=mar, mgp=mgp, 
+                                 tformat=tformat, debug=debug-1)
+            } else {
+                Axis(xx, side=1, at=xat, labels=rev(xlabels))
+            }
         } else {
-            Axis(xx, side=1)
+            if (xIsTime) {
+                oce.axis.POSIXct(side=1, x=x,
+                                 drawTimeRange=drawTimeRange,
+                                 #mar=mar, mgp=mgp,
+                                 tformat=tformat, debug=debug-1)
+            } else {
+                Axis(xx, side=1)
+            }
         }
         if (revy) {
             Axis(yy, side=2, at=yat, labels=rev(ylabels))

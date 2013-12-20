@@ -293,7 +293,7 @@ imagep <- function(x, y, z,
     }
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
     oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
-    x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
+    xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
@@ -423,7 +423,7 @@ imagep <- function(x, y, z,
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     }
-    if (x.is.time) {
+    if (xIsTime) {
         if (filledContour) {
             if (!is.double(z))
                 storage.mode(z) <- "double"
