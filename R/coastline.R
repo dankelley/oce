@@ -114,7 +114,7 @@ setMethod(f="plot",
                   par(mar=mar)
               par(mgp=mgp)
               if (add) {
-                  if ((is.logical(fill) && fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                  if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                       polygon(longitude, latitude, col=fill, ...)
                       if (axes)
                           box()                      # clean up edges
@@ -260,13 +260,13 @@ setMethod(f="plot",
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
                       yscale <- 180 / (yaxp[2] - yaxp[1])
-                      if ((is.logical(fill) && fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                      if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                           polygon(x[["longitude"]], x[["latitude"]], col=fill, ...)
                       } else {
                           lines(x[["longitude"]], x[["latitude"]], ...)
                       }
                   } else {
-                      if ((is.logical(fill) && fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                      if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                           polygon(longitude, latitude, col=fill, ...)
                           if (axes)
                               rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
