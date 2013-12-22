@@ -12,6 +12,40 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="ctd",
+          definition=function(object, ...) {
+              cat("CTD Summary\n-----------\n\n")
+              showMetadataItem(object, "type", "Instrument: ")
+              showMetadataItem(object, "model", "Instrument model:  ")
+              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
+              showMetadataItem(object, "filename", "File source:         ")
+              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
+              showMetadataItem(object, "institute", "Institute:      ")
+              showMetadataItem(object, "scientist", "Chief scientist:      ")
+              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
+              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",  "Cruise:              ")
+              showMetadataItem(object, "ship",    "Vessel:              ")
+              showMetadataItem(object, "station", "Station:             ")
+              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                               object@metadata$longitude,
+                                                               digits=5), "\n")
+              showMetadataItem(object, "waterDepth", "Water depth: ")
+              showMetadataItem(object, "levels", "Number of levels: ")
+              cat("* Statistics of subsample::\n")
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata, ncol=3)
+              for (i in 1:ndata)
+                  threes[i,] <- threenum(object@data[[i]])
+              rownames(threes) <- paste("   ", names(object@data))
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
 setMethod(f="[[",
           signature="ctd",
           definition=function(x, i, j, drop) {
@@ -2010,39 +2044,6 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     oceDebug(debug, "} # read.ctd.odf()\n")
     res
 }
-
-summary.ctd <- function(object, ...)
-{
-    cat("CTD Summary\n-----------\n\n")
-    showMetadataItem(object, "type", "Instrument: ")
-    showMetadataItem(object, "model", "Instrument model:  ")
-    showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-    showMetadataItem(object, "filename", "File source:         ")
-    showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-    showMetadataItem(object, "institute", "Institute:      ")
-    showMetadataItem(object, "scientist", "Chief scientist:      ")
-    showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-    showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
-    showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-    showMetadataItem(object, "cruise",  "Cruise:              ")
-    showMetadataItem(object, "ship",    "Vessel:              ")
-    showMetadataItem(object, "station", "Station:             ")
-    cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                     object@metadata$longitude,
-                                                     digits=5), "\n")
-    showMetadataItem(object, "waterDepth", "Water depth: ")
-    showMetadataItem(object, "levels", "Number of levels: ")
-    cat("* Statistics of subsample::\n")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata, ncol=3)
-    for (i in 1:ndata)
-        threes[i,] <- threenum(object@data[[i]])
-    rownames(threes) <- paste("   ", names(object@data))
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes, indent='  ')
-    processingLogShow(object)
-    invisible()
-} 
 
 
 plotTS <- function (x,

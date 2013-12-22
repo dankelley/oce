@@ -1,14 +1,14 @@
 \name{summary.ctd}
 
 \alias{summary.ctd}
+\alias{summary,ctd,missing-method}
+\alias{summary,ctd-method}
 
 \title{Summarize a CTD object}
 
 \description{Summarizes some of the data in a \code{ctd} object.}
 
-\usage{
-\method{summary}{ctd}(object, \dots)
-}
+\usage{\S4method{summary}{ctd}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"ctd"}, usually, a result of a
