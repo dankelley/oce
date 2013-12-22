@@ -6,6 +6,52 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="tidem",
+          definition=function(object, ...) {
+              n <- length(object[["p"]])
+              ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
+              haveP <- any(!is.na(object@data$p))
+              if (missing(constituent)) {
+                  fit <- data.frame(Const=object@data$const[ok],
+                                    Name=object@data$name[ok],
+                                    Freq=object@data$freq[ok],
+                                    Amplitude=object@data$amplitude[ok],
+                                    Phase=object@data$phase[ok],
+                                    p=object@data$p[ok])
+              } else {
+                  i <- which(object@data$name==constituent)
+                  if (length(i) == 0)
+                      stop("there is no such constituent '", constituent, "'")
+                  fit <- data.frame(Const=object@data$const[i],
+                                    Name=object@data$name[i],
+                                    Freq=object@data$freq[i],
+                                    Amplitude=object@data$amplitude[i],
+                                    Phase=object@data$phase[i],
+                                    p=p)
+              }
+              cat("tidem summary\n-------------\n")
+              cat("\nCall:\n")
+              cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
+              cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
+              cat("\nFitted model:\n")
+              f <- fit[3:6]
+              rownames(f) <- as.character(fit[,2])
+              digits <- 3
+              if (haveP) {
+                  printCoefmat(f, digits=digits,
+                               signif.stars=getOption("show.signif.stars"),
+                               signif.legend=TRUE,
+                               P.values=TRUE, has.Pvalue=TRUE, ...)
+              } else {
+                  printCoefmat(f[,-4], digits=digits)
+              }
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="tidem",
           definition=function(x, i, j, drop) {
@@ -541,48 +587,6 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     rval
 }
 
-summary.tidem <- function(object, p, constituent, ...)
-{
-    n <- length(object[["p"]])
-    ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
-    haveP <- any(!is.na(object@data$p))
-    if (missing(constituent)) {
-        fit <- data.frame(Const=object@data$const[ok],
-                          Name=object@data$name[ok],
-                          Freq=object@data$freq[ok],
-                          Amplitude=object@data$amplitude[ok],
-                          Phase=object@data$phase[ok],
-                          p=object@data$p[ok])
-    } else {
-        i <- which(object@data$name==constituent)
-        if (length(i) == 0)
-            stop("there is no such constituent '", constituent, "'")
-        fit <- data.frame(Const=object@data$const[i],
-                          Name=object@data$name[i],
-                          Freq=object@data$freq[i],
-                          Amplitude=object@data$amplitude[i],
-                          Phase=object@data$phase[i],
-                          p=p)
-    }
-    cat("tidem summary\n-------------\n")
-    cat("\nCall:\n")
-    cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
-    cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
-    cat("\nFitted model:\n")
-    f <- fit[3:6]
-    rownames(f) <- as.character(fit[,2])
-    digits <- 3
-    if (haveP) {
-        printCoefmat(f, digits=digits,
-                     signif.stars=getOption("show.signif.stars"),
-                     signif.legend=TRUE,
-                     P.values=TRUE, has.Pvalue=TRUE, ...)
-    } else {
-        printCoefmat(f[,-4], digits=digits)
-    }
-
-    processingLogShow(object)
-}
 
 predict.tidem <- function(object, newdata, ...)
 {
