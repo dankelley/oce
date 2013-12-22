@@ -11,6 +11,27 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="gps",
+          definition=function(object, ...) {
+              threes <- matrix(nrow=2, ncol=3)
+              threes[1,] <- threenum(object@data$latitude)
+              threes[2,] <- threenum(object@data$longitude)
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              rownames(threes) <- c("Latitude", "Longitude")
+              cat("GPX Summary\n-----------------\n\n")
+              cat("* Number of points:", length(object@data$latitude), ", of which", 
+                  sum(is.na(object@data$latitude)), "are NA.\n")
+              cat("\n",...)
+              cat("* Statistics of subsample::\n\n", ...)
+              print(threes)
+              cat("\n")
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="gps",
           definition=function(x, i, j, drop) {
@@ -249,24 +270,6 @@ as.gps <- function(longitude, latitude, filename="")
     rval <- new('gps', longitude=longitude, latitude=latitude, filename=filename)
 }
 
-summary.gps <- function(object, ...)
-{
-    if (!inherits(object, "gps"))
-        stop("method is only for gps objects")
-    threes <- matrix(nrow=2, ncol=3)
-    threes[1,] <- threenum(object@data$latitude)
-    threes[2,] <- threenum(object@data$longitude)
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- c("Latitude", "Longitude")
-    cat("GPX Summary\n-----------------\n\n")
-    cat("* Number of points:", length(object@data$latitude), ", of which", 
-        sum(is.na(object@data$latitude)), "are NA.\n")
-    cat("\n",...)
-    cat("* Statistics of subsample::\n\n", ...)
-    print(threes)
-    cat("\n")
-    processingLogShow(object)
-}
 
 read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog)
 {

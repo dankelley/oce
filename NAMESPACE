@@ -148,6 +148,7 @@ export("+.section",
        parseLatLon,
        plotPolar,
        plotTaylor,
+       predict.tidem,
        "processingLog<-",
        processingLog,
        processingLogItem,
@@ -280,5 +281,5 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
-exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lisst, lobo, met, tdr, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, lisst, lobo, met, sealevel, section, tdr, tidem, topo, windrose)
 
