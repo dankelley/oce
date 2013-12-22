@@ -1,14 +1,14 @@
 \name{summary.coastline}
 
 \alias{summary.coastline}
+\alias{summary,coastline,missing-method}
+\alias{summary,coastline-method}
 
 \title{Summarize a coastline data object}
 
 \description{Summarizes coastline length, bounding box, etc.}
 
-\usage{
-\method{summary}{coastline}(object, \dots)
-}
+\usage{\S4method{summary}{coastline}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"coastline"}, usually, a result of a

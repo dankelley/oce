@@ -28,7 +28,25 @@ setMethod(f="subset",
               rval
           })
 
+setMethod(f="summary",
+          signature="coastline",
+          definition=function(object, ...) {
+              cat("Coastline Summary\n-----------------\n\n")
+              cat("* Number of points:", length(object@data$latitude), ", of which", 
+                  sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
+              cat("\n",...)
+              cat("* Statistics of subsample::\n\n", ...)
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata, ncol=3)
+              for (i in 1:ndata)
+                  threes[i,] <- threenum(object@data[[i]])
+              rownames(threes) <- paste("   ", names(object@data))
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
 
+ 
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
@@ -592,24 +610,23 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
 }
 
 
-summary.coastline <- function(object, ...)
-{
-    if (!inherits(object, "coastline"))
-        stop("method is only for coastline objects")
-    threes <- matrix(nrow=2, ncol=3)
-    threes[1,] <- threenum(object@data$latitude)
-    threes[2,] <- threenum(object@data$longitude)
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- c("Latitude", "Longitude")
-    cat("Coastline Summary\n-----------------\n\n")
-    cat("* Number of points:", length(object@data$latitude), ", of which", 
-        sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-    cat("\n",...)
-    cat("* Statistics of subsample::\n\n", ...)
-    print(threes)
-    cat("\n")
-    processingLogShow(object)
-}
+## summary.coastline <- function(object, ...)
+## {
+##     cat("Coastline Summary\n-----------------\n\n")
+##     cat("* Number of points:", length(object@data$latitude), ", of which", 
+##         sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
+##     cat("\n",...)
+##     cat("* Statistics of subsample::\n\n", ...)
+##     ndata <- length(object@data)
+##     threes <- matrix(nrow=ndata, ncol=3)
+##     for (i in 1:ndata)
+##         threes[i,] <- threenum(object@data[[i]])
+##     rownames(threes) <- paste("   ", names(object@data))
+##     colnames(threes) <- c("Min.", "Mean", "Max.")
+##     print(threes, indent='  ')
+##     processingLogShow(object)
+##     invisible()
+## }
 
 
 coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
