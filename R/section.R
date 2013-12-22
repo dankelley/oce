@@ -6,6 +6,44 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="tdr",
+          definition=function(object, ...) {
+              numStations <- length(object@data$station)
+              lat1 <- object@data$station[[1]]@metadata$latitude
+              lon1 <- object@data$station[[1]]@metadata$longitude
+              cat("Section Summary\n---------------\n\n")
+              cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
+              cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
+              stn.sum <- matrix(nrow=numStations, ncol=5)
+              if (numStations > 0) {
+                  cat("* Summary of", numStations, "stations (first column is station ID)\n")
+                  for (i in 1:numStations) {
+                      stn <- object@data$station[[i]]
+                      stn.sum[i, 1] <- stn@metadata$longitude
+                      stn.sum[i, 2] <- stn@metadata$latitude
+                      stn.sum[i, 3] <- length(stn@data$pressure)
+                      if (is.finite(stn@metadata$waterDepth)) {
+                          stn.sum[i, 4] <- stn@metadata$waterDepth
+                      } else {
+                          temp <- stn@data$temperature
+                          wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
+                          stn.sum[i, 4] <- stn@data$pressure[wdi]
+                      }
+                      stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
+                  }
+                  colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
+                  rownames(stn.sum) <- object@metadata$stationId
+                  print(stn.sum, indent="    ")
+              } else {
+                  cat("* No stations\n")
+              }
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="section",
           definition=function(x, i, j, drop) {
@@ -1345,41 +1383,6 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     res
 }
 
-summary.section <- function(object, ...)
-{
-    if (!inherits(object, "section"))
-        stop("method is only for section objects")
-    numStations <- length(object@data$station)
-    lat1 <- object@data$station[[1]]@metadata$latitude
-    lon1 <- object@data$station[[1]]@metadata$longitude
-    cat("Section Summary\n---------------\n\n")
-    cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
-    cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
-    stn.sum <- matrix(nrow=numStations, ncol=5)
-    if (numStations > 0) {
-        cat("* Summary of", numStations, "stations (first column is station ID)\n")
-        for (i in 1:numStations) {
-            stn <- object@data$station[[i]]
-            stn.sum[i, 1] <- stn@metadata$longitude
-            stn.sum[i, 2] <- stn@metadata$latitude
-            stn.sum[i, 3] <- length(stn@data$pressure)
-            if (is.finite(stn@metadata$waterDepth)) {
-                stn.sum[i, 4] <- stn@metadata$waterDepth
-            } else {
-                temp <- stn@data$temperature
-                wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
-                stn.sum[i, 4] <- stn@data$pressure[wdi]
-            }
-            stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
-        }
-        colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
-        rownames(stn.sum) <- object@metadata$stationId
-        print(stn.sum, indent="    ")
-    } else {
-        cat("* No stations\n")
-    }
-    processingLogShow(object)
-}
 
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station)
 {

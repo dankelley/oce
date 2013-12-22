@@ -14,7 +14,7 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="tdr",
           definition=function(object, ...) {
-              cat("PT Summary\n----------\n", ...)
+              cat("TDR Summary\n----------\n", ...)
               cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
                         "``, model ``", object@metadata$model, "``\n", sep=""))
               if ("pressureAtmospheric" %in% names(object@metadata)) {
