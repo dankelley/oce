@@ -6,6 +6,28 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="windrose",
+          definition=function(object, ...) {
+              cat("Windrose data\n-------------\n\n")
+              n <- length(object@data$theta)
+              dtheta <- abs(diff(object@data$theta[1:2]))
+              cat("* Have n=", n, "angles, separated by dtheta=", dtheta,"\n\n")
+              ##cat("* Statistics by angle::\n\n", ...)
+              ##threes <- matrix(nrow=2, ncol=3)
+              ##threes[1,] <- threenum(object@data$theta)
+              ##threes[2,] <- threenum(object@data$count)
+              ##colnames(threes) <- c("Min.", "Mean", "Max.")
+              ##rownames(threes) <- c("theta", "count")
+              ##print(threes)
+              ##cat('\n')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
+
 setMethod(f="[[",
           signature="windrose",
           definition=function(x, i, j, drop) {
@@ -171,22 +193,4 @@ setMethod(f="plot",
               invisible()
           })
 
-summary.windrose <- function(object, ...)
-{
-    if (!inherits(object, "windrose"))
-        stop("method is only for windrose objects")
-    cat("Windrose data\n-------------\n\n")
-    n <- length(object@data$theta)
-    dtheta <- abs(diff(object@data$theta[1:2]))
-    cat("* Have n=", n, "angles, separated by dtheta=", dtheta,"\n\n")
-    ##cat("* Statistics by angle::\n\n", ...)
-    ##threes <- matrix(nrow=2, ncol=3)
-    ##threes[1,] <- threenum(object@data$theta)
-    ##threes[2,] <- threenum(object@data$count)
-    ##colnames(threes) <- c("Min.", "Mean", "Max.")
-    ##rownames(threes) <- c("theta", "count")
-    ##print(threes)
-    ##cat('\n')
-    processingLogShow(object)
-}
 

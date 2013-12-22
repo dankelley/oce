@@ -1,12 +1,14 @@
 \name{summary.windrose}
 
 \alias{summary.windrose}
+\alias{summary,windrose,missing-method}
+\alias{summary,windrose-method}
 
 \title{Summarize a windrose data object}
 
 \description{Summarizes some of the data in a \code{windrose} object.}
 
-\usage{\method{summary}{windrose}(object, \dots)}
+\usage{\S4method{summary}{windrose}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"windrose"}, usually, a result of a
@@ -16,8 +18,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{An object of class \code{"summary.windrose"}, which contains
-  pertinent information about the windrose record and its processing.}
+\value{\code{NULL}}
 
 \seealso{A \code{windrose} object may be created with
   \code{\link{as.windrose}} or plotted with
