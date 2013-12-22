@@ -12,6 +12,48 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="echosounder",
+          definition=function(object, ...) {
+              cat("Echosounder Summary\n-------------------\n\n")
+              showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
+              showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
+              metadataNames <- names(object@metadata)
+              cat(sprintf("* File type:           %s\n", object[["fileType"]]))
+              if ("beamType" %in% metadataNames)
+                  cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
+              time <- object[["time"]]
+              tz <- attr(time[1], "tzone")
+              nt <- length(time)
+              cat(sprintf("* Channel:             %d\n", object[["channel"]]))
+              cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
+              cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
+              ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+              if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
+              cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
+              cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
+              cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
+              cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
+              cat("* Statistics::\n")
+              dataNames <- c(names(object@data), "Sv", "TS")
+              ndata <- length(dataNames)
+              threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (0 == length(grep("^time", dataNames[i]))) {
+                      threes[ii,] <- threenum(object[[dataNames[i]]])
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes)
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="echosounder",
           definition=function(x, i, j, drop) {
@@ -745,43 +787,5 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
-}
-
-summary.echosounder <- function(object, ...)
-{
-    cat("Echosounder Summary\n-------------------\n\n")
-    showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
-    showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
-    metadataNames <- names(object@metadata)
-    cat(sprintf("* File type:           %s\n", object[["fileType"]]))
-    if ("beamType" %in% metadataNames)
-        cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
-    time <- object[["time"]]
-    tz <- attr(time[1], "tzone")
-    nt <- length(time)
-    cat(sprintf("* Channel:             %d\n", object[["channel"]]))
-    cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
-    cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
-    ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
-    if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
-    cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
-    cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
-    cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
-    cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
-    cat("* Statistics::\n")
-    dataNames <- c(names(object@data), "Sv", "TS")
-    ndata <- length(dataNames)
-    threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
-    ii <- 1
-    for (i in 1:ndata) {
-        if (0 == length(grep("^time", dataNames[i]))) {
-            threes[ii,] <- threenum(object[[dataNames[i]]])
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes)
-    processingLogShow(object)
 }
 

@@ -280,16 +280,5 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
-## FIXME: comment out items as they are made into S4, and remove the block when done
-S3method(predict, tidem)
-S3method(summary, drifter)
-S3method(summary, lobo)
-S3method(summary, oce)
-S3method(summary, section)
-S3method(summary, tdr)
-S3method(summary, tidem)
-S3method(summary, topo)
-S3method(summary, windrose)
-
 exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lisst, lobo, met, tdr, sealevel, section, tidem, topo, windrose)
 
