@@ -1,8 +1,8 @@
 \name{summary.tdr}
 
 \alias{summary.tdr}
-\alias{summary,tdr,missing-tdrhod}
-\alias{summary,tdr-tdrhod}
+\alias{summary,tdr,missing-method}
+\alias{summary,tdr-method}
 
 \title{Summarize a tdr object}
 
