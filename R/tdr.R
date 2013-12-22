@@ -10,6 +10,35 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="tdr",
+          definition=function(object, ...) {
+              cat("PT Summary\n----------\n", ...)
+              cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
+                        "``, model ``", object@metadata$model, "``\n", sep=""))
+              if ("pressureAtmospheric" %in% names(object@metadata)) {
+                  cat(paste("* Atmospheric pressure: ", object@metadata$pressureAtmospheric, "\n", sep=""))
+              }
+              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""), ...)
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
+                          format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
+                          1 / object@metadata$deltat))
+              cat("* Statistics of subsample::\n\n")
+              time.range <- range(object@data$time, na.rm=TRUE)
+              threes <- matrix(nrow=2, ncol=3)
+              threes[1,] <- threenum(object@data$temperature)
+              threes[2,] <- threenum(object@data$pressure)
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              rownames(threes) <- c("Temperature", "Pressure")
+              print(threes)
+              cat('\n')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="subset",
           signature="tdr",
           definition=function(x, subset, ...) {
@@ -425,32 +454,6 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     rval
 }
 
-summary.tdr <- function(object, ...)
-{
-    if (!inherits(object, "tdr"))
-        stop("method is only for tdr objects")
-    cat("PT Summary\n----------\n", ...)
-    cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
-              "``, model ``", object@metadata$model, "``\n", sep=""))
-    if ("pressureAtmospheric" %in% names(object@metadata)) {
-        cat(paste("* Atmospheric pressure: ", object@metadata$pressureAtmospheric, "\n", sep=""))
-    }
-    cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""), ...)
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
-                format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
-                1 / object@metadata$deltat))
-    cat("* Statistics of subsample::\n\n")
-    time.range <- range(object@data$time, na.rm=TRUE)
-    threes <- matrix(nrow=2, ncol=3)
-    threes[1,] <- threenum(object@data$temperature)
-    threes[2,] <- threenum(object@data$pressure)
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- c("Temperature", "Pressure")
-    print(threes)
-    cat('\n')
-    processingLogShow(object)
-}
 
 tdrPatm <- function(x, dp=0.5)
 {
