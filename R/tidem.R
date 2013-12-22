@@ -9,7 +9,7 @@ setMethod(f="initialize",
 
 setMethod(f="summary",
           signature="tidem",
-          definition=function(object, ...) {
+          definition=function(object, p, constituent, ...) {
               n <- length(object[["p"]])
               ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
               haveP <- any(!is.na(object@data$p))
