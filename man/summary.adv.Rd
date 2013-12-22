@@ -1,14 +1,14 @@
 \name{summary.adv}
 
 \alias{summary.adv}
+\alias{summary,adv,missing-method}
+\alias{summary,adv-method}
 
 \title{Summarize an ADV object}
 
 \description{Summarize data in an \code{adv} object.}
 
-\usage{
-\method{summary}{adv}(object, \dots)
-}
+\usage{\S4method{summary}{adv}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"adv"}, usually, a result of a
