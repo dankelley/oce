@@ -1,14 +1,14 @@
 \name{summary.adp}
 
 \alias{summary.adp}
+\alias{summary,adp,missing-method}
+\alias{summary,adp-method}
 
 \title{Summarize an ADP object}
 
 \description{Summarize data in an \code{adp} object.}
 
-\usage{
-\method{summary}{adp}(object, \dots)
-}
+\usage{\S4method{summary}{adp}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"adp"}, usually, a result of a
