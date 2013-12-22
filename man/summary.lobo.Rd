@@ -3,12 +3,12 @@
 \alias{summary.lobo}
 
 \title{Summarize a lobo data object}
+\alias{summary,lobo,missing-method}
+\alias{summary,lobo-method}
 
 \description{Summarizes some of the data in a lobo object.}
 
-\usage{
-\method{summary}{lobo}(object, \dots)
-}
+\usage{\S4method{summary}{lobo}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"lobo"}, usually, a result of a
@@ -19,8 +19,7 @@
 \details{Pertinent summary information is presented, including the
   sampling interval, data ranges, etc.}
 
-\value{An object of class \code{"summary.lobo"}, which contains
-  pertinent information about the Lobo record and its processing.}
+\value{\code{NULL}}
 
 \seealso{The documentation for \code{\link{lobo-class}} explains the structure
     of LOBO objects, and also outlines the other functions dealing with them.}
