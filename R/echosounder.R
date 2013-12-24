@@ -435,7 +435,8 @@ setMethod(f="plot",
           })
 
 read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),
-                             tz=getOption("oceTz"), debug=getOption("oceDebug"))
+                             tz=getOption("oceTz"), debug=getOption("oceDebug"),
+                             processingLog)
 {
     oceDebug(debug, "\b\bread.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="")
     ofile <- file
@@ -782,9 +783,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         res@data$b <- NULL
         res@data$c <- NULL
     }
-
-    res@processingLog <- processingLog(res@processingLog,
-                                       paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }
