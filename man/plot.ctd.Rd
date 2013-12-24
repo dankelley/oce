@@ -86,9 +86,9 @@
       \code{which="map"}.  This may be a coastline object, whether built-in or
       supplied by the user, or a character string.  If the later, it may be the
       name of a built-in coastline (\code{"coastlineWorld"},
-      \code{"coastlineMaritimes"}, \code{"coastlineSLE"}, or
-      \code{"coastlineHalifax"}), or \code{"best"}, to choose the
-      highest-resolution coastline for the locale, or \code{"none"} to prevent
+      \code{"coastlineWorldFine"}, or
+      \code{"coastlineWorldCoarse"}), or \code{"best"}, to choose 
+      a suitable coastline for the locale, or \code{"none"} to prevent
       the drawing of a coastline.  There is a speed penalty for providing
       \code{coastline} as a character string, because it forces
       \code{\link{plot.coastline}} to load it on every call.  So, if

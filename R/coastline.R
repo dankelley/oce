@@ -676,22 +676,26 @@ coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
 
     if (lonRange[1] >= lonrHalifax[1] && lonRange[2] <= lonrHalifax[2] &&
         latRange[1] >= latrHalifax[1] && latRange[2] <= latrHalifax[2]) {
-        oceDebug(debug, "\b\b} # using coastlineHalifax\n")
-        data(coastlineHalifax, envir=environment())
-        return(coastlineHalifax)
+        oceDebug(debug, "\b\b}\n")
+        data(coastlineWorld, envir=environment())
+        warning("returning coastlineWorld as a default (FIXME)")
+        return(coastlineWorld)
     } else if (lonRange[1] >= lonrSLE[1] && lonRange[2] <= lonrSLE[2] &&
                latRange[1] >= latrSLE[1] && latRange[2] <= latrSLE[2]) {
-        oceDebug(debug, "\b\b} # using coastlineSLE\n")
-        data(coastlineSLE, envir=environment())
-        return(coastlineSLE)
+        oceDebug(debug, "\b\b}\n")
+        data(coastlineWorld, envir=environment())
+        warning("returning coastlineWorld as a default (FIXME)")
+        return(coastlineWorld)
     } else if (lonRange[1] >= lonrMaritimes[1] && lonRange[2] <= lonrMaritimes[2] &&
                latRange[1] >= latrMaritimes[1] && latRange[2] <= latrMaritimes[2]) {
-        oceDebug(debug, "\b\b} # using coastlineMaritimes\n")
-        data(coastlineMaritimes, envir=environment())
-        return(coastlineMaritimes)
+        oceDebug(debug, "\b\b}\n")
+        warning("returning coastlineWorld as a default (FIXME)")
+        data(coastlineWorld, envir=environment())
+        return(coastlineWorld)
     } else {
         data(coastlineWorld, envir=environment())
-        oceDebug(debug, "\b\b} # using coastlineWorld\n")
+        oceDebug(debug, "\b\b}\n")
+        warning("returning coastlineWorld as a default (FIXME)")
         return(coastlineWorld)
     }
 }

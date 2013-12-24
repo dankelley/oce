@@ -6,7 +6,8 @@
 \description{Read an echosounder data file, producing an object of type \code{echosounder}.}
 
 \usage{read.echosounder(file, channel=1, soundSpeed=swSoundSpeed(35,10,50),
-                 tz=getOption("oceTz"), debug=getOption("oceDebug"))
+                 tz=getOption("oceTz"), debug=getOption("oceDebug"),
+                 processingLog)
 }
 
 \arguments{
@@ -24,6 +25,9 @@
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
       amount of debugging information, or to 2 to get more.}
+
+  \item{processingLog}{if provided, the action item to be stored in the log,
+      typically only provided for internal calls.}
 
 }
 

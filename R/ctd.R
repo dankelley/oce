@@ -980,23 +980,18 @@ setMethod(f="plot",
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
                               if (coastline == "best") {
-                                  coastline <- coastlineBest(x[["longitude"]]+c(-1,1)*span/111,
-                                                             x[["latitude"]]+c(-1,1)*span/111,
-                                                             debug=debug-1)
+                                  warning("using default coastlineWorld for 'best' (FIXME)")
+                                  coastline <- coastlineWorld
                               } else if (coastline == "coastlineWorld") {
                                   data(coastlineWorld, envir=environment())
                                   coastline <- coastlineWorld
-                              } else if (coastline == "coastlineMaritimes") {
-                                  data(coastlineMaritimes, envir=environment())
-                                  coastline <- coastlineMaritimes
-                              } else if (coastline == "coastlineHalifax") {
-                                  data(coastlineHalifax, envir=environment())
-                                  coastline <- coastlineHalifax
-                              } else if (coastline == "coastlineSLE") {
-                                  data(coastlineSLE, envir=environment())
-                                  coastline <- coastlineSLE
-                              } else if (coastline == "none") {
-                              } else {
+                              } else if (coastline == "coastlineWorldFine") {
+                                  data(coastlineWorldFine, envir=environment())
+                                  coastline <- coastlineWorldFine
+                              } else if (coastline == "coastlineWorldCoarse") {
+                                  data(coastlineWorlCoarse, envir=environment())
+                                  coastline <- coastlineWorldCoarse
+                              }  else {
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                           }

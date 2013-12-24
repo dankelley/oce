@@ -27,16 +27,6 @@
     structure of gps objects, and also outlines the other functions
     dealing with them.}
 
-\examples{
-    library(oce)
-    data(coastlineHalifax)
-    lat <- coastlineHalifax[["latitude"]]
-    lon <- coastlineHalifax[["longitude"]]
-    gps <- as.gps(lon, lat, "-")
-    plot(coastlineHalifax)
-    points(gps[["longitude"]], gps[["latitude"]])
-}
-
 \references{The GPX format is described at
     \url{http://www.topografix.com/GPX/1/1/}.}
 

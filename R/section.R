@@ -367,7 +367,8 @@ setMethod(f="plot",
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
+                              coastline=c("best", "coastlineWorld", "coastlineWorldFine",
+                                          "coastlineWorldCoarse", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
@@ -441,55 +442,24 @@ setMethod(f="plot",
                           plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       }
                       haveCoastline <- FALSE
-                      ##data(coastlineWorld, envir=environment())
-                      ##data(coastlineMaritimes, envir=environment())
-                      ##data(coastlineHalifax, envir=environment())
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
                           coastline <- coastlineBest(lonr, latr, debug=debug-1)
                           haveCoastline <- TRUE
-                          if (FALSE) {
-                              if (any(lonr > 180))
-                                  lonr <- lonr - 360
-                              ##cat("TEST: autoshrink to best coastline file\n")
-                              ##cat("lonr:", lonr, "\n")
-                              ##cat("latr:", latr, "\n")
-                              ##cat("lon range hfs:", range(coastlineHalifax[['longitude']],na.rm=TRUE), '\n')
-                              ##cat("lat range hfs:", range(coastlineHalifax[['latitude']],na.rm=TRUE), '\n')
-                              if (lonr[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-                                  lonr[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-                                  latr[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
-                                  latr[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
-                                  coastline <- coastlineHalifax
-                                  haveCoastline <- TRUE 
-                                  oceDebug(debug, "using coastlineHalifax\n")
-                              } else if (lonr[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-                                         lonr[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-                                         latr[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
-                                         latr[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
-                                  coastline <- coastlineMaritimes
-                                  haveCoastline <- TRUE 
-                                  oceDebug(debug, "using coastlineMaritimes\n")
-                              } else {
-                                  oceDebug(debug, "using coastlineWorld\n")
-                                  coastline <- coastlineWorld
-                                  haveCoastline <- TRUE 
-                              }
-                          }
                       } else {
                           if (coastline != "none") {
-                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                  if (coastline == "coastlineWorld") {
-                                      coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineMaritimes") {
-                                      coastline <- coastlineMaritimes
-                                  } else if (coastline == "coastlineHalifax") {
-                                      coastline <- coastlineHalifax
-                                  } else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                  }
+                              if (coastline == "coastlineWorld") {
+                                  data(coastlineWorld, envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (coastline == "coastlineWorldFine") {
+                                  data(coastlineWorldFine, envir=environment())
+                                  coastline <- coastlineWorldFine
+                              } else if (coastline == "coastlineWorldCoarse") {
+                                  data(coastlineWorlCoarse, envir=environment())
+                                  coastline <- coastlineWorldCoarse
+                              }  else {
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                               haveCoastline <- TRUE
                           }

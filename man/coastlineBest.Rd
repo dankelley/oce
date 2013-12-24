@@ -19,9 +19,9 @@
 
 }
   
-\details{Checks \code{coastlineHalifax}, \code{coastlineMaritimes} and
-    \code{coastlineWorld}, in that order, to find the first that spans the
-    locale.  This yields the highest resolution.}
+\details{Checks \code{coastlineWorld}, \code{coastlineWorldFine} and
+    \code{coastlineWorldCoarse}, in that order, to find the one most
+    appropriate for the locale.}
 
 \value{A coastline}
 
