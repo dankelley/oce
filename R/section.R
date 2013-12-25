@@ -101,7 +101,7 @@ setMethod(f="[[",
                   for (stn in seq_along(x@data$station))
                       rval <- c(rval, x@data$station[[stn]]@data$pressure)
               } else {
-                  rval <- unlist(lapply(a03@data$station, function(x) x[[i]]))
+                  rval <- unlist(lapply(x@data$station, function(X) X[[i]]))
               #} else {
               #    stop("cannot access item named \"", i, "\" in this section object")
               }
@@ -986,6 +986,7 @@ read.section <- function(file, directory, sectionId="", flags,
     if (!inherits(file, "connection")) {
 	stop("argument `file' must be a character string or connection")
     }
+    res <- new("section")
     if (!isOpen(file)) {
 	filename <- "(connection)"
 	open(file, "r")
@@ -1181,10 +1182,12 @@ read.section <- function(file, directory, sectionId="", flags,
     if (missing(processingLog))
 	processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- new("section")
     res@metadata <- metadata
     res@data <- data
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
+    oceDebug(debug, "\b\b} # read.section()\n")
     res
 }
 
