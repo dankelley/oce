@@ -609,26 +609,6 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     res
 }
 
-
-## summary.coastline <- function(object, ...)
-## {
-##     cat("Coastline Summary\n-----------------\n\n")
-##     cat("* Number of points:", length(object@data$latitude), ", of which", 
-##         sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-##     cat("\n",...)
-##     cat("* Statistics of subsample::\n\n", ...)
-##     ndata <- length(object@data)
-##     threes <- matrix(nrow=ndata, ncol=3)
-##     for (i in 1:ndata)
-##         threes[i,] <- threenum(object@data[[i]])
-##     rownames(threes) <- paste("   ", names(object@data))
-##     colnames(threes) <- c("Min.", "Mean", "Max.")
-##     print(threes, indent='  ')
-##     processingLogShow(object)
-##     invisible()
-## }
-
-
 coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\bcoastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
@@ -637,65 +617,24 @@ coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
         lonRange <- lonRange - 360 # FIXME: does this always work?
         oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
     }
-
-    ## data(coastlineHalifax, envir=environment())
-    ## data(coastlineMaritimes, envir=environment())
-    ## data(coastlineSLE, envir=environment())
-    ## data(coastlineWorld, envir=environment())
-    ## range(coastlineHalifax[["longitude"]], na.rm=TRUE)
-    ## [1] -63.70000 -63.36807
-    ## range(coastlineHalifax[["latitude"]], na.rm=TRUE)
-    ## [1] 44.55496 44.75000
-    ## data(coastlineMaritimes, envir=environment())
-    ## range(coastlineMaritimes[["longitude"]], na.rm=TRUE)
-    ## [1] -66.8000 -59.6897
-    ## range(coastlineMaritimes[["latitude"]], na.rm=TRUE)
-    ## [1] 43.39973 47.20000
-    ## data(coastlineSLE, envir=environment())
-    ## range(coastlineSLE[["longitude"]], na.rm=TRUE)
-    ## [1] -71.50000 -67.31163
-    ## range(coastlineSLE[["latitude"]], na.rm=TRUE)
-    ## [1] 46.80000 49.38621
-    ## data(coastlineWorld, envir=environment())
-    ## range(coastlineWorld[["longitude"]], na.rm=TRUE)
-    ## [1] -180  180
-    ## range(coastlineWorld[["latitude"]], na.rm=TRUE)
-    ## [1] -90.0000  83.6236
-
-    lonrHalifax <- c(-63.70000, -63.36807)
-    latrHalifax <- c(44.55496, 44.75000)
-
-    lonrMaritimes <- c(-66.8000, -59.6897)
-    latrMaritimes <- c(43.39973, 47.20000)
-
-    lonrSLE <- c(-71.50000, -67.31163)
-    latrSLE <- c(46.80000, 49.38621)
-
-    lonrWorld <- c(-180, 180)
-    latrWorld <- c(-90.0000, 83.6236)
-
-    if (lonRange[1] >= lonrHalifax[1] && lonRange[2] <= lonrHalifax[2] &&
-        latRange[1] >= latrHalifax[1] && latRange[2] <= latrHalifax[2]) {
-        oceDebug(debug, "\b\b}\n")
-        data(coastlineWorld, envir=environment())
-        warning("returning coastlineWorld as a default (FIXME)")
-        return(coastlineWorld)
-    } else if (lonRange[1] >= lonrSLE[1] && lonRange[2] <= lonrSLE[2] &&
-               latRange[1] >= latrSLE[1] && latRange[2] <= latrSLE[2]) {
-        oceDebug(debug, "\b\b}\n")
-        data(coastlineWorld, envir=environment())
-        warning("returning coastlineWorld as a default (FIXME)")
-        return(coastlineWorld)
-    } else if (lonRange[1] >= lonrMaritimes[1] && lonRange[2] <= lonrMaritimes[2] &&
-               latRange[1] >= latrMaritimes[1] && latRange[2] <= latrMaritimes[2]) {
-        oceDebug(debug, "\b\b}\n")
-        warning("returning coastlineWorld as a default (FIXME)")
-        data(coastlineWorld, envir=environment())
-        return(coastlineWorld)
-    } else {
-        data(coastlineWorld, envir=environment())
-        oceDebug(debug, "\b\b}\n")
-        warning("returning coastlineWorld as a default (FIXME)")
-        return(coastlineWorld)
-    }
+    lonRange <- sort(lonRange)
+    latRange <- sort(latRange)
+    ## Set scale as the max of the distances along four sides of box
+    ## NB. all distance used here are in km.
+    l <- geodDist(lonRange[1], latRange[1], lonRange[1], latRange[2])
+    r <- geodDist(lonRange[2], latRange[1], lonRange[2], latRange[2])
+    b <- geodDist(lonRange[1], latRange[1], lonRange[2], latRange[1])
+    t <- geodDist(lonRange[1], latRange[2], lonRange[2], latRange[2])
+    oceDebug(debug, "l:", l, ", r:", r, ", b:", b, ", t:", t, "\n")
+    scale <- max(l, r, b, t)
+    C <- 2 * 3.14 * 6.4e3              # circumferance of earth
+    oceDebug(debug, "scale:", scale, ", C:", C, "\n")
+    if (scale < 500)
+        rval <- coastlineWorldFine
+    else if (scale < C / 4)
+        rval <- coastlineWorld
+    else
+        rval <- coastlineWorldCoarse
+    oceDebug(debug, "\b\b}\n")
+    return(rval)
 }
