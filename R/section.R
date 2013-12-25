@@ -8,7 +8,7 @@ setMethod(f="initialize",
 
 
 setMethod(f="summary",
-          signature="tdr",
+          signature="section",
           definition=function(object, ...) {
               numStations <- length(object@data$station)
               lat1 <- object@data$station[[1]]@metadata$latitude
