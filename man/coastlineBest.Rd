@@ -6,7 +6,8 @@
 
 \description{Find highest-resolution coastline for given locale}
 
-\usage{coastlineBest(lonRange, latRange, debug=getOption("oceDebug"))}
+\usage{coastlineBest(lonRange, latRange, span,
+    debug=getOption("oceDebug"))}
 
 
 \arguments{
@@ -15,7 +16,11 @@
   
   \item{latRange}{range of latitude for locale}
   
-  \item{debug}{set to a positive value to get debugging information during processing.}
+  \item{span}{span of domain in km (if provided, previous two arguments are
+      ignored).}
+  
+  \item{debug}{set to a positive value to get debugging information during
+      processing.}
 
 }
   

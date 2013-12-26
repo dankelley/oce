@@ -763,7 +763,6 @@ setMethod(f="plot",
                       warning("plot.ctd(): unknown plot type requested\n", call.=FALSE)
                       next
                   }
-                  oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
                       plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
                                   eos=eos,
@@ -961,7 +960,7 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 5) {
                       if (is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
-                          oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                          oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## FIXME: use waterdepth to guess a reasonable span, if not supplied
                           if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
                               waterDepth <- x[["waterDepth"]]
@@ -980,8 +979,7 @@ setMethod(f="plot",
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
                               if (coastline == "best") {
-                                  warning("using default coastlineWorld for 'best' (FIXME)")
-                                  coastline <- coastlineWorld
+                                  coastline <- coastlineBest(span=span)
                               } else if (coastline == "coastlineWorld") {
                                   data(coastlineWorld, envir=environment())
                                   coastline <- coastlineWorld
@@ -1037,6 +1035,7 @@ setMethod(f="plot",
                           ##if (!is.null(x@metadata$scientist))
                           ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
                       }
+                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n")
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
@@ -2267,11 +2266,11 @@ plotProfile <- function (x,
                          ...)
 {
     oceDebug(debug, "\bplotProfile(x, xtype[1]=\"", xtype[1],
-             "\", ...) {\n", sep="")
+             "\", debug=", debug, ", ...) {\n", sep="")
     eos <- match.arg(eos, c("unesco", "teos"))
     plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
-        oceDebug(debug, "\b    plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="")
+        oceDebug(debug, "\bplotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="")
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -2829,6 +2828,7 @@ plotProfile <- function (x,
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
         }
     }
+    oceDebug(debug, "\b\b} # plotProfile()\n")
 }
 
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,

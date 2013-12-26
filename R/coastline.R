@@ -197,14 +197,18 @@ setMethod(f="plot",
                       oceDebug(debug, "  yr narrowed:", yr, "\n")
                   }
                   ## Avoid looking beyond the poles, or the dateline
-                  if (xr[1] < (-180))
+                  if (xr[1] < (-180)) {
                       xr[1] <- (-180)
-                  if (xr[2] >  180)
+                  }
+                  if (xr[2] >  180) {
                       xr[2] <- 180
-                  if (yr[1] <  (-90))
+                  }
+                  if (yr[1] <  (-90)) {
                       yr[1] <- (-90)
-                  if (yr[2] >  90)
+                  }
+                  if (yr[2] >  90) {
                       yr[2] <- 90
+                  }
                   oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
                   ## Draw underlay, if desired
                   plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
@@ -609,29 +613,32 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     res
 }
 
-coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
+coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\bcoastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
-             "), latRange=c(", paste(round(latRange, 2), collapse=","), "), debug=", debug, ") {\n", sep="")
-    if (any(lonRange > 180)) {
-        lonRange <- lonRange - 360 # FIXME: does this always work?
-        oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
+             "), latRange=c(", paste(round(latRange, 2), collapse=","),
+             "), span=", span, ", debug=", debug, ") {\n", sep="")
+    if (missing(span)) {
+        if (any(lonRange > 180)) {
+            lonRange <- lonRange - 360 # FIXME: does this always work?
+            oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
+        }
+        lonRange <- sort(lonRange)
+        latRange <- sort(latRange)
+        ## Set scale as the max of the distances along four sides of box
+        ## NB. all distance used here are in km.
+        l <- geodDist(lonRange[1], latRange[1], lonRange[1], latRange[2])
+        r <- geodDist(lonRange[2], latRange[1], lonRange[2], latRange[2])
+        b <- geodDist(lonRange[1], latRange[1], lonRange[2], latRange[1])
+        t <- geodDist(lonRange[1], latRange[2], lonRange[2], latRange[2])
+        oceDebug(debug, "l:", l, ", r:", r, ", b:", b, ", t:", t, "\n")
+        span <- max(l, r, b, t)
     }
-    lonRange <- sort(lonRange)
-    latRange <- sort(latRange)
-    ## Set scale as the max of the distances along four sides of box
-    ## NB. all distance used here are in km.
-    l <- geodDist(lonRange[1], latRange[1], lonRange[1], latRange[2])
-    r <- geodDist(lonRange[2], latRange[1], lonRange[2], latRange[2])
-    b <- geodDist(lonRange[1], latRange[1], lonRange[2], latRange[1])
-    t <- geodDist(lonRange[1], latRange[2], lonRange[2], latRange[2])
-    oceDebug(debug, "l:", l, ", r:", r, ", b:", b, ", t:", t, "\n")
-    scale <- max(l, r, b, t)
     C <- 2 * 3.14 * 6.4e3              # circumferance of earth
-    oceDebug(debug, "scale:", scale, ", C:", C, "\n")
-    if (scale < 500)
+    oceDebug(debug, "span:", span, ", C:", C, "\n")
+    if (span < 500)
         rval <- coastlineWorldFine
-    else if (scale < C / 4)
+    else if (span < C / 4)
         rval <- coastlineWorld
     else
         rval <- coastlineWorldCoarse
