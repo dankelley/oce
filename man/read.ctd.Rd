@@ -197,8 +197,8 @@ plot(woce)
 d <- read.ctd.woce("*.csv")
 data(coastlineWrold)
 plot(coastlineWorld, clat=55, clon=-50, span=5000)
-longitude<-unlist(lapply(d, function(stn) stn[['longitude']]))
-latitude<-unlist(lapply(d, function(stn) stn[['latitude']]))
+longitude <- sapply(d, function(stn) stn[['longitude']])
+latitude <- sapply(d, function(stn) stn[['latitude']])
 points(longitude, latitude, col='red')
 
 

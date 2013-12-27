@@ -576,7 +576,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             w <- which(Z[ij] < breaks * (1 + small))
             if (length(w) && w[1] > 1) col[-1 + w[1]] else missingColor
         }
-        col <- unlist(lapply(1:(ni*nj), colorLookup))
+        col <- sapply(1:(ni*nj), colorLookup)
         polygon(xy$x[r$okPoint&!r$clippedPoint], xy$y[r$okPoint&!r$clippedPoint],
                 col=col[r$okPolygon&!r$clippedPolygon],
                 border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)

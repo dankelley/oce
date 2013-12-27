@@ -14,7 +14,7 @@ binApply1D <- function(x, f, xbreaks, FUN)
     ##if (class(t) == "try-error")
     ##    stop("cannot coerce 'data' into a data.frame")
     fSplit <- split(f, cut(x, xbreaks))
-    rval <- unlist(lapply(fSplit, FUN))
+    rval <- sapply(fSplit, FUN)
     names(rval) <- NULL
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=rval)
 }
@@ -40,7 +40,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
     for (i in 1:length(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks))
         ##rval[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        rval[,i] <- unlist(lapply(fSplit, FUN))
+        rval[,i] <- sapply(fSplit, FUN)
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),

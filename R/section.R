@@ -101,9 +101,7 @@ setMethod(f="[[",
                   for (stn in seq_along(x@data$station))
                       rval <- c(rval, x@data$station[[stn]]@data$pressure)
               } else {
-                  rval <- unlist(lapply(x@data$station, function(X) X[[i]]))
-              #} else {
-              #    stop("cannot access item named \"", i, "\" in this section object")
+                  rval <- sapply(x@data$station, function(X) X[[i]])
               }
               rval
           })
@@ -395,7 +393,8 @@ setMethod(f="plot",
               oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ztype=\"",
                        ztype, "\", ...) {\n", sep="")
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
-              haveData <- unlist(lapply(x@data$station, function(stn) 0 < length(stn[['pressure']])))
+              haveData <- sapply(x@data$station,
+                                 function(stn) 0 < length(stn[['pressure']]))
               x@data$station <- x@data$station[haveData]
               x@metadata$stationId <- x@metadata$stationId[haveData]
               x@metadata$latitude <- x@metadata$latitude[haveData]
