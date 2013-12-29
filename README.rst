@@ -6,7 +6,7 @@ The git branching model is used to organize the code. The ``master`` branch
 holds the code used in the official releases, and is mainly provided to
 document the history of those releases.  It is updated only when new versions
 of Oce are updated to the Comprehensive R Archive Network (CRAN), perhaps once
-a month.  The ``develop`` branch may be updated several times per day, as the
+a season.  The ``develop`` branch may be updated several times per day, as the
 author fixes bugs or adds features that are motivated by day-to-day usage.
 This is the branch favoured by users who need new features or would like to
 help the author in the development of Oce.  The easy way to install the
@@ -20,9 +20,10 @@ This uses the ``devtools`` package, which is one of many powerful tools written
 by Hadley Wickham (whose github site is https://github.com/hadley).
 
 In addition to the ``master`` and ``develop`` branches, there is a ``testing``
-branch that is sometimes used to try out variants of new features, and any
-number of temporary branches that are used to address bugs or requests for new
-features.  These bugs and requests are generally made through the GitHub issue
+branch that is sometimes used to try out variants of new features, and many
+temporary branches that are used to address bugs or requests for new features.
+
+Bug reports and feature requests should be made through the GitHub issue
 system, and often the code branches that address such issues are named after
 the issues, e.g. branch ``issue100`` addressing issue number 100.
 
