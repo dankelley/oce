@@ -25,7 +25,8 @@
 
   \item{latitude}{latitude at which prediction is required (ignored if \code{node} is given).}
 
-  \item{time}{times at which prediction is to be made.}
+  \item{time}{times at which prediction is to be made.  If not supplied, this will be the week
+    starting at the present time, incrementing by 15 minutes.}
 
   \item{basedir}{direction in which the WebTide databases are installed.}
 

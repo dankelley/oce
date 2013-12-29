@@ -631,13 +631,16 @@ webtide <- function(action=c("map", "predict"),
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
-            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="", ...)
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="", ...)
+            lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
             point <- locator(1)
             node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
             longitude <- triangles$longitude[node]
             latitude <- triangles$latitude[node]
             points(longitude, latitude, pch=20, cex=2, col='red')
+            text(longitude, latitude, sprintf("node %.0f\n%.3fN %.3fE", node, latitude, longitude),
+                 col='red', pos=3)
         } else  {
             node <- seq_along(triangles$longitude)
             longitude <- triangles$longitude
@@ -646,7 +649,7 @@ webtide <- function(action=c("map", "predict"),
         return(list(node=node, latitude=latitude, longitude=longitude))
     } else {
         if (missing(time))
-            stop("must supply list of times in 'time'")
+            time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
         if (missing(node)) {
             if (missing(longitude) || missing(latitude))
                 stop("'longitude' and 'latitude' must be given unless 'node' is given")
