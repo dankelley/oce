@@ -619,18 +619,19 @@ predict.tidem <- function(object, newdata, ...)
     as.numeric(rval)
 }
 
-webtide <- function(action=c("map", "predict"), longitude, latitude, time,
+webtide <- function(action=c("map", "predict"),
+                    node, longitude, latitude, time,
                     basedir="/usr/local/WebTide", region="nwatl",
-                    plot=TRUE, tformat)
+                    plot=TRUE, tformat, ...)
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
     filename <- paste(subdir, "/", region, "_ll.nod", sep="")
     triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
     if (action == "map") {
-        if (interactive() && missing(latitude) && missing(longitude)) {
+        if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
-            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="", ...)
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
             point <- locator(1)
             node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
@@ -638,15 +639,22 @@ webtide <- function(action=c("map", "predict"), longitude, latitude, time,
             latitude <- triangles$latitude[node]
             points(longitude, latitude, pch=20, cex=2, col='red')
         } else  {
-            node <- 1
-            longitude <- triangles$longitude[node]
-            latitude <- triangles$latitude[node]
+            node <- seq_along(triangles$longitude)
+            longitude <- triangles$longitude
+            latitude <- triangles$latitude
         }
-        return(list(latitude=latitude, longitude=longitude))
+        return(list(node=node, latitude=latitude, longitude=longitude))
     } else {
         if (missing(time))
             stop("must supply list of times in 'time'")
-        node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
+        if (missing(node)) {
+            if (missing(longitude) || missing(latitude))
+                stop("'longitude' and 'latitude' must be given unless 'node' is given")
+            node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
+        } else {
+            latitude <- triangles$latitude[node]
+            longitude <- triangles$longitude[node]
+        }
         constituentse <- dir(path=subdir, pattern="*.s2c")
         abbrev <- substr(constituentse, 1, 2)
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
@@ -689,6 +697,7 @@ webtide <- function(action=c("map", "predict"), longitude, latitude, time,
                         drawTimeRange=FALSE, tformat=tformat)
         }
     }
-    invisible(list(time=time, elevation=elevation, u=u, v=v, node=node, basedir=basedir, region=region))
+    invisible(list(time=time, elevation=elevation, u=u, v=v,
+                   node=node, basedir=basedir, region=region))
 }
 
