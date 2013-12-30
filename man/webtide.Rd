@@ -15,10 +15,9 @@
 
 \arguments{
 
-  \item{action}{An indication of the action, either \code{map} to draw a map and measure the
-    coordinates of a point the user clicks on that map, or \code{predict} to predict time-series for
-    a specific location.}
-    
+  \item{action}{An indication of the action, either \code{action="map"} to draw a map or
+    \code{actoin="predict"} to get a prediction; see \sQuote{Details}.}
+  
   \item{longitude}{longitude at which prediction is required (ignored if \code{node} is given).}
 
   \item{latitude}{latitude at which prediction is required (ignored if \code{node} is given).}
@@ -42,16 +41,20 @@
     example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 }
 
-\details{The \code{action="map"} method plots a map with a dot for the lower-left corner of each
-  triangle used in the finite-element tidal simulation upon which WebTide predictions are based.
-  \code{\link{locator}} is called within this method, so that the user can indicate a spot of
-  interest on the map, and the longitude and latitude of this point are provided in the return value.
-  This is a crude emulation of the WebTide interface, without the ability to zoom or slide reference
-  points around with the mouse.  The \code{action="predict"} method uses a longitude and latitude,
-  possibly discovered from clicking the mouse, and calculates elevation and velocity time-series at
-  the specified times.  In the first case, a plot is drawn irrespective of the value of \code{plot},
-  but in the second case, a plot is only made if \code{plot=TRUE}.  Naturally, none of this works
-  unless WebTide has been installed on the computer.}
+\details{If \code{action="map"} then a map is drawn, with a dot for the lower-left corner of each
+  triangle used in the finite-element tidal simulation upon which WebTide predictions are based.  If
+  \code{node} is missing, then \code{\link{locator}} is called, so that the user can indicate a spot
+  of interest on the map, and this point is indicated on the map (and in the return value).  If
+  \code{node} is provided, however, the point is indicated but \code{\link{locator}} is not called.
+  (This second style is of use in documenting interactive work after the fact.)
+  
+  If \code{action="predict"} then either a node number or the longitude and latitude
+  must be specified.  If \code{plot=TRUE} (the default) then a plot is drawn, but no plot is
+  produced otherwise.  In either case, the (silent) return value is a list as described in the next
+  section.  The times used for prediction are specified with the \code{time} argument, and if this
+  is not specified then a week following the present time is used.
+
+  Naturally, \code{webtide} will not work unless WebTide has been installed on the computer.}
 
 \value{If \code{action="map"} and \code{plot=TRUE}, the return value is a list containing the index
   of the nearest node, along with the \code{latitude} and \code{longitude} of that node.  If
