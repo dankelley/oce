@@ -12,6 +12,7 @@
                   ##oceFlag1 = 1,
                   eos="unesco",
                   libteos=libteos,
+                  webtide="/usr/local/WebTide",
                   oceDebug=0)
     toset <- !(names(opOce) %in% names(op))
     if (any(toset)) {

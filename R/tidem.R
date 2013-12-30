@@ -620,8 +620,9 @@ predict.tidem <- function(object, newdata, ...)
 }
 
 webtide <- function(action=c("map", "predict"),
-                    node, longitude, latitude, time,
-                    basedir="/usr/local/WebTide", region="nwatl",
+                    longitude, latitude, node, time,
+                    basedir=getOption("webtide"),
+                    region="nwatl",
                     plot=TRUE, tformat, ...)
 {
     action <- match.arg(action)
@@ -632,22 +633,23 @@ webtide <- function(action=c("map", "predict"),
         if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
-            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="", ...)
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
+                 asp=asp, xlab="", ylab="", ...)
             lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
             point <- locator(1)
             node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
             longitude <- triangles$longitude[node]
             latitude <- triangles$latitude[node]
-            points(longitude, latitude, pch=20, cex=2, col='red')
-            text(longitude, latitude, sprintf("node %.0f\n%.3fN %.3fE", node, latitude, longitude),
-                 col='red', pos=3)
+            points(longitude, latitude, pch=20, cex=2, col='blue')
+            legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
+                   legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
         } else  {
             node <- seq_along(triangles$longitude)
             longitude <- triangles$longitude
             latitude <- triangles$latitude
         }
         return(list(node=node, latitude=latitude, longitude=longitude))
-    } else {
+    } else if (action == "predict") {
         if (missing(time))
             time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
         if (missing(node)) {
@@ -667,6 +669,12 @@ webtide <- function(action=c("map", "predict"),
         tidedata  <- get("tidedata",   pos=globalenv())
         for (i in 1:nconstituents) {
             period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            ## Elevation file contains one entry per node, starting with e.g.:
+            ##tri
+            ## period 23.934470 (hours) first harmonic 
+            ##260.000000 (days) 
+            ##1 0.191244 223.820954
+            ##2 0.188446 223.141200
             cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
             ampe[i] <- cone[[2]]
             phasee[i] <- cone[[3]]
@@ -692,12 +700,15 @@ webtide <- function(action=c("map", "predict"),
         if (plot) {
             par(mfrow=c(3,1))
             oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
-                        main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""),
+                        main=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
                         tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
             oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"),
                         drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
             oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
                         drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
         }
     }
     invisible(list(time=time, elevation=elevation, u=u, v=v,

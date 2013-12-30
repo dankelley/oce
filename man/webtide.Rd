@@ -8,8 +8,9 @@
 \description{Get a tidal prediction from a WebTide database}
 
 \usage{webtide(action=c("map", "predict"),
-        node, longitude, latitude, time,
-        basedir="/usr/local/WebTide", region="nwatl", plot=TRUE,
+        longitude, latitude, node, time,
+        basedir=getOption("webtide"),
+        region="nwatl", plot=TRUE,
         tformat, \dots)}
 
 \arguments{
@@ -18,21 +19,21 @@
     coordinates of a point the user clicks on that map, or \code{predict} to predict time-series for
     a specific location.}
     
-  \item{node}{node to look up; only needed if \code{longitude} and \code{latitude}
-   are not given.}
-
   \item{longitude}{longitude at which prediction is required (ignored if \code{node} is given).}
 
   \item{latitude}{latitude at which prediction is required (ignored if \code{node} is given).}
+  
+  \item{node}{node to look up; only needed if \code{longitude} and \code{latitude} are not given.}
 
   \item{time}{times at which prediction is to be made.  If not supplied, this will be the week
     starting at the present time, incrementing by 15 minutes.}
 
-  \item{basedir}{direction in which the WebTide databases are installed.}
+  \item{basedir}{directory containing the \code{WebTide} application.}
 
   \item{region}{database region, given as a directory name in the WebTide directory.  For example,
     \code{h3o} is for Halifax Harbour, \code{nwatl} is for the northwest Atlantic, and \code{sshelf}
     is for the Scotian Shelf and Gulf of Maine.}
+
   \item{plot}{boolean indicating whether to plot.}
   \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
       plot types that call that function.  (See \code{\link{strptime}} for the
@@ -62,15 +63,18 @@
   components of velocity, \code{u} and \code{v}, along with the \code{node} number, and the
   \code{basedir} and \code{region} as supplied to this function.}
   
-\examples{ \dontrun{ library(oce) tStart <- ISOdate(2008, 7, 1, 0, 0, 0, tz="UTC") tEnd <-
-ISOdate(2008, 7, 5, 0, 0, 0, tz="UTC") time<-seq(tStart, tEnd, by=15, units="minutes") prediction <-
-  webtide("predict", -69.61, 48.14, time) } }
+\examples{
+\dontrun{
+library(oce)
+prediction <- webtide("predict", lon=-69.61, lat=48.14)
+}
+}
 
 \references{The WebTide software may be downloaded for free at
-  \url{http://www.bio.gc.ca/research-recherche/WebTide-MareeWeb/webtide-eng.htm}, along with a suite
-  of databases for various geographical regions.  Note that WebTide is not an open-source
-  application, as it consists mainly of precompiled code written in Java, which precludes
-  examination of the source.}
+  \url{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-eng.php}, along with a
+  suite of databases for various geographical regions.  Note that WebTide is not an open-source
+  application, as it consists mainly of compiled Java code, which precludes examination of the
+  source.}
 
 \author{Dan Kelley}
 
