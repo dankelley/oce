@@ -99,9 +99,9 @@ setMethod(f="[[",
               } else if ("depth" == i) {
                   rval <- NULL
                   for (stn in seq_along(x@data$station))
-                      rval <- c(rval, x@data$station[[stn]]@data$pressure)
+                      rval <- c(rval, x@data$station[[stn]]@data$pressure) # FIXME not really depth
               } else {
-                  rval <- sapply(x@data$station, function(X) X[[i]])
+                  rval <- unlist(lapply(x@data$station, function(X) X[[i]]))
               }
               rval
           })
