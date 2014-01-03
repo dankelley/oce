@@ -8,21 +8,33 @@
 
 /*
 
-To test this, without building the whole package, do the following.
+   To test this, without building the whole package, do the following.
 
-In R:
+   In R:
 
-par(mar=c(2,2,1,1))
-library(oce)
-data(RRprofile)
-zz <- seq(0,2000,5)
-system("R CMD SHLIB oce_approx.c");dyn.load("oce_approx.so")
-TT <- .Call("oce_approx",RRprofile$depth,RRprofile$temperature,zz)
-plot(RRprofile$temperature,RRprofile$depth,ylim=c(500,0),xlim=c(2,10), col='red', pch=20)
-lines(TT,zz,col='blue')
+   par(mar=c(2,2,1,1))
+   library(oce)
+   data(RRprofile)
+   zz <- seq(0,2000,5)
+   system("R CMD SHLIB oce_approx.c");dyn.load("oce_approx.so")
+   TT <- .Call("oce_approx",RRprofile$depth,RRprofile$temperature,zz)
+   plot(RRprofile$temperature,RRprofile$depth,ylim=c(500,0),xlim=c(2,10), col='red', pch=20)
+   lines(TT,zz,col='blue')
 
 */
 
+int between(double x, double x0, double x1)
+{
+  int rval = 0;
+  if (x0 == x1) {
+    rval = (x == x0);
+  } else if (x0 < x1) {
+    rval = (x0 <= x && x <= x1);
+  } else {
+    rval = (x1 <= x && x <= x0);
+  }
+  return(rval);
+}
 static double gamma_ijk(int i, int j, int k, double z0, double *z,              int len);
 static double phi_ij(   int i, int j,        double z0, double *z, double *phi, int len);
 static double phi_P1(int i0, double z0, double *z, double *phi, int len);
@@ -116,7 +128,8 @@ static double phi_ij(int i, int j, double z0, double *z, double *phi, int len) /
     return (0.0); // never reached
   }
 }
-SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
+
+SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP method) // , SEXP n, SEXP m)
 {
   int x_len = length(x);
   int  y_len = length(y);
@@ -126,65 +139,84 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
   PROTECT(xout = AS_NUMERIC(xout));
+  PROTECT(method = AS_NUMERIC(method));
+  const int Method = (int)floor(0.5 + *REAL(method));
   if (x_len != y_len) error("lengths of x (%d) and y (%d) disagree", x_len, y_len);
   xp = REAL(x);
   xoutp = REAL(xout);
   yp = REAL(y);
   PROTECT(ans = allocVector(REALSXP, xout_len));
   ansp = REAL(ans);
-//#ifdef DEBUG
-//  Rprintf("DEBUG: x="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(xp + i));  Rprintf("\n");
-//  Rprintf("DEBUG: y="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
-//  Rprintf("DEBUG: xout="); for (int i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
-//#endif
+  //#ifdef DEBUG
+  //  Rprintf("DEBUG: x="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(xp + i));  Rprintf("\n");
+  //  Rprintf("DEBUG: y="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
+  //  Rprintf("DEBUG: xout="); for (int i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
+  //#endif
   for (int i = 0; i < xout_len; i++) {
-#ifdef DEBUG
-    Rprintf("xout[%d] = %f\n",i,*(xoutp+i));
-#endif
     double val = 0.0; // value always altered; this is to prevent compiler warning
     int found;
     found = 0;
-    for (int j = 0; j < x_len - 1; j++) {
-      //#ifdef DEBUG
-      //Rprintf("x[%d]=%.1f\n", j, *(xp + j));
-      //#endif
-      double xx = *(xoutp + i);
-      // Look for neighbors (BUG: what about hitting directly?)
-      if (xx == *(xp + j)) {
-        val = *(yp + j);
-        found = 1;
-      } else if (xx == *(xp + j + 1)) {
-        val = *(yp + j + 1);
-        found = 1;
-      } else if (*(xp + j) < xx && xx < *(xp + j + 1)) {
-        if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
-          val = *yp + (xx - *xp) * (*(yp + 1) - *(yp)) / (*(xp + 1) - *xp);
+    //Rprintf("Method:%d xoutp[%d]:%f, xp[0]:%f\n", Method, i, xoutp[i], xp[0]);
+    // Handle top region (above 5m)
+    if (Method == 1 && (xoutp[i] <= xp[0] && xp[0] <= 5)) {
+      val = yp[0];
+      found = 1;
+      Rprintf("xoutp[%d]=%f is above 5m, setting to xp[0]=%f\n", i, xoutp[i], val);
+    } else {
+      // Handle region below 5m
+      for (int j = 0; j < x_len - 1; j++) {
+	//#ifdef DEBUG
+	//Rprintf("x[%d]=%.1f\n", j, *(xp + j));
+	//#endif
+	double xx = xoutp[i];
+	//Rprintf("xoutp[%d]:%f, xp[%d]:%.1f, Method:%d\n", i, xoutp[i], j, xp[j], Method);
+	// Look for neighbors
+	if (xx == xp[j]) {
+	  // Exact match with point above
+	  val = yp[j];
+	  found = 1;
+	} else if (xx == xp[j + 1]) {
+	  // Exact match with point below
+	  val = yp[j + 1];
+	  found = 1;
+	} else if (xp[j] < xx && xx < xp[j + 1]) {
+	  // Has a neeighbor above and below
+	  if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
+	    val = yp[0] + (xx - xp[0]) * (yp[1] - yp[0]) / (xp[1] - xp[0]);
 #ifdef DEBUG
-          Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n", xx, val, *xp, *(xp+1), *yp,*(yp+1));
+	    Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n",
+		xx, val, xp[0], xp[1], yp[0], yp[1]);
 #endif
-        } else if (j == x_len - 1) {
-	  val = *(yp + j - 1) + (xx - *(xp + j - 1)) * (*(yp + j) - *(yp + j - 1)) / (*(xp + j) - *(xp + j - 1));
-        } else {
-	  if (j >= x_len - 2) {
-	    //Rprintf("j >= x_len - 2\n");
-	    //val = NA_REAL;
-	    val = yp[x_len - 1]; // trim to endpoint
+	  } else if (j == x_len - 1) {
+	    val = yp[j - 1] + (xx - xp[j - 1]) * (yp[j] - yp[j - 1]) / (xp[j] - xp[j - 1]);
 	  } else {
-	    val = phi_z(j, xx, xp, yp, x_len);
+	    if (j >= x_len - 2) {
+	      //Rprintf("j >= x_len - 2\n");
+	      //val = NA_REAL;
+	      val = yp[x_len - 1]; // trim to endpoint
+	    } else {
+	      val = phi_z(j, xx, xp, yp, x_len);
+	      if (Method == 1) {
+		//Rprintf("xoutp[%d]:%.1f, j:%d, val:%.1f, xp[j-1]:%.1f, xp[j]:%.1f, xp[j+1]:%.1f, yp[j]:%.1f, yp[j+1]:%.1f\n",
+		//    i, xoutp[i], j, val, xp[j-1], xp[j], xp[j+1], yp[j], yp[j+1]);
+		if (!between(val, yp[j], yp[j+1])) {
+		  val = yp[j] + (xoutp[i] - xp[j]) * (yp[j+1] - yp[j]) / (xp[j+1] - xp[j]);
+		  Rprintf(" using linear interp to get %.1f, since not bounded by %.1f and %.1f\n", val, yp[j], yp[j+1]);
+		}
+	      }
+	    }
 	  }
-        }
 #ifdef DEBUG
-        Rprintf("Y j=%d VAL=%f\n", j, val);
+	  Rprintf("Y j=%d VAL=%f\n", j, val);
 #endif
-        found = 1;
-        break;
+	  found = 1;
+	  break;
+	}
       }
     }
-    if (found) 
-      *(ansp + i) = val;
-    else 
-      *(ansp + i) = NA_REAL;
+    ansp[i] = found?val:NA_REAL;
   }
-  UNPROTECT(4);
+  Rprintf("AT END, first few values %f %f %f ...\n", ansp[0], ansp[1], ansp[2]);
+  UNPROTECT(5);
   return(ans);
 }
