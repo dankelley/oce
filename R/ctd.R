@@ -237,7 +237,8 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
     res
 }
 
-ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"), e=1.5, debug=getOption("oceDebug"))
+ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","rr", "unesco"),
+                        e=1.5, debug=getOption("oceDebug"))
     ## SHOULD ADD: spline; supsmu; ...
 {
     oceDebug(debug, "\bctdDecimate(x, p, method=\"", method, "\", ...) {\n", sep="")
@@ -281,13 +282,13 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
             }
         }
         data.new[["pressure"]] <- pt
-    } else if ("reiniger-ross" == method) {
+    } else if ("rr" == method || "unesco" == method) {
         oceDebug(debug, "Reiniger-Ross method\n")
         xvar <- x@data[["pressure"]]
         for (datum.name in data.names) {
             if (datum.name != "pressure") {
                 yvar <- x@data[[datum.name]]
-                pred <- oceApprox(xvar, yvar, pt)
+                pred <- oceApprox(xvar, yvar, pt, method=method)
                 data.new[[datum.name]] <- pred
             }
         }

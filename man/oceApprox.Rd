@@ -8,7 +8,7 @@
     curvature but tends minimize extrema that are not well-indicated by the
     data.}
 
-\usage{oceApprox(x, y, xout, method=c("unesco", "rr"))}
+\usage{oceApprox(x, y, xout, method=c("rr", "unesco"))}
 
 \arguments{
   \item{x}{the independent variable (z or p, usually).}
@@ -33,8 +33,9 @@
     routine might provide the ability to modify these values.)
 
     Setting \code{method="unesco"} yields the method that is used by the U.S.
-    National Oceanographic Data Center (see reference 2, page 48-50).  The
-    method works as follows.
+    National Oceanographic Data Center. It is described in pages 48-50 of
+    reference 2; reference 3 presumably contains the same information but it is
+    not as easily accessible.  The method works as follows.
     
     \itemize{
 
@@ -48,17 +49,17 @@
         they are transformed to the following rules.  Inner neighbors must be
         within 5m for data above 10m, 50m above 250m 100m above 900m, 200m
         above 2000m, or within 1000m otherwise.  Outer neighbors must be within
-        200m above 500m, 400m above 1300m, or 1000m otherwise. \emph{NOT CODED
-            YET.}
-
-        \item Three-point Lagrangian interpolation is used if three neighbors
-        are within the depth bounds. \emph{NOT CODED YET.}
+        200m above 500m, 400m above 1300m, or 1000m otherwise.  If two or more
+        points meet these criteria, Lagrangian interpolation is used.  If not,
+        \code{NA} is used as the interpolant.
 
     }
 
     After these rules are applied, the interpolated value is compared with the
-    values above and below it, and if it is outside the range, simple linear
-    interpolation is used.}
+    values immediately above and below it, and if it is outside the range,
+    simple linear interpolation is used.
+
+}
 
 \value{A vector of interplated values, corresponding to the \code{xout}
     values and equal in number.}
@@ -74,7 +75,7 @@ a2 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz, 'rr')
 lines(a1, zz)
 lines(a2, zz, col='red')
 legend("bottomright", lwd=1, col=1:2,
-       legend=c("Reiniger-Ross", "NODC"), cex=3/4)
+       legend=c("Unesco", "Reiniger-Ross"), cex=3/4)
 }
 
 \references{
