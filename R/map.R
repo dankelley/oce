@@ -96,8 +96,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
         ## FIXME: should we create a series of points to a trace along the edge 
         ## FIXME: the visible earth?
-        if (sum(bad))
+
+        if (debug > 0 && sum(bad))
             warning("mapPlot(): trimming spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
+
         x[bad] <- NA                       
         y[bad] <- NA
     }
