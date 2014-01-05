@@ -51,8 +51,11 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
 binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
-    if (missing(f)) stop("must supply 'f'")
-    if (length(x) != length(f))
+    fGiven <- !missing(f)
+    if (!fGiven)
+        f <- rep(1, length(x))
+    nx <- length(x)
+    if (nx != length(f))
         stop("lengths of x and f must agree")
     if (missing(xbreaks))
         xbreaks <- pretty(x)
@@ -64,8 +67,10 @@ binMean1D <- function(x, f, xbreaks)
               number=integer(nxbreaks-1),
               result=double(nxbreaks-1),
               NAOK=TRUE, PACKAGE="oce")
-    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
-         number=res$number, result=res$result)
+    list(xbreaks=xbreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks), 
+         number=res$number,
+         result=if (fGiven) res$result else rep(NA, length=nx))
 }
 
 ##binWhich1D <- function(x, xbreaks)
@@ -88,7 +93,9 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
-    if (missing(f)) stop("must supply 'f'")
+    fGiven <- !missing(f)
+    if (!fGiven)
+        f <- rep(1, length(x))
     if (length(x) != length(y)) stop("lengths of x and y must agree")
     if (length(x) != length(f)) stop("lengths of x and f must agree")
     if (missing(xbreaks)) xbreaks <- pretty(x)
@@ -108,7 +115,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ymids=ybreaks[-1]-0.5*diff(ybreaks),
          number=matrix(rval$number, nrow=nxbreaks-1),
-         result=matrix(rval$mean, nrow=nxbreaks-1))
+         result=matrix(if (fGiven) rval$mean else NA, nrow=nxbreaks-1))
 }
 
 binAverage <- function(x, y, xmin, xmax, xinc)

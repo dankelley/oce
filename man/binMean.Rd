@@ -18,7 +18,8 @@ binMean2D(x, y, f, xbreaks, ybreaks)}
   \item{y}{a vector of numerical values.}
 
   \item{f}{a vector of numerical values, f=f(x) for the 1D function and
-      f=f(x,y) for the 2D function.}
+      f=f(x,y) for the 2D function.  If missing, the \code{value} component of
+      the return value will consist entirely of \code{NA} values.}
 
   \item{xbreaks}{values of x at the boundaries between bins; calculated using
       \code{\link{pretty}} if not supplied.}
