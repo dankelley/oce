@@ -9,7 +9,7 @@
 \usage{
 drawIsopycnals(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
                eos=getOption("eos", default="unesco"),
-               cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+               cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 }
 
 \arguments{
