@@ -70,7 +70,7 @@ setMethod(f="plot",
                                xlab="", ylab="",
                                asp,
                                clongitude, clatitude, span,
-                               projection, parameters=NULL, orientation=NULL,
+                               projection=NULL, parameters=NULL, orientation=NULL,
                                ## center, span,
                                expand=1,
                                mgp=getOption("oceMgp"),
@@ -91,17 +91,17 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="")
-              if (!missing(projection)) {
+              if (!is.null(projection)) {
                   if (missing(span))
                       span <- 1000
                   if (missing(clongitude))
                       longitudelim <- c(-180, 180)
                   else
-                      longitudelim <- clongitude + c(-1, 1) * span / 111
+                      longitudelim <- clongitude + c(-1, 1) * span / 111 / 2
                   if (missing(clatitude))
                       latitudelim <- c(-90, 90)
                   else
-                      latitudelim <- clatitude + c(-1, 1) * span / 111
+                      latitudelim <- clatitude + c(-1, 1) * span / 111 / 2
                   return(mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
                                  mgp=mgp, mar=mar,
                                  bg="white", fill=fill, type='l', axes=TRUE,
@@ -192,7 +192,8 @@ setMethod(f="plot",
                   } else {
                       oceDebug(debug, "type 2 (will narrow y range)\n")
                       d <- asp.page / asp * diff(yr)
-                      oceDebug(debug, "  yr original:", yr, "\n")
+                      oceDebug(debug, "  yr original:", yr, ", yielding approx span", 111*diff(yr),
+                               "km\n")
                       yr <- mean(yr) + d * c(-1/2, 1/2)
                       oceDebug(debug, "  yr narrowed:", yr, "\n")
                   }

@@ -63,7 +63,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    oceDebug(debug, "\b\bmapPlot(...) {\n")
+    oceDebug(debug, "\b\bmapPlot(longitude, latitude", 
+            ", longitudelim=",
+             if (missing(longitudelim)) c("missing") else c("c(", paste(longitudelim, collapse=","), ")"),
+             ", longitudelim=",
+             if (missing(latitudelim)) c("missing") else c("c(", paste(latitudelim, collapse=","), ")"),
+             ", ...) {\n")
+    if (missing(longitude))
+        longitude <- coastlineWorld
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -130,14 +137,22 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
         inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
+        incBest <- diff(pretty(latitudelim, n=2, n.min=1))[1]
+        oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+        if (inc / incBest > 3) {
+            latlabs <- pretty(latitudelim, n=2, n.min=1)
+            grid[2] <- incBest
+        } else {
+            latlabs <- seq(-90, 90, inc)
+        }
+        oceDebug(debug, "latlabs:", latlabs, "\n")
         usr <- par('usr')
         labelAt <- NULL
         labels <- NULL
         lastAtY <- NA
         ##cat("inc:", inc, "\n")
         if (drawGrid) {
-            for (latlab in seq(-90, 90, inc)) {
-                oceDebug(debug, "latlab", latlab, "\n")
+            for (latlab in latlabs) {
                 if (-90 <= latlab && latlab <= 90) {
                     try({
                         o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]),
@@ -155,7 +170,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
                             mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
                                   line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
-                                  side=2, at=at$y, srt=90, ...) # how to rotate?
+                                  side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
                             lastAtY <- at$y
                         }
                     }, silent=TRUE)
@@ -164,11 +179,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         labelAt <- NULL
         inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
+        incBest <- diff(pretty(longitudelim, n=2, n.min=1))[1]
+        oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+        if (inc / incBest > 3) {
+            lonlabs <- pretty(longitudelim, n=2, n.min=1)
+            grid[1] <- incBest
+        } else {
+            lonlabs <- seq(-180, 180, inc)
+        }
+        oceDebug(debug, "lonlabs:", lonlabs, "\n")
         labels <- NULL
         lastx <- NA
         dxMin <- (usr[2] - usr[1]) / 10
         mgp <- par('mgp')
-        for (lonlab in seq(-180, 180, inc)) {
+        for (lonlab in lonlabs) {
             if (-180 <= lonlab && lonlab <= 180) { # the limits are the lonlim
                 try({
                     o <- optimize(function(lat) abs(mapproject(lonlab, lat)$y-usr[3]), lower=-89, upper=89)
@@ -176,7 +200,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         next
                     latlab <- o$minimum
                     at <- mapproject(lonlab, latlab)
-                                        #if (lonlab > -66 && lonlab < -64) browser()
                     if (usr[1] < at$x && at$x < usr[2]) {
                         labelAt <- c(labelAt, at$x)
                         labels <- c(labels,
@@ -185,7 +208,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
                                   side=1,
                                   line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
-                                  at=at$x, ...)
+                                  at=at$x, cex=par('cex'), ...)
                             lastx <- at$x
                         }
                         oceDebug(debug, "  x axis: ",

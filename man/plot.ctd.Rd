@@ -18,7 +18,7 @@
      coastline="best",
      Slim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
-     lonlim, latlim, span,
+     lonlim, latlim, span, projection=NULL,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
      pch=1,
@@ -46,11 +46,10 @@
       \item \code{which=3} or \code{which="TS"} gives a TS plot
       \item \code{which=4} or \code{which="text"} gives a textual
       summary of some aspects of the data
-      \item \code{which=5} or \code{which="map"} gives a map, with a dot
-      for the station location.  If a coastline is given, that is drawn as
-      well.  Notes near the top boundary of the map give the station number,
-      the sampling date, and the name of the chief scientist, if these are
-      known.
+      \item \code{which=5} or \code{which="map"} gives a map, with a dot for
+      the station location.  Notes near the top boundary of the map give the
+      station number, the sampling date, and the name of the chief scientist,
+      if these are known.
       \item \code{which=5.1} as for \code{which=5}, except that the file name
       is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
@@ -107,7 +106,9 @@
     map plotted)} 
   \item{latlim}{optional limits of latitude axis of map (ignored if no
     map plotted)} 
-  \item{span}{optional span of map, in km (ignored unless a map is being drawn)}
+  \item{span}{optional span of map, in km.  If not given, the map scale is
+      chosen to include some points on the nearby coastline.}
+  \item{projection}{projection for map, \code{NULL} for none.}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}

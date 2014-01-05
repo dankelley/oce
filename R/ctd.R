@@ -644,7 +644,7 @@ setMethod(f="plot",
                               coastline="best",
                               Slim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
-                              lonlim, latlim, span,
+                              lonlim, latlim, span, projection=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
                               pch=1,
@@ -969,14 +969,31 @@ setMethod(f="plot",
                               waterDepth <- max(x[["pressure"]], na.rm=TRUE)
                           if (missing(span)) {
                               if (waterDepth < 50)
+                                  span <- 50
+                              else if (waterDepth < 100)
                                   span <- 100
                               else if (waterDepth < 200)
                                   span <- 500
                               else if (waterDepth < 2000)
                                   span <- 1000
                               else
-                                  span <- 10000
+                                  span <- 5000
+                              oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
+                              if (TRUE) {
+                                  ## find nearest point on (coarse) globe
+                                  d <- geodDist(coastlineWorldCoarse[['longitude']],
+                                                coastlineWorldCoarse[['latitude']],
+                                                x[['longitude']],
+                                                x[['latitude']])
+                                  nearest <- d[which.min(d)] # in km
+                                  span <- 3 * nearest
+                                  oceDebug(debug, "**NEW METHOD** span not given, and nearest point is=", nearest,
+                                           "km away (coarse coastline), so set span=", span, "\n")
+                              }
                           }
+                          ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
+                          if (x[["latitude"]][1] > 70 && is.null(projection))
+                              projection <- "stereographic"
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
                               if (coastline == "best") {
@@ -1000,13 +1017,15 @@ setMethod(f="plot",
                               if (missing(latlim)) {
                                   oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
-                                  plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
-                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                  plot(coastline,
+                                       clatitude=mean(latlim.c), clongitude=clon, span=span, projection=projection,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)
-                                  plot(coastline, clatitude=clat, clongitude=clon,
-                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                  plot(coastline,
+                                       clatitude=clat, clongitude=clon, span=span, projection=projection,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               }
                               if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
                                   mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
@@ -1017,18 +1036,25 @@ setMethod(f="plot",
                                   oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   clat <- mean(latlim.c)
-                                  plot(coastline, clatitude=clat, clongitude=clon,
-                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                  plot(coastline,
+                                       clatitude=clat, clongitude=clon, span=span, projection=projection,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                   clat <- mean(latlim)
-                                  plot(coastline, clatitude=clat, clongitude=clon,
-                                       span=span, mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                  plot(coastline,
+                                       clatitude=clat, clongitude=clon, span=span, projection=projection,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               }
                           }
                           oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
-                          points(x@metadata$longitude, x@metadata$latitude,
-                                 cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                          if (is.null(projection)) {
+                              points(x@metadata$longitude, x@metadata$latitude,
+                                     cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                          } else {
+                              mapPoints(x@metadata$longitude, x@metadata$latitude,
+                                     cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                          }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                               mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                           if (!is.null(x@metadata$startTime))
