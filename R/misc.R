@@ -115,7 +115,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
          xmids=xbreaks[-1]-0.5*diff(xbreaks),
          ymids=ybreaks[-1]-0.5*diff(ybreaks),
          number=matrix(rval$number, nrow=nxbreaks-1),
-         result=matrix(if (fGiven) rval$mean else NA, nrow=nxbreaks-1))
+         result=if (fGiven) matrix(rval$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
 }
 
 binAverage <- function(x, y, xmin, xmax, xinc)
