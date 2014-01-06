@@ -146,11 +146,9 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     oceDebug(debug, "\b\b} # plotPolar()\n")
 }
 
-oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
+oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 {
     method <- match.arg(method)
-    if (method != "reiniger-ross")
-        stop("only available method is \"reiniger-ross\"")
     if (missing(x))
         stop("must supply x")
     if (missing(y))
@@ -173,7 +171,8 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x, y=y, xout=xout)
+    .Call("oce_approx", x=x, y=y, xout=xout,
+          method=pmatch(method, c("unesco", "rr")))
 }
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,

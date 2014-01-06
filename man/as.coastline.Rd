@@ -26,21 +26,6 @@
     structure of coastline objects, and also outlines the other functions
     dealing with them.}
 
-\examples{
-    ## Demonstrate coastline alteration, removing Georges Island from Halifax Harbour
-    library(oce)
-    data(coastlineHalifax)
-    lat <- coastlineHalifax[["latitude"]]
-    lon <- coastlineHalifax[["longitude"]]
-    georges <- 44.63632 < lat & lat < 44.64784 & -63.56681 < lon & lon < -63.55452
-    lat <- lat[!georges]
-    lon <- lon[!georges]
-    coastlineNew <- as.coastline(lon, lat, fillable=TRUE)
-    par(mfrow=c(2,1))
-    plot(coastlineHalifax)
-    plot(coastlineNew)
-}
-
 \references{
 The NOAA site \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html}
 is a good source for coastline data files.}

@@ -17,7 +17,8 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline=c("best","coastlineWorld","coastlineMaritimes","coastlineHalifax","none"),
+     coastline=c("best", "coastlineWorld", "coastlineWorldFine",
+                 "coastlineWorldCoarse", "none"),
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
@@ -164,16 +165,13 @@
 
 \examples{
 library(oce)
-## Halifax Harbour
-data(section)
-plot(section)
+sg <- sectionGrid(section)
 
 ## AO3 section
-data(a03)
-plot(a03, which="salinity", ztype="points", pch=20, cex=1.5) 
+plot(sg, which="salinity", ztype="points", pch=20, cex=1.5) 
 
 ## Gulf Stream
-GS <- subset(a03, 109<=stationId&stationId<=129)
+GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 plot(GSg, which=c(1,99), map.ylim=c(34,42))
 

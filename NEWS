@@ -1,4 +1,7 @@
 0.9-13
+- ctdDecimate() handles new method 'unesco'
+- coastline improvements (now 3 resolutions)
+- webtide() improvements
 - read.observatory() added
 - read.ctd.itp() added
 - mapImage() speeded up (60X in 1deg SST example)
@@ -332,7 +335,7 @@
 - plot.tidem(): remove argument 'plot.type', using 'which' instead
 - read.pt(): add arguments from, by, and to
 - fix issue 57 [read.adp.rdi() read the heading incorrectly]
-- add "reiniger-ross" method to ctd.decimate()
+- add "rr" method to ctdDecimate()
 - oceApprox() added
 - topoWorld dataset added
 - plot.ctd(): by default, make coastlines extend to box boundaries
@@ -497,7 +500,7 @@
 - rename as.CTD() to as.ctd(), to make it consistent with similar functions
 - add read.section()
 - add sectionGrid(), which only grids in p at the moment
-- add a03 dataset
+- add a03 dataset (renamed 'section' in 0.9-13)
 - fix SF bug 1833719: warnings from read.ctd()
 - fix google-code issue 8: read.coastline() not producing data
   [http://code.google.com/p/r-oce/issues/detail?id=8&can=1&q=label:Type-Defect]

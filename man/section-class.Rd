@@ -57,20 +57,19 @@
     Statistical summaries are provided by \code{\link{summary.section}}, while
     overviews are provided by \code{show.section}.  
     
-    Two section datasets are provided in the package: \code{\link{a03}},
-    containing data along WOCE line A03, and \code{\link[ocedata]{section}},
-    containing data in Halifax Harbour.}
+    The sample dataset \code{\link{section}} contains data along WOCE line A03.
+
+}
 
 \examples{
 library(oce)
-data(a03)
-plot(a03[['station', 1]])
-pairs(cbind(z=-a03[["pressure"]],T=a03[["temperature"]],S=a03[["salinity"]]))
-## T profiles for first few stations in a03, at common scale
+plot(section[['station', 1]])
+pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["salinity"]]))
+## T profiles for first few stations in section, at common scale
 par(mfrow=c(3,3))
-Tlim <- range(a03[["temperature"]])
-ylim <- rev(range(a03[["pressure"]]))
-for (stn in a03[["station",1:9]])
+Tlim <- range(section[["temperature"]])
+ylim <- rev(range(section[["pressure"]]))
+for (stn in section[["station",1:9]])
     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 }
 

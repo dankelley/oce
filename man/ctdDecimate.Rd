@@ -2,7 +2,7 @@
 \alias{ctdDecimate}
 \title{Decimate a CTD profile}
 \description{Interpolate a CTD profile to specified pressure values.}
-\usage{ctdDecimate(x, p, method=c("approx","boxcar","lm","reiniger-ross"),
+\usage{ctdDecimate(x, p, method=c("approx","boxcar","lm","rr", "unesco"),
              e=1.5, debug=getOption("oceDebug"))}
 \arguments{
   \item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -19,10 +19,9 @@
     function \code{\link{approx}} and is a simple linear interpolation
     between neighbouring points. The \code{"boxcar"} method is based on
     the mean of local data , while the \code{"lm"} method is based on a
-    local linear regression model. (The \code{e} parameter sets the
-    locality, as explained in the next item.)  The
-    \code{"reiniger-ross"} method uses \code{\link{oceApprox}} to use
-    the weighted-parabola method developed by Reiniger and Ross (1968).}
+    local linear regression model (with \code{e} setting the
+    locality, as explained below.)  The
+    \code{"unesco"} and \code{"rr"} methods use \code{\link{oceApprox}}.}
   \item{e}{is an expansion coefficient used to calculate the local
     neighbourhoods for the \code{"boxcar"} and \code{"lm"} methods.  If
     \code{e=1}, then the neighbourhood for the i-th pressure extends from
@@ -62,7 +61,7 @@ library(oce)
 data(RRprofile)
 ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
 plotProfile(ctd, "T", Tlim=c(2,9))
-ctd2 <- ctdDecimate(ctd,p=seq(0,2000,1),method="reiniger-ross")
+ctd2 <- ctdDecimate(ctd,p=seq(0,2000,1))
 lines(temperature(ctd2), pressure(ctd2), col="blue")
 }
 

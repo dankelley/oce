@@ -1393,15 +1393,12 @@ setMethod(f="plot",
                                   if (coastline == "coastlineWorld") {
                                       data(coastlineWorld, envir=environment())
                                       coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineMaritimes") {
-                                      data(coastlineMaritimes, envir=environment())
-                                      coastline <- coastlineMaritimes
-                                  } else if (coastline == "coastlineHalifax") {
-                                      data(coastlineHalifax, envir=environment())
-                                      coastline <- coastlineHalifax
-                                  } else if (coastline == "coastlineSLE") {
-                                      data(coastlineSLE, envir=environment())
-                                      coastline <- coastlineSLE
+                                  } else if (coastline == "coastlineWorldFine") {
+                                      data(coastlineWorldFine, envir=environment())
+                                      coastline <- coastlineWorldFine
+                                  } else if (coastline == "coastlineWorldCoarse") {
+                                      data(coastlineWorlCoarse, envir=environment())
+                                      coastline <- coastlineWorldCoarse
                                   } else {
                                       stop("there is no built-in coastline file of name \"", coastline, "\"")
                                   }

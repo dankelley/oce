@@ -32,9 +32,8 @@ data(coastlineWorld)
 mapPlot(coastlineWorld, type='l', grid=TRUE,
         longitudelim=c(-80,0), latitudelim=c(20,50),
         projection="mercator", orientation=c(90,-40,0))
-data(a03)
-lon <- a03[["longitude", 'byStation']]
-lat <- a03[["latitude", 'byStation']]
+lon <- section[["longitude", 'byStation']]
+lat <- section[["latitude", 'byStation']]
 mapPoints(lon, lat, pch=20, col='red')
 }
 }

@@ -70,7 +70,7 @@ setMethod(f="plot",
                                xlab="", ylab="",
                                asp,
                                clongitude, clatitude, span,
-                               projection, parameters=NULL, orientation=NULL,
+                               projection=NULL, parameters=NULL, orientation=NULL,
                                ## center, span,
                                expand=1,
                                mgp=getOption("oceMgp"),
@@ -91,17 +91,17 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="")
-              if (!missing(projection)) {
+              if (!is.null(projection)) {
                   if (missing(span))
                       span <- 1000
                   if (missing(clongitude))
                       longitudelim <- c(-180, 180)
                   else
-                      longitudelim <- clongitude + c(-1, 1) * span / 111
+                      longitudelim <- clongitude + c(-1, 1) * span / 111 / 2
                   if (missing(clatitude))
                       latitudelim <- c(-90, 90)
                   else
-                      latitudelim <- clatitude + c(-1, 1) * span / 111
+                      latitudelim <- clatitude + c(-1, 1) * span / 111 / 2
                   return(mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
                                  mgp=mgp, mar=mar,
                                  bg="white", fill=fill, type='l', axes=TRUE,
@@ -192,19 +192,24 @@ setMethod(f="plot",
                   } else {
                       oceDebug(debug, "type 2 (will narrow y range)\n")
                       d <- asp.page / asp * diff(yr)
-                      oceDebug(debug, "  yr original:", yr, "\n")
+                      oceDebug(debug, "  yr original:", yr, ", yielding approx span", 111*diff(yr),
+                               "km\n")
                       yr <- mean(yr) + d * c(-1/2, 1/2)
                       oceDebug(debug, "  yr narrowed:", yr, "\n")
                   }
                   ## Avoid looking beyond the poles, or the dateline
-                  if (xr[1] < (-180))
+                  if (xr[1] < (-180)) {
                       xr[1] <- (-180)
-                  if (xr[2] >  180)
+                  }
+                  if (xr[2] >  180) {
                       xr[2] <- 180
-                  if (yr[1] <  (-90))
+                  }
+                  if (yr[1] <  (-90)) {
                       yr[1] <- (-90)
-                  if (yr[2] >  90)
+                  }
+                  if (yr[2] >  90) {
                       yr[2] <- 90
+                  }
                   oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
                   ## Draw underlay, if desired
                   plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
@@ -609,89 +614,35 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     res
 }
 
-
-## summary.coastline <- function(object, ...)
-## {
-##     cat("Coastline Summary\n-----------------\n\n")
-##     cat("* Number of points:", length(object@data$latitude), ", of which", 
-##         sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-##     cat("\n",...)
-##     cat("* Statistics of subsample::\n\n", ...)
-##     ndata <- length(object@data)
-##     threes <- matrix(nrow=ndata, ncol=3)
-##     for (i in 1:ndata)
-##         threes[i,] <- threenum(object@data[[i]])
-##     rownames(threes) <- paste("   ", names(object@data))
-##     colnames(threes) <- c("Min.", "Mean", "Max.")
-##     print(threes, indent='  ')
-##     processingLogShow(object)
-##     invisible()
-## }
-
-
-coastlineBest <- function(lonRange, latRange, debug=getOption("oceDebug"))
+coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\bcoastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
-             "), latRange=c(", paste(round(latRange, 2), collapse=","), "), debug=", debug, ") {\n", sep="")
-    if (any(lonRange > 180)) {
-        lonRange <- lonRange - 360 # FIXME: does this always work?
-        oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
+             "), latRange=c(", paste(round(latRange, 2), collapse=","),
+             "), span=", span, ", debug=", debug, ") {\n", sep="")
+    if (missing(span)) {
+        if (any(lonRange > 180)) {
+            lonRange <- lonRange - 360 # FIXME: does this always work?
+            oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
+        }
+        lonRange <- sort(lonRange)
+        latRange <- sort(latRange)
+        ## Set scale as the max of the distances along four sides of box
+        ## NB. all distance used here are in km.
+        l <- geodDist(lonRange[1], latRange[1], lonRange[1], latRange[2])
+        r <- geodDist(lonRange[2], latRange[1], lonRange[2], latRange[2])
+        b <- geodDist(lonRange[1], latRange[1], lonRange[2], latRange[1])
+        t <- geodDist(lonRange[1], latRange[2], lonRange[2], latRange[2])
+        oceDebug(debug, "l:", l, ", r:", r, ", b:", b, ", t:", t, "\n")
+        span <- max(l, r, b, t)
     }
-
-    ## data(coastlineHalifax, envir=environment())
-    ## data(coastlineMaritimes, envir=environment())
-    ## data(coastlineSLE, envir=environment())
-    ## data(coastlineWorld, envir=environment())
-    ## range(coastlineHalifax[["longitude"]], na.rm=TRUE)
-    ## [1] -63.70000 -63.36807
-    ## range(coastlineHalifax[["latitude"]], na.rm=TRUE)
-    ## [1] 44.55496 44.75000
-    ## data(coastlineMaritimes, envir=environment())
-    ## range(coastlineMaritimes[["longitude"]], na.rm=TRUE)
-    ## [1] -66.8000 -59.6897
-    ## range(coastlineMaritimes[["latitude"]], na.rm=TRUE)
-    ## [1] 43.39973 47.20000
-    ## data(coastlineSLE, envir=environment())
-    ## range(coastlineSLE[["longitude"]], na.rm=TRUE)
-    ## [1] -71.50000 -67.31163
-    ## range(coastlineSLE[["latitude"]], na.rm=TRUE)
-    ## [1] 46.80000 49.38621
-    ## data(coastlineWorld, envir=environment())
-    ## range(coastlineWorld[["longitude"]], na.rm=TRUE)
-    ## [1] -180  180
-    ## range(coastlineWorld[["latitude"]], na.rm=TRUE)
-    ## [1] -90.0000  83.6236
-
-    lonrHalifax <- c(-63.70000, -63.36807)
-    latrHalifax <- c(44.55496, 44.75000)
-
-    lonrMaritimes <- c(-66.8000, -59.6897)
-    latrMaritimes <- c(43.39973, 47.20000)
-
-    lonrSLE <- c(-71.50000, -67.31163)
-    latrSLE <- c(46.80000, 49.38621)
-
-    lonrWorld <- c(-180, 180)
-    latrWorld <- c(-90.0000, 83.6236)
-
-    if (lonRange[1] >= lonrHalifax[1] && lonRange[2] <= lonrHalifax[2] &&
-        latRange[1] >= latrHalifax[1] && latRange[2] <= latrHalifax[2]) {
-        oceDebug(debug, "\b\b} # using coastlineHalifax\n")
-        data(coastlineHalifax, envir=environment())
-        return(coastlineHalifax)
-    } else if (lonRange[1] >= lonrSLE[1] && lonRange[2] <= lonrSLE[2] &&
-               latRange[1] >= latrSLE[1] && latRange[2] <= latrSLE[2]) {
-        oceDebug(debug, "\b\b} # using coastlineSLE\n")
-        data(coastlineSLE, envir=environment())
-        return(coastlineSLE)
-    } else if (lonRange[1] >= lonrMaritimes[1] && lonRange[2] <= lonrMaritimes[2] &&
-               latRange[1] >= latrMaritimes[1] && latRange[2] <= latrMaritimes[2]) {
-        oceDebug(debug, "\b\b} # using coastlineMaritimes\n")
-        data(coastlineMaritimes, envir=environment())
-        return(coastlineMaritimes)
-    } else {
-        data(coastlineWorld, envir=environment())
-        oceDebug(debug, "\b\b} # using coastlineWorld\n")
-        return(coastlineWorld)
-    }
+    C <- 2 * 3.14 * 6.4e3              # circumferance of earth
+    oceDebug(debug, "span:", span, ", C:", C, "\n")
+    if (span < 500)
+        rval <- coastlineWorldFine
+    else if (span < C / 4)
+        rval <- coastlineWorld
+    else
+        rval <- coastlineWorldCoarse
+    oceDebug(debug, "\b\b}\n")
+    return(rval)
 }

@@ -8,7 +8,7 @@ setMethod(f="initialize",
 
 
 setMethod(f="summary",
-          signature="tdr",
+          signature="section",
           definition=function(object, ...) {
               numStations <- length(object@data$station)
               lat1 <- object@data$station[[1]]@metadata$latitude
@@ -99,11 +99,9 @@ setMethod(f="[[",
               } else if ("depth" == i) {
                   rval <- NULL
                   for (stn in seq_along(x@data$station))
-                      rval <- c(rval, x@data$station[[stn]]@data$pressure)
+                      rval <- c(rval, x@data$station[[stn]]@data$pressure) # FIXME not really depth
               } else {
-                  rval <- unlist(lapply(a03@data$station, function(x) x[[i]]))
-              #} else {
-              #    stop("cannot access item named \"", i, "\" in this section object")
+                  rval <- unlist(lapply(x@data$station, function(X) X[[i]]))
               }
               rval
           })
@@ -367,7 +365,8 @@ setMethod(f="plot",
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
+                              coastline=c("best", "coastlineWorld", "coastlineWorldFine",
+                                          "coastlineWorldCoarse", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
@@ -394,7 +393,8 @@ setMethod(f="plot",
               oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ztype=\"",
                        ztype, "\", ...) {\n", sep="")
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
-              haveData <- unlist(lapply(x@data$station, function(stn) 0 < length(stn[['pressure']])))
+              haveData <- sapply(x@data$station,
+                                 function(stn) 0 < length(stn[['pressure']]))
               x@data$station <- x@data$station[haveData]
               x@metadata$stationId <- x@metadata$stationId[haveData]
               x@metadata$latitude <- x@metadata$latitude[haveData]
@@ -441,55 +441,24 @@ setMethod(f="plot",
                           plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       }
                       haveCoastline <- FALSE
-                      ##data(coastlineWorld, envir=environment())
-                      ##data(coastlineMaritimes, envir=environment())
-                      ##data(coastlineHalifax, envir=environment())
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
                           coastline <- coastlineBest(lonr, latr, debug=debug-1)
                           haveCoastline <- TRUE
-                          if (FALSE) {
-                              if (any(lonr > 180))
-                                  lonr <- lonr - 360
-                              ##cat("TEST: autoshrink to best coastline file\n")
-                              ##cat("lonr:", lonr, "\n")
-                              ##cat("latr:", latr, "\n")
-                              ##cat("lon range hfs:", range(coastlineHalifax[['longitude']],na.rm=TRUE), '\n')
-                              ##cat("lat range hfs:", range(coastlineHalifax[['latitude']],na.rm=TRUE), '\n')
-                              if (lonr[1] >= min(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-                                  lonr[2] <= max(coastlineHalifax[['longitude']],na.rm=TRUE) &&
-                                  latr[1] >= min(coastlineHalifax[['latitude']],na.rm=TRUE) &&
-                                  latr[2] <= max(coastlineHalifax[['latitude']],na.rm=TRUE)) {
-                                  coastline <- coastlineHalifax
-                                  haveCoastline <- TRUE 
-                                  oceDebug(debug, "using coastlineHalifax\n")
-                              } else if (lonr[1] >= min(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-                                         lonr[2] <= max(coastlineMaritimes[['longitude']],na.rm=TRUE) &&
-                                         latr[1] >= min(coastlineMaritimes[['latitude']],na.rm=TRUE) &&
-                                         latr[2] <= max(coastlineMaritimes[['latitude']],na.rm=TRUE)) {
-                                  coastline <- coastlineMaritimes
-                                  haveCoastline <- TRUE 
-                                  oceDebug(debug, "using coastlineMaritimes\n")
-                              } else {
-                                  oceDebug(debug, "using coastlineWorld\n")
-                                  coastline <- coastlineWorld
-                                  haveCoastline <- TRUE 
-                              }
-                          }
                       } else {
                           if (coastline != "none") {
-                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                  if (coastline == "coastlineWorld") {
-                                      coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineMaritimes") {
-                                      coastline <- coastlineMaritimes
-                                  } else if (coastline == "coastlineHalifax") {
-                                      coastline <- coastlineHalifax
-                                  } else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                  }
+                              if (coastline == "coastlineWorld") {
+                                  data(coastlineWorld, envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (coastline == "coastlineWorldFine") {
+                                  data(coastlineWorldFine, envir=environment())
+                                  coastline <- coastlineWorldFine
+                              } else if (coastline == "coastlineWorldCoarse") {
+                                  data(coastlineWorlCoarse, envir=environment())
+                                  coastline <- coastlineWorldCoarse
+                              }  else {
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                               haveCoastline <- TRUE
                           }
@@ -1016,6 +985,7 @@ read.section <- function(file, directory, sectionId="", flags,
     if (!inherits(file, "connection")) {
 	stop("argument `file' must be a character string or connection")
     }
+    res <- new("section")
     if (!isOpen(file)) {
 	filename <- "(connection)"
 	open(file, "r")
@@ -1211,10 +1181,12 @@ read.section <- function(file, directory, sectionId="", flags,
     if (missing(processingLog))
 	processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- new("section")
     res@metadata <- metadata
     res@data <- data
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
+    oceDebug(debug, "\b\b} # read.section()\n")
     res
 }
 

@@ -12,7 +12,7 @@
      xlab="", ylab="",
      asp,
      clongitude, clatitude, span,
-     projection, parameters=NULL, orientation=NULL,
+     projection=NULL, parameters=NULL, orientation=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),

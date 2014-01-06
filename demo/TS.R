@@ -1,9 +1,9 @@
 library(oce)
 # Plot TS diagram for data along 36N Atlantic section,
 # colour-coded for longitude (which ranges -8 to -74)
-data(a03)
+data(section)
 for (i in 1:124) {
-    profile <- a03[["station", i]]
+    profile <- section[["station", i]]
     x <- (-8 - profile[["longitude"]]) / (74 - 8)
     col <- hsv(2*x/3) # red to blue
     if (i == 1) {
