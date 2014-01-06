@@ -6,7 +6,7 @@
 - read.ctd.itp() added
 - mapImage() speeded up (60X in 1deg SST example)
 - binApply1D() and binApply2D() added
-- binMean1D() and binMean2D() added
+- binCount1D(), binMean1D(), binCount2D(), and binMean2D() added
 - numberAsHMS() added
 - gps data type added (provisionally)
 - various functions: reorder arguments putting longitude before latitude

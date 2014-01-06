@@ -47,6 +47,24 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
          result=rval)
 }
 
+binCount1D <- function(x, xbreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    nx <- length(x)
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2)
+        stop("must have more than 1 break")
+    res <- .C("bin_count_1d", length(x), as.double(x),
+              length(xbreaks), as.double(xbreaks),
+              number=integer(nxbreaks-1),
+              result=double(nxbreaks-1),
+              NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks), 
+         number=res$number)
+}
 
 binMean1D <- function(x, f, xbreaks)
 {
@@ -87,6 +105,32 @@ binMean1D <- function(x, f, xbreaks)
 ##               NAOK=TRUE, PACKAGE="oce")
 ##    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), bi=rval$bi)
 ##}
+
+
+binCount2D <- function(x, y, xbreaks, ybreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (length(x) != length(y)) stop("lengths of x and y must agree")
+    if (length(x) != length(f)) stop("lengths of x and f must agree")
+    if (missing(xbreaks)) xbreaks <- pretty(x)
+    if (missing(ybreaks)) ybreaks <- pretty(y)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    nybreaks <- length(ybreaks)
+    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    rval <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
+               length(xbreaks), as.double(xbreaks),
+               length(ybreaks), as.double(ybreaks),
+               number=integer((nxbreaks-1)*(nybreaks-1)),
+               mean=double((nxbreaks-1)*(nybreaks-1)),
+               NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks,
+         ybreaks=ybreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         ymids=ybreaks[-1]-0.5*diff(ybreaks),
+         number=matrix(rval$number, nrow=nxbreaks-1))
+}
 
 
 binMean2D <- function(x, y, f, xbreaks, ybreaks)

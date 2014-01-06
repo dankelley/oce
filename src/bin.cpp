@@ -27,6 +27,32 @@
 */
 
 extern "C" {
+    void bin_count_1d(int *nx, double *x, int *nxbreaks, double *xbreaks,
+            int *number, double *mean)
+    {
+
+        if (*nxbreaks < 2)
+            error("cannot have fewer than 1 break"); // already checked in R but be safe
+        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
+        std::sort(b.begin(), b.end()); // STL wants breaks ordered
+        for (int i = 0; i < (*nxbreaks-1); i++) {
+            number[i] = 0;
+        }
+        for (int i = 0; i < (*nx); i++) {
+            std::vector<double>::iterator lower_bound;
+            lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
+            int bi = lower_bound - b.begin();
+            if (bi > 0 && bi < (*nxbreaks)) {
+#ifdef DEBUG
+                Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, breaks[bi-1], breaks[bi]);
+#endif
+                number[bi-1]++;
+            }
+        }
+    }
+}
+
+extern "C" {
     void bin_mean_1d(int *nx, double *x, double *f, int *nxbreaks, double *xbreaks,
             int *number, double *mean)
     {
@@ -64,14 +90,47 @@ extern "C" {
 }
 
 
+#define ij(i, j) ((i) + (*nxbreaks-1) * (j))
+extern "C" {
+    void bin_count_2d(int *nx, double *x, double *y,
+            int *nxbreaks, double *xbreaks,
+            int *nybreaks, double *ybreaks,
+            int *number, double *mean)
+    {
+#ifdef DEBUG
+        Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
+#endif
+        if (*nxbreaks < 2) error("cannot have fewer than 1 xbreak"); // already checked in R but be safe
+        if (*nybreaks < 2) error("cannot have fewer than 1 ybreak"); // already checked in R but be safe
+        std::vector<double> bx(xbreaks, xbreaks + *nxbreaks);
+        std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
+        std::vector<double> by(ybreaks, ybreaks + *nybreaks);
+        std::sort(by.begin(), by.end()); // STL wants breaks ordered
+        for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
+            number[bij] = 0;
+        }
+        for (int i = 0; i < (*nx); i++) {
+            int bi = std::lower_bound(bx.begin(), bx.end(), x[i]) - bx.begin();
+            int bj = std::lower_bound(by.begin(), by.end(), y[i]) - by.begin();
+            if (bi > 0 && bj > 0 && bi < (*nxbreaks) && bj < (*nybreaks)) {
+#ifdef DEBUG
+                Rprintf("x: %6.3f, y: %6.3f, bi: %d, bj: %d\n", x[i], y[i], bi, bj);
+#endif
+                number[ij(bi-1, bj-1)]++;
+            }
+        }
+    }
+}
+#undef ij
+
+
+#define ij(i, j) ((i) + (*nxbreaks-1) * (j))
 extern "C" {
     void bin_mean_2d(int *nx, double *x, double *y, double *f,
             int *nxbreaks, double *xbreaks,
             int *nybreaks, double *ybreaks,
             int *number, double *mean)
     {
-        // array lookup
-#define ij(i, j) ((i) + (*nxbreaks-1) * (j))
 #ifdef DEBUG
         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
 #endif
@@ -107,6 +166,7 @@ extern "C" {
         }
     }
 }
+#undef ij
 
 
 // /* keep below in case .bincode() proves to be slow for binApply1D() and binApply2D() */

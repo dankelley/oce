@@ -1,14 +1,19 @@
 \name{binMean}
 
 \alias{binMean}
+\alias{binCount}
+\alias{binCount1D}
+\alias{binCount2D}
 \alias{binMean1D}
 \alias{binMean2D}
 
-\title{Bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
+\title{Bin-count or bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
 
-\description{Bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
+\description{Bin-count or bin-average f=f(x) or f=f(x,y), based on x or (x,y) values}
 
 \usage{
+binCount1D(x, xbreaks)
+binCount2D(x, y, xbreaks, ybreaks)
 binMean1D(x, f, xbreaks)
 binMean2D(x, y, f, xbreaks, ybreaks)}
 
@@ -35,10 +40,11 @@ binMean2D(x, y, f, xbreaks, ybreaks)}
 \value{A list with the following elements: the breaks (\code{xbreaks}, along
     with \code{ybreaks} for the 2D case), the break mid-points (\code{xmids}
     along with \code{ymids} for the 2D case), the number of data points in each
-    bin, \code{number}, and the mean value of \code{f} value in the bins,
-    \code{value}.  For the 1D case, \code{number} and \code{mean} are vectors,
-    whereas they are matrices for the 2D case.  For plotting, the midpoints are
-    more useful than the breaks, as shown in the examples.}
+    bin, \code{number}, and (for the ``mean'' case) the mean value of \code{f}
+    value in the bins, \code{value}.  For the 1D case, \code{number} and
+    \code{mean} are vectors, whereas they are matrices for the 2D case.  For
+    plotting, the midpoints are more useful than the breaks, as shown in the
+    examples.}
 
 \examples{
 library(oce)
