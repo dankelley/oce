@@ -65,9 +65,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 {
     oceDebug(debug, "\b\bmapPlot(longitude, latitude", 
             ", longitudelim=",
-             if (missing(longitudelim)) c("missing") else c("c(", paste(longitudelim, collapse=","), ")"),
+             if (missing(longitudelim)) "(missing)" else c("c(", paste(longitudelim, collapse=","), ")"),
              ", longitudelim=",
-             if (missing(latitudelim)) c("missing") else c("c(", paste(latitudelim, collapse=","), ")"),
+             if (missing(latitudelim)) "(missing)" else c("c(", paste(latitudelim, collapse=","), ")"),
              ", ...) {\n")
     if (missing(longitude))
         longitude <- coastlineWorld
@@ -137,13 +137,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
         inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
-        incBest <- diff(pretty(latitudelim, n=2, n.min=1))[1]
-        oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-        if (inc / incBest > 3) {
-            latlabs <- pretty(latitudelim, n=2, n.min=1)
-            grid[2] <- incBest
-        } else {
-            latlabs <- seq(-90, 90, inc)
+        latlabs <- seq(-90, 90, inc)
+        if (!missing(latitudelim)) { 
+            incBest <- diff(pretty(latitudelim, n=2, n.min=1))[1]
+            oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+            if (inc / incBest > 3) {
+                latlabs <- pretty(latitudelim, n=2, n.min=1)
+                grid[2] <- incBest
+            }
         }
         oceDebug(debug, "latlabs:", latlabs, "\n")
         usr <- par('usr')
@@ -179,13 +180,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         labelAt <- NULL
         inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
-        incBest <- diff(pretty(longitudelim, n=2, n.min=1))[1]
-        oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-        if (inc / incBest > 3) {
-            lonlabs <- pretty(longitudelim, n=2, n.min=1)
-            grid[1] <- incBest
-        } else {
-            lonlabs <- seq(-180, 180, inc)
+        lonlabs <- seq(-180, 180, inc)
+        if (!missing(longitudelim)) { 
+            oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+            incBest <- diff(pretty(longitudelim, n=2, n.min=1))[1]
+            if (inc / incBest > 3) {
+                lonlabs <- pretty(longitudelim, n=2, n.min=1)
+                grid[1] <- incBest
+            }
         }
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
         labels <- NULL
