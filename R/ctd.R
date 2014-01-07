@@ -644,7 +644,9 @@ setMethod(f="plot",
                               coastline="best",
                               Slim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
-                              lonlim, latlim, span, projection=NULL,
+                              lonlim, latlim, # deprecated 2014-01-07
+                              clongitude, clatitude, span, # (clon clat parameters orientation) added 2014-01-07
+                              projection=NULL, parameters=NULL, orientation=NULL, # handed to mapPlot() if that is to be used
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
                               pch=1,
@@ -738,6 +740,10 @@ setMethod(f="plot",
                       }
                   }
               }
+              if (!missing(latlim))
+                  warning("the latlim argument is deprecated; should instead specify clongitude, clatitude, and span")
+              if (!missing(lonlim))
+                  warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
 
               oceDebug(debug, "which:", which, "(before matching character strings)\n")
               which <- ocePmatch(which,
@@ -992,7 +998,7 @@ setMethod(f="plot",
                               }
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
-                          if (x[["latitude"]][1] > 70 && is.null(projection))
+                          if (x[["latitude"]][1] > 70 && missing(projection))
                               projection <- "stereographic"
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
@@ -1018,13 +1024,15 @@ setMethod(f="plot",
                                   oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   plot(coastline,
-                                       clatitude=mean(latlim.c), clongitude=clon, span=span, projection=projection,
+                                       clatitude=mean(latlim.c), clongitude=clon, span=span,
+                                       projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span, projection=projection,
+                                       clatitude=clat, clongitude=clon, span=span,
+                                       projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               }
                               if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
@@ -1037,13 +1045,15 @@ setMethod(f="plot",
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   clat <- mean(latlim.c)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span, projection=projection,
+                                       clatitude=clat, clongitude=clon, span=span,
+                                       projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span, projection=projection,
+                                       clatitude=clat, clongitude=clon, span=span,
+                                       projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
                               }
                           }

@@ -169,15 +169,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             oceDebug(debug, "  y axis: ",
                                      formatPosition(latlab, isLat=TRUE, type="string", showHemi=TRUE),
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
-                            mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
-                                  line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
-                                  side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+                            if (debug < 0) {
+                                mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
+                                      line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
+                                      side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+                            }
                             lastAtY <- at$y
                         }
                     }, silent=TRUE)
                 }
             }
         }
+        if (!is.null(labels))
+            if (debug>90)
+                axis(2, at=labelAt, labels=labels, col.ticks="lightgray")
         labelAt <- NULL
         inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
         lonlabs <- seq(-180, 180, inc)
@@ -222,7 +227,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 }, silent=TRUE)
             }
         }
-        if (debug>90) axis(1,at=labelAt,labels=labels)
+        if (!is.null(labels))
+            if (debug>90)
+                axis(1, at=labelAt, labels=labels, col.ticks="lightgray")
         options(warn=options$warn) 
     }
     oceDebug(debug, "\b\b} # mapPlot(...)\n")

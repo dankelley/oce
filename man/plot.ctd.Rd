@@ -18,7 +18,9 @@
      coastline="best",
      Slim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
-     lonlim, latlim, span, projection=NULL,
+     lonlim, latlim, # deprecated 2014-01-07
+     clongitude, clatitude, span,
+     projection=NULL, parameters=NULL, orientation=NULL,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
      pch=1,
@@ -103,12 +105,18 @@
   \item{dpdtlim}{optional limits of dP/dt axis}
   \item{timelim}{optional limits of delta-time axis}
   \item{lonlim}{optional limits of longitude axis of map (ignored if no
-    map plotted)} 
+    map plotted) DEPRECATED 2014-01-07} 
   \item{latlim}{optional limits of latitude axis of map (ignored if no
-    map plotted)} 
+    map plotted) DEPRECATED 2014-01-07} 
+  \item{clongitude}{center longitude}
+  \item{clatitude}{center latitude}
   \item{span}{optional span of map, in km.  If not given, the map scale is
       chosen to include some points on the nearby coastline.}
-  \item{projection}{projection for map, \code{NULL} for none.}
+  \item{projection}{projection for map, passed to
+      \code{\link[mapproj]{mapproj}} by \code{plot} with a \code{coastline}
+      object; \code{NULL} for none.}
+  \item{parameters}{parameters for map, as for \code{projection}.}
+  \item{orientation}{orientation for map, as for \code{projection}.}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
