@@ -6,7 +6,7 @@
 
 \description{Plot meridians (lines of constant latitude) on a existing map}
 
-\usage{mapMeridians(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgray', \dots)}
+\usage{mapMeridians(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', \dots)}
 
 \arguments{
     \item{latitude}{either a boolean indicating whether to draw a meridian

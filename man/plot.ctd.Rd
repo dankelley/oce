@@ -113,7 +113,7 @@
   \item{span}{optional span of map, in km.  If not given, the map scale is
       chosen to include some points on the nearby coastline.}
   \item{projection}{projection for map, passed to
-      \code{\link[mapproj]{mapproj}} by \code{plot} with a \code{coastline}
+      \code{\link[mapproj]{mapproject}} by \code{plot} with a \code{coastline}
       object; \code{NULL} for none.}
   \item{parameters}{parameters for map, as for \code{projection}.}
   \item{orientation}{orientation for map, as for \code{projection}.}

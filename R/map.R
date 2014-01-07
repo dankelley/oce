@@ -128,10 +128,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     usr <- par('usr')
     ## FIXME: meridians and zones should be added later because they can change depending
     ## FIXME: on the 'pretty' operation below.
-    if (grid[2])
-        mapMeridians(seq(-90, 90, grid[2]))
-    if (grid[1])
-        mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
+    ##if (grid[2]) mapMeridians(seq(-90, 90, grid[2]))
+    ##if (grid[1]) mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
@@ -147,6 +145,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 latlabs <- pretty(latitudelim, n=2, n.min=1)
                 grid[2] <- incBest
             }
+        }
+        if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
+            mapMeridians(latlabs, lty='dotted')
         }
         oceDebug(debug, "latlabs:", latlabs, "\n")
         usr <- par('usr')
@@ -182,9 +183,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 }
             }
         }
-        if (!is.null(labels))
-            if (debug>90)
+        if (!is.null(labels)) {
+            if (debug>90) {
                 axis(2, at=labelAt, labels=labels, col.ticks="lightgray")
+                cat("DEVELOPER FIXME: since debug>90, axis labels were drawn with 'axis' not 'mtext'")
+            }
+        }
         labelAt <- NULL
         inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
         lonlabs <- seq(-180, 180, inc)
@@ -197,6 +201,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
+        if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
+            mapZones(lonlabs, lty='dotted')
+        }
         labels <- NULL
         lastx <- NA
         dxMin <- (usr[2] - usr[1]) / 10
@@ -229,15 +236,18 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 }, silent=TRUE)
             }
         }
-        if (!is.null(labels))
-            if (debug>90)
+        if (!is.null(labels)) {
+            if (debug>90) {
                 axis(1, at=labelAt, labels=labels, col.ticks="lightgray")
+                cat("DEVELOPER FIXME: since debug>90, axis labels were drawn with 'axis' not 'mtext'")
+            }
+        }
         options(warn=options$warn) 
     }
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
-mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
+mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     if (missing(latitude))
         latitude <- TRUE
@@ -271,14 +281,15 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgr
         bad <- d > dc
         x[bad] <- NA                   # FIXME: add, don't replace
         y[bad] <- NA                   # FIXME: add, don't replace
-        if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-            lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-        }
+        ## NB. used to check for points in region but when zoomed in closely, there may be none!
+        ##if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
+        lines(x, y, lty=lty, lwd=lwd, col=col, ...)
+        ##}
     }
 }
 
 
-mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
+mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     if (missing(longitude))
         longitude <- TRUE
@@ -299,9 +310,10 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
         ok <- !is.na(x) & !is.na(y)
         x <- x[ok]
         y <- y[ok]
-        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-            lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-        }
+        ## NB. used to check for points in region but when zoomed in closely, there may be none!
+        ##if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
+        lines(x, y, lty=lty, lwd=lwd, col=col, ...)
+        ##}
     }
 }
 
