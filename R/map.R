@@ -126,6 +126,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
+    ## FIXME: meridians and zones should be added later because they can change depending
+    ## FIXME: on the 'pretty' operation below.
     if (grid[2])
         mapMeridians(seq(-90, 90, grid[2]))
     if (grid[1])
