@@ -207,10 +207,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         labels <- c(labels,
                                     formatPosition(lonlab, isLat=FALSE, type="string", showHemi=TRUE))
                         if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
-                            mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
-                                  side=1,
-                                  line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
-                                  at=at$x, cex=par('cex'), ...)
+                            if (debug < 0) {
+                                mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
+                                      side=1,
+                                      line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
+                                      at=at$x, cex=par('cex'), ...)
+                            }
                             lastx <- at$x
                         }
                         oceDebug(debug, "  x axis: ",
@@ -220,6 +222,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 }, silent=TRUE)
             }
         }
+        if (debug>90) axis(1,at=labelAt,labels=labels)
         options(warn=options$warn) 
     }
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
