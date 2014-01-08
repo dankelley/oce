@@ -42,11 +42,18 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
       profiler file is assumed.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
-  \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column names from the
-    header.  If a list, then it will be taken to be the list
-    of columns.  The list must include \code{"pressure"}, \code{"temperature"}
-    and either \code{"conductivity"} or \code{"salinity"}, or else very little
-    can be done with the file.}
+
+  \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column
+      names from the header.  For SBE files only, the \code{column} argument
+      can control the column selection.  It is a list that names data types and
+      the columns containing them, starting at 1.  The list must include
+      \code{"pressure"}, \code{"temperature"} and \code{"salinity"}, with any
+      other values being ignored (in this version of the function).  Note that
+      SBE headers count the "name" from zero, e.g. if the header line says
+      \code{# name 1 = prDM: Pressure, Digiquartz [db]} then the correct
+      specification to get this pressure would be
+      \code{columns=list(pressure=2, ...)}.}
+
   \item{station}{optional character string containing an identifying name (or
     number) for the station. (This can be useful if the routine cannot determine
     the name automatically, or if another name is preferred.)}

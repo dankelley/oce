@@ -1457,6 +1457,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         salinity <- vector("numeric", nlines)
         oxygen <- vector("numeric", nlines)
         b <- 0
+        oceDebug("pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
         for (iline in 1:nlines) {
             if (0 < (length(grep("END_DATA", lines[iline]))))
                 break
@@ -1604,6 +1605,14 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!missing(columns)) {
+        columnsNames <- names(columns)
+        if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
+        if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
+        if (!("salinity" %in% columnsNames)) stop("'columns' must contain 'salinity'")
+        if (3 != length(columns)) stop("'columns' must contain exactly three elements")
+    }
+
     if (length(grep("\\*", file))) {
         oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") { # will read a series of files\n")
         files <- list.files(pattern=file)
@@ -1877,20 +1886,29 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
     col.names.inferred <- tolower(col.names.inferred)
-    oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-    data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
-    ndata <- length(data[[1]])
-    if (0 < ndata) {
-        haveData <- TRUE
-        names <- names(data)
-        labels <- names
-        if (!found.scan) {
-            data[['scan']] <- 1:ndata
+    if (missing(columns)) {
+        oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
+        data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
+        ndata <- length(data[[1]])
+        if (0 < ndata) {
+            haveData <- TRUE
+            names <- names(data)
+            labels <- names
+            if (!found.scan) {
+                data[['scan']] <- 1:ndata
+            }
+        } else {
+            haveData <- FALSE
+            warning("no data in CTD file \"", filename, "\"\n")
+            data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
-        haveData <- FALSE
-        warning("no data in CTD file \"", filename, "\"\n")
-        data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
+        dataAll <- read.table(file, header=FALSE, colClasses="numeric")
+        data <- dataAll[, as.numeric(columns)]
+        names(data) <- names(columns)
+        data <- as.list(data)
+        ndata <- length(data[[1]])
+        haveData <- ndata > 0
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
