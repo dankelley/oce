@@ -6,7 +6,7 @@
 
 \description{Plot zones (lines of constant longitude) on a existing map}
 
-\usage{mapZones(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', \dots)}
+\usage{mapZones(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', \dots)}
 
 \arguments{
 

@@ -9,7 +9,7 @@
 \description{Plot a coastline}
 
 \usage{\S4method{plot}{coastline}(x,
-     xlab="", ylab="",
+     xlab="", ylab="", showHemi=FALSE,
      asp,
      clongitude, clatitude, span,
      projection=NULL, parameters=NULL, orientation=NULL,
@@ -31,6 +31,8 @@
     \code{longitude} and \code{latitude}.} 
   \item{xlab}{label for x axis}
   \item{ylab}{label for y axis}
+  \item{showHemi}{logical indicating whether to show the hemisphere in axis
+      tick labels.}
   \item{asp}{Aspect ratio for plot.  The default is for \code{plot.coastline}
       to set the aspect ratio to give natural latitude-longitude scaling
       somewhere near the centre latitude on the plot. Often, it makes sense to

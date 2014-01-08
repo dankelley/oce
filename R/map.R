@@ -57,7 +57,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 ##}
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-                    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+                    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=FALSE,
                     polarCircle=0,
                     projection="mollweide", parameters=NULL, orientation=NULL,
                     debug=getOption("oceDebug"),
@@ -126,10 +126,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
-    if (grid[2])
-        mapMeridians(seq(-90, 90, grid[2]))
-    if (grid[1])
-        mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
+    ## FIXME: meridians and zones should be added later because they can change depending
+    ## FIXME: on the 'pretty' operation below.
+    ##if (grid[2]) mapMeridians(seq(-90, 90, grid[2]))
+    ##if (grid[1]) mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
@@ -146,36 +146,52 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 grid[2] <- incBest
             }
         }
+        if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
+            mapMeridians(latlabs, lty='dotted')
+        }
         oceDebug(debug, "latlabs:", latlabs, "\n")
         usr <- par('usr')
         labelAt <- NULL
-        labels <- NULL
+        lab <- vector("expression", length(latlabs))
+        nlab <- 0
         lastAtY <- NA
         ##cat("inc:", inc, "\n")
         if (drawGrid) {
             for (latlab in latlabs) {
+                cat("latlab:", latlab, "\n")
                 if (-90 <= latlab && latlab <= 90) {
                     try({
                         o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]),
                                       lower=-180, upper=180)
-                        if (o$object > 0.01)
+                        if (o$objective > 0.01)
                             next
                         lonlab <- o$minimum
                         at <- mapproject(lonlab, latlab)
                         if (usr[3] < at$y && at$y < usr[4]) {
+                            cat("lonlab:", lonlab, " INSIDE\n")
                             labelAt <- c(labelAt, at$y)
-                            labels <- c(labels,
-                                        formatPosition(latlab, isLat=TRUE, type="string", showHemi=TRUE))
+                            nlab <- nlab + 1
+                            lab[nlab] <- formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi)
                             oceDebug(debug, "  y axis: ",
-                                     formatPosition(latlab, isLat=TRUE, type="string", showHemi=TRUE),
+                                     formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
-                            mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=TRUE),
-                                  line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
-                                  side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+                            if (debug < 0) {
+                                mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi),
+                                      line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
+                                      side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+                            }
                             lastAtY <- at$y
+                        } else {
+                            cat("lonlab:", lonlab, "OUTSIDE\n")
                         }
                     }, silent=TRUE)
                 }
+            }
+        }
+        if (nlab > 0) {
+            if (debug>90) {
+                axis(2, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray")
+                cat("DEVELOPER FIXME: since debug>90, axis labels were drawn with 'axis' not 'mtext'")
             }
         }
         labelAt <- NULL
@@ -190,7 +206,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
-        labels <- NULL
+        if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
+            mapZones(lonlabs, lty='dotted')
+        }
+        lab <- vector("expression", length(latlabs))
+        nlab <- 0
         lastx <- NA
         dxMin <- (usr[2] - usr[1]) / 10
         mgp <- par('mgp')
@@ -204,20 +224,28 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     at <- mapproject(lonlab, latlab)
                     if (usr[1] < at$x && at$x < usr[2]) {
                         labelAt <- c(labelAt, at$x)
-                        labels <- c(labels,
-                                    formatPosition(lonlab, isLat=FALSE, type="string", showHemi=TRUE))
+                        nlab <- nlab + 1
+                        lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi)
                         if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
-                            mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=TRUE),
-                                  side=1,
-                                  line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
-                                  at=at$x, cex=par('cex'), ...)
+                            if (debug < 0) {
+                                mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi),
+                                      side=1,
+                                      line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
+                                      at=at$x, cex=par('cex'), ...)
+                            }
                             lastx <- at$x
                         }
                         oceDebug(debug, "  x axis: ",
-                                 formatPosition(lonlab, isLat=FALSE, type="string", showHemi=TRUE),
+                                 formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi),
                                  "at$x", at$x, "lastx", lastx, "\n")
                     }
                 }, silent=TRUE)
+            }
+        }
+        if (nlab > 0) {
+            if (debug>90) {
+                axis(1, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray")
+                cat("DEVELOPER FIXME: since debug>90, axis labels were drawn with 'axis' not 'mtext'")
             }
         }
         options(warn=options$warn) 
@@ -225,7 +253,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "\b\b} # mapPlot(...)\n")
 }
 
-mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
+mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     if (missing(latitude))
         latitude <- TRUE
@@ -259,14 +287,15 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='lightgr
         bad <- d > dc
         x[bad] <- NA                   # FIXME: add, don't replace
         y[bad] <- NA                   # FIXME: add, don't replace
-        if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-            lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-        }
+        ## NB. used to check for points in region but when zoomed in closely, there may be none!
+        ##if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
+        lines(x, y, lty=lty, lwd=lwd, col=col, ...)
+        ##}
     }
 }
 
 
-mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='lightgray', ...)
+mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     if (missing(longitude))
         longitude <- TRUE
@@ -287,9 +316,10 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
         ok <- !is.na(x) & !is.na(y)
         x <- x[ok]
         y <- y[ok]
-        if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
-            lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-        }
+        ## NB. used to check for points in region but when zoomed in closely, there may be none!
+        ##if (length(x) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
+        lines(x, y, lty=lty, lwd=lwd, col=col, ...)
+        ##}
     }
 }
 
@@ -373,8 +403,12 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
-    hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
-    hemispheres[signs==0] <- ""
+    if (showHemi) {
+        hemispheres <- if (isLat) ifelse(signs>0, "N", "S") else ifelse(signs>0, "E", "W")
+        hemispheres[signs==0] <- ""
+    } else {
+        hemispheres <- rep("", length(signs))
+    }
     oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
     if (type == "list") {
         if (noMinutes)
