@@ -7,7 +7,7 @@
 \description{Plot a map}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=FALSE,
     polarCircle=0,
     projection="mollweide", parameters=NULL, orientation=NULL,
     debug=getOption("oceDebug"),
@@ -50,6 +50,9 @@
 
     \item{drawBox}{logical value indicating whether to draw a box around the
         plot.  This is helpful for many projections at sub-global scale.}
+
+    \item{showHemi}{logical value indicating whether to show the hemisphere in
+        axis tick labels.}
 
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
