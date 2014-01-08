@@ -158,7 +158,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ##cat("inc:", inc, "\n")
         if (drawGrid) {
             for (latlab in latlabs) {
-                cat("latlab:", latlab, "\n")
+                ##cat("latlab:", latlab, "\n")
                 if (-90 <= latlab && latlab <= 90) {
                     try({
                         o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]),
@@ -168,7 +168,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         lonlab <- o$minimum
                         at <- mapproject(lonlab, latlab)
                         if (usr[3] < at$y && at$y < usr[4]) {
-                            cat("lonlab:", lonlab, " INSIDE\n")
+                            ##cat("lonlab:", lonlab, " INSIDE\n")
                             labelAt <- c(labelAt, at$y)
                             nlab <- nlab + 1
                             lab[nlab] <- formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi)
@@ -182,7 +182,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             }
                             lastAtY <- at$y
                         } else {
-                            cat("lonlab:", lonlab, "OUTSIDE\n")
+                            ##cat("lonlab:", lonlab, "OUTSIDE\n")
                         }
                     }, silent=TRUE)
                 }
