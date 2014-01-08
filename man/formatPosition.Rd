@@ -6,7 +6,7 @@
 
 \description{Format geographical positions to degrees, minutes, and hemispheres}
 
-\usage{formatPosition(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=FALSE)}
+\usage{formatPosition(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)}
 
 \arguments{
   \item{latlon}{a vector of latitudes or longitudes}

@@ -645,7 +645,7 @@ setMethod(f="plot",
                               Slim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
-                              clongitude, clatitude, span, showHemi=FALSE,
+                              clongitude, clatitude, span, showHemi=TRUE,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -1904,8 +1904,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
     } else {
         dataAll <- read.table(file, header=FALSE, colClasses="numeric")
-        data <- dataAll[, as.numeric(columns)]
-        names(data) <- names(columns)
+        data <- cbind(seq.int(1, dim(dataAll)[1]), dataAll[, as.numeric(columns)])
+        names(data) <- c("index", names(columns))
         data <- as.list(data)
         ndata <- length(data[[1]])
         haveData <- ndata > 0

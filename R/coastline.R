@@ -67,7 +67,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
-                               xlab="", ylab="", showHemi=FALSE,
+                               xlab="", ylab="", showHemi=TRUE,
                                asp,
                                clongitude, clatitude, span,
                                projection=NULL, parameters=NULL, orientation=NULL,

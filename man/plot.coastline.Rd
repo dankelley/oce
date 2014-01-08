@@ -9,7 +9,7 @@
 \description{Plot a coastline}
 
 \usage{\S4method{plot}{coastline}(x,
-     xlab="", ylab="", showHemi=FALSE,
+     xlab="", ylab="", showHemi=TRUE,
      asp,
      clongitude, clatitude, span,
      projection=NULL, parameters=NULL, orientation=NULL,

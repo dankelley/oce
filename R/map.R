@@ -57,7 +57,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 ##}
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-                    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=FALSE,
+                    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0,
                     projection="mollweide", parameters=NULL, orientation=NULL,
                     debug=getOption("oceDebug"),
@@ -382,7 +382,7 @@ mapText <- function(longitude, latitude, labels, ...)
     }
 }
 
-formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=FALSE)
+formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
     type <- match.arg(type)
     signs <- sign(latlon)

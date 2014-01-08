@@ -19,7 +19,7 @@
      Slim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
      lonlim, latlim,
-     clongitude, clatitude, span, showHemi=FALSE,
+     clongitude, clatitude, span, showHemi=TRUE,
      projection=NULL, parameters=NULL, orientation=NULL,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
