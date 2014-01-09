@@ -441,6 +441,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
     res <- x
+    str(x@data)
     n <- length(x@data$pressure)
     if (n < 2) {
         warning("too few data to ctdTrim()")
@@ -465,12 +466,18 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             }
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
-            x@data$pressure <- smooth(x@data$pressure, kind="3R")
-            ascending <- 0 > mean(diff(x@data$pressure[1:min(3, 0.2*length(x@data$pressure))]))
-            oceDebug(debug, "ascending=", ascending, "\n")
-            if (ascending) {
-                for (name in names(x@data)) {
-                    x@data[[name]] <- rev(x@data[[name]])
+            pSmooth <- smooth(x@data$pressure, kind="3R")
+            ## 2014-01-08: remove the following block that reverses a profile.  This
+            ## was happening for some 24-Hz data (see also below), and it seems unlikely
+            ## this block of code will ever be useful, anyway.
+            ascending <- FALSE
+            if (FALSE) {
+                ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
+                oceDebug(debug, "ascending=", ascending, "\n")
+                if (ascending) {
+                    for (name in names(x@data)) {
+                        x@data[[name]] <- rev(x@data[[name]])
+                    }
                 }
             }
             pmin <- 0
@@ -481,7 +488,12 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
             delta.p <- diff(x@data$pressure)  # descending
             delta.p <- c(delta.p[1], delta.p) # to get right length
-            keep <- keep & (delta.p > 0)
+            ## 2014-01-08: previous to this time, we had
+            ##         keep <- keep & (delta.p > 0)
+            ## here.  However, this failed for some data with 24 Hz sampling, because in 
+            ## that case, what was clearly a descent phase had sign flips in delta.p;
+            ## for this reason, the line of code was dropped today.
+
             ## 3. trim the upcast and anything thereafter (ignore beginning and end)
             trim.top <- as.integer(0.1*n)
             trim.bottom <- as.integer(0.9*n)
@@ -508,6 +520,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 keep[equilibration] <- FALSE
             }
             if (TRUE) {                 # new method, after Feb 2008
+                cat("DOING bilinear method\n")
                 bilinear1 <- function(s, s0, dpds) {
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
@@ -520,10 +533,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 if (length(ss) > 2)
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 else
-                   dpds0 <- 0 
-                t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds),
-                                  start=list(s0=s0, dpds=dpds0)),
-                         silent=TRUE)
+                    dpds0 <- 0 
+                browser()
+                t <- try(
+                         m <- nls(pp ~ bilinear1(ss, s0, dpds), start=list(s0=s0, dpds=dpds0))
+                         , silent=TRUE)
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
                         s0 <- floor(coef(m)[[1]])
@@ -532,6 +546,8 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     }
                     ##} else {
                     ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
+                } else {
+                    warning("bilinear method could not converge on a solution")
                 }
             }
             if (ascending) {
@@ -1610,7 +1626,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
         if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
         if (!("salinity" %in% columnsNames)) stop("'columns' must contain 'salinity'")
-        if (3 != length(columns)) stop("'columns' must contain exactly three elements")
+        if (3 > length(columns)) stop("'columns' must contain three or more elements")
     }
 
     if (length(grep("\\*", file))) {
@@ -1904,8 +1920,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
     } else {
         dataAll <- read.table(file, header=FALSE, colClasses="numeric")
-        data <- cbind(seq.int(1, dim(dataAll)[1]), dataAll[, as.numeric(columns)])
-        names(data) <- c("index", names(columns))
+        if ("scan" %in% names(columns)) {
+            data <- dataAll[, as.numeric(columns)]
+            names(data) <- names(columns)
+        } else {
+            data <- cbind(seq.int(1, dim(dataAll)[1]), dataAll[, as.numeric(columns)])
+            names(data) <- c("scan", names(columns))
+        }
         data <- as.list(data)
         ndata <- length(data[[1]])
         haveData <- ndata > 0
