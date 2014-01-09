@@ -191,7 +191,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (nlab > 0) {
             if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
-                axis(2, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray")
+                axis(2, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray",
+                     mgp=getOption('oceMgp'))
             }
         }
         labelAt <- NULL
@@ -245,7 +246,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (nlab > 0) {
             if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
-                axis(1, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray")
+                axis(1, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray",
+                     mgp=getOption('oceMgp'))
             }
         }
         options(warn=options$warn) 
@@ -283,13 +285,15 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
         d[!is.finite(d)] <- 0
         if (0 == length(d))
             next
-        dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
-        bad <- d > dc
+        ##2014-01-09 dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
+        dc <- as.numeric(median(d, na.rm=TRUE))
+        bad <- d > 3 * dc
         x[bad] <- NA                   # FIXME: add, don't replace
         y[bad] <- NA                   # FIXME: add, don't replace
         ## NB. used to check for points in region but when zoomed in closely, there may be none!
         ##if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
         lines(x, y, lty=lty, lwd=lwd, col=col, ...)
+        ##points(x, y, pch=20, col='red', cex=.7)
         ##}
     }
 }
