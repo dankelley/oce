@@ -441,7 +441,6 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
     res <- x
-    str(x@data)
     n <- length(x@data$pressure)
     if (n < 2) {
         warning("too few data to ctdTrim()")
@@ -486,13 +485,13 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             }
             oceDebug(debug, 'pmin=', pmin, '\n')
             keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
-            delta.p <- diff(x@data$pressure)  # descending
-            delta.p <- c(delta.p[1], delta.p) # to get right length
-            ## 2014-01-08: previous to this time, we had
-            ##         keep <- keep & (delta.p > 0)
-            ## here.  However, this failed for some data with 24 Hz sampling, because in 
-            ## that case, what was clearly a descent phase had sign flips in delta.p;
-            ## for this reason, the line of code was dropped today.
+            ## 2014-01-08 delta.p <- diff(x@data$pressure)  # descending
+            ## 2014-01-08 delta.p <- c(delta.p[1], delta.p) # to get right length
+            ## 2014-01-08 ## previous to this time, we had
+            ## 2014-01-08          keep <- keep & (delta.p > 0)
+            ## 2014-01-08 ## here.  However, this failed for some data with 24 Hz sampling, because in 
+            ## 2014-01-08 ## that case, what was clearly a descent phase had sign flips in delta.p;
+            ## 2014-01-08 ## for this reason, the line of code was dropped today.
 
             ## 3. trim the upcast and anything thereafter (ignore beginning and end)
             trim.top <- as.integer(0.1*n)
@@ -501,26 +500,25 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             max.location <- trim.top + max.spot
             keep[max.location:n] <- FALSE
             oceDebug(debug, "pressure maximum of", x@data$pressure[max.spot], "dbar, at index=", max.spot, "\n")
-            if (FALSE) {
-                ## deleted method: slowly-falling data
-                delta.p.sorted <- sort(delta.p)
-                if (!is.null(parameters)) {
-                    dp.cutoff <- t.test(delta.p[keep], conf.level=0.5)$conf.int[1]
-                    print(t.test(delta.p[keep], conf.level=0.05))#$conf.int[1]
-                } else {
-                    dp.cutoff <- delta.p.sorted[0.1*n]
-                }
-                keep[delta.p < dp.cutoff] <- FALSE
-            }
+            ## 2011-02-04 if (FALSE) {
+            ## 2011-02-04     ## deleted method: slowly-falling data
+            ## 2011-02-04     delta.p.sorted <- sort(delta.p)
+            ## 2011-02-04     if (!is.null(parameters)) {
+            ## 2011-02-04         dp.cutoff <- t.test(delta.p[keep], conf.level=0.5)$conf.int[1]
+            ## 2011-02-04         print(t.test(delta.p[keep], conf.level=0.05))#$conf.int[1]
+            ## 2011-02-04     } else {
+            ## 2011-02-04         dp.cutoff <- delta.p.sorted[0.1*n]
+            ## 2011-02-04     }
+            ## 2011-02-04     keep[delta.p < dp.cutoff] <- FALSE
+            ## 2011-02-04 }
             ## 4. remove equilibration phase
-            if (FALSE) {                # old method, prior to Feb 2008
-                pp <- x@data$pressure[keep]
-                ss <- x@data$scan[keep]
-                equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x@data$scan)) < 0)
-                keep[equilibration] <- FALSE
-            }
+            ## 2011-02-04 if (FALSE) {                # old method, prior to Feb 2008
+            ## 2011-02-04     pp <- x@data$pressure[keep]
+            ## 2011-02-04     ss <- x@data$scan[keep]
+            ## 2011-02-04     equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x@data$scan)) < 0)
+            ## 2011-02-04     keep[equilibration] <- FALSE
+            ## 2011-02-04 }
             if (TRUE) {                 # new method, after Feb 2008
-                cat("DOING bilinear method\n")
                 bilinear1 <- function(s, s0, dpds) {
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
