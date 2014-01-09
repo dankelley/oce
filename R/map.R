@@ -433,6 +433,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
                                                     list(d=degrees[i],
                                                          hemi=hemispheres[i])))
             } else if (noSeconds) {
+                ##rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
                                                     list(d=degrees[i],
                                                          m=sprintf("%02d", minutes[i]),
