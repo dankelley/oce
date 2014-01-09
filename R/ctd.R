@@ -534,10 +534,8 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 else
                     dpds0 <- 0 
-                browser()
-                t <- try(
-                         m <- nls(pp ~ bilinear1(ss, s0, dpds), start=list(s0=s0, dpds=dpds0))
-                         , silent=TRUE)
+                t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds), start=list(s0=s0, dpds=dpds0)),
+                         silent=TRUE)
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
                         s0 <- floor(coef(m)[[1]])
