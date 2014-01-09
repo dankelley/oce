@@ -175,10 +175,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             oceDebug(debug, "  y axis: ",
                                      formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
-                            if (debug < 0) {
+                            if (debug>90) {
                                 mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi),
                                       line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
                                       side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+                                warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
                             }
                             lastAtY <- at$y
                         } else {
@@ -189,9 +190,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         if (nlab > 0) {
-            if (debug>90) {
+            if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
                 axis(2, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray")
-                cat("DEVELOPER FIXME: since debug>90, axis labels were drawn with 'axis' not 'mtext'")
             }
         }
         labelAt <- NULL
@@ -227,11 +227,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         nlab <- nlab + 1
                         lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi)
                         if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
-                            if (debug < 0) {
+                            if (debug>90) {
                                 mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi),
                                       side=1,
                                       line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
                                       at=at$x, cex=par('cex'), ...)
+                                warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
                             }
                             lastx <- at$x
                         }
@@ -243,9 +244,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         if (nlab > 0) {
-            if (debug>90) {
+            if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
                 axis(1, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray")
-                cat("DEVELOPER FIXME: since debug>90, axis labels were drawn with 'axis' not 'mtext'")
             }
         }
         options(warn=options$warn) 
