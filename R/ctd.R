@@ -1617,7 +1617,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (!missing(columns)) {
+    if (!is.null(columns)) {
         columnsNames <- names(columns)
         if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
         if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
@@ -1898,7 +1898,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
     col.names.inferred <- tolower(col.names.inferred)
-    if (missing(columns)) {
+    if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
         data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
         ndata <- length(data[[1]])
