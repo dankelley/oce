@@ -147,7 +147,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
-            mapMeridians(latlabs, lty='dotted')
+            mapMeridians(latlabs)
         }
         oceDebug(debug, "latlabs:", latlabs, "\n")
         usr <- par('usr')
@@ -207,7 +207,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
-            mapZones(lonlabs, lty='dotted')
+            mapZones(lonlabs)
         }
         lab <- vector("expression", length(latlabs))
         nlab <- 0
