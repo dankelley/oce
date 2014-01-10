@@ -207,8 +207,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             incBest <- diff(pretty(longitudelim, n=4, n.min=3))[1]
             if (inc / incBest > 3) {
                 ## extend range because the lims may not agree given the plot geometry
-                lonSmall <- mean(lonitudelim) - 5 * (lonitudelim[2] - lonitudelim[1])
-                lonLarge <- mean(lonitudelim) + 5 * (lonitudelim[2] - lonitudelim[1])
+                lonSmall <- mean(longitudelim) - 5 * (longitudelim[2] - longitudelim[1])
+                lonLarge <- mean(longitudelim) + 5 * (longitudelim[2] - longitudelim[1])
                 browser()
                 lonlabs <- pretty(c(lonSmall, lonLarge), n=4, n.min=3)
                 ##lonlabs <- pretty(longitudelim, n=2, n.min=1)
