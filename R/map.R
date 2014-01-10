@@ -139,11 +139,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
         latlabs <- seq(-90, 90, inc)
         if (!missing(latitudelim)) { 
-            incBest <- diff(pretty(latitudelim, n=2, n.min=1))[1]
+            incBest <- diff(pretty(latitudelim, n=4, n.min=3))[1]
             oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
             if (inc / incBest > 3) {
-                latlabs <- pretty(latitudelim, n=2, n.min=1)
-                grid[2] <- incBest
+                ## extend range because the lims may not agree given the plot geometry
+                latSmall <- mean(latitudelim) - 5 * (latitudelim[2] - latitudelim[1])
+                latLarge <- mean(latitudelim) + 5 * (latitudelim[2] - latitudelim[1])
+                latlabs <- pretty(c(latSmall, latLarge), n=4, n.min=3)
+                ##latlabs <- pretty(latitudelim, n=2, n.min=1)
+                grid[2] <- diff(latlabs[1:2])
             }
         }
         if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
@@ -200,10 +204,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         lonlabs <- seq(-180, 180, inc)
         if (!missing(longitudelim)) { 
             oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-            incBest <- diff(pretty(longitudelim, n=2, n.min=1))[1]
+            incBest <- diff(pretty(longitudelim, n=4, n.min=3))[1]
             if (inc / incBest > 3) {
-                lonlabs <- pretty(longitudelim, n=2, n.min=1)
-                grid[1] <- incBest
+                ## extend range because the lims may not agree given the plot geometry
+                lonSmall <- mean(lonitudelim) - 5 * (lonitudelim[2] - lonitudelim[1])
+                lonLarge <- mean(lonitudelim) + 5 * (lonitudelim[2] - lonitudelim[1])
+                browser()
+                lonlabs <- pretty(c(lonSmall, lonLarge), n=4, n.min=3)
+                ##lonlabs <- pretty(longitudelim, n=2, n.min=1)
+                grid[1] <- diff(lonlabs[1:2])
             }
         }
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
