@@ -214,6 +214,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 grid[1] <- diff(lonlabs[1:2])
             }
         }
+        ## Prevent labelling both 180W and 180E on top of each other (not sure how
+        ## axis permits this, actually).
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
             mapZones(lonlabs)
@@ -224,7 +226,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         dxMin <- (usr[2] - usr[1]) / 10
         mgp <- par('mgp')
         for (lonlab in lonlabs) {
-            if (-180 <= lonlab && lonlab <= 180) { # the limits are the lonlim
+            if (-180 <= lonlab && lonlab < 180) { # the limits are the lonlim
                 try({
                     o <- optimize(function(lat) abs(mapproject(lonlab, lat)$y-usr[3]), lower=-89, upper=89)
                     if (o$object > 0.01)

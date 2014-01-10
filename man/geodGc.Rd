@@ -28,11 +28,8 @@ data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
         longitudelim=c(-80,10), latitudelim=c(35,80),
         projection="orthographic", orientation=c(35, -35, 0))
-## Airplanes travelling between New York and London 
-## pass over Newfoundland and Nova Scotia.
-lon <- c(-74.0064, 0.1062)
-lat <- c(40.7142, 51.5171)
-l <- geodGc(lon, lat, d=1)
+## Great circle from New York to Paris (Lindberg's flight)
+l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
 mapLines(l$longitude, l$latitude, col='red', lwd=2)
 }
 

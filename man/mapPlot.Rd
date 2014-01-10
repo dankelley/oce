@@ -72,30 +72,39 @@
 
 \details{Creates a map using the indicated projection.  The available
     projections can be found in the documentation for \code{\link{mapproject}},
-    along with the important choices of the arguments named \code{projection}
-    and \code{parameters}.  Since map projection is a large and subtle field,
-    this documentation is necessarily limited; those seeking to learn the
-    details should consult the exhaustive treatment provided by Snyder (1987),
-    which includes not just helpful illustrations but also an overview of the
-    long history of the topic, and the strengths and weaknesses of the various
-    formulations.  See especially page 34, which provides recommendations.}
+    which also provides information on the arguments named \code{parameters}
+    and \code{orientation}.  Further details on these and other projections are
+    provided by Snyder (1987), an exhaustive treatment that includes many
+    illustrations, an overview of the history of the topic, and some notes on
+    the strengths and weaknesses of the various formulations.  See especially
+    pages 2 through 7, which define terms and provide recommendations.}
 
-\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines may
-    be added with \code{\link{mapLines}}, and text with \code{\link{mapText}}.
-    Points on a map may be found with \code{\link{mapLocator}}.}
+\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines with
+    \code{\link{mapLines}}, and text with \code{\link{mapText}}.  Points on a
+    map may be found with \code{\link{mapLocator}}.  Great circle paths can be
+    calculated with \code{\link{geodGc}}.}
 
 \examples{
 \dontrun{
 library(oce)
 data(coastlineWorld)
 
+## Mollweide is an equal-area projection that works well for
+## whole-globe views, below shown in default and Pacific-focus
+## views.  See Snyder (1987 page 54).
+mapPlot(coastlineWorld, proj="mollweide")
+mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
+
 ## Orthographic projections resemble a globe, making them
 ## attractive for non-technical use, but they are neither conformal
 ## nor equal-area, so they are somewhat limited for serious
-## use on large scales.  There is no distortion at the centre.
-## See Snyder (1987 section 20).
-mapPlot(coastlineWorld, longitudelim=c(-80,10), latitudelim=c(0,120),
-        projection="orthographic", orientation=c(45,-100,0))
+## use on large scales.  See Snyder (1987 section 20).  The
+## examples given below illustrate use for low-latitude
+## Pacific and high-latitude Atlantic/Arctic.
+mapPlot(coastlineWorld, projection="orthographic",
+        orientation=c(0,-180,0))
+mapPlot(coastlineWorld, projection="orthographic",
+        orientation=c(60,-40,0))
 
 ## The Lambert conformal conic projection is an equal-area
 ## projection recommended by Snyder for regions of large 
@@ -105,11 +114,10 @@ mapPlot(coastlineWorld, longitudelim=c(-80,10), latitudelim=c(0,120),
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
 
-## Arctic view with a stereographic projection.
-par(mar=rep(1, 4))
-mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(60,120),
-        proj="stereographic", orientation=c(90, -90, 0), 
-        axes=FALSE, fill='lightgray')
+## The stereographic projection (Snyder 1987 page 120) is conformal,
+## used below for an Arctic view with a Canadian focus.
+mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(70,110),
+        proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
 }
 }
 
