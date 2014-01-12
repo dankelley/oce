@@ -286,11 +286,15 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
             }
         }
     } else if ("boxcar" == method) {
-        pcut <- cut(x@data$pressure, c(pt, tail(pt, 1)+diff(pt[1:2])))
+        dp <- diff(pt[1:2])
+        pbreaks <- -dp / 2 + c(pt, tail(pt, 1) + dp)
+        p <- x@data[["pressure"]]
         for (name in data.names) {
-            ## FIXME: we should probably not e averaging scan, flag, etc
             oceDebug(debug, "decimating", name)
-            data.new[[name]] <- as.vector(sapply(split(x@data[[name]], pcut), mean))
+            if (name != "pressure") {
+                ## FIXME: we should probably not e averaging scan, flag, etc
+                data.new[[name]] <- binMean1D(p, x@data[[name]], xbreaks=pbreaks)$result
+            }
         }
     } else {
         for (i in 1:npt) {
