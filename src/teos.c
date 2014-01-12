@@ -114,6 +114,10 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
   }
 }
 
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
+typedef double (*F4)(double, double, double, double);
+#endif
+
 void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *a4, double *rval)
 {
 #ifdef DEBUG
@@ -134,7 +138,7 @@ void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
     first_teos_call = 0;
   }
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
-  double (*f4)(double, double, double, double) = GetProcAddress(teos_handle, *name);
+  F4 f4 = (F4)GetProcAddress(teos_handle, *name);
 #else
   double (*f4)(double, double, double, double) = dlsym(teos_handle, *name);
 #endif

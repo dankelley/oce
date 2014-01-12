@@ -127,8 +127,8 @@ SEXP map_assemble_polygons(SEXP lon, SEXP lat, SEXP z)
 
 SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // returns new x vector
 {
-    int nrow = INTEGER(GET_DIM(z))[0];
-    int ncol = INTEGER(GET_DIM(z))[1];
+    //int nrow = INTEGER(GET_DIM(z))[0];
+    //int ncol = INTEGER(GET_DIM(z))[1];
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(z = AS_NUMERIC(z));
@@ -139,7 +139,7 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     double *usrp = REAL(usr); // left right bottom top
     double *xp = REAL(x);
     double *yp = REAL(y);
-    double *zp = REAL(z);
+    //double *zp = REAL(z);
     double *xokspanp = REAL(xokspan);
     int nx = length(x);
     int ny = length(y);
@@ -170,8 +170,9 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     }
     // x1 x2 x3 x4 NA x1 x2 x3 x4 NA ...
     double dxPermitted = fabs(*xokspanp);
-    int count = 0, ncount=100000; // FIXME: remove when working
-    int show = 0;
+#ifdef DEBUG
+    int count = 0, ncount=100000;
+#endif
     for (int ipoly = 0; ipoly < npoly; ipoly++) {
         int start = 5 * ipoly;
         // Check for bad polygons, in three phases.

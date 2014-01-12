@@ -1,3 +1,4 @@
+#if 0
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -18,7 +19,6 @@ points(ba$xout, ba$average, col='red')
 
 */
 
-
 SEXP boxcar_average_vector(SEXP x, SEXP y, SEXP xout)
 {
     PROTECT(x = AS_NUMERIC(x));
@@ -28,7 +28,6 @@ SEXP boxcar_average_vector(SEXP x, SEXP y, SEXP xout)
     double *yp = REAL(y);
     double *xoutp = REAL(xout);
     int nx = LENGTH(x);
-    int ny = LENGTH(y);
     int nxout = LENGTH(xout);
 
     SEXP avg; // first holds sum, then (divided by count), the average
@@ -43,7 +42,6 @@ SEXP boxcar_average_vector(SEXP x, SEXP y, SEXP xout)
     }
     // FIXME: what if dg < 0 or dg == 0?  (check in R code)
     double xoutMin = xoutp[0];
-    double xoutMax = xoutp[nxout-1];
     double xoutInc = xoutp[1] - xoutp[0];
     for (int i=0; i < nx; i++) {
         // FIXME: assuming regular grid
@@ -74,7 +72,6 @@ SEXP boxcar_average_vector(SEXP x, SEXP y, SEXP xout)
     UNPROTECT(7);
     return(res);
 }
-
 
 /*
 
@@ -126,8 +123,6 @@ SEXP boxcar_average_2d(SEXP x1, SEXP x2, SEXP y, SEXP x1out, SEXP x2out)
     // FIXME: what if dg < 0 or dg == 0?  (check in R code)
     double x1outMin = x1outp[0];
     double x2outMin = x2outp[0];
-    double x1outMax = x1outp[nx1out-1];
-    double x2outMax = x2outp[nx2out-1];
     double x1outInc = x1outp[1] - x1outp[0];
     double x2outInc = x2outp[1] - x2outp[0];
     int nx = LENGTH(x1);
@@ -171,4 +166,5 @@ SEXP boxcar_average_2d(SEXP x1, SEXP x2, SEXP y, SEXP x1out, SEXP x2out)
 #undef ij
     return(res);
 }
+#endif
 

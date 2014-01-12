@@ -84,7 +84,7 @@ void fence(double *xoutp, double *xp, int i, int j, int x_len)
   } else {
     double xout = xoutp[i];
     // af=above-far, an=above-near, bn=below-near, bf=below-far
-    double xaf = xp[j-1], xan = xp[j], xbn = xp[j+1], xbf = xp[j+2];
+    double xan = xp[j], xbn = xp[j+1];
     // Inner neighbors must be within
     //   5m for data above 10m
     //   50m above 250m
@@ -115,7 +115,6 @@ void fence(double *xoutp, double *xp, int i, int j, int x_len)
     if (xout < 500) {
       fok[2] = fabs(xout - xan) < 200;
       fok[3] = fabs(xout - xbn) < 200;
-      //if (i == 48) Rprintf("xan:%.1f (%.1f) xbn:%.1f\n %.1f (0) %.1f\nfok[2]:%d fok[3]:%d\n", xaf, xout, xbf, fabs(xout - xaf), fabs(xout - xbf), fok[2], fok[3]);
     } else if (xout < 130) {
       fok[2] = fabs(xout - xan) < 400;
       fok[3] = fabs(xout - xbn) < 400;

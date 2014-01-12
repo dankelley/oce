@@ -65,7 +65,6 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
       sum_w += weight;
     }
   }
-  time_t now = time(NULL);
   return ((sum_w > 0.0) ? (zz + sum / sum_w) : NA_REAL);
 }
 
