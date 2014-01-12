@@ -281,7 +281,6 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","rr", "unesco"),
                 }
             }
         }
-        data.new[["pressure"]] <- pt
     } else if ("rr" == method || "unesco" == method) {
         oceDebug(debug, "Reiniger-Ross method\n")
         xvar <- x@data[["pressure"]]
@@ -292,7 +291,6 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","rr", "unesco"),
                 data.new[[datum.name]] <- pred
             }
         }
-        data.new[["pressure"]] <- pt
     } else if ("boxcar" == method) {
         pcut <- cut(x@data$pressure, c(pt, tail(pt, 1)+diff(pt[1:2])))
         for (name in data.names) {
@@ -339,7 +337,11 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","rr", "unesco"),
                 }
             }
         }
-        data.new[["pressure"]] <- pt
+    }
+    data.new[["pressure"]] <- pt
+    ## convert any NaN to NA
+    for (i in 1:length(data.new)) {
+        data.new[[i]][is.nan(data.new[[i]])] <- NA
     }
     res@data <- data.new
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
