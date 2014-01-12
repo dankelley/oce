@@ -2,18 +2,15 @@
 \alias{ctdDecimate}
 \title{Decimate a CTD profile}
 \description{Interpolate a CTD profile to specified pressure values.}
-\usage{ctdDecimate(x, p, method=c("approx","boxcar","lm","rr", "unesco"),
+\usage{ctdDecimate(x, p=1,
+             method=c("boxcar", "approx", "lm", "rr", "unesco"),
              e=1.5, debug=getOption("oceDebug"))}
 \arguments{
   \item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{p}{an optional pressure increment, or vector of pressures. If
-    \code{p} is not supplied, a vector of regularly-spaced pressures is
-    computed based on the mean pressure difference between samples
-    (converted to a round value using \code{\link{pretty}}). This list
-    goes from 0 to the maximum pressure in the profile (rounded to the
-    pressure increment). If a single \code{p} value is specified, then
-    it is used as the increment. Finally, if a vector of pressures is
-    provided, interpolation is done to these pressures.}
+  \item{p}{pressure increment, or vector of pressures.  In the first case,
+      pressures from 0dbar to the rounded maximum pressure are used,
+      incrementing by \code{p} dbars.  If a vector of pressures is given,
+      interpolation is done to these pressures.}
   \item{method}{the method to be used for calculating decimated
     values. The default \code{"approx"} method is based on the R
     function \code{\link{approx}} and is a simple linear interpolation

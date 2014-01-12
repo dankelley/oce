@@ -237,7 +237,7 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
     res
 }
 
-ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","rr", "unesco"),
+ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco"),
                         e=1.5, debug=getOption("oceDebug"))
     ## SHOULD ADD: spline; supsmu; ...
 {
@@ -247,20 +247,14 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","rr", "unesco"),
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
-        warning("too few data to trim.decimate()")
+        warning("too few data to ctdDecimate()")
         return(res)
     }
     ## Figure out pressure targets, pt
-    if (missing(p)) { # autoscale
-        dp.exact <- median(abs(diff(x@data$pressure)))
-        dp <- pretty(3 * dp.exact)[2] # try for 3 data at least
-        pt <- seq(0, dp * floor(max(x@data$pressure, na.rm=TRUE) / dp), dp)
+    if (length(p) == 1) {
+        pt <- seq(0, p * floor(max(x@data$pressure, na.rm=TRUE) / p), p)
     } else {
-        if (length(p) == 1) {
-            pt <- seq(0, p * floor(max(x@data$pressure, na.rm=TRUE) / p), p)
-        } else {
-            pt <- p
-        }
+        pt <- p
     }
     npt <- length(pt)
     data.names <- names(x@data)         # Step through each variable.
