@@ -2116,7 +2116,7 @@ plotTS <- function (x,
                     inSitu=FALSE,
                     type='p',
                     referencePressure=0,
-                    rhoLevels=6,
+                    nlevels=6, levels,
                     grid=TRUE,
                     col.grid="lightgray",
                     lty.grid="dotted",
@@ -2125,7 +2125,7 @@ plotTS <- function (x,
                     cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
-                    rotateRhoLabels=FALSE,
+                    rotate=FALSE,
                     useSmoothScatter=FALSE,
                     xlab, ylab,
                     Slim, Tlim,
@@ -2240,7 +2240,7 @@ plotTS <- function (x,
     ## grid, isopycnals, then freezing-point line
     if (grid)
         grid(col=col.grid, lty=lty.grid)
-    drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000,
+    drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
                    eos=eos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
@@ -2249,7 +2249,7 @@ plotTS <- function (x,
     oceDebug(debug, "\b} # plotTS(...)\n", sep="")
 }
 
-drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
+drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("eos", default='unesco'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
@@ -2271,19 +2271,20 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
     }
     rhoMin <- min(rhoCorners, na.rm=TRUE)
     rhoMax <- max(rhoCorners, na.rm=TRUE)
-    if (length(rhoLevels) == 1) {
-        rhoList <- pretty(c(rhoMin, rhoMax), n=rhoLevels)
+    if (missing(levels)) {
+        levels <- pretty(c(rhoMin, rhoMax), n=nlevels)
         ## Trim first and last values, since not in box
-        rhoList <- rhoList[-1]
-        rhoList <- rhoList[-length(rhoList)]
-    } else {
-        rhoList <- rhoLevels
+        levels <- levels[-1]
+        levels <- levels[-length(levels)]
     }
+    if (any(levels > 1000))
+        levels <- levels - 1000
     Tn <- 200
     Tline <- seq(TAxisMin, TAxisMax, length.out=Tn)
     cex.par <- par("cex")               # need to scale text() differently than mtext()
-    for (rho in rhoList) {
+    for (rho in levels) {
         rhoLabel <- if (rho1000) 1000+rho else rho
+        rhoLabel <- round(rhoLabel, digits)
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
@@ -2293,7 +2294,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
             if (cex > 0) {
                 if (Sok[length(Sok)] > SAxisMax) { # to right of box
                     i <- match(TRUE, Sok > SAxisMax)
-                    if (rotateRhoLabels)
+                    if (rotate)
                         mtext(rhoLabel, side=4, at=Tline[i], line=0, cex=cex, col=col)
                     else
                         text(usr[2], Tline[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
