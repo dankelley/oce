@@ -29,22 +29,16 @@
 \value{A new vector, which has minimum \code{lim[1]} and maximum \code{lim[2]}.}
 
 \examples{
-low <- 0
-high <- 1
-x <- runif(1000, min=low, max=high)
-y <- runif(1000, min=low, max=high)
-z <- sqrt(0.5 * (x^2+y^2))
-# "jet" color scheme
-drawPalette(zlim=c(low,high), col=oceColorsJet)
-col <- oceColorsJet(256)[rescale(z, xlow=low, xhigh=high, rlow=1, rhigh=256)]
-plot(x, y, col=col, cex=4, pch=20, asp=1)
-contour <- interpBarnes(x,y,z)
-contour(contour$xg, contour$yg, contour$zg, add=TRUE, labcex=1, levels=seq(0,1,0.2))
-
-# forward and reverse "jet" colorscale
-i <- 1:100
-plot(i, rep(0, 100), pch=20, cex=2, col=oceColorsJet(100)[rescale(i, rlow=1, rhigh=100)])
-points(i, rep(1, 100), pch=20, cex=2, col=oceColorsJet(100)[rescale(i, rlow=100, rhigh=1)])
+library(oce)
+# Fake tow-yow data
+t <- seq(0, 600, 5)
+x <- 0.5 * t
+z <- 50 * (-1 + sin(2 * pi * t / 360))
+T <- 5 + 10 * exp(z / 100)
+palette <- oceColorsJet(100)
+drawPalette(zlim=range(T), col=palette)
+plot(x, z, type='p', pch=20, cex=3,
+     col=palette[rescale(T, rlow=1, rhigh=100)])
 }
 
 \author{Dan Kelley}
