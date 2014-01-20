@@ -1,6 +1,6 @@
 ---
-permalink: ocedemo1d.html
-title: ocedemo1d
+permalink: ocedemo1c.html
+title: ocedemo1c
 ---
 
 # Test 0818
