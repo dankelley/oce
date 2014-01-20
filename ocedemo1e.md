@@ -4,7 +4,7 @@ title: ocedemo1e
 layout: default
 ---
 
-# Test 1235
+# Test 1241
 
 Things I have tried
 
@@ -27,7 +27,7 @@ end
 
 ## R
 
-{% highlight r %}
+{% highlight splus %}
 library(oce)
 data(ctd)
 plot(ctd, which=c(1,2,3,5))
