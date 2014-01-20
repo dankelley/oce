@@ -6,7 +6,9 @@ permalink: ocedemo1e.html
 title: ocedemo1e
 ---
 
-# Test 1004
+{% include syntax.css %}
+
+# Test 1006
 
 Things I have tried
 
