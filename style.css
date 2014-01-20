@@ -1,5 +1,9 @@
-html,body{height:100%;color:black;}
+html,body{
+    height:100%;
+    color:black;
+}
 a, a:visited {
+    color: #FF0000;
     text-decoration: underline;
 }
 body{
