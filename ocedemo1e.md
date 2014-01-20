@@ -1,7 +1,6 @@
 ---
-css: syntax.css
 pygments: true
-brokenlayout: default
+layout: default
 permalink: ocedemo1e.html
 title: ocedemo1e
 ---
