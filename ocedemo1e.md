@@ -1,18 +1,18 @@
 ---
-layout: default
 permalink: ocedemo1e.html
 title: ocedemo1e
 ---
 
 {% include syntax.css %}
 
-# Test 1006
+# Test 1135
 
 Things I have tried
 
-- add the usual "link href" line to 
+- add the usual link href line to 
 - set ``css: syntax`` in YAML preamble
 - set ``css: syntax.css`` in YAML preamble
+- remove ``layout: default`` from preamble
 
 ## ruby (from the docs)
 
