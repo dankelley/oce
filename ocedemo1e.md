@@ -3,7 +3,6 @@ permalink: ocedemo1e.html
 title: ocedemo1e
 ---
 
-{% include syntax.css %}
 
 # Test 1205
 
