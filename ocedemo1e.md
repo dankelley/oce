@@ -1,3 +1,5 @@
+<link href="syntax.css" media="screen" rel="stylesheet" type="text/css" />
+
 ---
 css: syntax.css
 pygments: true
