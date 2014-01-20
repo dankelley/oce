@@ -1,14 +1,18 @@
 ---
-css: syntax
+css: syntax.css
 pygments: true
 brokenlayout: default
 permalink: ocedemo1e.html
 title: ocedemo1e
 ---
 
-# Test 1001
+# Test 1002
 
-css: syntax
+Things I have tried
+
+- add ``<link href="style.css" media="screen" rel="stylesheet" type="text/css" />`` at start of markdown file
+- set ``css: syntax`` in YAML preamble
+- set ``css: syntax.css`` in YAML preamble
 
 ## ruby (from the docs)
 
