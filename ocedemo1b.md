@@ -3,7 +3,7 @@ permalink: /ocedemo1b.html
 title: oce demo 1b
 ---
 
-TEST some ruby from the docs.
+# Test some ruby from the docs.
 
 {% highlight ruby %}
 def show
@@ -14,4 +14,13 @@ def show
   end
 end
 {% endhighlight %}
+
+# Test some R
+
+{% highlight r %}
+library(oce)
+data(ctd)
+plot(ctd, which=c(1,2,3,5))
+{% endhighlight %}
+
 
