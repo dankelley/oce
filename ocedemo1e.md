@@ -4,9 +4,6 @@ title: ocedemo1e
 layout: default
 ---
 
-``<link href="syntax.css" rel="stylesheet" >```
-
-```{% include syntax.css %}```
 
 # Test 1215
 
