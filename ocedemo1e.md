@@ -1,14 +1,14 @@
-<link href="syntax.css" media="screen" rel="stylesheet" type="text/css" />
-
 ---
-css: syntax.css
+css: syntax
 pygments: true
 brokenlayout: default
 permalink: ocedemo1e.html
 title: ocedemo1e
 ---
 
-# Test 0958
+# Test 1001
+
+css: syntax
 
 ## ruby (from the docs)
 
