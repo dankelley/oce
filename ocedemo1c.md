@@ -3,7 +3,9 @@ permalink: ocedemo1c.html
 title: ocedemo1c
 ---
 
-# Test some ruby from the docs.
+# Test 2
+
+## ruby (from the docs)
 
 {% highlight ruby %}
 def show
@@ -15,7 +17,7 @@ def show
 end
 {% endhighlight %}
 
-# Test some R
+## R
 
 {% highlight r %}
 library(oce)
