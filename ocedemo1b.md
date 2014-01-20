@@ -1,5 +1,5 @@
 ---
-permalink: http://dankelley.github.io/oce/ocedemo1b.html
+permalink: ocedemo1b.html
 title: oce demo 1b
 ---
 
