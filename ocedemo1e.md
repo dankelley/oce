@@ -1,5 +1,4 @@
 ---
-pygments: true
 layout: default
 permalink: ocedemo1e.html
 title: ocedemo1e
