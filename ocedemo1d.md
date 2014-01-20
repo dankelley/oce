@@ -1,5 +1,3 @@
-<link rel="stylesheet" type="text/css" href="syntax.css">
-
 ---
 pygments: true
 layout: default
