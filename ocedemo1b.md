@@ -1,5 +1,5 @@
 ---
-permalink: ocedemo1b.html
+permalink: /ocedemo1b.html
 title: oce demo 1b
 ---
 
