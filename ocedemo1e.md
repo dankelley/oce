@@ -1,7 +1,6 @@
 ---
 permalink: ocedemo1e.html
 title: ocedemo1e
-layout: default
 ---
 
 # Test 1215
@@ -9,8 +8,9 @@ layout: default
 Things I have tried
 
 - add the usual link href line to 
-- set ``css: syntax`` in YAML preamble
-- set ``css: syntax.css`` in YAML preamble
+- ``css: syntax`` in preamble
+- ``css: syntax.css`` in preamble
+- ``layout: default`` in preamble
 
 ## ruby (from the docs)
 
