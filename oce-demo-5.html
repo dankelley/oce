@@ -1,0 +1,15 @@
+---
+permalink: oce-demo-5.html
+title: oce demo 5
+layout: default
+---
+
+{% highlight splus %}
+library(ocedata)
+library(oce)
+par(mar=rep(0.5, 4))
+data(endeavour)
+mapPlot(coastlineWorld, type='l', proj='mollweide', fill='gray')
+mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col='red')
+{% endhighlight %}
+
