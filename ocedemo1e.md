@@ -4,7 +4,7 @@ title: ocedemo1e
 layout: default
 ---
 
-<link href="{{ relative }}/syntax.css" rel="stylesheet" />
+<link href="syntax.css" rel="stylesheet" />
 
 # Test 1215
 
