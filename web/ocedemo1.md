@@ -3,12 +3,7 @@ permalink: http://dankelley.github.io/oce/web/ocedemo1.html
 title: oce demo 1
 ---
 
-{% highlight r %}
-library(oce)
-data(ctd)
-plot(ctd, which=c(1,2,3,5))
-{% endhighlight %}
-
+TEST some ruby from the docs.
 
 {% highlight ruby %}
 def show
