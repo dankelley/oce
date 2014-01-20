@@ -1,3 +1,4 @@
-oce is an R package for processing oceanographic data.  Its repository
-was moved from google to github in March 2010.
+Oce is an R package for processing oceanographic data, and the ``gh-pages`` git
+branch holds the source of its webpage, hosted on github.com and coded using
+the Jekyll system.
 
