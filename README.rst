@@ -12,11 +12,11 @@ This is the branch favoured by users who need new features or would like to
 help the author in the development of Oce.  The easy way to install the
 ``develop`` branch is to execute the following commands in R::
 
-```r
+{% highlight r %}
 library(devtools)
 install_github('ocedata', 'dankelley', 'master')
 install_github('oce', 'dankelley', 'develop')
-```
+{% endhighlight %}
 
 This uses the ``devtools`` package, which is one of many powerful tools written
 by Hadley Wickham (whose github site is https://github.com/hadley).
