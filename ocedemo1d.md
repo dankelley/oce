@@ -1,5 +1,6 @@
 ---
 pygments: true
+layout: default
 permalink: ocedemo1d.html
 title: ocedemo1d
 ---
