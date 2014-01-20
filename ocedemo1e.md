@@ -6,11 +6,11 @@ permalink: ocedemo1e.html
 title: ocedemo1e
 ---
 
-# Test 1002
+# Test 1004
 
 Things I have tried
 
-- add ``<link href="style.css" media="screen" rel="stylesheet" type="text/css" />`` at start of markdown file
+- add the usual "link href" line to 
 - set ``css: syntax`` in YAML preamble
 - set ``css: syntax.css`` in YAML preamble
 
