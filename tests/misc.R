@@ -13,9 +13,9 @@ stopifnot(all.equal.numeric(matlab.res, oceFilter(x, a, b)))
 
 ## Magnetic declination etc at Halifax
 ## test values from http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
-stopifnot(all.equal.numeric(-17.976, magneticField(-63.562,44.640,2013)$declination,1e-3))
-stopifnot(all.equal.numeric(67.562, magneticField(-63.562,44.640,2013)$inclination,1e-3))
-stopifnot(all.equal.numeric(52096, magneticField(-63.562,44.640,2013)$intensity,1e-3))
+stopifnot(all.equal.numeric(-17.976, magneticField(-63.562,44.640,2013)$declination,tolerance=1e-3))
+stopifnot(all.equal.numeric(67.562, magneticField(-63.562,44.640,2013)$inclination,tolerance=1e-3))
+stopifnot(all.equal.numeric(52096, magneticField(-63.562,44.640,2013)$intensity,tolerance=1e-3))
 
 ## GPS time
 stopifnot(numberAsPOSIXct(cbind(604,134351), type="gps") == as.POSIXct("2011-03-21 13:18:56",tz="UTC"))

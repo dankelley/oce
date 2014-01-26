@@ -18,8 +18,8 @@ d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 stopifnot(d1[["ship"]] == "Divcom3")
 stopifnot(d1[["cruise"]] == "Halifax Harbour")
 stopifnot(d1[["station"]] == "Stn 2")
-stopifnot(all.equal.numeric(d1[["latitude"]], 44.68427, 0.0001))
-stopifnot(all.equal.numeric(d1[["longitude"]], -63.64388, 0.0001))
+stopifnot(all.equal.numeric(d1[["latitude"]], 44.68427, tolerance=0.0001))
+stopifnot(all.equal.numeric(d1[["longitude"]], -63.64388, tolerance=0.0001))
 
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
@@ -37,9 +37,9 @@ stopifnot(all.equal.numeric(d1[["longitude"]], -63.64388, 0.0001))
 d2 <- read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
 stopifnot(d2[["ship"]] == "CCGS Louis S St.Laurent")
 stopifnot(d2[["station"]] == "1")
-stopifnot(all.equal.numeric(d2[["date"]], as.POSIXct("2003-08-11", tz="UTC"), 0.01))
-stopifnot(all.equal.numeric(d2[["latitude"]], 71.391, 0.0001))
-stopifnot(all.equal.numeric(d2[["longitude"]], -134.001, 0.0001))
+stopifnot(all.equal.numeric(d2[["date"]], as.POSIXct("2003-08-11", tz="UTC"), tolerance=0.01))
+stopifnot(all.equal.numeric(d2[["latitude"]], 71.391, tolerance=0.0001))
+stopifnot(all.equal.numeric(d2[["longitude"]], -134.001, tolerance=0.0001))
 
 ## A file containing CTD data acquired in the Beaufort Sea in 20l2,
 ## in standard .cnv format (albeit with a date format that was
@@ -53,10 +53,10 @@ stopifnot(all.equal.numeric(d2[["longitude"]], -134.001, 0.0001))
 d3 <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
 stopifnot(d3[["ship"]] == "CCGS Louis St-Laurent")
 stopifnot(d3[["station"]] == "BL1")
-stopifnot(all.equal.numeric(d3[["date"]], as.POSIXct("2012-08-09 06:34:34", tz="UTC"), 0.01))
-stopifnot(all.equal.numeric(d3[["waterDepth"]], 87, 0.1))
-stopifnot(all.equal.numeric(d3[["latitude"]], 71+20.70/60, 0.0001))
-stopifnot(all.equal.numeric(d3[["longitude"]], -(151+47.26/60), 0.0001))
+stopifnot(all.equal.numeric(d3[["date"]], as.POSIXct("2012-08-09 06:34:34", tz="UTC"), tolerance=0.01))
+stopifnot(all.equal.numeric(d3[["waterDepth"]], 87, tolerance=0.1))
+stopifnot(all.equal.numeric(d3[["latitude"]], 71+20.70/60, tolerance=0.0001))
+stopifnot(all.equal.numeric(d3[["longitude"]], -(151+47.26/60), tolerance=0.0001))
 
 ## An ODF file
 ##'  CHIEF_SCIENTIST='Glen Harrison','
@@ -69,7 +69,7 @@ d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oc
 stopifnot(d4[["ship"]] == "Launch  Sigma-T")
 stopifnot(d4[["cruise"]] == "Scotian Shelf")
 stopifnot(d4[["scientist"]] == "Glen Harrison")
-stopifnot(all.equal.numeric(d4[["waterDepth"]], 161, 0.0001)) # "SOUNDING", not "MAX_DEPTH"
-stopifnot(all.equal.numeric(d4[["latitude"]], 44.2667, 0.0001))
-stopifnot(all.equal.numeric(d4[["longitude"]], -63.3167, 0.0001))
+stopifnot(all.equal.numeric(d4[["waterDepth"]], 161, tolerance=0.0001)) # "SOUNDING", not "MAX_DEPTH"
+stopifnot(all.equal.numeric(d4[["latitude"]], 44.2667, tolerance=0.0001))
+stopifnot(all.equal.numeric(d4[["longitude"]], -63.3167, tolerance=0.0001))
 

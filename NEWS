@@ -1,4 +1,5 @@
 0.9-13
+- coding changes for an upcoming version of R
 - drawIsopycnals() and plotTS(): improve isopycnal labels
 - ctdDecimate() handles new method 'unesco'
 - coastline improvements (now 3 resolutions)
