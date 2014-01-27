@@ -126,9 +126,9 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     with regular expressions and string manipulation may be needed; see
     \code{\link{regexpr}} and \code{\link{sub}}.
     Three sample files are provided with the package, in
-    \itemize{\item \code{system.file("extdata", "ctd.cnv", package="oce")}
-    \item \code{system.file("extdata", "d200321-001.ctd", package="oce")}
-    \item \code{system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce")}}
+    \itemize{\item \code{system.file("extdata", "ctd.cnv.gz", package="oce")}
+    \item \code{system.file("extdata", "d200321-001.ctd.gz", package="oce")}
+    \item \code{system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF.gz", package="oce")}}
     and an examination of these in relationship with the existing code should help
     users to understand the present implementation, providing insights on extending it
     for their own data.
