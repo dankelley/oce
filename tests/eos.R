@@ -49,7 +49,7 @@ stopifnot(all.equal.numeric(swTheta(40,10,4000,0,"unesco"), 9.42648, tolerance=1
 stopifnot(all.equal.numeric(swTheta(ctd,0,"unesco"), 9.42648, tolerance=1e-5))
 
 ab <- swAlphaOverBeta(40, 10, 4000, isTheta=TRUE)
-stopifnot(all.equal.numeric(ab, 0.34763, tolerance=.00005))
+stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))
 ab <- swAlphaOverBeta(ctd, isTheta=TRUE)
 stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))
 

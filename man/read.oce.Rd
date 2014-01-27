@@ -39,7 +39,7 @@ of the following is called:
 
 \examples{
 library(oce)
-x <- read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
+x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plotTS(x) # just the TS
 }
