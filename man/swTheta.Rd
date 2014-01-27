@@ -64,6 +64,7 @@ print(max(abs(swTheta(S,T,p) - swTheta(S,T,p,0,"bryden"))))
 
 
 # Example from a cross-Atlantic section
+data(section)
 stn <- section[['station', 70]]
 plotProfile(stn, 'theta', ylim=c(6000, 1000))
 lines(stn[['temperature']], stn[['pressure']], lty=2)

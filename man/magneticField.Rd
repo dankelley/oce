@@ -43,6 +43,7 @@ library(oce)
 magneticField(-(63+36/60), 44+39/60, 2013)
 
 ## map of North American values
+data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
 lon <- seq(-180, 180, 1)

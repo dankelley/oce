@@ -638,12 +638,13 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     }
     C <- 2 * 3.14 * 6.4e3              # circumferance of earth
     oceDebug(debug, "span:", span, ", C:", C, "\n")
-    if (span < 500)
-        rval <- coastlineWorldFine
-    else if (span < C / 4)
-        rval <- coastlineWorld
-    else
-        rval <- coastlineWorldCoarse
+    if (span < 500) {
+        rval <- "coastlineWorldFine"
+    } else if (span < C / 4) {
+        rval <- "coastlineWorld"
+    } else {
+        rval <- "coastlineWorldCoarse"
+    }
     oceDebug(debug, "\b\b}\n")
     return(rval)
 }

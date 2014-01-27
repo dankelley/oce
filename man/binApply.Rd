@@ -61,6 +61,7 @@ zlim <- c(0, 20)
 breaksPalette <- seq(min(zlim), max(zlim), 1)
 colPalette <- rev(oceColorsJet(length(breaksPalette)-1))
 drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
+data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-5,20), latitudelim=c(50,66),
         grid=5, fill='gray', proj="lambert",
         parameters=c(lat0=50, lat1=65))

@@ -17,5 +17,5 @@ Description: Supports the analysis of Oceanographic data,
 License: GPL (>= 2)
 URL: http://dankelley.github.com/oce/
 LazyLoad: yes
-LazyData: yes
+LazyData: no
 Packaged: Dan Kelley

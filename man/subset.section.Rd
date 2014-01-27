@@ -28,6 +28,7 @@
 
 \examples{
 library(oce)
+data(section)
 GS <- subset(section, 109<=stationId&stationId<=129)
 }
 

@@ -40,7 +40,10 @@
 \code{\link{swSigmaTheta}}. 
 }
 
-\examples{rho <- swRho(35, 13, 1000) # 1030.818}
+\examples{
+library(oce)
+rho <- swRho(35, 13, 1000)
+}
 
 \references{[1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
     computation of fundamental properties of seawater. \emph{Unesco Technical

@@ -30,6 +30,7 @@
     dealing with them.}
 
 \examples{
+library(oce)
 data(sealevelHalifax)
 show(sealevelHalifax)
 plot(sealevelHalifax)

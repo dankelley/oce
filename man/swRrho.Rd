@@ -44,6 +44,7 @@
 
 \examples{
 library(oce)
+data(section)
 stn <- section[["station"]][[20]]
 par(mfrow=c(1,3))
 plotProfile(stn,"salinity")

@@ -165,6 +165,7 @@
 
 \examples{
 library(oce)
+data(section)
 sg <- sectionGrid(section)
 
 ## AO3 section

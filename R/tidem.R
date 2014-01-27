@@ -135,7 +135,7 @@ tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata", envir=environment())
-    tidedata <- get("tidedata", pos=globalenv())
+    tidedata <- get("tidedata")#, pos=globalenv())
 
     a <- tidemAstron(t)
 
@@ -406,7 +406,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
     data("tidedata", envir=environment())
-    tidedata <- get("tidedata", pos=globalenv())
+    tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
 
@@ -636,7 +636,9 @@ webtide <- function(action=c("map", "predict"),
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
                  asp=asp, xlab="", ylab="", ...)
             usr <- par('usr')
-            coastline <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            data(best, envir=environment(), debug=debug-1)
+            coastline <- get(best)
             lines(coastline[['longitude']], coastline[['latitude']])
             if (missing(node)) {
                 point <- locator(1)
@@ -670,7 +672,7 @@ webtide <- function(action=c("map", "predict"),
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
         data("tidedata", envir=environment())
-        tidedata  <- get("tidedata",   pos=globalenv())
+        tidedata  <- get("tidedata")#,   pos=globalenv())
         for (i in 1:nconstituents) {
             period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
             ## Elevation file contains one entry per node, starting with e.g.:

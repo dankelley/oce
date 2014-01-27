@@ -69,8 +69,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(latitudelim, collapse=","), ")"),
              ", ...) {\n")
-    if (missing(longitude))
-        longitude <- coastlineWorld
+    if (missing(longitude)) {
+        data("coastlineWorld", envir=environment())
+        longitude <- get("coastlineWorld")
+    }
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude

@@ -192,6 +192,7 @@ been trimmed to just the downcast portion of the sampling.  (See the next
 section to learn how to do this trimming.).  The commands
 <<label=ctdplot,eval=FALSE>>=
 library(oce)
+library(ocedata)
 data(ctd)
 plot(ctd)
 @
@@ -414,6 +415,7 @@ different pressure levels at each station.  For such cases, the
 jpeg("section.jpg", quality=75, width=600, height=700, pointsize=12)
 @
 <<>>=
+data(section)
 GS <- subset(section, 102<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))

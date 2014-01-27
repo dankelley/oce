@@ -444,18 +444,20 @@ setMethod(f="plot",
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
-                          coastline <- coastlineBest(lonr, latr, debug=debug-1)
+                          best <- coastlineBest(lonr, latr, debug=debug-1)
+                          data(list=best, envir=environment())
+                          coastline <- get(best)
                           haveCoastline <- TRUE
                       } else {
                           if (coastline != "none") {
                               if (coastline == "coastlineWorld") {
-                                  data(coastlineWorld, envir=environment())
+                                  data("coastlineWorld", envir=environment())
                                   coastline <- coastlineWorld
                               } else if (coastline == "coastlineWorldFine") {
-                                  data(coastlineWorldFine, envir=environment())
+                                  data("coastlineWorldFine", envir=environment())
                                   coastline <- coastlineWorldFine
                               } else if (coastline == "coastlineWorldCoarse") {
-                                  data(coastlineWorlCoarse, envir=environment())
+                                  data("coastlineWorlCoarse", envir=environment())
                                   coastline <- coastlineWorldCoarse
                               }  else {
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")

@@ -999,6 +999,7 @@ setMethod(f="plot",
                               oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
                               if (TRUE) {
                                   ## find nearest point on (coarse) globe
+                                  data("coastlineWorldCoarse", envir=environment())
                                   d <- geodDist(coastlineWorldCoarse[['longitude']],
                                                 coastlineWorldCoarse[['latitude']],
                                                 x[['longitude']],
@@ -1015,15 +1016,17 @@ setMethod(f="plot",
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
                               if (coastline == "best") {
-                                  coastline <- coastlineBest(span=span)
+                                  best <- coastlineBest(span=span, debug=debug-1)
+                                  data(list=best, envir=environment())
+                                  coastline <- get(best)
                               } else if (coastline == "coastlineWorld") {
-                                  data(coastlineWorld, envir=environment())
+                                  data("coastlineWorld", envir=environment())
                                   coastline <- coastlineWorld
                               } else if (coastline == "coastlineWorldFine") {
-                                  data(coastlineWorldFine, envir=environment())
+                                  data("coastlineWorldFine", envir=environment())
                                   coastline <- coastlineWorldFine
                               } else if (coastline == "coastlineWorldCoarse") {
-                                  data(coastlineWorlCoarse, envir=environment())
+                                  data("coastlineWorlCoarse", envir=environment())
                                   coastline <- coastlineWorldCoarse
                               }  else {
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")

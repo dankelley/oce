@@ -133,6 +133,7 @@
 
 \examples{
 library(oce)
+data(echosounder)
 plot(echosounder, which=c(1,2), drawBottom=TRUE)
 }
 

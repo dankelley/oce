@@ -2,9 +2,10 @@
 
 \alias{coastlineBest}
 
-\title{Find best coastline file}
+\title{Find the name of the best coastline file}
 
-\description{Find highest-resolution coastline for given locale}
+\description{Find the name of the most appropriate coastline for a given
+    locale}
 
 \usage{coastlineBest(lonRange, latRange, span,
     debug=getOption("oceDebug"))}
@@ -28,7 +29,7 @@
     \code{coastlineWorldCoarse}, in that order, to find the one most
     appropriate for the locale.}
 
-\value{A coastline}
+\value{The name of a coastline that can be loaded with \code{data()}.}
 
 \author{Dan Kelley}
 
