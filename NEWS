@@ -1,4 +1,5 @@
-0.9-13
+0.9-14
+- reverse oceColorsGebco colours for water
 - coding changes for an upcoming version of R
 - drawIsopycnals() and plotTS(): improve isopycnal labels
 - ctdDecimate() handles new method 'unesco'
@@ -31,6 +32,9 @@
 - as.ctd(): new arguments filename etc
 - remove oceBisect(), which merely reproduces uniroot()
 - move all data to library(ocedata)
+
+0.9-13
+- prepare for an upcoming release of R-devel
 
 0.9-12
 - move vignette source directory
