@@ -1000,10 +1000,8 @@ setMethod(f="plot",
                               if (TRUE) {
                                   ## find nearest point on (coarse) globe
                                   data("coastlineWorld", envir=environment())
-                                  coastline <- coastlineWorld
-                                  warning("plot(ctd) should be finding best coastline, but just using coarse one for testing\n")
-                                  d <- geodDist(coastline[['longitude']],
-                                                coastline[['latitude']],
+                                  d <- geodDist(coastlineWorld[['longitude']],
+                                                coastlineWorld[['latitude']],
                                                 x[['longitude']],
                                                 x[['latitude']])
                                   nearest <- d[which.min(d)] # in km
@@ -1019,9 +1017,13 @@ setMethod(f="plot",
                           if (is.character(coastline)) {
                               oceDebug(debug, " coastline is a string: \"", coastline, "\"\n", sep="")
                               if (require(ocedata, quietly=TRUE)) {
-                                  oceDebug(debug, "ocedata is present, so will try a coastline from that\n")
+                                  library(ocedata)
+                                  oceDebug(debug, "ocedata is present\n")
                                   if (coastline == "best") {
-                                      warning("ctd: using default coastline for testing")
+                                      bestcoastline <- coastlineBest(span=span)
+                                      oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                      data(list=bestcoastline, package="ocedata", envir=environment())
+                                      coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
                                       data("coastlineWorld", envir=environment())
                                       coastline <- coastlineWorld
