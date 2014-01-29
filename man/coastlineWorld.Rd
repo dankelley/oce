@@ -8,9 +8,7 @@
 
 \description{World coastline, in any of three resolutions}
 
-\usage{data(coastlineWorld)
-data(coastlineWorldMedium, package="ocedata")
-data(coastlineWorldFine, package="ocedata")}
+\usage{data(coastlineWorld)}
 
 \details{In each case, the longitudes are in the range from -180 to 180 degrees, i.e.
     western longitudes have negative values.  Large lakes (particularly the Great Lakes)

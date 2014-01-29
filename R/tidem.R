@@ -638,9 +638,11 @@ webtide <- function(action=c("map", "predict"),
             usr <- par('usr')
             best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
             warning("tidem: using default coastline for testing")
+            data("coastlineWorld", envir=environment())
+            coastlineWorld <- get("coastlineWorld")
             ##data(best, envir=environment(), debug=debug-1)
             ##coastline <- get(best)
-            lines(coastline[['longitude']], coastline[['latitude']])
+            lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
             if (missing(node)) {
                 point <- locator(1)
                 node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))

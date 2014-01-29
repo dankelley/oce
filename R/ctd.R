@@ -1000,8 +1000,10 @@ setMethod(f="plot",
                               if (TRUE) {
                                   ## find nearest point on (coarse) globe
                                   data("coastlineWorld", envir=environment())
-                                  d <- geodDist(coastlineWorld[['longitude']],
-                                                coastlineWorld[['latitude']],
+                                  coastline <- coastlineWorld
+                                  warning("plot(ctd) should be finding best coastline, but just using coarse one for testing\n")
+                                  d <- geodDist(coastline[['longitude']],
+                                                coastline[['latitude']],
                                                 x[['longitude']],
                                                 x[['latitude']])
                                   nearest <- d[which.min(d)] # in km
@@ -1034,6 +1036,7 @@ setMethod(f="plot",
                                   }
                               } else {
                                   warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
+                                  data("coastlineWorld", envir=environment())
                                   coastline <- coastlineWorld
                               }
                           }

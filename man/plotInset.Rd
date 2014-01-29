@@ -46,8 +46,8 @@
 \examples{
 library(oce)
 ## power law in linear and log form
-x<-1:10
-y<-x^2
+x <- 1:10
+y <- x^2
 plot(x, y, log='xy',type='l')
 plotInset(3, 1, 10, 8,
           expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2,1/2,0)),
