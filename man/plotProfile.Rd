@@ -138,7 +138,6 @@
 
 \examples{
 library(oce)
-library(ocedata)
 data(ctd)
 plotProfile(ctd, xtype="temperature")
 }
