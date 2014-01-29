@@ -105,12 +105,10 @@ velocity(x)
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(adp)
-    print(heading(adp))
-    heading(adp) <- 5 + heading(adp) # add 5 degrees to the heading
-    print(heading(adp))
-}
+data(adp)
+print(heading(adp))
+heading(adp) <- 5 + heading(adp) # add 5 degrees to the heading
+print(heading(adp))
 }
 
 \seealso{Similar accessor functions are \code{\link{time}}, and \code{\link{velocity}}.}

@@ -21,12 +21,12 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(ctd) 
-    st <- swSigmaTheta(salinity(ctd), temperature(ctd), pressure(ctd))
-    new <- addColumn(ctd, st, "sigmaTheta")
-}
+data(ctd) 
+st <- swSigmaTheta(salinity(ctd), temperature(ctd), pressure(ctd))
+new <- addColumn(ctd, st, "sigmaTheta")
 }
 
 \author{Dan Kelley}
+
 \keyword{misc}
+

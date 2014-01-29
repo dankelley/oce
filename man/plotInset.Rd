@@ -53,16 +53,16 @@ plotInset(3, 1, 10, 8,
           expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2,1/2,0)),
           mar=c(2.5,2.5,1,1))
 
-if (require(ocedata)) {
-    ## CTD data with location
-    data(ctd) 
-    plot(ctd, which="TS")
-    plotInset(29.9, 2.7, 31, 10,
-              expr=plot(ctd, which='map',
-                        coastline="coastlineWorld",
-                        span=5000, mar=NULL, cex.axis=3/4))
-}
+## CTD data with location
+data(ctd) 
+plot(ctd, which="TS")
+plotInset(29.9, 2.7, 31, 10,
+          expr=plot(ctd, which='map',
+          coastline="coastlineWorld",
+          span=5000, mar=NULL, cex.axis=3/4))
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

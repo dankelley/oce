@@ -34,17 +34,15 @@
     including other functions.}
 
 \examples{
-\dontrun
+\dontrun{
 library(oce)
-if (require(ocedata)) {
-    data(coastlineWorld)
-    longitude <- coastlineWorld[['longitude']]
-    latitude <- coastlineWorld[['latitude']]
-    mapPlot(longitude, latitude, type='l', grid=FALSE,
-            longitudelim=c(-80,10), latitudelim=c(0,120),
-            projection="orthographic", orientation=c(45,-100,0))
-    mapZones()
-}
+data(coastlineWorld)
+longitude <- coastlineWorld[['longitude']]
+latitude <- coastlineWorld[['latitude']]
+mapPlot(longitude, latitude, type='l', grid=FALSE,
+longitudelim=c(-80,10), latitudelim=c(0,120),
+projection="orthographic", orientation=c(45,-100,0))
+mapZones()
 }
 }
 

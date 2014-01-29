@@ -138,11 +138,9 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    library(ocedata)
-    data(ctd)
-    plotProfile(ctd, xtype="temperature")
-}
+library(ocedata)
+data(ctd)
+plotProfile(ctd, xtype="temperature")
 }
 
 \author{Dan Kelley}

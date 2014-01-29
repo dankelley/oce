@@ -73,11 +73,8 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(drifter)
-    data(coastlineWorld)
-    plot(drifter, which="trajectory", coastline=coastlineWorld)
-}
+data(drifter)
+plot(drifter, which="trajectory")
 }
 
 \references{\url{http://www.argo.ucsd.edu/}}

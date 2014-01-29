@@ -72,15 +72,13 @@ debug=getOption("oceDebug"),
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(sealevelHalifax)
-    plot(sealevelHalifax)
-    plot(sealevelHalifax, which=1, 
-         xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
-    juan <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
-    abline(v=juan, col="red")
-    mtext("Hurricane\nJuan", juan, col="red")
-}
+data(sealevelHalifax)
+plot(sealevelHalifax)
+plot(sealevelHalifax, which=1, 
+     xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
+juan <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
+abline(v=juan, col="red")
+mtext("Hurricane\nJuan", juan, col="red")
 }
 
 \references{The example refers to Hurricane Juan, which caused a great

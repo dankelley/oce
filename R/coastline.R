@@ -641,9 +641,9 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     if (span < 500) {
         rval <- "coastlineWorldFine"
     } else if (span < C / 4) {
-        rval <- "coastlineWorld"
+        rval <- "coastlineWorldMedium"
     } else {
-        rval <- "coastlineWorldCoarse"
+        rval <- "coastlineWorld"
     }
     oceDebug(debug, "\b\b}\n")
     return(rval)

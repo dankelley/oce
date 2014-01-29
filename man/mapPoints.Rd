@@ -28,17 +28,17 @@
 \examples{
 \dontrun{
 library(oce)
-if (require(ocedata)) {
-    data(coastlineWorld)
-    mapPlot(coastlineWorld, type='l', grid=TRUE,
-    longitudelim=c(-80,0), latitudelim=c(20,50),
-    projection="mercator", orientation=c(90,-40,0))
-    lon <- section[["longitude", 'byStation']]
-    lat <- section[["latitude", 'byStation']]
-    mapPoints(lon, lat, pch=20, col='red')
-}
+data(coastlineWorld)
+mapPlot(coastlineWorld, type='l', grid=TRUE,
+longitudelim=c(-80,0), latitudelim=c(20,50),
+projection="mercator", orientation=c(90,-40,0))
+lon <- section[["longitude", 'byStation']]
+lat <- section[["latitude", 'byStation']]
+mapPoints(lon, lat, pch=20, col='red')
 }
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

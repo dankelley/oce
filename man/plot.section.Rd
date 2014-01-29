@@ -17,8 +17,8 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline=c("best", "coastlineWorld", "coastlineWorldFine",
-                 "coastlineWorldCoarse", "none"),
+     coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                 "coastlineWorldFine", "none"),
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
@@ -165,31 +165,28 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(section)
-    sg <- sectionGrid(section)
+data(section)
+sg <- sectionGrid(section)
 
-    ## AO3 section
-    plot(sg, which="salinity", ztype="points", pch=20, cex=1.5) 
+## AO3 section
+plot(sg, which="salinity", ztype="points", pch=20, cex=1.5) 
 
-    ## Gulf Stream
-    GS <- subset(section, 109<=stationId&stationId<=129)
-    GSg <- sectionGrid(GS, p=seq(0,2000,100))
-    plot(GSg, which=c(1,99), map.ylim=c(34,42))
+## Gulf Stream
+GS <- subset(section, 109<=stationId&stationId<=129)
+GSg <- sectionGrid(GS, p=seq(0,2000,100))
+plot(GSg, which=c(1,99), map.ylim=c(34,42))
 
-    par(mfrow=c(2,1))
-    plot(GS, which=1, ylim=c(2000, 0), ztype='points',
-    zbreaks=seq(0,30,2), pch=20, cex=3)
-    plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
+par(mfrow=c(2,1))
+plot(GS, which=1, ylim=c(2000, 0), ztype='points',
+zbreaks=seq(0,30,2), pch=20, cex=3)
+plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 
-
-    ## image, with coloured dots to show if grid smoothing was OK
-    plot(GSg, which=1, ztype='image')
-    T <- GS[['temperature']]
-    col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
-    points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
-    points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
-}
+## image, with coloured dots to show if grid smoothing was OK
+plot(GSg, which=1, ztype='image')
+T <- GS[['temperature']]
+col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
+points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 }
 
 \author{Dan Kelley}

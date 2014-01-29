@@ -365,8 +365,8 @@ setMethod(f="plot",
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline=c("best", "coastlineWorld", "coastlineWorldFine",
-                                          "coastlineWorldCoarse", "none"),
+                              coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                                          "coastlineWorldFine", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
@@ -444,9 +444,9 @@ setMethod(f="plot",
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
-                          best <- coastlineBest(lonr, latr, debug=debug-1)
-                          data(list=best, envir=environment())
-                          coastline <- get(best)
+                          warning("section: using default coastline for testing")
+                          data("coastlineWorld", envir=environment())
+                          coastline <- coastlineWorld
                           haveCoastline <- TRUE
                       } else {
                           if (coastline != "none") {
@@ -456,9 +456,9 @@ setMethod(f="plot",
                               } else if (coastline == "coastlineWorldFine") {
                                   data("coastlineWorldFine", envir=environment())
                                   coastline <- coastlineWorldFine
-                              } else if (coastline == "coastlineWorldCoarse") {
-                                  data("coastlineWorlCoarse", envir=environment())
-                                  coastline <- coastlineWorldCoarse
+                              } else if (coastline == "coastlineWorldMedium") {
+                                  data("coastlineWorldMedium", envir=environment())
+                                  coastline <- coastlineWorldMedium
                               }  else {
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }

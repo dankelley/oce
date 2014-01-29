@@ -1389,18 +1389,23 @@ setMethod(f="plot",
                               }
                           } else { # named coastline
                               if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                  if (coastline == "coastlineWorld") {
-                                      data(coastlineWorld, envir=environment())
-                                      coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineWorldFine") {
-                                      data(coastlineWorldFine, envir=environment())
-                                      coastline <- coastlineWorldFine
-                                  } else if (coastline == "coastlineWorldCoarse") {
-                                      data(coastlineWorlCoarse, envir=environment())
-                                      coastline <- coastlineWorldCoarse
-                                  } else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  if (require(ocedata)) {
+                                      if (coastline == "best") {
+                                          best <- coastlineBest(span=span, debug=debug-1)
+                                          data(list=best, envir=environment())
+                                          coastline <- get(best)
+                                      } else if (coastline == "coastlineWorld") {
+                                          data("coastlineWorld", envir=environment())
+                                          coastline <- coastlineWorld
+                                      } else if (coastline == "coastlineWorldFine") {
+                                          data("coastlineWorldFine", envir=environment())
+                                          coastline <- coastlineWorldFine
+                                      } else if (coastline == "coastlineWorldMedium") {
+                                          data("coastlineWorldMedium", envir=environment())
+                                          coastline <- coastlineWorldMedium
+                                      }  else {
+                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                      }
                                   }
                               }
                           }

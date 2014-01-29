@@ -59,10 +59,8 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(lisst)
-    plot(lisst)
-}
+data(lisst)
+plot(lisst)
 }
 
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure

@@ -195,20 +195,14 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
 \examples{
 library(oce)
 \dontrun{
-woce <- read.oce(
-  "http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
-plot(woce)
-
 ## Labrador Sea data, file 0001919.tar.gz from website
 ## http://www.nodc.noaa.gov/cgi-bin/OAS/prd/accession/download
 d <- read.ctd.woce("*.csv")
-if (require(ocedata)) {
-    data(coastlineWrold)
-    plot(coastlineWorld, clat=55, clon=-50, span=5000)
-    longitude <- sapply(d, function(stn) stn[['longitude']])
-    latitude <- sapply(d, function(stn) stn[['latitude']])
-    points(longitude, latitude, col='red')
-}
+data(coastlineWorld)
+plot(coastlineWorld, clat=55, clon=-50, span=5000)
+longitude <- sapply(d, function(stn) stn[['longitude']])
+latitude <- sapply(d, function(stn) stn[['latitude']])
+points(longitude, latitude, col='red')
 }
 }
 

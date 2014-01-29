@@ -22,12 +22,10 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(ctd)
-    write.ctd(ctd, "ctd.csv")
-    d <- read.csv("ctd.csv")
-    plot(as.ctd(d$salinity, d$temperature, d$pressure))
-}
+data(ctd)
+write.ctd(ctd, "ctd.csv")
+d <- read.csv("ctd.csv")
+plot(as.ctd(d$salinity, d$temperature, d$pressure))
 }
 
 \author{Dan Kelley}

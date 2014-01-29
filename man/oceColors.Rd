@@ -77,13 +77,11 @@ image(x, col=oceColorsPalette(200), main="oceColorsPalette")
 par(opar)
 
 # real-world example, with acoustic-doppler profiler data
-if (require(ocedata)) {
-    data(adp)
-    par(mfrow=c(3,1))
-    plot(adp, which='u1')
-    plot(adp, which='u1', col=oceColorsJet)
-    plot(adp, which='u1', col=oceColors9B)
-}
+data(adp)
+par(mfrow=c(3,1))
+plot(adp, which='u1')
+plot(adp, which='u1', col=oceColorsJet)
+plot(adp, which='u1', col=oceColors9B)
 }
 
 \references{

@@ -637,8 +637,9 @@ webtide <- function(action=c("map", "predict"),
                  asp=asp, xlab="", ylab="", ...)
             usr <- par('usr')
             best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
-            data(best, envir=environment(), debug=debug-1)
-            coastline <- get(best)
+            warning("tidem: using default coastline for testing")
+            ##data(best, envir=environment(), debug=debug-1)
+            ##coastline <- get(best)
             lines(coastline[['longitude']], coastline[['latitude']])
             if (missing(node)) {
                 point <- locator(1)

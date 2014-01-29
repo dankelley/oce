@@ -32,17 +32,17 @@
 \examples{
 \dontrun{
 library(oce)
-if (require(ocedata)) {
-    data(coastlineWorld)
-    longitude <- coastlineWorld[['longitude']]
-    latitude <- coastlineWorld[['latitude']]
-    mapPlot(longitude, latitude, type='l',
-    longitudelim=c(-130,-50), latitudelim=c(30,60),
-    proj="polyconic", orientation=c(90, -90, 0))
-    mapMeridians()
-}
+data(coastlineWorld)
+longitude <- coastlineWorld[['longitude']]
+latitude <- coastlineWorld[['latitude']]
+mapPlot(longitude, latitude, type='l',
+longitudelim=c(-130,-50), latitudelim=c(30,60),
+proj="polyconic", orientation=c(90, -90, 0))
+mapMeridians()
 }
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

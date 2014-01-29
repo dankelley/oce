@@ -40,13 +40,11 @@ coordinate(x)
   functions.}
 
 \examples{
-if (require(ocedata)) {
-    data(adp)
-    print(is.beam(adp))
-    print(is.xyz(adp))
-    print(is.enu(adp))
-    print(coordinate(adp))
-}
+data(adp)
+print(is.beam(adp))
+print(is.xyz(adp))
+print(is.enu(adp))
+print(coordinate(adp))
 }
 
 \author{Dan Kelley}

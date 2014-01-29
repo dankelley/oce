@@ -192,7 +192,6 @@ been trimmed to just the downcast portion of the sampling.  (See the next
 section to learn how to do this trimming.).  The commands
 <<label=ctdplot,eval=FALSE>>=
 library(oce)
-library(ocedata)
 data(ctd)
 plot(ctd)
 @
@@ -202,10 +201,10 @@ summary(ctd)
 @
 
 The object used to hold CTD data stores not just the data, but also the raw
-header sequence, and whatever has been discovered about the dataset by parsing
-the header, use
+header sequence, and whatever other metadata has been discovered about the
+dataset by
 <<ctdnames,eval=false>>=
-names(ctd)
+names(ctd@metadata)
 @
 etc.
 

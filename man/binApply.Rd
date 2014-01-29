@@ -42,18 +42,18 @@ binApply2D(x, y, f, xbreaks, ybreaks, FUN)}
 \examples{
 library(oce)
 ## (a) 1D: salinity profile with median and quartile 1 and 3
-if (require(ocedata)) {
-    data(ctd)
-    p <- ctd[["pressure"]]
-    S <- ctd[["salinity"]]
-    q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
-    q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
-    plotProfile(ctd, "salinity", col='gray', type='n')
-    polygon(c(q1$result, rev(q3$result)),
-    c(q1$xmids, rev(q1$xmids)), col='gray')
-    points(S, p, pch=20)
+data(ctd)
+p <- ctd[["pressure"]]
+S <- ctd[["salinity"]]
+q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
+q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
+plotProfile(ctd, "salinity", col='gray', type='n')
+polygon(c(q1$result, rev(q3$result)),
+c(q1$xmids, rev(q1$xmids)), col='gray')
+points(S, p, pch=20)
 
-    ## (b) 2D: secchi depths in lat and lon bins
+## (b) 2D: secchi depths in lat and lon bins
+if (require(ocedata)) {
     data(secchi)
     col <- rev(oceColorsJet(100))[rescale(secchi$depth,
     xlow=0, xhigh=20,
@@ -78,3 +78,4 @@ if (require(ocedata)) {
 \author{Dan Kelley}
 
 \keyword{misc}
+

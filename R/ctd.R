@@ -999,9 +999,9 @@ setMethod(f="plot",
                               oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
                               if (TRUE) {
                                   ## find nearest point on (coarse) globe
-                                  data("coastlineWorldCoarse", envir=environment())
-                                  d <- geodDist(coastlineWorldCoarse[['longitude']],
-                                                coastlineWorldCoarse[['latitude']],
+                                  data("coastlineWorld", envir=environment())
+                                  d <- geodDist(coastlineWorld[['longitude']],
+                                                coastlineWorld[['latitude']],
                                                 x[['longitude']],
                                                 x[['latitude']])
                                   nearest <- d[which.min(d)] # in km
@@ -1015,21 +1015,26 @@ setMethod(f="plot",
                               projection <- "stereographic"
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
-                              if (coastline == "best") {
-                                  best <- coastlineBest(span=span, debug=debug-1)
-                                  data(list=best, envir=environment())
-                                  coastline <- get(best)
-                              } else if (coastline == "coastlineWorld") {
-                                  data("coastlineWorld", envir=environment())
+                              oceDebug(debug, " coastline is a string: \"", coastline, "\"\n", sep="")
+                              if (require(ocedata, quietly=TRUE)) {
+                                  oceDebug(debug, "ocedata is present, so will try a coastline from that\n")
+                                  if (coastline == "best") {
+                                      warning("ctd: using default coastline for testing")
+                                  } else if (coastline == "coastlineWorld") {
+                                      data("coastlineWorld", envir=environment())
+                                      coastline <- coastlineWorld
+                                  } else if (coastline == "coastlineWorldFine") {
+                                      data("coastlineWorldFine", envir=environment())
+                                      coastline <- coastlineWorldFine
+                                  } else if (coastline == "coastlineWorldMedium") {
+                                      data("coastlineWorldMedium", envir=environment())
+                                      coastline <- coastlineWorldMedium
+                                  }  else {
+                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  }
+                              } else {
+                                  warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
                                   coastline <- coastlineWorld
-                              } else if (coastline == "coastlineWorldFine") {
-                                  data("coastlineWorldFine", envir=environment())
-                                  coastline <- coastlineWorldFine
-                              } else if (coastline == "coastlineWorldCoarse") {
-                                  data("coastlineWorlCoarse", envir=environment())
-                                  coastline <- coastlineWorldCoarse
-                              }  else {
-                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                           }
                           if (missing(lonlim)) {

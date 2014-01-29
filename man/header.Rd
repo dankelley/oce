@@ -18,12 +18,11 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(ctd)
-    header(ctd)
-}
+data(ctd)
+header(ctd)
 }
 
 \author{Dan Kelley}
 
 \keyword{misc}
+

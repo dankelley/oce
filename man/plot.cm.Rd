@@ -89,12 +89,12 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(cm)
-    summary(cm)
-    plot(cm)
-}
+data(cm)
+summary(cm)
+plot(cm)
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

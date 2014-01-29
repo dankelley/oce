@@ -175,11 +175,11 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(adv)
-    plot(adv)
-}
+data(adv)
+plot(adv)
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

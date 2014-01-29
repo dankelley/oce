@@ -67,11 +67,9 @@
 \examples{
 library(oce)
 km <- geodDist(100, 45, 100, 46)
-if (require(ocedata)) {
-    data(section)
-    geodDist(section)
-    geodDist(section, alongPath=TRUE)
-}
+data(section)
+geodDist(section)
+geodDist(section, alongPath=TRUE)
 }
 
 \references{T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on

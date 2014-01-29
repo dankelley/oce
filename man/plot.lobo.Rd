@@ -54,10 +54,8 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(lobo)
-    plot(lobo)
-}
+data(lobo)
+plot(lobo)
 }
 
 \references{\url{http://lobo.satlantic.com/} and

@@ -21,31 +21,28 @@
 \examples{
 \dontrun{
 library(oce)
-#
 # 1. tidal anomaly
-if (require(ocedata)) {
-    data(sealevelTuktoyaktuk)
-    time <- sealevelTuktoyaktuk[["time"]]
-    elevation <- sealevelTuktoyaktuk[["elevation"]]
-    oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
-    tide <- tidem(sealevelTuktoyaktuk)
-    lines(time, elevation - predict(tide), col="red")
-    abline(h=0, col="red")
-    #
-    # 2. prediction at specified times
-    data(sealevelHalifax)
-    m <- tidem(sealevelHalifax)
-    ## Check fit over 2 days (interpolating to finer timescale)
-    look <- 1:48
-    time <- sealevelHalifax[["time"]]
-    elevation <- sealevelHalifax[["elevation"]]
-    oce.plot.ts(time[look], elevation[look])
-    # 360s = 10 minute timescale
-    t <- seq(from=time[1], to=time[max(look)], by=360)
-    lines(t, predict(m,newdata=t), col='red')
-    legend("topright", col=c("black","red"),
-           legend=c("data","model"),lwd=1)
-}
+data(sealevelTuktoyaktuk)
+time <- sealevelTuktoyaktuk[["time"]]
+elevation <- sealevelTuktoyaktuk[["elevation"]]
+oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
+tide <- tidem(sealevelTuktoyaktuk)
+lines(time, elevation - predict(tide), col="red")
+abline(h=0, col="red")
+
+# 2. prediction at specified times
+data(sealevelHalifax)
+m <- tidem(sealevelHalifax)
+## Check fit over 2 days (interpolating to finer timescale)
+look <- 1:48
+time <- sealevelHalifax[["time"]]
+elevation <- sealevelHalifax[["elevation"]]
+oce.plot.ts(time[look], elevation[look])
+# 360s = 10 minute timescale
+t <- seq(from=time[1], to=time[max(look)], by=360)
+lines(t, predict(m,newdata=t), col='red')
+legend("topright", col=c("black","red"),
+legend=c("data","model"),lwd=1)
 }
 }
 

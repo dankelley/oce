@@ -24,15 +24,13 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(coastlineWorld)
-    mapPlot(coastlineWorld, type='l',
-    longitudelim=c(-80,10), latitudelim=c(35,80),
-    projection="orthographic", orientation=c(35, -35, 0))
-    ## Great circle from New York to Paris (Lindberg's flight)
-    l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
-    mapLines(l$longitude, l$latitude, col='red', lwd=2)
-}
+data(coastlineWorld)
+mapPlot(coastlineWorld, type='l',
+longitudelim=c(-80,10), latitudelim=c(35,80),
+projection="orthographic", orientation=c(35, -35, 0))
+## Great circle from New York to Paris (Lindberg's flight)
+l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
+mapLines(l$longitude, l$latitude, col='red', lwd=2)
 }
 
 \author{Dan Kelley, based on code from Clark Richards, in turn based on
@@ -41,3 +39,4 @@ if (require(ocedata)) {
 \source{\url{http://williams.best.vwh.net/avform.htm#Intermediate}}
 
 \keyword{misc}
+

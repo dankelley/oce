@@ -106,10 +106,8 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(ctd)
-    plotTS(ctd)
-}
+data(ctd)
+plotTS(ctd)
 }
 
 \author{Dan Kelley}

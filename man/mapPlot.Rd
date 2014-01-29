@@ -87,39 +87,38 @@
 \examples{
 \dontrun{
 library(oce)
-if (require(ocedata)) {
-    data(coastlineWorld)
+data(coastlineWorld)
 
-    ## Mollweide is an equal-area projection that works well for
-    ## whole-globe views, below shown in default and Pacific-focus
-    ## views.  See Snyder (1987 page 54).
-    mapPlot(coastlineWorld, proj="mollweide")
-    mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
+## Mollweide is an equal-area projection that works well for
+## whole-globe views, below shown in default and Pacific-focus
+## views.  See Snyder (1987 page 54).
+mapPlot(coastlineWorld, proj="mollweide")
+mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
 
-    ## Orthographic projections resemble a globe, making them
-    ## attractive for non-technical use, but they are neither conformal
-    ## nor equal-area, so they are somewhat limited for serious
-    ## use on large scales.  See Snyder (1987 section 20).  The
-    ## examples given below illustrate use for low-latitude
-    ## Pacific and high-latitude Atlantic/Arctic.
-    mapPlot(coastlineWorld, projection="orthographic",
-    orientation=c(0,-180,0))
-    mapPlot(coastlineWorld, projection="orthographic",
-    orientation=c(60,-40,0))
+## Orthographic projections resemble a globe, making them
+## attractive for non-technical use, but they are neither conformal
+## nor equal-area, so they are somewhat limited for serious
+## use on large scales.  See Snyder (1987 section 20).  The
+## examples given below illustrate use for low-latitude
+## Pacific and high-latitude Atlantic/Arctic.
+mapPlot(coastlineWorld, projection="orthographic",
+        orientation=c(0,-180,0))
+mapPlot(coastlineWorld, projection="orthographic",
+        orientation=c(60,-40,0))
 
-    ## The Lambert conformal conic projection is an equal-area
-    ## projection recommended by Snyder for regions of large 
-    ## east-west extent away from the equator, here illustrated 
-    ## for the USA and Canada.  Readers should compare the results
-    ## with those with a polygonic projection, which is also popular.
-    mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-    proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
+## The Lambert conformal conic projection is an equal-area
+## projection recommended by Snyder for regions of large 
+## east-west extent away from the equator, here illustrated 
+## for the USA and Canada.  Readers should compare the results
+## with those with a polygonic projection, which is also popular.
+mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
+        proj="lambert", parameters=c(lat0=40,lat1=60),
+        orientation=c(90,-100,0))
 
-    ## The stereographic projection (Snyder 1987 page 120) is conformal,
-    ## used below for an Arctic view with a Canadian focus.
-    mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(70,110),
-            proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
-}
+## The stereographic projection (Snyder 1987 page 120) is conformal,
+## used below for an Arctic view with a Canadian focus.
+mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(70,110),
+        proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
 }
 }
 
@@ -137,3 +136,4 @@ if (require(ocedata)) {
 }
 
 \keyword{hplot}
+

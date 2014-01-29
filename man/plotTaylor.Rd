@@ -52,14 +52,14 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(sealevelHalifax)
-    x <- elevation(sealevelHalifax)
-    M2 <- predict(tidem(sealevelHalifax, constituents="M2"))
-    S2 <- predict(tidem(sealevelHalifax, constituents=c("S2")))
-    plotTaylor(x, cbind(M2, S2))
-}
+data(sealevelHalifax)
+x <- elevation(sealevelHalifax)
+M2 <- predict(tidem(sealevelHalifax, constituents="M2"))
+S2 <- predict(tidem(sealevelHalifax, constituents=c("S2")))
+plotTaylor(x, cbind(M2, S2))
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

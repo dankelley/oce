@@ -37,14 +37,12 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(ctd) 
-    plotScan(ctd)
+data(ctd) 
+plotScan(ctd)
 
-    # demonstrate adding elements to plots, e.g. to narrow
-    # down on good start end points
-    plotScan(ctd, adorn="abline(v=240,col='red')")
-}
+# demonstrate adding elements to plots, e.g. to narrow
+# down on good start end points
+plotScan(ctd, adorn="abline(v=240,col='red')")
 }
 
 \author{Dan Kelley}

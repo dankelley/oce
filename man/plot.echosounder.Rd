@@ -133,10 +133,8 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(echosounder)
-    plot(echosounder, which=c(1,2), drawBottom=TRUE)
-}
+data(echosounder)
+plot(echosounder, which=c(1,2), drawBottom=TRUE)
 }
 
 \author{Dan Kelley, with extensive help from Clark Richards}

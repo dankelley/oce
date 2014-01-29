@@ -299,15 +299,13 @@
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(adp)
-    plot(adp, which=1:3)
-    plot(adp, which=5, missingColor='gray',
-    adorn=expression({
-        lines(x[["time"]], x[["pressure"]], lwd=3, col='blue')
-        }))
-    plot(adp, which='temperature', tformat='\%H:\%M')
-}
+data(adp)
+plot(adp, which=1:3)
+plot(adp, which=5, missingColor='gray',
+adorn=expression({
+    lines(x[["time"]], x[["pressure"]], lwd=3, col='blue')
+    }))
+plot(adp, which='temperature', tformat='\%H:\%M')
 }
 
 \seealso{The documentation for \code{\link{adp-class}} explains the structure

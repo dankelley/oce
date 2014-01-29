@@ -35,11 +35,9 @@ processingLogShow(x)
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(ctd)
-    ctd@metadata$latitude <- ctd@metadata$latitude + 1
-    processingLog(ctd) <- "correct the latitude"
-}
+data(ctd)
+ctd@metadata$latitude <- ctd@metadata$latitude + 1
+processingLog(ctd) <- "correct the latitude"
 }
 
 \author{Dan Kelley}
