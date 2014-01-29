@@ -444,9 +444,10 @@ setMethod(f="plot",
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
                       if (coastline == "best") {
-                          warning("section: using default coastline for testing")
-                          data("coastlineWorld", envir=environment())
-                          coastline <- coastlineWorld
+                          bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                          oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                          data(list=bestcoastline, package="ocedata", envir=environment())
+                          coastline <- get(bestcoastline)
                           haveCoastline <- TRUE
                       } else {
                           if (coastline != "none") {
