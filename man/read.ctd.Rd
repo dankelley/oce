@@ -202,14 +202,13 @@ plot(woce)
 ## Labrador Sea data, file 0001919.tar.gz from website
 ## http://www.nodc.noaa.gov/cgi-bin/OAS/prd/accession/download
 d <- read.ctd.woce("*.csv")
-data(coastlineWrold)
-plot(coastlineWorld, clat=55, clon=-50, span=5000)
-longitude <- sapply(d, function(stn) stn[['longitude']])
-latitude <- sapply(d, function(stn) stn[['latitude']])
-points(longitude, latitude, col='red')
-
-
-ustations <- read.ctd.woce("*.csv")o
+if (require(ocedata)) {
+    data(coastlineWrold)
+    plot(coastlineWorld, clat=55, clon=-50, span=5000)
+    longitude <- sapply(d, function(stn) stn[['longitude']])
+    latitude <- sapply(d, function(stn) stn[['latitude']])
+    points(longitude, latitude, col='red')
+}
 }
 }
 

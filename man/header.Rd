@@ -18,8 +18,10 @@
 
 \examples{
 library(oce)
-data(ctd)
-header(ctd)
+if (require(ocedata)) {
+    data(ctd)
+    header(ctd)
+}
 }
 
 \author{Dan Kelley}

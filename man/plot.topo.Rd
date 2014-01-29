@@ -99,9 +99,11 @@
 
 \examples{
 library(oce)
-data(topoWorld)
-plot(topoWorld)
-plot(topoWorld, clongitude=300, clatitude=45, span=10000)
+if (require(ocedata)) {
+    data(topoWorld)
+    plot(topoWorld)
+    plot(topoWorld, clongitude=300, clatitude=45, span=10000)
+}
 }
 
 \author{Dan Kelley}

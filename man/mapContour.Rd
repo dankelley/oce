@@ -38,17 +38,19 @@ col=par("fg"), lty=par("lty"), lwd=par("lwd"))}
 \examples{
 \dontrun{
 library(oce)
-data(coastlineWorld)
-par(mar=rep(1, 4))
-## Arctic 100m, 2km, 3km isobaths, showing shelves and ridges.
-mapPlot(coastlineWorld, latitudelim=c(60,120), longitudelim=c(-130,-50), 
-        proj="stereographic", orientation=c(90, -90, 0), 
-        axes=FALSE, fill='lightgray')
-data(topoWorld)
-lon <- topoWorld[['longitude']]
-lat <- topoWorld[['latitude']]
-z <- topoWorld[['z']] 
-mapContour(lon, lat, z, levels=c(-100, -2000, -3000), col=1:3, lwd=2)
+if (require(ocedata)) {
+    data(coastlineWorld)
+    par(mar=rep(1, 4))
+    ## Arctic 100m, 2km, 3km isobaths, showing shelves and ridges.
+    mapPlot(coastlineWorld, latitudelim=c(60,120), longitudelim=c(-130,-50), 
+    proj="stereographic", orientation=c(90, -90, 0), 
+    axes=FALSE, fill='lightgray')
+    data(topoWorld)
+    lon <- topoWorld[['longitude']]
+    lat <- topoWorld[['latitude']]
+    z <- topoWorld[['z']] 
+    mapContour(lon, lat, z, levels=c(-100, -2000, -3000), col=1:3, lwd=2)
+}
 }
 }
 

@@ -83,9 +83,12 @@
 }
 
 \examples{
-data(tdr)
-plot(tdr, which=c(1,3), 
- adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
+library(oce)
+if (require(ocedata)) {
+    data(tdr)
+    t <- as.POSIXct('2008-07-04 20:00:00',tz='UTC')
+    plot(tdr, which=c(1,3), adorn=expression({abline(v=t)}))
+}
 }
 
 \seealso{The documentation for \code{\link{tdr-class}} explains the structure of

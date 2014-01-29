@@ -43,9 +43,11 @@
 \examples{
 \dontrun{
 library(oce)
-data(sealevelHalifax)
-tide <- tidem(sealevelHalifax)
-plot(tide)
+if (require(ocedata)) {
+    data(sealevelHalifax)
+    tide <- tidem(sealevelHalifax)
+    plot(tide)
+}
 }
 }
 

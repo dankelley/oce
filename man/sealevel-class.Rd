@@ -31,9 +31,11 @@
 
 \examples{
 library(oce)
-data(sealevelHalifax)
-show(sealevelHalifax)
-plot(sealevelHalifax)
+if (require(ocedata)) {
+    data(sealevelHalifax)
+    show(sealevelHalifax)
+    plot(sealevelHalifax)
+}
 }
 
 \author{Dan Kelley}

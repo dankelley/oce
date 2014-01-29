@@ -54,12 +54,12 @@
 
 \examples{
 library(oce)
-data(lobo)
-plot(lobo)
-# illustrate adornment
-plot(lobo,
-     adorn=expression({abline(v=as.POSIXct("2009-03-23 00:00:00"), col="red")}))
+if (require(ocedata)) {
+    data(lobo)
+    plot(lobo)
 }
+}
+
 \references{\url{http://lobo.satlantic.com/} and
 \url{http://www.mbari.org/lobo/}
 }

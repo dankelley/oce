@@ -36,9 +36,11 @@
 
 \examples{
 library(oce)
-data(adp)
-o <- enuToOtherAdp(adp, heading=-31.5)
-plot(o, which=1:3)
+if (require(ocedata)) {
+    data(adp)
+    o <- enuToOtherAdp(adp, heading=-31.5)
+    plot(o, which=1:3)
+}
 }
 
 \references{RD Instruments, 1998.

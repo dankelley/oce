@@ -57,14 +57,15 @@ plotSticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
 rm(n, x, y, theta, u, v)
 
 # Oceanographic example
-data(airHalifax)
-t <- airHalifax$t
-u <- airHalifax$u
-v <- airHalifax$v
-temperature <- airHalifax$temperature
-oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizableLabel("T"))
-plotSticks(t, 5, u, v, yscale=2, add=TRUE)
-legend("bottomright", legend="Velocity scale: 2 m/s per degC", bg="white")
+if (require(ocedata)) {
+    data(airHalifax)
+    t <- airHalifax$t
+    u <- airHalifax$u
+    v <- airHalifax$v
+    temperature <- airHalifax$temperature
+    oce.plot.ts(t, temperature, type='l', ylim=c(0,25))
+    plotSticks(t, 5, u, v, yscale=2, add=TRUE)
+}
 }
 
 \author{Dan Kelley}

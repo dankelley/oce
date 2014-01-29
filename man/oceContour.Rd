@@ -39,13 +39,15 @@
 
 \examples{
 library(oce)
-data(topoWorld)
-## coastline now, and in last glacial maximum
-lon <- topoWorld[["longitude"]]
-lat <- topoWorld[["latitude"]]
-z <- topoWorld[["z"]]
-oceContour(lon, lat, z, levels=0, drawlabels=FALSE)
-oceContour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
+if (require(ocedata)) {
+    data(topoWorld)
+    ## coastline now, and in last glacial maximum
+    lon <- topoWorld[["longitude"]]
+    lat <- topoWorld[["latitude"]]
+    z <- topoWorld[["z"]]
+    oceContour(lon, lat, z, levels=0, drawlabels=FALSE)
+    oceContour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
+}
 }
 
 \author{Dan Kelley}

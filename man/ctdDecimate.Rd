@@ -57,11 +57,13 @@ xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pre
 
 \examples{
 library(oce)
-data(RRprofile)
-ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
-plotProfile(ctd, "T", Tlim=c(2,9))
-ctd2 <- ctdDecimate(ctd, p=seq(0,2000,1))
-lines(temperature(ctd2), pressure(ctd2), col="blue")
+if (require(ocedata)) {
+    data(RRprofile)
+    ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
+    plotProfile(ctd, "T", Tlim=c(2,9))
+    ctd2 <- ctdDecimate(ctd, p=seq(0,2000,1))
+    lines(temperature(ctd2), pressure(ctd2), col="blue")
+}
 }
 
 \references{R.F. Reiniger and C.K. Ross, 1968.  A method of

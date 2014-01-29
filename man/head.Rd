@@ -33,8 +33,11 @@
 
 \examples{
 library(oce)
-data(adp)
-start <- head(adp)
-plot(start)
+if (require(ocedata)) {
+    data(adp)
+    start <- head(adp)
+    plot(start)
 }
+}
+
 \keyword{manip}

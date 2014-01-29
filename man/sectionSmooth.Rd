@@ -48,14 +48,16 @@
 \examples{
 \dontrun{
 library(oce)
-data(coastlineWorld)
-data(section)
-gs <- subset(section, 109<=stationId&stationId<=129)
-gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
-gss1 <- sectionSmooth(gsg, "spline", df=16)
-plot(gss1, which=c(1, 99), map.xlim=c(-80,-55))
-gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
-plot(gss2, which=c(1,99), map.xlim=c(-80,-55))
+if (require(ocedata)) {
+    data(coastlineWorld)
+    data(section)
+    gs <- subset(section, 109<=stationId&stationId<=129)
+    gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
+    gss1 <- sectionSmooth(gsg, "spline", df=16)
+    plot(gss1, which=c(1, 99), map.xlim=c(-80,-55))
+    gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
+    plot(gss2, which=c(1,99), map.xlim=c(-80,-55))
+}
 }
 }
 

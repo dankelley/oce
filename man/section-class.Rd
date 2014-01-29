@@ -63,18 +63,22 @@
 
 \examples{
 library(oce)
-data(section)
-plot(section[['station', 1]])
-pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["salinity"]]))
-## T profiles for first few stations in section, at common scale
-par(mfrow=c(3,3))
-Tlim <- range(section[["temperature"]])
-ylim <- rev(range(section[["pressure"]]))
-for (stn in section[["station",1:9]])
-    plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
+if (require(ocedata)) {
+    data(section)
+    plot(section[['station', 1]])
+    pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["salinity"]]))
+    ## T profiles for first few stations in section, at common scale
+    par(mfrow=c(3,3))
+    Tlim <- range(section[["temperature"]])
+    ylim <- rev(range(section[["pressure"]]))
+    for (stn in section[["station",1:9]])
+        plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
+}
 }
 
 \author{Dan Kelley}
+
 \keyword{classes}
+
 \keyword{oce}
 

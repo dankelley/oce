@@ -33,11 +33,13 @@
 
 \examples{
 library(oce)
-data(ctd) 
-SS <- ctd[["salinity"]]^2
-ctdNew <- ctdAddColumn(ctd, SS, "ss", 
-                        expression(paste(S^2, " [", PSU^2, " ]")))
-plotProfile(ctdNew, "ss")
+if (require(ocedata)) {
+    data(ctd) 
+    SS <- ctd[["salinity"]]^2
+    ctdNew <- ctdAddColumn(ctd, SS, "ss", 
+    expression(paste(S^2, " [", PSU^2, " ]")))
+    plotProfile(ctdNew, "ss")
+}
 }
 
 \author{Dan Kelley}

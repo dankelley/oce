@@ -175,8 +175,10 @@
 
 \examples{
 library(oce)
-data(adv)
-plot(adv)
+if (require(ocedata)) {
+    data(adv)
+    plot(adv)
+}
 }
 
 \author{Dan Kelley}

@@ -23,9 +23,11 @@ smoothed appropriately.}
 
 \examples{
 library(oce)
-data(ctd)
-d <- oceSmooth(ctd)
-plot(d)
+if (require(ocedata)) {
+    data(ctd)
+    d <- oceSmooth(ctd)
+    plot(d)
+}
 }
 
 \author{Dan Kelley}

@@ -96,10 +96,12 @@ parameters, debug=getOption("oceDebug"))}
 
 \examples{
 library(oce)
-data(ctdRaw) 
-plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
-plot(ctdTrim(ctdRaw)) # looks like a real profile ...
-plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
+if (require(ocedata)) {
+  data(ctdRaw) 
+  plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
+  plot(ctdTrim(ctdRaw)) # looks like a real profile ...
+  plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
+}
 }
 
 \references{The Seabird CTD instrument is described at

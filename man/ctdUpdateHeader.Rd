@@ -20,9 +20,11 @@
 
 \examples{
 library(oce)
-data(ctd) 
-ctd[["pressure"]] <- ctd[["pressure"]] + 3
-ctdNew <- ctdUpdateHeader(ctd)
+if (require(ocedata)) {
+    data(ctd) 
+    ctd[["pressure"]] <- ctd[["pressure"]] + 3
+    ctdNew <- ctdUpdateHeader(ctd)
+}
 }
 
 \references{The Seabird CTD instrument is described at

@@ -50,10 +50,12 @@
 
 \examples{
 library(oce)
-data(ctd)
-ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
-                 reason="illustration", person="Dan Kelley")
-ctd3 <- oceEdit(ctd, action= "x@data$pressure <- x@data$pressure - 1")
+if (require(ocedata)) {
+    data(ctd)
+    ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
+                    reason="illustration", person="Dan Kelley")
+    ctd3 <- oceEdit(ctd,action="x@data$pressure<-x@data$pressure-1")
+}
 }
 \author{Dan Kelley}
 \keyword{misc}

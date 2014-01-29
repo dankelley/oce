@@ -89,9 +89,11 @@
 
 \examples{
 library(oce)
-data(cm)
-summary(cm)
-plot(cm)
+if (require(ocedata)) {
+    data(cm)
+    summary(cm)
+    plot(cm)
+}
 }
 
 \author{Dan Kelley}

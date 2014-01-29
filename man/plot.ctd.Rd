@@ -179,8 +179,11 @@
 
 \examples{
 library(oce)
-data(ctd) 
-plot(ctd)
+if (require(ocedata)) {
+    data(ctd) 
+    plot(ctd)
 }
+}
+
 \author{Dan Kelley}
 \keyword{hplot}

@@ -137,9 +137,12 @@
 }
 
 \examples{
-    library(oce)
+library(oce)
+if (require(ocedata)) {
+    library(ocedata)
     data(ctd)
     plotProfile(ctd, xtype="temperature")
+}
 }
 
 \author{Dan Kelley}

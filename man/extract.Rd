@@ -17,15 +17,17 @@
 \examples{
 library(oce)
 ## ctd cast
-data(ctd)
-TS <- extract(ctd, c("temperature", "salinity"))
-print(summary(lm(temperature~salinity, data=TS)))
+if (require(ocedata)) {
+    data(ctd)
+    TS <- extract(ctd, c("temperature", "salinity"))
+    print(summary(lm(temperature~salinity, data=TS)))
 
-## section
-data(section)
-TSlon <- extract(section, c("temperature","salinity","longitude"))
-med <- factor(-20 > TSlon$longitude, labels=c("med","other"))
-plotTS(TSlon, col=c("black","gray")[med])
+    ## section
+    data(section)
+    TSlon <- extract(section, c("temperature","salinity","longitude"))
+    med <- factor(-20 > TSlon$longitude, labels=c("med","other"))
+    plotTS(TSlon, col=c("black","gray")[med])
+}
 }
 
 \author{Dan Kelley}

@@ -126,13 +126,17 @@
 \examples{
 \dontrun{
 library(oce)
-data(coastlineWorld)
-plot(coastlineWorld)
-plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
+if (require(ocedata)) {
+    data(coastlineWorld)
+    plot(coastlineWorld)
+    plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
 
-## Canada in Lambert projection
-plot(coastlineWorld, clongitude=-90, clatitude=60, span=3000, fill=NULL, grid=10,
-     projection='lambert', parameters=c(lat0=50,lat1=70), orientation=c(90,-90,0))
+    ## Canada in Lambert projection
+    plot(coastlineWorld, clongitude=-90, clatitude=60, span=3000,
+         fill=NULL, grid=10,
+         projection='lambert', parameters=c(lat0=50,lat1=70),
+         orientation=c(90,-90,0))
+}
 }
 }
 

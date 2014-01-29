@@ -31,9 +31,11 @@
 \examples{
 \dontrun{
 library(oce)
-data(coastlineWorld)
-xy <- mapLongitudeLatitudeXY(coastlineWorld)
-plot(xy, type='l', asp=1)
+if (require(ocedata)) {
+    data(coastlineWorld)
+    xy <- mapLongitudeLatitudeXY(coastlineWorld)
+    plot(xy, type='l', asp=1)
+}
 }
 }
 

@@ -60,8 +60,12 @@
 
 \examples{
 library(oce)
-data(met)
-plot(met, which=3:4)
+if (require(ocedata)) {
+    data(met)
+    plot(met, which=3:4)
 }
+}
+
 \author{Dan Kelley}
+
 \keyword{hplot}

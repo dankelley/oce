@@ -66,16 +66,18 @@
 
 \examples{
 library(oce)
-data(RRprofile)
-zz <- seq(0,2000,5)
-plot(RRprofile$temperature, RRprofile$depth, ylim=c(500,0), xlim=c(2,11))
-## Contrast two methods
-a1 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz)
-a2 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz, 'rr')
-lines(a1, zz)
-lines(a2, zz, col='red')
-legend("bottomright", lwd=1, col=1:2,
-       legend=c("Unesco", "Reiniger-Ross"), cex=3/4)
+if (require(ocedata)) {
+    data(RRprofile)
+    zz <- seq(0,2000,5)
+    plot(RRprofile$temperature, RRprofile$depth, ylim=c(500,0), xlim=c(2,11))
+    ## Contrast two methods
+    a1 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz)
+    a2 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz, 'rr')
+    lines(a1, zz)
+    lines(a2, zz, col='red')
+    legend("bottomright", lwd=1, col=1:2,
+    legend=c("Unesco", "Reiniger-Ross"), cex=3/4)
+}
 }
 
 \references{

@@ -33,18 +33,22 @@ makeSection(item, \dots)
 
 \examples{
 library(oce)
-data(ctd)
-ctdWarmed <- ctd
-ctdWarmed[["temperature"]] <- ctdWarmed[["temperature"]] + 0.5
-ctdWarmed[["latitude"]] <- ctdWarmed[["latitude"]] + 0.1
-section <- makeSection(ctd, ctdWarmed)
-summary(section)
+if (require(ocedata)) {
+    data(ctd)
+    ctdWarmed <- ctd
+    ctdWarmed[["temperature"]] <- ctdWarmed[["temperature"]] + 0.5
+    ctdWarmed[["latitude"]] <- ctdWarmed[["latitude"]] + 0.1
+    section <- makeSection(ctd, ctdWarmed)
+    summary(section)
 
-s2 <- makeSection(ctd)
-s2 <- s2 + ctdWarmed
-plot(s2)
-\dontrun{
-plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))
+    s2 <- makeSection(ctd)
+    s2 <- s2 + ctdWarmed
+    plot(s2)
+    # Below is how to create a section from well-named CSV files
+    # that contain consecutive stations
+    \dontrun{
+        plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))
+    }
 }
 }
 \author{Dan Kelley}
