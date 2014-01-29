@@ -696,7 +696,7 @@ webtide <- function(action=c("map", "predict"),
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
-            vuf <- oce:::tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
