@@ -359,7 +359,8 @@ imagep <- function(x, y, z,
         } else {
             ## zlim given, but breaks not given
             if (missing(col)) {
-                breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
+                ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
+                breaks <- pretty(zlim, n=nbreaks)
                 oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
             } else {
                 breaks <- seq(zlim[1], zlim[2],
