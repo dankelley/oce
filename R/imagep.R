@@ -41,7 +41,7 @@ abbreviateTimeLabels <- function(t, ...)
 }
 
 
-makePalette <- function(type="topography", style=c("gmt0"), file, breaksPerLevel=16)
+makePalette <- function(type="topography", style=c("gmt0"), file, breaksPerLevel=16, water=TRUE)
 {
     type <- match.arg(type)
     style <- match.arg(style)
@@ -90,6 +90,11 @@ N	255	255	255"
         upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
         breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=breaksPerLevel))
         col <- c(col, colorRampPalette(c(lowerColor, upperColor))(breaksPerLevel))
+    }
+    if (water) {
+        wet <- breaks <= 0
+        breaks <- breaks[wet]
+        col <- col[wet]
     }
     col <- col[-1]                     # drop one colour for length match with breaks
     list(breaks=breaks, col=col)

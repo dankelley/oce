@@ -6,7 +6,7 @@
 
 \description{Make a palette, e.g. for bathymetric images}
 
-\usage{makePalette(type="topography", style=c("gmt0"), file, breaksPerLevel=16)}
+\usage{makePalette(type="topography", style=c("gmt0"), file, breaksPerLevel=16, water=TRUE)}
 
 \arguments{
 
@@ -21,6 +21,10 @@
       format (see \sQuote{References})}
 
   \item{breaksPerLevel}{number of breaks between each level of the palette}
+
+  \item{water}{restrict breaks to non-positive values, i.e. water for
+      topography files}
+
 }
 
 \details{This function is in a preliminary form (for testing), and its
