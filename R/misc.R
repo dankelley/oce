@@ -1456,11 +1456,13 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
-    if (missing(to))
-        to <- length(x@data$time[[1]])
-    if (length(by) == 1) { # FIXME: probably should not be here
-        select <- seq(from=1, to=to, by=by)
-        oceDebug(debug, vectorShow(select, "select:"))
+    if ("time" %in% names(x@data)) {
+        if (missing(to))
+            to <- length(x@data$time[[1]])
+        if (length(by) == 1) { # FIXME: probably should not be here
+            select <- seq(from=1, to=to, by=by)
+            oceDebug(debug, vectorShow(select, "select:"))
+        }
     }
     if (inherits(x, "adp")) {
         oceDebug(debug, "decimate() on an ADP object\n")
@@ -1593,6 +1595,13 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             res[["a"]] <- a2
         }
         ## do depth, rows of matrix, time, cols of matrix
+    } else if (inherits(x, "topo")) {
+        oceDebug(debug, "Decimating a topo object")
+        lonlook <- seq(1, length(x[["longitude"]]), by=by)
+        latlook <- seq(1, length(x[["latitude"]]), by=by)
+        res[["longitude"]] <- x[["longitude"]][lonlook]
+        res[["latitude"]] <- x[["latitude"]][latlook]
+        res[["z"]] <- x[["z"]][lonlook, latlook]
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }

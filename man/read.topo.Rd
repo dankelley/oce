@@ -7,15 +7,13 @@
 \description{Read a file that contains topographic data in the ETOPO2 dataset, 
   as provided by the NOAA website.}
 
-\usage{read.topo(file, processingLog, \dots)}
+\usage{read.topo(file, \dots)}
 
 \arguments{
   \item{file}{name of a file containing an ETOPO2 dataset.}
-  \item{processingLog}{if provided, the action item to be stored in the
-    log.  (Typically only provided for internal calls; the default that
-    it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
 }
+
 \value{An object of type \code{\link[base]{class}} \code{"topo"},
   which is a list containing the following items.
   \item{data}{a data frame containing \code{lat},

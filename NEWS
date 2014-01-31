@@ -1,4 +1,7 @@
 0.9-14
+- subset.topo() added
+- read.topo() now handles GEBCO netcdf files
+- decimate() now handles topo objects
 - reverse oceColorsGebco colours for water
 - coding changes for an upcoming version of R
 - drawIsopycnals() and plotTS(): improve isopycnal labels
