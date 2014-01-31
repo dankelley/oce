@@ -34,10 +34,14 @@
 \value{A list containing \code{breaks} and \code{col}, as used by e.g.
     \code{\link{image}} or \code{\link{imagep}}.}
 
+\section{Development status}{Devised 2014-Jan-31 with a particular plot in
+    mind, this function is likely to be somewhat unstable until perhaps the end
+    of Feb, 2014.}
+
 \examples{
 library(oce)
-pal <- makePalette()
 data(topoWorld)
+pal <- makePalette(region="both")
 imagep(topoWorld, breaks=pal$breaks, col=pal$col, asp=1)
 }
 
