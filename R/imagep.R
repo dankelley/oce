@@ -40,6 +40,62 @@ abbreviateTimeLabels <- function(t, ...)
     return(t)
 }
 
+
+makePalette <- function(type="topography", style=c("gmt0"), file, breaksPerLevel=16)
+{
+    type <- match.arg(type)
+    style <- match.arg(style)
+    if (!missing(file)) {
+        d <- read.table(file, comment.char="#", nrows=17,
+                        col.names=c("l", "lr", "lg", "lb",
+                                    "u", "ur", "ug", "ub"))
+    } else {
+        if (style== "gmt0") {
+            text <- "
+#	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+#
+# Colortable for whole earth relief used in Wessel topomaps
+# Designed by P. Wessel and F. Martinez, SOEST
+# COLOR_MODEL = RGB
+-8000	0	0	0	-7000	0	5	25
+-7000	0	5	25	-6000	0	10	50
+-6000	0	10	50	-5000	0	80	125
+-5000	0	80	125	-4000	0	150	200
+-4000	0	150	200	-3000	86	197	184
+-3000	86	197	184	-2000	172	245	168
+-2000	172	245	168	-1000	211	250	211
+-1000	211	250	211	0	250	255	255
+0	70	120	50	500	120	100	50
+500	120	100	50	1000	146	126	60
+1000	146	126	60	2000	198	178	80
+2000	198	178	80	3000	250	230	100
+3000	250	230	100	4000	250	234	126
+4000	250	234	126	5000	252	238	152
+5000	252	238	152	6000	252	243	177
+6000	252	243	177	7000	253	249	216
+7000	253	249	216	8000	255	255	255
+F	255	255	255				
+B	0	0	0
+N	255	255	255"
+        d <- read.table(text=text, comment.char="#", nrows=17,
+                        col.names=c("l", "lr", "lg", "lb",
+                                    "u", "ur", "ug", "ub"))
+    }
+    }
+    nlevel <- length(d$l)
+    breaks <- NULL
+    col <- NULL
+    for (l in 1:nlevel) {
+        lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
+        upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
+        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=breaksPerLevel))
+        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(breaksPerLevel))
+    }
+    col <- col[-1]                     # drop one colour for length match with breaks
+    list(breaks=breaks, col=col)
+}
+
+
 paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
                                 mai=c(0, 1/8, 0, 1/4))
 {

@@ -1,4 +1,5 @@
 0.9-14
+- makePalette() added
 - subset.topo() added
 - read.topo() now handles GEBCO netcdf files
 - decimate() now handles topo objects
