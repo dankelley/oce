@@ -82,7 +82,8 @@
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines with
     \code{\link{mapLines}}, and text with \code{\link{mapText}}.  Points on a
     map may be found with \code{\link{mapLocator}}.  Great circle paths can be
-    calculated with \code{\link{geodGc}}.}
+    calculated with \code{\link{geodGc}}.  Scale bars may be added with
+    \code{\link{mapScalebar}}.}
 
 \examples{
 \dontrun{

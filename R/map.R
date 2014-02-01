@@ -310,19 +310,39 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     }
 }
 
-mapScalebar <- function(position=c("topleft"), length,
+mapScalebar <- function(x, y=NULL, length,
                         lwd=4*par("lwd"), cex=1.2*par("cex"),
                         col="black")
 {
-    position <- match.arg(position)
+    if (!is.null(y))
+        stop("y must be NULL in this (early) version of mapScalebar()\n")
+    if (missing(x))
+        x <- "topleft"
+    else if (!match.arg(x, "topleft"))
+        stop("x must be \"topleft\"in this (early) version of mapScalebar()\n")
     usr <- par('usr')
-    lonlatUL <- map2lonlat(usr[1], usr[4])
-    lonlatUR <- map2lonlat(usr[2], usr[4])
-    L <- geodDist(lonlatUL$longitude, lonlatUL$latitude, 
-                  lonlatUR$longitude, lonlatUR$latitude) 
+
+    ## determine scale from centre of region
+    x0 <- 0.5 * (usr[1] + usr[2])
+    y0 <- 0.5 * (usr[3] + usr[4])
+    dusr <- 0.001 * (usr[2] - usr[1])
+    x1 <- x0 + dusr
+    ##cat("dusr:", dusr, "\n")
+    y1 <- y0
+    lonlat0 <- map2lonlat(x0, y0)
+    lonlat1 <- map2lonlat(x1, y1)
+    dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
+                      lonlat1$longitude, lonlat1$latitude)
+    ##cat("dkm:", dkm, "\n")
+
+    kmPerUsr <- dkm / dusr
+    ##cat("kmPerUsr:", kmPerUsr, "\n")
+    
     if (missing(length))
-        length <- diff(pretty(L)[1:2])
-    frac <- length / L
+        length <- diff(pretty(kmPerUsr*(usr[4]-usr[3]))[1:2])
+    ##cat("length:", length, "\n")
+    frac <- length / kmPerUsr
+    ##cat("frac:", frac, "\n")
     xBar <- usr[1] + 0.05 * (usr[2] - usr[1])
     yBar <- usr[4] - 0.05 * (usr[4] - usr[3])
     lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col)

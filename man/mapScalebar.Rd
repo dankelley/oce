@@ -6,14 +6,15 @@
 
 \description{Draw a scalebar on an existing map}
 
-\usage{mapScalebar(position=c("topleft"), length,
+\usage{mapScalebar(x, y=NULL, length,
             lwd=4*par("lwd"), cex=1.2*par("cex"), col="black")
 }
 
 \arguments{
 
-    \item{position}{position for the scalebar, as for \code{\link{legend}}
-        (only one allowed at present)}
+    \item{x, y}{position of the scalebar.  Eventually this should be similar to
+        the corresponding arguments in \code{\link{legend}}, but at the moment
+        \code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.}
 
     \item{length}{length to indicate, in kilometres.  If not provided, a
         possibly reasonable choice is made.}
@@ -26,9 +27,9 @@
 
 }
 
-\details{This relies on the edges of the map being on the earth, and thus fails
-    for cases in which the form of the globe does not fill the plot box.  Then
-    again, it makes very little sense to draw a scale bar in such a case.}
+\details{The scale is appropriate to the centre of the plot, and will become
+    increasingly inaccurate away from that spot, with the error depending on
+    the projection and the fraction of the earth that is shown.}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}
