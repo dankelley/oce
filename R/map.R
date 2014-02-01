@@ -310,6 +310,40 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     }
 }
 
+mapScalebar <- function(position=c("topleft"), length,
+                        lwd=4*par("lwd"), cex=1.2*par("cex"),
+                        col="black")
+{
+    position <- match.arg(position)
+    usr <- par('usr')
+    lonlatUL <- map2lonlat(usr[1], usr[4])
+    lonlatUR <- map2lonlat(usr[2], usr[4])
+    L <- geodDist(lonlatUL$longitude, lonlatUL$latitude, 
+                  lonlatUR$longitude, lonlatUR$latitude) 
+    if (missing(length))
+        length <- diff(pretty(L)[1:2])
+    frac <- length / L
+    xBar <- usr[1] + 0.05 * (usr[2] - usr[1])
+    yBar <- usr[4] - 0.05 * (usr[4] - usr[3])
+    lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col)
+    text(xBar + frac / 2, yBar, pos=1, sprintf("%.0f km", length),
+         cex=cex, col=col)
+}
+
+mapText <- function(longitude, latitude, labels, ...)
+{
+    ok <- !is.na(longitude) & !is.na(latitude)
+    longitude <- longitude[ok]
+    latitude <- latitude[ok]
+    labels <- labels[ok]
+    if (length(longitude) > 0) {
+        xy <- mapproject(longitude, latitude)
+        text(xy$x, xy$y, labels, ...)
+    }
+}
+
+
+
 
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
@@ -383,18 +417,6 @@ mapPoints <- function(longitude, latitude, ...)
     if (length(longitude) > 0) {
         xy <- mapproject(longitude, latitude)
         points(xy$x, xy$y, ...)
-    }
-}
-
-mapText <- function(longitude, latitude, labels, ...)
-{
-    ok <- !is.na(longitude) & !is.na(latitude)
-    longitude <- longitude[ok]
-    latitude <- latitude[ok]
-    labels <- labels[ok]
-    if (length(longitude) > 0) {
-        xy <- mapproject(longitude, latitude)
-        text(xy$x, xy$y, labels, ...)
     }
 }
 
