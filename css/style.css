@@ -163,3 +163,8 @@ post.count {
 p.footnote {
     font-size: 90%;
 }
+
+table,tr
+{
+    border:1px solid black;
+}
