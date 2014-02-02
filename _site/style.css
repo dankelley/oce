@@ -1,31 +1,38 @@
-html,body{height:100%;color:black;}
+/* oce */
+html {
+    height:100%;
+}
+
 a, a:visited {
+    color: #0000FF;
     text-decoration: underline;
 }
-body{
+
+body {
     font-family: helvetica,arial,freesans,clean,sans-serif;
-    font-size:small;
+    font-size:14px;
+    color: #444444;
+    line-height:2.5ex;
 }
 
-tt{
-    font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
-    font-size:90%;
-}
-
-code{
+tt {
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
 }
 
+code {
+    font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+}
 
-pre{
+
+pre {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    margin-left: 2.5em;
+    margin-left: 1em;
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
-    font-size:90%;
+    font-weight: 400;
+    font-size: 90%;
 }
 
-body *{line-height:1.4em;}
 table.gallery {
     text-align: center;
 }
@@ -46,9 +53,13 @@ h1 {
     margin-top: -0.5em;
     margin-bottom: -1.0em;
 }
-@media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
+
+@media only screen and (max-device-width: 480px) {
     body{
+        color:blue;
+        -webkit-text-size-adjust:100%;
         padding:5px;
+        width:100%;
         font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
     pre{
