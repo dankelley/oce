@@ -17,12 +17,10 @@ body {
 
 tt {
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
-    font-size:90%;
 }
 
 code {
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
-    font-size:90%;
 }
 
 
@@ -33,7 +31,6 @@ pre {
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     background-color: #F2F2F2;
     font-weight: 400;
-    font-size:90%;
 }
 
 body *{line-height:1.4em;}
