@@ -50,6 +50,7 @@ h1 {
     margin-top: -0.5em;
     margin-bottom: -1.0em;
 }
+/*
 @media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
     body{
         padding:5px;
@@ -59,4 +60,5 @@ h1 {
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     }
 }
+*/
 
