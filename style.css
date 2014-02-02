@@ -54,14 +54,13 @@ h1 {
     margin-bottom: -1.0em;
 }
 
-@media screen and (max-device-width: 481px) {
+@media only screen and (max-device-width: 480px) {
     body{
         color:blue;
         -webkit-text-size-adjust:none;
         padding:5px;
         width:100%;
-        /*font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;*/
-        font-family:Helvetica, Arial, Verdana, sans-serif;
+        font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
     pre{
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
