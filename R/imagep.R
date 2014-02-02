@@ -41,18 +41,29 @@ abbreviateTimeLabels <- function(t, ...)
 }
 
 
-makePalette <- function(type="topography", style=c("gmt0"), file, breaksPerLevel=16,
+makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
+                        file, breaksPerLevel=20,
                         region=c("water", "land", "both"))
 {
-    type <- match.arg(type)
-    region <- match.arg(region)
+    readGMT <- function(file, text)
+    {
+        if (missing(file) && missing(text))
+            stop("must give either 'file' or 'text'\n")
+        if (missing(file)) {
+            text <- strsplit(text, '\\n')[[1]]
+        } else {
+            text <- readLines(file)
+        }
+        text <- text[grep("^[-0-9]", text)]
+        d <- read.table(text=text, col.names=c("l", "lr", "lg", "lb", "u", "ur", "ug", "ub"))
+        d
+    }
     style <- match.arg(style)
+    region <- match.arg(region)
     if (!missing(file)) {
-        d <- read.table(file, comment.char="#", nrows=17,
-                        col.names=c("l", "lr", "lg", "lb",
-                                    "u", "ur", "ug", "ub"))
+        d <- readGMT(file)
     } else {
-        if (style== "gmt0") {
+        if (style == "gmt_relief") {
             text <- "
 #	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
 #
@@ -79,10 +90,45 @@ makePalette <- function(type="topography", style=c("gmt0"), file, breaksPerLevel
 F	255	255	255				
 B	0	0	0
 N	255	255	255"
-        d <- read.table(text=text, comment.char="#", nrows=17,
-                        col.names=c("l", "lr", "lg", "lb",
-                                    "u", "ur", "ug", "ub"))
-    }
+        } else if (style == "gmt_ocean") {
+            text <- "
+#	$Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+#
+# Colortable for oceanic areas as used in Wessel maps
+# Designed by P. Wessel and F. Martinez, SOEST.
+# COLOR_MODEL = RGB
+-8000	0	0	0	-7000	0	5	25
+-7000	0	5	25	-6000	0	10	50
+-6000	0	10	50	-5000	0	80	125
+-5000	0	80	125	-4000	0	150	200
+-4000	0	150	200	-3000	86	197	184
+-3000	86	197	184	-2000	172	245	168
+-2000	172	245	168	-1000	211	250	211
+-1000	211	250	211	0	250	255	255
+F	255	255	255
+B	0	0	0"
+        } else if (style == "oce_shelf") {
+            ## FIXME: colours are junk -- need to design them myself, perhaps along lines below.
+            ## N<-10;plot(1:N, 1:N, pch=21, bg=colorRampPalette(c("white", "#66CCCC", "blue"))(N),cex=3,col='red')
+            ## > standardDepths()[seq.int(1, 9, 2)]
+            ## [1]   0  20  50 100 150
+            ## > standardDepths()[seq.int(2, 10, 2)]
+            ## [1]  10  30  75 125 200
+
+
+            text <- "
+-150	0	80	125	-125	0	115     162	
+-125	0	150	200	-100	43	173     192	
+-100	86	197	184	-75	129     221     176
+-75	172     245     168	-50	191     247     189
+-50	211     250     211	-30     220     250     240	
+-30	235     252     247	-20	172	245	168
+-20	172	245	168	-10	211	250	211
+-10	220	250	240	0	250	255	255
+F	255	255	255
+B	0	0	0"
+        }
+        d <- readGMT(text=text)
     }
     nlevel <- length(d$l)
     breaks <- NULL
@@ -90,8 +136,8 @@ N	255	255	255"
     for (l in 1:nlevel) {
         lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
         upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
-        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=breaksPerLevel))
-        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(breaksPerLevel))
+        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=1+breaksPerLevel))
+        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(1+breaksPerLevel))
     }
     if (region == "water") {
         wet <- breaks <= 0
