@@ -1,7 +1,6 @@
 /* oce */
 html {
     height:100%;
-    color:black;
 }
 
 a, a:visited {
@@ -33,7 +32,6 @@ pre {
     font-size: 90%;
 }
 
-body *{line-height:1.4em;}
 table.gallery {
     text-align: center;
 }
