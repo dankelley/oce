@@ -57,7 +57,6 @@ h1 {
 @media only screen and (max-device-width: 480px) {
     body{
         color:blue;
-        -webkit-text-size-adjust:100%;
         padding:5px;
         width:100%;
         font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
