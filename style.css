@@ -1,4 +1,4 @@
-/* oce */
+/* website */
 html {
     height:100%;
 }
@@ -8,11 +8,29 @@ a, a:visited {
     text-decoration: underline;
 }
 
+a:hover {
+    color: red;
+}
+
+/* tag links are styled differently */
+a.tag:link, a.tag:visited {
+    color: blue;
+}
+
+a.tag:hover {
+    color: red;
+}
+
+span.topnav {
+    font-size:120%;
+    margin-left: 0px;
+}
+
 body {
     font-family: helvetica,arial,freesans,clean,sans-serif;
     font-size:14px;
     color: #444444;
-    line-height:2.5ex;
+    line-height: 2.5ex;
 }
 
 tt {
@@ -29,41 +47,113 @@ pre {
     margin-bottom: 0.2em;
     margin-left: 1em;
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    background-color: #F2F2F2;
     font-weight: 400;
-    font-size: 90%;
+    font-size: 95%;
+    /* new: messes up with line numbered code */
+    /*width: 620px; /* see span8 */
+    /*display: block; */
+    /*overflow:auto; */
+    /* endnew */
 }
 
-table.gallery {
-    text-align: center;
+div.slug {
+    margin-left: 1em;
+    color: black;
+    font-size:90%;
+    margin-bottom:1.5ex;
+}
+div.post_title {
+    font-size:160%;
+    line-height:110%;
+    font-weight:400;
+    color:black;
+    line-height:140%;
+    margin-top: 1ex;
+    margin-bottom: 0ex;
 }
 
-table.galleryitem, table.galleryitembottom a{
-    text-align: center;
+div.post_tags, div.post_date, div.post_summary {
+    margin-left: 0ex;
+    margin-bottom: 0ex;
 }
-div.center {
-    text-align:center;
-}
-div.center a {
-    font-weight: normal;
-}
+
 h1 {
-    font-size: 110%;
-    font-weight: bold;
-    padding: 0em 0em 0em 0em;
-    margin-top: -0.5em;
-    margin-bottom: -1.0em;
+    font-size:140%;
+    font-weight:400;
+    line-height:140%;
+    margin-top: 0px;
+    margin-bottom: -0.5ex;
 }
 
-@media only screen and (max-device-width: 480px) {
+h2 {
+    font-size:100%;
+    line-height:100%;
+    margin-top: 0em;
+    margin-bottom: -0.5em;
+}
+
+
+@media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
     body{
-        color:blue;
         padding:5px;
-        width:100%;
         font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
     pre{
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     }
+}
+
+
+/* TESTING */
+[class*="span"]{
+    float:left;
+    margin-left:20px;
+}
+
+post.count {
+    color: red;
+}
+.span4 { /* for RHS (date, tags, comments) */
+    /*
+    width:300px;
+    background-color: #F0FFFF;
+    */
+}
+
+.span8 { /* for LHS (main content) */
+    /*
+     width:620px;
+     */
+}
+
+.navbar {
+    display:block;
+    position:relative;
+    bottom:0px;
+    right:0px;
+    width:100%;
+}
+.navbar ul {
+    margin: 0;
+    padding: 0.2em 0.2em;
+    list-style: none;
+    background-color: #036;
+    color: #FFF;
+    width: 100%;
+}
+.navbar li {
+    display:inline;
+}
+.navbar li a {
+    text-decoration:none;
+    font-weight: bold;
+    color: white;
+    padding: 0.5em 0.5em;
+    border-right: 1px solid #fff;
+}
+.navbar li a:hover {
+    background-color: #06C;
 }
 
 #content {
