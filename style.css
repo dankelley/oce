@@ -1,3 +1,4 @@
+/* oce */
 html {
     height:100%;
     color:black;
@@ -21,14 +22,17 @@ tt {
 
 code {
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    font-size:90%;
 }
 
 
-pre{
+pre {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    margin-left: 2.5em;
+    margin-left: 1em;
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    background-color: #F2F2F2;
+    font-weight: 400;
     font-size:90%;
 }
 
