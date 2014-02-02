@@ -54,7 +54,7 @@ h1 {
     margin-bottom: -1.0em;
 }
 
-@media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
+@media screen and (max-device-width: 481px) {
     body{
         color:blue;
         padding:5px;
