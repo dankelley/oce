@@ -55,6 +55,7 @@ h1 {
 
 @media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
     body{
+        color:red;
         padding:5px;
         font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
