@@ -164,7 +164,6 @@ p.footnote {
     font-size: 90%;
 }
 
-table,tr
-{
+table,tr {
     border:1px solid black;
 }
