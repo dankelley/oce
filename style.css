@@ -9,9 +9,9 @@ a, a:visited {
 }
 
 body {
-        color:green;
     font-family: helvetica,arial,freesans,clean,sans-serif;
     font-size:14px;
+    color: #444444;
     line-height:2.5ex;
 }
 
