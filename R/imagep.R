@@ -54,9 +54,27 @@ makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
         } else {
             text <- readLines(file)
         }
-        text <- text[grep("^[-0-9]", text)]
-        d <- read.table(text=text, col.names=c("l", "lr", "lg", "lb", "u", "ur", "ug", "ub"))
-        d
+        text1 <- text[grep("^[ ]*[-0-9]", text)]
+        d <- read.table(text=text1, col.names=c("l", "lr", "lg", "lb", "u", "ur", "ug", "ub"))
+        if (length(grep("^[ ]*F", text))) {
+            f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
+            f <- rgb(f[1]/255, f[2]/255, f[3]/255)
+        } else {
+            f <- "#FFFFFF"
+        }
+        if (length(grep("^[ ]*B", text))) {
+            b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
+            b <- rgb(b[1]/255, b[2]/255, b[3]/255)
+        } else {
+            b <- "#000000"
+        }
+        if (length(grep("^[ ]*N", text))) {
+            n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
+            n <- rgb(n[1]/255, n[2]/255, n[3]/255)
+        } else {
+            n <- "#FFFFFF"
+        }
+        list(l=d$l, lr=d$lr, lg=d$lg, lb=d$lb, u=d$u, ur=d$ur, ug=d$ug, ub=d$ub, f=f, b=b, n=n)
     }
     style <- match.arg(style)
     region <- match.arg(region)
@@ -108,25 +126,16 @@ N	255	255	255"
 F	255	255	255
 B	0	0	0"
         } else if (style == "oce_shelf") {
-            ## FIXME: colours are junk -- need to design them myself, perhaps along lines below.
-            ## N<-10;plot(1:N, 1:N, pch=21, bg=colorRampPalette(c("white", "#66CCCC", "blue"))(N),cex=3,col='red')
-            ## > standardDepths()[seq.int(1, 9, 2)]
-            ## [1]   0  20  50 100 150
-            ## > standardDepths()[seq.int(2, 10, 2)]
-            ## [1]  10  30  75 125 200
-
-
             text <- "
+-500	0	0	0	-200	0	10	55
+-200	0	10	55	-175	0	40	80
+-175	0	40	80	-150	0	80	125
 -150	0	80	125	-125	0	115     162	
 -125	0	150	200	-100	43	173     192	
 -100	86	197	184	-75	129     221     176
 -75	172     245     168	-50	191     247     189
--50	211     250     211	-30     220     250     240	
--30	235     252     247	-20	172	245	168
--20	172	245	168	-10	211	250	211
--10	220	250	240	0	250	255	255
-F	255	255	255
-B	0	0	0"
+-50	211     250     211	-25     220     250     240	
+-25	220	250	240	0	250	255	255"
         }
         d <- readGMT(text=text)
     }
@@ -150,7 +159,7 @@ B	0	0	0"
     }
     ## drop a colour for length match with breaks
     col <- col[-1]                     
-    list(breaks=breaks, col=col)
+    list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
 }
 
 

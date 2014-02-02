@@ -48,14 +48,14 @@ pal <- makePalette(region="both")
 imagep(topoWorld, breaks=pal$breaks, col=pal$col, asp=1)
 
 ## (test) shelf scheme
-source('~/src/R-kelley/oce/R/imagep.R')
-pal <- makePalette(style="oce_shelf", breaksPerLevel=2)
-N <- 100 # increase to make breaks match exactly contours
+pal <- makePalette(style="oce_shelf", breaksPerLevel=1)
+N <- 300 # increase to make breaks match exactly contours
 x <- 1:N
-y <- 1:N
-z <- outer(x, y, function(x,y) -200*(x-1)/N)
+y <- 1:5
+z <- outer(x, y, function(x,y) -300*(x-1)/N)
 imagep(x, y, z, breaks=pal$breaks, col=pal$col)
-contour(x, y, z, add=TRUE, col='red', labcex=1, levels=-standardDepths()[1:10])
+contour(x, y, z, add=TRUE, col='red', labcex=1,
+        levels=-c(seq(0, 200, 25), 250, 300))
 
 
 }
