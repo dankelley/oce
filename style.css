@@ -57,7 +57,8 @@ h1 {
 @media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
     body{
         padding:5px;
-        font: 5em Verdana, Tahoma, Arial, Helvetica, sans-serif;
+        width:100%;
+        font: 2em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
     pre{
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
