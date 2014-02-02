@@ -10,7 +10,7 @@ a, a:visited {
 
 body {
     font-family: helvetica,arial,freesans,clean,sans-serif;
-    font-size:14px;
+    font-size:100%; /*4px; */
     color: #444444;
     line-height:2.5ex;
 }
@@ -56,7 +56,6 @@ h1 {
 
 @media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
     body{
-        -webkit-text-size-adjust: 100%;
         padding:5px;
         font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
