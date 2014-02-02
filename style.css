@@ -30,6 +30,7 @@ pre {
     margin-left: 1em;
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     font-weight: 400;
+    font-size: 95%;
 }
 
 body *{line-height:1.4em;}
