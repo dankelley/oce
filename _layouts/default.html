@@ -1,12 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<link rel='stylesheet' type='text/css' href='style.css' />
-<link rel='stylesheet' type='text/css' href='syntax.css' />
+<link rel='stylesheet' type='text/css' href='{{ site.url }}/style.css' />
+<link rel='stylesheet' type='text/css' href='{{ site.url }}/syntax.css' />
 <title>{{ page.title }}</title>
 </head>
 <body>
-{{ content }}
+<div id="content">
+    {{ content }}
+</div>
 </body>
 </html>
 

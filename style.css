@@ -10,7 +10,7 @@ a, a:visited {
 
 body {
     font-family: helvetica,arial,freesans,clean,sans-serif;
-    font-size:100%; /*4px; */
+    font-size:14px;
     color: #444444;
     line-height:2.5ex;
 }
