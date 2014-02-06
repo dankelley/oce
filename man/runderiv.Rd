@@ -36,6 +36,18 @@ lines(x[1]+c(0, L), rep(mean(theory), 2), col='blue', lwd=3)
 lines(x, calc, col='red')
 legend("top", lwd=1, col=c("black","red"),
        legend=c("theory", "calc"))
+
+# Case 2: square of buoyancy frequency
+data(ctd)
+par(mfrow=c(1,1))
+plot(ctd, which="N2")
+rho <- swRho(ctd)
+z <- swZ(ctd)
+N2 <- -9.8 / mean(rho) * runderiv(z, rho, 5)
+lines(N2, -z, col='blue')
+legend("bottomright", lwd=2, bg="white",
+       col=c("darkred", "blue"),
+       legend=c("swN2()", "using runderiv()"))
 }
 
 \section{Development status}{Devised 2014-Feb-06 with a particular plot in
