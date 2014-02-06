@@ -11,9 +11,9 @@
    x <- 1:100
    y <- 1 + 2 * x + x^2/50 + 200*sin(x/5)
    L <- 4
-   system("R CMD SHLIB running_derivative.c")
-   dyn.load('running_derivative.so')
-   calc <- .Call("running_derivative", x, y, L)
+   system("R CMD SHLIB run.c")
+   dyn.load('run.so')
+   calc <- .Call("run_deriv", x, y, L)
    theory <- 2 + 0.04 * x + 40*cos(x/5)
    compare <- data.frame(calc=calc, theory=theory)
    par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
@@ -28,7 +28,7 @@
 
 */
 
-SEXP running_derivative(SEXP x, SEXP y, SEXP L)
+SEXP run_deriv(SEXP x, SEXP y, SEXP L)
 {
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));

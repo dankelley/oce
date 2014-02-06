@@ -14,21 +14,33 @@
     \item{L}{width of running window, in x units.}
 }
 
-\details{This is useful for e.g. gridding large datasets, in which the first
-    step might be to use \code{\link{binMean2D}}, followed by
-    \code{\link{interpBarnes}}.}
+\details{The derivative is calculated from the slope of a localized
+    least-squares regression model y=y(x).  The localization is defined by the
+    x difference from the point in question, with data at distance exceeding
+    L/2 being ignored.  To attain speed, the calculation is done in C.}
 
-\value{A list containing three vectors: \code{x}, the grid x values, \code{y},
-    the grid y values, and \code{grid}, the grid values.}
+\value{A vector of derivative values.}
     
 \examples{
 library(oce)
-data(wind)
-u <- interpBarnes(wind$x, wind$y, wind$z)
-contour(u$xg, u$yg, u$zg)
-U <- runderiv(u$xg, u$yg, u$zg)
-points(U$x, U$y, col=oceColorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
+x <- 1:100
+y <- 1 + 2 * x + x^2/50 + 200*sin(x/5)
+L <- 4
+calc <- runderiv(x, y, L)
+theory <- 2 + 0.04 * x + 40*cos(x/5)
+par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+plot(x, y, type='l')
+lines(x[1]+c(0, L), rep(mean(y), 2), col='blue', lwd=3)
+plot(x, theory, type='l', ylab="dy/dx")
+lines(x[1]+c(0, L), rep(mean(theory), 2), col='blue', lwd=3)
+lines(x, calc, col='red')
+legend("top", lwd=1, col=c("black","red"),
+       legend=c("theory", "calc"))
 }
+
+\section{Development status}{Devised 2014-Feb-06 with a particular plot in
+    mind, this function is likely to be somewhat unstable until perhaps the
+    middle of Mar, 2014.}
 
 \author{Dan Kelley}
 
