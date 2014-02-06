@@ -10,10 +10,10 @@
 
    x <- 1:100
    y <- 1 + 2 * x + x^2/50 + 200*sin(x/5)
-   L <- 4
+   L <- 5
    system("R CMD SHLIB run.c")
    dyn.load('run.so')
-   calc <- .Call("run_deriv", x, y, L)
+   calc <- .Call("run_deriv", x, y, L, 0)
    theory <- 2 + 0.04 * x + 40*cos(x/5)
    compare <- data.frame(calc=calc, theory=theory)
    par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
@@ -28,11 +28,12 @@
 
 */
 
-SEXP run_deriv(SEXP x, SEXP y, SEXP L)
+SEXP run_deriv(SEXP x, SEXP y, SEXP L, SEXP window)
 {
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
   PROTECT(L = AS_NUMERIC(L));
+  PROTECT(window = AS_NUMERIC(window));
   int nx = LENGTH(x);
   int ny = LENGTH(y);
   if (nx != ny)
@@ -45,32 +46,56 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP L)
   SEXP res;
   PROTECT(res = allocVector(REALSXP, nx));
   double *resp = REAL(res);
-  if (1 == length(L)) {
-    // formula: sum((x-xbar)*(y-ybar))/sum((x-xbar)^2)
+  double *windowp = REAL(window);
+  int windowType = (int)floor(0.5 + *windowp);
+  if (windowType == 0) {
     for (int i = 0; i < nx; i++) {
-      double xsum = 0.0, ysum = 0.0;
+      double Sx = 0.0, Sy = 0.0, Sxx = 0.0, Sxy = 0.0;
       int n = 0;
       for (int j=0; j < nx; j++) {
-	if (fabs(xp[i] - xp[j]) < L2) {
-	  xsum += xp[j];
-	  ysum += yp[j];
+	double w, d;
+	double l = fabs(xp[i] - xp[j]);
+	if (l < L2) {
+	  Sx += xp[j];
+	  Sy += yp[j];
+	  Sxx += xp[j] * xp[j];
+	  Sxy += xp[j] * yp[j];
 	  n++;
 	}
+      } // j
+      if (n > 0) {
+	resp[i] = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
+      } else {
+	resp[i] = NA_REAL;
       }
-      double xbar = xsum / n, ybar = ysum / n;
-      double Sxy = 0, Sxx = 0.0;
+    } // i
+  } else if (windowType == 1) {
+    double pi = 3.141592653589793116;
+    for (int i = 0; i < nx; i++) {
+      double Swwx = 0.0, Swwy = 0.0, Swwxx = 0.0, Swwxy = 0.0, Sww = 0.0;
+      int n = 0;
       for (int j=0; j < nx; j++) {
-	if (fabs(xp[i] - xp[j]) < L2) {
-	  Sxy += (xp[j] - xbar) * (yp[j] - ybar);
-	  Sxx += (xp[j] - xbar) * (xp[j] - xbar);
+	double l = fabs(xp[i] - xp[j]);
+	if (l < L2) {
+	  double ww = 0.5 * (1 + cos(pi * l / L2));
+	  Swwx += ww * xp[j];
+	  Swwy += ww * yp[j];
+	  Swwxx += ww * xp[j] * xp[j];
+	  Swwxy += ww * xp[j] * yp[j];
+	  Sww += ww;
+	  n++;
 	}
+      } // j
+      if (n > 0) {
+	resp[i] = (Sww * Swwxy - Swwx * Swwy) / (Sww * Swwxx - Swwx * Swwx);
+      } else {
+	resp[i] = NA_REAL;
       }
-      resp[i] = Sxy / Sxx;
-    } // for (int i...)
+    } // i
   } else {
-    error("at least for now, length(L) must be 1\n");
+    error("invalid window type (internal coding error in run.c)\n");
   }
-  UNPROTECT(4);
+  UNPROTECT(5);
   return(res);
 }
 

@@ -6,18 +6,21 @@
 
 \description{Calculate dy/dx with running regression}
 
-\usage{runderiv(x, y, L)}
+\usage{runderiv(x, y, L, window=c("boxcar", "hanning"))}
 
 \arguments{
     \item{x}{a vector holding the x coordinates of grid.}
     \item{y}{a vector holding the y coordinates of grid.}
     \item{L}{width of running window, in x units.}
+    \item{window}{weighting within the window; see \sQuote{Details}.}
 }
 
 \details{The derivative is calculated from the slope of a localized
     least-squares regression model y=y(x).  The localization is defined by the
     x difference from the point in question, with data at distance exceeding
-    L/2 being ignored.  To attain speed, the calculation is done in C.}
+    L/2 being ignored.  With a \code{boxcar} window, all data within the local
+    domain are treated equally, while with a \code{hanning} window, a
+    raised-cosine weighting function is used.}
 
 \value{A vector of derivative values.}
     
@@ -43,16 +46,16 @@ par(mfrow=c(1,1))
 plot(ctd, which="N2")
 rho <- swRho(ctd)
 z <- swZ(ctd)
-N2 <- -9.8 / mean(rho) * runderiv(z, rho, 5)
+N2 <- -9.8 / mean(rho) * runderiv(z, rho, 10, "hanning")
 lines(N2, -z, col='blue')
 legend("bottomright", lwd=2, bg="white",
        col=c("darkred", "blue"),
        legend=c("swN2()", "using runderiv()"))
 }
 
-\section{Development status}{Devised 2014-Feb-06 with a particular plot in
-    mind, this function is likely to be somewhat unstable until perhaps the
-    middle of Mar, 2014.}
+\section{Development status}{Devised 2014-Feb-06 with a particular purpose in
+    mind, this function may be somewhat unstable until perhaps the middle of
+    Mar, 2014.}
 
 \author{Dan Kelley}
 
