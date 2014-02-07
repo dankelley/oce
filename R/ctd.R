@@ -2781,7 +2781,14 @@ plotProfile <- function (x,
         }
         axis(2)
         box()
-        if (type == 'l') lines(st, y, col = col.rho, lwd=lwd) else points(st, y, col = col.rho, pch=pch)
+        if (type == 'l') {
+            lines(st, y, col = col.rho, lwd=lwd) 
+        } else if (type == 'p') {
+            points(st, y, col = col.rho, pch=pch)
+        } else {
+            points(st, y, col = col.rho, pch=pch)
+            lines(st, y, col = col.rho, lwd=lwd) 
+        }
         par(new = TRUE)
         N2 <- swN2(x@data$pressure, st, df=df)
         N2[!is.finite(N2)] <- NA
@@ -2792,8 +2799,15 @@ plotProfile <- function (x,
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
-        if (type == 'l')
-            lines(N2, y, col = col.N2, lwd=lwd) else points(N2, y, col = col.N2, pch=pch)
+
+        if (type == 'l') {
+            lines(N2, y, col = col.N2, lwd=lwd) 
+        } else if (type == 'p') {
+            points(N2, y, col = col.N2, pch=pch)
+        } else {
+            points(N2, y, col = col.N2, pch=pch)
+            lines(N2, y, col = col.N2, lwd=lwd) 
+        }
         if (getOption("oceUnitBracket") == '[') {
             mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
         } else {
