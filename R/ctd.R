@@ -889,7 +889,6 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 15) {
                       plotProfile(x, xtype="Rrho",
-                                  xlim=Rrholim,
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -2472,7 +2471,7 @@ plotProfile <- function (x,
         }
     } else if (xtype == "index") {
         index <- 1:length(x@data$pressure)
-        plot(index, x@data$pressure, ylim=ylim, xlab = "index", ylab = yname, type='l', xaxs=xaxs, yaxs=yaxs)
+        plot(index, x@data$pressure, ylim=ylim, col=col, xlab = "index", ylab = yname, type='l', xaxs=xaxs, yaxs=yaxs)
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
@@ -2599,6 +2598,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
+            ## 2014-02-07: use col here, since no second axis to worry about
             plotJustProfile(salinity, y, type=type, lwd=lwd, cex=cex, pch=pch, col=col, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
@@ -2635,6 +2635,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
+            ## 2014-02-07: use col here, since no second axis to worry about
             plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
@@ -2661,6 +2662,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
+        ## 2014-02-07: use col here, since no second axis to worry about
         plotJustProfile(Rrho, y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
@@ -2697,7 +2699,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(temperature, y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
         theta <- swTheta(x, method=eos)
@@ -2828,12 +2830,12 @@ plotProfile <- function (x,
                  xlim=N2lim, ylim=ylim,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             } else {
-                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             }
             axis(2)
-            axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
+            axis(3)
             box()
             if (grid) {
                 at <- par("yaxp")
@@ -2842,7 +2844,8 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
+        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
