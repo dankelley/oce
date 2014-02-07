@@ -90,6 +90,10 @@ setMethod(f="[[",
                   t <- x@data$temperature
                   p <- x@data$pressure
                   teos("gsw_ct_from_t", Sp, t, p)
+              } else if (i == "z") {
+                  swZ(x)
+              } else if (i == "depth") {
+                  swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
                   rval <- as(x, "oce")[[i, j, drop]]
@@ -649,10 +653,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = c(1, 2, 3, 5),
+          definition=function(x, which = c(1, 2, 3, 5), col=par("fg"),
                               eos=getOption("eos", default='unesco'),
                               ref.lat = NaN, ref.lon = NaN,
-                              grid = TRUE, col.grid="lightgray", lty.grid="dotted",
+                              grid = TRUE,
                               coastline="best",
                               Slim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
@@ -786,7 +790,7 @@ setMethod(f="plot",
                       plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -796,16 +800,17 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   df=df,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 6) {
                       plotProfile(x, xtype="density+dpdt",
                                   ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -813,16 +818,17 @@ setMethod(f="plot",
                       plotProfile(x, xtype="density+time",
                                   ylim=plim, densitylim=densitylim, timelim=timelim,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 8) {
                       plotProfile(x, xtype="index",
                                   ylim=plim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -830,9 +836,10 @@ setMethod(f="plot",
                       plotProfile(x, xtype="salinity",
                                   ylim=plim,
                                   Slim=Slim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -840,9 +847,10 @@ setMethod(f="plot",
                       plotProfile(x, xtype="temperature",
                                   ylim=plim,
                                   Tlim=Tlim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -851,9 +859,10 @@ setMethod(f="plot",
                                   ylim=plim,
                                   densitylim=densitylim,
                                   grid=grid,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  col.grid=col.grid, lty.grid=lty.grid,
+                                  col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -862,46 +871,51 @@ setMethod(f="plot",
                                   ylim=plim,
                                   N2lim=N2lim,
                                   grid=grid,
+                                  col=col,
                                   eos=eos,
                                   df=df,
                                   useSmoothScatter=useSmoothScatter,
-                                  col.grid=col.grid, lty.grid=lty.grid,
+                                  col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 13) {
                       plotProfile(x, xtype="spice",
                                   ylim=plim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 14) {
                       plotProfile(x, xtype="tritium",
                                   ylim=plim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 15) {
                       plotProfile(x, xtype="Rrho",
                                   ylim=plim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 16) {
                       plotProfile(x, xtype="RrhoSF",
                                   ylim=plim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
-                                  grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
@@ -910,7 +924,7 @@ setMethod(f="plot",
                       lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
                       lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
                       plotTS(x, Slim=Slim, Tlim=Tlim,
-                             grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                             grid=grid, col.grid="lightgray", lty.grid="dotted",
                              eos=eos,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
                              useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, 
@@ -2750,12 +2764,12 @@ plotProfile <- function (x,
                 plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"))
+                mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
             } else {
-                mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col, cex=par("cex"))
+                mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
             }
             axis(2)
-            axis(3, col = col, col.axis = col, col.lab = col)
+            axis(3)
             box()
             if (grid) {
                 at <- par("yaxp")

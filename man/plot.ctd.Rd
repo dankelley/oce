@@ -11,10 +11,10 @@
     square of buoyancy frequency, (c) a TS diagram and (d) a coastline diagram
     indicating the station location.}
 
-\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), 
+\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), col=par("fg"),
      eos=getOption("eos", default='unesco'),
      ref.lat=NaN, ref.lon=NaN, 
-     grid=TRUE, col.grid="lightgray", lty.grid="dotted",
+     grid=TRUE,
      coastline="best",
      Slim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
@@ -70,6 +70,7 @@
       \item \code{which=14} or \code{which="tritium"} gives a tritium profile
     }
   }
+  \item{col}{colour of lines or symbols}
   \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
       computer must have the TEOS library installed; see \code{\link{teos}}.
       The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
@@ -81,8 +82,6 @@
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
-  \item{col.grid}{colour for the grid.}
-  \item{lty.grid}{line type for grid.}
   \item{coastline}{a specification of the coastline to be used for
       \code{which="map"}.  This may be a coastline object, whether built-in or
       supplied by the user, or a character string.  If the later, it may be the
