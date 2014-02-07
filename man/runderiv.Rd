@@ -6,13 +6,14 @@
 
 \description{Calculate dy/dx with running regression}
 
-\usage{runderiv(x, y, L, window=c("boxcar", "hanning"))}
+\usage{runderiv(x, y, window=c("hanning", "boxcar"), L)}
 
 \arguments{
     \item{x}{a vector holding the x coordinates of grid.}
     \item{y}{a vector holding the y coordinates of grid.}
-    \item{L}{width of running window, in x units.}
     \item{window}{weighting within the window; see \sQuote{Details}.}
+    \item{L}{width of running window, in x units.  If not provided, a reasonable
+        default will be used}
 }
 
 \details{The derivative is calculated from the slope of a localized
@@ -20,7 +21,8 @@
     x difference from the point in question, with data at distance exceeding
     L/2 being ignored.  With a \code{boxcar} window, all data within the local
     domain are treated equally, while with a \code{hanning} window, a
-    raised-cosine weighting function is used.}
+    raised-cosine weighting function is used; the latter produces smoother
+    derivatives, which can be useful for noisy data.}
 
 \value{A vector of derivative values.}
     
@@ -29,7 +31,7 @@ library(oce)
 x <- 1:100
 y <- 1 + 2 * x + x^2/50 + 200*sin(x/5)
 L <- 4
-calc <- runderiv(x, y, L)
+calc <- runderiv(x, y, L=L)
 theory <- 2 + 0.04 * x + 40*cos(x/5)
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(x, y, type='l')
@@ -46,7 +48,7 @@ par(mfrow=c(1,1))
 plot(ctd, which="N2")
 rho <- swRho(ctd)
 z <- swZ(ctd)
-N2 <- -9.8 / mean(rho) * runderiv(z, rho, 10, "hanning")
+N2 <- -9.8 / mean(rho) * runderiv(z, rho)
 lines(N2, -z, col='blue')
 legend("bottomright", lwd=2, bg="white",
        col=c("darkred", "blue"),
