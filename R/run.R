@@ -1,12 +1,14 @@
-runderiv <- function(x, y, window=c("hanning", "boxcar"), L)
+runderiv <- function(x, y, xout, window=c("hanning", "boxcar"), L)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
     nx <- length(x)
     ny <- length(y)
-    window <- match.arg(window)
     if (nx != ny)
         stop("lengths of x and y must match, but they are ", nx, " and ", ny, ", respectively\n")
+    if (missing(xout))
+        xout <- x
+    window <- match.arg(window)
     if (missing(L)) {
         spacing <- median(abs(diff(x)), na.rm=TRUE)
         if (nx > 20)
@@ -23,6 +25,6 @@ runderiv <- function(x, y, window=c("hanning", "boxcar"), L)
             L <- L * 1.5
         ##cat("L:", L, ", spacing:", spacing, "\n")
     }
-    .Call("run_deriv", x, y, L, switch(window, boxcar=0, hanning=1))
+    .Call("run_deriv", x, y, xout, switch(window, boxcar=0, hanning=1), L)
 }
 

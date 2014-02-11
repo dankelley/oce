@@ -6,14 +6,17 @@
 
 \description{Calculate dy/dx with running regression}
 
-\usage{runderiv(x, y, window=c("hanning", "boxcar"), L)}
+\usage{runderiv(x, y, xout, window=c("hanning", "boxcar"), L)}
 
 \arguments{
-    \item{x}{a vector holding the x coordinates of grid.}
-    \item{y}{a vector holding the y coordinates of grid.}
-    \item{window}{weighting within the window; see \sQuote{Details}.}
-    \item{L}{width of running window, in x units.  If not provided, a reasonable
-        default will be used}
+    \item{x}{a vector holding x values.}
+    \item{y}{a vector holding y values.}
+    \item{xout}{optional vector of x values at which the derivative is to be
+        found.  If not provided, \code{x} is used.}
+    \item{window}{type of weighting function used to weight data within the
+        window; see \sQuote{Details}.}
+    \item{L}{width of running window, in x units.  If not provided, a
+        reasonable default will be used.}
 }
 
 \details{The derivative is calculated from the slope of a localized
@@ -48,16 +51,13 @@ par(mfrow=c(1,1))
 plot(ctd, which="N2")
 rho <- swRho(ctd)
 z <- swZ(ctd)
-N2 <- -9.8 / mean(rho) * runderiv(z, rho)
-lines(N2, -z, col='blue')
+zz <- seq(min(z), max(z), 0.1)
+N2 <- -9.8 / mean(rho) * runderiv(z, rho, zz)
+lines(N2, -zz, col='blue')
 legend("bottomright", lwd=2, bg="white",
        col=c("darkred", "blue"),
        legend=c("swN2()", "using runderiv()"))
 }
-
-\section{Development status}{Devised 2014-Feb-06 with a particular purpose in
-    mind, this function may be somewhat unstable until perhaps the middle of
-    Mar, 2014.}
 
 \author{Dan Kelley}
 

@@ -28,33 +28,36 @@
 
 */
 
-SEXP run_deriv(SEXP x, SEXP y, SEXP L, SEXP window)
+SEXP run_deriv(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
 {
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
+  PROTECT(xout = AS_NUMERIC(xout));
   PROTECT(L = AS_NUMERIC(L));
   PROTECT(window = AS_NUMERIC(window));
   int nx = LENGTH(x);
   int ny = LENGTH(y);
   if (nx != ny)
     error("length(x) is %d but length(y) is %d\n", nx, ny);
+  int nxout = LENGTH(xout);
   double *xp = REAL(x);
   double *yp = REAL(y);
+  double *xoutp = REAL(xout);
   int nL = LENGTH(L);
   double *Lp = REAL(L);
   double L2 = Lp[0] / 2;
   SEXP res;
-  PROTECT(res = allocVector(REALSXP, nx));
+  PROTECT(res = allocVector(REALSXP, nxout));
   double *resp = REAL(res);
   double *windowp = REAL(window);
   int windowType = (int)floor(0.5 + *windowp);
   if (windowType == 0) {
-    for (int i = 0; i < nx; i++) {
+    for (int i = 0; i < nxout; i++) {
       double Sx = 0.0, Sy = 0.0, Sxx = 0.0, Sxy = 0.0;
       int n = 0;
       for (int j=0; j < nx; j++) {
 	double w, d;
-	double l = fabs(xp[i] - xp[j]);
+	double l = fabs(xoutp[i] - xp[j]);
 	if (l < L2) {
 	  Sx += xp[j];
 	  Sy += yp[j];
@@ -71,11 +74,11 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP L, SEXP window)
     } // i
   } else if (windowType == 1) {
     double pi = 3.141592653589793116;
-    for (int i = 0; i < nx; i++) {
+    for (int i = 0; i < nxout; i++) {
       double Swwx = 0.0, Swwy = 0.0, Swwxx = 0.0, Swwxy = 0.0, Sww = 0.0;
       int n = 0;
       for (int j=0; j < nx; j++) {
-	double l = fabs(xp[i] - xp[j]);
+	double l = fabs(xoutp[i] - xp[j]);
 	if (l < L2) {
 	  double ww = 0.5 * (1 + cos(pi * l / L2));
 	  Swwx += ww * xp[j];
@@ -95,7 +98,7 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP L, SEXP window)
   } else {
     error("invalid window type (internal coding error in run.c)\n");
   }
-  UNPROTECT(5);
+  UNPROTECT(6);
   return(res);
 }
 
