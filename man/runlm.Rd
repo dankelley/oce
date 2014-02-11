@@ -1,12 +1,13 @@
-\name{runderiv}
+\name{runlm}
 
-\alias{runderiv}
+\alias{runlm}
 
-\title{Calculate dy/dx with running regression}
+\title{Calculate running linear models}
 
-\description{Calculate dy/dx with running regression}
+\description{Fit linear models y=y(x) in local regions of x space, possibly
+    with distance-based Hanning weightings.}
 
-\usage{runderiv(x, y, xout, window=c("hanning", "boxcar"), L)}
+\usage{runlm(x, y, xout, window=c("hanning", "boxcar"), L, deriv=0)}
 
 \arguments{
     \item{x}{a vector holding x values.}
@@ -17,33 +18,33 @@
         window; see \sQuote{Details}.}
     \item{L}{width of running window, in x units.  If not provided, a
         reasonable default will be used.}
+    \item{deriv}{0 to get the local fitted value, 1 to get the fitted local
+        slope.  See \sQuote{Examples}.}
 }
 
-\details{The derivative is calculated from the slope of a localized
+\details{The linear model is calculated from the slope of a localized
     least-squares regression model y=y(x).  The localization is defined by the
     x difference from the point in question, with data at distance exceeding
     L/2 being ignored.  With a \code{boxcar} window, all data within the local
     domain are treated equally, while with a \code{hanning} window, a
     raised-cosine weighting function is used; the latter produces smoother
-    derivatives, which can be useful for noisy data.}
+    derivatives, which can be useful for noisy data.  The function is based on
+    internal calculation, not on \code{\link{lm}}.}
 
-\value{A vector of derivative values.}
+\value{A vector of values or slopes.}
     
 \examples{
 library(oce)
+
+# Case 1: smooth a noisy signal
 x <- 1:100
-y <- 1 + 2 * x + x^2/50 + 200*sin(x/5)
+y <- 1 + x/100 + sin(x/5)
+yn <- y + rnorm(100, sd=0.1)
 L <- 4
-calc <- runderiv(x, y, L=L)
-theory <- 2 + 0.04 * x + 40*cos(x/5)
-par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-plot(x, y, type='l')
-lines(x[1]+c(0, L), rep(mean(y), 2), col='blue', lwd=3)
-plot(x, theory, type='l', ylab="dy/dx")
-lines(x[1]+c(0, L), rep(mean(theory), 2), col='blue', lwd=3)
-lines(x, calc, col='red')
-legend("top", lwd=1, col=c("black","red"),
-       legend=c("theory", "calc"))
+calc <- runlm(x, y, L=L)
+plot(x, y, type='l', lwd=7, col='gray')
+points(x, yn, pch=20, col='blue')
+lines(x, calc, lwd=2, col='red')
 
 # Case 2: square of buoyancy frequency
 data(ctd)
@@ -52,11 +53,11 @@ plot(ctd, which="N2")
 rho <- swRho(ctd)
 z <- swZ(ctd)
 zz <- seq(min(z), max(z), 0.1)
-N2 <- -9.8 / mean(rho) * runderiv(z, rho, zz)
-lines(N2, -zz, col='blue')
+N2 <- -9.8 / mean(rho) * runlm(z, rho, zz, deriv=1)
+lines(N2, -zz, col='red')
 legend("bottomright", lwd=2, bg="white",
-       col=c("darkred", "blue"),
-       legend=c("swN2()", "using runderiv()"))
+       col=c("black", "red"),
+       legend=c("swN2()", "using runlm()"))
 }
 
 \author{Dan Kelley}

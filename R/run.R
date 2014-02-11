@@ -1,4 +1,4 @@
-runderiv <- function(x, y, xout, window=c("hanning", "boxcar"), L)
+runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv=0)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -6,6 +6,8 @@ runderiv <- function(x, y, xout, window=c("hanning", "boxcar"), L)
     ny <- length(y)
     if (nx != ny)
         stop("lengths of x and y must match, but they are ", nx, " and ", ny, ", respectively\n")
+    if (deriv != 0 && deriv != 1)
+        stop("deriv must be 0 or 1\n")
     if (missing(xout))
         xout <- x
     window <- match.arg(window)
@@ -25,6 +27,6 @@ runderiv <- function(x, y, xout, window=c("hanning", "boxcar"), L)
             L <- L * 1.5
         ##cat("L:", L, ", spacing:", spacing, "\n")
     }
-    .Call("run_deriv", x, y, xout, switch(window, boxcar=0, hanning=1), L)
+    .Call("run_lm", x, y, xout, switch(window, boxcar=0, hanning=1), L, deriv)
 }
 

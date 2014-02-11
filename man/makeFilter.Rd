@@ -262,6 +262,8 @@ R package \code{signal}
 
 }
 
+\section{Bugs}{The examples on this help page are way too long.  What was I thinking?}
+
 \references{F. J. Harris, 1978.  On the use of windows for harmonic
   analysis with the discrete Fourier Transform.
   \emph{Proceedings of the IEEE}, 66(1), 51-83

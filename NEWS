@@ -1,5 +1,5 @@
 0.9-14
-- runderiv() added
+- runlm() added
 - mapScalebar() added
 - makePalette() added
 - subset.topo() added

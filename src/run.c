@@ -13,7 +13,7 @@
    L <- 5
    system("R CMD SHLIB run.c")
    dyn.load('run.so')
-   calc <- .Call("run_deriv", x, y, L, 0)
+   calc <- .Call("run_lm", x, y, L, 0)
    theory <- 2 + 0.04 * x + 40*cos(x/5)
    compare <- data.frame(calc=calc, theory=theory)
    par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
@@ -28,13 +28,14 @@
 
 */
 
-SEXP run_deriv(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
+SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
 {
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
   PROTECT(xout = AS_NUMERIC(xout));
   PROTECT(L = AS_NUMERIC(L));
   PROTECT(window = AS_NUMERIC(window));
+  PROTECT(deriv = AS_NUMERIC(deriv));
   int nx = LENGTH(x);
   int ny = LENGTH(y);
   if (nx != ny)
@@ -51,6 +52,8 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
   double *resp = REAL(res);
   double *windowp = REAL(window);
   int windowType = (int)floor(0.5 + *windowp);
+  double *derivp = REAL(deriv);
+  int derivType = (int)floor(0.5 + * derivp);
   if (windowType == 0) {
     for (int i = 0; i < nxout; i++) {
       double Sx = 0.0, Sy = 0.0, Sxx = 0.0, Sxy = 0.0;
@@ -67,7 +70,13 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
 	}
       } // j
       if (n > 0) {
-	resp[i] = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
+	double A = (Sxx * Sy - Sx * Sxy) / (n * Sxx - Sx * Sx);
+	double B = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
+	if (derivType == 0) {
+	  resp[i] = A + B * xoutp[i];
+	} else {
+	  resp[i] = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
+	}
       } else {
 	resp[i] = NA_REAL;
       }
@@ -90,7 +99,13 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
 	}
       } // j
       if (n > 0) {
-	resp[i] = (Sww * Swwxy - Swwx * Swwy) / (Sww * Swwxx - Swwx * Swwx);
+	double A = (Swwxx * Swwy - Swwx * Swwxy) / (Sww * Swwxx - Swwx * Swwx);
+	double B = (Sww * Swwxy - Swwx * Swwy) / (Sww * Swwxx - Swwx * Swwx);
+	if (derivType == 0) {
+	  resp[i] = A + B * xoutp[i];
+	} else {
+	  resp[i] = B;
+	}
       } else {
 	resp[i] = NA_REAL;
       }
@@ -98,7 +113,7 @@ SEXP run_deriv(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
   } else {
     error("invalid window type (internal coding error in run.c)\n");
   }
-  UNPROTECT(6);
+  UNPROTECT(7);
   return(res);
 }
 
