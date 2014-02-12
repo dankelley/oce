@@ -69,7 +69,7 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
 	  n++;
 	}
       } // j
-      if (n > 0) {
+      if (n > 1) {
 	double A = (Sxx * Sy - Sx * Sxy) / (n * Sxx - Sx * Sx);
 	double B = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
 	if (derivType == 0) {
@@ -98,7 +98,7 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
 	  n++;
 	}
       } // j
-      if (n > 0) {
+      if (n > 1) {
 	double A = (Swwxx * Swwy - Swwx * Swwxy) / (Sww * Swwxx - Swwx * Swwx);
 	double B = (Sww * Swwxy - Swwx * Swwy) / (Sww * Swwxx - Swwx * Swwx);
 	if (derivType == 0) {
