@@ -81,6 +81,9 @@ julianCenturyAnomaly <- function(jd)
 
 moonAngle <- function(t, longitude, latitude, useRefraction=TRUE)
 {
+    if (missing(t)) stop("must give 't'")
+    if (missing(longitude)) stop("must give 'longitude'")
+    if (missing(latitude)) stop("must give 'latitude'")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
