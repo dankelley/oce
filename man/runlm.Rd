@@ -7,7 +7,7 @@
 \description{Fit linear models y=y(x) in local regions of x space, possibly
     with distance-based Hanning weightings.}
 
-\usage{runlm(x, y, xout, window=c("hanning", "boxcar"), L, deriv=0)}
+\usage{runlm(x, y, xout, window=c("hanning", "boxcar"), L, deriv)}
 
 \arguments{
     \item{x}{a vector holding x values.}
@@ -18,8 +18,8 @@
         window; see \sQuote{Details}.}
     \item{L}{width of running window, in x units.  If not provided, a
         reasonable default will be used.}
-    \item{deriv}{0 to get the local fitted value, 1 to get the fitted local
-        slope.  See \sQuote{Examples}.}
+    \item{deriv}{an optional indicator of the desired return value; see
+        \sQuote{Examples}.}
 }
 
 \details{The linear model is calculated from the slope of a localized
@@ -31,10 +31,12 @@
     derivatives, which can be useful for noisy data.  The function is based on
     internal calculation, not on \code{\link{lm}}.}
 
-\value{A vector of values or slopes.}
+\value{If \code{deriv} is not specified, a list containing vectors of output
+    values \code{y} and \code{y}, derivative (\code{dydx}), along with the
+    scalar length scale \code{L}.  If \code{deriv=0}, a vector of values is
+    returned, and if \code{deriv=1}, a vector of derivatives is returned.}
     
-\examples{
-library(oce)
+\examples{ library(oce)
 
 # Case 1: smooth a noisy signal
 x <- 1:100
@@ -44,7 +46,7 @@ L <- 4
 calc <- runlm(x, y, L=L)
 plot(x, y, type='l', lwd=7, col='gray')
 points(x, yn, pch=20, col='blue')
-lines(x, calc, lwd=2, col='red')
+lines(x, calc$y, lwd=2, col='red')
 
 # Case 2: square of buoyancy frequency
 data(ctd)

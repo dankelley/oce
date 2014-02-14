@@ -1,4 +1,4 @@
-runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv=0)
+runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -6,7 +6,7 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv=0)
     ny <- length(y)
     if (nx != ny)
         stop("lengths of x and y must match, but they are ", nx, " and ", ny, ", respectively\n")
-    if (deriv != 0 && deriv != 1)
+    if (!missing(deriv) && deriv != 0 && deriv != 1)
         stop("deriv must be 0 or 1\n")
     if (missing(xout))
         xout <- x
@@ -27,6 +27,11 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv=0)
             L <- L * 1.5
         ##cat("L:", L, ", spacing:", spacing, "\n")
     }
-    .Call("run_lm", x, y, xout, switch(window, boxcar=0, hanning=1), L, deriv)
+    rval <- .Call("run_lm", x, y, xout, switch(window, boxcar=0, hanning=1), L)
+    if (!missing(deriv) && deriv == 0)
+        rval <- rval$y
+    else if (!missing(deriv) && deriv == 1)
+        rval <- rval$dydx
+    rval
 }
 

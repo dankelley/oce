@@ -8,34 +8,24 @@
 
 /* 
 
-   x <- 1:100
+   x <- 1:20
    y <- 1 + 2 * x + x^2/50 + 200*sin(x/5)
-   L <- 5
+   L <- 10
    system("R CMD SHLIB run.c")
    dyn.load('run.so')
-   calc <- .Call("run_lm", x, y, L, 0)
-   theory <- 2 + 0.04 * x + 40*cos(x/5)
-   compare <- data.frame(calc=calc, theory=theory)
-   par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-   plot(x, y, type='l')
-   lines(x[1]+c(0, L), rep(mean(y), 2), col='blue', lwd=3)
-   plot(x, theory, type='l', ylab="dy/dx")
-   lines(x[1]+c(0, L), rep(mean(theory), 2), col='blue', lwd=3)
-   lines(x, calc, col='red')
-   legend("top", lwd=1, col=c("black","red"),
-           legend=c("theory", "calc"))
-
+   source("../R/run.R")
+   calc <- runlm(x, y, L=L)
+   plot(x,y,type='l'); lines(x, calc$y, col='red')
 
 */
 
-SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
+SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
 {
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
   PROTECT(xout = AS_NUMERIC(xout));
   PROTECT(L = AS_NUMERIC(L));
   PROTECT(window = AS_NUMERIC(window));
-  PROTECT(deriv = AS_NUMERIC(deriv));
   int nx = LENGTH(x);
   int ny = LENGTH(y);
   if (nx != ny)
@@ -47,13 +37,20 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
   int nL = LENGTH(L);
   double *Lp = REAL(L);
   double L2 = Lp[0] / 2;
-  SEXP res;
-  PROTECT(res = allocVector(REALSXP, nxout));
-  double *resp = REAL(res);
   double *windowp = REAL(window);
   int windowType = (int)floor(0.5 + *windowp);
-  double *derivp = REAL(deriv);
-  int derivType = (int)floor(0.5 + * derivp);
+
+  SEXP res, res_names, Y, dYdx, Lout;
+  PROTECT(res = allocVector(VECSXP, 4));
+  PROTECT(res_names = allocVector(STRSXP, 4));
+  // xout
+  PROTECT(Y = allocVector(REALSXP, nxout));
+  PROTECT(dYdx = allocVector(REALSXP, nxout));
+  PROTECT(Lout = allocVector(REALSXP, 1));
+  double *Yp = REAL(Y);
+  double *dYdxp = REAL(dYdx);
+  double *Loutp = REAL(Lout);
+
   if (windowType == 0) {
     for (int i = 0; i < nxout; i++) {
       double Sx = 0.0, Sy = 0.0, Sxx = 0.0, Sxy = 0.0;
@@ -72,13 +69,11 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
       if (n > 1) {
 	double A = (Sxx * Sy - Sx * Sxy) / (n * Sxx - Sx * Sx);
 	double B = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
-	if (derivType == 0) {
-	  resp[i] = A + B * xoutp[i];
-	} else {
-	  resp[i] = (n * Sxy - Sx * Sy) / (n * Sxx - Sx * Sx);
-	}
+	Yp[i] = A + B * xoutp[i];
+	dYdxp[i] = B;
       } else {
-	resp[i] = NA_REAL;
+	Yp[i] = NA_REAL;
+	dYdxp[i] = NA_REAL;
       }
     } // i
   } else if (windowType == 1) {
@@ -101,19 +96,26 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L, SEXP deriv)
       if (n > 1) {
 	double A = (Swwxx * Swwy - Swwx * Swwxy) / (Sww * Swwxx - Swwx * Swwx);
 	double B = (Sww * Swwxy - Swwx * Swwy) / (Sww * Swwxx - Swwx * Swwx);
-	if (derivType == 0) {
-	  resp[i] = A + B * xoutp[i];
-	} else {
-	  resp[i] = B;
-	}
+	Yp[i] = A + B * xoutp[i];
+	dYdxp[i] = B;
       } else {
-	resp[i] = NA_REAL;
+	Yp[i] = NA_REAL;
+	dYdxp[i] = NA_REAL;
       }
     } // i
   } else {
     error("invalid window type (internal coding error in run.c)\n");
   }
-  UNPROTECT(7);
+  SET_VECTOR_ELT(res, 0, xout);
+  SET_STRING_ELT(res_names, 0, mkChar("x"));
+  SET_VECTOR_ELT(res, 1, Y);
+  SET_STRING_ELT(res_names, 1, mkChar("y"));
+  SET_VECTOR_ELT(res, 2, dYdx);
+  SET_STRING_ELT(res_names, 2, mkChar("dydx"));
+  SET_VECTOR_ELT(res, 3, L);
+  SET_STRING_ELT(res_names, 3, mkChar("L"));
+  setAttrib(res, R_NamesSymbol, res_names);
+  UNPROTECT(10);
   return(res);
 }
 
