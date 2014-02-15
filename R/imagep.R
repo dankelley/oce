@@ -185,13 +185,15 @@ paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
     pc 
 }
 
-drawPalette <- function(zlim, zlab="", breaks, col,
-                        labels=NULL, at=NULL, mai, fullpage=FALSE,
-                        drawContours=FALSE, drawTriangles=FALSE,
-                        cex.axis=par("cex.axis"),
+drawPalette <- function(zlim, zlab="",
+                        breaks, col, mai, cex.axis=par("cex.axis"),
+                        labels=NULL, at=NULL,
+                        levels, drawContours=FALSE,
+                        fullpage=FALSE, drawTriangles=FALSE,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
+    levelsGiven <- !missing(levels)
     if (zlimGiven)
         zlim <- range(zlim, na.rm=TRUE)
     breaksGiven <- !missing(breaks)
@@ -276,8 +278,9 @@ drawPalette <- function(zlim, zlab="", breaks, col,
                   col=col,
                   zlim=zlim)
         }
-        if (drawContours)
-            abline(h=contours)
+        if (drawContours) {
+            if (levelsGiven) abline(h=levels) else abline(h=contours)
+        }
         box()
         drawTriangles <- rep(drawTriangles, length.out=2)
         if (any(drawTriangles, na.rm=TRUE)) {
