@@ -1,4 +1,5 @@
 0.9-14
+- drawPalette() gets argument cex.axis
 - runlm() added
 - mapScalebar() added
 - makePalette() added

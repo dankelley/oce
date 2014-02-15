@@ -188,6 +188,7 @@ paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
 drawPalette <- function(zlim, zlab="", breaks, col,
                         labels=NULL, at=NULL, mai, fullpage=FALSE,
                         drawContours=FALSE, drawTriangles=FALSE,
+                        cex.axis=par("cex.axis"),
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
@@ -316,9 +317,9 @@ drawPalette <- function(zlim, zlab="", breaks, col,
             labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
-        axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
+        axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
         if (nchar(zlab) > 0)
-            mtext(zlab, side=4, line=2.0, cex=par('cex'))
+            mtext(zlab, side=4, line=2.0, cex=par('cex'), cex.axis)
     }
     theMai <- c(pc$omai[1],
                 pc$maiLHS,

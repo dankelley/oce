@@ -9,6 +9,7 @@
 \usage{drawPalette(zlim, zlab="", breaks, col,
     labels=NULL, at=NULL, mai, fullpage=FALSE,
     drawContours=FALSE, drawTriangles=FALSE,
+    cex.axis=par("cex.axis"),
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
