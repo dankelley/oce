@@ -34,7 +34,6 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
   double *xp = REAL(x);
   double *yp = REAL(y);
   double *xoutp = REAL(xout);
-  int nL = LENGTH(L);
   double *Lp = REAL(L);
   double L2 = Lp[0] / 2;
   double *windowp = REAL(window);
@@ -49,14 +48,12 @@ SEXP run_lm(SEXP x, SEXP y, SEXP xout, SEXP window, SEXP L)
   PROTECT(Lout = allocVector(REALSXP, 1));
   double *Yp = REAL(Y);
   double *dYdxp = REAL(dYdx);
-  double *Loutp = REAL(Lout);
 
   if (windowType == 0) {
     for (int i = 0; i < nxout; i++) {
       double Sx = 0.0, Sy = 0.0, Sxx = 0.0, Sxy = 0.0;
       int n = 0;
       for (int j=0; j < nx; j++) {
-	double w, d;
 	double l = fabs(xoutp[i] - xp[j]);
 	if (l < L2) {
 	  Sx += xp[j];
