@@ -443,22 +443,29 @@ setMethod(f="plot",
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
+                      haveOcedata <- require("ocedata", quietly=TRUE)
                       if (coastline == "best") {
-                          bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                          oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                          data(list=bestcoastline, package="ocedata", envir=environment())
-                          coastline <- get(bestcoastline)
+                          if (haveOcedata) {
+                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                              oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              coastline <- get(bestcoastline)
+                          } else {
+                              oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
+                              data(coastlineWorld, envir=environment())
+                              coastline <- coastlineWorld
+                          }
                           haveCoastline <- TRUE
                       } else {
                           if (coastline != "none") {
                               if (coastline == "coastlineWorld") {
                                   data("coastlineWorld", envir=environment())
                                   coastline <- coastlineWorld
-                              } else if (coastline == "coastlineWorldFine") {
-                                  data("coastlineWorldFine", envir=environment())
+                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                                  data("coastlineWorldFine", package="ocedata", envir=environment())
                                   coastline <- coastlineWorldFine
-                              } else if (coastline == "coastlineWorldMedium") {
-                                  data("coastlineWorldMedium", envir=environment())
+                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
                                   coastline <- coastlineWorldMedium
                               }  else {
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")
