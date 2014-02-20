@@ -740,15 +740,15 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     axis <- match.arg(axis)
     if (item == "T") {
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Temperature [", degree, "C]"))
+            full <- expression(paste(gettext("Temperature ["), degree, "C]"))
             abbreviated <- expression(paste("T [", degree, "C]"))
         } else {
-            full <- expression(paste("Temperature (", degree, "C)"))
+            full <- expression(paste(gettext("Temperature ("), degree, "C)"))
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
     } else if (item == "conservative temperature") {
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Conservative Temperature [", degree, "C]"))
+            full <- expression(paste(gettext("Conservative Temperature ["), degree, "C]"))
             abbreviated <- expression(paste(Theta, "[", degree, "C]"))
         } else {
             full <- expression(paste("Conservative Temperature (", degree, "C)"))
@@ -820,10 +820,10 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         }
     } else if (item == "fluorescence") {
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Fluorescence"))
+            full <- expression(paste(gettext("Fluorescence")))
             abbreviated <- full
         } else {
-            full <- expression(paste("Fluorescence"))
+            full <- expression(paste(gettext("Fluorescence")))
             abbreviated <- full
         }
     } else if (item == "spice") {
@@ -835,22 +835,23 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- full
         }
     } else if (item == "S") {
-        full <- "Practical Salinity"
+        full <- gettext("Practical Salinity")
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
+            full <- expression(paste(gettext("Absolute Salinity "), S[A], " [g/kg]"))
             abbreviated <- expression(paste(S[A], " [g/kg]"))
         } else {
-            full <- expression(paste("Absolute Salinity, ", S[A], " (g/kg)"))
+            full <- expression(paste(gettext("Absolute Salinity "), S[A], " (g/kg)"))
             abbreviated <- expression(paste(S[A], " (g/kg)"))
         }
     } else if (item == "p") {
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Pressure [dbar]"))
+            full <- expression(paste(gettext("Pressure [dbar]")))
+            full <- gettext("Pressure [dbar]")
             abbreviated <- expression(paste(P, " [dbar]"))
         } else {
-            full <- expression(paste("Pressure (dbar)"))
+            full <- expression(paste(gettext("Pressure (dbar)")))
             abbreviated <- expression(paste(P, " (dbar)"))
         }
     } else if (item == "z") {
