@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-20 13:48\n"
+"POT-Creation-Date: 2014-02-20 19:05\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1453,13 +1453,85 @@ msgstr ""
 msgid "must provide 2 or 3 bytes"
 msgstr ""
 
-msgid "Temperature ["
+msgid "Temperature"
 msgstr ""
 
-msgid "Temperature ("
+msgid "Conservative Temperature"
 msgstr ""
 
-msgid "Conservative Temperature ["
+msgid "Potential Temperature"
+msgstr ""
+
+msgid "Tritium Concentration [Tu]"
+msgstr ""
+
+msgid "Tritium [Tu]"
+msgstr ""
+
+msgid "Tritium Concentration (Tu)"
+msgstr ""
+
+msgid "Tritium (Tu)"
+msgstr ""
+
+msgid "Nitrate Concentration [umol/kg]"
+msgstr ""
+
+msgid "NO3 [umol/kg]"
+msgstr ""
+
+msgid "Nitrate Concentration (umol/kg)"
+msgstr ""
+
+msgid "NO3 (umol/kg)"
+msgstr ""
+
+msgid "Nitrite Concentration [umol/kg]"
+msgstr ""
+
+msgid "NO2 [umol/kg]"
+msgstr ""
+
+msgid "Nitrite Concentration (umol/kg)"
+msgstr ""
+
+msgid "NO2 (umol/kg)"
+msgstr ""
+
+msgid "Oxygen Concentration [ml/l]"
+msgstr ""
+
+msgid "O2 [ml/l]"
+msgstr ""
+
+msgid "Oxygen Concentration (ml/l)"
+msgstr ""
+
+msgid "O2 (ml/l)"
+msgstr ""
+
+msgid "Phosphate Concentration [umol/kg]"
+msgstr ""
+
+msgid "PO4 [umol/kg]"
+msgstr ""
+
+msgid "Phosphate Concentration (umol/kg)"
+msgstr ""
+
+msgid "PO4 (umol/kg)"
+msgstr ""
+
+msgid "Silicate Concentration [umol/kg]"
+msgstr ""
+
+msgid "Si [umol/kg]"
+msgstr ""
+
+msgid "Silicate Concentration (umol/kg)"
+msgstr ""
+
+msgid "Si (umol/kg)"
 msgstr ""
 
 msgid "Fluorescence"
@@ -1468,13 +1540,94 @@ msgstr ""
 msgid "Practical Salinity"
 msgstr ""
 
-msgid "Absolute Salinity"
-msgstr ""
-
 msgid "Pressure [dbar]"
 msgstr ""
 
-msgid "Pressure (dbar)"
+msgid "Distance [m]"
+msgstr ""
+
+msgid "Dist. [m]"
+msgstr ""
+
+msgid "Distance (m)"
+msgstr ""
+
+msgid "Dist. (m)"
+msgstr ""
+
+msgid "Heading [deg]"
+msgstr ""
+
+msgid "Heading"
+msgstr ""
+
+msgid "Heading (deg)"
+msgstr ""
+
+msgid "Pitch [deg]"
+msgstr ""
+
+msgid "Pitch"
+msgstr ""
+
+msgid "Pitch (deg)"
+msgstr ""
+
+msgid "Roll [deg]"
+msgstr ""
+
+msgid "Roll"
+msgstr ""
+
+msgid "Roll (deg)"
+msgstr ""
+
+msgid "u [m/s]"
+msgstr ""
+
+msgid "u (m/s)"
+msgstr ""
+
+msgid "v [m/s]"
+msgstr ""
+
+msgid "v (m/s)"
+msgstr ""
+
+msgid "w [m/s]"
+msgstr ""
+
+msgid "w (m/s)"
+msgstr ""
+
+msgid "Eastward wind [m/s]"
+msgstr ""
+
+msgid "Eastward wind (m/s)"
+msgstr ""
+
+msgid "Northward wind [m/s]"
+msgstr ""
+
+msgid "Northward wind (m/s)"
+msgstr ""
+
+msgid "Depth [m]"
+msgstr ""
+
+msgid "Depth (m)"
+msgstr ""
+
+msgid "Elevation [m]"
+msgstr ""
+
+msgid "Elevation (m)"
+msgstr ""
+
+msgid "Speed [m/s]"
+msgstr ""
+
+msgid "Speed (m/s)"
 msgstr ""
 
 msgid "must supply 'm'"
