@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-21 07:54\n"
+"POT-Creation-Date: 2014-02-21 10:47\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -1601,13 +1601,11 @@ msgstr "must provide 2 or 3 bytes"
 msgid "Temperature"
 msgstr "Temperatura"
 
-#, fuzzy
-#FIXME: maybe these over-ride the above?
-#msgid "conservative temperature"
-#msgstr "SPANISH-Conservative Temperatura"
-#
-#msgid "Potential Temperature"
-#msgstr "SPANISH-Potential Temperatura"
+msgid "conservative temperature"
+msgstr "SPANISH(conservative temperature)"
+
+msgid "Potential Temperature"
+msgstr "SPANISH(Potential Temperature)"
 
 msgid "Tritium Concentration [Tu]"
 msgstr "Tritium Concentration [Tu]"
@@ -1685,23 +1683,25 @@ msgid "Fluorescence"
 msgstr "Fluorescencia"
 
 msgid "Practical Salinity"
-msgstr "Practical Salinity"
+msgstr "Salinidad"
 
-#, fuzzy
+msgid "absolute salinity"
+msgstr "absolute salinity"
+
+msgid "g/kg"
+msgstr "g/kg"
+
 msgid "Pressure"
-msgstr "Pressure [dbar]"
+msgstr "Presión"
 
-msgid "Distance [m]"
-msgstr "Distance [m]"
+msgid "dbar"
+msgstr "dbar"
 
-msgid "Dist. [m]"
-msgstr "Dist. [m]"
+msgid "Distance"
+msgstr "Distance"
 
-msgid "Distance (m)"
-msgstr "Distance (m)"
-
-msgid "Dist. (m)"
-msgstr "Dist. (m)"
+msgid "m"
+msgstr ""
 
 msgid "Heading [deg]"
 msgstr "Heading [deg]"
@@ -2710,9 +2710,3 @@ msgstr "method is only for wind-rose objects"
 
 msgid "'col' should be a list of 4 colours"
 msgstr "'col' should be a list of 4 colours"
-
-#~ msgid "Depth [m]"
-#~ msgstr "Profundidad [m]"
-
-#~ msgid "Depth (m)"
-#~ msgstr "Profundidad [m]"

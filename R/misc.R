@@ -740,21 +740,20 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     axis <- match.arg(axis)
     if (item == "T") {
         var <- gettext("Temperature", domain="R-oce")
-        cat("DEBUG: is this temp?", var, "\n")
         if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*phantom(x)*"["*degree*"C]")
+            full <- bquote(.(var)*" ["*degree*"C]")
             abbreviated <- expression(paste("T [", degree, "C]"))
         } else {
-            full <- bquote(.(var)*phantom(x)*"("*degree*"C)")
+            full <- bquote(.(var)*" ("*degree*"C)")
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
     } else if (item == "conservative temperature") {
         var <- gettext("conservative temperature", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*phantom(x)*"["*degree*"C]")
+            full <- bquote(.(var)*" ["*degree*"C]")
             abbreviated <- expression(paste(Theta, "[", degree, "C]"))
         } else {
-            full <- bquote(.(var)*phantom(x)*"("*degree*"C)")
+            full <- bquote(.(var)*" ("*degree*"C)")
             abbreviated <- expression(paste(Theta, "(", degree, "C)"))
         }
     } else if (item == "sigmaTheta") {
@@ -841,22 +840,24 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- gettext("Practical Salinity")
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
+        var <- gettext("absolute salinity")
+        unit <- gettext("g/kg")
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Absolute Salinity "), S[A], " [g/kg]")
+            full <- paste(var, "[", unit, "]")
             abbreviated <- expression(paste(S[A], " [g/kg]"))
         } else {
-            full <- expression(paste("Absolute Salinity "), S[A], " (g/kg)")
+            full <- paste(var, "(", unit, ")")
             abbreviated <- expression(paste(S[A], " (g/kg)"))
         }
     } else if (item == "p") {
-        var <- gettext("Pressure", domain="R-oce")
-        cat("prssure???", var, "\n")
+        var <- gettext("Pressure")
+        unit <- gettext("dbar")
         if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*phantom(x)*"[dbar]")
-            abbreviated <- expression(paste(P, " [dbar]"))
+            full <- paste(var, "[", unit, "]")
+            abbreviated <- expression(paste(P, "[", unit, "]"))
         } else {
-            full <- bquote(.(var)*phantom(x)*"[dbar]")
-            abbreviated <- expression(paste(P, " (dbar)"))
+            full <- paste(var, "(", unit, ")")
+            abbreviated <- expression(paste(P, "(", unit, ")"))
         }
     } else if (item == "z") {
         if (getOption("oceUnitBracket") == '[') {
@@ -867,12 +868,14 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             full <- expression(paste(z, " (m)"))
         }
     } else if (item == "distance") {
+        var <- gettext("Distance")
+        unit <- gettext("m")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Distance [m]")
-            abbreviated <- gettext("Dist. [m]")
+            full <- paste(var, "[", unit, "]")
+            abbreviated <- expression(paste(P, "[", unit, "]"))
         } else {
-            full <- gettext("Distance (m)")
-            abbreviated <- gettext("Dist. (m)")
+            full <- paste(var, "(", unit, ")")
+            abbreviated <- expression(paste(P, "(", unit, ")"))
         }
     } else if (item == "heading") {
         if (getOption("oceUnitBracket") == '[') {

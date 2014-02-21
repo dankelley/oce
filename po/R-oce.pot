@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-21 07:54\n"
+"POT-Creation-Date: 2014-02-21 10:47\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1540,19 +1540,22 @@ msgstr ""
 msgid "Practical Salinity"
 msgstr ""
 
+msgid "absolute salinity"
+msgstr ""
+
+msgid "g/kg"
+msgstr ""
+
 msgid "Pressure"
 msgstr ""
 
-msgid "Distance [m]"
+msgid "dbar"
 msgstr ""
 
-msgid "Dist. [m]"
+msgid "Distance"
 msgstr ""
 
-msgid "Distance (m)"
-msgstr ""
-
-msgid "Dist. (m)"
+msgid "m"
 msgstr ""
 
 msgid "Heading [deg]"
