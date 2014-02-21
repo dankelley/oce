@@ -854,10 +854,10 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         unit <- gettext("dbar")
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")
-            abbreviated <- expression(paste(P, "[", unit, "]"))
+            abbreviated <- paste("p [", unit, "]") # guessing initial same in all languages
         } else {
             full <- paste(var, "(", unit, ")")
-            abbreviated <- expression(paste(P, "(", unit, ")"))
+            abbreviated <- paste("p (", unit, ")") # guessing initial same in all languages
         }
     } else if (item == "z") {
         if (getOption("oceUnitBracket") == '[') {
