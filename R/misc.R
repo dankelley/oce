@@ -739,22 +739,22 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
-        cat(gettext("Temperature"), "\n")
+        var <- gettext("Temperature", domain="R-oce")
+        cat("DEBUG: is this temp?", var, "\n")
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste(gettext("Temperature"), "[", degree, "C]"))
-            var <- gettext("Temperature")
             full <- bquote(.(var)*phantom(x)*"["*degree*"C]")
             abbreviated <- expression(paste("T [", degree, "C]"))
         } else {
-            full <- expression(paste("Temperature ("), degree, "C)")
+            full <- bquote(.(var)*phantom(x)*"("*degree*"C)")
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
     } else if (item == "conservative temperature") {
+        var <- gettext("conservative temperature", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste(gettext("Conservative Temperature"), "[", degree, "C]"))
+            full <- bquote(.(var)*phantom(x)*"["*degree*"C]")
             abbreviated <- expression(paste(Theta, "[", degree, "C]"))
         } else {
-            full <- expression(paste(gettext("Conservative Temperature"), "(", degree, "C)"))
+            full <- bquote(.(var)*phantom(x)*"("*degree*"C)")
             abbreviated <- expression(paste(Theta, "(", degree, "C)"))
         }
     } else if (item == "sigmaTheta") {
@@ -849,12 +849,13 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- expression(paste(S[A], " (g/kg)"))
         }
     } else if (item == "p") {
+        var <- gettext("Pressure", domain="R-oce")
+        cat("prssure???", var, "\n")
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Pressure [dbar]"))
-            full <- gettext("Pressure [dbar]")
+            full <- bquote(.(var)*phantom(x)*"[dbar]")
             abbreviated <- expression(paste(P, " [dbar]"))
         } else {
-            full <- expression(paste("Pressure (dbar)"))
+            full <- bquote(.(var)*phantom(x)*"[dbar]")
             abbreviated <- expression(paste(P, " (dbar)"))
         }
     } else if (item == "z") {
@@ -938,12 +939,13 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- gettext("v (m/s)")
         }
     } else if (item == "depth") {
+        var <- gettext("Depth", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Depth [m]")
-            abbreviated <- gettext("Depth [m]")
+            full <- paste(var, "[m]")
+            abbreviated <- full
         } else {
-            full <- gettext("Depth (m)")
-            abbreviated <- gettext("Depth (m)")
+            full <- paste(var, "(m)")
+            abbreviated <- full
         }
     } else if (item == "elevation") {
         if (getOption("oceUnitBracket") == '[') {

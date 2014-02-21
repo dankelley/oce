@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-20 19:05\n"
+"POT-Creation-Date: 2014-02-21 07:54\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
+"Language: en_CA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_CA\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "must give 'subset'"
@@ -1601,11 +1601,13 @@ msgstr "must provide 2 or 3 bytes"
 msgid "Temperature"
 msgstr "Temperatura"
 
-msgid "Conservative Temperature"
-msgstr "Conservative Temperature"
-
-msgid "Potential Temperature"
-msgstr "Potential Temperature"
+#, fuzzy
+#FIXME: maybe these over-ride the above?
+#msgid "conservative temperature"
+#msgstr "SPANISH-Conservative Temperatura"
+#
+#msgid "Potential Temperature"
+#msgstr "SPANISH-Potential Temperatura"
 
 msgid "Tritium Concentration [Tu]"
 msgstr "Tritium Concentration [Tu]"
@@ -1685,7 +1687,8 @@ msgstr "Fluorescencia"
 msgid "Practical Salinity"
 msgstr "Practical Salinity"
 
-msgid "Pressure [dbar]"
+#, fuzzy
+msgid "Pressure"
 msgstr "Pressure [dbar]"
 
 msgid "Distance [m]"
@@ -1757,11 +1760,9 @@ msgstr "Northward wind [m/s]"
 msgid "Northward wind (m/s)"
 msgstr "Northward wind (m/s)"
 
-msgid "Depth [m]"
-msgstr "Profundidad [m]"
-
-msgid "Depth (m)"
-msgstr "Profundidad [m]"
+#, fuzzy
+msgid "Depth"
+msgstr "Profundidad"
 
 msgid "Elevation [m]"
 msgstr "Elevation [m]"
@@ -2709,3 +2710,9 @@ msgstr "method is only for wind-rose objects"
 
 msgid "'col' should be a list of 4 colours"
 msgstr "'col' should be a list of 4 colours"
+
+#~ msgid "Depth [m]"
+#~ msgstr "Profundidad [m]"
+
+#~ msgid "Depth (m)"
+#~ msgstr "Profundidad [m]"

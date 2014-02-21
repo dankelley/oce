@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-20 19:05\n"
+"POT-Creation-Date: 2014-02-21 07:54\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1456,7 +1456,7 @@ msgstr ""
 msgid "Temperature"
 msgstr ""
 
-msgid "Conservative Temperature"
+msgid "conservative temperature"
 msgstr ""
 
 msgid "Potential Temperature"
@@ -1540,7 +1540,7 @@ msgstr ""
 msgid "Practical Salinity"
 msgstr ""
 
-msgid "Pressure [dbar]"
+msgid "Pressure"
 msgstr ""
 
 msgid "Distance [m]"
@@ -1612,10 +1612,7 @@ msgstr ""
 msgid "Northward wind (m/s)"
 msgstr ""
 
-msgid "Depth [m]"
-msgstr ""
-
-msgid "Depth (m)"
+msgid "Depth"
 msgstr ""
 
 msgid "Elevation [m]"
