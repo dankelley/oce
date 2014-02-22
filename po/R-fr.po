@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 10:17\n"
+"POT-Creation-Date: 2014-02-22 11:02\n"
 "PO-Revision-Date: 2014-02-21 11:34-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-fr\n"
@@ -158,6 +158,21 @@ msgstr ""
 msgid ""
 "unknown file type; the object must inherit from either \"adv\" or \"adp\""
 msgstr ""
+
+msgid "beam"
+msgstr "rayon"
+
+msgid "east"
+msgstr "est"
+
+msgid "north"
+msgstr "nord"
+
+msgid "up"
+msgstr "haut"
+
+msgid "error"
+msgstr "erreur"
 
 msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "

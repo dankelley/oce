@@ -419,15 +419,20 @@ is.enu <- function(x)
 
 beamName <- function(x, which)
 {
-    if (x@metadata$oceCoordinate == "beam")
-        c("beam 1", "beam 2", "beam 3", "beam 4")[which]
-    else if (x@metadata$oceCoordinate == "enu")
-        c("east", "north", "up", "error")[which]
-    else if (x@metadata$oceCoordinate == "xyz")
+    if (x@metadata$oceCoordinate == "beam") {
+        paste(gettext("beam", domain="R-oce"), 1:4)[which]
+    } else if (x@metadata$oceCoordinate == "enu") {
+        c(gettext("east", domain="R-oce"),
+          gettext("north", domain="R-oce"),
+          gettext("up", domain="R-oce"),
+          gettext("error", domain="R-oce"))[which]
+    } else if (x@metadata$oceCoordinate == "xyz") {
         c("u", "v", "w", "e")[which]
-    else if (x@metadata$oceCoordinate == "other")
+    } else if (x@metadata$oceCoordinate == "other") {
         c("u'", "v'", "w'", "e")[which]
-    else " "
+    } else {
+        " "
+    }
 }
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -1273,21 +1278,25 @@ setMethod(f="plot",
                       } else if (which[w] == 24) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,1], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 1), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 1),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                       } else if (which[w] == 25) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,2], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 2), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 2),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                       } else if (which[w] == 26) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,3], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 3), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 3),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                           ##grid()
                       } else if (which[w] == 27) {
                           if (x@metadata$numberOfBeams > 3) {
                               par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                               value <- apply(x@data$v[,,4], 2, mean, na.rm=TRUE)
-                              plot(value, x@data$distance, xlab=beamName(x, 4), ylab="Distance [m]", type='l', ...)
+                              plot(value, x@data$distance, xlab=beamName(x, 4),
+                                   ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                               ##grid()
                           } else {
                               warning("cannot use which=27 because this device did not have 4 beams")

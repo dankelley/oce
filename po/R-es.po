@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 10:17\n"
+"POT-Creation-Date: 2014-02-22 11:02\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -165,6 +165,21 @@ msgid ""
 "unknown file type; the object must inherit from either \"adv\" or \"adp\""
 msgstr ""
 "unknown file type; the object must inherit from either \"adv\" or \"adp\""
+
+msgid "beam"
+msgstr "rayo"
+
+msgid "east"
+msgstr "este"
+
+msgid "north"
+msgstr "norte"
+
+msgid "up"
+msgstr "arriba"
+
+msgid "error"
+msgstr "error"
 
 msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
@@ -2673,4 +2688,3 @@ msgstr ""
 
 msgid "'col' should be a list of 4 colours"
 msgstr "'col' should be a list of 4 colours"
-
