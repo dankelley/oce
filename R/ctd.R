@@ -2409,8 +2409,6 @@ plotProfile <- function (x,
                         depth=resizableLabel("depth", "y"),
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
-    print(yname); cat("prev is yname in plotProfile()\n")
-    print(resizableLabel("p"))
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
