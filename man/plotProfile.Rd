@@ -8,7 +8,7 @@
 
 \usage{plotProfile(x,
     xtype="salinity+temperature", 
-    ytype=c("pressure", "z", "sigmaTheta"),
+    ytype=c("pressure", "z", "depth", "sigmaTheta"),
     eos=getOption("eos", default='unesco'),
     xlab=NULL, ylab=NULL,
     col="black",
@@ -72,7 +72,8 @@
                 specify also \code{xlab}.}
         }
     }
-    \item{ytype}{variable to use on y axis.}
+    \item{ytype}{variable to use on y axis; note that \code{z} is the negative
+        of \code{depth}.}
     \item{eos}{name of equation of state to be used, either \code{"unesco"} or
         \code{"teos"}.  If the latter, then the computer must have the TEOS
         library installed; see \code{\link{teos}}.}

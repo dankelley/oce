@@ -2335,7 +2335,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 
 plotProfile <- function (x,
                          xtype="salinity+temperature",
-                         ytype=c("pressure", "z", "sigmaTheta"),
+                         ytype=c("pressure", "z", "depth", "sigmaTheta"),
                          eos=getOption("eos", default='unesco'),
                          xlab=NULL, ylab=NULL,
                          col='black',
@@ -2405,16 +2405,19 @@ plotProfile <- function (x,
         yname <- switch(ytype,
                         pressure=resizableLabel("p", "y"),
                         z=resizableLabel("z", "y"),
+                        depth=resizableLabel("depth", "y"),
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
                        z = range(swZ(x), na.rm=TRUE),
+                       depth = rev(range(swDepth(x), na.rm=TRUE)),
                        sigmaTheta = rev(range(x@data$sigmaTheta, na.rm=TRUE)))
     examineIndices <- switch(ytype,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
                        z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
+                       depth = (min(ylim) <= swDepth(x) & swDepth(x) <= max(ylim)),
                        sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
@@ -2442,9 +2445,11 @@ plotProfile <- function (x,
     if (ytype == "pressure")
         y <- x@data$pressure
     else if (ytype == "z")
-        y <- swZ(x@data$pressure)
+        y <- swZ(x)
+    else if (ytype == "depth")
+        y <- swDepth(x)
     else if (ytype == "sigmaTheta")
-        y <- x@data$sigmaTheta # FIXME: are we sure this exists?
+        y <- swSigmaTheta(x)
 
     if (!add)
         par(mar=mar, mgp=mgp)
