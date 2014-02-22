@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 08:20\n"
+"POT-Creation-Date: 2014-02-22 10:17\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -109,9 +109,8 @@ msgstr ""
 msgid "method is only for objects of class '"
 msgstr "método es sólo para objetos de la clase"
 
-#, fuzzy
 msgid "adp"
-msgstr "and"
+msgstr ""
 
 msgid "no 'time' in names(x@data)"
 msgstr "no 'time' in names(x@data)"
@@ -528,7 +527,7 @@ msgid "heading/pitch/roll values to the"
 msgstr "heading/pitch/roll values to the"
 
 msgid "velocity profiles"
-msgstr "velocity profiles"
+msgstr "perfiles de velocidad"
 
 msgid "*****FIXME: check up and down; also read it and check*****"
 msgstr "*****FIXME: check up and down; also read it and check*****"
@@ -581,9 +580,8 @@ msgstr "only 'time' is permitted for subsetting"
 msgid "read.adv() cannot understand type = \""
 msgstr "read.adv() cannot understand type = \""
 
-#, fuzzy
 msgid "adv"
-msgstr "and"
+msgstr ""
 
 msgid "unknown 'which':"
 msgstr "unknown 'which':"
@@ -1600,92 +1598,62 @@ msgstr "must provide 2 or 3 bytes"
 msgid "Temperature"
 msgstr "Temperatura"
 
-msgid "conservative temperature"
-msgstr "SPANISH(conservative temperature)"
+msgid "Conservative temperature"
+msgstr "temperatura conservador"
+
+msgid "Potential density anomaly"
+msgstr "Anomalía densidad potencial"
 
 msgid "Potential Temperature"
-msgstr "SPANISH(Potential Temperature)"
+msgstr "Temperatura potencial"
 
-msgid "Tritium Concentration [Tu]"
-msgstr "Tritium Concentration [Tu]"
+msgid "Tritium"
+msgstr "Tritio"
 
-msgid "Tritium [Tu]"
-msgstr "Tritium [Tu]"
+msgid "Nitrate"
+msgstr "Nitrato"
 
-msgid "Tritium Concentration (Tu)"
-msgstr "Tritium Concentration (Tu)"
+msgid "NO3"
+msgstr ""
 
-msgid "Tritium (Tu)"
-msgstr "Tritium (Tu)"
+msgid "umol/kg"
+msgstr ""
 
-msgid "Nitrate Concentration [umol/kg]"
-msgstr "Nitrate Concentration [umol/kg]"
+msgid "Nitrite"
+msgstr "Nitrito"
 
-msgid "NO3 [umol/kg]"
-msgstr "NO3 [umol/kg]"
+msgid "NO2"
+msgstr ""
 
-msgid "Nitrate Concentration (umol/kg)"
-msgstr "Nitrate Concentration (umol/kg)"
+msgid "Oxygen"
+msgstr "Oxígeno"
 
-msgid "NO3 (umol/kg)"
-msgstr "NO3 (umol/kg)"
+msgid "O2"
+msgstr ""
 
-msgid "Nitrite Concentration [umol/kg]"
-msgstr "Nitrite Concentration [umol/kg]"
+msgid "Phosphate"
+msgstr "Fosfato"
 
-msgid "NO2 [umol/kg]"
-msgstr "NO2 [umol/kg]"
+msgid "PO4"
+msgstr ""
 
-msgid "Nitrite Concentration (umol/kg)"
-msgstr "Nitrite Concentration (umol/kg)"
+msgid "Silicate"
+msgstr ""
 
-msgid "NO2 (umol/kg)"
-msgstr "NO2 (umol/kg)"
-
-msgid "Oxygen Concentration [ml/l]"
-msgstr "Oxygen Concentration [ml/l]"
-
-msgid "O2 [ml/l]"
-msgstr "O2 [ml/l]"
-
-msgid "Oxygen Concentration (ml/l)"
-msgstr "Oxygen Concentration (ml/l)"
-
-msgid "O2 (ml/l)"
-msgstr "O2 (ml/l)"
-
-msgid "Phosphate Concentration [umol/kg]"
-msgstr "Phosphate Concentration [umol/kg]"
-
-msgid "PO4 [umol/kg]"
-msgstr "PO4 [umol/kg]"
-
-msgid "Phosphate Concentration (umol/kg)"
-msgstr "Phosphate Concentration (umol/kg)"
-
-msgid "PO4 (umol/kg)"
-msgstr "PO4 (umol/kg)"
-
-msgid "Silicate Concentration [umol/kg]"
-msgstr "Silicate Concentration [umol/kg]"
-
-msgid "Si [umol/kg]"
-msgstr "Si [umol/kg]"
-
-msgid "Silicate Concentration (umol/kg)"
-msgstr "Silicate Concentration (umol/kg)"
-
-msgid "Si (umol/kg)"
-msgstr "Si (umol/kg)"
+msgid "SiO4"
+msgstr ""
 
 msgid "Fluorescence"
 msgstr "Fluorescencia"
 
+msgid "Spice"
+msgstr ""
+
 msgid "Practical Salinity"
-msgstr "Salinidad"
+msgstr "Salinidad práctica"
 
 msgid "absolute salinity"
-msgstr "absolute salinity"
+msgstr "salinidad absoluta"
 
 msgid "g/kg"
 msgstr "g/kg"
@@ -1697,7 +1665,7 @@ msgid "dbar"
 msgstr "dbar"
 
 msgid "Distance"
-msgstr "Distance"
+msgstr "Distancia"
 
 msgid "m"
 msgstr ""
@@ -1762,17 +1730,14 @@ msgstr "Northward wind (m/s)"
 msgid "Depth"
 msgstr "Profundidad"
 
-msgid "Elevation [m]"
-msgstr "Elevation [m]"
+msgid "Elevation"
+msgstr ""
 
-msgid "Elevation (m)"
-msgstr "Elevation (m)"
+msgid "Speed"
+msgstr ""
 
-msgid "Speed [m/s]"
-msgstr "Speed [m/s]"
-
-msgid "Speed (m/s)"
-msgstr "Speed (m/s)"
+msgid "m/s"
+msgstr ""
 
 msgid "must supply 'm'"
 msgstr "must supply 'm'"
@@ -2709,47 +2674,3 @@ msgstr ""
 msgid "'col' should be a list of 4 colours"
 msgstr "'col' should be a list of 4 colours"
 
-#~ msgid "x must be an object of class \"adp\""
-#~ msgstr "x must be an object of class \"adp\""
-
-#~ msgid "method is only for adp objects"
-#~ msgstr "method is only for adp objects"
-
-#~ msgid "method is only for adv objects"
-#~ msgstr "method is only for adv objects"
-
-#~ msgid "method is only for objects of class \"adv\""
-#~ msgstr "method is only for objects of class \"adv\""
-
-#~ msgid "method is only for cm objects"
-#~ msgstr "method is only for cm objects"
-
-#~ msgid "method is only for ctd objects"
-#~ msgstr "method is only for ctd objects"
-
-#~ msgid "method is only for drifter objects"
-#~ msgstr "method is only for drifter objects"
-
-#~ msgid "method is only for lobo objects"
-#~ msgstr "method is only for lobo objects"
-
-#~ msgid "method is only for sealevel objects"
-#~ msgstr "method is only for sealevel objects"
-
-#~ msgid "method is only for section objects"
-#~ msgstr "method is only for section objects"
-
-#~ msgid "method only works for 'section' or 'ctd' objects"
-#~ msgstr "method only works for 'section' or 'ctd' objects"
-
-#~ msgid "method is only for tdr objects"
-#~ msgstr "method is only for tdr objects"
-
-#~ msgid "method is only for tidal analysis objects"
-#~ msgstr "method is only for tidal analysis objects"
-
-#~ msgid "method is only for topo objects"
-#~ msgstr "method is only for topo objects"
-
-#~ msgid "method is only for wind-rose objects"
-#~ msgstr "method is only for wind-rose objects"

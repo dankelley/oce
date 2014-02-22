@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 08:20\n"
+"POT-Creation-Date: 2014-02-22 10:17\n"
 "PO-Revision-Date: 2014-02-21 11:34-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-fr\n"
@@ -500,7 +500,7 @@ msgid "heading/pitch/roll values to the"
 msgstr ""
 
 msgid "velocity profiles"
-msgstr ""
+msgstr "Les profils de vitesse"
 
 msgid "*****FIXME: check up and down; also read it and check*****"
 msgstr ""
@@ -1523,92 +1523,62 @@ msgstr ""
 msgid "Temperature"
 msgstr "Température"
 
-msgid "conservative temperature"
-msgstr ""
+msgid "Conservative temperature"
+msgstr "Température conservateur"
+
+msgid "Potential density anomaly"
+msgstr "Anomalie potentiel de densité"
 
 msgid "Potential Temperature"
+msgstr "Température potentielle"
+
+msgid "Tritium"
 msgstr ""
 
-msgid "Tritium Concentration [Tu]"
+msgid "Nitrate"
 msgstr ""
 
-msgid "Tritium [Tu]"
+msgid "NO3"
 msgstr ""
 
-msgid "Tritium Concentration (Tu)"
+msgid "umol/kg"
 msgstr ""
 
-msgid "Tritium (Tu)"
+msgid "Nitrite"
 msgstr ""
 
-msgid "Nitrate Concentration [umol/kg]"
+msgid "NO2"
 msgstr ""
 
-msgid "NO3 [umol/kg]"
+msgid "Oxygen"
+msgstr "Oxygène"
+
+msgid "O2"
 msgstr ""
 
-msgid "Nitrate Concentration (umol/kg)"
+msgid "Phosphate"
 msgstr ""
 
-msgid "NO3 (umol/kg)"
+msgid "PO4"
 msgstr ""
 
-msgid "Nitrite Concentration [umol/kg]"
+msgid "Silicate"
 msgstr ""
 
-msgid "NO2 [umol/kg]"
-msgstr ""
-
-msgid "Nitrite Concentration (umol/kg)"
-msgstr ""
-
-msgid "NO2 (umol/kg)"
-msgstr ""
-
-msgid "Oxygen Concentration [ml/l]"
-msgstr ""
-
-msgid "O2 [ml/l]"
-msgstr ""
-
-msgid "Oxygen Concentration (ml/l)"
-msgstr ""
-
-msgid "O2 (ml/l)"
-msgstr ""
-
-msgid "Phosphate Concentration [umol/kg]"
-msgstr ""
-
-msgid "PO4 [umol/kg]"
-msgstr ""
-
-msgid "Phosphate Concentration (umol/kg)"
-msgstr ""
-
-msgid "PO4 (umol/kg)"
-msgstr ""
-
-msgid "Silicate Concentration [umol/kg]"
-msgstr ""
-
-msgid "Si [umol/kg]"
-msgstr ""
-
-msgid "Silicate Concentration (umol/kg)"
-msgstr ""
-
-msgid "Si (umol/kg)"
+msgid "SiO4"
 msgstr ""
 
 msgid "Fluorescence"
 msgstr "Fluoresence"
 
+msgid "Spice"
+msgstr ""
+
 msgid "Practical Salinity"
-msgstr "Salinité"
+msgstr "Salinité pratique"
 
 msgid "absolute salinity"
-msgstr ""
+msgstr "Salinité absolue"
 
 msgid "g/kg"
 msgstr ""
@@ -1685,16 +1655,13 @@ msgstr ""
 msgid "Depth"
 msgstr "Profondeur"
 
-msgid "Elevation [m]"
+msgid "Elevation"
 msgstr ""
 
-msgid "Elevation (m)"
+msgid "Speed"
 msgstr ""
 
-msgid "Speed [m/s]"
-msgstr ""
-
-msgid "Speed (m/s)"
+msgid "m/s"
 msgstr ""
 
 msgid "must supply 'm'"

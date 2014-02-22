@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 08:20\n"
+"POT-Creation-Date: 2014-02-22 10:17\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1453,85 +1453,55 @@ msgstr ""
 msgid "Temperature"
 msgstr ""
 
-msgid "conservative temperature"
+msgid "Conservative temperature"
+msgstr ""
+
+msgid "Potential density anomaly"
 msgstr ""
 
 msgid "Potential Temperature"
 msgstr ""
 
-msgid "Tritium Concentration [Tu]"
+msgid "Tritium"
 msgstr ""
 
-msgid "Tritium [Tu]"
+msgid "Nitrate"
 msgstr ""
 
-msgid "Tritium Concentration (Tu)"
+msgid "NO3"
 msgstr ""
 
-msgid "Tritium (Tu)"
+msgid "umol/kg"
 msgstr ""
 
-msgid "Nitrate Concentration [umol/kg]"
+msgid "Nitrite"
 msgstr ""
 
-msgid "NO3 [umol/kg]"
+msgid "NO2"
 msgstr ""
 
-msgid "Nitrate Concentration (umol/kg)"
+msgid "Oxygen"
 msgstr ""
 
-msgid "NO3 (umol/kg)"
+msgid "O2"
 msgstr ""
 
-msgid "Nitrite Concentration [umol/kg]"
+msgid "Phosphate"
 msgstr ""
 
-msgid "NO2 [umol/kg]"
+msgid "PO4"
 msgstr ""
 
-msgid "Nitrite Concentration (umol/kg)"
+msgid "Silicate"
 msgstr ""
 
-msgid "NO2 (umol/kg)"
-msgstr ""
-
-msgid "Oxygen Concentration [ml/l]"
-msgstr ""
-
-msgid "O2 [ml/l]"
-msgstr ""
-
-msgid "Oxygen Concentration (ml/l)"
-msgstr ""
-
-msgid "O2 (ml/l)"
-msgstr ""
-
-msgid "Phosphate Concentration [umol/kg]"
-msgstr ""
-
-msgid "PO4 [umol/kg]"
-msgstr ""
-
-msgid "Phosphate Concentration (umol/kg)"
-msgstr ""
-
-msgid "PO4 (umol/kg)"
-msgstr ""
-
-msgid "Silicate Concentration [umol/kg]"
-msgstr ""
-
-msgid "Si [umol/kg]"
-msgstr ""
-
-msgid "Silicate Concentration (umol/kg)"
-msgstr ""
-
-msgid "Si (umol/kg)"
+msgid "SiO4"
 msgstr ""
 
 msgid "Fluorescence"
+msgstr ""
+
+msgid "Spice"
 msgstr ""
 
 msgid "Practical Salinity"
@@ -1615,16 +1585,13 @@ msgstr ""
 msgid "Depth"
 msgstr ""
 
-msgid "Elevation [m]"
+msgid "Elevation"
 msgstr ""
 
-msgid "Elevation (m)"
+msgid "Speed"
 msgstr ""
 
-msgid "Speed [m/s]"
-msgstr ""
-
-msgid "Speed (m/s)"
+msgid "m/s"
 msgstr ""
 
 msgid "must supply 'm'"
