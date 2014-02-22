@@ -775,7 +775,7 @@ setMethod(f="plot",
                   oceDebug(debug, "\b\b} # plotSubsection()\n")
               }
               if (!inherits(x, "section"))
-                  stop("method is only for section objects")
+                  stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
               which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude"), nomatch=0)
@@ -1252,7 +1252,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
     oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(section, "section"))
-        stop("method is only for section objects")
+        stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
     if (method == "spline") {
         stn1pressure <- section[["station", 1]][["pressure"]]

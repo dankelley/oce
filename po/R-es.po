@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-21 10:47\n"
+"POT-Creation-Date: 2014-02-22 08:20\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -106,8 +106,12 @@ msgid "'time' is neither a POSIXt time, nor an oce object containing data$time"
 msgstr ""
 "'time' is neither a POSIXt time, nor an oce object containing data$time"
 
-msgid "x must be an object of class \"adp\""
-msgstr "x must be an object of class \"adp\""
+msgid "method is only for objects of class '"
+msgstr "method is only for objects of class '"
+
+#, fuzzy
+msgid "adp"
+msgstr "and"
 
 msgid "no 'time' in names(x@data)"
 msgstr "no 'time' in names(x@data)"
@@ -183,9 +187,6 @@ msgid ""
 msgstr ""
 "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
 "being ignored"
-
-msgid "method is only for adp objects"
-msgstr "method is only for adp objects"
 
 msgid "there are no profiles in this dataset"
 msgstr "there are no profiles in this dataset"
@@ -580,8 +581,9 @@ msgstr "only 'time' is permitted for subsetting"
 msgid "read.adv() cannot understand type = \""
 msgstr "read.adv() cannot understand type = \""
 
-msgid "method is only for adv objects"
-msgstr "method is only for adv objects"
+#, fuzzy
+msgid "adv"
+msgstr "and"
 
 msgid "unknown 'which':"
 msgstr "unknown 'which':"
@@ -603,9 +605,6 @@ msgstr "unknown value of \"which\":"
 
 msgid "adv.2enu cannot convert from coordinate system"
 msgstr "adv.2enu cannot convert from coordinate system"
-
-msgid "method is only for objects of class \"adv\""
-msgstr "method is only for objects of class \"adv\""
 
 msgid "input must be in beam coordinates, but it is in"
 msgstr "input must be in beam coordinates, but it is in"
@@ -831,8 +830,8 @@ msgstr "'from' must be either POSIXt or numeric"
 msgid "'to' must be either POSIXt or numeric"
 msgstr "'to' must be either POSIXt or numeric"
 
-msgid "method is only for cm objects"
-msgstr "method is only for cm objects"
+msgid "cm"
+msgstr "cm"
 
 msgid "must provide longitude"
 msgstr "must provide longitude"
@@ -983,8 +982,8 @@ msgstr "data to match existing object"
 msgid "must supply \"name\""
 msgstr "must supply \"name\""
 
-msgid "method is only for ctd objects"
-msgstr "method is only for ctd objects"
+msgid "ctd"
+msgstr ""
 
 msgid "too few data to ctdDecimate()"
 msgstr "too few data to ctdDecimate()"
@@ -1284,8 +1283,8 @@ msgstr "must give temperature"
 msgid "must give salinity"
 msgstr "must give salinity"
 
-msgid "method is only for drifter objects"
-msgstr "method is only for drifter objects"
+msgid "drifter"
+msgstr "drifter"
 
 msgid "no non-missing salinity data"
 msgstr "no non-missing salinity data"
@@ -1384,8 +1383,8 @@ msgstr "data file must hold at least 42 space-separated columns"
 msgid "data file has more than 42 columns; only first 42 are used"
 msgstr "data file has more than 42 columns; only first 42 are used"
 
-msgid "method is only for lobo objects"
-msgstr "method is only for lobo objects"
+msgid "lobo"
+msgstr "lobo"
 
 msgid "no time column in data file.  The column names are:"
 msgstr "no time column in data file.  The column names are:"
@@ -1760,7 +1759,6 @@ msgstr "Northward wind [m/s]"
 msgid "Northward wind (m/s)"
 msgstr "Northward wind (m/s)"
 
-#, fuzzy
 msgid "Depth"
 msgstr "Profundidad"
 
@@ -2161,8 +2159,8 @@ msgstr "\" in this sealevel object"
 msgid "must supply sealevel height, elevation, in metres"
 msgstr "must supply sealevel height, elevation, in metres"
 
-msgid "method is only for sealevel objects"
-msgstr "method is only for sealevel objects"
+msgid "sealevel"
+msgstr ""
 
 msgid ""
 "cannot draw sealevel spectum, because the series contains missing values"
@@ -2242,8 +2240,8 @@ msgstr "\" [3]"
 msgid "\" [4]"
 msgstr "\" [4]"
 
-msgid "method is only for section objects"
-msgstr "method is only for section objects"
+msgid "section"
+msgstr "section"
 
 msgid ""
 "xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
@@ -2436,8 +2434,8 @@ msgstr "must provide temperature"
 msgid "lengths of salinity and temperature must agree, but they are"
 msgstr "lengths of salinity and temperature must agree, but they are"
 
-msgid "method only works for 'section' or 'ctd' objects"
-msgstr "method only works for 'section' or 'ctd' objects"
+msgid "or '"
+msgstr ""
 
 msgid "unrecognized method=\""
 msgstr "unrecognized method=\""
@@ -2472,8 +2470,8 @@ msgstr "lengths of 'time' and 'temperature' must match"
 msgid "lengths of 'time' and 'pressure' must match"
 msgstr "lengths of 'time' and 'pressure' must match"
 
-msgid "method is only for tdr objects"
-msgstr "method is only for tdr objects"
+msgid "tdr"
+msgstr ""
 
 msgid "no good temperatures to plot"
 msgstr "no good temperatures to plot"
@@ -2588,8 +2586,8 @@ msgstr "length(a4) must match length(a1)"
 msgid "there is no such constituent '"
 msgstr "there is no such constituent '"
 
-msgid "method is only for tidal analysis objects"
-msgstr "method is only for tidal analysis objects"
+msgid "tidem"
+msgstr ""
 
 msgid "unknown value of which"
 msgstr "unknown value of which"
@@ -2656,8 +2654,8 @@ msgstr "must supply topo"
 msgid "lengths of latitude and longitude must match"
 msgstr "lengths of latitude and longitude must match"
 
-msgid "method is only for topo objects"
-msgstr "method is only for topo objects"
+msgid "topo"
+msgstr ""
 
 msgid "please use 'clatitude' and 'clongitude' instead of 'center'"
 msgstr "please use 'clatitude' and 'clongitude' instead of 'center'"
@@ -2705,8 +2703,53 @@ msgstr "problem setting up bins (ai>xlen)"
 msgid "miscount in angles"
 msgstr "miscount in angles"
 
-msgid "method is only for wind-rose objects"
-msgstr "method is only for wind-rose objects"
+msgid "windrose"
+msgstr ""
 
 msgid "'col' should be a list of 4 colours"
 msgstr "'col' should be a list of 4 colours"
+
+#~ msgid "x must be an object of class \"adp\""
+#~ msgstr "x must be an object of class \"adp\""
+
+#~ msgid "method is only for adp objects"
+#~ msgstr "method is only for adp objects"
+
+#~ msgid "method is only for adv objects"
+#~ msgstr "method is only for adv objects"
+
+#~ msgid "method is only for objects of class \"adv\""
+#~ msgstr "method is only for objects of class \"adv\""
+
+#~ msgid "method is only for cm objects"
+#~ msgstr "method is only for cm objects"
+
+#~ msgid "method is only for ctd objects"
+#~ msgstr "method is only for ctd objects"
+
+#~ msgid "method is only for drifter objects"
+#~ msgstr "method is only for drifter objects"
+
+#~ msgid "method is only for lobo objects"
+#~ msgstr "method is only for lobo objects"
+
+#~ msgid "method is only for sealevel objects"
+#~ msgstr "method is only for sealevel objects"
+
+#~ msgid "method is only for section objects"
+#~ msgstr "method is only for section objects"
+
+#~ msgid "method only works for 'section' or 'ctd' objects"
+#~ msgstr "method only works for 'section' or 'ctd' objects"
+
+#~ msgid "method is only for tdr objects"
+#~ msgstr "method is only for tdr objects"
+
+#~ msgid "method is only for tidal analysis objects"
+#~ msgstr "method is only for tidal analysis objects"
+
+#~ msgid "method is only for topo objects"
+#~ msgstr "method is only for topo objects"
+
+#~ msgid "method is only for wind-rose objects"
+#~ msgstr "method is only for wind-rose objects"

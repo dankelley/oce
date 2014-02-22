@@ -171,7 +171,7 @@ setMethod(f="plot",
               }
 
               if (!inherits(x, "sealevel"))
-                  stop("method is only for sealevel objects")
+                  stop("method is only for objects of class '", "sealevel", "'")
               opar <- par(no.readonly = TRUE)
               par(mgp=mgp, mar=mar)
               lw <- length(which)

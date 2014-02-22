@@ -1,4 +1,5 @@
 0.9-14
+- Spanish and French translations of some axis names
 - mapImage() and friends now demand a map exists first
 - drawPalette() gets arguments levels and cex.axis
 - runlm() added

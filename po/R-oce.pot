@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-21 10:47\n"
+"POT-Creation-Date: 2014-02-22 08:20\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,7 +100,10 @@ msgstr ""
 msgid "'time' is neither a POSIXt time, nor an oce object containing data$time"
 msgstr ""
 
-msgid "x must be an object of class \"adp\""
+msgid "method is only for objects of class '"
+msgstr ""
+
+msgid "adp"
 msgstr ""
 
 msgid "no 'time' in names(x@data)"
@@ -158,9 +161,6 @@ msgid "This instrument seems to be a Nortek Aquadopp, but it has more than 1 cel
 msgstr ""
 
 msgid "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is being ignored"
-msgstr ""
-
-msgid "method is only for adp objects"
 msgstr ""
 
 msgid "there are no profiles in this dataset"
@@ -529,7 +529,7 @@ msgstr ""
 msgid "read.adv() cannot understand type = \""
 msgstr ""
 
-msgid "method is only for adv objects"
+msgid "adv"
 msgstr ""
 
 msgid "unknown 'which':"
@@ -551,9 +551,6 @@ msgid "unknown value of \"which\":"
 msgstr ""
 
 msgid "adv.2enu cannot convert from coordinate system"
-msgstr ""
-
-msgid "method is only for objects of class \"adv\""
 msgstr ""
 
 msgid "input must be in beam coordinates, but it is in"
@@ -748,7 +745,7 @@ msgstr ""
 msgid "'to' must be either POSIXt or numeric"
 msgstr ""
 
-msgid "method is only for cm objects"
+msgid "cm"
 msgstr ""
 
 msgid "must provide longitude"
@@ -883,7 +880,7 @@ msgstr ""
 msgid "must supply \"name\""
 msgstr ""
 
-msgid "method is only for ctd objects"
+msgid "ctd"
 msgstr ""
 
 msgid "too few data to ctdDecimate()"
@@ -1153,7 +1150,7 @@ msgstr ""
 msgid "must give salinity"
 msgstr ""
 
-msgid "method is only for drifter objects"
+msgid "drifter"
 msgstr ""
 
 msgid "no non-missing salinity data"
@@ -1249,7 +1246,7 @@ msgstr ""
 msgid "data file has more than 42 columns; only first 42 are used"
 msgstr ""
 
-msgid "method is only for lobo objects"
+msgid "lobo"
 msgstr ""
 
 msgid "no time column in data file.  The column names are:"
@@ -1993,7 +1990,7 @@ msgstr ""
 msgid "must supply sealevel height, elevation, in metres"
 msgstr ""
 
-msgid "method is only for sealevel objects"
+msgid "sealevel"
 msgstr ""
 
 msgid "cannot draw sealevel spectum, because the series contains missing values"
@@ -2068,7 +2065,7 @@ msgstr ""
 msgid "\" [4]"
 msgstr ""
 
-msgid "method is only for section objects"
+msgid "section"
 msgstr ""
 
 msgid "xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
@@ -2242,7 +2239,7 @@ msgstr ""
 msgid "lengths of salinity and temperature must agree, but they are"
 msgstr ""
 
-msgid "method only works for 'section' or 'ctd' objects"
+msgid "or '"
 msgstr ""
 
 msgid "unrecognized method=\""
@@ -2278,7 +2275,7 @@ msgstr ""
 msgid "lengths of 'time' and 'pressure' must match"
 msgstr ""
 
-msgid "method is only for tdr objects"
+msgid "tdr"
 msgstr ""
 
 msgid "no good temperatures to plot"
@@ -2365,7 +2362,7 @@ msgstr ""
 msgid "there is no such constituent '"
 msgstr ""
 
-msgid "method is only for tidal analysis objects"
+msgid "tidem"
 msgstr ""
 
 msgid "unknown value of which"
@@ -2431,7 +2428,7 @@ msgstr ""
 msgid "lengths of latitude and longitude must match"
 msgstr ""
 
-msgid "method is only for topo objects"
+msgid "topo"
 msgstr ""
 
 msgid "please use 'clatitude' and 'clongitude' instead of 'center'"
@@ -2479,7 +2476,7 @@ msgstr ""
 msgid "miscount in angles"
 msgstr ""
 
-msgid "method is only for wind-rose objects"
+msgid "windrose"
 msgstr ""
 
 msgid "'col' should be a list of 4 colours"

@@ -514,7 +514,7 @@ setMethod(f="plot",
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
               if (!inherits(x, "adp"))
-                  stop("method is only for adp objects")
+                  stop("method is only for objects of class '", "adp", "'")
               if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
                   warning("there are no profiles in this dataset")
                   return
@@ -1450,7 +1450,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 {
     oceDebug(debug, "\b\bbeamUnspreadAdp(...) {\n")
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     ## make compatible with old function name (will remove in Jan 2013)
     if (!is.null(x@metadata$oceBeamUnattenuated) && x@metadata$oceBeamUnattenuated) {
         warning("the beams are already unspreaded in this dataset.")
@@ -1579,7 +1579,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "\b\bxyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates")
     res <- x
@@ -1744,7 +1744,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "enu")
         stop("input must be in enu coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     res <- x

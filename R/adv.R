@@ -270,7 +270,7 @@ setMethod(f="plot",
               oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
               oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
               if (!inherits(x, "adv"))
-                  stop("method is only for adv objects")
+                  stop("method is only for objects of class '", "adv", "'")
               opar <- par(no.readonly = TRUE)
               dots <- names(list(...))
               ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))
@@ -839,7 +839,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
     if (!inherits(x, "adv"))
-        stop("method is only for objects of class \"adv\"")
+        stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if (is.null(x@metadata$transformationMatrix)) {
@@ -880,7 +880,7 @@ xyzToEnuAdv <- function(x, declination=0,
               ",sensorOrientation=",if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
               ",debug) {\n")
     if (!inherits(x, "adv"))
-        stop("method is only for objects of class \"adv\"")
+        stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if ("ts" %in% names(x@data) || "ma" %in% names(x@data))
@@ -1030,7 +1030,7 @@ xyzToEnuAdv <- function(x, declination=0,
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))
-        stop("method is only for objects of class \"adv\"")
+        stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "enu")
         stop("input must be in \"enu\" coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     oceDebug(debug, "\b\benuToOtherAdv(x, heading=", heading, ", pitch=", 

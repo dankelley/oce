@@ -100,7 +100,7 @@ setMethod(f="plot",
           {
               oceDebug(debug, "\b\bplot.tdr(..., which=", which, ", ...) {\n")
               if (!inherits(x, "tdr"))
-                  stop("method is only for tdr objects")
+                  stop("method is only for objects of class '", "tdr", "'")
               if (0 == sum(!is.na(x@data$temperature)))
                   stop("no good temperatures to plot")
               if (0 == sum(!is.na(x@data$pressure)))
@@ -473,7 +473,7 @@ tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebu
 {
     oceDebug(debug, "\b\btdrTrim() {\n")
     if (!inherits(x, "tdr"))
-        stop("method is only for tdr objects")
+        stop("method is only for objects of class '", "tdr", "'")
     res <- x
     n <- length(x@data$temperature)
     oceDebug(debug, "dataset has", n, "points\n")

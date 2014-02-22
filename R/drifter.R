@@ -140,7 +140,7 @@ setMethod(f="plot",
                                ...)
           {
               if (!inherits(x, "drifter"))
-                  stop("method is only for drifter objects")
+                  stop("method is only for objects of class '", "drifter", "'")
               oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",

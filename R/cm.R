@@ -237,7 +237,7 @@ setMethod(f="plot",
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (!inherits(x, "cm"))
-                  stop("method is only for cm objects")
+                  stop("method is only for objects of class '", "cm", "'")
               if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
                   warning("there are no profiles in this dataset")
                   return

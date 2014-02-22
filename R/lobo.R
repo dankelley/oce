@@ -124,7 +124,7 @@ setMethod(f="plot",
                               ...)
           {
               if (!inherits(x, "lobo"))
-                  stop("method is only for lobo objects")
+                  stop("method is only for objects of class '", "lobo", "'")
               oceDebug(debug, "plot.lobo(...)\n", sep="")
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
