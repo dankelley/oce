@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 13:43\n"
+"POT-Creation-Date: 2014-02-22 19:05\n"
 "PO-Revision-Date: 2014-02-22 11:49-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-zh\n"
@@ -1674,13 +1674,22 @@ msgid "Depth"
 msgstr ""
 
 msgid "Elevation"
-msgstr ""
+msgstr "海拔"
 
 msgid "Speed"
 msgstr ""
 
 msgid "m/s"
 msgstr ""
+
+msgid "Frequency"
+msgstr "频率"
+
+msgid "cph"
+msgstr ""
+
+msgid "Spectral density"
+msgstr "谱密度"
 
 msgid "must supply 'm'"
 msgstr ""
@@ -2112,6 +2121,12 @@ msgstr ""
 
 msgid "'station' is not a station"
 msgstr ""
+
+msgid "Longitude"
+msgstr "经度"
+
+msgid "Latitude"
+msgstr "纬度"
 
 msgid "coastline must be a character string"
 msgstr ""

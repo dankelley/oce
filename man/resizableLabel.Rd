@@ -14,8 +14,9 @@ resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "tritium", "spice", "fluorescence",
   "p", "z", "distance", "heading", "pitch", "roll",
   "u", "v", "w", "speed", "direction",
-  "eastward", "northward", "depth", "elevation"),
-  axis=c("x", "y"))}
+  "eastward", "northward", "depth", "elevation",
+  "frequency cph", "spectral density m2/cph"),
+               axis=c("x", "y"))}
 
 \arguments{
   \item{item}{code for the label.}

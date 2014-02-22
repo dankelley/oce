@@ -433,12 +433,18 @@ setMethod(f="plot",
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
                       if (!is.null(map.xlim)) {
                           map.xlim <- sort(map.xlim)
-                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       } else if (!is.null(map.ylim)) {
                           map.ylim <- sort(map.ylim)
-                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       } else {
-                          plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       }
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
@@ -551,11 +557,12 @@ setMethod(f="plot",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
+                               ## FIXME: below should use gettext() or resizableLabel.
                                xlab=switch(which.xtype, 
                                            if (getOption("oceUnitBracket") == "[") "Distance [km]" else "Distance (km)",
                                            if (getOption("oceUnitBracket") == "[") "Along-track Distance [km]" else "Along-track Distance (km)",
-                                           "Longitude",
-                                           "Latitude"),
+                                           gettext("Longitude", domain="R-oce"),
+                                           gettext("Latitude", domain="R-oce")),
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)

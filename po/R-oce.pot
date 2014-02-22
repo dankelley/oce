@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 13:43\n"
+"POT-Creation-Date: 2014-02-22 19:05\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1612,6 +1612,15 @@ msgstr ""
 msgid "m/s"
 msgstr ""
 
+msgid "Frequency"
+msgstr ""
+
+msgid "cph"
+msgstr ""
+
+msgid "Spectral density"
+msgstr ""
+
 msgid "must supply 'm'"
 msgstr ""
 
@@ -2027,6 +2036,12 @@ msgid "'section' is not a section"
 msgstr ""
 
 msgid "'station' is not a station"
+msgstr ""
+
+msgid "Longitude"
+msgstr ""
+
+msgid "Latitude"
 msgstr ""
 
 msgid "coastline must be a character string"

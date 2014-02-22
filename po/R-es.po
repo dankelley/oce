@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 13:43\n"
+"POT-Creation-Date: 2014-02-22 19:05\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -1749,13 +1749,22 @@ msgid "Depth"
 msgstr "Profundidad"
 
 msgid "Elevation"
-msgstr ""
+msgstr "Elevación"
 
 msgid "Speed"
 msgstr ""
 
 msgid "m/s"
 msgstr ""
+
+msgid "Frequency"
+msgstr "Frecuencia"
+
+msgid "cph"
+msgstr ""
+
+msgid "Spectral density"
+msgstr "Densidad espectral"
 
 msgid "must supply 'm'"
 msgstr "must supply 'm'"
@@ -2201,6 +2210,12 @@ msgstr "'section' is not a section"
 
 msgid "'station' is not a station"
 msgstr "'station' is not a station"
+
+msgid "Longitude"
+msgstr "Longitud"
+
+msgid "Latitude"
+msgstr "Latitud"
 
 msgid "coastline must be a character string"
 msgstr "coastline must be a character string"

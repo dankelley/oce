@@ -733,7 +733,8 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "tritium", "spice", "fluorescence",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
-                                  "eastward", "northward", "depth", "elevation"),
+                                  "eastward", "northward", "depth", "elevation",
+                                  "frequency cph", "spectral density m2/cph"),
                            axis=c("x", "y"))
 {
     item <- match.arg(item)
@@ -851,12 +852,10 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "spice") {
         var <- gettext("Spice", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- expression(paste("Spice [", kg/m^3, "]"))
             full <- bquote(.(var)*" ["* kg / m^3*" ]")
             abbreviated <- full
         } else {
-            full <- expression(paste("Spice (", kg/m^3, ")"))
-            full <- bquote(.(var)*" ["* kg / m^3*" ]")
+            full <- bquote(.(var)*" ("* kg / m^3*" )")
             abbreviated <- full
         }
         ##title(full, line=-5)
@@ -997,7 +996,27 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             full <- paste(var, "(", unit, ")")
             abbreviated <- full
         }
+    } else if (item == "frequency cph") {
+        var <- gettext("Frequency", domain="R-oce")
+        unit <- gettext("cph", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviated <- full
+        } else {
+            full <- paste(var, "[", unit, "]")
+            abbreviated <- full
+        }
+    } else if (item == "spectral density m2/cph") {
+        var <- gettext("Spectral density", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- bquote(.(var)*" ["* m^2 / cph*" ]")
+            abbreviated <- full
+        } else {
+            full <- bquote(.(var)*" ("* m^2 / cph*" )")
+            abbreviated <- full
+        }
     }
+
     spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
