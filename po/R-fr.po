@@ -14,7 +14,7 @@ msgid "must give 'subset'"
 msgstr ""
 
 msgid "there is no item named \""
-msgstr ""
+msgstr "il n'y a aucune élément nommé \""
 
 msgid "\" in this"
 msgstr ""
@@ -23,7 +23,7 @@ msgid "object"
 msgstr ""
 
 msgid "method is only for oce objects"
-msgstr ""
+msgstr "méthode est uniquement pour les objets de oce"
 
 msgid "must supply 'x'"
 msgstr ""
@@ -38,7 +38,7 @@ msgid "' not in object's metadata or data$station[[1]]@data"
 msgstr ""
 
 msgid "' not in object"
-msgstr ""
+msgstr "pas dans l'objet"
 
 msgid "cannot determine time to which to interpolate"
 msgstr ""

@@ -15,7 +15,7 @@ msgid "must give 'subset'"
 msgstr "must give 'subset'"
 
 msgid "there is no item named \""
-msgstr "there is no item named \""
+msgstr "no hay ningún elemento con nombre \""
 
 msgid "\" in this"
 msgstr "\" in this"
@@ -24,7 +24,7 @@ msgid "object"
 msgstr "object"
 
 msgid "method is only for oce objects"
-msgstr "method is only for oce objects"
+msgstr "método sólo es para la clase de oce"
 
 msgid "must supply 'x'"
 msgstr "must supply 'x'"
@@ -39,7 +39,7 @@ msgid "' not in object's metadata or data$station[[1]]@data"
 msgstr "' not in object's metadata or data$station[[1]]@data"
 
 msgid "' not in object"
-msgstr "' not in object"
+msgstr "' no en el objeton"
 
 msgid "cannot determine time to which to interpolate"
 msgstr "cannot determine time to which to interpolate"
@@ -107,7 +107,7 @@ msgstr ""
 "'time' is neither a POSIXt time, nor an oce object containing data$time"
 
 msgid "method is only for objects of class '"
-msgstr "method is only for objects of class '"
+msgstr "método es sólo para objetos de la clase"
 
 #, fuzzy
 msgid "adp"
