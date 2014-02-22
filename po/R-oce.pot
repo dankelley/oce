@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 11:02\n"
+"POT-Creation-Date: 2014-02-22 13:43\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -971,6 +971,9 @@ msgid "plot.ctd(): unknown plot type requested"
 msgstr ""
 
 msgid "CTD plots will have better coastlines after doing install.packages(\"ocedata\")"
+msgstr ""
+
+msgid "Station"
 msgstr ""
 
 msgid "unknown value of which,"

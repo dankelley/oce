@@ -741,10 +741,10 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     if (item == "T") {
         var <- gettext("Temperature", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*degree*"C]")
+            full <- bquote(.(var)*" [ "*degree*"C ]")
             abbreviated <- expression(paste("T [", degree, "C]"))
         } else {
-            full <- bquote(.(var)*" ("*degree*"C)")
+            full <- bquote(.(var)*" ( "*degree*"C )")
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
     } else if (item == "conservative temperature") {
@@ -768,7 +768,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*degree*"C]")
+            full <- bquote(.(var)*" [ "*degree*"C ]")
             abbreviated <- expression(paste(theta, " [", degree, "C]"))
         } else {
             full <- bquote(.(var)*" ("*degree*"C)")

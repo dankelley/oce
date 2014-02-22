@@ -1104,7 +1104,7 @@ setMethod(f="plot",
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                              mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                              mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                           if (!is.null(x@metadata$startTime))
                               mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
                           ##if (!is.null(x@metadata$scientist))
@@ -1178,7 +1178,7 @@ plotScan <- function(x,
          xlab=name, ylab=resizableLabel("p", "y"),
          yaxs='r',
          type=type)
-    mtext(paste("Station", x@metadata$station), side=3, adj=1, cex=par('cex'))
+    mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=1, cex=par('cex'))
     mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
     if (1 <= adorn.length) {
         t <- try(eval(adorn[1]), silent=TRUE)
@@ -2219,7 +2219,7 @@ plotTS <- function (x,
         if (eos == "teos")
             ylab <- resizableLabel("conservative temperature", "y")
         else
-            ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
+            ylab <- if (inSitu) resizableLabel("T", "y") else resizableLabel("theta", "y")
     }
     if (useSmoothScatter) {
         smoothScatter(salinity, y,

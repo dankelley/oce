@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 11:02\n"
+"POT-Creation-Date: 2014-02-22 13:43\n"
 "PO-Revision-Date: 2014-02-21 11:34-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-fr\n"
@@ -1032,6 +1032,9 @@ msgid ""
 "CTD plots will have better coastlines after doing install.packages(\"ocedata"
 "\")"
 msgstr ""
+
+msgid "Station"
+msgstr "Station"
 
 msgid "unknown value of which,"
 msgstr ""
