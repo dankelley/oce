@@ -31,9 +31,9 @@
 
 \examples{
 library(oce)
-data(sealevelHalifax)
-show(sealevelHalifax)
-plot(sealevelHalifax)
+data(sealevel)
+show(sealevel)
+plot(sealevel)
 }
 
 \author{Dan Kelley}

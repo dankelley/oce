@@ -31,12 +31,12 @@ lines(time, elevation - predict(tide), col="red")
 abline(h=0, col="red")
 
 # 2. prediction at specified times
-data(sealevelHalifax)
-m <- tidem(sealevelHalifax)
+data(sealevel)
+m <- tidem(sealevel)
 ## Check fit over 2 days (interpolating to finer timescale)
 look <- 1:48
-time <- sealevelHalifax[["time"]]
-elevation <- sealevelHalifax[["elevation"]]
+time <- sealevel[["time"]]
+elevation <- sealevel[["elevation"]]
 oce.plot.ts(time[look], elevation[look])
 # 360s = 10 minute timescale
 t <- seq(from=time[1], to=time[max(look)], by=360)

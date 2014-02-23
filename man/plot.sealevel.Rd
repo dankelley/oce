@@ -72,9 +72,9 @@ debug=getOption("oceDebug"),
 
 \examples{
 library(oce)
-data(sealevelHalifax)
-plot(sealevelHalifax)
-plot(sealevelHalifax, which=1, 
+data(sealevel)
+plot(sealevel)
+plot(sealevel, which=1, 
      xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
 juan <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
 abline(v=juan, col="red")
