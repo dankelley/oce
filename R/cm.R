@@ -278,11 +278,15 @@ setMethod(f="plot",
                   oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
                   if (which[w] == 1) {
                       oce.plot.ts(x@data$time, x@data$u,
-                                  type=type, xlab="", ylab="u [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("u"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 2) {
                       oce.plot.ts(x@data$time, x@data$v,
-                                  type=type, xlab="", ylab="v [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("v"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 3) {     # or "progressive vector"
                       oceDebug(debug, "progressive vector plot\n")
@@ -294,13 +298,19 @@ setMethod(f="plot",
                       v[is.na(v)] <- 0
                       x.dist <- cumsum(u) * dt / m.per.km
                       y.dist <- cumsum(v) * dt / m.per.km
-                      plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
+                      plot(x.dist, y.dist,
+                           xlab=resizableLabel("km"), ylab=resizableLabel("km"),
+                           type='l', asp=1, ...)
                   } else if (which[w] %in% 4:6) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
                       oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                       if (len <= small)
-                          plot(x@data$u, x@data$v, type=type, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                          plot(x@data$u, x@data$v, type=type,
+                               xlab=resizableLabel("u"), ylab=resizableLabel("v"),
+                               asp=1, ...)
                       else
-                          smoothScatter(x@data$u, x@data$v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                          smoothScatter(x@data$u, x@data$v,
+                                        xlab=resizableLabel("u"), ylab=resizableLabel("v"),
+                                        asp=1, ...)
                       if (which[w] >= 5) {
                           oceDebug(debug, "\"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                           ok <- !is.na(x@data$u) & !is.na(x@data$v)
@@ -326,19 +336,27 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 7) {
                       oce.plot.ts(x@data$time, x@data$depth,
-                                  type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("depth"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 8) {
                       oce.plot.ts(x@data$time, x@data$salinity,
-                                  type=type, xlab="", ylab=resizableLabel("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("S", "y"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 9) {
                       oce.plot.ts(x@data$time, x@data$temperature,
-                                  type=type, xlab="", ylab=resizableLabel("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("T", "y"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 10) {
                       oce.plot.ts(x@data$time, x@data$heading,
-                                  type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("heading"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 11) {
                       plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$depth), main=main, ...) 
