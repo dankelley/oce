@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 09:24\n"
+"POT-Creation-Date: 2014-02-23 09:46\n"
 "PO-Revision-Date: 2014-02-22 11:49-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-zh\n"
@@ -2417,6 +2417,9 @@ msgid ""
 "in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for "
 "type=3)"
 msgstr ""
+
+msgid "Serial Number"
+msgstr "编号"
 
 msgid "from cannot be an integer less than 1"
 msgstr ""

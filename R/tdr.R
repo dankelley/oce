@@ -186,7 +186,7 @@ setMethod(f="plot",
                       ##if (!is.null(object@metadata$filename))
                       ##    text.item(object@metadata$filename, cex=cex)
                       if (!is.null(x@metadata$serialNumber)) {
-                          text.item(paste("Serial Number: ", x@metadata$serialNumber),cex=cex)
+                          text.item(paste(gettext("Serial Number", domain="R-oce"), x@metadata$serialNumber),cex=cex)
                           yloc <- yloc - d.yloc
                       }
                       if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel

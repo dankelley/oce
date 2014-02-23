@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 09:24\n"
+"POT-Creation-Date: 2014-02-23 09:46\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2318,6 +2318,9 @@ msgid "in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (f
 msgstr ""
 
 msgid "in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3)"
+msgstr ""
+
+msgid "Serial Number"
 msgstr ""
 
 msgid "from cannot be an integer less than 1"
