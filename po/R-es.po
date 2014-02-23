@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 08:06\n"
+"POT-Creation-Date: 2014-02-23 08:59\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -1766,6 +1766,12 @@ msgstr ""
 msgid "m/s"
 msgstr ""
 
+msgid "Latitude"
+msgstr "Latitud"
+
+msgid "Longitude"
+msgstr "Longitud"
+
 msgid "Frequency"
 msgstr "Frecuencia"
 
@@ -2219,12 +2225,6 @@ msgstr "'section' is not a section"
 
 msgid "'station' is not a station"
 msgstr "'station' is not a station"
-
-msgid "Longitude"
-msgstr "Longitud"
-
-msgid "Latitude"
-msgstr "Latitud"
 
 msgid "coastline must be a character string"
 msgstr "coastline must be a character string"

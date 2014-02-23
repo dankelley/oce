@@ -17,6 +17,7 @@ resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "heading", "pitch", "roll",
   "u", "v", "w", "speed", "direction",
   "eastward", "northward", "depth", "elevation",
+  "latitude", "longitude",
   "frequency cph", "spectral density m2/cph"),
                axis=c("x", "y"))}
 

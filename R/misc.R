@@ -736,6 +736,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward", "depth", "elevation",
+                                  "latitude", "longitude",
                                   "frequency cph", "spectral density m2/cph"),
                            axis=c("x", "y"))
 {
@@ -1016,6 +1017,26 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- full
         } else {
             full <- paste(var, "(", unit, ")")
+            abbreviated <- full
+        }
+    } else if (item == "latitude") {
+        var <- gettext("Latitude", domain="R-oce")
+        ## maybe add deg "N" "S" etc here, but maybe not (aesthetics)
+        if (getOption("oceUnitBracket") == '[') {
+            full <- var
+            abbreviated <- full
+        } else {
+            full <- var
+            abbreviated <- full
+        }
+    } else if (item == "longitude") {
+        var <- gettext("Longitude", domain="R-oce")
+        ## maybe add deg "N" "S" etc here, but maybe not (aesthetics)
+        if (getOption("oceUnitBracket") == '[') {
+            full <- var
+            abbreviated <- full
+        } else {
+            full <- var
             abbreviated <- full
         }
     } else if (item == "frequency cph") {
