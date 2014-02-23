@@ -731,7 +731,9 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
                                   "tritium", "spice", "fluorescence",
-                                  "p", "z", "distance", "heading", "pitch", "roll",
+                                  "p", "z",
+                                  "distance", "distance km", "along-track distance km",
+                                  "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward", "depth", "elevation",
                                   "frequency cph", "spectral density m2/cph"),
@@ -777,7 +779,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         }
     } else if (item == "tritium") {
         var <- gettext("Tritium", domain="R-oce")
-        unit <- "Tu"
+        unit <- gettext("Tu", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")
             abbreviate <- full
@@ -893,7 +895,27 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         }
     } else if (item == "distance") {
         var <- gettext("Distance", domain="R-oce")
-        unit <- gettext("m")
+        unit <- gettext("m", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviated <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviated <- full
+        }
+    } else if (item == "distance km") {
+        var <- gettext("Distance", domain="R-oce")
+        unit <- gettext("km", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviated <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviated <- full
+        }
+    } else if (item == "along-track distance km") {
+        var <- gettext("Along-track Distance", domain="R-oce")
+        unit <- gettext("km", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")
             abbreviated <- full

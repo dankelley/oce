@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 19:05\n"
+"POT-Creation-Date: 2014-02-23 08:06\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -1628,6 +1628,9 @@ msgstr "Temperatura potencial"
 msgid "Tritium"
 msgstr "Tritio"
 
+msgid "Tu"
+msgstr ""
+
 msgid "Nitrate"
 msgstr "Nitrato"
 
@@ -1687,6 +1690,12 @@ msgstr "Distancia"
 
 msgid "m"
 msgstr ""
+
+msgid "km"
+msgstr ""
+
+msgid "Along-track Distance"
+msgstr "Distancia a lo largo de la pista"
 
 msgid "Heading [deg]"
 msgstr "Heading [deg]"

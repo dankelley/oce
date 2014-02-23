@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-22 19:05\n"
+"POT-Creation-Date: 2014-02-23 08:06\n"
 "PO-Revision-Date: 2014-02-22 11:49-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-zh\n"
@@ -1553,6 +1553,9 @@ msgstr "位温"
 msgid "Tritium"
 msgstr ""
 
+msgid "Tu"
+msgstr ""
+
 msgid "Nitrate"
 msgstr ""
 
@@ -1596,10 +1599,10 @@ msgid "Practical Salinity"
 msgstr "实用盐度"
 
 msgid "absolute salinity"
-msgstr ""
+msgstr "绝对盐度"
 
 msgid "g/kg"
-msgstr ""
+msgstr "克/公斤"
 
 msgid "Pressure"
 msgstr "压力"
@@ -1611,7 +1614,13 @@ msgid "Distance"
 msgstr "距离"
 
 msgid "m"
-msgstr ""
+msgstr "计"
+
+msgid "km"
+msgstr "公里"
+
+msgid "Along-track Distance"
+msgstr "沿轨距离"
 
 msgid "Heading [deg]"
 msgstr ""
@@ -1671,7 +1680,7 @@ msgid "Northward wind (m/s)"
 msgstr ""
 
 msgid "Depth"
-msgstr ""
+msgstr "深度"
 
 msgid "Elevation"
 msgstr "海拔"

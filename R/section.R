@@ -545,10 +545,7 @@ setMethod(f="plot",
                           if (which.ytype==1) {
                               resizableLabel("p")
                           } else {
-                              if (getOption("oceUnitBracket") == "[")
-                                  "Depth [m]"
-                              else
-                                  "Depth (m)"
+                              resizableLabel("depth")
                           }
                       }
                       if (is.null(at)) {
@@ -559,8 +556,8 @@ setMethod(f="plot",
                                col="white",
                                ## FIXME: below should use gettext() or resizableLabel.
                                xlab=switch(which.xtype, 
-                                           if (getOption("oceUnitBracket") == "[") "Distance [km]" else "Distance (km)",
-                                           if (getOption("oceUnitBracket") == "[") "Along-track Distance [km]" else "Along-track Distance (km)",
+                                           resizableLabel("distance km"),
+                                           resizabelLabel("along-track distance km"),
                                            gettext("Longitude", domain="R-oce"),
                                            gettext("Latitude", domain="R-oce")),
                                ylab=ylab,
