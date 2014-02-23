@@ -667,10 +667,12 @@ been using lately in his research. New data types will be added as the need
 arises in that work, but the author would also be happy to add other data types
 that are likely to prove useful to the Oceanographic community.  (The data types
 need not be restricted to Physical Oceanography, but the author will need some
-help in dealing with other types of data, given his research focus.)
-Two principles will guide the addition of data types and functions:
-(a) the need, as perceived by the author or by other contributors and
-(b) the ease with which the additions can be made.
+help in dealing with other types of data, given his research focus.) 
+
+Two principles will guide the addition of data types and functions: (a) the
+need, as perceived by the author or by other contributors and (b) the ease with
+which the additions can be made.  One might call this development by triage, by
+analogy to the scheme used in Emergency Rooms to focus medical effort.
 
 % As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing
 % with measurements of turbulence is a high priority for the author, for
