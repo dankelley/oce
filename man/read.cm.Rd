@@ -9,7 +9,7 @@
 
 \usage{read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
         type=c("s4"),
-        latitude=NA, longitude=NA,
+        longitude=NA, latitude=NA,
         debug=getOption("oceDebug"), monitor=FALSE, processingLog, \dots)
 }
 
@@ -29,10 +29,10 @@
     colon-separated format, then this interval is divided by the
     sampling interval, to get the stride length. \emph{BUG:} if the data
     are not equi-spaced, then odd results will occur.}
-  \item{latitude}{optional signed number indicating the latitude in 
-    degrees North.}
   \item{longitude}{optional signed number indicating the longitude in 
     degrees East.}
+  \item{latitude}{optional signed number indicating the latitude in 
+    degrees North.}
   \item{type}{character string indicating type of file (ignored at present).}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{debug}{a flag that turns on debugging.  The value indicates the

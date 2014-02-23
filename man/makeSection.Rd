@@ -28,7 +28,7 @@ makeSection(item, \dots)
 \value{An object of \code{\link[base]{class}} "\code{section}" (for
   details, see \code{\link{read.section}}).}
 
-\seealso{\code{\link{read.ctd}} reads CTD data.  \code{\link[ocedata]{section}}
+\seealso{\code{\link{read.ctd}} reads CTD data.  \code{\link{section}}
   is a sample data set.}
 
 \examples{
@@ -43,9 +43,13 @@ summary(section)
 s2 <- makeSection(ctd)
 s2 <- s2 + ctdWarmed
 plot(s2)
+# Below is how to create a section from well-named CSV files
+# that contain consecutive stations
 \dontrun{
-plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))
+    plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))
 }
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

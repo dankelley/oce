@@ -9,7 +9,7 @@
 \description{Plot a CTD section.}
 
 \usage{\S4method{plot}{section}(x,
-     which,
+     which=c(1, 2, 3, 99),
      eos=getOption("eos", default='unesco'),
      at=NULL,
      labels=TRUE,
@@ -17,14 +17,16 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline=c("best", "coastlineWorld", "coastlineMaritimes", "coastlineHalifax", "none"),
+     coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                 "coastlineWorldFine", "none"),
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
      map.ylim=NULL,
-     xtype=c("distance", "track", "latitude", "longitude"),
+     xtype=c("distance", "track", "longitude", "latitude"),
      ytype=c("depth", "pressure"),
-     ztype=c('contour', 'image'),
+     ztype=c("contour", "image", "points"),
+     zbreaks=NULL, zcol=NULL,
      legend.loc="bottomright",
      adorn=NULL,
      showStations=FALSE,
@@ -40,13 +42,11 @@
     \item{x}{a \code{section} object, e.g. as created by
         \code{\link{makeSection}}.}
 
-    \item{which}{list of desired plot types.  If not supplied, the value
-        \code{"temperature"} is assumed.  There may be up to four panels in
-        total, and the desired plots are placed in these panels, in reading
-        order.  The codes for the plot types are explained in the
-        \dQuote{Details} section.  If only one panel is plotted, \code{par} is
-        not adjusted, which makes it easy to add to the plot with subsequent
-        plotting commands.}
+    \item{which}{a list of desired plot types, as explained in
+        \dQuote{Details}.  There may be up to four panels in total, and the
+        desired plots are placed in these panels, in reading order.  If only
+        one panel is plotted, \code{par} is not adjusted, which makes it easy
+        to add to the plot with subsequent plotting commands.}
 
     \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
         computer must have the TEOS library installed; see \code{\link{teos}}.
@@ -90,8 +90,17 @@
         \code{"pressure"} for pressure (in dbar, with zero at the surface)
         or \code{"depth"} for depth (in m below the surface, calculated
         from pressure with \code{\link{swDepth}}).}
-    \item{ztype}{string indicating whether to use contours or an image.}
+
+    \item{ztype}{string indicating whether to use contours, an image, or
+        points.  In the first two cases, the data must be gridded, with
+        identical pressures at each station.}
+    
+    \item{zbreaks, zcol}{breaks and colours to be used if
+        \code{ztype="points"}.  If not provided, a reasonable default is
+        chosen.}
+
     \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number of
         panels, then the strings are applied to the appropriate panels, as
@@ -156,21 +165,28 @@
 
 \examples{
 library(oce)
-## Halifax Harbour
 data(section)
-plot(section, which=c(1, 2, 3, 99))
+sg <- sectionGrid(section)
+
+## AO3 section
+plot(sg, which="salinity", ztype="points", pch=20, cex=1.5) 
 
 ## Gulf Stream
-data(a03)
-GS <- subset(a03, 109<=stationId&stationId<=129)
+GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 plot(GSg, which=c(1,99), map.ylim=c(34,42))
 
+par(mfrow=c(2,1))
+plot(GS, which=1, ylim=c(2000, 0), ztype='points',
+zbreaks=seq(0,30,2), pch=20, cex=3)
+plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
+
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
-col <- oceColorsJet(100)[rescale(GS[['temperature']], rlow=1, rhigh=100)]
-points(GS[['distance']], GS[['depth']], pch=20, cex=1.2)
-points(GS[['distance']], GS[['depth']], pch=20, cex=1, col=col)
+T <- GS[['temperature']]
+col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
+points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 }
 
 \author{Dan Kelley}

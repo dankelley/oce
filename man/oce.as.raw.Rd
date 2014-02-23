@@ -2,7 +2,7 @@
 
 \alias{oce.as.raw}
 
-\title{A version of as.raw() that clips data to prevent warnings}
+\title{Version of as.raw() that clips data}
 
 \description{A version of as.raw() that clips data to prevent warnings}
 

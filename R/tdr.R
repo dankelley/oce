@@ -9,20 +9,50 @@ setMethod(f="initialize",
               .Object@processingLog$value <- "create 'tdr' object"
               return(.Object)
           })
-## the default 'oce' object is sufficient for other methods
 
-#subset.tdr <- function (x, subset, ...)
-#{
-#    if (missing(subset))
-#        stop("must give 'subset'")
-#    keep <- eval(substitute(subset), x@data, parent.frame())
-#    rval <- x
-#    for (i in seq_along(x@data))
-#        rval@data[[i]] <- rval@data[[i]][keep]
-#    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-#    rval
-#}
 
+setMethod(f="summary",
+          signature="tdr",
+          definition=function(object, ...) {
+              cat("TDR Summary\n----------\n", ...)
+              cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
+                        "``, model ``", object@metadata$model, "``\n", sep=""))
+              if ("pressureAtmospheric" %in% names(object@metadata)) {
+                  cat(paste("* Atmospheric pressure: ", object@metadata$pressureAtmospheric, "\n", sep=""))
+              }
+              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""), ...)
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
+                          format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
+                          1 / object@metadata$deltat))
+              cat("* Statistics of subsample::\n\n")
+              time.range <- range(object@data$time, na.rm=TRUE)
+              threes <- matrix(nrow=2, ncol=3)
+              threes[1,] <- threenum(object@data$temperature)
+              threes[2,] <- threenum(object@data$pressure)
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              rownames(threes) <- c("Temperature", "Pressure")
+              print(threes)
+              cat('\n')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
+setMethod(f="subset",
+          signature="tdr",
+          definition=function(x, subset, ...) {
+              rval <- x
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.tdr(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+ 
 as.tdr <- function(time, temperature, pressure,
                    filename="",
                    instrumentType="rbr",
@@ -75,6 +105,14 @@ setMethod(f="plot",
                   stop("no good temperatures to plot")
               if (0 == sum(!is.na(x@data$pressure)))
                   stop("no good pressures to plot")
+              dotsNames <- names(list(...))
+              ## FIXME: In the below, we could be more clever for single-panel plots
+              ## but it may be better to get users out of the habit of supplying xlim
+              ## etc (which will yield errors in plot.lm(), for example).
+              if ("xlim" %in% dotsNames)
+                  stop("in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
+              if ("ylim" %in% dotsNames)
+                  stop("in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
               nw <- length(which)
               opar <- par(no.readonly = TRUE)
               if (nw > 1)
@@ -175,6 +213,8 @@ setMethod(f="plot",
                       if (!("axes" %in% a))
                           args <- c(args, axes=FALSE)
                       np <- length(x@data$pressure)
+                      if (nw == 1)
+                          par(mar=c(1, 3.5, 4, 1))
                       if (useSmoothScatter) {
                           args <- args[names(args) != "type"]
                           do.call(smoothScatter, args)
@@ -414,32 +454,6 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     rval
 }
 
-summary.tdr <- function(object, ...)
-{
-    if (!inherits(object, "tdr"))
-        stop("method is only for tdr objects")
-    cat("PT Summary\n----------\n", ...)
-    cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
-              "``, model ``", object@metadata$model, "``\n", sep=""))
-    if ("pressureAtmospheric" %in% names(object@metadata)) {
-        cat(paste("* Atmospheric pressure: ", object@metadata$pressureAtmospheric, "\n", sep=""))
-    }
-    cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""), ...)
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
-                format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
-                1 / object@metadata$deltat))
-    cat("* Statistics of subsample::\n\n")
-    time.range <- range(object@data$time, na.rm=TRUE)
-    threes <- matrix(nrow=2, ncol=3)
-    threes[1,] <- threenum(object@data$temperature)
-    threes[2,] <- threenum(object@data$pressure)
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- c("Temperature", "Pressure")
-    print(threes)
-    cat('\n')
-    processingLogShow(object)
-}
 
 tdrPatm <- function(x, dp=0.5)
 {

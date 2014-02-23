@@ -5,7 +5,7 @@
 \alias{is.enu}
 \alias{coordinate}
 
-\title{Determine coordinate system for acoustic-doppler device}
+\title{Determine coordinate system}
 
 \description{Determine coordinate system for acoustic-doppler device}
 

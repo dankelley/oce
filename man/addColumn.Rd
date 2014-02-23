@@ -27,4 +27,6 @@ new <- addColumn(ctd, st, "sigmaTheta")
 }
 
 \author{Dan Kelley}
+
 \keyword{misc}
+

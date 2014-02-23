@@ -1,6 +1,6 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             type=c("vector", "aquadopp"),
                             haveAnalog1=FALSE,
                             haveAnalog2=FALSE,
@@ -14,7 +14,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
     type <- match.arg(type)
-    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", latitude=", latitude, ", longitude=", longitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
+    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", longitude=", longitude, ", latitude=", latitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (by != 1)
@@ -53,8 +53,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata <- list(manufacturer="nortek",
                      instrumentType="vector",
                      filename=filename,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=NA, # filled in later
                      numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      measurementStart=NA, # FIXME

@@ -6,13 +6,13 @@
 
 \description{Lunar angle as function of space and time.}
 
-\usage{moonAngle(t, latitude, longitude, useRefraction=TRUE)}
+\usage{moonAngle(t, longitude, latitude, useRefraction=TRUE)}
 
 \arguments{
     \item{t}{time, a POSIXt object (must be in timezone UTC), or a numeric
         value that corresponds to such a time.}
-    \item{latitude}{observer latitude in degrees north}
     \item{longitude}{observer longitude in degrees east}
+    \item{latitude}{observer latitude in degrees north}
     \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for
         atmospheric refraction.  (Ignored at present.)} }
 
@@ -84,7 +84,7 @@ latitude <- 44.65
 longitude <- -63.6
 for (i in 1:3) {
     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
-    ma <- moonAngle(t, latitude, longitude)
+    ma <- moonAngle(t, longitude, latitude)
     oce.plot.ts(t, ma$altitude, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Altitude")
     abline(h=0)
     points(rises[i], 0, col='red', pch=3, lwd=2, cex=1.5)

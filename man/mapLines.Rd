@@ -11,7 +11,7 @@
 \arguments{
 
     \item{longitude}{longitudes of points to be plotted, or an object from
-        which latitude and longitude can be inferred (e.g. a coastline file, or
+        which longitude and latitude can be inferred (e.g. a coastline file, or
         the return value from \code{\link{mapLocator}}), in which case the
         following two arguments are ignored.}
 
@@ -35,8 +35,8 @@ data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
 mapPlot(longitude, latitude, type='l',
-        longitudelim=c(-80,10), latitudelim=c(0,120),
-        projection="orthographic", orientation=c(45,-100,0))
+longitudelim=c(-80,10), latitudelim=c(0,120),
+projection="orthographic", orientation=c(45,-100,0))
 lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)
 mapLines(lon, lat, col='red')
@@ -44,4 +44,6 @@ mapLines(lon, lat, col='red')
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

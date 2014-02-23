@@ -2,19 +2,19 @@
 
 \alias{equatorialToLocalHorizontal}
 
-\title{Convert from equatorial coordinates to local horizontal coordinates}
+\title{Convert equatorial to local horizontal coordinate}
 
 \description{Convert from equatorial coordinates to local horizontal
     coordinates, i.e. azimuth and altitude.}
 
-\usage{equatorialToLocalHorizontal(rightAscension, declination, t, latitude, longitude)}
+\usage{equatorialToLocalHorizontal(rightAscension, declination, t, longitude, latitude)}
 
 \arguments{
     \item{rightAscension}{right ascension, e.g. calculated with \code{\link{eclipticalToEquatorial}}.}
     \item{declination}{declination, e.g. calculated with \code{\link{eclipticalToEquatorial}}.}
     \item{t}{time of observation.}
-    \item{latitude}{latitude of observation, positive in northern hemisphere.}
     \item{longitude}{longitude of observation, positive in eastern hemisphere.}
+    \item{latitude}{latitude of observation, positive in northern hemisphere.}
 }
 
 \details{The method is taken from equations 8.5 and 8.6 of [1], or,

@@ -6,7 +6,8 @@
 
 \title{Scan a coastline data file}
 
-\description{Read a coastline file in mapgen, matlab, or Splus format}
+\description{Read a coastline file in mapgen, matlab, Splus, or shapefile
+    format.}
 
 \usage{
 read.coastline(file, type=c("R","S","mapgen","shapefile","openstreetmap"),
@@ -94,7 +95,7 @@ lines(lon-360, lat)
         depths <- d[["depths"]]
         n <- length(depths)
         D<-200
-        plot.window(c(-180,180),c(-90,90), xlab="", ylab="", asp=1)
+        plot(c(-180,180),c(-90,90), xlab="", ylab="", asp=1, type='n')
         for (i in 1:n) {
             if (depths[i]==D)
                 lines(lon[[i]],lat[[i]])

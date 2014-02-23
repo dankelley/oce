@@ -2,7 +2,7 @@
 
 \alias{swAbsoluteSalinity}
 
-\title{Seawater absolute salinity, as defined in TEOS-10.}
+\title{Seawater absolute salinity, in TEOS-10}
 
 \description{Compute seawater absolute salinity, according to TEOS-10.}
 

@@ -12,7 +12,7 @@
        filename="", type="", model="", serialNumber="",
        ship="", scientist="", institute="", address="", cruise="", station="", 
        date="", startTime="", recovery="",
-       latitude=NA, longitude=NA, 
+       longitude=NA, latitude=NA,
        waterDepth=NA, sampleInterval=NA, src="")
 }
 \arguments{
@@ -57,8 +57,8 @@
   \item{date}{optional string containing the date at which the profile was started.}
   \item{startTime}{optional string containing the start time.}
   \item{recovery}{optional string indicating the recovery time.}
-  \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
   \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
+  \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
   \item{waterDepth}{optional numerical value indicating the water depth in metres.}
   \item{sampleInterval}{optional numerical value indicating the time
     between samples in the profile.}

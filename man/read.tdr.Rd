@@ -2,7 +2,7 @@
 
 \alias{read.tdr}
 
-\title{Read an TDR temperature-depth recorder data file}
+\title{Read temperature-depth recorder file}
 
 \description{Read an tdr temperature-depth recorder file, producing an object of type \code{tdr}.}
 

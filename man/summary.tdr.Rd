@@ -1,14 +1,14 @@
 \name{summary.tdr}
 
 \alias{summary.tdr}
+\alias{summary,tdr,missing-method}
+\alias{summary,tdr-method}
 
 \title{Summarize a tdr object}
 
 \description{Summarize a tdr object}
 
-\usage{
-\method{summary}{tdr}(object, \dots)
-}
+\usage{\S4method{summary}{tdr}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"tdr"}, usually, a result of a
@@ -19,8 +19,7 @@
 \details{Pertinent summary information is presented, including the start
   and stop times, as well as statistics of temperature and pressure.}
 
-\value{An object of class \code{"summary.tdr"}, which contains
-  pertinent information about the TDR record and its processing.}
+\value{\code{NULL}}
 
 \seealso{The documentation for \code{\link{tdr-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}

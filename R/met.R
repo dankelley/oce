@@ -12,6 +12,32 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="met",
+          definition=function(object, ...) {
+              cat("Met Summary\n-----------\n\n")
+              showMetadataItem(object, "filename", "Source     ", quote=TRUE)
+              showMetadataItem(object, "latitude", "Latitude     ")
+              showMetadataItem(object, "longitude", "Longitude   ")
+              showMetadataItem(object, "elevation", "Elevation   ")
+              showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
+              showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
+              showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
+              cat("* Statistics of subsample::\n")
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata-1, ncol=3)
+              for (i in 2:ndata) { # skip time
+                  threes[i-1,] <- threenum(object@data[[i]])
+              }
+              rownames(threes) <- paste("   ", names(object@data)[-1])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='  ')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
     if (missing(time)) stop("must provide time")
@@ -138,26 +164,5 @@ setMethod(f="plot",
            })
 
 
-summary.met <- function(object, ...)
-{
-    cat("Met Summary\n-----------\n\n")
-    showMetadataItem(object, "filename", "Source     ", quote=TRUE)
-    showMetadataItem(object, "latitude", "Latitude     ")
-    showMetadataItem(object, "longitude", "Longitude   ")
-    showMetadataItem(object, "elevation", "Elevation   ")
-    showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
-    showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
-    showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
-    cat("* Statistics of subsample::\n")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata-1, ncol=3)
-    for (i in 2:ndata) { # skip time
-        threes[i-1,] <- threenum(object@data[[i]])
-    }
-    rownames(threes) <- paste("   ", names(object@data)[-1])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes, indent='  ')
-    processingLogShow(object)
-} 
 
  

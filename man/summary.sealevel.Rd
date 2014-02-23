@@ -1,14 +1,14 @@
 \name{summary.sealevel}
 
 \alias{summary.sealevel}
+\alias{summary,sealevel,missing-method}
+\alias{summary,sealevel-method}
 
 \title{Summarize a sealevel object}
 
 \description{Summarizes some of the data in a sealevel object.}
 
-\usage{
-\method{summary}{sealevel}(object, \dots)
-}
+\usage{\S4method{summary}{sealevel}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"sealevel"}, usually, a result of a

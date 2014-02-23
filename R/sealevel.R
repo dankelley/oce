@@ -10,6 +10,35 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="sealevel",
+          definition=function(object, ...) {
+              threes <- matrix(nrow=1, ncol=3)
+              cat("Sealevel Summary\n----------------\n\n")
+              showMetadataItem(object, "stationNumber",  "number:              ")
+              showMetadataItem(object, "version", "version:             ")
+              showMetadataItem(object, "stationName",    "name:                ")
+              showMetadataItem(object, "region",  "region:              ")
+              showMetadataItem(object, "deltat",  "sampling delta-t:    ")
+              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                               object@metadata$longitude,
+                                                               digits=5), "\n")
+              showMetadataItem(object, "year",    "year:                ")
+              ndata <- length(object@data$elevation)
+              cat("* number of observations:  ", ndata, "\n")
+              cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
+              cat("* Statistics of subsample::\n")
+              threes <- matrix(nrow=1, ncol=3)
+              threes[1,] <- threenum(object@data$elevation)
+              rownames(threes) <- paste("   ", "elevation")
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='   ')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="sealevel",
           definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
@@ -50,8 +79,7 @@ as.sealevel <- function(elevation,
                         stationName=NULL,
                         region=NULL,
                         year=NA,
-                        latitude=NA,
-                        longitude=NA,
+                        longitude=NA, latitude=NA,
                         GMTOffset=NA,
                         decimationMethod=NA,
                         referenceOffset=NA,
@@ -433,30 +461,4 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     rval
 }
 
-summary.sealevel <- function(object, ...)
-{
-    if (!inherits(object, "sealevel"))
-        stop("method is only for sealevel objects")
-    threes <- matrix(nrow=1, ncol=3)
-    cat("Sealevel Summary\n----------------\n\n")
-    showMetadataItem(object, "stationNumber",  "number:              ")
-    showMetadataItem(object, "version", "version:             ")
-    showMetadataItem(object, "stationName",    "name:                ")
-    showMetadataItem(object, "region",  "region:              ")
-    showMetadataItem(object, "deltat",  "sampling delta-t:    ")
-    cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                     object@metadata$longitude,
-                                                     digits=5), "\n")
-    showMetadataItem(object, "year",    "year:                ")
-    ndata <- length(object@data$elevation)
-    cat("* number of observations:  ", ndata, "\n")
-    cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-    cat("* Statistics of subsample::\n")
-    threes <- matrix(nrow=1, ncol=3)
-    threes[1,] <- threenum(object@data$elevation)
-    rownames(threes) <- paste("   ", "elevation")
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes, indent='   ')
-    processingLogShow(object)
-}
 

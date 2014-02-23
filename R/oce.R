@@ -146,11 +146,9 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     oceDebug(debug, "\b\b} # plotPolar()\n")
 }
 
-oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
+oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 {
     method <- match.arg(method)
-    if (method != "reiniger-ross")
-        stop("only available method is \"reiniger-ross\"")
     if (missing(x))
         stop("must supply x")
     if (missing(y))
@@ -173,7 +171,8 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x, y=y, xout=xout)
+    .Call("oce_approx", x=x, y=y, xout=xout,
+          method=pmatch(method, c("unesco", "rr")))
 }
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
@@ -304,7 +303,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       xlim=if(missing(xlim)) range(x) else xlim,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       tformat=tformat,
-                                      debug=debug-1)#, ...)
+                                      debug=debug-1)
         }
         if (grid) {
             lwd <- par("lwd")
@@ -484,91 +483,13 @@ oce.write.table <- function (x, file="", ...)
         write.table(x@data, file, ...)
 }
 
-
-##subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
-##{
-##    debug <- max(0, min(debug, 1), na.rm=TRUE)
-##    oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
-##    if (!inherits(x, "oce"))
-##        stop("method is only for oce objects")
-##    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-##    oceDebug(debug, "subsetString='", subsetString, "'\n")
-##    #if (inherits(x, "adv")) {
-##    #    if (!is.null(indices))
-##    #        stop("cannot specify 'indices' for adv objects (not coded yet)")
-##    #    if (missing(subset))
-##    #        stop("must specify a 'subset'")
-##    #    ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-##    #    ##oceDebug(debug, "subsetString='", subsetString, "'\n")
-##    #    if (length(grep("time", subsetString))) {
-##    #        oceDebug(debug, "subsetting an adv object by time\n")
-##    #        keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
-##    #        sum.keep <- sum(keep)
-##    #        if (sum.keep < 2)
-##    #            stop("must keep at least 2 profiles")
-##    #        oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
-##    #        oceDebug(debug, vectorShow(keep, "keeping bins:"))
-##    #        rval <- x
-##    #        names <- names(x@data)
-##    #        haveSlow <- "timeSlow" %in% names
-##    #        keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
-##    #        if (haveSlow) {
-##    #            subsetStringSlow <- gsub("time", "timeSlow", subsetString)
-##    #            keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
-##    #        }
-##    #        if ("timeBurst" %in% names) {
-##    #            subsetStringBurst <- gsub("time", "timeBurst", subsetString)
-##    #            keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
-##    #        }
-##    #        for (name in names(x@data)) {
-##    #            if ("distance" == name)
-##    #                next
-##    #            if (length(grep("Burst$", name))) {
-##    #                rval@data[[name]] = x@data[[name]][keepBurst]
-##    #            } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
-##    #                if (1 == length(agrep("Slow$", name))) {
-##    #                    oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
-##    #                    rval@data[[name]] <- x@data[[name]][keepSlow]
-##    #                } else {
-##    #                    oceDebug(debug, "subsetting data$", name, "\n", sep="")
-##    #                    rval@data[[name]] <- x@data[[name]][keep]
-##    #                }
-##    #            } else if (is.matrix(rval@data[[name]])) {
-##    #                oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
-##    #                rval@data[[name]] <- x@data[[name]][keep,]
-##    #            } else if (is.array(rval@data[[name]])) {
-##    #                oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
-##    #                rval@data[[name]] <- x@data[[name]][keep,,]
-##    #            }
-##    #        }
-##    #    } else {
-##    #        stop("only 'time' is permitted for subsetting")
-##    #    }
-##    #} else {
-##        if (isS4(x)) {
-##            r <- eval(substitute(subset), x@data, parent.frame())
-##        } else {
-##            r <- eval(substitute(subset), x@data, parent.frame())
-##        }
-##        r <- r & !is.na(r)
-##        rval <- x
-##        if (isS4(x)) {
-##            for (i in seq_along(x@data))
-##                rval@data[[i]] <- x@data[[i]][r]
-##        } else {
-##            rval@data <- x@data[r,]
-##        }
-##        names(rval@data) <- names(x@data)
-##    }
-##    ## fix up metadata
-##    if (inherits(x, "adp") || inherits(x, "adv")) {
-##        rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
-##        rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-##    }
-##    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-##    oceDebug(debug, "\b\b} # subset.oce\n")
-##    rval
-##}
+standardDepths <- function()
+{
+    c(0,   10,   20,   30,   50,   75,  100,  125,  150,  200,
+      250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
+      1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
+      4500, 5000, 5500)
+}
 
 summary.oce <- function(object, ...)
 {
@@ -612,7 +533,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
-            return(paste("odf", subtype, sep="/"))
+            return(paste(subtype, "odf", sep="/"))
+        } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
+            return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
             if (substr(filename, 1, 5) == "http:")
                 stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
@@ -625,6 +548,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return("openstreetmap")
         } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
+        } else if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
+            return("gpx")
         }
         file <- file(file, "r")
     }
@@ -634,6 +559,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    line2 <- scan(file, what='char', sep="\n", skip=1, n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
@@ -712,6 +638,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
+    if ("%ITP" == substr(line, 1, 4)) {
+        oceDebug(debug, "this is ice-tethered profile\n")
+        return("ctd/itp")
+    }
     if ("# -b" == substr(line, 1, 4)) {
         oceDebug(debug, "this is coastline\n")
         return("coastline")
@@ -723,6 +653,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if ("Station_Name," == substr(line, 1, 13)) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
+    }
+    if ("%" == line && length(line2) && regexpr("^Observatory", line2)) {
+        oceDebug(debug, "this is observatory\n")
+        return("observatory")
     }
     if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
         oceDebug(debug, "this is sealevel\n")
@@ -749,11 +683,11 @@ read.oce <- function(file, ...)
     type <- oceMagic(file)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
-        return(read.coastline.shapefile(file, ...))
+        return(read.coastline.shapefile(file, processingLog=processingLog, ...))
     if (type == "openstreetmap")
-        return(read.coastline.openstreetmap(file, ...))
+        return(read.coastline.openstreetmap(file, processingLog=processingLog, ...))
     if (type == "echosounder")
-        return(read.echosounder(file, ...))
+        return(read.echosounder(file, processingLog=processingLog, ...))
     if (type == "adp/rdi")
         return(read.adp.rdi(file, processingLog=processingLog, ...))
     if (type == "adp/sontek")
@@ -775,6 +709,14 @@ read.oce <- function(file, ...)
         return(read.ctd.sbe(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/exchange")
         return(read.ctd.woce(file, processingLog=processingLog, ...))
+    if (type == "ctd/odf")
+        return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "ctd/itp")
+        return(read.ctd.itp(file, processingLog=processingLog, ...))
+    if (type == "gpx")
+        return(read.gps(file, type="gpx", processingLog=processingLog, ...))
+    if (type == "mvctd/odf")
+        return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (type == "coastline")
         return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
     if (type == "drifter/argo")
@@ -791,10 +733,10 @@ read.oce <- function(file, ...)
         return(read.tdr(file, processingLog=processingLog, type='rsk'))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
-    if (type == "odf/ctd")
-        return(read.ctd.odf(file, processingLog=processingLog, ...))
-    if (type == "odf/mvctd")
-        return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "ctd/woce/other")
+        return(read.ctd.woce.other(file, processingLog=processingLog, ...))
+    if (type == "observatory")
+        return(read.observatory(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 
@@ -1148,7 +1090,35 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     invisible()
 }
 
-numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss"), tz="UTC")
+numberAsHMS <- function(t, default=0)
+{
+    if ("factor" == class(t))
+        t <- as.character(t)
+    if (!is.character(t))
+        stop("can only handle strings or factors")
+    nc <- nchar(t)
+    t[nc == 0] <- "0000"
+    nc <- nchar(t)
+    t[nc==1] <- paste("000", t[nc==1], sep="")
+    t[nc==2] <- paste("00", t[nc==2], sep="")
+    t[nc==3] <- paste("0", t[nc==3], sep="")
+    nc <- nchar(t)
+    warn <- options('warn')$warn
+    options(warn=-1)
+    try({
+        hour <- as.numeric(substr(t, 1, 2))
+        minute <- as.numeric(substr(t, 3, 4))
+        second <- rep(0, length(hour))
+    }, silent=TRUE)
+    options(warn=warn)
+    bad <- nc > 4 | grepl('[^[0-9]]*', t)
+    hour[bad] <- default
+    minute[bad] <- default
+    second[bad] <- default
+    list(hour=hour, minute=minute, second=second)
+}
+
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss", "yearday"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -1157,6 +1127,10 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "s
     } else if (type == "matlab") {
         ## R won't take a day "0", so subtract one
         return(as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1)))
+    } else if (type == "yearday") {
+        if (2 != ncol(t))
+            stop("'t' must have two columns, one for year, the other for yearday")
+        return(ISOdatetime(t[,1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[,2] * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
     } else if (type == "argo") {
@@ -1273,10 +1247,26 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     invisible()
 }
 
-decodeTime <- function(time, time.formats=c("%b %d %Y %H:%M:%s", "%Y%m%d"), tz="UTC")
+decodeTime <- function(time, timeFormats, tz="UTC")
 {
+    if (missing(timeFormats))
+        timeFormats <- c("%b %d %Y %H:%M:%S", "%b %d %Y", # Jul 1 2013
+                         "%B %d %Y %H:%M:%S", "%B %d %Y", # July 1 2013
+                         "%d %b %Y %H:%M:%S", "%d %b %Y", # 1 Jul 2013
+                         "%d %B %Y %H:%M:%S", "%d %B %Y", # 1 July 2013
+                         "%Y-%m-%d %H:%M:%S", "%Y-%m-%d", # 2013-07-01
+                         "%Y-%b-%d %H:%M:%S", "%Y-%b-%d", # 2013-Jul-01
+                         "%Y-%B-%d %H:%M:%S", "%Y-%B-%d", # 2013-July-01
+                         "%d-%b-%Y %H:%M:%S", "%d-%b-%Y", # 01-Jul-2013
+                         "%d-%B-%Y %H:%M:%S", "%d-%B-%Y", # 01-July-2013
+                         "%Y/%m/%d %H:%M:%S", "%Y/%m/%d", # 2013/07/01
+                         "%Y/%b/%d %H:%M:%S", "%Y/%b/%d", # 2013/Jul/01
+                         "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
+                         "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
+    ## FIXME: permit time to be a vector
     rval <- NA
-    for (format in time.formats) {
+    for (format in timeFormats) {
+        ##cat("TRYING FORMAT:", format, "\n")
         if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
             break
         }
@@ -1324,50 +1314,92 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     oceDebug(debug, "\b\b} # drawDirectionField\n")
 }
 
-oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, ...)
+oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+                       tformat, drawTimeRange=getOption("oceDrawTimeRange"),
+                       debug=getOption("oceDebug"), ...)
 {
     dots <- list(...)
     dotsNames <- names(dots)
-    if ("add" %in% dotsNames) {
-        contour(x, y, z, ...)
+    mustReverseX <- any(0 > diff(order(x)))
+    mustReverseY <- any(0 > diff(order(y)))
+    oceDebug(debug, "mustReverseX:", mustReverseX, '\n')
+    oceDebug(debug, "mustReverseY:", mustReverseY, '\n')
+
+    ## perhaps get (x,y,z) from x, etc., trying to emulate contour()
+    if (missing(z)) {
+        if (!missing(x)) {
+            if (is.list(x)) {
+                z <- x$z
+                y <- x$y
+                x <- x$x
+            } else {
+                z <- x
+                x <- seq.int(0, 1, length.out = nrow(z))
+            }
+        } else stop("no 'z' matrix specified")
+    } else if (is.list(x)) {
+        y <- x$y
+        x <- x$x
+    }
+    zdim <- dim(z)
+
+
+    ## store local values for the tricky cases of reversing axes etc
+    xx <- x
+    yy <- y
+    zz <- z
+    if (mustReverseX) {
+        xx <- rev(xx)
+        zz <- zz[seq.int(zdim[1], 1),]
+    }
+    if (mustReverseY) {
+        yy <- rev(yy)
+        zz <- zz[,seq.int(zdim[2], 1)]
+    }
+    if (add) {
+        contour(xx, yy, zz, add=TRUE, ...)
     } else {
-        if (missing(z)) {
-            if (!missing(x)) {
-                if (is.list(x)) {
-                    z <- x$z; y <- x$y; x <- x$x
-                } else {
-                    z <- x
-                    x <- seq.int(0, 1, length.out = nrow(z))
-                }
-            } else stop("no 'z' matrix specified")
-        } else if (is.list(x)) {
-            y <- x$y
-            x <- x$x
-        }
-        zdim <- dim(z)
         if (revx) {
-            x <- rev(x)
-##            z <- z[seq.int(zdim[1], 1), ]
+            xx <- rev(xx)
         }
         if (revy) {
-            y <- rev(y)
- ##           z <- z[, seq.int(zdim[2], 1)]
+            yy <- rev(yy)
         }
-        if (!("axes" %in% dotsNames)) {
-            contour(x, y, z, axes=FALSE, ...)
-            ## see src/library/graphics/R/contour.R 
-            xaxp <- par('xaxp')
-            xat <- seq(xaxp[1], xaxp[2], length.out=-1+xaxp[3])
-            xlabels <- format(xat)
-            yaxp <- par('yaxp')
-            yat <- seq(yaxp[1], yaxp[2], length.out=-1+yaxp[3])
-            ylabels <- format(yat)
-            ##print(data.frame(yat, ylabels))
-            if (revx) Axis(x, side=1, at=xat, labels=rev(xlabels)) else Axis(x, side=1)
-            if (revy) Axis(y, side=2, at=yat, labels=rev(ylabels)) else Axis(y, side=2)
-            box()
+        contour(xx, yy, zz, axes=FALSE, ...)
+        ## see src/library/graphics/R/contour.R 
+        xaxp <- par('xaxp')
+        xat <- seq(xaxp[1], xaxp[2], length.out=xaxp[3])
+        xlabels <- format(xat)
+        yaxp <- par('yaxp')
+        yat <- seq(yaxp[1], yaxp[2], length.out=yaxp[3])
+        ylabels <- format(yat)
+        xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
+
+        if (revx) {
+            if (xIsTime) {
+                oce.axis.POSIXct(side=1, x=x,
+                                 drawTimeRange=drawTimeRange,
+                                 #mar=mar, mgp=mgp, 
+                                 tformat=tformat, debug=debug-1)
+            } else {
+                Axis(xx, side=1, at=xat, labels=rev(xlabels))
+            }
         } else {
-            contour(x, y, z, ...)
+            if (xIsTime) {
+                oce.axis.POSIXct(side=1, x=x,
+                                 drawTimeRange=drawTimeRange,
+                                 #mar=mar, mgp=mgp,
+                                 tformat=tformat, debug=debug-1)
+            } else {
+                Axis(xx, side=1)
+            }
         }
+        if (revy) {
+            Axis(yy, side=2, at=yat, labels=rev(ylabels))
+        } else {
+            Axis(yy, side=2)
+        }
+        box()
     }
 }
+

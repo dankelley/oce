@@ -2,7 +2,7 @@
 
 \alias{eclipticalToEquatorial}
 
-\title{Convert from ecliptical to equatorial coordinates}
+\title{Convert ecliptical to equatorial coordinate}
 
 \description{Convert from ecliptical to equatorial coordinates}
 

@@ -60,4 +60,6 @@ plotTaylor(x, cbind(M2, S2))
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

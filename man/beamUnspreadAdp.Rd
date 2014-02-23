@@ -2,7 +2,7 @@
 
 \alias{beamUnspreadAdp}
 
-\title{Compensate ADP signal strength for spherical spreading}
+\title{Adjust ADP signal for spherical spreading}
 
 \description{Compensate ADP signal strength for spherical spreading}
 
@@ -46,9 +46,8 @@ legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 plot(adp.att, which="amplitude",col=oceColorsJet(100))
 }
 
-\references{The coefficient to convert to decibels is a personal
-    communication.  The logarithmic term is explained in textbooks on
-    acoustics, optics, etc.}
+\references{The coefficient to convert to decibels is a personal communication.
+    The logarithmic term is explained in textbooks on acoustics, optics, etc.}
 
 \author{Dan Kelley}
 
@@ -56,3 +55,4 @@ plot(adp.att, which="amplitude",col=oceColorsJet(100))
     of class \code{"adp"}.}
 
 \keyword{misc}
+

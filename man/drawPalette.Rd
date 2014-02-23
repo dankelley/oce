@@ -2,13 +2,15 @@
 
 \alias{drawPalette}
 
-\title{Draw a palette on the right-hand side of plot device}
+\title{Draw palette on RHS of plot device}
 
 \description{Draw a palette on the right-hand side of plot device}
 
-\usage{drawPalette(zlim, zlab="", breaks, col,
-    labels=NULL, at=NULL, mai, fullpage=FALSE,
-    drawContours=FALSE, drawTriangles=FALSE,
+\usage{drawPalette(zlim, zlab="",
+    breaks, col, mai, cex.axis=par("cex.axis"),
+    labels=NULL, at=NULL,
+    levels, drawContours=FALSE,
+    fullpage=FALSE, drawTriangles=FALSE,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -23,26 +25,27 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
-    \item{labels}{optional vector of labels for ticks on palette axis (must
-        correspond with \code{at})}
-    \item{at}{optional vector of positions for the \code{label}s}
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.  If not given, reasonable values are inferred from
         the existence of a non-blank \code{zlab}.}
+    \item{cex.axis}{character-expansion value for text labels}
+    \item{labels}{optional vector of labels for ticks on palette axis (must
+        correspond with \code{at})}
+    \item{at}{optional vector of positions for the \code{label}s}
+    \item{levels}{optional contour levels, in preference to \code{breaks}
+        values, to be added to the image if \code{drawContours} is
+        \code{TRUE}.}
+    \item{drawContours}{logical value indicating whether to draw contours on
+        the palette, at the colour breaks.}
     \item{fullpage}{logical value indicating whether to draw the palette
         filling the whole plot width (apart from \code{mai}, of course).  This
         can be helpful if the palette panel is to be created with
         \code{\link{layout}}, as illustrated in the \dQuote{Examples}.}
-
-    \item{drawContours}{logical value indicating whether to draw contours on
-        the palette, at the colour breaks.}
-
     \item{drawTriangles}{logical value indicating whether to draw triangles on
         the top and bottom of the palette.  If a single value is provide, it
         applies to both ends of the palette.  If a pair is provided, the first
         refers to the lower range of the palette, and the second to the upper
         range.}
-
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}

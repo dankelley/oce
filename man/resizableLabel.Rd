@@ -10,12 +10,11 @@
 \usage{
 resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "conservative temperature", "absolute salinity",
-  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice",
-  "fluorescence", "p", "z", "distance",
-  "heading", "pitch", "roll",
+  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
+  "tritium", "spice", "fluorescence",
+  "p", "z", "distance", "heading", "pitch", "roll",
   "u", "v", "w", "speed", "direction",
-  "eastward", "northward",
-  "depth", "elevation"),
+  "eastward", "northward", "depth", "elevation"),
   axis=c("x", "y"))}
 
 \arguments{
@@ -23,8 +22,10 @@ resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   \item{axis}{which axis to use.}
 }
 
-\value{A character string or expression, in either a long or a shorter
-  format, for use in the indicated axis at the present plot size.}
+\value{A character string or expression, in either a long or a shorter format,
+    for use in the indicated axis at the present plot size.  Whether the unit
+    is enclosed in parentheses or square brackets is determined by the value of
+    \code{getOption("oceUnitBracket")}, which may be \code{"["} or \code{"("}.}
 
 \details{Used by e.g. \code{\link{plot.ctd}}.}
 

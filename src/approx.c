@@ -57,7 +57,6 @@ SEXP approx3d(SEXP x, SEXP y, SEXP z, SEXP f, SEXP xout, SEXP yout, SEXP zout)
 #ifdef debug
     Rprintf("dx=%f dy=%f dz=%f\n", dx, dy, dz);
 #endif
-    int N = nx * ny * nz;
 #ifdef debug2
     for (int iz = 0; iz < nz; iz++) {
         for (int iy = 0; iy < ny; iy++) {

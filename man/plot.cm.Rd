@@ -95,4 +95,6 @@ plot(cm)
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

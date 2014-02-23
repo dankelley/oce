@@ -28,8 +28,8 @@
 
 \examples{
 library(oce)
-data(a03)
-GS <- subset(a03, 109<=stationId&stationId<=129)
+data(section)
+GS <- subset(section, 109<=stationId&stationId<=129)
 }
 
 \author{Dan Kelley}

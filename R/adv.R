@@ -11,6 +11,57 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="summary",
+          signature="adv",
+          definition=function(object, ...) {
+              cat("ADV Summary\n-----------\n\n", ...)
+              cat(paste("* Instrument:             ", object@metadata$instrumentType,
+                        ", serial number ``", object@metadata$serialNumber, "``\n",sep=""))
+              cat(paste("* Source filename:        ``", object@metadata$filename, "``\n", sep=""))
+              if ("latitude" %in% names(object@metadata)) {
+                  cat(paste("* Location:              ",
+                            if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+              }
+              cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
+                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+                          1 / object@metadata$measurementDeltat), ...)
+              cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
+                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
+                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
+                          1 / object@metadata$subsampleDeltat), ...)
+              if ("samplingMode" %in% names(object@metadata)) {
+                  if ("burst" == object@metadata$samplingMode) {
+                      cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
+                  } else {
+                      cat("* Sampling in continuous mode\n")
+                  }
+              }
+              cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
+              cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
+              cat("* Orientation:           ", object@metadata$orientation, "\n")
+              cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
+              dataNames <- names(object@data)
+              nrow <- length(dataNames) - length(grep("^time", dataNames))
+              threes <- matrix(nrow=nrow, ncol=3)
+              ii <- 1
+              for (name in dataNames) {
+                  if (0 == length(grep("^time", name))) {
+                      if (0 == length(object@data[[name]])) {
+                          threes[ii,] <- c(NA, NA, NA)
+                      } else {
+                          threes[ii,] <- threenum(as.numeric(object@data[[name]]))
+                      }
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes)
+              processingLogShow(object)
+          })
+
 setMethod(f="[[",
           signature="adv",
           definition=function(x, i, j, drop) {
@@ -162,7 +213,7 @@ setMethod(f="subset",
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
-                     latitude=NA, longitude=NA,
+                     longitude=NA, latitude=NA,
                      start, deltat,
                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -171,75 +222,23 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug, monitor=monitor, processingLog=processingLog)
     else if (type == "sontek") # guess
         read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
-                               latitude=latitude, longitude=longitude,
+                               longitude=longitude, latitude=latitude,
                                start=start, deltat=deltat,
                                debug=debug, monitor=monitor, processingLog=processingLog)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
-                            latitude=latitude, longitude=longitude,
+                            longitude=longitude, latitude=latitude,
                             debug=debug, processingLog=processingLog)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
-                             latitude=latitude, longitude=longitude,
+                             longitude=longitude, latitude=latitude,
                              debug=debug, processingLog=processingLog)
     else
         stop("read.adv() cannot understand type = \"", type, "\"")
-}
-
-summary.adv <- function(object, ...)
-{
-    if (!inherits(object, "adv"))
-        stop("method is only for adv objects")
-    cat("ADV Summary\n-----------\n\n", ...)
-    cat(paste("* Instrument:             ", object@metadata$instrumentType,
-              ", serial number ``", object@metadata$serialNumber, "``\n",sep=""))
-    cat(paste("* Source filename:        ``", object@metadata$filename, "``\n", sep=""))
-    if ("latitude" %in% names(object@metadata)) {
-        cat(paste("* Location:              ",
-                  if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                  if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
-    }
-    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                1 / object@metadata$measurementDeltat), ...)
-    cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                1 / object@metadata$subsampleDeltat), ...)
-    if ("samplingMode" %in% names(object@metadata)) {
-        if ("burst" == object@metadata$samplingMode) {
-            cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-        } else {
-            cat("* Sampling in continuous mode\n")
-        }
-    }
-    cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-    cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
-    cat("* Orientation:           ", object@metadata$orientation, "\n")
-    cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
-    dataNames <- names(object@data)
-    nrow <- length(dataNames) - length(grep("^time", dataNames))
-    threes <- matrix(nrow=nrow, ncol=3)
-    ii <- 1
-    for (name in dataNames) {
-        if (0 == length(grep("^time", name))) {
-            if (0 == length(object@data[[name]])) {
-                threes[ii,] <- c(NA, NA, NA)
-            } else {
-                threes[ii,] <- threenum(as.numeric(object@data[[name]]))
-            }
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes)
-    processingLogShow(object)
 }
 
 setMethod(f="plot",

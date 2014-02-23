@@ -1,5 +1,5 @@
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   latitude=NA, longitude=NA,
+                                   longitude=NA, latitude=NA,
                                    start, deltat,
                                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -105,8 +105,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv",
                      filename=filename,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=len,
                      numberOfBeams=3,
                      serialNumber="?",
@@ -137,7 +136,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),      # FIXME (twoTimescales)
                                 header=TRUE,
-                                latitude=NA, longitude=NA,
+                                longitude=NA, latitude=NA,
                                 debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {
@@ -199,8 +198,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"???
                      filename=filename,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=NA, # fill in later
                      numberOfBeams=NA, # fill in later
                      measurementDeltat=1,
@@ -603,7 +601,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
 read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz"),
                                  originalCoordinate="xyz", transformationMatrix,
-                                 latitude=NA, longitude=NA,
+                                 longitude=NA, latitude=NA,
                                  debug=getOption("oceDebug"), monitor=FALSE,
                                  processingLog)
 {
@@ -730,8 +728,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"?
                      filename=basefile,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=dim(v)[1],
                      numberOfBeams=dim(v)[2],
                      velocityResolution=velocityScale/10, # FIXME: guessing on the resolution for text files

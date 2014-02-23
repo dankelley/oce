@@ -1,5 +1,204 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+binApply1D <- function(x, f, xbreaks, FUN)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(f)) stop("must supply 'f'")
+    if (missing(xbreaks)) xbreaks <- pretty(x, 20)
+    if (missing(FUN)) stop("must supply 'FUN'")
+    if (!is.function(FUN)) stop("'FUN' must be a function")
+    ## FIXME: maybe employ the code below to get data from oce objects
+    ##if ("data" %in% slotNames(x)) # oce objects have this
+    ##    x <- x@data
+    ##t <- try(x <- data.frame(x), silent=TRUE)
+    ##if (class(t) == "try-error")
+    ##    stop("cannot coerce 'data' into a data.frame")
+    fSplit <- split(f, cut(x, xbreaks))
+    rval <- sapply(fSplit, FUN)
+    names(rval) <- NULL
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=rval)
+}
+
+binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (missing(f)) stop("must supply 'f'")
+    nx <- length(x)
+    if (nx != length(y)) stop("lengths of x and y must agree")
+    if (missing(xbreaks)) xbreaks <- pretty(x, 20)
+    if (missing(ybreaks)) ybreaks <- pretty(y, 20)
+    if (missing(FUN)) stop("must supply 'FUN'")
+    if (!is.function(FUN)) stop("'FUN' must be a function")
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    nybreaks <- length(ybreaks)
+    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    rval <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
+    A <- split(f, cut(y, ybreaks))
+    B <- split(x, cut(y, ybreaks))
+    for (i in 1:length(A)) {
+        fSplit <- split(A[[i]], cut(B[[i]], xbreaks))
+        ##rval[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
+        rval[,i] <- sapply(fSplit, FUN)
+    }
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
+         ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
+         result=rval)
+}
+
+binCount1D <- function(x, xbreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    nx <- length(x)
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2)
+        stop("must have more than 1 break")
+    res <- .C("bin_count_1d", length(x), as.double(x),
+              length(xbreaks), as.double(xbreaks),
+              number=integer(nxbreaks-1),
+              result=double(nxbreaks-1),
+              NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks), 
+         number=res$number)
+}
+
+binMean1D <- function(x, f, xbreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    fGiven <- !missing(f)
+    if (!fGiven)
+        f <- rep(1, length(x))
+    nx <- length(x)
+    if (nx != length(f))
+        stop("lengths of x and f must agree")
+    if (missing(xbreaks))
+        xbreaks <- pretty(x)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2)
+        stop("must have more than 1 break")
+    res <- .C("bin_mean_1d", length(x), as.double(x), as.double(f),
+              length(xbreaks), as.double(xbreaks),
+              number=integer(nxbreaks-1),
+              result=double(nxbreaks-1),
+              NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks), 
+         number=res$number,
+         result=if (fGiven) res$result else rep(NA, length=nx))
+}
+
+##binWhich1D <- function(x, xbreaks)
+##{
+##    if (missing(x)) stop("must supply 'x'")
+##    if (missing(xbreaks))
+##        xbreaks <- pretty(x)
+##    nxbreaks <- length(xbreaks)
+##    if (nxbreaks < 2)
+##        stop("must have more than 1 break")
+##    rval <- .C("bin_which_1d", length(x), as.double(x),
+##               length(xbreaks), as.double(xbreaks),
+##               bi=integer(length(x)),
+##               NAOK=TRUE, PACKAGE="oce")
+##    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), bi=rval$bi)
+##}
+
+
+binCount2D <- function(x, y, xbreaks, ybreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (length(x) != length(y)) stop("lengths of x and y must agree")
+    if (missing(xbreaks)) xbreaks <- pretty(x)
+    if (missing(ybreaks)) ybreaks <- pretty(y)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    nybreaks <- length(ybreaks)
+    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    rval <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
+               length(xbreaks), as.double(xbreaks),
+               length(ybreaks), as.double(ybreaks),
+               number=integer((nxbreaks-1)*(nybreaks-1)),
+               mean=double((nxbreaks-1)*(nybreaks-1)),
+               NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks,
+         ybreaks=ybreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         ymids=ybreaks[-1]-0.5*diff(ybreaks),
+         number=matrix(rval$number, nrow=nxbreaks-1))
+}
+
+
+binMean2D <- function(x, y, f, xbreaks, ybreaks)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    fGiven <- !missing(f)
+    if (!fGiven)
+        f <- rep(1, length(x))
+    if (length(x) != length(y)) stop("lengths of x and y must agree")
+    if (length(x) != length(f)) stop("lengths of x and f must agree")
+    if (missing(xbreaks)) xbreaks <- pretty(x)
+    if (missing(ybreaks)) ybreaks <- pretty(y)
+    nxbreaks <- length(xbreaks)
+    if (nxbreaks < 2) stop("must have more than 1 xbreak")
+    nybreaks <- length(ybreaks)
+    if (nybreaks < 2) stop("must have more than 1 ybreak")
+    rval <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+               length(xbreaks), as.double(xbreaks),
+               length(ybreaks), as.double(ybreaks),
+               number=integer((nxbreaks-1)*(nybreaks-1)),
+               mean=double((nxbreaks-1)*(nybreaks-1)),
+               NAOK=TRUE, PACKAGE="oce")
+    list(xbreaks=xbreaks,
+         ybreaks=ybreaks,
+         xmids=xbreaks[-1]-0.5*diff(xbreaks),
+         ymids=ybreaks[-1]-0.5*diff(ybreaks),
+         number=matrix(rval$number, nrow=nxbreaks-1),
+         result=if (fGiven) matrix(rval$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
+}
+
+binAverage <- function(x, y, xmin, xmax, xinc)
+{
+    if (missing(y))
+        stop("must supply 'y'")
+    if (missing(xmin))
+        xmin <- min(as.numeric(x), na.rm=TRUE)
+    if (missing(xmax))
+        xmax <- max(as.numeric(x), na.rm=TRUE)
+    if (missing(xinc))
+        xinc  <- (xmax - xmin) / 10 
+    if (xmax <= xmin)
+        stop("must have xmax > xmin")
+    if (xinc <= 0)
+        stop("must have xinc > 0")
+    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
+    #cat("xx:", xx, "\n")
+    nb <- length(xx)
+    ##dyn.load("bin_average.so") # include this whilst debugging
+    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
+             as.double(xmin), as.double(xmax), as.double(xinc),
+             ##means=double(nb), NAOK=TRUE)$means
+             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
+    list(x=xx, y=yy)
+}
+
+
+
+ungrid <- function(x, y, grid)
+{
+    nrow <- nrow(grid)
+    ncol <- ncol(grid)
+    grid <- as.vector(grid) # by columns
+    x <- rep(x, times=ncol)
+    y <- rep(y, each=nrow)
+    ok <- !is.na(grid)
+    list(x=x[ok], y=y[ok], grid=grid[ok])
+}
+
 approx3d <- function(x, y, z, f, xout, yout, zout) {
     equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
     if (missing(x)) stop("must provide x")
@@ -193,34 +392,11 @@ smoothSomething <- function(x, ...)
     res
 }
 
-binAverage <- function(x, y, xmin, xmax, xinc)
-{
-    if (missing(y))
-        stop("must supply 'y'")
-    if (missing(xmin))
-        xmin <- min(as.numeric(x), na.rm=TRUE)
-    if (missing(xmax))
-        xmax <- max(as.numeric(x), na.rm=TRUE)
-    if (missing(xinc))
-        xinc  <- (xmax - xmin) / 10 
-    if (xmax <= xmin)
-        stop("must have xmax > xmin")
-    if (xinc <= 0)
-        stop("must have xinc > 0")
-    xx <- head(seq(xmin, xmax, xinc), -1) + xinc / 2
-    #cat("xx:", xx, "\n")
-    nb <- length(xx)
-    ##dyn.load("bin_average.so") # include this whilst debugging
-    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
-             as.double(xmin), as.double(xmax), as.double(xinc),
-             ##means=double(nb), NAOK=TRUE)$means
-             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means # include this whilst debugging
-    list(x=xx, y=yy)
-}
 
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
+    finite <- is.finite(x)
     r <- range(x, na.rm=TRUE)
     if (missing(xlow))
         xlow <- min(x, na.rm=TRUE)
@@ -231,6 +407,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
         rval <- ifelse(rval < min(rlow, rhigh), rlow, rval)
         rval <- ifelse(rval > max(rlow, rhigh), rhigh, rval)
     }
+    rval[!finite] <- NA
     rval
 }
 
@@ -279,19 +456,23 @@ normalize <- function(x)
         (x - mean(x, na.rm=TRUE)) / sqrt(var)
 }
 
-detrend <- function(x,y)
+detrend <- function(x, y)
 {
     if (missing(x))
         stop("must give x")
     n <- length(x)
     if (missing(y)) {
         y <- x
-        x <- 1:length(y)
+        x <- seq_along(y)
     } else {
         if (length(y) != n)
             stop("x and y must be of same length, but they are ", n, " and ", length(y))
     }
-    y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
+    if (x[1] == x[n])
+        stop("cannot have x[1] == x[n]")
+    b <- (y[1] - y[n]) / (x[1] - x[n])
+    a <- y[1] - b * x[1]
+    list(Y=y-(a+b*x), a=a, b=b)
 }
 
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
@@ -547,100 +728,235 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
-                                  "conservative temperature",
-                                  "absolute salinity",
-                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice", "fluorescence",
+                                  "conservative temperature", "absolute salinity",
+                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
+                                  "tritium", "spice", "fluorescence",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
-                                  "eastward", "northward",
-                                  "depth", "elevation"), axis=c("x", "y"))
+                                  "eastward", "northward", "depth", "elevation"),
+                           axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
-        full <- expression(paste("Temperature, T [", degree, "C]"))
-        abbreviated <- expression(paste("T [", degree, "C]"))
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Temperature [", degree, "C]"))
+            abbreviated <- expression(paste("T [", degree, "C]"))
+        } else {
+            full <- expression(paste("Temperature (", degree, "C)"))
+            abbreviated <- expression(paste("T (", degree, "C)"))
+        }
     } else if (item == "conservative temperature") {
-        full <- expression(paste("Conservative Temperature, ", Theta, " [", degree, "C]"))
-        abbreviated <- expression(paste(Theta, "[", degree, "C]"))
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Conservative Temperature [", degree, "C]"))
+            abbreviated <- expression(paste(Theta, "[", degree, "C]"))
+        } else {
+            full <- expression(paste("Conservative Temperature (", degree, "C)"))
+            abbreviated <- expression(paste(Theta, "(", degree, "C)"))
+        }
     } else if (item == "sigmaTheta") {
-        full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
-        abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
+            abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
+        } else {
+            full <- expression(paste("Potential density anomaly (", kg/m^3, ")"))
+            abbreviated <- expression(paste(sigma[theta], " (", kg/m^3, ")"))
+        }
     } else if (item == "theta") {
-        full <- expression(paste("Potential Temperature [", degree, "C]"))
-        abbreviated <- expression(paste(theta, " [", degree, "C]"))
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Potential Temperature [", degree, "C]"))
+            abbreviated <- expression(paste(theta, " [", degree, "C]"))
+        } else {
+            full <- expression(paste("Potential Temperature (", degree, "C)"))
+            abbreviated <- expression(paste(theta, " (", degree, "C)"))
+        }
     } else if (item == "tritium") {
-        full <- "Tritium Concentration [Tu]"
-        abbreviated <- "Tritium [Tu]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Tritium Concentration [Tu]"
+            abbreviated <- "Tritium [Tu]"
+        } else {
+            full <- "Tritium Concentration (Tu)"
+            abbreviated <- "Tritium (Tu)"
+        }
     } else if (item ==  "nitrate") {
-        full <- "Nitrate Concentration [umol/kg]"
-        abbreviated <- "NO3 [umol/kg]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Nitrate Concentration [umol/kg]"
+            abbreviated <- "NO3 [umol/kg]"
+        } else {
+            full <- "Nitrate Concentration (umol/kg)"
+            abbreviated <- "NO3 (umol/kg)"
+        }
     } else if (item ==  "nitrite") {
-        full <- "Nitrite Concentration [umol/kg]"
-        abbreviated <- "NO2 [umol/kg]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Nitrite Concentration [umol/kg]"
+            abbreviated <- "NO2 [umol/kg]"
+        } else {
+            full <- "Nitrite Concentration (umol/kg)"
+            abbreviated <- "NO2 (umol/kg)"
+        }
     } else if (item ==  "oxygen") {
-        full <- "Oxygen Concentration [ml/l]"
-        abbreviated <- "O2 [ml/l]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Oxygen Concentration [ml/l]"
+            abbreviated <- "O2 [ml/l]"
+        } else {
+            full <- "Oxygen Concentration (ml/l)"
+            abbreviated <- "O2 (ml/l)"
+        }
     } else if (item ==  "phosphate") {
-        full <- "Phosphate Concentration [umol/kg]"
-        abbreviated <- "PO4 [umol/kg]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Phosphate Concentration [umol/kg]"
+            abbreviated <- "PO4 [umol/kg]"
+        } else {
+            full <- "Phosphate Concentration (umol/kg)"
+            abbreviated <- "PO4 (umol/kg)"
+        }
     } else if (item ==  "silicate") {
-        full <- "Silicate Concentration [umol/kg]"
-        abbreviated <- "Si [umol/kg]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Silicate Concentration [umol/kg]"
+            abbreviated <- "Si [umol/kg]"
+        } else {
+            full <- "Silicate Concentration (umol/kg)"
+            abbreviated <- "Si (umol/kg)"
+        }
     } else if (item == "fluorescence") {
-        full <- expression(paste("Fluorescence"))
-        abbreviated <- full
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Fluorescence"))
+            abbreviated <- full
+        } else {
+            full <- expression(paste("Fluorescence"))
+            abbreviated <- full
+        }
     } else if (item == "spice") {
-        full <- expression(paste("Spice [", kg/m^3, "]"))
-        abbreviated <- full
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Spice [", kg/m^3, "]"))
+            abbreviated <- full
+        } else {
+            full <- expression(paste("Spice (", kg/m^3, ")"))
+            abbreviated <- full
+        }
     } else if (item == "S") {
-        full <- expression(paste("Practical Salinity, ", S))
+        full <- "Practical Salinity"
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
-        full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
-        abbreviated <- expression(paste(S[A], " [g/kg]"))
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
+            abbreviated <- expression(paste(S[A], " [g/kg]"))
+        } else {
+            full <- expression(paste("Absolute Salinity, ", S[A], " (g/kg)"))
+            abbreviated <- expression(paste(S[A], " (g/kg)"))
+        }
     } else if (item == "p") {
-        full <- expression(paste("Pressure, ", P, " [dbar]"))
-        abbreviated <- expression(paste(P, " [dbar]"))
+        if (getOption("oceUnitBracket") == '[') {
+            full <- expression(paste("Pressure [dbar]"))
+            abbreviated <- expression(paste(P, " [dbar]"))
+        } else {
+            full <- expression(paste("Pressure (dbar)"))
+            abbreviated <- expression(paste(P, " (dbar)"))
+        }
     } else if (item == "z") {
-        abbreviated <- expression(paste(z, " [m]"))
-        full <- expression(paste(z, " [m]"))
+        if (getOption("oceUnitBracket") == '[') {
+            abbreviated <- expression(paste(z, " [m]"))
+            full <- expression(paste(z, " [m]"))
+        } else {
+            abbreviated <- expression(paste(z, " (m)"))
+            full <- expression(paste(z, " (m)"))
+        }
     } else if (item == "distance") {
-        full <- "Distance [m]"
-        abbreviated <- "Dist. [m]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Distance [m]"
+            abbreviated <- "Dist. [m]"
+        } else {
+            full <- "Distance (m)"
+            abbreviated <- "Dist. (m)"
+        }
     } else if (item == "heading") {
-        full <- "Heading [deg]"
-        abbreviated <- "Heading"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Heading [deg]"
+            abbreviated <- "Heading"
+        } else {
+            full <- "Heading (deg)"
+            abbreviated <- "Heading"
+        }
     } else if (item == "pitch") {
-        full <- "Pitch [deg]"
-        abbreviated <- "Pitch"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Pitch [deg]"
+            abbreviated <- "Pitch"
+        } else {
+            full <- "Pitch (deg)"
+            abbreviated <- "Pitch"
+        }
     } else if (item == "roll") {
-        full <- "Roll [deg]"
-        abbreviated <- "Roll"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Roll [deg]"
+            abbreviated <- "Roll"
+        } else {
+            full <- "Roll (deg)"
+            abbreviated <- "Roll"
+        }
     } else if (item == "u") {
-        full <- "u [m/s]"
-        abbreviated <- "u [m/s]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "u [m/s]"
+            abbreviated <- "u [m/s]"
+        } else {
+            full <- "u (m/s)"
+            abbreviated <- "u (m/s)"
+        }
     } else if (item == "v") {
-        full <- "v [m/s]"
-        abbreviated <- "v [m/s]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "v [m/s]"
+            abbreviated <- "v [m/s]"
+        } else {
+            full <- "v (m/s)"
+            abbreviated <- "v (m/s)"
+        }
     } else if (item == "w") {
-        full <- "w [m/s]"
-        abbreviated <- "w [m/s]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "w [m/s]"
+            abbreviated <- "w [m/s]"
+        } else {
+            full <- "w (m/s)"
+            abbreviated <- "w (m/s)"
+        }
     } else if (item == "eastward") {
-        full <- "Eastward wind [m/s]"
-        abbreviated <- "u [m/s]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Eastward wind [m/s]"
+            abbreviated <- "u [m/s]"
+        } else {
+            full <- "Eastward wind (m/s)"
+            abbreviated <- "u (m/s)"
+        }
     } else if (item == "northward") {
-        full <- "Northward wind [m/s]"
-        abbreviated <- "v [m/s]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Northward wind [m/s]"
+            abbreviated <- "v [m/s]"
+        } else {
+            full <- "Northward wind (m/s)"
+            abbreviated <- "v (m/s)"
+        }
     } else if (item == "depth") {
-        full <- "Depth [m]"
-        abbreviated <- "Depth [m]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Depth [m]"
+            abbreviated <- "Depth [m]"
+        } else {
+            full <- "Depth (m)"
+            abbreviated <- "Depth (m)"
+        }
     } else if (item == "elevation") {
-        full <- "Elevation [m]"
-        abbreviated <- "Elevation [m]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Elevation [m]"
+            abbreviated <- "Elevation [m]"
+        } else {
+            full <- "Elevation (m)"
+            abbreviated <- "Elevation (m)"
+        }
     } else if (item ==  "speed") {
-        full <- "Speed [m/s]"
-        abbreviated <- "Speed [m/s]"
+        if (getOption("oceUnitBracket") == '[') {
+            full <- "Speed [m/s]"
+            abbreviated <- "Speed [m/s]"
+        } else {
+            full <- "Speed (m/s)"
+            abbreviated <- "Speed (m/s)"
+        }
     }
     spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
@@ -861,25 +1177,18 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 ## The answer is returned in the same units as a; here in meters.
 ##
 ## Patterned after R code donated by Darren Gillis
-geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
+geodXy <- function(lon, lat, lon.ref, lat.ref, rotate=0)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(lat))
-        stop("must provide lat")
-    if (missing(lon))
-        stop("must provide lat")
-    if (missing(lat.ref))
-        stop("must provide lat.ref")
-    if (missing(lon.ref))
-        stop("must provide lon.ref")
-    if (!is.finite(lat.ref))
-        stop("lat.ref must be finite")
-    if (!is.finite(lon.ref))
-        stop("lat.ref must be finite")
+    if (missing(lon)) stop("must provide lat")
+    if (missing(lat)) stop("must provide lat")
+    if (missing(lat.ref)) stop("must provide lat.ref")
+    if (missing(lon.ref)) stop("must provide lon.ref")
+    if (!is.finite(lat.ref)) stop("lat.ref must be finite")
+    if (!is.finite(lon.ref)) stop("lat.ref must be finite")
     n <- length(lat)
-    if (length(lon) != n)
-        stop("lat and lon must be vectors of the same length")
+    if (length(lon) != n) stop("lat and lon must be vectors of the same length")
     x <- y <- vector("numeric", n)
     xy  <- .C("geod_xy",
               as.integer(n),
@@ -905,12 +1214,12 @@ geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     data.frame(x, y)
 }
 
-geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
+geodDist <- function (lon1, lat1=NULL, lon2=NULL, lat2=NULL, alongPath=FALSE)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (inherits(lat1, "section")) {
-        section <- lat1
+    if (inherits(lon1, "section")) {
+        section <- lon1
         lat <- section[["latitude", "byStation"]]
         lon <- section[["longitude", "byStation"]]
         if (alongPath) {
@@ -951,7 +1260,7 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
 
 interpBarnes <- function(x, y, z, w,
                          xg, yg, xgl, ygl,
-                         xr, yr, gamma=0.5, iterations=2,
+                         xr, yr, gamma=0.5, iterations=2, trim=0,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
@@ -1004,19 +1313,18 @@ interpBarnes <- function(x, y, z, w,
     oceDebug(debug, "gamma:", gamma, "iterations:", iterations, "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
-    zg <- .Call("interp_barnes",
-                as.double(x[ok]),
-                as.double(y[ok]),
-                as.double(z[ok]),
-                as.double(w[ok]),
-                as.double(xg),
-                as.double(yg),
-                as.double(xr),
-                as.double(yr),
-                as.double(gamma),
-                as.integer(iterations))
+    g <- .Call("interp_barnes",
+               as.double(x[ok]), as.double(y[ok]), as.double(z[ok]), as.double(w[ok]),
+               as.double(xg), as.double(yg),
+               as.double(xr), as.double(yr),
+               as.double(gamma),
+               as.integer(iterations))
     oceDebug(debug, "\b\b} # interpBarnes(...)\n")
-    list(xg=xg, yg=yg, zg=zg)
+    if (trim >= 0 && trim <= 1) {
+        bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
+        g$zg[bad] <- NA
+    }
+    list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
 }
 
 coriolis <- function(lat, degrees=TRUE)
@@ -1088,14 +1396,14 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
         ## generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10,4,10))/255)
         land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
                   "#C79652","#BD9248","#B38E3E","#A98A34")
-        water <- c("#E1FCF7","#BFF2EC","#A0E8E4","#83DEDE","#68CDD4",
-                   "#4FBBC9","#38A7BF","#2292B5","#0F7CAB")
+        water <- rev(c("#E1FCF7","#BFF2EC","#A0E8E4","#83DEDE","#68CDD4",
+                       "#4FBBC9","#38A7BF","#2292B5","#0F7CAB"))
     } else {
         land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
                   "#C79652","#BD9248","#B38E3E","#A98A34")
-        water <- c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
-                   "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3","#3194B4",
-                   "#2A7CA4","#205081","#16255E","#100C2F")
+        water <- rev(c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
+                       "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3","#3194B4",
+                       "#2A7CA4","#205081","#16255E","#100C2F"))
     }
     if (region == "water") {
         rgb.list <- col2rgb(water) / 255
@@ -1148,11 +1456,13 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
-    if (missing(to))
-        to <- length(x@data$time[[1]])
-    if (length(by) == 1) { # FIXME: probably should not be here
-        select <- seq(from=1, to=to, by=by)
-        oceDebug(debug, vectorShow(select, "select:"))
+    if ("time" %in% names(x@data)) {
+        if (missing(to))
+            to <- length(x@data$time[[1]])
+        if (length(by) == 1) { # FIXME: probably should not be here
+            select <- seq(from=1, to=to, by=by)
+            oceDebug(debug, vectorShow(select, "select:"))
+        }
     }
     if (inherits(x, "adp")) {
         oceDebug(debug, "decimate() on an ADP object\n")
@@ -1285,6 +1595,13 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             res[["a"]] <- a2
         }
         ## do depth, rows of matrix, time, cols of matrix
+    } else if (inherits(x, "topo")) {
+        oceDebug(debug, "Decimating a topo object")
+        lonlook <- seq(1, length(x[["longitude"]]), by=by)
+        latlook <- seq(1, length(x[["latitude"]]), by=by)
+        res[["longitude"]] <- x[["longitude"]][lonlook]
+        res[["latitude"]] <- x[["latitude"]][latlook]
+        res[["z"]] <- x[["z"]][lonlook, latlook]
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
@@ -1501,36 +1818,51 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
     rval
 }
 
-magneticDeclination <- function(lat, lon, date)
+magneticField <- function(longitude, latitude, time)
 {
-    if (missing(lat) || missing(lon) || missing(date))
-        stop("must provide lat, lon, and date")
-    dim <- dim(lat)
-    if (!all(dim == dim(lon)))
-        stop("dimensions of lat and lon must agree")
-    n <- length(lat)
-    if (length(date) == 1) {
-        date <- rep(date, n)
+    if (missing(longitude) || missing(latitude) || missing(time))
+        stop("must provide longitude, latitude, and time")
+    dim <- dim(latitude)
+    if (!all(dim == dim(longitude)))
+        stop("dimensions of longitude and latitude must agree")
+    n <- length(latitude)
+    if (inherits(time, "POSIXt")) {
+        d <- as.POSIXlt(time)
+        year <- d$year+1900
+        yearday <- d$yday
+        time <- year + yearday / 365.25 # ignore leap year issue (formulae not daily)
+    }
+    if (length(time) == 1) {
+        time <- rep(time, n)
     } else {
-        if (!all(dim == dim(date)))
-            stop("dimensions of lat and date must agree")
+        if (!all(dim == dim(time)))
+            stop("dimensions of latitude and time must agree")
     }
     if (!is.null(dim)) {
-        dim(lat) <- n
-        dim(lon) <- n
-        dim(date) <- n
+        dim(longitude) <- n
+        dim(latitude) <- n
+        dim(time) <- n
     }
     isv <- 0
     itype <- 1                          # geodetic
     alt <- 0.0                          # altitude in km
-    colat <- 90 - lat
-    elong <- ifelse(lon < 0, 360 + lon, lon)
-    r <- .Fortran("md_driver", as.double(colat), as.double(elong), as.double(date),
-                  as.integer(n), dev=double(n))
-    rval <- r$dev
-    if (!is.null(dim))
-        dim(rval) <- dim
-    rval
+    elong <- ifelse(longitude < 0, 360 + longitude, longitude)
+    colat <- 90 - latitude
+    r <- .Fortran("md_driver",
+                  as.double(colat), as.double(elong), as.double(time),
+                  as.integer(n),
+                  declination=double(n),
+                  inclination=double(n),
+                  intensity=double(n))
+    declination <- r$declination
+    inclination <- r$inclination
+    intensity <- r$intensity
+    if (!is.null(dim)) {
+        dim(declination) <- dim
+        dim(inclination) <- dim
+        dim(intensity) <- dim
+    }
+    list(declination=declination, inclination=inclination, intensity=intensity)
 }
 
 secondsToCtime <- function(sec)

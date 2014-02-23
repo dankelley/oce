@@ -9,9 +9,48 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="summary",
+          signature="cm",
+          definition=function(object, ...) {
+              dataNames <- names(object@data)
+              threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
+              ii <- 1
+              for (i in 1:length(dataNames)) {
+                  if (names(object@data)[i] != "time") {
+                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              vDim <- dim(object@data$v)
+
+              cat("cm Summary\n----------\n\n", ...)
+              cat(paste("* Instrument:         ", object@metadata$instrumentType, ", serial number ``", paste(object@metadata$serialNumber, collapse=""), "``\n", sep=""), ...)
+              cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
+              if ("latitude" %in% names(object@metadata)) {
+                  cat(paste("* Location:           ", if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+              }
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+                          1 / object@metadata$measurementDeltat), ...)
+              cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
+                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
+                          1 / object@metadata$subsampleDeltat), ...)
+              cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                          object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
+              cat("* Statistics of subsample\n  ::\n\n", ...)
+              print(threes)
+              cat("\n")
+              processingLogShow(object)
+          })
+
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
-                    latitude=NA, longitude=NA,
+                    longitude=NA, latitude=NA,
                     debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 2)
@@ -24,14 +63,14 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     type <- match.arg(type)
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
-                   latitude=latitude, longitude=longitude,
+                   longitude=longitude, latitude=latitude,
                    debug=debug-1, monitor=monitor, processingLog=processingLog, ...)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                       latitude=NA, longitude=NA,
+                       longitude=NA, latitude=NA,
                        debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 1)
@@ -177,60 +216,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-summary.cm <- function(object, ...)
-{
-    if (!inherits(object, "cm"))
-        stop("method is only for cm objects")
-    res <- list()
-    res$latitude <- object@metadata$latitude
-    res$longitude <- object@metadata$longitude
-    res$filename <- object@metadata$filename
-    res$instrumentType <- object@metadata$instrumentType
-    res$serialNumber <- object@metadata$serialNumber
-    res$measurementStart <- object@metadata$measurementStart
-    res$measurementEnd <- object@metadata$measurementEnd
-    res$measurementDeltat <- object@metadata$measurementDeltat
-    res$processingLog <- object@processingLog
-    dataNames <- names(object@data)
-    threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
-    ii <- 1
-    for (i in 1:length(dataNames)) {
-        if (names(object@data)[i] != "time") {
-            threes[ii,] <- threenum(object@data[[dataNames[i]]])
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    vDim <- dim(object@data$v)
-    res$subsampleStart <- object@data$time[1]
-    res$subsampleEndTime <- object@data$time[length(object@data$time)]
-    res$subsampleDeltat <- mean(diff(as.numeric(object@data$time)),na.rm=TRUE)
-    res$distance <- object@data$distance
-    res$time <- object@data$time
-    res$dataNames <- names(object@data)
-    cat("cm Summary\n----------\n\n", ...)
-    cat(paste("* Instrument:         ", object@metadata$instrumentType, ", serial number ``", paste(object@metadata$serialNumber, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
-    if ("latitude" %in% names(object@metadata)) {
-        cat(paste("* Location:           ", if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                  if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
-    }
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                1 / object@metadata$measurementDeltat), ...)
-    cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                1 / object@metadata$subsampleDeltat), ...)
-    cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
-    cat("* Statistics of subsample\n  ::\n\n", ...)
-    print(threes)
-    cat("\n")
-    processingLogShow(object)
-}
 
 setMethod(f="plot",
           signature=signature("cm"),

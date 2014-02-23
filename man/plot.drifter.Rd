@@ -74,8 +74,7 @@
 \examples{
 library(oce)
 data(drifter)
-data(coastlineWorld)
-plot(drifter, which="trajectory", coastline=coastlineWorld)
+plot(drifter, which="trajectory")
 }
 
 \references{\url{http://www.argo.ucsd.edu/}}

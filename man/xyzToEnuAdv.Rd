@@ -2,7 +2,7 @@
 
 \alias{xyzToEnuAdv}
 
-\title{Convert ADP or ADV from xyz coordinates to enu coordinates}
+\title{Convert XYZ to ENU coordinates}
 
 \description{Convert ADP or ADV velocity components from a xyz-based coordinate
     system to an enu-based coordinate system.}

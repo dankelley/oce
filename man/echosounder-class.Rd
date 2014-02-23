@@ -16,12 +16,12 @@
     \itemize{
 
         \item An infrequently updated record of the intrument position, in
-        \code{timeSlow}, \code{latitudeSlow} and \code{longitudeSlow}.   These
+        \code{timeSlow}, \code{longitudeSlow} and \code{latitudeSlow}.   These
         are used in plotting maps with \code{\link{plot.echosounder}}.
       
         \item An interpolated record of the instrument position, in
-        \code{time}, \code{latitude}, and \code{longitude}.  Linear
-        interpolation is used to infer the latitude and longitude from the
+        \code{time}, \code{longitude}, and \code{latitude}.  Linear
+        interpolation is used to infer the longitude and latitude from the
         variables listed above.
         
         \item \code{depth}, vector of depths of echo samples (measured positive

@@ -6,12 +6,12 @@
 
 \description{Plot zones (lines of constant longitude) on a existing map}
 
-\usage{mapZones(lon, polarCircle=0, lty='dotted', lwd=par('lwd'), col='lightgray', \dots)}
+\usage{mapZones(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', \dots)}
 
 \arguments{
-    \item{lon}{either a boolean indicating whether to draw a zonal grid, or a
-        single number to indicate the increment in zone longitudes, or a vector 
-        of longitudes at which to draw zones.}
+
+    \item{longitude}{either a boolean indicating whether to draw a zonal grid,
+        or a vector of longitudes at which to draw zones.}
 
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
@@ -34,14 +34,16 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
 mapPlot(longitude, latitude, type='l', grid=FALSE,
-        longitudelim=c(-80,10), latitudelim=c(0,120),
-        projection="orthographic", orientation=c(45,-100,0))
+longitudelim=c(-80,10), latitudelim=c(0,120),
+projection="orthographic", orientation=c(45,-100,0))
 mapZones()
+}
 }
 
 \author{Dan Kelley}

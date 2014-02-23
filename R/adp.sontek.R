@@ -1,6 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             type=c("adp", "pcadp"),
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"),
@@ -315,8 +315,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=type,
                      filename=filename,
                      serialNumber=if (exists('serialNumber')) serialNumber else "?",
-                     latitude=latitude,
                      longitude=longitude,
+                     latitude=latitude,
                      numberOfSamples=dim(v)[1],
                      numberOfCells=dim(v)[2],
                      numberOfBeams=dim(v)[3],
@@ -388,7 +388,7 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 }
 
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   latitude=NA, longitude=NA,
+                                   longitude=NA, latitude=NA,
                                    type=c("adp", "pcadp"),
                                    beamAngle=25, orientation,
                                    monitor=FALSE, processingLog,

@@ -12,6 +12,48 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="echosounder",
+          definition=function(object, ...) {
+              cat("Echosounder Summary\n-------------------\n\n")
+              showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
+              showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
+              metadataNames <- names(object@metadata)
+              cat(sprintf("* File type:           %s\n", object[["fileType"]]))
+              if ("beamType" %in% metadataNames)
+                  cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
+              time <- object[["time"]]
+              tz <- attr(time[1], "tzone")
+              nt <- length(time)
+              cat(sprintf("* Channel:             %d\n", object[["channel"]]))
+              cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
+              cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
+              ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+              if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
+              cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
+              cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
+              cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
+              cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
+              cat("* Statistics::\n")
+              dataNames <- c(names(object@data), "Sv", "TS")
+              ndata <- length(dataNames)
+              threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (0 == length(grep("^time", dataNames[i]))) {
+                      threes[ii,] <- threenum(object[[dataNames[i]]])
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes)
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="echosounder",
           definition=function(x, i, j, drop) {
@@ -309,7 +351,7 @@ setMethod(f="plot",
                       latitude <- x[["latitude"]]
                       longitude <- x[["longitude"]]
                       jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
-                      distance <- geodDist(jitter + latitude, longitude, alongPath=TRUE) ## FIXME: jitter should be in imagep
+                      distance <- geodDist(longitude, jitter+latitude, alongPath=TRUE) ## FIXME: jitter should be in imagep
                       depth <- x[["depth"]]
                       a <- x[["a"]]
                       if (despike)
@@ -359,11 +401,11 @@ setMethod(f="plot",
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
                       if (missing(radius))
-                          radius <- max(geodDist(latm, lonm, lat, lon))
+                          radius <- max(geodDist(lonm, latm, lon, lat))
                       else
-                          radius <- max(radius, geodDist(latm, lonm, lat, lon))
-                      km_per_lat_deg <- geodDist(latm, lonm, latm+1, lonm) 
-                      km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
+                          radius <- max(radius, geodDist(lonm, latm, lon, lat))
+                      km_per_lat_deg <- geodDist(lonm, latm, lonm, latm+1) 
+                      km_per_lon_deg <- geodDist(lonm, latm, lonm+1, latm) 
                       lonr <- lonm + radius / km_per_lon_deg * c(-2, 2)
                       latr <- latm + radius / km_per_lat_deg * c(-2, 2)
                       plot(lonr, latr, asp=asp, type='n',
@@ -393,7 +435,8 @@ setMethod(f="plot",
           })
 
 read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),
-                             tz=getOption("oceTz"), debug=getOption("oceDebug"))
+                             tz=getOption("oceTz"), debug=getOption("oceDebug"),
+                             processingLog)
 {
     oceDebug(debug, "\b\bread.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="")
     ofile <- file
@@ -740,48 +783,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         res@data$b <- NULL
         res@data$c <- NULL
     }
-
-    res@processingLog <- processingLog(res@processingLog,
-                                       paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
-}
-
-summary.echosounder <- function(object, ...)
-{
-    cat("Echosounder Summary\n-------------------\n\n")
-    showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
-    showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
-    metadataNames <- names(object@metadata)
-    cat(sprintf("* File type:           %s\n", object[["fileType"]]))
-    if ("beamType" %in% metadataNames)
-        cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
-    time <- object[["time"]]
-    tz <- attr(time[1], "tzone")
-    nt <- length(time)
-    cat(sprintf("* Channel:             %d\n", object[["channel"]]))
-    cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
-    cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
-    ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
-    if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
-    cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
-    cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
-    cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
-    cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
-    cat("* Statistics::\n")
-    dataNames <- c(names(object@data), "Sv", "TS")
-    ndata <- length(dataNames)
-    threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
-    ii <- 1
-    for (i in 1:ndata) {
-        if (0 == length(grep("^time", dataNames[i]))) {
-            threes[ii,] <- threenum(object[[dataNames[i]]])
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes)
-    processingLogShow(object)
 }
 

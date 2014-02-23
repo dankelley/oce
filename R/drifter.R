@@ -15,28 +15,28 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="summary",
+          signature="drifter",
+          definition=function(object, ...) {
+              cat("Drifter Summary\n---------------\n\n")
+              cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
+              cat("* id:         \"", object@metadata$id, "\"\n", sep="")
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
+              for (i in 2:ndata)
+                  threes[i-1,] <- threenum(object@data[[i]])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              rownames(threes) <- names(object@data)[-1]
+              print(threes)
+              processingLogShow(object)
+          })
+
 ##setMethod(f="[[",
 ##          signature="drifter",
 ##          definition=function(x, i, j, drop) {
 ##              as(x, "oce")[[i, j, drop]]
 ##          })
 
-summary.drifter <- function(object, ...)
-{
-    if (!inherits(object, "drifter"))
-        stop("method is only for drifter objects")
-    cat("Drifter Summary\n---------------\n\n")
-    cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
-    cat("* id:         \"", object@metadata$id, "\"\n", sep="")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
-    for (i in 2:ndata)
-        threes[i-1,] <- threenum(object@data[[i]])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- names(object@data)[-1]
-    print(threes)
-    processingLogShow(object)
-}
 
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {

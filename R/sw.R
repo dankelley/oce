@@ -1,3 +1,34 @@
+swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df)
+{
+    if (!inherits(ctd, "ctd"))
+        stop("first argument must be of class \"ctd\"")
+    sense <- match.arg(sense)
+    pressure <- ctd[['pressure']]
+    salinity <- ctd[['salinity']]
+    theta <- ctd[['theta']]
+    if (length(pressure) < 4)
+        return(NA)
+    alpha <- swAlpha(ctd)
+    beta <- swBeta(ctd)
+    A <- smoothingLength / mean(diff(pressure), na.rm=TRUE) 
+    n <- length(pressure)
+    ## infer d(theta)/dp and d(salinity)/dp from smoothing splines
+    if (missing(df)) {
+        thetaSpline <- smooth.spline(pressure, theta, df=n/A)
+        salinitySpline <- smooth.spline(pressure, salinity, df=n/A)
+    } else {
+        thetaSpline <- smooth.spline(pressure, theta, df=df)
+        salinitySpline <- smooth.spline(pressure, salinity, df=df)
+    }
+    dthetadp <- predict(thetaSpline, pressure, deriv=1)$y
+    dsalinitydp <- predict(salinitySpline, pressure, deriv=1)$y
+    if (sense == "diffusive")
+        Rrho <- (beta * dsalinitydp)/ (alpha * dthetadp)
+    else
+        Rrho <- (alpha * dthetadp) / (beta * dsalinitydp)
+    Rrho
+}
+
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
 {
     ##cat("swN2(..., df=", df, ")\n",sep="")
@@ -27,13 +58,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
                     df <- floor(depths / 2)
                 oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
             }
+            df <- min(df, length(unique(pressure))/2)
             if (depths > 4 && df > 1) {
                 sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                 sigmaThetaDeriv <- rep(NA, length(pressure))
                 sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
             } else {
                 sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
-                sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
+                sigmaThetaDeriv <- rep(NA, length(pressure))
+                sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
             }
         } else {
             stop("derivs must be 'simple', 'smoothing', or a function")
@@ -312,7 +345,7 @@ swDynamicHeight <- function(x, referencePressure=2000)
         h <- vector("numeric", ns)
         for (i in 1:ns) {               # FIXME: avoid loops
 ##            cat("i=",i,"\n")
-            d[i] <- geodDist(x@data$station[[i]]@metadata$latitude, x@data$station[[i]]@metadata$longitude, lat0, lon0)
+            d[i] <- geodDist(x@data$station[[i]]@metadata$longitude, x@data$station[[i]]@metadata$latitude, lon0, lat0)
             h[i] <- height(x@data$station[[i]], referencePressure)
         }
         return(list(distance=d, height=h))

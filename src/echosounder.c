@@ -161,10 +161,6 @@ SEXP biosonics_ping(SEXP bytes, SEXP Rspp, SEXP Rns, SEXP Rtype)
   if (type == 1 || type == 2) {
     byte_per_sample = 4;
   }
-  unsigned int nbytes = LENGTH(bytes);
-#ifdef DEBUG
-  Rprintf("nbytes: %d (should be 2*ns for single-beam or 4*ns for split- and dual-beam)\n", nbytes);
-#endif
   unsigned char *bytep = RAW(bytes);
 
   SEXP res;

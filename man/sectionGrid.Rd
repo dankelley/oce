@@ -19,8 +19,9 @@
       \code{section}.  If a single numerical value is provided, it is taken as
       a step for a seq() running from 0 to the maximum pressure (rounded to
       that step).  If \code{p="levitus"}, then the levels are set to be those
-      of Levitus atlas, trimmed to the maximum pressure in \code{section}.  If
-      a list of numerical values is provided, then it is used as is.}
+      of Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
+      maximum pressure in \code{section}.  If a list of numerical values is
+      provided, then it is used as is.}
 
   \item{method}{the algorithm to use for interpolation to the pressure levels;
       see Details below for a sketch, and see \code{\link{ctdDecimate}} for a
@@ -53,10 +54,8 @@
 \examples{
 # Gulf Stream
 library(oce)
-# http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
-# a03 <- read.section("a03_hy1.csv")
-data(a03)
-GS <- subset(a03, 109<=stationId&stationId<=129)
+data(section)
+GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 plot(GSg, map.xlim=c(-80,-60))
 }

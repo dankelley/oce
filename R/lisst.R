@@ -1,16 +1,46 @@
 setMethod(f="initialize",
           signature="lisst",
-          definition=function(.Object, filename="", latitude=NA, longitude=NA) {
+          definition=function(.Object, filename="", longitude=NA, latitude=NA) {
               .Object@metadata$filename <- filename
-              .Object@metadata$latitude <- latitude
               .Object@metadata$longitude <- longitude
+              .Object@metadata$latitude <- latitude
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- paste("create 'lisst' object with", 
                                                    " filename=\"", filename, "\"", 
-                                                   ", latitude=", latitude,
-                                                   ", longitude=", longitude, sep="")
+                                                   ", longitude=", longitude,
+                                                   ", latitude=",
+                                                   latitude, sep="")
               return(.Object)
           })
+
+
+setMethod(f="summary",
+          signature="lisst",
+          definition=function(object, ...) {
+              cat("LISST Summary\n-------------\n\n")
+              showMetadataItem(object, "filename", "File source:        ")
+              start <- object@data$time[1]
+              dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
+              end <- object@data$time[length(object@data$time)]
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(start), attr(start, "tzone"),
+                          format(end), attr(end, "tzone"),
+                          1 / dt))
+              cat("* Statistics of subsample::\n")
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata-1, ncol=3)
+              names <- names(object@data)
+              for (i in 1:ndata) {
+                  if (names[i] != "time") {
+                      threes[i,] <- threenum(object@data[[i]])
+                  }
+              }
+              rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
 
 setMethod(f="plot",
           signature="lisst",
@@ -44,7 +74,7 @@ setMethod(f="plot",
 
 
 
-as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude=NA)
+as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
@@ -80,7 +110,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude
     rval
 }
 
-read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
+read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
 
@@ -100,29 +130,4 @@ read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
     as.lisst(data, filename, year, tz, latitude, longitude)
 }
 
-summary.lisst <- function(object, ...)
-{
-    cat("LISST Summary\n-------------\n\n")
-    showMetadataItem(object, "filename", "File source:        ")
-    start <- object@data$time[1]
-    dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-    end <- object@data$time[length(object@data$time)]
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(start), attr(start, "tzone"),
-                format(end), attr(end, "tzone"),
-                1 / dt))
-    cat("* Statistics of subsample::\n")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata-1, ncol=3)
-    names <- names(object@data)
-    for (i in 1:ndata) {
-        if (names[i] != "time") {
-            threes[i,] <- threenum(object@data[[i]])
-        }
-    }
-    rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes, indent='  ')
-    processingLogShow(object)
-}
 

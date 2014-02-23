@@ -40,6 +40,129 @@ abbreviateTimeLabels <- function(t, ...)
     return(t)
 }
 
+
+makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
+                        file, breaksPerLevel=20,
+                        region=c("water", "land", "both"))
+{
+    readGMT <- function(file, text)
+    {
+        if (missing(file) && missing(text))
+            stop("must give either 'file' or 'text'\n")
+        if (missing(file)) {
+            text <- strsplit(text, '\\n')[[1]]
+        } else {
+            text <- readLines(file)
+        }
+        text1 <- text[grep("^[ ]*[-0-9]", text)]
+        d <- read.table(text=text1, col.names=c("l", "lr", "lg", "lb", "u", "ur", "ug", "ub"))
+        if (length(grep("^[ ]*F", text))) {
+            f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
+            f <- rgb(f[1]/255, f[2]/255, f[3]/255)
+        } else {
+            f <- "#FFFFFF"
+        }
+        if (length(grep("^[ ]*B", text))) {
+            b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
+            b <- rgb(b[1]/255, b[2]/255, b[3]/255)
+        } else {
+            b <- "#000000"
+        }
+        if (length(grep("^[ ]*N", text))) {
+            n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
+            n <- rgb(n[1]/255, n[2]/255, n[3]/255)
+        } else {
+            n <- "#FFFFFF"
+        }
+        list(l=d$l, lr=d$lr, lg=d$lg, lb=d$lb, u=d$u, ur=d$ur, ug=d$ug, ub=d$ub, f=f, b=b, n=n)
+    }
+    style <- match.arg(style)
+    region <- match.arg(region)
+    if (!missing(file)) {
+        d <- readGMT(file)
+    } else {
+        if (style == "gmt_relief") {
+            text <- "
+#	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+#
+# Colortable for whole earth relief used in Wessel topomaps
+# Designed by P. Wessel and F. Martinez, SOEST
+# COLOR_MODEL = RGB
+-8000	0	0	0	-7000	0	5	25
+-7000	0	5	25	-6000	0	10	50
+-6000	0	10	50	-5000	0	80	125
+-5000	0	80	125	-4000	0	150	200
+-4000	0	150	200	-3000	86	197	184
+-3000	86	197	184	-2000	172	245	168
+-2000	172	245	168	-1000	211	250	211
+-1000	211	250	211	0	250	255	255
+0	70	120	50	500	120	100	50
+500	120	100	50	1000	146	126	60
+1000	146	126	60	2000	198	178	80
+2000	198	178	80	3000	250	230	100
+3000	250	230	100	4000	250	234	126
+4000	250	234	126	5000	252	238	152
+5000	252	238	152	6000	252	243	177
+6000	252	243	177	7000	253	249	216
+7000	253	249	216	8000	255	255	255
+F	255	255	255				
+B	0	0	0
+N	255	255	255"
+        } else if (style == "gmt_ocean") {
+            text <- "
+#	$Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+#
+# Colortable for oceanic areas as used in Wessel maps
+# Designed by P. Wessel and F. Martinez, SOEST.
+# COLOR_MODEL = RGB
+-8000	0	0	0	-7000	0	5	25
+-7000	0	5	25	-6000	0	10	50
+-6000	0	10	50	-5000	0	80	125
+-5000	0	80	125	-4000	0	150	200
+-4000	0	150	200	-3000	86	197	184
+-3000	86	197	184	-2000	172	245	168
+-2000	172	245	168	-1000	211	250	211
+-1000	211	250	211	0	250	255	255
+F	255	255	255
+B	0	0	0"
+        } else if (style == "oce_shelf") {
+            text <- "
+-500	0	0	0	-200	0	10	55
+-200	0	10	55	-175	0	40	80
+-175	0	40	80	-150	0	80	125
+-150	0	80	125	-125	0	115     162	
+-125	0	150	200	-100	43	173     192	
+-100	86	197	184	-75	129     221     176
+-75	172     245     168	-50	191     247     189
+-50	211     250     211	-25     220     250     240	
+-25	220	250	240	0	250	255	255"
+        }
+        d <- readGMT(text=text)
+    }
+    nlevel <- length(d$l)
+    breaks <- NULL
+    col <- NULL
+    for (l in 1:nlevel) {
+        lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
+        upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
+        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=1+breaksPerLevel))
+        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(1+breaksPerLevel))
+    }
+    if (region == "water") {
+        wet <- breaks <= 0
+        breaks <- breaks[wet]
+        col <- col[wet]
+    } else if (region == "land") {
+        dry <- breaks >= 0
+        breaks <- breaks[dry]
+        col <- col[dry]
+    }
+    ## drop a colour for length match with breaks
+    col <- col[-1]                     
+    list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
+}
+
+
 paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
                                 mai=c(0, 1/8, 0, 1/4))
 {
@@ -62,12 +185,15 @@ paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
     pc 
 }
 
-drawPalette <- function(zlim, zlab="", breaks, col,
-                        labels=NULL, at=NULL, mai, fullpage=FALSE,
-                        drawContours=FALSE, drawTriangles=FALSE,
+drawPalette <- function(zlim, zlab="",
+                        breaks, col, mai, cex.axis=par("cex.axis"),
+                        labels=NULL, at=NULL,
+                        levels, drawContours=FALSE,
+                        fullpage=FALSE, drawTriangles=FALSE,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
+    levelsGiven <- !missing(levels)
     if (zlimGiven)
         zlim <- range(zlim, na.rm=TRUE)
     breaksGiven <- !missing(breaks)
@@ -92,10 +218,11 @@ drawPalette <- function(zlim, zlab="", breaks, col,
     if (!maiGiven)
         mai <- c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0)
     pc <- paletteCalculations(mai=mai)
-    contours <- NULL
+    contours <- if (breaksGiven) breaks else NULL
     if (zlimGiven) {
         if (breaksGiven) {
             breaksOrig <- breaks
+            contours <- breaks
         } else {
             zrange <- zlim
             if (missing(col)) {
@@ -103,7 +230,7 @@ drawPalette <- function(zlim, zlab="", breaks, col,
                 contours <- breaks
             } else {
                 if (is.function(col)) {
-                    breaks <- seq(zlim[1], zlim[2], length.out=256) # smooth image colorscale
+                    breaks <- seq(zlim[1], zlim[2], length.out=128) # smooth image colorscale
                     contours <- pretty(zlim)
                 } else {
                     breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
@@ -151,8 +278,9 @@ drawPalette <- function(zlim, zlab="", breaks, col,
                   col=col,
                   zlim=zlim)
         }
-        if (drawContours)
-            abline(h=contours)
+        if (drawContours) {
+            if (levelsGiven) abline(h=levels) else abline(h=contours)
+        }
         box()
         drawTriangles <- rep(drawTriangles, length.out=2)
         if (any(drawTriangles, na.rm=TRUE)) {
@@ -192,9 +320,9 @@ drawPalette <- function(zlim, zlab="", breaks, col,
             labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
-        axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
+        axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
         if (nchar(zlab) > 0)
-            mtext(zlab, side=4, line=2.0, cex=par('cex'))
+            mtext(zlab, side=4, line=2.0, cex=par('cex'), cex.axis)
     }
     theMai <- c(pc$omai[1],
                 pc$maiLHS,
@@ -292,7 +420,7 @@ imagep <- function(x, y, z,
     }
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
     oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
-    x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
+    xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
@@ -344,10 +472,11 @@ imagep <- function(x, y, z,
     par(mgp=mgp, mar=mar, cex=cex)
     breaksGiven <- !missing(breaks)
     if (!breaksGiven) {
+        nbreaks <- 128                 # smooth image colorscale
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
             if (missing(col)) {
-                breaks <- pretty(zrange, n=10)
+                breaks <- pretty(zrange, n=nbreaks)
                 if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
                 if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
             } else {
@@ -355,21 +484,27 @@ imagep <- function(x, y, z,
             }
             breaksOrig <- breaks
         } else {
-            if (missing(col))
-                breaks <- c(zlim[1], pretty(zlim), zlim[2])
-            else
-                breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+            ## zlim given, but breaks not given
+            if (missing(col)) {
+                ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
+                breaks <- pretty(zlim, n=nbreaks)
+                oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+            } else {
+                breaks <- seq(zlim[1], zlim[2],
+                              length.out=if(is.function(col))128 else 1+length(col))
+                oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+            }
             breaksOrig <- breaks
-            ##cat('range(z):', zrange, '\n')
-            ##cat('ORIG  range(breaks):', range(breaks), '\n')
-            breaks[1] <- min(zrange[1], breaks[1])
-            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
-            ##cat('later range(breaks):', range(breaks), '\n')
+            oceDebug(debug, 'range(z):', zrange, '\n')
+            oceDebug(debug, 'ORIG  range(breaks):', range(breaks), '\n')
+            breaks[1] <- min(max(zlim[1], zrange[1]), breaks[1])
+            breaks[length(breaks)] <- max(breaks[length(breaks)], min(zlim[2], zrange[2]))
+            oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
         }
     } else {
         breaksOrig <- breaks
         if (1 == length(breaks)) {
-            breaks <- pretty(z, n=breaks)
+            breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
         }
     }
     if (missing(col))
@@ -379,7 +514,14 @@ imagep <- function(x, y, z,
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
     } else if (drawPalette) {
-        zlim <- if(missing(zlim)) range(z, na.rm=TRUE) else zlim
+        if(missing(zlim)) {
+            ## use range of breaks preferably; otherwise use range z
+            if (missing(breaks)) {
+                zlim <- range(z, na.rm=TRUE)
+            } else {
+                zlim <- range(breaks, na.rm=TRUE)
+            }
+        }
         drawTriangles <- rep(drawTriangles, length.out=2)
         drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
@@ -394,6 +536,11 @@ imagep <- function(x, y, z,
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+
+    ## trim image to limits, so endpoint colours will indicate outliers
+    z[z < zlim[1]] <- zlim[1]
+    z[z > zlim[2]] <- zlim[2]
+
     if (flipy) {
         ## nc <- ncol(z)
         ## z[, seq.int(nc, 1L)] <- z[, seq.int(1L, nc)]
@@ -404,23 +551,18 @@ imagep <- function(x, y, z,
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     }
-    if (x.is.time) {
+    if (xIsTime) {
         if (filledContour) {
             if (!is.double(z))
                 storage.mode(z) <- "double"
             plot.new()
-            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
-            if (!breaksGiven) {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            }
+            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
+                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
         }
         if (axes) {
             box()
@@ -433,7 +575,7 @@ imagep <- function(x, y, z,
         if (filledContour) {
             storage.mode(z) <- "double"
             plot.new()
-            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(xlab, side=1, line=mgp[1])
@@ -457,7 +599,7 @@ imagep <- function(x, y, z,
     if (!(is.character(main) && main == ""))
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
     if (drawContours)
-        contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
+        contour(x=xorig, y=yorig, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     if (zlabPosition == "top")
         mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
     if (!missing(adorn)) {
