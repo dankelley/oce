@@ -639,6 +639,26 @@ in the St Lawrence Estuary Internal Wave Experiment.
 \end{figure}
 
 
+\section{Working in non-English languages}
+
+Many of the \verb@oce@ plotting functions produce axis labels that can be
+displayed in languages other than English.  At the time of writing, French,
+Spanish, and Mandarin are supported in at least a rudimentary way.  Setting the
+language can be done at the general system level, or within R; the latter is
+illustrated below for French (which is coded \verb@"fr"@ in the ISO 639 language
+standard).
+<<>>=
+library(oce)
+Sys.setenv(LANGUAGE="fr")
+data(ctd)
+plot(ctd)
+@
+
+Most of the translated items were found by online dictionaries, and so they may
+be incorrect for oceanographic usage; readers with knowledge of how words such
+as ``Pitch'' and ``Roll'' should be written in nautical terms in French,
+Spanish, or Simplified Chinese are asked to contact the author to help in the
+translation effort.
 
 \section{The future of oce}
 
