@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 08:59\n"
+"POT-Creation-Date: 2014-02-23 09:24\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -1392,6 +1392,27 @@ msgstr ") does not match length of y ("
 
 msgid "cannot evaluate adorn='"
 msgstr "cannot evaluate adorn='"
+
+msgid "Size Class #"
+msgstr "Clase de tamaño"
+
+msgid "Laser Trans. Sensor"
+msgstr "Sensor de trans. de láser"
+
+msgid "Voltage"
+msgstr "Voltaje"
+
+msgid "Ext. Aux. Input"
+msgstr "Entrada auxiliar externa"
+
+msgid "Laser Ref. Sensor"
+msgstr "Sensor de ref. de láser"
+
+msgid "Transmission %"
+msgstr "Transmisión %"
+
+msgid "Beam-C [1/m]"
+msgstr "Haz-C [1/m]"
 
 msgid "data file must hold at least 42 space-separated columns"
 msgstr "data file must hold at least 42 space-separated columns"

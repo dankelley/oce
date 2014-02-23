@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 08:59\n"
+"POT-Creation-Date: 2014-02-23 09:24\n"
 "PO-Revision-Date: 2014-02-22 11:49-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-zh\n"
@@ -1322,6 +1322,27 @@ msgstr ""
 
 msgid "cannot evaluate adorn='"
 msgstr ""
+
+msgid "Size Class #"
+msgstr "大小类"
+
+msgid "Laser Trans. Sensor"
+msgstr "激光传输传感器"
+
+msgid "Voltage"
+msgstr "电压"
+
+msgid "Ext. Aux. Input"
+msgstr "外部辅助输入"
+
+msgid "Laser Ref. Sensor"
+msgstr "激光参考传感器"
+
+msgid "Transmission %"
+msgstr "传输％的"
+
+msgid "Beam-C [1/m]"
+msgstr "束-C [1/m]"
 
 msgid "data file must hold at least 42 space-separated columns"
 msgstr ""
