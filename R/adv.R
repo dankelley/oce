@@ -682,13 +682,17 @@ setMethod(f="plot",
                       q <- as.numeric(x@data$q[,1])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(a, c, xlab="Amplitude", ylab="Correlation",
+                          plot(a, c,
+                               xlab=gettext("Amplitude", domain="R-oce"),
+                               ylab=gettext("Correlation", domain="R-oce"),
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
                                main=main,
                                debug=debug-1)
                       } else {
-                          smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          smoothScatter(a, c, nbin=64,
+                                        xlab=gettext("Amplitude", domain="R-oce"),
+                                        ylab=gettext("Correlation", domain="R-oce"),
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
                                         main=main,
@@ -700,13 +704,17 @@ setMethod(f="plot",
                       q <- as.numeric(x@data$q[,2])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(a, c, xlab="Amplitude", ylab="Correlation",
+                          plot(a, c,
+                               xlab=gettext("Amplitude", domain="R-oce"),
+                               ylab=gettext("Correlation", domain="R-oce"),
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
                                main=main,
                                debug=debug-1)
                       } else {
-                          smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          smoothScatter(a, c, nbin=64,
+                                        xlab=gettext("Amplitude", domain="R-oce"),
+                                        ylab=gettext("Correlation", domain="R-oce"),
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
                                         main=main,
@@ -718,12 +726,16 @@ setMethod(f="plot",
                       q <- as.numeric(x@data$q[,3])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(a, c, xlab="Amplitude", ylab="Correlation",
+                          plot(a, c,
+                               xlab=gettext("Amplitude", domain="R-oce"),
+                               ylab=gettext("Correlation", domain="R-oce"),
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
                                main=main)
                       } else {
-                          smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          smoothScatter(a, c, nbin=64,
+                                        xlab=gettext("Amplitude", domain="R-oce"),
+                                        ylab=gettext("Correlation", domain="R-oce"),
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
                                         main=main)
@@ -748,12 +760,17 @@ setMethod(f="plot",
                       par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                       n <- length(x@data$time)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(x@data$v[,1], x@data$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
+                          plot(x@data$v[,1], x@data$v[,2],
+                               xlab=resizableLabel("u"),
+                               ylab=resizableLabel("v"),
+                               type=type,
                                cex=cex, cex.axis=cex.axis, cex.main=cex.main, asp=1,
                                xlim=if(gave.xlim)xlim, ylim=if(gave.ylim) ylim,
                                lwd=lwd[w], col=col[w], main=main, ...)
                       } else {
-                          smoothScatter(x@data$v[,1], x@data$v[,2], xlab="u [m/s]", ylab="v [m/s]",
+                          smoothScatter(x@data$v[,1], x@data$v[,2],
+                                        xlab=resizableLabel("u"),
+                                        ylab=resizableLabel("v"),
                                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                         asp=1, xlim=xlim, ylim=ylim, ...)
                       }

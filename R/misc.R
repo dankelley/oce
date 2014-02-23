@@ -925,70 +925,69 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- full
         }
     } else if (item == "heading") {
+        var <- gettext("Heading", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Heading [deg]", domain="R-oce")
-            abbreviated <- gettext("Heading")
+            full <- bquote(.(var)*" [deg]")
         } else {
-            full <- gettext("Heading (deg)", domain="R-oce")
-            abbreviated <- gettext("Heading")
+            full <- bquote(.(var)*" (deg)")
         }
+        abbreviated <- full
     } else if (item == "pitch") {
+        var <- gettext("Pitch", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Pitch [deg]", domain="R-oce")
-            abbreviated <- gettext("Pitch", domain="R-oce")
+            full <- bquote(.(var)*" [deg]")
         } else {
-            full <- gettext("Pitch (deg)", domain="R-oce")
-            abbreviated <- gettext("Pitch", domain="R-oce")
+            full <- bquote(.(var)*" (deg)")
         }
+        abbreviated <- full
     } else if (item == "roll") {
+        var <- gettext("Roll", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Roll [deg]", domain="R-oce")
-            abbreviated <- gettext("Roll", domain="R-oce")
+            full <- bquote(.(var)*" [deg]")
         } else {
-            full <- gettext("Roll (deg)", domain="R-oce")
-            abbreviated <- gettext("Roll", domain="R-oce")
+            full <- bquote(.(var)*" (deg)")
         }
+        abbreviated <- full
     } else if (item == "u") {
+        var <- gettext("u", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("u [m/s]", domain="R-oce")
-            abbreviated <- gettext("u [m/s]", domain="R-oce")
+            full <- bquote(.(var)*" ["*m/s*"]")
         } else {
-            full <- gettext("u (m/s)")
-            abbreviated <- gettext("u (m/s)", domain="R-oce")
+            full <- bquote(.(var)*" ("*m/s*")")
         }
+        abbreviated <- full
     } else if (item == "v") {
+        var <- gettext("v", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("v [m/s]", domain="R-oce")
-            abbreviated <- gettext("v [m/s]", domain="R-oce")
+            full <- bquote(.(var)*" ["*m/s*"]")
         } else {
-            full <- gettext("v (m/s)", domain="R-oce")
-            abbreviated <- gettext("v (m/s)", domain="R-oce")
+            full <- bquote(.(var)*" ("*m/s*")")
         }
+        abbreviated <- full
     } else if (item == "w") {
+        var <- gettext("w", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("w [m/s]", domain="R-oce")
-            abbreviated <- gettext("w [m/s]", domain="R-oce")
+            full <- bquote(.(var)*" ["*m/s*"]")
         } else {
-            full <- gettext("w (m/s)", domain="R-oce")
-            abbreviated <- gettext("w (m/s)", domain="R-oce")
+            full <- bquote(.(var)*" ("*m/s*")")
         }
+        abbreviated <- full
     } else if (item == "eastward") {
+        var <- gettext("Eastward", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Eastward wind [m/s]", domain="R-oce")
-            abbreviated <- gettext("u [m/s]", domain="R-oce")
+            full <- bquote(.(var)*" ["*m/s*"]")
         } else {
-            full <- gettext("Eastward wind (m/s)", domain="R-oce")
-            abbreviated <- gettext("u (m/s)", domain="R-oce")
+            full <- bquote(.(var)*" ("*m/s*")")
         }
+        abbreviated <- full
     } else if (item == "northward") {
-        ## FIXME: why giving "wind" and unit here?  Which functions use this?
+        var <- gettext("Northward", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
-            full <- gettext("Northward wind [m/s]", domain="R-oce")
-            abbreviated <- gettext("v [m/s]", domain="R-oce")
+            full <- bquote(.(var)*" ["*m/s*"]")
         } else {
-            full <- gettext("Northward wind (m/s)", domain="R-oce")
-            abbreviated <- gettext("v (m/s)", domain="R-oce")
+            full <- bquote(.(var)*" ("*m/s*")")
         }
+        abbreviated <- full
     } else if (item == "depth") {
         var <- gettext("Depth", domain="R-oce")
         unit <- gettext("m", domain="R-oce")

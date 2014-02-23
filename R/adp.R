@@ -1329,19 +1329,28 @@ setMethod(f="plot",
                       oceDebug(debug, "uv type plot\n")
                       if (n < 5000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                           if ("type" %in% names(dots)) {
-                              plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (gave.col) col else "black",
+                              plot(u, v,
+                                   xlab=resizableLabel("u"),
+                                   ylab=resizableLabel("v"),
+                                   asp=1, col=if (gave.col) col else "black",
                                    xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                    ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                           } else {
-                              plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1,
+                              plot(u, v,
+                                   xlab=resizableLabel("u"),
+                                   ylab=resizableLabel("v"),
+                                   type='n', asp=1,
                                    xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                    ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                               points(u, v, cex=cex/2, col=if (gave.col) col else "black")
                           }
                       } else {
-                          smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
+                          smoothScatter(u, v,
+                                        xlab=resizableLabel("u"),
+                                        ylab=resizableLabel("v"),
+                                        asp=1,
                                         xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                         ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                         ...)

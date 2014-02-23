@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 09:46\n"
+"POT-Creation-Date: 2014-02-23 15:23\n"
 "PO-Revision-Date: 2014-02-21 11:34-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-fr\n"
@@ -575,6 +575,12 @@ msgid "unknown 'which':"
 msgstr ""
 
 msgid "no salinity in this ADV object"
+msgstr ""
+
+msgid "Amplitude"
+msgstr ""
+
+msgid "Correlation"
 msgstr ""
 
 msgid "there is no analog1 signal in this ADV object"
@@ -1643,61 +1649,28 @@ msgstr ""
 msgid "Along-track Distance"
 msgstr "Distance le long-piste"
 
-msgid "Heading [deg]"
-msgstr ""
-
 msgid "Heading"
-msgstr ""
-
-msgid "Heading (deg)"
-msgstr ""
-
-msgid "Pitch [deg]"
-msgstr ""
+msgstr "Direction"
 
 msgid "Pitch"
-msgstr ""
-
-msgid "Pitch (deg)"
-msgstr ""
-
-msgid "Roll [deg]"
-msgstr ""
+msgstr "Tanguer"
 
 msgid "Roll"
+msgstr "Rouler"
+
+msgid "u"
 msgstr ""
 
-msgid "Roll (deg)"
+msgid "v"
 msgstr ""
 
-msgid "u [m/s]"
+msgid "w"
 msgstr ""
 
-msgid "u (m/s)"
+msgid "Eastward"
 msgstr ""
 
-msgid "v [m/s]"
-msgstr ""
-
-msgid "v (m/s)"
-msgstr ""
-
-msgid "w [m/s]"
-msgstr ""
-
-msgid "w (m/s)"
-msgstr ""
-
-msgid "Eastward wind [m/s]"
-msgstr ""
-
-msgid "Eastward wind (m/s)"
-msgstr ""
-
-msgid "Northward wind [m/s]"
-msgstr ""
-
-msgid "Northward wind (m/s)"
+msgid "Northward"
 msgstr ""
 
 msgid "Depth"
