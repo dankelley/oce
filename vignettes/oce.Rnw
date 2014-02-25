@@ -493,8 +493,8 @@ jpeg("sealevel.jpg", quality=70, width=800, height=600, pointsize=20)
 <<>>=
 library(oce)
 #sealevel <- read.oce("../../tests/h275a96.dat")
-data(sealevelHalifax)
-plot(sealevelHalifax)
+data(sealevel)
+plot(sealevel)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
@@ -536,13 +536,13 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 %%%
 %%% <<label=tideplot,eval=FALSE>>=
 %%% library(oce)
-%%% data(sealevelHalifax)
-%%% tide <- tidem(sealevelHalifax)
+%%% data(sealevel)
+%%% tide <- tidem(sealevel)
 %%% days <- 15 # focus on these days at end of series
-%%% n <- length(sealevelHalifax$data$elevation)
+%%% n <- length(sealevel$data$elevation)
 %%% i <- seq(n-24*days, n)
-%%% t   <- sealevelHalifax$data$t[i]
-%%% eta <- sealevelHalifax$data$elevation[i]
+%%% t   <- sealevel$data$t[i]
+%%% eta <- sealevel$data$elevation[i]
 %%% eta.pred <- predict(tide)[i]
 %%% plot(t, eta, type="l", ylim=c(-0.5,3))
 %%% abline(h=0, col="pink")
@@ -639,6 +639,26 @@ in the St Lawrence Estuary Internal Wave Experiment.
 \end{figure}
 
 
+\section{Working in non-English languages}
+
+Many of the \verb@oce@ plotting functions produce axis labels that can be
+displayed in languages other than English.  At the time of writing, French,
+Spanish, and Mandarin are supported in at least a rudimentary way.  Setting the
+language can be done at the general system level, or within R; the latter is
+illustrated below for French (which is coded \verb@"fr"@ in the ISO 639 language
+standard).
+<<>>=
+library(oce)
+Sys.setenv(LANGUAGE="fr")
+data(ctd)
+plot(ctd)
+@
+
+Most of the translated items were found by online dictionaries, and so they may
+be incorrect for oceanographic usage.  Readers can help out in the translation
+effort, if they have knowledge of how nautical words such as ``Pitch'' and
+``Roll'' and technical terms such as ``Absolute Salinity'' and ``Potential
+Temperature'' should be written in various languages.
 
 \section{The future of oce}
 
@@ -647,10 +667,12 @@ been using lately in his research. New data types will be added as the need
 arises in that work, but the author would also be happy to add other data types
 that are likely to prove useful to the Oceanographic community.  (The data types
 need not be restricted to Physical Oceanography, but the author will need some
-help in dealing with other types of data, given his research focus.)
-Two principles will guide the addition of data types and functions:
-(a) the need, as perceived by the author or by other contributors and
-(b) the ease with which the additions can be made.
+help in dealing with other types of data, given his research focus.) 
+
+Two principles will guide the addition of data types and functions: (a) the
+need, as perceived by the author or by other contributors and (b) the ease with
+which the additions can be made.  One might call this development by triage, by
+analogy to the scheme used in Emergency Rooms to focus medical effort.
 
 % As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing
 % with measurements of turbulence is a high priority for the author, for
@@ -770,9 +792,9 @@ The author can verify that the strongest winds occurred a bit after midnight -- 
 he moved to a room without windows, in fear of flying glass.
 <<>>=
 library(oce)
-data(sealevelHalifax)
+data(sealevel)
 # Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
-plot(sealevelHalifax,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
+plot(sealevel,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
 abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 @
@@ -782,11 +804,11 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="re
 The first step is to load the data.
 <<>>=
 library(oce)
-data(sealevelHalifax)
+data(sealevel)
 @
 Next, we extract the elevation data
 <<>>=
-elevation <- sealevelHalifax[["elevation"]]
+elevation <- sealevel[["elevation"]]
 @
 and then we return to standard R processing, to compute the spectrum, and 
 indicate the M2 tide.

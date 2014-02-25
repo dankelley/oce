@@ -105,7 +105,7 @@ setMethod(f="plot",
                   }
               }
               if (!inherits(x, "tidem"))
-                  stop("method is only for tidal analysis objects")
+                  stop("method is only for objects of class '", "tidem", "'")
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (lw > 1) on.exit(par(opar))

@@ -103,7 +103,7 @@ setMethod(f="plot",
                               ...)
           {
               if (!inherits(x, "windrose"))
-                  stop("method is only for wind-rose objects")
+                  stop("method is only for objects of class '", "windrose", "'")
               type <- match.arg(type)
               convention <- match.arg(convention)
               nt <- length(x@data$theta)

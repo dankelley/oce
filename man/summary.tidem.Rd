@@ -35,8 +35,8 @@
 \examples{
 \dontrun{
 library(oce)
-data(sealevelHalifax)
-tide <- tidem(sealevelHalifax)
+data(sealevel)
+tide <- tidem(sealevel)
 summary(tide)
 }
 }

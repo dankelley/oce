@@ -54,6 +54,8 @@ lines(time, detided, col="red")
 
 \seealso{The documentation for \code{sealevel-class} in the Oce package
     explains the structure of sea-level objects, and also outlines the other
-    functions dealing with them.}
+    functions dealing with them.  Data for Halifax harbour are stored in
+    \code{\link{sealevel}}.}
 
 \keyword{datasets}
+

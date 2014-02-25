@@ -24,9 +24,9 @@
 
 \examples{
 library(oce)
-data(sealevelHalifax)
-plot(sealevelHalifax)
-plot(subset(sealevelHalifax, time < mean(range(sealevelHalifax[['time']]))))
+data(sealevel)
+plot(sealevel)
+plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
 }
 
 \author{Dan Kelley}

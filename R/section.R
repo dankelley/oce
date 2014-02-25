@@ -433,12 +433,18 @@ setMethod(f="plot",
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
                       if (!is.null(map.xlim)) {
                           map.xlim <- sort(map.xlim)
-                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       } else if (!is.null(map.ylim)) {
                           map.ylim <- sort(map.ylim)
-                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       } else {
-                          plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       }
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
@@ -539,10 +545,7 @@ setMethod(f="plot",
                           if (which.ytype==1) {
                               resizableLabel("p")
                           } else {
-                              if (getOption("oceUnitBracket") == "[")
-                                  "Depth [m]"
-                              else
-                                  "Depth (m)"
+                              resizableLabel("depth")
                           }
                       }
                       if (is.null(at)) {
@@ -551,11 +554,12 @@ setMethod(f="plot",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
+                               ## FIXME: below should use gettext() or resizableLabel.
                                xlab=switch(which.xtype, 
-                                           if (getOption("oceUnitBracket") == "[") "Distance [km]" else "Distance (km)",
-                                           if (getOption("oceUnitBracket") == "[") "Along-track Distance [km]" else "Along-track Distance (km)",
-                                           "Longitude",
-                                           "Latitude"),
+                                           resizableLabel("distance km"),
+                                           resizabelLabel("along-track distance km"),
+                                           gettext("Longitude", domain="R-oce"),
+                                           gettext("Latitude", domain="R-oce")),
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)
@@ -775,7 +779,7 @@ setMethod(f="plot",
                   oceDebug(debug, "\b\b} # plotSubsection()\n")
               }
               if (!inherits(x, "section"))
-                  stop("method is only for section objects")
+                  stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
               which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude"), nomatch=0)
@@ -1252,7 +1256,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
     oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(section, "section"))
-        stop("method is only for section objects")
+        stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
     if (method == "spline") {
         stn1pressure <- section[["station", 1]][["pressure"]]

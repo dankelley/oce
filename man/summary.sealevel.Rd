@@ -28,8 +28,8 @@
 
 \examples{
 library(oce)
-data(sealevelHalifax)
-summary(sealevelHalifax)
+data(sealevel)
+summary(sealevel)
 }
 
 \author{Dan Kelley}

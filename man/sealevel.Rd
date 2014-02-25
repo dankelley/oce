@@ -1,8 +1,8 @@
-\name{sealevelHalifax}
+\name{sealevel}
 
 \docType{data}
 
-\alias{sealevelHalifax}
+\alias{sealevel}
 
 \title{Sea-level data set, from Halifax Harbour}
 
@@ -13,7 +13,7 @@
     that are not mentioned on the data archive website, the record ends on the
     8th of October.}
 
-\usage{data(sealevelHalifax)}
+\usage{data(sealevel)}
 
 \source{The data were downloaded from MEDS, and read with \code{read.oce} in
     the Oce package.  The sign of the longitude was flipped before storing.}
@@ -26,16 +26,18 @@
 \examples{
 \dontrun{
 library(oce)
-data(sealevelHalifax)
-plot(sealevelHalifax)
-plot(sealevelHalifax, which=1, xlim=as.POSIXct(c("2003-01-01","2003-02-01")))
+data(sealevel)
+plot(sealevel)
+plot(sealevel, which=1, xlim=as.POSIXct(c("2003-01-01","2003-02-01")))
 }
 }
 
 \seealso{The documentation for \code{sealevel-class} in the Oce package
     explains the structure of sealevel objects, and also outlines the other
-    functions dealing with them.}
+    functions dealing with them.  Data for Tuktoyaktuk are stored in
+    \code{\link{sealevelTuktoyaktuk}}.}
 
 \author{Dan Kelley}
 
 \keyword{datasets}
+

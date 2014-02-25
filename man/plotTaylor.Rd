@@ -52,10 +52,10 @@
 
 \examples{
 library(oce)
-data(sealevelHalifax)
-x <- elevation(sealevelHalifax)
-M2 <- predict(tidem(sealevelHalifax, constituents="M2"))
-S2 <- predict(tidem(sealevelHalifax, constituents=c("S2")))
+data(sealevel)
+x <- elevation(sealevel)
+M2 <- predict(tidem(sealevel, constituents="M2"))
+S2 <- predict(tidem(sealevel, constituents=c("S2")))
 plotTaylor(x, cbind(M2, S2))
 }
 

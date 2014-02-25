@@ -352,7 +352,7 @@ swDynamicHeight <- function(x, referencePressure=2000)
     } else if (inherits(x, "ctd")) {
         return(height(x, referencePressure))
     } else {
-        stop("method only works for 'section' or 'ctd' objects")
+        stop("method is only for objects of class '", "section", " or '", "ctd", "'")
     }
 }
 

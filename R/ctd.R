@@ -247,7 +247,7 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
 {
     oceDebug(debug, "\bctdDecimate(x, p, method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
+        stop("method is only for objects of class '", "ctd", "'")
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
@@ -363,7 +363,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
              ", direction=\"", direction, "\"",
              ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
+        stop("method is only for objects of class '", "ctd", "'")
     direction <- match.arg(direction)
     pressure <- x[["pressure"]]
     dp <- diff(pressure)
@@ -443,7 +443,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
 {
     oceDebug(debug, "\b\bctdTrim() {\n")
     if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
+        stop("method is only for objects of class '", "ctd", "'")
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
@@ -639,7 +639,7 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 write.ctd <- function(object, file=stop("'file' must be specified"))
 {
     if (!inherits(object, "ctd"))
-        stop("method is only for ctd objects")
+        stop("method is only for objects of class '", "ctd", "'")
     if (is.character(file)) {
         if (file == "")
             stop("'file' must be a non-empty string")
@@ -1104,7 +1104,7 @@ setMethod(f="plot",
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                              mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                              mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
                           if (!is.null(x@metadata$startTime))
                               mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
                           ##if (!is.null(x@metadata$scientist))
@@ -1150,7 +1150,7 @@ plotScan <- function(x,
                      ...)
 {
     if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
+        stop("method is only for objects of class '", "ctd", "'")
     if (3 == length(mgp)) par(mgp=mgp)
     par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
 
@@ -1178,7 +1178,7 @@ plotScan <- function(x,
          xlab=name, ylab=resizableLabel("p", "y"),
          yaxs='r',
          type=type)
-    mtext(paste("Station", x@metadata$station), side=3, adj=1, cex=par('cex'))
+    mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=1, cex=par('cex'))
     mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
     if (1 <= adorn.length) {
         t <- try(eval(adorn[1]), silent=TRUE)
@@ -2219,7 +2219,7 @@ plotTS <- function (x,
         if (eos == "teos")
             ylab <- resizableLabel("conservative temperature", "y")
         else
-            ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
+            ylab <- if (inSitu) resizableLabel("T", "y") else resizableLabel("theta", "y")
     }
     if (useSmoothScatter) {
         smoothScatter(salinity, y,
@@ -2394,7 +2394,8 @@ plotProfile <- function (x,
         }
         oceDebug(debug, "} # plotJustProfile\n")
     }                                  # plotJustProfile
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for objects of class '", "ctd", "'")
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)

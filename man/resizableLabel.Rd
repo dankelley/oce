@@ -12,10 +12,14 @@ resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "conservative temperature", "absolute salinity",
   "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
   "tritium", "spice", "fluorescence",
-  "p", "z", "distance", "heading", "pitch", "roll",
+  "p", "z",
+  "distance", "distance km", "along-track distance km",
+  "heading", "pitch", "roll",
   "u", "v", "w", "speed", "direction",
-  "eastward", "northward", "depth", "elevation"),
-  axis=c("x", "y"))}
+  "eastward", "northward", "depth", "elevation",
+  "latitude", "longitude",
+  "frequency cph", "spectral density m2/cph"),
+               axis=c("x", "y"))}
 
 \arguments{
   \item{item}{code for the label.}
