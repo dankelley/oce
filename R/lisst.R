@@ -60,15 +60,33 @@ setMethod(f="plot",
               time <- x[["time"]]
               for (w in 1:nw) {
                   ww <- which[w]
-                  if      (ww <= 32) oce.plot.ts(time, x@data[[which[w]]], ylab=paste("Size Class #", ww, sep=""), tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 33) oce.plot.ts(time, x[["lts"]], ylab="Laser Trans. Sensor", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 34) oce.plot.ts(time, x[["voltage"]], ylab="Voltage", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 35) oce.plot.ts(time, x[["aux"]], ylab="Ext. Aux. Input", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 36) oce.plot.ts(time, x[["lrs"]], ylab="Laser Ref. Sensor", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 37) oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p"), tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 38) oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T"), tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 41) oce.plot.ts(time, x[["transmission"]], ylab="Transmission [%]", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 42) oce.plot.ts(time, x[["beam"]], ylab="Beam-C [1/m]", tformat=tformat, debug=debug-1, ...)
+                  if      (ww <= 32) oce.plot.ts(time, x@data[[which[w]]],
+                                                 ylab=paste(gettext("Size Class #", domain="R-oce"), ww, sep=""),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 33) oce.plot.ts(time, x[["lts"]],
+                                                 ylab=gettext("Laser Trans. Sensor", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 34) oce.plot.ts(time, x[["voltage"]],
+                                                 ylab=gettext("Voltage", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 35) oce.plot.ts(time, x[["aux"]],
+                                                 ylab=gettext("Ext. Aux. Input", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 36) oce.plot.ts(time, x[["lrs"]],
+                                                 ylab=gettext("Laser Ref. Sensor", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 37) oce.plot.ts(time, x[["pressure"]],
+                                                 ylab=resizableLabel("p"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 38) oce.plot.ts(time, x[["temperature"]],
+                                                 ylab=resizableLabel("T"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 41) oce.plot.ts(time, x[["transmission"]],
+                                                 ylab=gettext("Transmission %", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 42) oce.plot.ts(time, x[["beam"]],
+                                                 ylab=gettext("Beam-C [1/m]", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
               }
           })
 

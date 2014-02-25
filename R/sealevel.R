@@ -143,7 +143,7 @@ setMethod(f="plot",
               {
                   title <- ""
                   if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
-                      title <- paste(title, "Station ",
+                      title <- paste(title, gettext("Station ", domain="R-oce"),
                                      if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
                                      " ",
                                      if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
@@ -171,7 +171,7 @@ setMethod(f="plot",
               }
 
               if (!inherits(x, "sealevel"))
-                  stop("method is only for sealevel objects")
+                  stop("method is only for objects of class '", "sealevel", "'")
               opar <- par(no.readonly = TRUE)
               par(mgp=mgp, mar=mar)
               lw <- length(which)
@@ -216,7 +216,9 @@ setMethod(f="plot",
                   oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
                   if (which2[w] == 1) {
                       plot(x@data$time, x@data$elevation-MSL,
-                           xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
+                           xlab="",
+                           ylab=resizableLabel("elevation"),
+                           type='l', ylim=ylim, xaxs="i",
                            lwd=0.5, axes=FALSE, ...)
                       tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
                       box()
@@ -240,7 +242,9 @@ setMethod(f="plot",
                                      min(xx@data$elevation-MSL,na.rm=TRUE))/2)[2]
                       ylim <- c(-tmp,tmp)
                       plot(xx@data$time, xx@data$elevation - MSL,
-                           xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
+                           xlab="",
+                           ylab=resizableLabel("elevation"),
+                           type='l',ylim=ylim, xaxs="i",
                            axes=FALSE)
                       oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
                       yax <- axis(2)
@@ -259,7 +263,9 @@ setMethod(f="plot",
                           xlim <- c(0, 0.1) # FIXME: should be able to set this
                           ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
                           plot(s$freq,s$spec,xlim=xlim, ylim=ylim,
-                               xlab="Frequency [cph]", ylab="Spectral density [m^2/cph]",
+                               xlab=resizableLabel("frequency cph"),
+                               ylab=resizableLabel("spectral density m2/cph"),
+                               #[m^2/cph]",
                                type='l',log="y")
                           grid()
                           drawConstituents()
@@ -276,7 +282,7 @@ setMethod(f="plot",
                           e <- x@data$elevation - mean(x@data$elevation)
                           par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
                           plot(s$freq, cumSpec,
-                               xlab="Frequency [ cph ]",
+                               xlab=resizableLabel("frequency cph"),
                                ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
                                type='l',xlim=c(0,0.1))
                           if (adornLength > 3) {

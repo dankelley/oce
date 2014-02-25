@@ -140,7 +140,7 @@ setMethod(f="plot",
                                ...)
           {
               if (!inherits(x, "drifter"))
-                  stop("method is only for drifter objects")
+                  stop("method is only for objects of class '", "drifter", "'")
               oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
@@ -184,7 +184,7 @@ setMethod(f="plot",
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
                            type=type, cex=cex, pch=pch,
                            col=if (missing(col)) "black" else col,
-                           xlab="Longitude", ylab="Latitude", ...)
+                           xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
                       if (!missing(coastline)) {
                           polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
                           if (type[w] == 'l')

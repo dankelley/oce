@@ -1,4 +1,6 @@
 0.9-14
+- rename 'sealevelHalifax' dataset as 'sealevel'
+- translate some axis names (Spanish, French and Mandarin)
 - plotProfile() now has ytype="depth"
 - mapImage() and friends now demand a map exists first
 - drawPalette() gets arguments levels and cex.axis

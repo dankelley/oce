@@ -110,7 +110,7 @@ setMethod(f="plot",
                               ...)
           {
               if (!inherits(x, "topo"))
-                  stop("method is only for topo objects")
+                  stop("method is only for objects of class '", "topo", "'")
               oceDebug(debug, "\b\bplot.topo() {\n")
 
               opar <- par(no.readonly = TRUE)

@@ -419,15 +419,20 @@ is.enu <- function(x)
 
 beamName <- function(x, which)
 {
-    if (x@metadata$oceCoordinate == "beam")
-        c("beam 1", "beam 2", "beam 3", "beam 4")[which]
-    else if (x@metadata$oceCoordinate == "enu")
-        c("east", "north", "up", "error")[which]
-    else if (x@metadata$oceCoordinate == "xyz")
+    if (x@metadata$oceCoordinate == "beam") {
+        paste(gettext("beam", domain="R-oce"), 1:4)[which]
+    } else if (x@metadata$oceCoordinate == "enu") {
+        c(gettext("east", domain="R-oce"),
+          gettext("north", domain="R-oce"),
+          gettext("up", domain="R-oce"),
+          gettext("error", domain="R-oce"))[which]
+    } else if (x@metadata$oceCoordinate == "xyz") {
         c("u", "v", "w", "e")[which]
-    else if (x@metadata$oceCoordinate == "other")
+    } else if (x@metadata$oceCoordinate == "other") {
         c("u'", "v'", "w'", "e")[which]
-    else " "
+    } else {
+        " "
+    }
 }
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -514,7 +519,7 @@ setMethod(f="plot",
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
               if (!inherits(x, "adp"))
-                  stop("method is only for adp objects")
+                  stop("method is only for objects of class '", "adp", "'")
               if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
                   warning("there are no profiles in this dataset")
                   return
@@ -1273,21 +1278,25 @@ setMethod(f="plot",
                       } else if (which[w] == 24) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,1], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 1), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 1),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                       } else if (which[w] == 25) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,2], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 2), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 2),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                       } else if (which[w] == 26) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,3], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 3), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 3),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                           ##grid()
                       } else if (which[w] == 27) {
                           if (x@metadata$numberOfBeams > 3) {
                               par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                               value <- apply(x@data$v[,,4], 2, mean, na.rm=TRUE)
-                              plot(value, x@data$distance, xlab=beamName(x, 4), ylab="Distance [m]", type='l', ...)
+                              plot(value, x@data$distance, xlab=beamName(x, 4),
+                                   ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                               ##grid()
                           } else {
                               warning("cannot use which=27 because this device did not have 4 beams")
@@ -1320,19 +1329,28 @@ setMethod(f="plot",
                       oceDebug(debug, "uv type plot\n")
                       if (n < 5000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                           if ("type" %in% names(dots)) {
-                              plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (gave.col) col else "black",
+                              plot(u, v,
+                                   xlab=resizableLabel("u"),
+                                   ylab=resizableLabel("v"),
+                                   asp=1, col=if (gave.col) col else "black",
                                    xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                    ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                           } else {
-                              plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1,
+                              plot(u, v,
+                                   xlab=resizableLabel("u"),
+                                   ylab=resizableLabel("v"),
+                                   type='n', asp=1,
                                    xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                    ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                               points(u, v, cex=cex/2, col=if (gave.col) col else "black")
                           }
                       } else {
-                          smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
+                          smoothScatter(u, v,
+                                        xlab=resizableLabel("u"),
+                                        ylab=resizableLabel("v"),
+                                        asp=1,
                                         xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                         ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                         ...)
@@ -1450,7 +1468,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 {
     oceDebug(debug, "\b\bbeamUnspreadAdp(...) {\n")
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     ## make compatible with old function name (will remove in Jan 2013)
     if (!is.null(x@metadata$oceBeamUnattenuated) && x@metadata$oceBeamUnattenuated) {
         warning("the beams are already unspreaded in this dataset.")
@@ -1579,7 +1597,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "\b\bxyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates")
     res <- x
@@ -1744,7 +1762,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "enu")
         stop("input must be in enu coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     res <- x
