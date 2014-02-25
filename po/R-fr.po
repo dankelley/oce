@@ -163,13 +163,13 @@ msgid "beam"
 msgstr "rayon"
 
 msgid "east"
-msgstr "est"
+msgstr "vers l'est"
 
 msgid "north"
-msgstr "nord"
+msgstr "vers le nord"
 
 msgid "up"
-msgstr "haut"
+msgstr "vers le haut"
 
 msgid "error"
 msgstr "erreur"
@@ -1677,7 +1677,7 @@ msgid "Depth"
 msgstr "Profondeur"
 
 msgid "Elevation"
-msgstr "Elevation"
+msgstr "Hauteur d l'eau"
 
 msgid "Speed"
 msgstr ""
