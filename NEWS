@@ -1,4 +1,5 @@
 0.9-14
+- plot.section() grids the data if needed
 - rename 'sealevelHalifax' dataset as 'sealevel'
 - translate some axis names (Spanish, French and Mandarin)
 - plotProfile() now has ytype="depth"

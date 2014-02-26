@@ -390,8 +390,39 @@ setMethod(f="plot",
               drawPoints <- ztype == "points"
               coastline <- match.arg(coastline)
               legend.loc <- match.arg(legend.loc)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ztype=\"",
-                       ztype, "\", ...) {\n", sep="")
+
+              ## Make 'which' be numeric, to simplify following code
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+              lw <- length(which)
+              which <- ocePmatch(which,
+                                 list(temperature=1, salinity=2, 
+                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                      phosphate=7, silicate=8, data=20, map=99))
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+
+
+              oceDebug(debug, "\bplot.section(..., which=c(",
+                       paste(which, collapse=","), "), eos=\"", eos,
+                       "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+
+             ## Ensure data on levels, for plot types requiring that
+              if (which != "data" && which != 'map') {
+                  p1 <- x[["station", 1]][["pressure"]]
+                  np1 <- length(p1)
+                  numStations <- length(x@data$station)
+                  for (ix in 2:numStations) {
+                      thisStation <- x@data$station[[ix]]
+                      thisPressure <- thisStation[["pressure"]]
+                      if ("points" != ztype && 
+                          np1 != length(thisPressure) ||
+                          any(p1 != x[["station", ix]][["pressure"]])) {
+                          x <- sectionGrid(x)
+                          warning("In plot.section() : gridded the data for plotting\n", call.=FALSE)
+                          break
+                      }
+                  }
+              }
+
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
               haveData <- sapply(x@data$station,
                                  function(stn) 0 < length(stn[['pressure']]))
@@ -400,6 +431,10 @@ setMethod(f="plot",
               x@metadata$latitude <- x@metadata$latitude[haveData]
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$date <- x@metadata$date[haveData]
+
+ 
+
+
 
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
@@ -799,18 +834,19 @@ setMethod(f="plot",
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
 
-              ## Check that pressures coincide
-              if (length(which) > 1 || (which != "data" && which != 'map')) {
-                  p1 <- firstStation@data$pressure
-                  np1 <- length(p1)
-                  for (ix in 2:numStations) {
-                      thisStation <- x@data$station[[stationIndices[ix]]]
-                      thisPressure <- thisStation[["pressure"]]
-                      if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
-                          stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
-                      }
-                  }
-              }
+              ## Ensure data on levels, for plot types requiring that
+              ##if (length(which) > 1 || (which != "data" && which != 'map')) { ## FIXME: why the length here?
+              ##    p1 <- firstStation@data$pressure
+              ##    np1 <- length(p1)
+              ##    for (ix in 2:numStations) {
+              ##        thisStation <- x@data$station[[stationIndices[ix]]]
+              ##        thisPressure <- thisStation[["pressure"]]
+              ##        if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
+              ##            stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
+              ##        }
+              ##    }
+              ##}
+
               zz <- matrix(nrow=numStations, ncol=num.depths)
               xx <- array(NA, numStations)
               yy <- array(NA, num.depths)
@@ -861,14 +897,7 @@ setMethod(f="plot",
                   stop("unknown ytype")
               }
 
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-              lw <- length(which)
-              which <- ocePmatch(which,
-                                 list(temperature=1, salinity=2, 
-                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                      phosphate=7, silicate=8, data=20, map=99))
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-              par(mgp=mgp, mar=mar)
+             par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
                       layout(matrix(1:4, nrow=2, byrow=TRUE))
