@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-23 15:23\n"
+"POT-Creation-Date: 2014-02-28 14:54\n"
 "PO-Revision-Date: 2014-02-22 11:49-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-zh\n"
@@ -2131,6 +2131,9 @@ msgstr ""
 msgid "'station' is not a station"
 msgstr ""
 
+msgid "In plot.section() : gridded the data for plotting"
+msgstr ""
+
 msgid "coastline must be a character string"
 msgstr ""
 
@@ -2160,13 +2163,6 @@ msgid ""
 msgstr ""
 
 msgid "cannot plot a section containing fewer than 2 stations"
-msgstr ""
-
-msgid ""
-"plot.section() requires stations to have identical pressure levels.\n"
-"  Please use e.g.\n"
-"\tsectionGridded <- sectionGrid(section)\n"
-"  to create a uniform grid, and then you will be able to plot the section."
 msgstr ""
 
 msgid ""
