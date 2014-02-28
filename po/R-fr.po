@@ -1692,7 +1692,7 @@ msgid "Longitude"
 msgstr "Longitude"
 
 msgid "Frequency"
-msgstr ""
+msgstr "Fréquence"
 
 msgid "cph"
 msgstr ""
