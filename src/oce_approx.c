@@ -19,7 +19,13 @@
    library(oce)
    data(RRprofile)
    zz <- seq(0,2000,5)
-   system("R CMD SHLIB oce_approx.c");dyn.load("oce_approx.so")
+
+
+   x <- c(0, 1, 2, 3, 3, 4, 5,  6,  6,  7,   8,   9)
+   y <- c(0, 0, 0, 0, 0, 0, 1, 10, 10, 80, 100, 150)
+
+   system("R CMD SHLIB oce_approx.c");dyn.load("oce_approx.so");.Call("oce_approx", x, y, x)
+
    TT <- .Call("oce_approx",RRprofile$depth,RRprofile$temperature,zz)
    plot(RRprofile$temperature,RRprofile$depth,ylim=c(500,0),xlim=c(2,10), col='red', pch=20)
    lines(TT,zz,col='blue')
@@ -150,6 +156,9 @@ static double phi_z(int i0, double z0, double *z, double *phi, int len) /* Reini
     double phiR = phi_R(i0, z0, z, phi, len);
     double phiP1 = phi_P1(i0, z0, z, phi, len);
     double phiP2 = phi_P2(i0, z0, z, phi, len);
+#ifdef DEBUG
+    if (i0 == 1) Rprintf("phi_z(2, ...): phiR %f   phiP1 %f    phiP2 %f\n", phiR, phiP1, phiP2);
+#endif
     if (z0 < *(z + i0    )) error("z0=%f must equal or exceed z[i0=%d]=%f\n", z0, i0, *(z + i0));
     if (z0 > *(z + i0 + 1)) error("z0=%f must equal or be smaller than [(i0+1)=%d]=%f\n", z0, i0+1, *(z + i0+1));
     return (fabs(phiR - phiP1) * phiP2 + fabs(phiR - phiP2) * phiP1) / (fabs(phiR - phiP1) + fabs(phiR - phiP2));
@@ -168,12 +177,16 @@ static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reini
     double phi23 = phi_ij(i0  , i0+1, z0, z, phi, len);
     double phi34 = phi_ij(i0+1, i0+2, z0, z, phi, len);
 #ifdef DEBUG
-    Rprintf("phi_R phi12=%f phi23=%f phi34=%f denom=%f\n", phi12, phi23, phi34, (SQR(phi23 - phi34) + SQR(phi12 - phi23)));
+    Rprintf("phi_R phi12=%f phi23=%f phi34=%f numer=%f denom=%f BAD? %d\n", phi12, phi23, phi34,
+	SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34,
+	SQR(phi23 - phi34) + SQR(phi12 - phi23),
+	0.0==SQR(phi23 - phi34) + SQR(phi12 - phi23));
 #endif
-    return (0.5 * (phi23 + 
-	  (SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34)
-	  /
-	  (SQR(phi23 - phi34) + SQR(phi12 - phi23))));
+    double denom = SQR(phi23 - phi34) + SQR(phi12 - phi23);
+    if (denom != 0)
+      return (0.5 * (phi23 + (SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34) / denom));
+    else
+      return (1.0); 
   } else {
     error("phi_R given bad i0=%d (note that len=%d)", i0, len);
     return (0.0); // never reached
@@ -256,24 +269,30 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP method) // , SEXP n, SEXP m)
   //  Rprintf("DEBUG: y="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
   //  Rprintf("DEBUG: xout="); for (int i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
   //#endif
+  //
+#ifdef DEBUG
+    Rprintf("Method:%d\n", Method);
+#endif
   for (int i = 0; i < xout_len; i++) {
     double val = 0.0; // value always altered; this is to prevent compiler warning
     int found;
     found = 0;
-    //Rprintf("Method:%d xoutp[%d]:%f, xp[0]:%f\n", Method, i, xoutp[i], xp[0]);
+#ifdef DEBUG
+    Rprintf("xoutp[%d]:%f, xp[0]:%f\n", i, xoutp[i], xp[0]);
+#endif
     // Handle top region (above 5m)
     if (Method == 1 && (xoutp[i] <= xp[0] && xp[0] <= 5)) {
       val = yp[0];
       found = 1;
-#ifdef DEBUG_INTERPOLATION
-      Rprintf("# xoutp[%d]=%.1f is above 5m, setting to xp[0]=%.1f\n", i, xoutp[i], val);
-#endif
+      //#ifdef DEBUG_INTERPOLATION
+      //      Rprintf("# xoutp[%d]=%.1f is above 5m, setting to xp[0]=%.1f\n", i, xoutp[i], val);
+      //#endif
     } else {
       // Handle region below 5m, by finding j such that xp[j] <= xout[i] <= xp[j+1]
       for (int j = 0; j < x_len - 1; j++) {
-	//#ifdef DEBUG
-	//Rprintf("x[%d]=%.1f\n", j, *(xp + j));
-	//#endif
+#ifdef DEBUG
+	Rprintf("x[%d]=%.1f\n", j, *(xp + j));
+#endif
 	double xx = xoutp[i];
 	//Rprintf("xoutp[%d]:%f, xp[%d]:%.1f, Method:%d\n", i, xoutp[i], j, xp[j], Method);
 	// Look for neighbors
@@ -281,11 +300,20 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP method) // , SEXP n, SEXP m)
 	  // Exact match with point above
 	  val = yp[j];
 	  found = 1;
+#ifdef DEBUG
+	  Rprintf("i=%d j=%d exact match with point above\n", i, j);
+#endif
 	} else if (xx == xp[j + 1]) {
 	  // Exact match with point below
 	  val = yp[j + 1];
 	  found = 1;
+#ifdef DEBUG
+	  Rprintf("i=%d j=%d exact match with point below\n", i, j);
+#endif
 	} else if (xp[j] < xx && xx < xp[j + 1]) {
+#ifdef DEBUG
+	  Rprintf("i=%d j=%d has a neighbor above and below\n", i, j);
+#endif
 	  // Has a neeighbor above and below
 	  if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
 	    val = yp[0] + (xx - xp[0]) * (yp[1] - yp[0]) / (xp[1] - xp[0]);
