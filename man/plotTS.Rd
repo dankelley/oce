@@ -16,7 +16,8 @@
     lty.grid="dotted",
     rho1000=FALSE,
     eos=getOption("eos", default='unesco'),
-    cex=par("cex"), col=par("col"), pch=par("pch"), bg,
+    cex=par("cex"), col=par("col"), pch=par("pch"),
+    bg, pt.bg="transparent",
     col.rho="darkgray",
     cex.rho=3/4*par("cex"),
     rotate=FALSE,
@@ -64,6 +65,7 @@
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.
         (This is useful for cases in which \code{inset=TRUE}.)}
+    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
     \item{col}{colour for symbols.}
     \item{col.rho}{colour for isopycnal lines.}
     \item{cex.rho}{size of isopycnal labels.}

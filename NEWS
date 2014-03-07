@@ -1,4 +1,5 @@
 0.9-14
+- plotProfile() and plotTS() get new argument 'pt.bg'
 - plot.section() grids the data if needed
 - rename 'sealevelHalifax' dataset as 'sealevel'
 - translate some axis names (Spanish, French, German and Mandarin)
