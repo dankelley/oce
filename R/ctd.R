@@ -1495,7 +1495,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         salinity <- vector("numeric", nlines)
         oxygen <- vector("numeric", nlines)
         b <- 0
-        oceDebug("pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
+        oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
         for (iline in 1:nlines) {
             if (0 < (length(grep("END_DATA", lines[iline]))))
                 break
