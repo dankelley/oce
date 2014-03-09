@@ -309,7 +309,6 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
             } else {
                 focus <- (x@data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x@data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
             }
-            ##cat("i=",i,"pt[i]=",pt[i],"; datum.name=", datum.name, "\n")
             if (sum(focus, na.rm=TRUE) > 0) {
                 if ("boxcar" == method) {
                     for (datum.name in data.names) {
@@ -323,8 +322,11 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
                     for (datum.name in data.names) {
                         if (datum.name != "pressure") {
                             yvar <- x@data[[datum.name]][focus]
-                            m <- lm(yvar ~ xvar)
-                            data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
+                            t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
+                            if (class(t) != "try-error")
+                                data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
+                            else
+                                data.new[[datum.name]][i] <- NA
                         }
                     }
                 } else {
@@ -343,6 +345,7 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
     data.new[["pressure"]] <- pt
     ## convert any NaN to NA
     for (i in 1:length(data.new)) {
+        cat("i:", i, "\n")
         data.new[[i]][is.nan(data.new[[i]])] <- NA
     }
     res@data <- data.new
