@@ -84,34 +84,37 @@ title: Oce
 
 <ol>
 
-    <li> Download the source for ocedata and oce as tarballs (<a
-        href="http://github.com/dankelley/ocedata/tarball/master">ocedata</a>,
-    and <a href="http://github.com/dankelley/oce/tarball/develop">oce</a>), or
-    as zip files (<a
-        href="http://github.com/dankelley/ocedata/zipball/master">ocedata</a>,
-    and <a href="http://github.com/dankelley/oce/zipball/develop">oce</a>), and
-    then build both with the following OS commands
+    <li> Download the source for oce and ocedata as tarballs (
+    <a href="http://github.com/dankelley/oce/tarball/develop">oce</a>
+    and
+    <a href="http://github.com/dankelley/ocedata/tarball/master">ocedata</a>),
+    or as zip files
+    (<a href="http://github.com/dankelley/oce/zipball/develop">oce</a>
+    and
+    <a href="http://github.com/dankelley/ocedata/zipball/master">ocedata</a>),
+    and then build both with the following OS commands
 
 {% highlight bash %}
-R CMD install ocedata_0.1.1.gz
 R CMD build oce
 R CMD install oce_0.9-13.tar.gz
+R CMD build ocedata_0.1.1.gz
+R CMD install ocedata_0.1.1.gz
 {% endhighlight %}
 
 <p>(where similar commands work for zipballs, and of course the version numbers may need adjustment)</p>
 
     <li> Acquire the sources through Git using
 {% highlight bash %}
-git clone https://dankelley@github.com/dankelley/ocedata.git
 git clone https://dankelley@github.com/dankelley/oce.git
+git clone https://dankelley@github.com/dankelley/ocedata.git
 {% endhighlight %}
     and then build them as described in #1.
     <li> Download and build using install_github()
 
 {% highlight R %}
 library(devtools)
-install_github("ocedata", "dankelley", "master")
 install_github("oce", "dankelley", "develop")
+install_github("ocedata", "dankelley", "master")
 {% endhighlight %}
 
 </ol>
