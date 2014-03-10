@@ -26,11 +26,24 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     col <- rep(col, nlevels)
     lty <- rep(lty, nlevels)
     lwd <- rep(lwd, nlevels)
+    xx <- seq_along(longitude)
+    yy <- seq_along(latitude)
+    if (length(xx) > 1 && diff(longitude[1:2]) < 0)
+        xx <- rev(xx)
+    if (length(yy) > 1 && diff(latitude[1:2]) < 0)
+        yy <- rev(yy)
     for (ilevel in 1:nlevels) {
-        cl <- contourLines(x=longitude, y=latitude, z=z, levels=levels[ilevel])
+        cl <- contourLines(x=longitude[xx],
+                           y=latitude[yy],
+                           z=z, levels=levels[ilevel])
         for (segment in 1:length(cl)) {
             if (length(cl) > 0) {
-                mapLines(cl[[segment]]$x, cl[[segment]]$y, lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+                mapLines(cl[[segment]]$x, cl[[segment]]$y,
+                         lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+                ## if (segment == 1) {
+                ##     cat(str(cl[[segment]]$x))
+                ##     cat(str(cl[[segment]]$y))
+                ## }
             }
         }
     }
