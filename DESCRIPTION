@@ -5,7 +5,7 @@ Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods
-Suggests: ocedata, mapproj, ncdf, foreign
+Suggests: ocedata, mapproj, ncdf4, foreign
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data,
  including ADP measurements, CTD measurements, sectional

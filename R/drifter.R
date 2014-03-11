@@ -41,43 +41,43 @@ setMethod(f="summary",
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    if (!require(ncdf))
-        stop("need the ncdf library to read netcdf-formatted drifter files\n")
+    if (!require(ncdf4))
+        stop("need the ncdf4 package to read netcdf-formatted drifter files\n")
     ofile <- file
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- ncdf::open.ncdf(file)
-        on.exit(ncdf::close.ncdf(file))
+        file <- nc_open(file)
+        on.exit(nc_close(file))
     } else {
         if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
         if (!isOpen(file)) {
-            d <- ncdf::open.ncdf(file)
-            on.exit(ncdf::close.ncdf(file))
+            file <- nc_open(file)
+            on.exit(nc_close(file))
         }
     }
-    id <- ncdf::get.var.ncdf(file, "PLATFORM_NUMBER")[1]
+    id <- ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
-    t0s <- ncdf::get.var.ncdf(file, "REFERENCE_DATE_TIME")
+    t0s <- ncvar_get(file, "REFERENCE_DATE_TIME")
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
-    julianDayTime <- ncdf::get.var.ncdf(file, "JULD")
+    julianDayTime <- ncvar_get(file, "JULD")
     time <- t0 + julianDayTime * 86400
-    longitude <- ncdf::get.var.ncdf(file, "LONGITUDE")
-    longitudeNA <- ncdf::att.get.ncdf(file, "LONGITUDE","_FillValue")$value
+    longitude <- ncvar_get(file, "LONGITUDE")
+    longitudeNA <- ncatt_get(file, "LONGITUDE","_FillValue")$value
     longitude[longitude == longitudeNA] <- NA
-    latitude <- ncdf::get.var.ncdf(file, "LATITUDE")
-    latitudeNA <- ncdf::att.get.ncdf(file, "LATITUDE","_FillValue")$value
+    latitude <- ncvar_get(file, "LATITUDE")
+    latitudeNA <- ncatt_get(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
-    salinity <- ncdf::get.var.ncdf(file, "PSAL")
-    salinityNA <- ncdf::att.get.ncdf(file, "PSAL","_FillValue")$value
+    salinity <- ncvar_get(file, "PSAL")
+    salinityNA <- ncatt_get(file, "PSAL","_FillValue")$value
     salinity[salinity == salinityNA] <- NA
-    temperature <- ncdf::get.var.ncdf(file, "TEMP")
-    temperatureNA <- ncdf::att.get.ncdf(file, "TEMP","_FillValue")$value
+    temperature <- ncvar_get(file, "TEMP")
+    temperatureNA <- ncatt_get(file, "TEMP","_FillValue")$value
     temperature[temperature == temperatureNA] <- NA
-    pressure <- ncdf::get.var.ncdf(file, "PRES")
-    pressureNA <- ncdf::att.get.ncdf(file, "PRES","_FillValue")$value
+    pressure <- ncvar_get(file, "PRES")
+    pressureNA <- ncatt_get(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
     ## make things into matrices, even for a single profile
     if (1 == length(dim(salinity))) {

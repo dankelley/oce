@@ -540,8 +540,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             if (substr(filename, 1, 5) == "http:")
                 stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                      filename, "\", \"", gsub(".*/", "", filename), "\")")
-            if (require(ncdf)) {
-                f <- open.ncdf(filename)
+            if (require(ncdf4)) {
+                f <- nc_open(filename)
                 if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
                 return("drifter/argo")
             } else {
