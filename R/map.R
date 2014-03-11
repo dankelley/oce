@@ -1,5 +1,3 @@
-library(mapproj)
-
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -14,6 +12,8 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
@@ -52,6 +52,8 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if (missing(longitude))
         stop("must give 'longitude' and possibly 'latitude'")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
@@ -80,6 +82,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     oceDebug(debug, "\b\bmapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(longitudelim)) "(missing)" else c("c(", paste(longitudelim, collapse=","), ")"),
@@ -286,6 +290,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if (missing(latitude))
         latitude <- TRUE
     if (is.logical(latitude)) {
@@ -369,6 +375,8 @@ mapScalebar <- function(x, y=NULL, length,
 
 mapText <- function(longitude, latitude, labels, ...)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     ok <- !is.na(longitude) & !is.na(latitude)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
@@ -384,6 +392,8 @@ mapText <- function(longitude, latitude, labels, ...)
 
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if (missing(longitude))
         longitude <- TRUE
     if (is.logical(longitude)) {
@@ -412,6 +422,8 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -439,6 +451,8 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 
 mapPoints <- function(longitude, latitude, ...)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -538,6 +552,8 @@ mapLocator <- function(n=512, type='n', ...)
 
 map2lonlat <- function(xusr, yusr, tolerance=1e-4)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     n <- length(xusr)
     if (length(yusr) != n)
         error("lengths of x and y must match")
@@ -581,6 +597,8 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -604,6 +622,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
+    if (!require(mapproj))
+        stop("'mapproj' package must be installed to work with maps")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
     oceDebug(debug, "\b\bmapImage(..., ",

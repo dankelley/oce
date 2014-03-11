@@ -540,10 +540,14 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             if (substr(filename, 1, 5) == "http:")
                 stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                      filename, "\", \"", gsub(".*/", "", filename), "\")")
-            library(ncdf)
-            f <- open.ncdf(filename)
-            if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
+            if (require(ncdf)) {
+                f <- open.ncdf(filename)
+                if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
                 return("drifter/argo")
+            } else {
+                warning("cannot determine type of .nc file without the ncdf library installed\n")
+                return("unknown")
+            }
         } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
         } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap

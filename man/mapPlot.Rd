@@ -57,12 +57,13 @@
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
 
-    \item{projection}{projection; see \code{\link{mapproject}}.}
+    \item{projection}{projection; see \code{\link[mapproj]{mapproject}}.}
 
-    \item{parameters}{parameters for projection; see \code{\link{mapproject}}.}
+    \item{parameters}{parameters for projection; see
+        \code{\link[mapproj]{mapproject}}.}
     
     \item{orientation}{orientation for projection; see
-        \code{\link{mapproject}}.}
+        \code{\link[mapproj]{mapproject}}.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
@@ -71,13 +72,14 @@
 }
 
 \details{Creates a map using the indicated projection.  The available
-    projections can be found in the documentation for \code{\link{mapproject}},
-    which also provides information on the arguments named \code{parameters}
-    and \code{orientation}.  Further details on these and other projections are
-    provided by Snyder (1987), an exhaustive treatment that includes many
-    illustrations, an overview of the history of the topic, and some notes on
-    the strengths and weaknesses of the various formulations.  See especially
-    pages 2 through 7, which define terms and provide recommendations.}
+    projections can be found in the documentation for
+    \code{\link[mapproj]{mapproject}}, which also provides information on the
+    arguments named \code{parameters} and \code{orientation}.  Further details
+    on these and other projections are provided by Snyder (1987), an exhaustive
+    treatment that includes many illustrations, an overview of the history of
+    the topic, and some notes on the strengths and weaknesses of the various
+    formulations.  See especially pages 2 through 7, which define terms and
+    provide recommendations.}
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines with
     \code{\link{mapLines}}, and text with \code{\link{mapText}}.  Points on a
