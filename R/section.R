@@ -481,6 +481,8 @@ setMethod(f="plot",
                                xlab=gettext("Longitude", domain="R-oce"),
                                ylab=gettext("Latitude", domain="R-oce"))
                       }
+                      ## FIXME: this coastline code is reproduced in section.R; it should be DRY
+                      ## figure out coastline
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")

@@ -147,6 +147,7 @@ setMethod(f="plot",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="")
+              coastline <- match.arg(coastline)
               #opar <- par(no.readonly = TRUE)
               lw <- length(which)
               ##if (lw > 1) on.exit(par(opar))
@@ -187,6 +188,7 @@ setMethod(f="plot",
                            type=type, cex=cex, pch=pch,
                            col=if (missing(col)) "black" else col,
                            xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
+                      ## FIXME: this coastline code is reproduced in section.R; it should be DRY
                       ## figure out coastline
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
@@ -232,12 +234,6 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
-
-
-
-
-
-                      browser()
                       if (!missing(coastline)) {
                           polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
                           if (type[w] == 'l')
