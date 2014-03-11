@@ -542,7 +542,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                      filename, "\", \"", gsub(".*/", "", filename), "\")")
             if (require(ncdf4)) {
                 f <- nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
+                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncvar_get(nc_open(filename), "DATA_TYPE"), ignore.case=TRUE))
                 return("drifter/argo")
             } else {
                 warning("cannot determine type of .nc file without the ncdf library installed\n")
