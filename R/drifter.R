@@ -128,7 +128,8 @@ as.drifter <- function(time, longitude, latitude,
 setMethod(f="plot",
           signature=signature("drifter"),
           definition=function (x, which = 1, level,
-                               coastline,
+                               coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                                           "coastlineWorldFine", "none"),
                                cex=1,
                                pch=1,
                                type='p',
@@ -186,6 +187,57 @@ setMethod(f="plot",
                            type=type, cex=cex, pch=pch,
                            col=if (missing(col)) "black" else col,
                            xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
+                      ## figure out coastline
+                      haveCoastline <- FALSE
+                      if (!is.character(coastline)) 
+                          stop("coastline must be a character string")
+                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      lonr <- range(x[["longitude"]], na.rm=TRUE)
+                      latr <- range(x[["latitude"]], na.rm=TRUE)
+                      if (coastline == "best") {
+                          if (haveOcedata) {
+                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                              oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              coastline <- get(bestcoastline)
+                          } else {
+                              oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
+                              data(coastlineWorld, envir=environment())
+                              coastline <- coastlineWorld
+                          }
+                          haveCoastline <- TRUE
+                      } else {
+                          if (coastline != "none") {
+                              if (coastline == "coastlineWorld") {
+                                  data("coastlineWorld", envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                                  data("coastlineWorldFine", package="ocedata", envir=environment())
+                                  coastline <- coastlineWorldFine
+                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                  coastline <- coastlineWorldMedium
+                              }  else {
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
+                              }
+                              haveCoastline <- TRUE
+                          }
+                      }
+                      if (haveCoastline) {
+                          if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                              polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                              polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                          } else {
+                              lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                              lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                          }
+                      }
+
+
+
+
+
+                      browser()
                       if (!missing(coastline)) {
                           polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
                           if (type[w] == 'l')

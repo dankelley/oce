@@ -8,13 +8,15 @@
 
 \description{Plot a summary diagram for drifter data.}
 
-\usage{\S4method{plot}{drifter}(x, which = 1, level, coastline,
-                          cex=1, pch=1, type='p', col,
-                          adorn=NULL,
-                          mgp=getOption("oceMgp"),
-                          mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                          tformat,
-                          debug=getOption("oceDebug"), \dots)}
+\usage{\S4method{plot}{drifter}(x, which = 1, level,
+     coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                 "coastlineWorldFine", "none"),
+     cex=1, pch=1, type='p', col,
+     adorn=NULL,
+     mgp=getOption("oceMgp"),
+     mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+     tformat,
+     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{A \code{drifter} object, e.g. as read by \code{\link{read.drifter}}.}
@@ -35,7 +37,9 @@
       integer, in which case it refers to an index of depth (1 being the top)
       or it may be the string "all" which means to plot all data.}
 
-  \item{coastline}{optional coastline file, to be drawn if \code{which=1}.}
+  \item{coastline}{string giving the coastline to be used in a drifter-location
+      map, or \code{"best"} to pick the one with highest resolution, or
+      \code{"none"} to avoid drawing the coastline.}
 
   \item{cex}{size of plotting symbols to be used if \code{type='p'}.}
 
