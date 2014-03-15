@@ -10,7 +10,7 @@
     breaks, col, mai, cex.axis=par("cex.axis"),
     labels=NULL, at=NULL,
     levels, drawContours=FALSE,
-    fullpage=FALSE, drawTriangles=FALSE,
+    fullpage=FALSE, drawTriangles=FALSE, pos=4,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -46,6 +46,12 @@
         applies to both ends of the palette.  If a pair is provided, the first
         refers to the lower range of the palette, and the second to the upper
         range.}
+    \item{pos}{an integer indicating the location of the palette within
+        the plotting area, 1 for near the bottom, 2 for near the left-hand
+        side, 3 for near the top side, and 4 (the default) for near
+        the right-hand side.  At the moment, only values 3 and 4 work,
+        because these are the two that seem most likely to be useful
+        in practice.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}

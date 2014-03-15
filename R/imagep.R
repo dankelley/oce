@@ -163,25 +163,29 @@ B	0	0	0"
 }
 
 
-paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
-                                mai=c(0, 1/8, 0, 1/4))
+paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4,
+                                mai=c(0, 1/8, 0, 1/4), pos=4)
 {
-    omai <- par('mai')
-    figureWidth <- par("fin")[1]
+    pc <- list(omai=par('mai'))
     lineHeight <- 1.5 * par("cin")[2]  # character height in inches (times a safety for superscripts etc)
     ticLength <- abs(par("tcl")) * lineHeight # inches (not sure on this)
-    pc <- list()
-    pc$maiLHS <- omai[2]               # width of LHS margin for panel to left of palette
-    ##pc$paletteSeparation <- paletteSeparation # space between palette and panel to its left
-    pc$paletteSeparation <- mai[2]     # space between palette and panel to its left
-    pc$paletteWidth <- paletteWidth    # palette width
-    #pc$marRHS <- lineHeight + ticLength # space to right of palette
-    pc$maiRHS <- mai[4]                # space to right of palette
-    ##if (!missing(label))
-    ##    pc$marRHS <- pc$marRHS + strheight(label)*par('cin')[1]
-    pc$main <- figureWidth - pc$maiLHS - pc$paletteSeparation - pc$paletteWidth - pc$maiRHS # width of main panel
-    pc$omai <- omai
-    pc$figureWidth <- figureWidth      # total width of figure (main panel, palette, space between, and margins)
+    pc$figureWidth <- par("fin")[1]
+    pc$figureHeight <- par("fin")[2]
+    if (pos == 3) {
+        pc$maiBS <- pc$omai[1]            # width of bottom margin for panel below palette
+        pc$paletteSeparation <- mai[1] # space between palette and panel below
+        pc$paletteHeight <- paletteWidth # palette width
+        pc$maiTS <- mai[3]             # space above palette
+        pc$main <- pc$figureHeight - pc$maiBS - pc$paletteSeparation - pc$paletteHeight - pc$maiTS # height of main panel
+    } else if (pos == 4) {
+        pc$maiLHS <- pc$omai[2]        # width of LHS margin for panel to left of palette
+        pc$paletteSeparation <- mai[2] # space between palette and panel to its left
+        pc$paletteWidth <- paletteWidth # palette width
+        pc$maiRHS <- mai[4]            # space to right of palette
+        pc$main <- pc$figureWidth - pc$maiLHS - pc$paletteSeparation - pc$paletteWidth - pc$maiRHS # width of main panel
+    } else {
+        stop("pos must be 3 or 4")
+    }
     pc 
 }
 
@@ -189,7 +193,7 @@ drawPalette <- function(zlim, zlab="",
                         breaks, col, mai, cex.axis=par("cex.axis"),
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
-                        fullpage=FALSE, drawTriangles=FALSE,
+                        fullpage=FALSE, drawTriangles=FALSE, pos=4,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
@@ -199,25 +203,37 @@ drawPalette <- function(zlim, zlab="",
     breaksGiven <- !missing(breaks)
     if (zlimGiven)
         oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",",
-                 zlim[2], "), zlab=", "\"", as.character(zlab), "\",
-                 drawTriangles=", drawTriangles, "...) {\n", sep="")
+                 zlim[2], "), zlab=", "\"", as.character(zlab),
+                 "\", drawTriangles=", drawTriangles, "...) {\n", sep="")
     else
         oceDebug(debug, "\bdrawPalette() with no arguments: set space to right of a graph\n", sep="")
     maiGiven <- !missing(mai)
+    oceDebug(debug, "maiGiven=", maiGiven, "\n")
+    oceDebug(debug, "breaksGiven=", breaksGiven, "\n")
+    oceDebug(debug, "fullpage=", fullpage, "\n")
+    haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
         zlimOrig <- zlim
         zlim <- as.numeric(zlim)
     }
-    oceDebug(debug, if (breaksGiven) "gave breaks\n" else "did not give breaks\n")
     oceDebug(debug, "zIsTime=", zIsTime, "\n")
     omai <- par("mai")
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(format(omar, digits=3), collapse=","), ")\n")
-    if (!maiGiven)
-        mai <- c(0, 1/8, 0, 3/8 + if (nchar(zlab)) 1.5*par('cin')[2] else 0)
-    pc <- paletteCalculations(mai=mai)
+    if (!maiGiven) {
+        if (pos == 3) {
+            mai <- c(1/8, 0, 3/8 + if (haveZlab) 1.5*par('cin')[2] else 0, 0)
+        } else if (pos == 4) {
+            mai <- c(0, 1/8, 0, 3/8 + if (haveZlab) 1.5*par('cin')[2] else 0)
+        } else {
+            stop("pos must be 3 or 4")
+        }
+        oceDebug(debug, "set mai=", mai, "\n")
+    }
+    pc <- paletteCalculations(mai=mai, pos=pos)
+    oceDebug(debug, "pc$omai:", pc$omai, "\n")
     contours <- if (breaksGiven) breaks else NULL
     if (zlimGiven) {
         if (breaksGiven) {
@@ -246,40 +262,76 @@ drawPalette <- function(zlim, zlab="",
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
-    oceDebug(debug, "fullpage=", fullpage, "\n")
-    oceDebug(debug, "maiGiven=", maiGiven, "\n")
     if (fullpage) {
         if (maiGiven) {
             theMai <- mai
         } else {
-            width <- par('fin')[1] # width
-            mai4 <- 3 * par('cin')[2]
-            mai2 <- 1/8 #width - paletteWidth - mai4
-            theMai <- c(omai[1], mai2, omai[3], mai4)
-            oceDebug(debug, "width=", width, ", mai2=", mai2, ", mai4=", mai4, "\n")
+            if (pos == 3) {
+                ## 4->3; 2->1
+                height <- par('fin')[2]
+                mai3 <- 3 * par('cin')[1]
+                mai1 <- 1/8
+                theMai <- c(mai1, omai[2], mai3, omai[4])
+                oceDebug(debug, "width=", width, ", mai2=", mai2, ", mai4=", mai4, "\n")
+            } else if (pos == 4) {
+                width <- par('fin')[1] # width
+                mai4 <- 3 * par('cin')[2]
+                mai2 <- 1/8 #width - paletteWidth - mai4
+                theMai <- c(omai[1], mai2, omai[3], mai4)
+                oceDebug(debug, "width=", width, ", mai2=", mai2, ", mai4=", mai4, "\n")
+            } else {
+                stop("pos must be 3 or 4")
+            }
         }
     } else {
-        theMai <- c(pc$omai[1]+mai[1],
-                    pc$main + pc$maiLHS + mai[2],
-                    pc$omai[3]+mai[3],
-                    pc$maiRHS)
+        if (pos == 3) {
+            theMai <- c(pc$main + pc$maiBS + mai[1],
+                        pc$omai[2],
+                        pc$maiTS,
+                        pc$omai[4])
+        } else if (pos == 4) {
+            theMai <- c(pc$omai[1]+mai[1],
+                        pc$main + pc$maiLHS + mai[2],
+                        pc$omai[3]+mai[3],
+                        pc$maiRHS)
+        } else {
+            stop("pos must be 3 or 4")
+        }
     }
-    oceDebug(debug, "theMai=", theMai, "\n")
+    oceDebug(debug, "pos=", pos, "; theMai=", theMai, "\n")
     if (zlimGiven) {
         par(mai=theMai)
         if (!breaksGiven) {
             palette <- seq(zlim[1], zlim[2], length.out=300)
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
-                  zlim=zlim)
+            if (pos == 3) {
+                image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
+                      col=col, zlim=zlim)
+            } else if (pos == 4) {
+                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                      col=col, zlim=zlim)
+            } else {
+                stop("pos must be 3 or 4")
+            }
         } else {
             palette <- seq(zlim[1], zlim[2], length.out=300)
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-                  breaks=breaksOrig,
-                  col=col,
-                  zlim=zlim)
+            if (pos == 3) {
+                image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
+                      breaks=breaksOrig, col=col, zlim=zlim)
+            } else if (pos == 4) {
+                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                      breaks=breaksOrig, col=col, zlim=zlim)
+            } else {
+                stop("pos must be 3 or 4")
+            }
         }
         if (drawContours) {
-            if (levelsGiven) abline(h=levels) else abline(h=contours)
+            if (pos == 3) {
+                if (levelsGiven) abline(v=levels) else abline(v=contours)
+            } else if (pos == 4){
+                if (levelsGiven) abline(h=levels) else abline(h=contours)
+            } else {
+                stop("pos must be 3 or 4")
+            }
         }
         box()
         drawTriangles <- rep(drawTriangles, length.out=2)
@@ -294,20 +346,32 @@ drawPalette <- function(zlim, zlab="",
             triangleHeight <- 1 / 3 * paletteWidth * dy / dx / paletteHeight
             oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
             if (drawTriangles[2]) {
-                polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                        usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
-                        border=col[length(col)], xpd=TRUE)
-                lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                      usr[4] + c(0, triangleHeight, 0),
-                      xpd=TRUE)
+                if (pos == 3) {
+                    warning("horizontal triangles not working yet\n")
+                } else if (pos == 4) {
+                    polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                            usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
+                            border=col[length(col)], xpd=TRUE)
+                    lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                          usr[4] + c(0, triangleHeight, 0),
+                          xpd=TRUE)
+                } else {
+                    stop("pos must be 3 or 4")
+                }
             }
             if (drawTriangles[1]) {
-                polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                        usr[3] + c(0, -triangleHeight, 0), col=col[1], 
-                        border=col[1], xpd=TRUE)
-                lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                      usr[3] + c(0, -triangleHeight, 0),
-                      xpd=TRUE)
+                if (pos == 3) {
+                    warning("horizontal triangles not working yet\n")
+                } else if (pos == 4) {
+                    polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                            usr[3] + c(0, -triangleHeight, 0), col=col[1], 
+                            border=col[1], xpd=TRUE)
+                    lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                          usr[3] + c(0, -triangleHeight, 0),
+                          xpd=TRUE)
+                } else {
+                    stop("pos must be 3 or 4")
+                }
             }
         }
         if (zIsTime & is.null(at)) {
@@ -320,14 +384,32 @@ drawPalette <- function(zlim, zlab="",
             labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
-        axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
-        if (nchar(zlab) > 0)
-            mtext(zlab, side=4, line=2.0, cex=par('cex'), cex.axis)
+        if (pos == 3) {
+            axis(side=3, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
+            ## FIXME: determine formula for best 'line'
+            if (haveZlab) mtext(zlab, side=3, line=-1.5, cex=par('cex'), cex.axis)
+        } else if (pos == 4) {
+            axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
+            ## FIXME: determine formula for best 'line'
+            if (haveZlab) mtext(zlab, side=4, line=-1, cex=par('cex'), cex.axis)
+        } else {
+            stop("pos must be 3 or 4")
+        }
     }
-    theMai <- c(pc$omai[1],
-                pc$maiLHS,
-                pc$omai[3],
-                pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
+    if (pos == 3) {
+        theMai <- c(pc$maiBS,
+                    pc$omai[2],
+                    pc$paletteSeparation + pc$paletteHeight + pc$maiTS,
+                    pc$omai[4])
+    } else if (pos == 4) {
+        theMai <- c(pc$omai[1],
+                    pc$maiLHS,
+                    pc$omai[3],
+                    pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
+    } else {
+        stop("pos must be 3 or 4")
+    }
+    oceDebug(debug, "theMai=", theMai, "\n")
     oceDebug(debug, "original par(mai)=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     oceDebug(debug, "setting  par(mai)=c(", paste(format(theMai, digits=3), collapse=","), ")\n")
     oceDebug(debug, "drawPalette orig mar=",par('mar'),"\n")
@@ -375,6 +457,7 @@ imagep <- function(x, y, z,
              ", ...) {\n", sep="")
     oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
     oceDebug(debug, "par(mai)=", paste(format(par('mai'), digits=3), collapse=" "), "\n")
+    haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
         if (!missing(y))
@@ -465,7 +548,7 @@ imagep <- function(x, y, z,
     if (missing(mar))
         mar <- c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)
     if (missing(mai.palette)) {
-        mai.palette <- c(0, 1/8, 0, 3/8 + if (nchar(zlab) && zlabPosition=="side") 1.5*par('cin')[2] else 0)
+        mai.palette <- c(0, 1/8, 0, 3/8 + if (haveZlab && zlabPosition=="side") 1.5*par('cin')[2] else 0)
         oceDebug(debug, "set mai.palette=", mai.palette, "\n")
     }
 
