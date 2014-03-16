@@ -167,20 +167,20 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
                                 width=par('cin')[2],
                                 pos=4,
                                 zlab, maidiff=c(0, 0, 0, 0))
-                                ##mai=c(0, 1/8, 0, 1/4), pos=4)
 {
+    ## This returns a list with the following entries:
+    ##   mai0 = before this call
+    ##   mai1 = just before plotting palette (i.e. lots of white space on one side)
+    ##   mai2 = ready for post-palette drawing (i.e. good for a diagram beside palette)
     if (!(pos %in% 1:4))
         stop("'pos' must be 1, 2, 3 or 4")
-    ## NB mai treated differently for different pos values.
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
-    pc <- list(mai0=par('mai'))
     lineHeight <- par("cin")[2]  # character height in inches
     tickSpace <- abs(par("tcl")) * lineHeight # inches (not sure on this)
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
-    pc$figureWidth <- par("fin")[1]
-    pc$figureHeight <- par("fin")[2]
-    pc$separation <- separation
-    pc$width <- width # palette width
+    figureWidth <- par("fin")[1]
+    figureHeight <- par("fin")[2]
+    pc <- list(mai0=par('mai'))
     pc$mai1 <- pc$mai0
     pc$mai2 <- pc$mai0
     P <- separation + width
@@ -189,32 +189,32 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     if (pos == 1) {
         ## alter top and bottom margins
         pc$mai1[1] <- A
-        pc$mai1[3] <- pc$figureHeight - P - A
+        pc$mai1[3] <- figureHeight - P - A
         pc$mai2[1] <- P + A + pc$mai0[1]
         pc$mai2[3] <- pc$mai0[3]
     } else if (pos == 2) {
         ## alter left and right margins
         pc$mai1[2] <- A
-        pc$mai1[4] <- pc$figureWidth - P - A
+        pc$mai1[4] <- figureWidth - P - A
         pc$mai2[2] <- P + A + pc$mai0[2]
         pc$mai2[4] <- pc$mai0[4]
     } else if (pos == 3) {
         ## alter top and bottom margins
-        pc$mai1[1] <- pc$figureHeight - P - A
+        pc$mai1[1] <- figureHeight - P - A
         pc$mai1[3] <- A
         pc$mai2[1] <- pc$mai0[1]
         pc$mai2[3] <- P + A + pc$mai0[3]
     } else if (pos == 4) {
         ## alter left and right margins
-        pc$mai1[2] <- pc$figureWidth - P - A
+        pc$mai1[2] <- figureWidth - P - A
         pc$mai1[4] <- A
         pc$mai2[2] <- pc$mai0[2]
         pc$mai2[4] <- P + A + pc$mai0[4]
     } else {
         stop("pos must be in 1:4") # never reached
     }
-    if (!missing(maidiff))
-        pc$mai1 <- pc$mai1 + maidiff
+    ## Adjust palette margins (mai1); FIXME: should this also alter mai2?
+    pc$mai1 <- pc$mai1 + maidiff
     pc 
 }
 
@@ -254,23 +254,9 @@ drawPalette <- function(zlim, zlab="",
     oceDebug(debug, "zIsTime=", zIsTime, "\n")
     omai <- par("mai")
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
-    if (!maiGiven) {
-        ##if (pos == 1) {
-        ##    mai <- c(3/8 + if (haveZlab) 1.5*par('cin')[2] else 0, 0, 1/8, 0)
-        ##    cat("mai:", mai, "???\n")
-        ##} else if (pos == 3) {
-        ##    mai <- c(1/8, 0, 3/8 + if (haveZlab) 1.5*par('cin')[2] else 0, 0)
-        ##} else if (pos == 4) {
-        ##    mai <- c(0, 1/8, 0, 3/8 + if (haveZlab) 1.5*par('cin')[2] else 0)
-        ##} else {
-        ##    stop("pos must be 1, 3 or 4")
-        ##}
-        mai <- rep(0, 4) # FIXME see above; moving this logic to paletteCalculations
-        ##oceDebug(debug, "set mai=", mai, "\n")
-    }
+    if (!maiGiven)
+        mai <- rep(0, 4)
     pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab)
-    if (debug > 0)
-        str(pc)
     contours <- if (breaksGiven) breaks else NULL
     if (zlimGiven) {
         if (breaksGiven) {
@@ -299,59 +285,6 @@ drawPalette <- function(zlim, zlab="",
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
-    ##if (fullpage) {
-    ##    if (maiGiven) {
-    ##        theMai <- mai
-    ##    } else {
-    ##        if (pos == 1) {
-    ##            height <- par('fin')[2]
-    ##            mai1 <- 3 * par('cin')[1]
-    ##            mai3 <- 1/8
-    ##            theMai <- c(mai1, omai[2], mai3, omai[4])
-    ##        } else if (pos == 3) {
-    ##            ## 4->3; 2->1
-    ##            height <- par('fin')[2]
-    ##            mai3 <- 3 * par('cin')[1]
-    ##            mai1 <- 1/8
-    ##            theMai <- c(mai1, omai[2], mai3, omai[4])
-    ##        } else if (pos == 4) {
-    ##            width <- par('fin')[1] # width
-    ##            mai4 <- 3 * par('cin')[2]
-    ##            mai2 <- 1/8 #width - width - mai4
-    ##            theMai <- c(omai[1], mai2, omai[3], mai4)
-    ##        } else {
-    ##            stop("pos must be 1, 3 or 4")
-    ##        }
-    ##    }
-    ##} else {
-    ##    if (pos == 1) {
-    ##        theMai <- c(pc$maiBS,
-    ##                    pc$mai0[2],
-    ##                    pc$main + pc$maiTS + mai[4],
-    ##                    pc$mai0[4])
-    ##    } else if (pos == 3) {
-    ##        theMai <- c(pc$main + pc$maiBS + mai[1],
-    ##                    pc$mai0[2],
-    ##                    pc$maiTS,
-    ##                    pc$mai0[4])
-    ##    } else if (pos == 4) {
-    ##        theMai <- c(pc$mai0[1]+mai[1],
-    ##                    pc$main + pc$maiLS + mai[2],
-    ##                    pc$mai0[3]+mai[3],
-    ##                    pc$maiRS)
-    ##        theMai <- pc$mai2
-    ##        ## FIXME: clean up above
-    ##    } else {
-    ##        stop("pos must be 1, 3 or 4")
-    ##    }
-    ##}
-    
-    
-    if (maiGiven)
-        theMai <- mai
-    else
-        theMai <- pc$mai2
-    oceDebug(debug, "theMai=", theMai, "\n")
     if (zlimGiven) {
         par(mai=pc$mai1)
         if (!breaksGiven) {
@@ -450,32 +383,11 @@ drawPalette <- function(zlim, zlab="",
             stop("pos must be 1, 2, 3 or 4") # cannot be reached
         }
     }
-    ## Recalculate theMai to position next graph.
-    ##if (pos == 1) {
-    ##    ## FIXME: should find out how much needed for axis; here just guessing.
-    ##    theMai <- c(par('mgp')[2]+pc$separation + pc$width + pc$maiBS,
-    ##                pc$mai0[2],
-    ##                pc$maiTS,
-    ##                pc$mai0[4])
-    ##} else if (pos == 3) {
-    ##    theMai <- c(pc$maiBS,
-    ##                pc$mai0[2],
-    ##                pc$separation + pc$width + pc$maiTS,
-    ##                pc$mai0[4])
-    ##} else if (pos == 4) {
-    ##    theMai <- c(pc$mai0[1],
-    ##                pc$maiLS,
-    ##                pc$mai0[3],
-    ##                pc$separation + pc$width + pc$maiRS)
-    ##} else {
-    ##    stop("pos must be 1, 3 or 4")
-    ##}
-    theMai <- pc$mai2
     ## FIXME why the "new" in only one case?
     if (zlimGiven)
-        par(new=TRUE, mai=theMai)
+        par(new=TRUE, mai=pc$mai2)
     else
-        par(mai=theMai)
+        par(mai=pc$mai2)
     if (fullpage)
         par(mai=omai)
     oceDebug(debug, "\b\b} # drawPalette()\n")
