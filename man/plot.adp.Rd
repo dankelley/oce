@@ -22,7 +22,7 @@
      missingColor="gray",
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-     mai.palette=c(0, 1/8, 0, 3/8),
+     mai.palette=rep(0, 4),
      tformat,
      marginsAsImage=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
@@ -98,7 +98,8 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{mai.palette}{margins, in inches, for the palette}
+  \item{mai.palette}{margins, in inches, to be added to those calculated
+      for the palette; alter from the default only with caution}
   \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
       plot types that call that function.  (See \code{\link{strptime}} for the
       format used.)}

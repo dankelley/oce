@@ -102,9 +102,8 @@
     \item{mar}{value to be used with \code{\link{par}("mar")}.  If not given, a
         reasonable value is calculated based on whether \code{xlab} and
         \code{ylab} are empty strings.}
-    \item{mai.palette}{margins, in inches, for the palette.  If not given, a
-        reasonable value is calculated based on whether \code{zlab} is an empty
-        string, and the value of \code{zlabPosition}.}
+    \item{mai.palette}{palette margin corrections (in inches), added to the
+        \code{mai} value used for the palette.  Use with care.}
     \item{xaxs}{character indicating whether image should extend to edge
         of x axis (with value \code{"i"}) or not; see
         \code{\link[graphics]{par}}("xaxs").}
