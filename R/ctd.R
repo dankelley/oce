@@ -345,7 +345,6 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
     data.new[["pressure"]] <- pt
     ## convert any NaN to NA
     for (i in 1:length(data.new)) {
-        cat("i:", i, "\n")
         data.new[[i]][is.nan(data.new[[i]])] <- NA
     }
     res@data <- data.new
