@@ -401,7 +401,7 @@ setMethod(f="plot",
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
 
 
-              oceDebug(debug, "\bplot.section(..., which=c(",
+              oceDebug(debug, "\bplot.section(, ..., which=c(",
                        paste(which, collapse=","), "), eos=\"", eos,
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="")
 
@@ -451,6 +451,7 @@ setMethod(f="plot",
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
+                  omar <- par('mar')
 
                   if (variable == "map") {
                       lat <- array(NA, numStations)
@@ -565,7 +566,7 @@ setMethod(f="plot",
                           if (is.null(zcol)) 
                               zcol <- oceColorsJet(nbreaks - 1)
                           zlim <- range(zbreaks)
-                          drawPalette(zlim=range(zbreaks), zlab=variable, breaks=zbreaks, col=zcol)
+                          drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
                       }
 
 
@@ -802,17 +803,19 @@ setMethod(f="plot",
                           }
                           box()
                       }
+                      print(vtitle)
+                      print(legend.loc)
                       ##axis(1, pretty(xxOrig))
                       axis(1)
+                      if (legend)
+                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
 
                       ## undo negation of the y coordinate, so further can can make sense
                       usr <- par('usr')
                       par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
-
-                      if (legend)
-                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
+                  par(mar=omar)
                   oceDebug(debug, "\b\b} # plotSubsection()\n")
               }
               if (!inherits(x, "section"))

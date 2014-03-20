@@ -47,8 +47,8 @@
     example 45.a of Meeus [1991] to 4 significant digits, e.g. with all angles
     matching to under 2 minutes of arc.}
 
-\value{A data frame containing the following.
-    \item{t}{time}
+\value{A list containing the following.
+    \item{time}{time}
     \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360.
         Note: this is not the convention used by Meeus, who uses degrees
         westward of South.  (See diagram below.)}
