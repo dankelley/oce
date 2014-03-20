@@ -724,6 +724,8 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
@@ -740,6 +742,8 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
@@ -759,6 +763,9 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      ## FIXME: testing here
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else if (ztype == "points") {
@@ -777,6 +784,8 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
@@ -803,8 +812,6 @@ setMethod(f="plot",
                           }
                           box()
                       }
-                      print(vtitle)
-                      print(legend.loc)
                       ##axis(1, pretty(xxOrig))
                       axis(1)
                       if (legend)
