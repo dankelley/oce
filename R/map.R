@@ -28,10 +28,16 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     lwd <- rep(lwd, nlevels)
     xx <- seq_along(longitude)
     yy <- seq_along(latitude)
-    if (length(xx) > 1 && diff(longitude[1:2]) < 0)
+    if (length(xx) > 1 && diff(longitude[1:2]) < 0) {
         xx <- rev(xx)
-    if (length(yy) > 1 && diff(latitude[1:2]) < 0)
+        z <- z[xx,]
+        ##cat("flipped in x\n")
+    }
+    if (length(yy) > 1 && diff(latitude[1:2]) < 0) {
         yy <- rev(yy)
+        z <- z[,yy]
+        ##cat("flipped in y\n")
+    }
     for (ilevel in 1:nlevels) {
         cl <- contourLines(x=longitude[xx],
                            y=latitude[yy],
