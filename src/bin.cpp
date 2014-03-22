@@ -44,7 +44,7 @@ extern "C" {
             int bi = lower_bound - b.begin();
             if (bi > 0 && bi < (*nxbreaks)) {
 #ifdef DEBUG
-                Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, breaks[bi-1], breaks[bi]);
+                Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
 #endif
                 number[bi-1]++;
             }
@@ -72,7 +72,7 @@ extern "C" {
                 int bi = lower_bound - b.begin();
                 if (bi > 0 && bi < (*nxbreaks)) {
 #ifdef DEBUG
-                    Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, breaks[bi-1], breaks[bi]);
+                    Rprintf("x: %6.3f   bi: %d    (%f to %f)\n", x[i], bi, xbreaks[bi-1], xbreaks[bi]);
 #endif
                     number[bi-1]++;
                     mean[bi-1] += f[i];
