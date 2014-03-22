@@ -24,7 +24,7 @@ sunAngle <- function(t, longitude, latitude, useRefraction=FALSE)
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
     t <- as.POSIXlt(t)                 # use this so we can work on hours, etc
-    if ("UTC" != attr(t[1], "tzone"))
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
         stop("t must be in UTC")
     year <- t$year + 1900
     if (any(year < 1950) || any(year > 2050))

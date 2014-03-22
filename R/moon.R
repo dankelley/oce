@@ -84,7 +84,7 @@ moonAngle <- function(t, longitude, latitude, useRefraction=TRUE)
     if (missing(t)) stop("must give 't'")
     if (missing(longitude)) stop("must give 'longitude'")
     if (missing(latitude)) stop("must give 'latitude'")
-    if ("UTC" != attr(t[1], "tzone"))
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
         stop("t must be in UTC")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
