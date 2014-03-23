@@ -16,6 +16,10 @@ setMethod(f="summary",
               showMetadataItem(object, "filename",   "File source:         ")
               showMetadataItem(object, "time",       "Time:                ")
               showMetadataItem(object, "spacecraft", "Spacecraft:          ")
+              cat(sprintf("* Lower left:          %fE %fN\n", object@metadata$lllon, object@metadata$lllat)) 
+              cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat)) 
+              cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat)) 
+              cat(sprintf("* Upper left:          %fE %fN\n", object@metadata$ullon, object@metadata$ullat)) 
               ## do not show the data stats: calculating them is very slow
               processingLogShow(object)
           })
@@ -26,6 +30,26 @@ setMethod(f="[[",
               error("no indexing yet\n")
           })
 
+setMethod(f="plot",
+          signature=signature("landsat"),
+          definition=function(x, which = 1, debug=getOption("oceDebug"), ...)
+          {
+              if (which == 1) {
+                  hist(x@data[[1]], xlab="Image value", main="", ...)
+              } else if (which == 2) {
+                  dim <- dim(x@data[[1]])
+                  lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
+                  lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
+                  asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
+                  imagep(lon, lat, x@data[[1]], asp=asp, ...)
+              } else {
+                  stop("unknown value of 'which'")
+              }
+          })
+## lt <- landsatTrim(landsat, list(longitude=-70.03252, latitude=47.71909), list(longitude=-69.39724, latitude=48.01573))
+
+
+## plot(landsat, which=2, col=oceColorsJet, zlim=c(0.11, 0.13))
 
 read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 {
@@ -60,27 +84,26 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
     gridCellSizePanchromatic <- getItem("GRID_CELL_SIZE_PANCHROMATIC")
     gridCellSizeReflective <- getItem("GRID_CELL_SIZE_REFLECTIVE")
     gridCellSizeThermal <- getItem("GRID_CELL_SIZE_THERMAL")                            
-    ## Image dimensions
-    l <- getItem("PANCHROMATIC_LINES")
-    s <- getItem("PANCHROMATIC_SAMPLES")
-    dimPanchromatic <- c(l, s)         # or reverse?
-    l <- getItem("REFLECTIVE_LINES")
-    s <- getItem("REFLECTIVE_SAMPLES")
-    dimReflective <- c(l, s)
-    l <- getItem("THERMAL_LINES")
-    s <- getItem("THERMAL_SAMPLES")
-    dimThermal <- c(l, s)
-
+    ## ## Image dimensions
+    ## l <- getItem("PANCHROMATIC_LINES")
+    ## s <- getItem("PANCHROMATIC_SAMPLES")
+    ## dimPanchromatic <- c(l, s)         # or reverse?
+    ## l <- getItem("REFLECTIVE_LINES")
+    ## s <- getItem("REFLECTIVE_SAMPLES")
+    ## dimReflective <- c(l, s)
+    ## l <- getItem("THERMAL_LINES")
+    ## s <- getItem("THERMAL_SAMPLES")
+    ## dimThermal <- c(l, s)
     list(info=info,
          time=time, spacecraft=spacecraft,
          ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon,
          lllat=lllat, lllon=lllon, lrlat=lrlat, lrlon=lrlon,
          gridCellSizePanchromatic=gridCellSizePanchromatic,
          gridCellSizeReflective=gridCellSizeReflective,
-         gridCellSizeThermal=gridCellSizeThermal,
-         dimPanchromatic=dimPanchromatic,
-         dimReflective=dimReflective,
-         dimThermal=dimThermal)
+         gridCellSizeThermal=gridCellSizeThermal)
+         ##dimPanchromatic=dimPanchromatic,
+         ##dimReflective=dimReflective,
+         ##dimThermal=dimThermal)
 }
 
 
@@ -134,3 +157,51 @@ read.landsat <- function(file, band=8, debug=getOption("oceDebug"))
     rval
 }
 
+landsatTrim <- function(x, ll, ur)
+{
+    if (!inherits(x, "landsat"))
+        stop("method is only for landsat objects")
+    print(ll)
+    print(ur)
+    if (2 != sum(c("longitude", "latitude") %in% names(ll)))
+        stop("'ll' must have named items 'longitude' and 'latitude'")
+    if (2 != sum(c("longitude", "latitude") %in% names(ur)))
+        stop("'ur' must have named items 'longitude' and 'latitude'")
+    ## Trim to box
+    ll$longitude <- max(ll$longitude, x@metadata$lllon)
+    ur$longitude <- min(ur$longitude, x@metadata$urlon)
+    ll$latitude <- max(ll$latitude, x@metadata$lllat)
+    ur$latitude <- min(ur$latitude, x@metadata$urlat)
+    ## use lm to map indices (overkill but what the heck)
+    dim <- dim(x@data[[1]])
+    user <- c(x@metadata$urlon, x@metadata$lllon)
+    image <- c(1, dim[1])
+    m <- lm(image ~ user)
+    ilim <- round(predict(m, list(user=c(ll$longitude, ur$longitude))))
+    ilim[1] <- max(1, ilim[1])
+    ilim[2] <- min(ilim[2], dim[1])
+    user <- c(x@metadata$urlat, x@metadata$lllat)
+    image <- c(1, dim[2])
+    m <- lm(image ~ user)
+    print(m)
+    jlim <- round(predict(m, list(user=c(ll$latitude, ur$latitude))))
+    jlim[1] <- max(1, jlim[1])
+    jlim[2] <- min(jlim[2], dim[2])
+    if (jlim[2] > jlim[1] && ilim[2] > ilim[1])
+        stop("no intersection between landsat image and trimming box")
+    x@data[[1]] <- x@data[[1]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+    ## Update bounding box but FIXME: this is not quite right, owing to projections
+    x@metadata$lllon <- ll$longitude
+    x@metadata$ullon <- ll$longitude
+    x@metadata$lrlon <- ur$longitude
+    x@metadata$urlon <- ur$longitude
+    x@metadata$lllat <- ll$latitude
+    x@metadata$lrlat <- ll$latitude
+    x@metadata$urlat <- ur$latitude
+    x@metadata$ullat <- ur$latitude
+    x@processingLog <- processingLog(x@processingLog,
+                                     sprintf("landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f)",
+                                             ll$longitude, ll$latitude, ur$longitude, ur$latitude))
+    x
+}
+#lt<-landsatTrim(landsat, list(longitude=-71, latitude=48), list(longitude=-72, latitude=48.3));dim(lt@data$band8)
