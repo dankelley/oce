@@ -46,10 +46,7 @@ setMethod(f="plot",
                   stop("unknown value of 'which'")
               }
           })
-## lt <- landsatTrim(landsat, list(longitude=-70.03252, latitude=47.71909), list(longitude=-69.39724, latitude=48.01573))
 
-
-## plot(landsat, which=2, col=oceColorsJet, zlim=c(0.11, 0.13))
 
 read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 {
