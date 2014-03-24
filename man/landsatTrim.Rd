@@ -7,7 +7,7 @@
 
 \description{Trim a landsat image to a lat-lon box.}
 
-\usage{landsatTrim(x, ll, ur)}
+\usage{landsatTrim(x, ll, ur, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
@@ -17,6 +17,9 @@
 
   \item{ur}{A list containing \code{longitude} and \code{latitude}, for the upper-right corner of
     the portion of the image to retain.}
+  
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
+    information, or to 2 to get more.} 
 
 }
 
