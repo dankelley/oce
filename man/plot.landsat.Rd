@@ -8,11 +8,13 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, debug=getOption("oceDebug"), \dots)
+\usage{\S4method{plot}{landsat}(x, which=1, decimate=10, debug=getOption("oceDebug"), \dots)
 }
 \arguments{
   \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
   \item{which}{desired plot type; 1=histogram, 2=image}
+  \item{decimate}{decimation interval for images plots; the default 10 means to
+      show only every 10-th point.  This speeds up plotting greatly.}
   \item{debug}{set to a positive value to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }

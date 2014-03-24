@@ -22,7 +22,8 @@ read.landsat(file, band, debug=getOption("oceDebug"))
 }
 
 \details{This reads just one band, and follows a strict file naming code that
-    works for Landsat-8 but may fail otherwise.}
+    works for Landsat-8 but may fail otherwise.  Also, it only works for
+    detailed data (in TIF format), not preview data (in JPG format).}
 
 \references{Landsat data are available from \url{http://glovis.usgs.gov} and
     other sources.}
