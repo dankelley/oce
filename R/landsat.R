@@ -51,28 +51,7 @@ setMethod(f="plot",
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
-                  ##if (!missing(zlim) && zlim == "histogram") {
-                  ##    ## Equalize the histogram, with result in matrix dd
-                  ##    dd <- as.vector(d)
-                  ##    n <- length(dd)
-                  ##    h <- hist(dd, breaks=100, plot=FALSE)   # the 100 could be altered...
-                  ##    x <- h$mids
-                  ##    y <- cumsum(h$counts)/n
-                  ##    dd <- approx(x, y, dd, rule=2)$y
-                  ##    dim(dd) <- dim
-                  ##    labels <- round(approx(y, x, seq(0, 1, 0.1), rule=2)$y, 3)
-                  ##    if (is.function(col))
-                  ##        col <- col(200)
-                  ##    if (!missing(col)) {
-                  ##        drawPalette(zlim=c(0, 1), col=col, labels=labels, at=seq(0, 1, 0.1))
-                  ##        image(lon, lat, dd, asp=asp, zlim=c(0,1), col=col, ...)
-                  ##    } else {
-                  ##        drawPalette(zlim=c(0, 1), labels=labels, at=seq(0, 1, 0.1))
-                  ##        image(lon, lat, dd, asp=asp, zlim=c(0,1), ...)
-                  ##    }
-                  ##} else {
-                      imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
-                  ##}
+                  imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
               } else {
                   stop("unknown value of 'which'")
               }
