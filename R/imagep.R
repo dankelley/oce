@@ -223,6 +223,7 @@ drawPalette <- function(zlim, zlab="",
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
                         fullpage=FALSE, drawTriangles=FALSE,
+                        myaxis,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
@@ -356,17 +357,24 @@ drawPalette <- function(zlim, zlab="",
                 }
             }
         }
-        if (zIsTime & is.null(at)) {
+        if (zIsTime && is.null(at)) {
             at <- as.numeric(pretty(zlim))
         } else if (is.null(at)) {
-            ## NB. in next line, the '10' matches a call to pretty() in imagep().
-            at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10) # FIXME: wrong on contours
+            if (missing(myaxis)) {
+                ## NB. in next line, the '10' matches a call to pretty() in imagep().
+                at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10)
+            } else {
+                ## Guess that the axis labels may need more space
+                at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 6) else prettyLocal(palette, 6)
+            }
         }
         if (is.null(labels))
             labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
         ## FIXME: just guessing on best 'line', used below
+        if (!missing(myaxis))
+            axis <- myaxis
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=1, line=-1, cex=par('cex'), cex.axis)
@@ -415,6 +423,7 @@ imagep <- function(x, y, z,
                    adorn,
                    axes=TRUE,
                    main="",
+                   myaxis,
                    debug=getOption("oceDebug"),
                    ...)
 {
@@ -565,7 +574,7 @@ imagep <- function(x, y, z,
     if (is.function(col))
         col <- col(n=length(breaks)-1)
     if (drawPalette == "space") {
-        drawPalette(zlab=if(zlabPosition=="side") zlab else "", debug=debug-1)
+        drawPalette(zlab=if(zlabPosition=="side") zlab else "", myaxis=myaxis, debug=debug-1)
     } else if (drawPalette) {
         if(missing(zlim)) {
             ## use range of breaks preferably; otherwise use range z
@@ -584,7 +593,8 @@ imagep <- function(x, y, z,
                     labels=labels, at=at,
                     drawContours=drawContours,
                     drawTriangles=drawTriangles,
-                    mai=mai.palette, debug=debug-1)
+                    mai=mai.palette,
+                    myaxis=myaxis, debug=debug-1)
     }
 
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim

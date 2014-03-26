@@ -11,6 +11,7 @@
     labels=NULL, at=NULL,
     levels, drawContours=FALSE,
     fullpage=FALSE, drawTriangles=FALSE,
+    myaxis,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -50,7 +51,9 @@
         applies to both ends of the palette.  If a pair is provided, the first
         refers to the lower range of the palette, and the second to the upper
         range.}
-   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    \item{myaxis}{optional replacement function for \code{axis()}, passed to
+        \code{\link{drawPalette}}.}
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
 }
