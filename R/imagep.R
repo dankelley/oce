@@ -604,15 +604,6 @@ imagep <- function(x, y, z,
         drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
         oceDebug(debug, "mai.palette=c(", paste(mai.palette, collapse=", "), ")\n")
-<<<<<<< HEAD
-        drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",
-                    breaks=breaks, col=col, 
-                    labels=labels, at=at,
-                    drawContours=drawContours,
-                    drawTriangles=drawTriangles,
-                    mai=mai.palette,
-                    myaxis=myaxis, debug=debug-1)
-=======
         if (zlimHistogram) {
             dim <- dim(z)
             z <- as.vector(z)
@@ -635,9 +626,9 @@ imagep <- function(x, y, z,
                         labels=labels, at=at,
                         drawContours=drawContours,
                         drawTriangles=drawTriangles,
-                        mai=mai.palette, debug=debug-1)
+                        mai=mai.palette,
+                        myaxis=myaxis, debug=debug-1)
         }
->>>>>>> adeb9c45c78b7078b09aa0857032525d8e16cbc2
     }
 
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
