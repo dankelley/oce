@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
 "POT-Creation-Date: 2014-02-28 14:54\n"
-"PO-Revision-Date: 2014-02-22 11:49-0400\n"
+"PO-Revision-Date: 2014-02-25 19:00-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
-"Language-Team: Language R-zh\n"
-"Language: R-zh\n"
+"Language-Team: Language R-de\n"
+"Language: R-de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -160,19 +160,19 @@ msgid ""
 msgstr ""
 
 msgid "beam"
-msgstr "光束"
+msgstr ""
 
 msgid "east"
-msgstr "东"
+msgstr "nach Osten"
 
 msgid "north"
-msgstr "北"
+msgstr "nach Norden"
 
 msgid "up"
-msgstr "向上"
+msgstr "nach oben"
 
 msgid "error"
-msgstr "错误"
+msgstr ""
 
 msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
@@ -581,7 +581,7 @@ msgid "Amplitude"
 msgstr ""
 
 msgid "Correlation"
-msgstr "海拔"
+msgstr ""
 
 msgid "there is no analog1 signal in this ADV object"
 msgstr ""
@@ -1040,7 +1040,7 @@ msgid ""
 msgstr ""
 
 msgid "Station"
-msgstr "站"
+msgstr "Station"
 
 msgid "unknown value of which,"
 msgstr ""
@@ -1330,25 +1330,25 @@ msgid "cannot evaluate adorn='"
 msgstr ""
 
 msgid "Size Class #"
-msgstr "大小类"
+msgstr "Korngrössen Klassen"
 
 msgid "Laser Trans. Sensor"
-msgstr "激光传输传感器"
+msgstr ""
 
 msgid "Voltage"
-msgstr "电压"
+msgstr ""
 
 msgid "Ext. Aux. Input"
-msgstr "外部辅助输入"
+msgstr ""
 
 msgid "Laser Ref. Sensor"
-msgstr "激光参考传感器"
+msgstr ""
 
 msgid "Transmission %"
-msgstr "传输％的"
+msgstr ""
 
 msgid "Beam-C [1/m]"
-msgstr "束-C [1/m]"
+msgstr ""
 
 msgid "data file must hold at least 42 space-separated columns"
 msgstr ""
@@ -1566,16 +1566,16 @@ msgid "must provide 2 or 3 bytes"
 msgstr ""
 
 msgid "Temperature"
-msgstr "温度"
+msgstr "Temperatur"
 
 msgid "Conservative temperature"
-msgstr ""
+msgstr "Conservative temperature"
 
 msgid "Potential density anomaly"
-msgstr ""
+msgstr "Mögliche Dichteanomalie"
 
 msgid "Potential Temperature"
-msgstr "位温"
+msgstr "Potenzielle Temperatur"
 
 msgid "Tritium"
 msgstr ""
@@ -1584,7 +1584,7 @@ msgid "Tu"
 msgstr ""
 
 msgid "Nitrate"
-msgstr ""
+msgstr "Nitrat"
 
 msgid "NO3"
 msgstr ""
@@ -1593,70 +1593,70 @@ msgid "umol/kg"
 msgstr ""
 
 msgid "Nitrite"
-msgstr ""
+msgstr "Nitrit"
 
 msgid "NO2"
 msgstr ""
 
 msgid "Oxygen"
-msgstr ""
+msgstr "Sauerstoff"
 
 msgid "O2"
 msgstr ""
 
 msgid "Phosphate"
-msgstr ""
+msgstr "Phosphat"
 
 msgid "PO4"
 msgstr ""
 
 msgid "Silicate"
-msgstr ""
+msgstr "Silikat"
 
 msgid "SiO4"
 msgstr ""
 
 msgid "Fluorescence"
-msgstr ""
+msgstr "Fluoreszenz"
 
 msgid "Spice"
 msgstr ""
 
 msgid "Practical Salinity"
-msgstr "实用盐度"
+msgstr "Praktische Salinität"
 
 msgid "absolute salinity"
-msgstr "绝对盐度"
+msgstr "Absolute Salinität"
 
 msgid "g/kg"
-msgstr "克/公斤"
+msgstr ""
 
 msgid "Pressure"
-msgstr "压力"
+msgstr "Druck"
 
 msgid "dbar"
 msgstr ""
 
 msgid "Distance"
-msgstr "距离"
+msgstr "Abstand"
 
 msgid "m"
-msgstr "计"
+msgstr ""
 
 msgid "km"
-msgstr "公里"
+msgstr ""
 
 msgid "Along-track Distance"
-msgstr "沿轨距离"
+msgstr "Spur-Abstand"
 
 msgid "Heading"
-msgstr "名称"
+msgstr "Unterwegs Richtung"
 
 msgid "Pitch"
-msgstr "议案"
+msgstr "Neigung"
 
 msgid "Roll"
-msgstr "翻滚"
+msgstr ""
 
 msgid "u"
 msgstr ""
@@ -1668,16 +1668,16 @@ msgid "w"
 msgstr ""
 
 msgid "Eastward"
-msgstr ""
+msgstr "nach Osten"
 
 msgid "Northward"
-msgstr ""
+msgstr "nach Norden"
 
 msgid "Depth"
-msgstr "深度"
+msgstr "Tiefe"
 
 msgid "Elevation"
-msgstr "海拔"
+msgstr "Höhe"
 
 msgid "Speed"
 msgstr ""
@@ -1686,19 +1686,19 @@ msgid "m/s"
 msgstr ""
 
 msgid "Latitude"
-msgstr "纬度"
+msgstr "Latitude"
 
 msgid "Longitude"
-msgstr "经度"
+msgstr "Longitude"
 
 msgid "Frequency"
-msgstr "频率"
+msgstr "Frequenz"
 
 msgid "cph"
 msgstr ""
 
 msgid "Spectral density"
-msgstr "谱密度"
+msgstr "Spektrale Dichte"
 
 msgid "must supply 'm'"
 msgstr ""
@@ -2388,7 +2388,7 @@ msgid ""
 msgstr ""
 
 msgid "Serial Number"
-msgstr "编号"
+msgstr ""
 
 msgid "from cannot be an integer less than 1"
 msgstr ""

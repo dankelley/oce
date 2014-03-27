@@ -643,10 +643,10 @@ in the St Lawrence Estuary Internal Wave Experiment.
 
 Many of the \verb@oce@ plotting functions produce axis labels that can be
 displayed in languages other than English.  At the time of writing, French,
-Spanish, and Mandarin are supported in at least a rudimentary way.  Setting the
-language can be done at the general system level, or within R; the latter is
-illustrated below for French (which is coded \verb@"fr"@ in the ISO 639 language
-standard).
+German, Spanish, and Mandarin are supported in at least a rudimentary way.
+Setting the language can be done at the general system level, or within R; the
+latter is illustrated below for French (which is coded \verb@"fr"@ in the ISO
+639 language standard).
 <<>>=
 library(oce)
 Sys.setenv(LANGUAGE="fr")

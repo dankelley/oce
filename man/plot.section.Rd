@@ -97,7 +97,8 @@
     
     \item{zbreaks, zcol}{breaks and colours to be used if
         \code{ztype="points"}.  If not provided, a reasonable default is
-        chosen.}
+        chosen.  If \code{zcol} is a function, it will be invoked
+        with an argument equal to \code{1+length(breaks)}.}
 
     \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
 

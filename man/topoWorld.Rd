@@ -20,7 +20,7 @@
 \dontrun{
 library(oce)
 data(topoWorld) 
-plot(topoWorld, legend=NULL)
+plot(topoWorld, location=NULL)
 }
 }
 

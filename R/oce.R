@@ -223,7 +223,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                        mai.palette=c(0, 1/8, 0, 3/8),
+                        mai.palette=rep(0, 4), #c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
                         axes=TRUE, tformat,
@@ -249,7 +249,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oceDebug(debug, "marginsAsImage=",marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
-    pc <- paletteCalculations(mai=mai.palette)
+    pc <- paletteCalculations(maidiff=mai.palette)
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -540,10 +540,14 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             if (substr(filename, 1, 5) == "http:")
                 stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                      filename, "\", \"", gsub(".*/", "", filename), "\")")
-            library(ncdf)
-            f <- open.ncdf(filename)
-            if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
+            if (require(ncdf4)) {
+                f <- nc_open(filename)
+                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncvar_get(nc_open(filename), "DATA_TYPE"), ignore.case=TRUE))
                 return("drifter/argo")
+            } else {
+                warning("cannot determine type of .nc file without the ncdf library installed\n")
+                return("unknown")
+            }
         } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
         } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
@@ -739,6 +743,47 @@ read.oce <- function(file, ...)
         return(read.observatory(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
+
+
+oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+{
+    region <- match.arg(region)
+    type <- match.arg(type)
+    if (type == "fill") {
+        ## generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10,4,10))/255)
+        land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
+                  "#C79652","#BD9248","#B38E3E","#A98A34")
+        water <- rev(c("#E1FCF7","#BFF2EC","#A0E8E4","#83DEDE","#68CDD4",
+                       "#4FBBC9","#38A7BF","#2292B5","#0F7CAB"))
+    } else {
+        land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
+                  "#C79652","#BD9248","#B38E3E","#A98A34")
+        water <- rev(c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
+                       "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3"))#,"#3194B4",
+                       #"#2A7CA4","#205081","#16255E","#100C2F"))
+    }
+    if (region == "water") {
+        rgb.list <- col2rgb(water) / 255
+        l <- length(water)
+        r <- approx(1:l, rgb.list[1,1:l], xout=seq(1, l, length.out=n))$y
+        g <- approx(1:l, rgb.list[2,1:l], xout=seq(1, l, length.out=n))$y
+        b <- approx(1:l, rgb.list[3,1:l], xout=seq(1, l, length.out=n))$y
+    } else if (region == "land") {
+        rgb.list <- col2rgb(land) / 255
+        l <- length(land)
+        r <- approx(1:l, rgb.list[1,1:l], xout=seq(1, l, length.out=n))$y
+        g <- approx(1:l, rgb.list[2,1:l], xout=seq(1, l, length.out=n))$y
+        b <- approx(1:l, rgb.list[3,1:l], xout=seq(1, l, length.out=n))$y
+    } else {                            # both
+        rgb.list <- col2rgb(c(water, land)) / 255
+        l <- length(land) + length(water)
+        r <- approx(1:l, rgb.list[1,1:l], xout=seq(1, l, length.out=n))$y
+        g <- approx(1:l, rgb.list[2,1:l], xout=seq(1, l, length.out=n))$y
+        b <- approx(1:l, rgb.list[3,1:l], xout=seq(1, l, length.out=n))$y
+    }
+    rgb(r, g, b)
+}
+
 
 oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {

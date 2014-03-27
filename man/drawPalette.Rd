@@ -7,10 +7,11 @@
 \description{Draw a palette on the right-hand side of plot device}
 
 \usage{drawPalette(zlim, zlab="",
-    breaks, col, mai, cex.axis=par("cex.axis"),
+    breaks, col, mai, cex.axis=par("cex.axis"), pos=4,
     labels=NULL, at=NULL,
     levels, drawContours=FALSE,
     fullpage=FALSE, drawTriangles=FALSE,
+    myaxis,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -29,6 +30,10 @@
         \code{\link{par}}.  If not given, reasonable values are inferred from
         the existence of a non-blank \code{zlab}.}
     \item{cex.axis}{character-expansion value for text labels}
+    \item{pos}{an integer indicating the location of the palette within
+        the plotting area, 1 for near the bottom, 2 for near the left-hand
+        side, 3 for near the top side, and 4 (the default) for near
+        the right-hand side.}
     \item{labels}{optional vector of labels for ticks on palette axis (must
         correspond with \code{at})}
     \item{at}{optional vector of positions for the \code{label}s}
@@ -46,6 +51,8 @@
         applies to both ends of the palette.  If a pair is provided, the first
         refers to the lower range of the palette, and the second to the upper
         range.}
+    \item{myaxis}{optional replacement function for \code{axis()}, passed to
+        \code{\link{drawPalette}}.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
@@ -89,6 +96,7 @@
     drawPalette(zlab="Image Scale")
     plot(1:10, 1:10, col=oceColorsPalette(10)[1:10], xlab='x', ylab='y')
 
+    \dontrun{
     # Use layout to mimic the action of imagep(), with the width
     # of the palette region being 14 percent of figure width.
     d <- 0.14
@@ -96,6 +104,7 @@
     image(volcano, col=oceColorsJet(100), zlim=c(90, 200))
     contour(volcano, add=TRUE)
     drawPalette(c(90, 200), fullpage=TRUE, col=oceColorsJet)
+    }
 }
 
 \author{Dan Kelley, with help from Clark Richards}

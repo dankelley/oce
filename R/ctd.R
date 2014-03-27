@@ -309,7 +309,6 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
             } else {
                 focus <- (x@data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x@data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
             }
-            ##cat("i=",i,"pt[i]=",pt[i],"; datum.name=", datum.name, "\n")
             if (sum(focus, na.rm=TRUE) > 0) {
                 if ("boxcar" == method) {
                     for (datum.name in data.names) {
@@ -323,8 +322,11 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
                     for (datum.name in data.names) {
                         if (datum.name != "pressure") {
                             yvar <- x@data[[datum.name]][focus]
-                            m <- lm(yvar ~ xvar)
-                            data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
+                            t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
+                            if (class(t) != "try-error")
+                                data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
+                            else
+                                data.new[[datum.name]][i] <- NA
                         }
                     }
                 } else {
@@ -1495,7 +1497,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         salinity <- vector("numeric", nlines)
         oxygen <- vector("numeric", nlines)
         b <- 0
-        oceDebug("pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
+        oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
         for (iline in 1:nlines) {
             if (0 < (length(grep("END_DATA", lines[iline]))))
                 break
@@ -2148,7 +2150,8 @@ plotTS <- function (x,
                     lty.grid="dotted",
                     rho1000=FALSE,
                     eos=getOption("eos", default='unesco'),
-                    cex=par("cex"), col = par("col"), pch=par("pch"), bg,
+                    cex=par("cex"), col = par("col"), pch=par("pch"),
+                    bg, pt.bg="transparent",
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
                     rotate=FALSE,
@@ -2231,14 +2234,14 @@ plotTS <- function (x,
     } else {
         if (add) {
             if (type == 'p') {
-                points(salinity, y, cex=cex, pch=pch, col=col)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
             } else if (type == 'l') {
                 lines(salinity, y, col=col, ...)
             } else if (type == 'o') {
-                points(salinity, y, cex=cex, pch=pch, col=col)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
                 lines(salinity, y, col=col, ...)
             } else if (type != 'n') {
-                points(salinity, y, cex=cex, pch=pch, col=col)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
             }
         } else {
             plot(Slim, Tlim,
@@ -2252,14 +2255,14 @@ plotTS <- function (x,
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
             if (type == 'p') {
-                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
             } else if (type == 'l') {
                 lines(salinity, y, col=col, ...)
             } else if (type == 'o') {
-                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
                 lines(salinity, y, col=col, ...)
             } else if (type != 'n') {
-                points(salinity, y, cex=cex, pch=pch, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
             }
         }
     }
@@ -2345,6 +2348,7 @@ plotProfile <- function (x,
                          col.N2 = "brown",
                          col.dpdt = "darkgreen",
                          col.time = "darkgreen",
+                         pt.bg="transparent",
                          grid = TRUE,
                          col.grid = "lightgray",
                          lty.grid = "dotted",
@@ -2367,7 +2371,10 @@ plotProfile <- function (x,
     oceDebug(debug, "\bplotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="")
     eos <- match.arg(eos, c("unesco", "teos"))
-    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, df=df, keepNA=FALSE, debug=getOption("oceDebug"))
+    plotJustProfile <- function(x, y, col="black", type="l",
+                                lwd=par("lwd"),
+                                cex=1, pch=1, pt.bg="transparent",
+                                df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
         oceDebug(debug, "\bplotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="")
         if (!keepNA) {
@@ -2380,13 +2387,13 @@ plotProfile <- function (x,
         } else if (type == 's') {
             lines(x, y, col = col, lwd=lwd, type='s')
         } else if (type == 'p') {
-            points(x, y, col = col, cex=cex, pch=pch)
+            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'o') {
             lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex, pch=pch)
+            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'b') {
             lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex, pch=pch)
+            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'n') {
             ; # skip it
         } else {
@@ -2619,7 +2626,9 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(salinity, y, type=type, lwd=lwd, cex=cex, pch=pch, col=col, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(salinity, y, type=type, lwd=lwd,
+                            cex=cex, pch=pch, col=col, pt.bg=pt.bg,
+                            keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
         if (!(xtype %in% names(x@data)))
@@ -2656,7 +2665,9 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd,
+                            cex=cex, col=col, pch=pch, pt.bg=pt.bg,
+                            keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
         Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger")
@@ -2683,7 +2694,9 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col here, since no second axis to worry about
-        plotJustProfile(Rrho, y[look], type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(Rrho, y[look], type=type, lwd=lwd,
+                        cex=cex, col=col, pch=pch, pt.bg=pt.bg,
+                        keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
         if (missing(Tlim)) {
@@ -2719,7 +2732,9 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd,
+                            cex=cex, pch=pch, pt.bg=pt.bg,
+                            keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
         theta <- swTheta(x, method=eos)
@@ -2756,7 +2771,9 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex,
+                            col=col, pch=pch, pt.bg=pt.bg,
+                            keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "density") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
@@ -2784,7 +2801,9 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(st, y, col = col, type=type, lwd=lwd,
+                        cex=cex, pch=pch, pt.bg=pt.bg,
+                        keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
@@ -2865,7 +2884,9 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
-        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd,
+                        cex=cex, pch=pch, pt.bg=pt.bg,
+                        keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
@@ -2884,7 +2905,9 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, cex=cex, col=col, pch=pch, keepNA=keepNA, debug=debug-1)
+        plotJustProfile(x=spice, y=y, type=type, lwd=lwd,
+                        cex=cex, col=col, pch=pch, pt.bg=pt.bg, 
+                        keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"salinity+temperature\"")

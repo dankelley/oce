@@ -27,6 +27,7 @@
     adorn,
     axes=TRUE,
     main="",
+    myaxis,
     debug=getOption("oceDebug"),
     \dots)
 }
@@ -102,9 +103,8 @@
     \item{mar}{value to be used with \code{\link{par}("mar")}.  If not given, a
         reasonable value is calculated based on whether \code{xlab} and
         \code{ylab} are empty strings.}
-    \item{mai.palette}{margins, in inches, for the palette.  If not given, a
-        reasonable value is calculated based on whether \code{zlab} is an empty
-        string, and the value of \code{zlabPosition}.}
+    \item{mai.palette}{palette margin corrections (in inches), added to the
+        \code{mai} value used for the palette.  Use with care.}
     \item{xaxs}{character indicating whether image should extend to edge
         of x axis (with value \code{"i"}) or not; see
         \code{\link[graphics]{par}}("xaxs").}
@@ -114,6 +114,8 @@
         drawing the data panel.}     
     \item{axes}{logical, set \code{TRUE} to get axes on the main image.}
     \item{main}{title for plot.}
+    \item{myaxis}{optional replacement function for \code{axis()}, passed to
+        \code{\link{drawPalette}}.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
