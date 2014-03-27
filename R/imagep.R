@@ -238,12 +238,13 @@ drawPalette <- function(zlim, zlab="",
         oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",",
                  zlim[2], "), zlab=", "\"", as.character(zlab), "\"",
                  ", pos=", pos, 
-                 ", mai=c(", paste(mai, collapse=","), ")",
                  ", drawTriangles=", drawTriangles, ", ...) {\n", sep="")
     else
-        oceDebug(debug, "\bdrawPalette() with no arguments: set space to right of a graph\n", sep="")
+        oceDebug(debug, "\bdrawPalette() with no zlim argument: set space to right of a graph\n", sep="")
     maiGiven <- !missing(mai)
     oceDebug(debug, "maiGiven=", maiGiven, "\n")
+    if (maiGiven)
+        oceDebug(debug, "original mai=c(", paste(mai, collapse=","), "\n")
     oceDebug(debug, "breaksGiven=", breaksGiven, "\n")
     oceDebug(debug, "fullpage=", fullpage, "\n")
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
@@ -294,6 +295,13 @@ drawPalette <- function(zlim, zlab="",
                 image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
                       col=col, zlim=zlim)
             } else if (pos == 2 || pos == 4) {
+                FIN <- par('fin')
+                PIN <- par('pin')
+                MAI <- par('mai')
+
+                oceDebug(debug, "mai[2] and mail[4] add to", MAI[2] + MAI[4], "fin[1]=", FIN[1], "so image will occupy ", FIN[1] - MAI[2] - MAI[4], "inches\n")
+                oceDebug(debug, "mai[2] and mail[4] add to", MAI[2] + MAI[4], "pin[1]=", PIN[1], "so image will occupy ", FIN[1] - MAI[2] - MAI[4], "inches\n")
+
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       col=col, zlim=zlim)
             } else {
