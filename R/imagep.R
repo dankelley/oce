@@ -544,6 +544,7 @@ imagep <- function(x, y, z,
 
     zlimHistogram <- !missing(zlim) && zlim == "histogram"
     breaksGiven <- !missing(breaks)
+    zrange <- range(z, na.rm=TRUE)
 
     ## Determine breaks unless zlim=="histogram".
     if (zlimHistogram) {
@@ -553,12 +554,13 @@ imagep <- function(x, y, z,
         if (!breaksGiven) {
             oceDebug(debug, "breaks were not given\n")
             nbreaks <- 128                 # smooth image colorscale
-            zrange <- range(z, na.rm=TRUE)
             if (missing(zlim)) {
                 if (missing(col)) {
                     breaks <- pretty(zrange, n=nbreaks)
-                    if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
-                    if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
+                    if (breaks[1] < zrange[1])
+                        breaks[1] <- zrange[1]
+                    if (breaks[length(breaks)] > zrange[2])
+                        breaks[length(breaks)] <- zrange[2]
                 } else {
                     breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
                 }
@@ -591,13 +593,15 @@ imagep <- function(x, y, z,
         if (missing(col))
             col <- oceColorsPalette(n=length(breaks)-1)
     }
+    breaks2 <- if (missing(breaks)) NULL else breaks
+    col2 <- if (missing(col)) NULL else col
     ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
     if (!zclip) {
-        ## FIXME: maybe should extend breaks using .Machine.xmax/100 or something like that
-        br <- diff(range(breaks, na.rm=TRUE))
-        breaks <- c(breaks[1] - 1000*br, breaks, breaks[length(breaks)]+ 1000*br)
+        breaks2 <- c(min(c(zrange[1], breaks))-.Machine$double.eps,
+                         breaks,
+                         max(c(zrange[2], breaks))+.Machine$double.eps)
         if (!is.function(col))
-            col <- c(col[1], col, col[length(col)])
+            col2 <- c(col[1], col, col[length(col)])
     }
 
     if (is.function(col)) {
@@ -672,6 +676,8 @@ imagep <- function(x, y, z,
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     }
+    if (is.function(col2))
+        col2 <- col2(n=length(breaks2)-1)
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
         if (filledContour) {
@@ -681,15 +687,15 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             oceDebug(debug, "not doing filled contours\n")
             if (zlimHistogram) {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
                       xlim=xlim, ylim=ylim, zlim=c(0,1), ...)
             } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                   xlim=xlim, ylim=ylim, zlim=zlim, ...)
             }
         }
@@ -708,12 +714,12 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
             mtext(xlab, side=1, line=mgp[1])
             mtext(ylab, side=2, line=mgp[1])
         } else {
             oceDebug(debug, "not doing filled contours\n")
-            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
                   xlim=xlim, ylim=ylim, ...)
         }
         if (axes) {

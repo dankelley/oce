@@ -167,9 +167,9 @@
     y <- seq(0, 1, 0.01)
     angle <- outer(x,y,function(x,y) atan2(y,x))
     imagep(x, y, angle, filledContour=TRUE, breaks=c(0, pi/4, pi/2),
-    col=c("lightgray", "darkgray"),
-    at=c(0, pi/4, pi/2),
-    labels=c(0, expression(pi/4), expression(pi/2)))
+           col=c("lightgray", "darkgray"),
+           at=c(0, pi/4, pi/2),
+           labels=c(0, expression(pi/4), expression(pi/2)))
 }
 \author{Dan Kelley, with help from Clark Richards}
 \keyword{misc}
