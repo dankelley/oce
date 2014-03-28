@@ -385,16 +385,20 @@ drawPalette <- function(zlim, zlab="",
             axis <- myaxis
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
-            if (haveZlab) mtext(zlab, side=1, line=-1, cex=par('cex'), cex.axis)
+            if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1],
+                                cex=par('cex'), cex.axis=cex.axis)
         } else if (pos == 2) {
             axis(side=2, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
-            if (haveZlab) mtext(zlab, side=2, line=-1, cex=par('cex'), cex.axis)
+            if (haveZlab) mtext(zlab, side=2, line=getOption("oceMgp")[1],
+                                cex=par('cex'), cex.axis=cex.axis)
         } else if (pos == 3) {
             axis(side=3, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
-            if (haveZlab) mtext(zlab, side=3, line=-1, cex=par('cex'), cex.axis)
+            if (haveZlab) mtext(zlab, side=3, line=getOption("oceMgp")[1],
+                                cex=par('cex'), cex.axis=cex.axis)
         } else if (pos == 4) {
             axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
-            if (haveZlab) mtext(zlab, side=4, line=-1, cex=par('cex'), cex.axis)
+            if (haveZlab) mtext(zlab, side=4, line=getOption("oceMgp")[1],
+                                cex=par('cex'), cex.axis=cex.axis)
         } else {
             stop("pos must be 1, 2, 3 or 4") # cannot be reached
         }
