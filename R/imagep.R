@@ -597,9 +597,9 @@ imagep <- function(x, y, z,
     col2 <- if (missing(col)) NULL else col
     ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
     if (!zclip) {
-        breaks2 <- c(min(c(zrange[1], breaks))-.Machine$double.eps,
+        breaks2 <- c(min(c(zrange[1], breaks))-10*.Machine$double.eps,
                          breaks,
-                         max(c(zrange[2], breaks))+.Machine$double.eps)
+                         max(c(zrange[2], breaks))+10*.Machine$double.eps)
         if (!is.function(col))
             col2 <- c(col[1], col, col[length(col)])
     }
