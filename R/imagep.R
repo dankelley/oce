@@ -597,9 +597,10 @@ imagep <- function(x, y, z,
     col2 <- if (missing(col)) NULL else col
     ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
     if (!zclip) {
-        breaks2 <- c(min(c(zrange[1], breaks))-.Machine$double.eps,
+        db <- median(diff(breaks), na.rm=TRUE)
+        breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
                          breaks,
-                         max(c(zrange[2], breaks))+.Machine$double.eps)
+                         max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
         if (!is.function(col))
             col2 <- c(col[1], col, col[length(col)])
     }
@@ -681,7 +682,7 @@ imagep <- function(x, y, z,
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
         if (filledContour) {
-            oceDebug(debug, "doing filled contours\n")
+            oceDebug(debug, "doing filled contours [1]\n")
             if (!is.double(z))
                 storage.mode(z) <- "double"
             plot.new()
@@ -690,7 +691,7 @@ imagep <- function(x, y, z,
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
-            oceDebug(debug, "not doing filled contours\n")
+            oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
                       xlim=xlim, ylim=ylim, zlim=c(0,1), ...)
@@ -709,7 +710,7 @@ imagep <- function(x, y, z,
     } else {                           # x is not a POSIXt
         oceDebug(debug, "the x axis does not represent time\n")
         if (filledContour) {
-            oceDebug(debug, "doing filled contours\n")
+            oceDebug(debug, "doing filled contours [3]\n")
             storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
