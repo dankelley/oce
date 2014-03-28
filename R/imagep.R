@@ -551,6 +551,7 @@ imagep <- function(x, y, z,
             col <- oceColorsPalette(200) # FIXME: how many colours to use?
     } else {
         if (!breaksGiven) {
+            oceDebug(debug, "breaks were not given\n")
             nbreaks <- 128                 # smooth image colorscale
             zrange <- range(z, na.rm=TRUE)
             if (missing(zlim)) {
@@ -581,6 +582,7 @@ imagep <- function(x, y, z,
                 oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
             }
         } else {
+            oceDebug(debug, "breaks were given\n")
             breaksOrig <- breaks
             if (1 == length(breaks)) {
                 breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
@@ -588,6 +590,14 @@ imagep <- function(x, y, z,
         }
         if (missing(col))
             col <- oceColorsPalette(n=length(breaks)-1)
+    }
+    ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
+    if (!zclip) {
+        ## FIXME: maybe should extend breaks using .Machine.xmax/100 or something like that
+        br <- diff(range(breaks, na.rm=TRUE))
+        breaks <- c(breaks[1] - 1000*br, breaks, breaks[length(breaks)]+ 1000*br)
+        if (!is.function(col))
+            col <- c(col[1], col, col[length(col)])
     }
 
     if (is.function(col)) {
@@ -597,9 +607,11 @@ imagep <- function(x, y, z,
             col <- col(n=length(breaks)-1)
     }
     if (drawPalette == "space") {
+        oceDebug(debug, "not drawing a palette, since drawPalette=\"space\"\n")
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", myaxis=myaxis, debug=debug-1)
     } else if (drawPalette) {
-
+        oceDebug(debug, "drawPalette=", drawPalette, "\n")
+        oceDebug(debug, "drawing a palette\n")
         if(missing(zlim)) {
             ## use range of breaks preferably; otherwise use range z
             if (missing(breaks)) {
@@ -613,6 +625,7 @@ imagep <- function(x, y, z,
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
         oceDebug(debug, "mai.palette=c(", paste(mai.palette, collapse=", "), ")\n")
         if (zlimHistogram) {
+            ## CAUTION: change data in 'z'
             dim <- dim(z)
             z <- as.vector(z)
             n <- length(z)
@@ -660,7 +673,9 @@ imagep <- function(x, y, z,
         z[z > zlim[2]] <- NA
     }
     if (xIsTime) {
+        oceDebug(debug, "the x axis represents time\n")
         if (filledContour) {
+            oceDebug(debug, "doing filled contours\n")
             if (!is.double(z))
                 storage.mode(z) <- "double"
             plot.new()
@@ -669,6 +684,7 @@ imagep <- function(x, y, z,
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
+            oceDebug(debug, "not doing filled contours\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
                       xlim=xlim, ylim=ylim, zlim=c(0,1), ...)
@@ -685,7 +701,9 @@ imagep <- function(x, y, z,
             axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     } else {                           # x is not a POSIXt
+        oceDebug(debug, "the x axis does not represent time\n")
         if (filledContour) {
+            oceDebug(debug, "doing filled contours\n")
             storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
@@ -694,6 +712,7 @@ imagep <- function(x, y, z,
             mtext(xlab, side=1, line=mgp[1])
             mtext(ylab, side=2, line=mgp[1])
         } else {
+            oceDebug(debug, "not doing filled contours\n")
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
         }
@@ -711,8 +730,10 @@ imagep <- function(x, y, z,
     }
     if (!(is.character(main) && main == ""))
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
-    if (drawContours)
+    if (drawContours) {
+        oceDebug(debug, "adding contours\n")
         contour(x=xorig, y=yorig, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
+    }
     if (zlabPosition == "top")
         mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
     if (!missing(adorn)) {
