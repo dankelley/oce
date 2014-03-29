@@ -419,18 +419,15 @@ drawPalette <- function(zlim, zlab="",
             stop("pos must be 1, 2, 3 or 4") # cannot be reached
         }
     }
-    ## FIXME why the "new" in only one case?
+    ## FIXME why the "new" in only one case? Generally, the graphic state is confusing!
     if (fullpage) {
         par(mai=pc$mai0) # reset to original
     } else {
         if (zlimGiven) {
-            message("zlimGiven and not fullpage; setting mai=", paste(pc$mai2, collapse=" "))
             par(new=TRUE, mai=pc$mai2)
         } else {
             par(mai=pc$mai2)
         }
-        ##if (fullpage)
-        ##    par(mai=omai)
     }
     oceDebug(debug, "\b\b} # drawPalette()\n")
     invisible()
