@@ -235,7 +235,7 @@ drawPalette <- function(zlim, zlab="",
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
                         fullpage=FALSE, drawTriangles=FALSE,
-                        myaxis,
+                        axisPalette,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
@@ -384,7 +384,7 @@ drawPalette <- function(zlim, zlab="",
         if (zIsTime && is.null(at)) {
             at <- as.numeric(pretty(zlim))
         } else if (is.null(at)) {
-            if (missing(myaxis)) {
+            if (missing(axisPalette)) {
                 ## NB. in next line, the '10' matches a call to pretty() in imagep().
                 at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10)
             } else {
@@ -397,8 +397,8 @@ drawPalette <- function(zlim, zlab="",
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
         ## FIXME: just guessing on best 'line', used below
-        if (!missing(myaxis))
-            axis <- myaxis
+        if (!missing(axisPalette))
+            axis <- axisPalette
         if (pos == 1) {
             axis(side=1, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1],
@@ -454,7 +454,7 @@ imagep <- function(x, y, z,
                    adorn,
                    axes=TRUE,
                    main="",
-                   myaxis,
+                   axisPalette,
                    debug=getOption("oceDebug"),
                    ...)
 {
@@ -636,7 +636,7 @@ imagep <- function(x, y, z,
     }
     if (drawPalette == "space") {
         oceDebug(debug, "not drawing a palette, since drawPalette=\"space\"\n")
-        drawPalette(zlab=if(zlabPosition=="side") zlab else "", myaxis=myaxis, debug=debug-1)
+        drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
         oceDebug(debug, "drawPalette=", drawPalette, "\n")
         oceDebug(debug, "drawing a palette\n")
@@ -676,7 +676,8 @@ imagep <- function(x, y, z,
                         drawContours=drawContours,
                         drawTriangles=drawTriangles,
                         mai=mai.palette,
-                        myaxis=myaxis, debug=debug-1)
+                        axisPalette=axisPalette,
+                        debug=debug-1)
         }
     }
 
