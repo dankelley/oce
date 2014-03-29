@@ -169,9 +169,10 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
                                 zlab, maidiff=c(0, 0, 0, 0))
 {
     ## This returns a list with the following entries:
-    ##   mai0 = before this call
-    ##   mai1 = just before plotting palette (i.e. lots of white space on one side)
-    ##   mai2 = ready for post-palette drawing (i.e. good for a diagram beside palette)
+    ##   mai0  = before this call
+    ##   mai1  = just before plotting palette (i.e. lots of white space on one side)
+    ##   mai1f = set before plotting fullpage palette
+    ##   mai2  = ready for post-palette drawing (i.e. good for a diagram beside palette)
     if (!(pos %in% 1:4))
         stop("'pos' must be 1, 2, 3 or 4")
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
@@ -182,32 +183,42 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     figureHeight <- par("fin")[2]
     pc <- list(mai0=par('mai'))
     pc$mai1 <- pc$mai0
+    pc$mai1f <- pc$mai0
     pc$mai2 <- pc$mai0
-    P <- separation + width
+    ##P <- separation + width
     P <- width
     A <- tickSpace + textSpace
     if (pos == 1) {
         ## alter top and bottom margins
         pc$mai1[1] <- A
         pc$mai1[3] <- figureHeight - P - A
+        pc$mai1f[2] <- 0
+        pc$mai1f[4] <- A
         pc$mai2[1] <- P + A + pc$mai0[1]
         pc$mai2[3] <- pc$mai0[3]
     } else if (pos == 2) {
         ## alter left and right margins
         pc$mai1[2] <- A
         pc$mai1[4] <- figureWidth - P - A
+        pc$mai1f[4] <- 0
+        pc$mai1f[2] <- A
         pc$mai2[2] <- P + A + pc$mai0[2]
         pc$mai2[4] <- pc$mai0[4]
     } else if (pos == 3) {
         ## alter top and bottom margins
         pc$mai1[1] <- figureHeight - P - A
         pc$mai1[3] <- A
+        pc$mai1f[1] <- 0
+        pc$mai1f[3] <- A
         pc$mai2[1] <- pc$mai0[1]
         pc$mai2[3] <- P + A + pc$mai0[3]
     } else if (pos == 4) {
+        ## DEVELOPER: work here first since it's the common case
         ## alter left and right margins
         pc$mai1[2] <- figureWidth - P - A
         pc$mai1[4] <- A
+        pc$mai1f[2] <- 0
+        pc$mai1f[4] <- A
         pc$mai2[2] <- pc$mai0[2]
         pc$mai2[4] <- P + A + pc$mai0[4]
     } else {
@@ -215,6 +226,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     }
     ## Adjust palette margins (mai1); FIXME: should this also alter mai2?
     pc$mai1 <- pc$mai1 + maidiff
+    pc$mai1f <- pc$mai1f + maidiff
     pc 
 }
 
@@ -288,7 +300,10 @@ drawPalette <- function(zlim, zlab="",
             col <- col(n=length(breaks)-1)
     }
     if (zlimGiven) {
-        par(mai=pc$mai1)
+        if (fullpage)
+            par(mai=pc$mai1f)
+        else
+            par(mai=pc$mai1)
         if (!breaksGiven) {
             palette <- seq(zlim[1], zlim[2], length.out=300)
             if (pos == 1 || pos == 3) {
@@ -302,6 +317,7 @@ drawPalette <- function(zlim, zlab="",
                 oceDebug(debug, "mai[2] and mail[4] add to", MAI[2] + MAI[4], "fin[1]=", FIN[1], "so image will occupy ", FIN[1] - MAI[2] - MAI[4], "inches\n")
                 oceDebug(debug, "mai[2] and mail[4] add to", MAI[2] + MAI[4], "pin[1]=", PIN[1], "so image will occupy ", FIN[1] - MAI[2] - MAI[4], "inches\n")
 
+                #browser()
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       col=col, zlim=zlim)
             } else {
@@ -404,12 +420,18 @@ drawPalette <- function(zlim, zlab="",
         }
     }
     ## FIXME why the "new" in only one case?
-    if (zlimGiven)
-        par(new=TRUE, mai=pc$mai2)
-    else
-        par(mai=pc$mai2)
-    if (fullpage)
-        par(mai=omai)
+    if (fullpage) {
+        par(mai=pc$mai0) # reset to original
+    } else {
+        if (zlimGiven) {
+            message("zlimGiven and not fullpage; setting mai=", paste(pc$mai2, collapse=" "))
+            par(new=TRUE, mai=pc$mai2)
+        } else {
+            par(mai=pc$mai2)
+        }
+        ##if (fullpage)
+        ##    par(mai=omai)
+    }
     oceDebug(debug, "\b\b} # drawPalette()\n")
     invisible()
 }
