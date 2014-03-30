@@ -45,7 +45,7 @@ setMethod(f="summary",
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
-              oceDebug(debug, "\b\bplot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="")
+              oceDebug(debug, "plot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="", unindent=1)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
               which <- ocePmatch(which,

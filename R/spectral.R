@@ -35,11 +35,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     gave.nfft <- !missing(nfft)
     gave.fs <- !missing(fs)
     gave.noverlap <- !missing(noverlap)
-    oceDebug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, noverlap=%s, ...) {\n",
+    oceDebug(debug, sprintf("pwelch(x, window=%s, nfft=%s, fs=%s, noverlap=%s, ...) {\n",
                              if (gave.window) window else "(not given)",
                              if (gave.nfft) nfft else "(not given)",
                              if (gave.noverlap) noverlap else "(not given)",
-                             if (gave.fs) fs else "(not given)"))
+                             if (gave.fs) fs else "(not given)"), unindent=1)
     if (is.ts(x)) {
         if (missing(fs))
             fs <- frequency(x)
@@ -123,7 +123,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     nrow <- max(1, nrow)
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "resultant spectrum is average across matrix of dimension", dim(psd), "\n")
-    oceDebug(debug, "\b\b} # pwelch()\n")
+    oceDebug(debug, "} # pwelch()\n", unindent=1)
     rval <- list(freq=freq, spec=apply(psd, 2, mean), 
                  method="Welch", series=deparse(substitute(x)),
                  df=s$df * (x.len / length(window)),

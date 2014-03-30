@@ -143,10 +143,10 @@ setMethod(f="plot",
           {
               if (!inherits(x, "drifter"))
                   stop("method is only for objects of class '", "drifter", "'")
-              oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "),",
+              oceDebug(debug, "plot.drifter(x, which=c(", paste(which,collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
-                      " ...) {\n", sep="")
+                      " ...) {\n", sep="", unindent=1)
               coastline <- match.arg(coastline)
               #opar <- par(no.readonly = TRUE)
               lw <- length(which)
@@ -290,7 +290,7 @@ setMethod(f="plot",
                       stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
-              oceDebug(debug, "\b\b} # plot.drifter()\n")
+              oceDebug(debug, "} # plot.drifter()\n", unindent=1)
               invisible()
           })
 

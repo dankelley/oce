@@ -90,12 +90,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 {
     if (!require(mapproj))
         stop("'mapproj' package must be installed to work with maps")
-    oceDebug(debug, "\b\bmapPlot(longitude, latitude", 
+    oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(longitudelim)) "(missing)" else c("c(", paste(longitudelim, collapse=","), ")"),
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(latitudelim, collapse=","), ")"),
-             ", ...) {\n")
+             ", ...) {\n", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", envir=environment())
         longitude <- get("coastlineWorld")
@@ -291,7 +291,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         options(warn=options$warn) 
     }
-    oceDebug(debug, "\b\b} # mapPlot(...)\n")
+    oceDebug(debug, "} # mapPlot()\n", unindent=1)
 }
 
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
@@ -632,10 +632,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         stop("'mapproj' package must be installed to work with maps")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
-    oceDebug(debug, "\b\bmapImage(..., ",
+    oceDebug(debug, "mapImage(..., ",
              " missingColor='", missingColor, "', ",
              " filledContour=", filledContour, ", ",
-             ", ...) {\n", sep="")
+             ", ...) {\n", sep="", unindent=1)
  
     if (filledContour)
         warning("mapImage() cannot yet handle filledContour\n")
@@ -774,7 +774,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             }
         }
     }
-    oceDebug(debug, "\b\b} # mapImage()\n")
+    oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
 }
 

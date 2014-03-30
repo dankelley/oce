@@ -14,7 +14,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
     type <- match.arg(type)
-    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", longitude=", longitude, ", latitude=", latitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
+    oceDebug(debug, "read.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", longitude=", longitude, ", latitude=", latitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="", unindent=1)
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (by != 1)
@@ -456,7 +456,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata$velocityMaximum <- metadata$velocityScale * 2^15
     res@metadata <- metadata
     res@processingLog <- unclass(hitem)
-    oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
+    oceDebug(debug, "} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="", unindent=1)
     res
 }
 

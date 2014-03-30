@@ -349,7 +349,7 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 
 prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\bprettyPosition(...) {\n", sep="")
+    oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
     r <- diff(range(x, na.rm=TRUE))
     oceDebug(debug, 'range(x)=', range(x), 'r=', r, '\n')
     if (r > 5) {                       # D only
@@ -370,7 +370,7 @@ prettyPosition <- function(x, debug=getOption("oceDebug"))
         rval <- (1 / 3600) * pretty(3600 * x)
         if (debug) cat("case 5: rval=", rval, "\n")
     }
-    oceDebug(debug, "\b\b} # prettyPosition\n")
+    oceDebug(debug, "} # prettyPosition\n", unindent=1)
     rval
 }
 
@@ -421,7 +421,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         stop("must give argument 'b'")
     if (missing(t0))
         stop("must give argument 't0'")
-    oceDebug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
+    oceDebug(debug, paste("retime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="", unindent=1)
     rval <- x
     oceDebug(debug, "retiming x@data$time")
     rval@data$time <- x@data$time + a + b * (as.numeric(x@data$time) - as.numeric(t0))
@@ -430,7 +430,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         rval@data$timeSlow <- x@data$timeSlow + a + b * (as.numeric(x@data$timeSlow) - as.numeric(t0))
     }
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # retime.adv()\n")
+    oceDebug(debug, "} # retime.adv()\n", unindent=1)
     rval
 }
 
@@ -1365,7 +1365,7 @@ interpBarnes <- function(x, y, z, w,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "\b\binterpBarnes(x, ...) {\n")
+    oceDebug(debug, "interpBarnes(x, ...) {\n", unindent=1)
     if (!is.vector(x))
         stop("x must be a vector")
     n <- length(x)
@@ -1420,7 +1420,7 @@ interpBarnes <- function(x, y, z, w,
                as.double(xr), as.double(yr),
                as.double(gamma),
                as.integer(iterations))
-    oceDebug(debug, "\b\b} # interpBarnes(...)\n")
+    oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
         g$zg[bad] <- NA
@@ -1859,7 +1859,7 @@ integerToAscii <- function(i)
 
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bapplyMagneticDeclination(x,declination=", declination, ") {\n", sep="")
+    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
     if (inherits(x, "cm")) {
         oceDebug(debug, "object is of type 'cm'\n")
         rval <- x
@@ -1877,7 +1877,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # applyMagneticDeclination\n")
+    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
     rval
 }
 

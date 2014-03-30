@@ -83,14 +83,14 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
-              oceDebug(debug, "\bplot.coastline(...",
+              oceDebug(debug, "plot.coastline(...",
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
-                       ", ...) {\n", sep="")
+                       ", ...) {\n", sep="", unindent=1)
               if (!is.null(projection)) {
                   if (missing(span))
                       span <- 1000
@@ -303,7 +303,7 @@ setMethod(f="plot",
               }
               ##box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
-              oceDebug(debug, "\b\b} # plot.coastline()\n")
+              oceDebug(debug, "} # plot.coastline()\n", unindent=1)
               invisible()
           })
 
@@ -314,7 +314,7 @@ read.coastline <- function(file,
                            processingLog)
 {
     type <- match.arg(type)
-    oceDebug(debug, "\b\bread.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="")
+    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     if (is.character(file)) {
         filename <- file
@@ -376,7 +376,7 @@ read.coastline <- function(file,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.coastline()\n")
+    oceDebug(debug, "} # read.coastline()\n", unindent=1)
     res
 }
 
@@ -392,7 +392,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ##     http://en.wikipedia.org/wiki/Shapefile#Shapefile_shape_format_.28.shp.29
     ## Shapefile for Canada:
     ## http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm
-    oceDebug(debug, "\b\bread.shapefile(file=\"", file, "\", ...) {\n", sep="")
+    oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     shapeTypeList <- c("nullshape",    # 0
                        "point",        # 1
                        "not used",     # 2
@@ -550,7 +550,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.coastline.shapefile()\n")
+    oceDebug(debug, "} # read.coastline.shapefile()\n", unindent=1)
     res
 }
 
@@ -559,7 +559,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
                                      monitor=FALSE,
                                      processingLog)
 {
-    oceDebug(debug, "\b\bread.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="")
+    oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     ## FIXME: ignoring lonlim and latlim
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -611,15 +611,15 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.coastline.openstreetmap()\n")
+    oceDebug(debug, "} # read.coastline.openstreetmap()\n", unindent=1)
     res
 }
 
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\bcoastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
+    oceDebug(debug, "coastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
              "), latRange=c(", paste(round(latRange, 2), collapse=","),
-             "), span=", span, ", debug=", debug, ") {\n", sep="")
+             "), span=", span, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(span)) {
         if (any(lonRange > 180)) {
             lonRange <- lonRange - 360 # FIXME: does this always work?
@@ -645,6 +645,6 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     } else {
         rval <- "coastlineWorld"
     }
-    oceDebug(debug, "\b\b}\n")
+    oceDebug(debug, "}\n", unindent=1)
     return(rval)
 }

@@ -61,7 +61,7 @@ as.tdr <- function(time, temperature, pressure,
                    processingLog, debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
-    oceDebug(debug, "\bas.tdr(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="")
+    oceDebug(debug, "as.tdr(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
     if (missing(time) || missing(temperature) || missing(pressure))
         stop("must give (at least) time, temperature, and pressure")
     if (!inherits(time, "POSIXt"))
@@ -79,7 +79,7 @@ as.tdr <- function(time, temperature, pressure,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    oceDebug(debug, "\b} # as.tdr()\n", sep="")
+    oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
     res
 }
 
@@ -98,7 +98,7 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "\b\bplot.tdr(..., which=", which, ", ...) {\n")
+              oceDebug(debug, "plot.tdr(..., which=", which, ", ...) {\n", unindent=1)
               if (!inherits(x, "tdr"))
                   stop("method is only for objects of class '", "tdr", "'")
               if (0 == sum(!is.na(x@data$temperature)))
@@ -232,7 +232,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.tdr()\n")
+              oceDebug(debug, "} # plot.tdr()\n", unindent=1)
               invisible()
           })
 
@@ -240,7 +240,7 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                      processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "\b\bread.tdr(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="")
+    oceDebug(debug, "read.tdr(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
@@ -450,7 +450,7 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                   filename=filename,
                   processingLog=paste(deparse(match.call()), sep="", collapse=""),
                   debug=debug-1)
-    oceDebug(debug, "\b} # read.tdr()\n", sep="")
+    oceDebug(debug, "} # read.tdr()\n", sep="", unindent=1)
     rval
 }
 
@@ -471,7 +471,7 @@ tdrPatm <- function(x, dp=0.5)
 
 tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\btdrTrim() {\n")
+    oceDebug(debug, "tdrTrim() {\n", unindent=1)
     if (!inherits(x, "tdr"))
         stop("method is only for objects of class '", "tdr", "'")
     res <- x
@@ -511,6 +511,6 @@ tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebu
         res@data[[name]] <- subset(x@data[[name]], keep)
     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # tdrTrim()n")
+    oceDebug(debug, "} # tdrTrim()\n", unindent=1)
     res
 }

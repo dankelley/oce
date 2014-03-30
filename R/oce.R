@@ -24,10 +24,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                        which=c("time","distance"), indexReturn=FALSE,
                        debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bwindow.oce(...,start=",
+    oceDebug(debug, "window.oce(...,start=",
              paste(format(start),collapse=","), ",end=",
              paste(format(end),collapse=","),
-             ",indexReturn=",indexReturn,",...) {\n")
+             ",indexReturn=",indexReturn,",...) {\n", unindent=1)
     if (extend)
         stop("cannot handle extend=TRUE yet")
     if (!is.null(frequency))
@@ -117,14 +117,14 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         res@metadata$numberOfSamples <- dim(res@data$v)[1]
         res@metadata$numberOfCells <- dim(res@data$v)[2]
     }
-    oceDebug(debug, "\b\b} # window.oce()\n")
+    oceDebug(debug, "} # window.oce()\n", unindent=1)
     res
 }
 
 plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 {
 
-    oceDebug(debug, "\b\bplotPolar(...)\n")
+    oceDebug(debug, "plotPolar(...)\n", unindent=1)
     if (missing(r)) stop("must supply 'r'")
     if (missing(theta)) stop("must supply 'theta'")
     thetaRad <- theta * atan2(1, 1) / 45
@@ -143,7 +143,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     }
     abline(h=0)
     abline(v=0)
-    oceDebug(debug, "\b\b} # plotPolar()\n")
+    oceDebug(debug, "} # plotPolar()\n", unindent=1)
 }
 
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
@@ -239,7 +239,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "\boce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="")
+    oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
     oceDebug(debug, "  mar=c(", paste(mar, collapse=", "), "),\n", sep="")
     oceDebug(debug, "  mai.palette=c(", paste(mar, collapse=", "), "),\n", sep="")
     oceDebug(debug, "  mgp=c(",paste(mgp, collapse=", "),"),\n", sep="")
@@ -327,7 +327,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             warning("cannot evaluate adorn {", format(adorn), "}\n")
     }
     ##par(cex=ocex)
-    oceDebug(debug, "\b\b} # oce.plot.ts()\n")
+    oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
     invisible()
 }
 
@@ -391,7 +391,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\boceEdit() {\n")
+    oceDebug(debug, "oceEdit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (!missing(item)) {
@@ -469,7 +469,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # oceEdit() \n")
+    oceDebug(debug, "} # oceEdit()\n", unindent=1)
     x
 }
 
@@ -884,7 +884,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               main="",
                               debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
+    oceDebug(debug, "oce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="", unindent=1)
     oceDebug(debug,"mar=",mar,"\n")
     oceDebug(debug,"mgp=",mgp,"\n")
     oceDebug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
@@ -1129,7 +1129,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
     par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
-    oceDebug(debug, "\b\b} # oce.axis.ts()\n")
+    oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
     invisible()
@@ -1243,10 +1243,10 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
             ytop <- usr[3] + f2 * (usr[4] - usr[3])
         }
     } else {
-        oceDebug(debug, "\bplotInset(xleft=", xleft, ", ybottom=", ybottom,
+        oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom,
                  ", xright=", xright, ", ytop=", ytop,
                  ",  ...) {\n",
-                 sep="")
+                 sep="", unindent=1)
     }
     oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
     opar <- par(no.readonly=TRUE)
@@ -1288,7 +1288,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     ## Reset some things that could have been set in the inset, and
     ## then adjust 'new' appropriately.
     par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
-    oceDebug(debug, "\b\b} # plotInset()\n")
+    oceDebug(debug, "} # plotInset()\n", unindent=1)
     invisible()
 }
 
@@ -1323,7 +1323,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
                                type=1,
                                debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bdrawDirectionField(...) {\n")
+    oceDebug(debug, "drawDirectionField(...) {\n", unindent=1)
     if (missing(x) || missing(y) || missing(u) || missing(v))
         stop("must supply x, y, u, and v")
     if ((missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)))
@@ -1356,7 +1356,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     } else {
         stop("unknown value of type ", type)
     }
-    oceDebug(debug, "\b\b} # drawDirectionField\n")
+    oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
 oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,

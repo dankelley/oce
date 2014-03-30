@@ -264,7 +264,7 @@ setMethod(f="plot",
                               ...)
           {
               debug <- min(4, max(0, round(debug)))
-              oceDebug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
+              oceDebug(debug, "plot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="", unindent=1)
               have.brushCorrelation <- !missing(brushCorrelation)
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
               oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
@@ -831,13 +831,13 @@ setMethod(f="plot",
                       par(mar=omar)
                   }
               }
-              oceDebug(debug, "\b\b} # plot.adv()\n")
+              oceDebug(debug, "} # plot.adv()\n", unindent=1)
               invisible()
           })
 
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\badv.2enu() {\n")
+    oceDebug(debug, "adv.2enu() {\n", unindent=1)
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdv(beamToXyzAdv(x, debug=debug-1), declination=declination, debug=debug-1)
@@ -848,13 +848,13 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
     } else {
         warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "\b\b} # adv.2enu()\n")
+    oceDebug(debug, "} # adv.2enu()\n", unindent=1)
     x
 }
 
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
+    oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
     if (!inherits(x, "adv"))
         stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "beam")
@@ -882,7 +882,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     x@data$v[,3] <- w
     x@metadata$oceCoordinate <- "xyz"
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # beamToXyzAdv()\n")
+    oceDebug(debug, "} # beamToXyzAdv()\n", unindent=1)
     x
 }
 
@@ -891,11 +891,11 @@ xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bxyzToEnuAdv(x, declination=", declination,
+    oceDebug(debug, "xyzToEnuAdv(x, declination=", declination,
               ",cabled=",cabled,
               ",horizontalCase=",if (missing(horizontalCase)) "(not provided)" else horizontalCase,
               ",sensorOrientation=",if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
-              ",debug) {\n")
+              ",debug) {\n", unindent=1)
     if (!inherits(x, "adv"))
         stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "xyz")
@@ -1040,7 +1040,7 @@ xyzToEnuAdv <- function(x, declination=0,
                                            ", horizontalCase=", if (missing(horizontalCase)) "(missing)" else horizontalCase,
                                            ", sensorOrientiation=", if (missing(sensorOrientation)) "(missing)" else sensorOrientation,
                                            ", debug=", debug, ")", sep=""))
-    oceDebug(debug, "\b\b} # xyzToEnuAdv()\n")
+    oceDebug(debug, "} # xyzToEnuAdv()\n", unindent=1)
     x
 }
 
@@ -1050,8 +1050,8 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
         stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "enu")
         stop("input must be in \"enu\" coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
-    oceDebug(debug, "\b\benuToOtherAdv(x, heading=", heading, ", pitch=", 
-             pitch, ", roll=", roll, ", debug=", debug, ")")
+    oceDebug(debug, "enuToOtherAdv(x, heading=", heading, ", pitch=", 
+             pitch, ", roll=", roll, ", debug=", debug, ")", unindent=1)
     np <- dim(x@data$v)[1]
     other <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
@@ -1072,6 +1072,6 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
     x@data$v[,3] <- other$v3new
     x@metadata$oceCoordinate <- "other"
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # enuToOtherAdv()\n")
+    oceDebug(debug, "} # enuToOtherAdv()\n", unindent=1)
     x
 }

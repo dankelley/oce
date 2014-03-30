@@ -401,9 +401,9 @@ setMethod(f="plot",
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
 
 
-              oceDebug(debug, "\bplot.section(, ..., which=c(",
+              oceDebug(debug, "plot.section(, ..., which=c(",
                        paste(which, collapse=","), "), eos=\"", eos,
-                       "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+                       "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
 
              ## Ensure data on levels, for plot types requiring that
               if (which != "data" && which != 'map') {
@@ -417,7 +417,7 @@ setMethod(f="plot",
                           np1 != length(thisPressure) ||
                           any(p1 != x[["station", ix]][["pressure"]])) {
                           x <- sectionGrid(x)
-                          warning("In plot.section() : gridded the data for plotting\n", call.=FALSE)
+                          warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
                   }
@@ -448,7 +448,7 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+                  oceDebug(debug, "plotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
@@ -823,7 +823,7 @@ setMethod(f="plot",
                       par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
                   }
                   par(mar=omar)
-                  oceDebug(debug, "\b\b} # plotSubsection()\n")
+                  oceDebug(debug, "} # plotSubsection()\n", unindent=1)
               }
               if (!inherits(x, "section"))
                   stop("method is only for objects of class '", "section", "'")
@@ -1011,7 +1011,7 @@ setMethod(f="plot",
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.section()\n")
+              oceDebug(debug, "} # plot.section()\n", unindent=1)
               invisible()
           })
 
@@ -1241,14 +1241,14 @@ read.section <- function(file, directory, sectionId="", flags,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.section()\n")
+    oceDebug(debug, "} # read.section()\n", unindent=1)
     res
 }
 
 sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 			 debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\bsectionGrid(section, p, method=\"", method, "\", ...) {\n", sep="")
+    oceDebug(debug, "sectionGrid(section, p, method=\"", method, "\", ...) {\n", sep="", unindent=1)
     method <- match.arg(method)
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
@@ -1286,7 +1286,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # sectionGrid\n")
+    oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }
 
@@ -1295,7 +1295,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
+    oceDebug(debug, "sectionSmooth(section,method=\"", method, "\", ...) {\n", sep="", unindent=1)
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
@@ -1406,7 +1406,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     }
 
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # sectionSmooth()\n")
+    oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
 }
 

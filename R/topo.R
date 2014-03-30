@@ -111,7 +111,7 @@ setMethod(f="plot",
           {
               if (!inherits(x, "topo"))
                   stop("method is only for objects of class '", "topo", "'")
-              oceDebug(debug, "\b\bplot.topo() {\n")
+              oceDebug(debug, "plot.topo() {\n", unindent=1)
 
               opar <- par(no.readonly = TRUE)
               ##on.exit(par(opar))
@@ -345,7 +345,7 @@ setMethod(f="plot",
                   o <- rev(order(legend))
                   legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
               }
-              oceDebug(debug, "\b\b} # plot.topo()\n")
+              oceDebug(debug, "} # plot.topo()\n", unindent=1)
               invisible()
           })
 
