@@ -219,7 +219,7 @@ as.ctd <- function(salinity, temperature, pressure,
 ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the unit
-    oceDebug(debug, "\bctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="")
+    oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
         stop("must supply column data")
     if (length(column) != length(x@data[[1]]))
@@ -237,7 +237,7 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
         res@metadata$labels <- c(res@metadata$labels, label)
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b} # ctdAddColumn()\n", sep="")
+    oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
 
@@ -245,7 +245,7 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
                         e=1.5, debug=getOption("oceDebug"))
     ## SHOULD ADD: spline; supsmu; ...
 {
-    oceDebug(debug, "\bctdDecimate(x, p, method=\"", method, "\", ...) {\n", sep="")
+    oceDebug(debug, "ctdDecimate(x, p, method=\"", method, "\", ...) {\n", sep="", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     res <- x
@@ -349,7 +349,7 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
     }
     res@data <- data.new
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # ctdDecimate()\n")
+    oceDebug(debug, "} # ctdDecimate()\n", unindent=1)
     res
 }
 
@@ -359,11 +359,11 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
                            arr.ind=FALSE, 
                            debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bctdFindProfiles(x, cutoff=", cutoff, 
+    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff, 
              ", minLength=", minLength,
              ", minHeight=", minHeight,
              ", direction=\"", direction, "\"",
-             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
+             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     direction <- match.arg(direction)
@@ -419,7 +419,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
     indices <- data.frame(start=start[keep], end=end[keep])
     if (debug) print(indices)
     if (is.logical(arr.ind) && arr.ind) {
-        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
+        oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
         return(indices)
     } else {
         ncasts <- length(indices$start)
@@ -433,7 +433,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
                                                 " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
-        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
+        oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
         return(casts)
     }
 }
@@ -443,7 +443,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     inferWaterDepth=TRUE, removeDepthInversions=FALSE, 
                     parameters, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bctdTrim() {\n")
+    oceDebug(debug, "ctdTrim() {\n", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     res <- x
@@ -602,7 +602,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
         res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
-    oceDebug(debug, "\b\b} # ctdTrim()\n")
+    oceDebug(debug, "} # ctdTrim()\n", unindent=1)
     res
 }
 
@@ -681,8 +681,8 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "teos"))
-              oceDebug(debug, "\b\bplot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
-                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="")
+              oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
               lw <- length(which)
               dots <- list(...)
               dotsNames <- names(dots)
@@ -1122,7 +1122,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.ctd()\n")
+              oceDebug(debug, "} # plot.ctd()\n", unindent=1)
               invisible()
           })
 
@@ -1262,7 +1262,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                           debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file))) {
-        oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n")
+        oceDebug(debug, "bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
         if (monitor)
@@ -1277,7 +1277,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         return(rval)
     }
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
-    oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="")
+    oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -1565,7 +1565,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res@processingLog <- processingLog(res@processingLog, processingLog)
     if (waterDepthWarning)
         res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
-    oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
+    oceDebug(debug, "} # read.ctd.woce()\n" , unindent=1) # FIXME: use S4 for ctd / woce
     res
 }
 
@@ -1637,7 +1637,7 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
         stop("cannot decode latitude or longitude from \"", line, "\"")
     }
     rval <- rval * sign
-    oceDebug(debug, "\b} # parseLatLon()\n")
+    oceDebug(debug, "} # parseLatLon()\n", unindent=1)
     rval
 }
 
@@ -1654,7 +1654,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
 
     if (length(grep("\\*", file))) {
-        oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") { # will read a series of files\n")
+        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
         if (monitor)
@@ -1668,7 +1668,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         oceDebug(debug, "} # read.ctd.sbe() {\n")
         return(rval)
     }
-    oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") {\n")
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
 
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -2006,7 +2006,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         else
             gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
     }
-    oceDebug(debug, "\b\bread.ctd.odf() {\n")
+    oceDebug(debug, "read.ctd.odf() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -2165,11 +2165,11 @@ plotTS <- function (x,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
+    oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
              "eos=\"", eos, "\", ",
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
-             "...) {\n", sep="")
+             "...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "teos"))
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
@@ -2275,7 +2275,7 @@ plotTS <- function (x,
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0)) # old: darkblue that looked black
     box()                              # redraw box (otherwise overdrawn with isopycnals)
-    oceDebug(debug, "\b} # plotTS(...)\n", sep="")
+    oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
 }
 
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
@@ -2368,15 +2368,15 @@ plotProfile <- function (x,
                          debug=getOption("oceDebug"),
                          ...)
 {
-    oceDebug(debug, "\bplotProfile(x, xtype[1]=\"", xtype[1],
-             "\", debug=", debug, ", ...) {\n", sep="")
+    oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
+             "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "teos"))
     plotJustProfile <- function(x, y, col="black", type="l",
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
-        oceDebug(debug, "\bplotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="")
+        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="", unindent=1)
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -2974,13 +2974,13 @@ plotProfile <- function (x,
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
         }
     }
-    oceDebug(debug, "\b\b} # plotProfile()\n")
+    oceDebug(debug, "} # plotProfile()\n", unindent=1)
 }
 
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "\b\bread.ctd.itp() {\n")
+    oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -3036,7 +3036,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     } else {
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
-    oceDebug(debug, "\b\b} # read.ctd.itp()\n")
+    oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
     rval
 }
  

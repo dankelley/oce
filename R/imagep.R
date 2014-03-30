@@ -166,7 +166,8 @@ B	0	0	0"
 paletteCalculations <- function(separation=par('cin')[2]/2,
                                 width=par('cin')[2],
                                 pos=4,
-                                zlab, maidiff=c(0, 0, 0, 0))
+                                zlab, maidiff=c(0, 0, 0, 0),
+                                debug=getOption("oceDebug"))
 {
     ## This returns a list with the following entries:
     ##   mai0  = before this call
@@ -175,12 +176,21 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     ##   mai2  = ready for post-palette drawing (i.e. good for a diagram beside palette)
     if (!(pos %in% 1:4))
         stop("'pos' must be 1, 2, 3 or 4")
+    oceDebug(debug, "paletteCalculations(separation=", separation,
+             ", width=", width, ", pos=", pos,
+             ", zlab=", if (missing(zlab)) "(missing)" else "(given)",
+             ", maidiff=c(", paste(maidiff, collapse=","), ")",
+             ", debug=", debug, ") {\n", sep="", unindent=1)
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
     lineHeight <- par("cin")[2]  # character height in inches
     tickSpace <- abs(par("tcl")) * lineHeight # inches (not sure on this)
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
     figureWidth <- par("fin")[1]
     figureHeight <- par("fin")[2]
+    oceDebug(debug, "figureWidth = ", figureWidth, "(inches)\n")
+    oceDebug(debug, "figureHeight = ", figureHeight, "(inches)\n")
+    oceDebug(debug, "tickSpace = ", tickSpace, "(inches)\n")
+    oceDebug(debug, "textSpace = ", textSpace, "(inches)\n")
     pc <- list(mai0=par('mai'))
     pc$mai1 <- pc$mai0
     pc$mai1f <- pc$mai0
@@ -227,6 +237,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     ## Adjust palette margins (mai1); FIXME: should this also alter mai2?
     pc$mai1 <- pc$mai1 + maidiff
     pc$mai1f <- pc$mai1f + maidiff
+    oceDebug(debug, "} # paletteCalculations\n", unindent=1)
     pc 
 }
 
@@ -247,18 +258,19 @@ drawPalette <- function(zlim, zlab="",
     if (!(pos %in% 1:4))
         stop("'pos' must be 1, 2, 3 or 4")
     if (zlimGiven)
-        oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",",
+        oceDebug(debug, "drawPalette(zlim=c(", zlim[1], ",",
                  zlim[2], "), zlab=", "\"", as.character(zlab), "\"",
                  ", pos=", pos, 
-                 ", drawTriangles=", drawTriangles, ", ...) {\n", sep="")
+                 ", drawTriangles=c(", paste(drawTriangles, collapse=","), "), ...) {\n", 
+                 unindent=1, sep="")
     else
-        oceDebug(debug, "\bdrawPalette() with no zlim argument: set space to right of a graph\n", sep="")
+        oceDebug(debug, "drawPalette() with no zlim argument: set space to right of a graph\n", sep="", unindent=1)
     maiGiven <- !missing(mai)
-    oceDebug(debug, "maiGiven=", maiGiven, "\n")
+    oceDebug(debug, "maiGiven =", maiGiven, "\n")
     if (maiGiven)
-        oceDebug(debug, "original mai=c(", paste(mai, collapse=","), "\n")
-    oceDebug(debug, "breaksGiven=", breaksGiven, "\n")
-    oceDebug(debug, "fullpage=", fullpage, "\n")
+        oceDebug(debug, "mai = c(", paste(mai, collapse=","), ") = the argument, not the par() value\n")
+    oceDebug(debug, "breaksGiven =", breaksGiven, "\n")
+    oceDebug(debug, "fullpage =", fullpage, "\n")
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
@@ -270,7 +282,7 @@ drawPalette <- function(zlim, zlab="",
     oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     if (!maiGiven)
         mai <- rep(0, 4)
-    pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab)
+    pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab, debug=debug-1)
     contours <- if (breaksGiven) breaks else NULL
     if (zlimGiven) {
         if (breaksGiven) {
@@ -325,6 +337,14 @@ drawPalette <- function(zlim, zlab="",
             }
         } else {
             palette <- seq(zlim[1], zlim[2], length.out=300)
+            oceDebug(debug, "drawing palette image, with par('mai')=c(",
+                     paste(round(par('mai'), 2), collapse=","), ")\n")
+            oceDebug(debug, "palette image width =",
+                     par('fin')[1] - par('mai')[2] - par('mai')[4], "in\n")
+            oceDebug(debug, "palette image height =",
+                     par('fin')[2] - par('mai')[1] - par('mai')[3], "in\n")
+            oceDebug(debug, "par('pin')=c(", paste(format(par('pin'), 2), collapse=","), ") in\n")
+            oceDebug(debug, "par('fin')=c(", paste(format(par('fin'), 2), collapse=","), ") in\n")
             if (pos == 1 || pos == 3) {
                 image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
@@ -429,7 +449,9 @@ drawPalette <- function(zlim, zlab="",
             par(mai=pc$mai2)
         }
     }
-    oceDebug(debug, "\b\b} # drawPalette()\n")
+    oceDebug(debug, "at end of drawPalette(), par('mai') yields c(",
+             paste(par('mai'), collapse=","), ")\n")
+    oceDebug(debug, "} # drawPalette()\n", unindent=1)
     invisible()
 }
 
@@ -459,12 +481,12 @@ imagep <- function(x, y, z,
                    ...)
 {
     zlabPosition <- match.arg(zlabPosition)
-    oceDebug(debug, "\b\bimagep(..., cex=", cex, ", flipy=", flipy, ",", 
+    oceDebug(debug, "imagep(..., cex=", cex, ", flipy=", flipy, ",", 
              " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
              " filledContour=", filledContour, ", ",
              " missingColor='", missingColor,
-             ", ...) {\n", sep="")
+             ", ...) {\n", sep="", unindent=1)
     oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
     oceDebug(debug, "par(mai)=", paste(format(par('mai'), digits=3), collapse=" "), "\n")
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
@@ -773,6 +795,8 @@ imagep <- function(x, y, z,
             warning("cannot evaluate adorn='", adorn, "'\n")
     }
     par(cex=ocex)
-    oceDebug(debug, "\b\b} # imagep()\n")
+    oceDebug(debug, "at end of imagep(), par('mai') yields c(", paste(par('mai'), collapse=","), ")\n")
+    oceDebug(debug, "at end of imagep(), par('mar') yields c(", paste(par('mar'), collapse=","), ")\n")
+    oceDebug(debug, "} # imagep()\n", unindent=1)
     invisible()
 }

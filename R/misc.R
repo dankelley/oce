@@ -1984,12 +1984,14 @@ ctimeToSeconds <- function(ctime)
 ##    res
 ##}
 
-oceDebug <- function(debug=0, ...)
+oceDebug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
-        cat(paste(rep("  ", 5 - debug), collapse=""), ...)
-        ##cat(paste(rep("  ", debug), collapse=""), ...)
+        n <- 5 - debug - unindent
+        if (n > 0)
+            cat(paste(rep("  ", n), collapse=""))
+        cat(...)
     }
     flush.console()
     invisible()
