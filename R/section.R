@@ -432,9 +432,6 @@ setMethod(f="plot",
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$date <- x@metadata$date[haveData]
 
- 
-
-
 
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
@@ -448,7 +445,7 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "plotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
+                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)", "...) {\n", sep="", unindent=1)
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
@@ -491,11 +488,11 @@ setMethod(f="plot",
                       if (coastline == "best") {
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                              oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                              oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
                               data(list=bestcoastline, package="ocedata", envir=environment())
                               coastline <- get(bestcoastline)
                           } else {
-                              oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
+                              oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
                               data(coastlineWorld, envir=environment())
                               coastline <- coastlineWorld
                           }
@@ -560,11 +557,18 @@ setMethod(f="plot",
 
                       if (drawPoints || ztype == "image") {
                           if (is.null(zbreaks)) {
-                              zbreaks <- pretty(x[[variable]], 128)
+                              zRANGE <- range(x[[variable]], na.rm=TRUE)
+                              if (is.null(zcol) || is.function(zcol)) {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                              } else {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                              }
                           }
                           nbreaks <- length(zbreaks)
                           if (is.null(zcol)) 
                               zcol <- oceColorsJet(nbreaks - 1)
+                          if (is.function(zcol))
+                              zcol <- zcol(nbreaks - 1)
                           zlim <- range(zbreaks)
                           drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
                       }
@@ -670,7 +674,7 @@ setMethod(f="plot",
                           }
                       }
 
-                      oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
+                      ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
                       ##waterDepth <- -waterDepth
                       if (!grid)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
@@ -922,7 +926,6 @@ setMethod(f="plot",
                   adorn.length <- lw
               }
               for (w in 1:lw) {
-                  oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
                       if (missing(contourLabels))
                           contourLabels <- format(contourLevels)
