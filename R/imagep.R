@@ -182,6 +182,26 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
              ", maidiff=c(", paste(maidiff, collapse=","), ")",
              ", debug=", debug, ") {\n", sep="", unindent=1)
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
+
+    ## 2014-04-02 {
+    ## Below, we will be using e.g. par('mai') to find margins.  If the user
+    ## is employing layout(), the call will not give the right answer until the plot
+    ## has been established or initialized (not sure on right term).  So, we use 
+    ## a trick: call frame() to establish/initialize the plot, then call
+    ## plot(new=TRUE) to prevent advancing to the next panel of the layout.
+    ## A secondary trick is also required: we set to zero margins before
+    ## calling frame(), because otherwise there can be a "figure margins
+    ## too large" error from frame(), if the layout is tight.
+    omar <- par('mar')
+    par(mar=rep(0, 4))
+    frame()
+    par(mar=omar)
+    par(new=TRUE)
+    ## OK, done with the trick now.  PS: the long comments given here
+    ## are a result of persistent problems with large-margin errors,
+    ## and I don't want this new approach to get lost in code.
+    ## } 2014-04-02
+
     lineHeight <- par("cin")[2]  # character height in inches
     tickSpace <- abs(par("tcl")) * lineHeight # inches (not sure on this)
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
