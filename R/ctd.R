@@ -765,7 +765,7 @@ setMethod(f="plot",
 
               oceDebug(debug, "which:", which, "(before matching character strings)\n")
               which <- ocePmatch(which,
-                                 list("temperature+salinity"=1,
+                                 list("salinity+temperature"=1,
                                       "density+N2"=2,
                                       TS=3,
                                       text=4,
