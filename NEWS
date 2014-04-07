@@ -47,7 +47,8 @@
 - ctdFindProfiles() added
 - as.ctd(): new arguments filename etc
 - remove oceBisect(), which merely reproduces uniroot()
-- move all data to library(ocedata)
+- move large/specialized datasets to library(ocedata)
+
 
 0.9-13
 - prepare for an upcoming release of R-devel
