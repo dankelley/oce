@@ -67,12 +67,18 @@
     this is useful in lining up the x axes of a stack of plots, some some of
     which will have palettes and others not.
 
-    Note that the plot positioning is done entirely with margins, not with
+    The plot positioning is done entirely with margins, not with
     \code{par(mfrow)} or other R schemes for multi-panel plots.  This means
     that the user is free to use those schemes without worrying about nesting
-    or conflicts; see see \dQuote{Examples}.
+    or conflicts.
+
 
 }
+
+\section{Use with multi-panel plots}{ An important consequence of the margin
+    adjustment is that multi-panel plots require that the initial margin be
+    stored prior to the first call to \code{drawPalette}, and reset after each
+    palette-plot pair.  This method is illustrated in \dQuote{Examples}.  }
 
 \value{None.}
 
@@ -84,19 +90,25 @@
     par(mar=c(3,3,1,1))
     par(mfrow=c(4,1))
 
+    omar <- par('mar')                 # save initial margin
     drawPalette(zlim=c(0,1),col=oceColorsJet(5))
     plot(1:5, 1:5, col=oceColorsJet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y')
+    par(mar=omar)                      # reset margin
 
     ## put space for palette to right of next graph (so x scales line up in stacked plot)
     drawPalette()
     plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y')
+    par(mar=omar)                      # reset margin
 
     drawPalette(zlim=c(0,1),zlab="Image Scale",col=oceColorsPalette)
     plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10], col='black',xlab='x',ylab='y')
+    par(mar=omar)                      # reset margin
+
+    ## put space for palette to right of next graph (so x scales line up in stacked plot)
     drawPalette(zlab="Image Scale")
     plot(1:10, 1:10, col=oceColorsPalette(10)[1:10], xlab='x', ylab='y')
+    par(mar=omar)                      # reset margin
 
-    \dontrun{
     # Use layout to mimic the action of imagep(), with the width
     # of the palette region being 14 percent of figure width.
     d <- 0.14
@@ -104,7 +116,6 @@
     image(volcano, col=oceColorsJet(100), zlim=c(90, 200))
     contour(volcano, add=TRUE)
     drawPalette(c(90, 200), fullpage=TRUE, col=oceColorsJet)
-    }
 }
 
 \author{Dan Kelley, with help from Clark Richards}
