@@ -354,8 +354,6 @@ read.topo <- function(file, ...)
     ## handle GEBCO netcdf files or an ascii format
     if (is.character(file) && grep(".nc$", file)) {
         ## GEBCO netcdf
-        if (!require(ncdf4))
-            stop("need the ncdf4 package to read a netcdf topography file\n")
         ncdf <- nc_open(file)
         xrange <- ncvar_get(ncdf, "x_range")
         yrange <- ncvar_get(ncdf, "y_range")

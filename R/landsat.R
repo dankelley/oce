@@ -148,8 +148,6 @@ read.landsat <- function(file, band=8, debug=getOption("oceDebug"))
     rval@metadata[["filename"]] <- bandfilename 
     oceDebug(debug, "about to read landsat data from ", bandfilename, ", which may take several moments.\n")
     ## FIXME: should also handle JPG data (i.e. previews)
-    if (!require(tiff))
-        stop("Need the 'tiff' package")
     d <- readTIFF(bandfilename)
     d <- t(d)
     d <- d[, seq.int(dim(d)[2], 1, -1)]

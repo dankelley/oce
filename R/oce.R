@@ -537,17 +537,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
-            if (substr(filename, 1, 5) == "http:")
+            if (substr(filename, 1, 5) == "http:") {
                 stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                      filename, "\", \"", gsub(".*/", "", filename), "\")")
-            if (require(ncdf4)) {
-                f <- nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncvar_get(nc_open(filename), "DATA_TYPE"), ignore.case=TRUE))
-                return("drifter/argo")
-            } else {
-                warning("cannot determine type of .nc file without the ncdf library installed\n")
-                return("unknown")
             }
+            f <- nc_open(filename)
+            if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncvar_get(nc_open(filename), "DATA_TYPE"), ignore.case=TRUE))
+            return("drifter/argo")
         } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
         } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap

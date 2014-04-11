@@ -41,8 +41,6 @@ setMethod(f="summary",
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    if (!require(ncdf4))
-        stop("need the ncdf4 package to read netcdf-formatted drifter files\n")
     ofile <- file
     filename <- ""
     if (is.character(file)) {
