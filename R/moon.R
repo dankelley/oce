@@ -79,7 +79,7 @@ julianCenturyAnomaly <- function(jd)
     (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
 }
 
-moonAngle <- function(t, longitude, latitude, useRefraction=TRUE)
+moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
     if (missing(t)) stop("must give 't'")
     if (missing(longitude)) stop("must give 'longitude'")
