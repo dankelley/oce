@@ -507,8 +507,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
     isdir<- file.info(file)$isdir
-    if (is.finite(isdir) && isdir)
+    if (is.finite(isdir) && isdir) {
+        tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
+        if (!is.na(tst) && !tst)
+            return("landsat")
         stop("please supply a file name, not a directory name")
+    }
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
         if (length(grep(".asc$", filename))) {
@@ -737,6 +741,9 @@ read.oce <- function(file, ...)
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     if (type == "observatory")
         return(read.observatory(file, processingLog=processingLog, ...))
+    if (type == "landsat") {
+        return(read.landsat(file))
+    }
     stop("unknown file type \"", type, "\"")
 }
 
