@@ -266,7 +266,7 @@ drawPalette <- function(zlim, zlab="",
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
                         fullpage=FALSE, drawTriangles=FALSE,
-                        axisPalette,
+                        axisPalette, tformat,
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
@@ -432,8 +432,17 @@ drawPalette <- function(zlim, zlab="",
                 at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 6) else prettyLocal(palette, 6)
             }
         }
-        if (is.null(labels))
-            labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
+        if (is.null(labels)) {
+            if (zIsTime) {
+                if (!missing(tformat)) {
+                    labels <- format(numberAsPOSIXct(at), format=tformat)
+                } else {
+                    labels <- abbreviateTimeLabels(numberAsPOSIXct(at), ...)
+                }
+            } else {
+                labels <- format(at)
+            }
+        }
         labels <- sub("^[ ]*", "", labels)
         labels <- sub("[ ]*$", "", labels)
         ## FIXME: just guessing on best 'line', used below

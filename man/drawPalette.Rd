@@ -11,7 +11,7 @@
     labels=NULL, at=NULL,
     levels, drawContours=FALSE,
     fullpage=FALSE, drawTriangles=FALSE,
-    axisPalette,
+    axisPalette, tformat,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
@@ -53,6 +53,8 @@
         range.}
     \item{axisPalette}{optional replacement function for \code{axis()}, e.g.
         for exponential notation on large or small values.}
+    \item{tformat}{optional format for axis labels, if the variable is
+        a time type (ignored otherwise).}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
     \item{\dots}{optional arguments passed to plotting functions.}
