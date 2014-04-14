@@ -48,11 +48,13 @@
     \code{landsat}.}
 
 \examples{
+\dontrun{
 library(oce)
 library(ocedata)
 data(landsat)
 plot(landsat, which=1, xlim=c(0.10, 0.13), breaks=200)
 plot(landsat, which=2, zlim=c(0.10, 0.13))
+}
 }
 
 \author{Dan Kelley}
