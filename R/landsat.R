@@ -31,7 +31,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature="landsat",
           definition=function(x, i, j, drop) {
-              error("no indexing yet\n")
+              stop("no indexing yet\n")
           })
 
 setMethod(f="plot",

@@ -47,12 +47,14 @@
         that x can be used instead of z for convenience. (NOTE: these arguments
         are meant to mimic those of \code{\link{image}}, which explains the same
         description here.)} 
-    \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
-
+    \item{xlim}{limits on x axis.}
+    \item{ylim}{limits on y axis.}
+    \item{zlim}{either a pair of numbers giving the limits for the colourscale,
+        or \code{"histogram"} to have a flattened histogram (i.e. to maximally
+        increase contrast throughout the domain.)}
     \item{zclip}{logical, indicating whether to clip the colours to those
         corresponding to \code{zlim}, if the latter is provided.  Clipped
         regions will be coloured with \code{missingColor}.}
-
     \item{flipy}{logical, with \code{TRUE} indicating that the image
         should be flipped top to bottom (e.g. to produce a profile image
         for a downward-looking acoustic-doppler profile).}
@@ -151,10 +153,10 @@
 \examples{
     library(oce)
 
-    ## simplest use
+    ## 1. simplest use
     imagep(volcano)
 
-    ## something oceanographic (internal-wave speed)
+    ## 2. something oceanographic (internal-wave speed)
     h <- seq(0, 50, length.out=100)
     drho <- seq(1, 3, length.out=200)
     speed <- outer(h, drho, function(drho, h) sqrt(9.8 * drho * h / 1024))
@@ -162,7 +164,7 @@
     ylab=expression(paste(Delta*rho, " [kg/m^3]")),
     zlab="Internal-wave speed [m/s]")
 
-    ## fancy labelling on atan() function
+    ## 3. fancy labelling on atan() function
     x <- seq(0, 1, 0.01)
     y <- seq(0, 1, 0.01)
     angle <- outer(x,y,function(x,y) atan2(y,x))
@@ -171,5 +173,7 @@
            at=c(0, pi/4, pi/2),
            labels=c(0, expression(pi/4), expression(pi/2)))
 }
+
 \author{Dan Kelley, with help from Clark Richards}
+
 \keyword{misc}

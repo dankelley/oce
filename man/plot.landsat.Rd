@@ -37,7 +37,10 @@
 
 }
 
-\details{This is a very preliminary version of the function!}
+\details{This is a very preliminary version of the function, and things are
+    likely to change.  In particular, since early tests with
+    \code{\link{read.landsat}} have only been with a single band at a time,
+    there is no facility to plot natural-colour, etc.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing

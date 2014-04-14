@@ -695,6 +695,7 @@ imagep <- function(x, y, z,
         drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
         oceDebug(debug, "mai.palette=c(", paste(mai.palette, collapse=", "), ")\n")
         if (zlimHistogram) {
+            oceDebug(debug, "palette with zlim=\"histogram\"\n")
             ## CAUTION: change data in 'z'
             dim <- dim(z)
             z <- as.vector(z)
@@ -712,6 +713,7 @@ imagep <- function(x, y, z,
                         drawTriangles=drawTriangles,
                         mai=mai.palette, debug=debug-1)
         } else {
+            oceDebug(debug, "palette with zlim not \"histogram\"\n")
             drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",
                         breaks=breaks, col=col, 
                         labels=labels, at=at,
@@ -743,8 +745,9 @@ imagep <- function(x, y, z,
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     }
-    if (is.function(col2))
+    if (is.function(col2) && !is.null(breaks2)) {
         col2 <- col2(n=length(breaks2)-1)
+    }
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
         if (filledContour) {
@@ -786,6 +789,11 @@ imagep <- function(x, y, z,
             mtext(ylab, side=2, line=mgp[1])
         } else {
             oceDebug(debug, "not doing filled contours\n")
+            if (zlimHistogram) {
+                if (is.function(col2))
+                    col2 <- col2(200)
+                breaks2 <- seq(0, 1, length.out=length(col2) + 1)
+            }
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
                   xlim=xlim, ylim=ylim, ...)
         }
