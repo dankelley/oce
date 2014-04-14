@@ -8,7 +8,7 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, decimate=1, zlim, col=oceColorsJet,
+\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=1, zlim, col=oceColorsJet,
     debug=getOption("oceDebug"), \dots)
 }
 \arguments{
@@ -25,6 +25,10 @@
   \item{col}{a function yielding colours, taking a single integer argument with
       the desired number of colours.}
 
+  \item{band}{if given, the number of the band to plot (between 1 and 11 for
+      Landsat-8); otherwise the first saved band (whatever that is) will be
+      plotted.}
+      
   \item{decimate}{decimation interval for images plots; e.g. setting to 10
       means to show only every 10-th point in both directions, for a plot
       simplification by a factor 100.  The purpose is mainly to speed up
