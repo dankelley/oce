@@ -52,8 +52,9 @@
 library(oce)
 library(ocedata)
 data(landsat)
-plot(landsat, which=1, xlim=c(0.10, 0.13), breaks=200)
-plot(landsat, which=2, zlim=c(0.10, 0.13))
+plot(landsat, which=1, xlim=c(0.10, 0.13), breaks=200) # suggests z limits
+plot(landsat, which=2, zlim=c(0.10, 0.13)) # pretty
+plot(landsat, which=2, zlim="histogram") # ugly but shows details best
 }
 }
 
