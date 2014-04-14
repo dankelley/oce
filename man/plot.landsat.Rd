@@ -37,14 +37,23 @@
 
 }
 
-\details{This is a very preliminary version of the function, and things are
-    likely to change.  In particular, since early tests with
-    \code{\link{read.landsat}} have only been with a single band at a time,
-    there is no facility to plot natural-colour, etc.}
+\details{This is a preliminary version of the function, and things are likely
+    to change.  Additions will likely be motivated by research needs, e.g. it
+    will probably not be a very high priority to produce natural-colour images
+    since they are not as useful as false-colour for oceanographic use.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing
-    with them.}
+    with them.  The \code{ocedata} package provides a dataset named
+    \code{landsat}.}
+
+\examples{
+library(oce)
+library(ocedata)
+data(landsat)
+plot(landsat, which=1, xlim=c(0.10, 0.13), breaks=200)
+plot(landsat, which=2, zlim=c(0.10, 0.13))
+}
 
 \author{Dan Kelley}
 

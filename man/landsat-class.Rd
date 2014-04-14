@@ -41,9 +41,9 @@
 }
 
 \seealso{A file containing Landsat data may be read with
-    \code{\link{read.landsat}}.
- 
-}
+    \code{\link{read.landsat}} or \code{\link{read.oce}}.  Plots may be made
+    with \code{\link{plot.landsat}}.  The \code{ocedata} package provides a
+    dataset named \code{landsat}.} }
 
 \author{Dan Kelley}
 
