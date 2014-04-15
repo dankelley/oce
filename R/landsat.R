@@ -40,7 +40,22 @@ setMethod(f="[[",
               if (i == "band") {
                   if (missing(j))
                       stop("need to give 'j', a band number")
-                  j <- round(as.numeric(j))
+                  if (is.character(j)) {
+                      nicknames <-c("aerosol", "blue", "green", "red",
+                                    "nir", "swir1", "swir2",
+                                    "panchromatic",
+                                    "cirrus",
+                                    "tirs1", "tirs2")
+                      ## FIXME: can later add e.g. "natural" etc
+                      ## FIXME: plot should accept this
+                      jj <- pmatch(j, nicknames)
+                      if (is.na(jj))
+                          stop("band nickname \"", j, "\" unknown; try one of: ",
+                               paste(nicknames, collapse=", "), "\n")
+                      j <- round(jj)
+                  } else {
+                      j <- round(as.numeric(j))
+                  }
                   if (j < 1 || j > 11)
                       stop("band must be between 1 and 11, not ", j, " as given")
                   return(x@data[[paste("band", j, sep="")]])
@@ -64,8 +79,24 @@ setMethod(f="plot",
                       d <- x@data[[1]]
                   }
               } else {
-                  oceDebug(debug, "using band", x@metadata$bands[band], "\n")
-                  d <- x@data[[which(x@metadata$bands == band)]]
+                  if (length(band) > 1)
+                      warning("only plotting first requested band\n")
+                  band <- band[1]
+                  if (is.character(band)) {
+                      oceDebug(debug, "using band named", band, "\n")
+                      d <- x[["band", band]]
+                  } else {
+                      ## FIXME: This hassle of named vs indexed bands would be avoided
+                      ## FIXME: if we just insisted that read.landscape() read all the bands;
+                      ## FIXME: consider that change, by analogy to e.g. CTD.
+                      oceDebug(debug, "using band", band, "\n")
+                      if (length(which(x@metadata$bands == band)))
+                          d <- x@data[[which(x@metadata$bands == band)]]
+                      else
+                          stop("[[\"band\", ", band, "]] not available; try one of: ",
+                               paste(x@metadata$bands, collapse=", "), "\n",
+                               call.=FALSE)
+                  }
               }
               if (which == 1) {
                   hist(d, xlab="Image value", main="", ...)
