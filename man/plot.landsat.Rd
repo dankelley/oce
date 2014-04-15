@@ -8,7 +8,7 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=1, zlim, col=oceColorsJet,
+\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=1, zlim, col=oceColorsPalette,
     debug=getOption("oceDebug"), \dots)
 }
 \arguments{
@@ -20,14 +20,15 @@
 
   \item{zlim}{either a pair of numbers giving the limits for the colourscale,
       or \code{"histogram"} to have a flattened histogram (i.e. to maximally
-      increase contrast throughout the domain.)}
+      increase contrast throughout the domain.)  If not given, the 1 and 99
+      percent quantiles are calculated and used as limits.}
 
   \item{col}{a function yielding colours, taking a single integer argument with
       the desired number of colours.}
 
   \item{band}{if given, the number of the band to plot (between 1 and 11 for
-      Landsat-8); otherwise the first saved band (whatever that is) will be
-      plotted.}
+      Landsat-8).  If not given, 8 will be used if band8 exists in the object
+      data, or otherwise the first band will be used.}
       
   \item{decimate}{decimation interval for images plots; e.g. setting to 10
       means to show only every 10-th point in both directions, for a plot
@@ -56,8 +57,9 @@
 library(oce)
 library(ocedata)
 data(landsat)
-plot(landsat, which=1, xlim=c(0.10, 0.13), breaks=200) # suggests z limits
-plot(landsat, which=2, zlim=c(0.10, 0.13)) # pretty
+plot(landsat, which=1, band=8, xlim=c(0.10, 0.15), breaks=200) # suggests z limits
+plot(landsat, which=2)
+plot(landsat, which=2, zlim=c(0.105, 0.130))
 plot(landsat, which=2, zlim="histogram") # ugly but shows details best
 }
 }

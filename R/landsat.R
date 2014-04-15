@@ -35,21 +35,41 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature="landsat",
           definition=function(x, i, j, drop) {
-              stop("no indexing yet\n")
+              if (missing(i))
+                  stop("need to give 'i', perhaps 'band'")
+              if (i == "band") {
+                  if (missing(j))
+                      stop("need to give 'j', a band number")
+                  j <- round(as.numeric(j))
+                  if (j < 1 || j > 11)
+                      stop("band must be between 1 and 11, not ", j, " as given")
+                  return(x@data[[paste("band", j, sep="")]])
+              } else if (i %in% names(x@metadata)) {
+                  return(x@metadata[[i]])
+              }
+              stop("can only index for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n")
           })
 
 setMethod(f="plot",
           signature=signature("landsat"),
-          definition=function(x, which=1, band, decimate=1, zlim, col=oceColorsJet,
+          definition=function(x, which=1, band, decimate=1, zlim, col=oceColorsPalette,
                               debug=getOption("oceDebug"), ...)
           {
-              if (which == 1) {
-                  hist(x@data[[1]], xlab="Image value", main="", ...)
-              } else if (which == 2) {
-                  if (missing(band))
+              if (missing(band)) {
+                  if ("band8" %in% names(x@data)) {
+                      oceDebug(debug, "using band8\n")
+                      d <- x@data$band8
+                  }  else {
+                      oceDebug(debug, "using band", x@metadata$bands[1], "\n")
                       d <- x@data[[1]]
-                  else
-                      d <- x@data[[which(x@metadata$bands == band)]]
+                  }
+              } else {
+                  oceDebug(debug, "using band", x@metadata$bands[band], "\n")
+                  d <- x@data[[which(x@metadata$bands == band)]]
+              }
+              if (which == 1) {
+                  hist(d, xlab="Image value", main="", ...)
+              } else if (which == 2) {
                   dim <- dim(d)
                   if (decimate > 1) {
                       d <- d[seq(1, dim[1], by=decimate), seq(1, dim[2], by=decimate)]
@@ -58,6 +78,8 @@ setMethod(f="plot",
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
+                  if (missing(zlim))
+                      zlim <- quantile(d, c(0.01, 0.99))
                   imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
               } else {
                   stop("unknown value of 'which'")
