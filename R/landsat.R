@@ -87,9 +87,6 @@ setMethod(f="plot",
                       oceDebug(debug, "using band named", band, "\n")
                       d <- x[["band", band]]
                   } else {
-                      ## FIXME: This hassle of named vs indexed bands would be avoided
-                      ## FIXME: if we just insisted that read.landscape() read all the bands;
-                      ## FIXME: consider that change, by analogy to e.g. CTD.
                       oceDebug(debug, "using band", band, "\n")
                       if (length(which(x@metadata$bands == band)))
                           d <- x@data[[which(x@metadata$bands == band)]]
