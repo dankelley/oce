@@ -6,3 +6,6 @@ sealevel.jpg
 tdr.png
 topo.jpg
 
+*.idx
+*.log
+section.jpg
