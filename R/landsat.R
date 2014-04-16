@@ -1,5 +1,11 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+bandnames <-c("aerosol", "blue", "green", "red",
+              "nir", "swir1", "swir2",
+              "panchromatic",
+              "cirrus",
+              "tirs1", "tirs2")
+
 setMethod(f="initialize",
           signature="landsat",
           definition=function(.Object,filename="") {
@@ -41,23 +47,18 @@ setMethod(f="[[",
                   if (missing(j))
                       stop("need to give 'j', a band number")
                   if (is.character(j)) {
-                      nicknames <-c("aerosol", "blue", "green", "red",
-                                    "nir", "swir1", "swir2",
-                                    "panchromatic",
-                                    "cirrus",
-                                    "tirs1", "tirs2")
                       ## FIXME: can later add e.g. "natural" etc
-                      jj <- pmatch(j, nicknames)
+                      jj <- pmatch(j, bandnames)
                       if (is.na(jj))
-                          stop("band nickname \"", j, "\" unknown; try one of: ",
-                               paste(nicknames, collapse=", "), "\n")
+                          stop("band \"", j, "\" unknown; try one of: ",
+                               paste(bandnames, collapse=", "), "\n")
                       j <- round(jj)
                   } else {
                       j <- round(as.numeric(j))
                   }
                   if (j < 1 || j > 11)
                       stop("band must be between 1 and 11, not ", j, " as given")
-                  return(x@data[[paste("band", j, sep="")]])
+                  return(x@data[[j]])
               } else if (i %in% names(x@metadata)) {
                   return(x@metadata[[i]])
               }
@@ -204,9 +205,6 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     rval@metadata <- header
     rval@metadata[["headerfilename"]] <- headerfilename
-    bandnames <-c("aerosol", "blue", "green", "red", "nir",
-                  "swir1", "swir2", "panchromatic", "cirrus",
-                  "tirs1", "tirs2")
     rval@metadata[["bands"]] <- bandnames[band]
     rval@metadata[["bandfiles"]] <- paste(file,"/",file,"_B",band,".TIF",sep="")
     for (b in seq_along(band)) {
