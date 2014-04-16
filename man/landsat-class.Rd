@@ -40,13 +40,19 @@
     the separate function \code{link{decimate}}.  Images may be subsetted with
     \code{\link{landsatTrim}}.
 
-    See [1] for information on the bands for Landsat 8, paying particular
+    Landsat data are available at several websites; see e.g. [1].
+
+    See [2] for information on the bands for Landsat 8, paying particular
     attention to the resolutions and wavelengths.  Band 8 is panchromatic, and
     has the highest resolution, so this is the default used in
     \code{\link{plot.landsat}}.}
 
 
-\references{1. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}}
+\references{
+1. \url{http://glovis.usgs.gov} 
+
+2. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}
+}
 
 \author{Dan Kelley}
 

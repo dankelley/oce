@@ -16,7 +16,7 @@
   \item{x}{A \code{landsat} object, e.g. as read by
       \code{\link{read.landsat}}.}
 
-  \item{which}{desired plot type; 1=histogram, 2=image}
+  \item{which}{desired plot type; 1=image, 2=histogram.}
 
   \item{zlim}{either a pair of numbers giving the limits for the colourscale,
       or \code{"histogram"} to have a flattened histogram (i.e. to maximally
@@ -42,10 +42,14 @@
 
 }
 
-\details{This is a preliminary version of the function, and things are likely
-    to change.  Additions will likely be motivated by research needs, e.g. it
-    will probably not be a very high priority to produce natural-colour images
-    since they are not as useful as false-colour for oceanographic use.}
+\details{Since landsat images are very detailed, it is sensible to use a fast
+    plotting device, e.g. \code{\link{x11}}, and to use perhaps
+    \code{decimate=10} for initial images.  The histogram plot can be handy in
+    setting scales, e.g. when an image has a fair bit of land, the histogram
+    will be double-lobed, and so quick examination can help in setting a good
+    value for \code{zlim}.  Using \code{zlim="histogram"} is probably the
+    fastest way to explore an image for detail, but it is important to bear in
+    mind that it yields a nonlinear colourscale.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing

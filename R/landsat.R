@@ -47,7 +47,6 @@ setMethod(f="[[",
                                     "cirrus",
                                     "tirs1", "tirs2")
                       ## FIXME: can later add e.g. "natural" etc
-                      ## FIXME: plot should accept this
                       jj <- pmatch(j, nicknames)
                       if (is.na(jj))
                           stop("band nickname \"", j, "\" unknown; try one of: ",
@@ -71,12 +70,14 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"), ...)
           {
               if (missing(band)) {
-                  if ("band8" %in% names(x@data)) {
-                      oceDebug(debug, "using band8\n")
-                      d <- x@data$band8
+                  if ("panchromatic" %in% names(x@data)) {
+                      oceDebug(debug, "using panchromatic\n")
+                      d <- x@data$panchromatic
+                      band <- "panchromatic"
                   }  else {
                       oceDebug(debug, "using band", x@metadata$bands[1], "\n")
                       d <- x@data[[1]]
+                      band <- x@metadata$bands[1]
                   }
               } else {
                   if (length(band) > 1)
@@ -99,8 +100,6 @@ setMethod(f="plot",
                   }
               }
               if (which == 1) {
-                  hist(d, xlab="Image value", main="", ...)
-              } else if (which == 2) {
                   dim <- dim(d)
                   if (decimate > 1) {
                       d <- d[seq(1, dim[1], by=decimate), seq(1, dim[2], by=decimate)]
@@ -112,6 +111,9 @@ setMethod(f="plot",
                   if (missing(zlim))
                       zlim <- quantile(d, c(0.01, 0.99))
                   imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
+                  mtext(band, side=3, adj=1, line=0, cex=1)
+              } else if (which == 2) {
+                  hist(d, xlab="Image value", main="", ...)
               } else {
                   stop("unknown value of 'which'")
               }
@@ -130,7 +132,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
             rval <- gsub("[ ]+$", "", rval)
         }
         rval <- if (numeric) as.numeric(rval) else gsub("\"", "", rval)
-        oceDebug(debug, "read item", name, "\n")
+        ##oceDebug(debug, "read item", name, "\n")
         rval
     }
     info <- readLines(file)
@@ -196,31 +198,36 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 ## OLD     d
 ## OLD }
 
-read.landsat <- function(file, band=8, debug=getOption("oceDebug"))
+read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.landsat(file=\"", file, "\", band=", band, ", ...) {", sep="")
+    oceDebug(debug, "read.landsat(file=\"", file, "\", band=c(",
+             paste(band, collapse=","), "), debug=", debug, ") {\n", sep="", unindent=1)
     rval <- new("landsat")
     headerfilename <- paste(file, "/", file, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     rval@metadata <- header
     rval@metadata[["headerfilename"]] <- headerfilename
-    rval@metadata[["bands"]] <- band
+    bandnames <-c("aerosol", "blue", "green", "red", "nir",
+                  "swir1", "swir2", "panchromatic", "cirrus",
+                  "tirs1", "tirs2")
+    rval@metadata[["bands"]] <- bandnames[band]
     rval@metadata[["bandfiles"]] <- paste(file,"/",file,"_B",band,".TIF",sep="")
-    for (b in band) {
+    for (b in seq_along(band)) {
         bandfilename <- paste(file, "/", file, "_B", b, ".TIF", sep="")
         ##rval@metadata[["filename"]] <- bandfilename 
-        oceDebug(debug, "reading band", b, "in", bandfilename, "\n")
+        oceDebug(debug, "reading ", bandnames[band[b]], " in ", bandfilename, "\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
         d <- readTIFF(bandfilename)
         d <- t(d)
         d <- d[, seq.int(dim(d)[2], 1, -1)]
         d[d==0] <- NA
-        bandname <- paste("band", b, sep="")
+        bandname <- bandnames[band[b]]
         rval@data[[bandname]] <- d
     }
     oceDebug(debug, "} # read.landsat()\n")
     rval@processingLog <- processingLog(rval@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.landsat", unindent=1)
     rval
 }
 
@@ -253,10 +260,10 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         jlim[2] <- min(jlim[2], dim[2])
         if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
             stop("no intersection between landsat image and trimming box")
-        oceDebug(debug, "  trimming i to range", ilim[1], "to", ilim[2], "inclusive, or percent range",
-                 ilim[1]/dim[1], "to", ilim[2]/dim[1], "inclusive\n")
-        oceDebug(debug, "  trimming j to range", jlim[1], "to", jlim[2], "inclusive, or percent range",
-                 jlim[1]/dim[2], "to", jlim[2]/dim[2], "inclusive\n")
+        oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
+                 ilim[1]/dim[1], "to", ilim[2]/dim[1], sep="", "\n")
+        oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
+                 jlim[1]/dim[2], "to", jlim[2]/dim[2], sep="", "\n")
         x@data[[b]] <- x@data[[b]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
     }
     ## Update bounding box but FIXME: this is not quite right, owing to projections
