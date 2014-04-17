@@ -234,12 +234,13 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             stop("x and xe must be of same length\n")
         if (percent)
             xe <- xe * x / 100
+        look <- xe != 0
         if (style == 0) {
-            segments(x, y, x+xe, y, ...)
-            segments(x, y, x-xe, y, ...)
+            segments(x[look], y[look], x[look]+xe[look], y[look], ...)
+            segments(x[look], y[look], x[look]-xe[look], y[look], ...)
         } else if (style == 1) {
-            arrows(x, y, x + xe, y, angle=90, length=length, ...)
-            arrows(x, y, x - xe, y, angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look] + xe[look], y[look], angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look] - xe[look], y[look], angle=90, length=length, ...)
         } else {
             stop("unknown value ", style, " of style; must be 0 or 1\n")
         }
@@ -249,12 +250,13 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             stop("y and ye must be of same length\n")
         if (percent)
             ye <- ye * y / 100
+        look <- ye != 0
         if (style == 0) {
-            segments(x, y, x, y+ye, ...)
-            segments(x, y, x, y-ye, ...)
+            segments(x[look], y[look], x[look], y+ye[look], ...)
+            segments(x[look], y[look], x[look], y-ye[look], ...)
         } else if (style == 1) {
-            arrows(x, y, x, y + ye, angle=90, length=length, ...)
-            arrows(x, y, x, y - ye, angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look], y[look] + ye[look], angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look], y[look] - ye[look], angle=90, length=length, ...)
         } else {
             stop("unknown value ", style, " of style; must be 0 or 1\n")
         }
