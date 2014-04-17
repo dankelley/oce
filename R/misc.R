@@ -236,11 +236,9 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             xe <- xe * x / 100
         look <- xe != 0
         if (style == 0) {
-            cat("A1\n")
             segments(x[look], y[look], x[look]+xe[look], y[look], ...)
             segments(x[look], y[look], x[look]-xe[look], y[look], ...)
         } else if (style == 1) {
-            cat("A2\n")
             arrows(x[look], y[look], x[look] + xe[look], y[look], angle=90, length=length, ...)
             arrows(x[look], y[look], x[look] - xe[look], y[look], angle=90, length=length, ...)
         } else {
@@ -254,11 +252,9 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             ye <- ye * y / 100
         look <- ye != 0
         if (style == 0) {
-            cat("B1\n")
             segments(x[look], y[look], x[look], y[look]+ye[look], ...)
             segments(x[look], y[look], x[look], y[look]-ye[look], ...)
         } else if (style == 1) {
-            cat("B2\n")
             arrows(x[look], y[look], x[look], y[look] + ye[look], angle=90, length=length, ...)
             arrows(x[look], y[look], x[look], y[look] - ye[look], angle=90, length=length, ...)
         } else {
