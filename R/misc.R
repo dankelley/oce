@@ -220,15 +220,15 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
         stop("must supply x")
     if (missing(y))
         stop("must supply y")
-    if (missing(xe) && missing(ye))
-        stop("must give either xe or ye")
     n <- length(x)
-    if (1 == length(xe))
-        xe <- rep(xe, n)
-    if (1 == length(ye))
-        ye <- rep(ye, n)
     if (n != length(y))
         stop("x and y must be of same length\n")
+    if (missing(xe) && missing(ye))
+        stop("must give either xe or ye")
+    if (1 == length(xe))
+        xe <- rep(xe, n) # FIXME probably gives wrong length
+    if (1 == length(ye))
+        ye <- rep(ye, n)
     if (!missing(xe)) {
         if (n != length(xe))
             stop("x and xe must be of same length\n")
@@ -236,9 +236,11 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             xe <- xe * x / 100
         look <- xe != 0
         if (style == 0) {
+            cat("A1\n")
             segments(x[look], y[look], x[look]+xe[look], y[look], ...)
             segments(x[look], y[look], x[look]-xe[look], y[look], ...)
         } else if (style == 1) {
+            cat("A2\n")
             arrows(x[look], y[look], x[look] + xe[look], y[look], angle=90, length=length, ...)
             arrows(x[look], y[look], x[look] - xe[look], y[look], angle=90, length=length, ...)
         } else {
@@ -252,9 +254,11 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             ye <- ye * y / 100
         look <- ye != 0
         if (style == 0) {
-            segments(x[look], y[look], x[look], y+ye[look], ...)
-            segments(x[look], y[look], x[look], y-ye[look], ...)
+            cat("B1\n")
+            segments(x[look], y[look], x[look], y[look]+ye[look], ...)
+            segments(x[look], y[look], x[look], y[look]-ye[look], ...)
         } else if (style == 1) {
+            cat("B2\n")
             arrows(x[look], y[look], x[look], y[look] + ye[look], angle=90, length=length, ...)
             arrows(x[look], y[look], x[look], y[look] - ye[look], angle=90, length=length, ...)
         } else {
