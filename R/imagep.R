@@ -40,6 +40,29 @@ abbreviateTimeLabels <- function(t, ...)
     return(t)
 }
 
+colorize <- function(z, breaks, colors=oceColorsJet)
+{
+    ## FIXME: colors could be e.g. "gmt_relief" etc
+    ## FIXME: add pre-defined palettes for e.g. topography
+    if (missing(z))
+        stop("must supply z")
+    if (is.character(colors)) {
+        stop("'colors' may not be a character string in this early version of colorize()\n")
+    } else {
+        if (is.function(colors)) {
+            if (missing(breaks)) { # Won't be doing it this way if e.g. colors="gmt"
+                breaks <- pretty(z, n=10)
+            }
+            if (length(breaks) == 1)
+                breaks <- pretty(z, n=breaks)
+            col <- colors(length(breaks) - 1)
+        } else {
+            stop("'colors' must be a function in this early version of colorize()\n")
+        }
+    }
+    list(zlim=range(z, na.rm=TRUE),
+         breaks=breaks, col=col, zcol=col[findInterval(z, breaks)])
+}
 
 makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
                         file, breaksPerLevel=20,

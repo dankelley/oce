@@ -31,15 +31,16 @@ makePalette(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
 
 }
 
-\details{This function is in a preliminary form (for testing), and its
-    arguments and action may change in the early months of 2014.}
+\details{This function is in a preliminary form (for testing); see also
+    \code{\link{colorize}}, a related function that may eventually provide
+    similar functionality to this one.}
 
 \value{A list containing \code{breaks} and \code{col}, as used by e.g.
     \code{\link{image}} or \code{\link{imagep}}.}
 
-\section{Development status}{Devised 2014-Jan-31 with a particular plot in
-    mind, this function is likely to be somewhat unstable until perhaps the end
-    of Feb, 2014.}
+\section{Development status}{Devised in January 2014 with a particular plot in
+    mind, this function is likely to undergo changes in both arguments and
+    return values, until perhaps mid-summer, 2014.}
 
 \examples{
 library(oce)
