@@ -40,15 +40,86 @@ abbreviateTimeLabels <- function(t, ...)
     return(t)
 }
 
-colorize <- function(z, breaks, colors=oceColorsJet)
+## internal function for palettes
+palette2breakscolor <- function(name,
+                                breaksPerLevel=1,
+                                topoRegion=c("water", "land", "both"))
 {
-    ## FIXME: colors could be e.g. "gmt_relief" etc
-    ## FIXME: add pre-defined palettes for e.g. topography
-    if (missing(z))
-        stop("must supply z")
-    if (is.character(colors)) {
-        stop("'colors' may not be a character string in this early version of colorize()\n")
+    knownPalettes <- c("GMT_relief", "GMT_ocean", "globe")
+    palette <- pmatch(name, knownPalettes)
+    if (is.na(palette))
+       stop("unknown palette name \"", name, "\"")
+    name <- knownPalettes[palette]
+    if (name == "GMT_relief") {
+        ## GMT based on
+        ## GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+        d <- list(l=1000*c(-8,-7,-6,-5,-4,-3,-2,-1,0,0.5,1,2,3,4,5,6,7),
+                  lr=c(0,0,0,0,0,86,172,211,70,120,146,198,250,250,252,252,253),
+                  lg=c(0,5,10,80,150,197,245,250,120,100,126,178,230,234,238,243,249),
+                  lb=c(0,25,50,125,200,184,168,211,50,50,60,80,100,126,152,177,216),
+                  u=1000*c(-7,-6,-5,-4,-3,-2,-1,0,0.5,1,2,3,4,5,6,7,8),
+                  ur=c(0,0,0,0,86,172,211,250,120,146,198,250,250,252,252,253,255),
+                  ug=c(5,10,80,150,197,245,250,255,100,126,178,230,234,238,243,249,255),
+                  ub=c(25,50,125,200,184,168,211,255,50,60,80,100,126,152,177,216,255),
+                  f="#FFFFFF",
+                  b="#000000",
+                  n="#FFFFFF")
+    } else if (name == "GMT_ocean") {
+        d <- list(l=1000*c(-8,-7,-6,-5,-4,-3,-2,-1),
+                  lr=c(0,0,0,0,0,86,172,211),
+                  lg=c(0,5,10,80,150,197,245,250),
+                  lb=c(0,25,50,125,200,184,168,211),
+                  u=1000*c(-7,-6,-5,-4,-3,-2,-1,0),
+                  ur=c(0,0,0,0,0,86,172,211,250),
+                  ug=c(5,10,80,150,197,245,250,255),
+                  ub=c(25,50,125,200,184,168,211,255),
+                  f="#FFFFFF",
+                  b="#000000",
+                  n="#FFFFFF")
+    } else if (name == "globe") {
+        d <- list(l=1000*c(-10,-9.5,-9,-8.5,-8,-7.5,-7,-6.5,-6,-5.5,-5,-4.5,-4,-3.5,-3,-2.5,-2,-1.5,-1,-0.5,-0.2,0,0.1,0.2,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5),
+                  lr=c(153,153,153,136,119,102,85,68,51,34,17,0,27,54,81,108,134,161,188,215,241,51,51,187,255,243,230,217,168,164,162,159,156,153,162,178,183,194,204,229,242,255,255),
+                  lg=c(0,0,0,17,34,51,68,85,102,119,136,153,164,175,186,197,208,219,230,241,252,102,204,228,220,202,184,166,154,144,134,123,113,102,89,118,147,176,204,229,242,255,255),
+                  lb=c(255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,0,102,146,185,137,88,39,31,25,19,13,7,0,89,118,147,176,204,229,242,255,255),
+                  u=1000*c(-9.5,-9,-8.5,-8,-7.5,-7,-6.5,-6,-5.5,-5,-4.5,-4,-3.5,-3,-2.5,-2,-1.5,-1,-0.5,-0.2,0,0.1,0.2,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10),
+                  ur=c(153,153,153,136,119,102,85,68,51,34,17,0,27,54,81,108,134,161,188,215,241,51,187,255,243,230,217,168,164,162,159,156,153,162,178,183,194,204,229,242,255,255,255),
+                  ug=c(0,0,0,17,34,51,68,85,102,119,136,153,164,175,186,197,208,219,230,241,252,204,228,220,202,184,166,154,144,134,123,113,102,89,118,147,176,204,229,242,255,255,255),
+                  ub=c(255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,102,146,185,137,88,39,31,25,19,13,7,0,89,118,147,176,204,229,242,255,255,255),
+                  f="#FFFFFF",
+                  b="#000000",
+                  n="#808080")
     } else {
+        stop("'", palette, "' is not a recognized value for 'palette'")
+    }
+    nlevel <- length(d$l)
+    breaks <- NULL
+    col <- NULL
+    for (l in 1:nlevel) {
+        lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
+        upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
+        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=1+breaksPerLevel))
+        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(1+breaksPerLevel))
+    }
+    if (palette %in% c("GMT_relief")) {
+        if (topoRegion == "water") {
+            wet <- breaks <= 0
+            breaks <- breaks[wet]
+            col <- col[wet]
+        } else if (topoRegion == "land") {
+            dry <- breaks >= 0
+            breaks <- breaks[dry]
+            col <- col[dry]
+        }
+    }
+    ## remove last colour since must have 1 more break than color
+    col <- head(col, -1)
+    list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
+}
+
+colorize <- function(z, breaks, colors=oceColorsJet,
+                     palette, breaksPerLevel=1)
+{
+    if (missing(palette)) {
         if (is.function(colors)) {
             if (missing(breaks)) { # Won't be doing it this way if e.g. colors="gmt"
                 breaks <- pretty(z, n=10)
@@ -57,11 +128,34 @@ colorize <- function(z, breaks, colors=oceColorsJet)
                 breaks <- pretty(z, n=breaks)
             col <- colors(length(breaks) - 1)
         } else {
-            stop("'colors' must be a function in this early version of colorize()\n")
+            stop("'colors' must be a function")
+        }
+        ## FIXME: next might miss top colour
+        if (missing(z)) {
+            zlim <- range(breaks)
+            zcol <- "black"
+        } else {
+            zlim <- range(z, na.rm=TRUE)
+            zcol <- col[findInterval(z, breaks)]
+        }
+    } else {
+        if (!missing(colors))
+            stop("cannot supply 'colors' and 'palette' at the same time")
+        if (!missing(breaks))
+            stop("cannot supply 'breaks' and 'palette' at the same time")
+        pal <- palette2breakscolor(palette) # FIXME what about extra args?
+        col <- pal$col
+        breaks <- pal$breaks
+        ## FIXME: next might miss top colour
+        if (missing(z)) {
+            zlim <- range(breaks)
+            zcol <- "black"
+        } else {
+            zlim <- range(z, na.rm=TRUE)
+            zcol <- col[findInterval(z, breaks)]
         }
     }
-    list(zlim=range(z, na.rm=TRUE),
-         breaks=breaks, col=col, zcol=col[findInterval(z, breaks)])
+    list(zlim=zlim, breaks=breaks, col=col, zcol=zcol)
 }
 
 makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
