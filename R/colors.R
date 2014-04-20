@@ -1,0 +1,298 @@
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
+colorize <- function(z, breaks, colors=oceColorsJet,
+                     palette, breaksPerLevel=1)
+{
+    if (missing(palette)) {
+        if (is.function(colors)) {
+            if (missing(breaks)) { # Won't be doing it this way if e.g. colors="gmt"
+                breaks <- pretty(z, n=10)
+            }
+            if (length(breaks) == 1)
+                breaks <- pretty(z, n=breaks)
+            col <- colors(length(breaks) - 1)
+        } else {
+            stop("'colors' must be a function")
+        }
+        ## FIXME: next might miss top colour
+        if (missing(z)) {
+            zlim <- range(breaks)
+            zcol <- "black"
+        } else {
+            zlim <- range(z, na.rm=TRUE)
+            zcol <- col[findInterval(z, breaks)]
+        }
+    } else {
+        if (!missing(colors))
+            stop("cannot supply 'colors' and 'palette' at the same time")
+        if (!missing(breaks))
+            stop("cannot supply 'breaks' and 'palette' at the same time")
+        pal <- palette2breakscolor(palette) # FIXME what about extra args?
+        col <- pal$col
+        breaks <- pal$breaks
+        ## FIXME: next might miss top colour
+        if (missing(z)) {
+            zlim <- range(breaks)
+            zcol <- "black"
+        } else {
+            zlim <- range(z, na.rm=TRUE)
+            zcol <- col[findInterval(z, breaks)]
+        }
+    }
+    list(zlim=zlim, breaks=breaks, col=col, zcol=zcol)
+}
+
+colormap <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
+{
+    if (!missing(name)) { # takes precedence over all
+        nameList <- c("gmt_relief", "gmt_ocean", "gmt_globe")
+        n <- pmatch(name, nameList)
+        if (is.na(n))
+            stop("unknown 'name'; must be one of: ", paste(nameList, collapse=" "))
+        name <- nameList[n]
+        stop("should handle name '", name, "' now")
+        return(NULL)
+    } else if (!missing(file)) {
+        ## colormap(file='http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
+        rval <- readGMT(file)
+        return(rval)
+    } else {                           # use lower, upper, and color
+        if (missing(breaks) || missing(col)) {
+            stop("provide 'breaks' and 'color' if both 'name' and 'file' are missing")
+        }
+        ## emulate how GMT handled
+        breaksPerLevel <- 3            # FIXME
+        nbreaks <- length(breaks)
+        ncol <- length(col)
+        delta <- mean(diff(breaks))
+        upper <- c(head(breaks, -1), breaks[nbreaks]+delta) + delta / 2
+        lower <- c(breaks[1]-delta, head(breaks,-1)) + delta / 2
+        lowerColor <- c(col[1], col)
+        upperColor <- c(col, col[ncol])
+        breaks2 <- NULL
+        col2 <- NULL
+        cat("breaks:", breaks, "\n")
+        cat("lower:", lower, "\n")
+        cat("upper:", upper, "\n")
+        for (l in seq.int(1, nbreaks)) {
+            cat("l:", l, ", lower[l]:", lower[l], ", upper[l]:", upper[l], "\n")
+            breaks2 <- c(breaks2, seq(lower[l], upper[l], length.out=1+breaksPerLevel))
+            col2 <- c(col2, colorRampPalette(c(lowerColor[l], upperColor[l]))(1+breaksPerLevel))
+        }
+        return(list(breaks=breaks2, col=head(col2, -1), mcol=mcol, fcol=fcol, l=breaks2, u=breaks2))# l and u wrong
+        if (F) {
+            ## centre and extend so get all colours
+            nbreaks <- length(breaks)
+            l <- c(breaks[1] - (breaks[2] - breaks[1]), breaks)
+            u <- c(breaks, breaks[nbreaks] + (breaks[nbreaks] - breaks[nbreaks-1]))
+            nb <- nbreaks
+            x <- seq(0, 1, length.out=nbreaks+1)
+            xout <- seq(0, 1, length.out=nb)
+            l <- approx(x, l, xout)$y
+            u <- approx(x, u, xout)$y
+            col <- colorRampPalette(col)(nb-1)
+            list(breaks=seq(min(l), max(u), length.out=nb), col=col, mcol=mcol, fcol=fcol, l=l, u=u)
+        }
+    }
+}
+
+readGMT <- function(file, text)
+{
+    if (missing(file) && missing(text))
+        stop("must give either 'file' or 'text'\n")
+    if (missing(file)) {
+        text <- strsplit(text, '\\n')[[1]]
+    } else {
+        text <- readLines(file)
+    }
+    text1 <- text[grep("^[ ]*[-0-9]", text)]
+    d <- read.table(text=text1, col.names=c("l", "lr", "lg", "lb", "u", "ur", "ug", "ub"))
+    if (length(grep("^[ ]*F", text))) {
+        f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
+        f <- rgb(f[1]/255, f[2]/255, f[3]/255)
+    } else {
+        f <- "#FFFFFF"
+    }
+    if (length(grep("^[ ]*B", text))) {
+        b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
+        b <- rgb(b[1]/255, b[2]/255, b[3]/255)
+    } else {
+        b <- "#000000"
+    }
+    if (length(grep("^[ ]*N", text))) {
+        n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
+        n <- rgb(n[1]/255, n[2]/255, n[3]/255)
+    } else {
+        n <- "#FFFFFF"
+    }
+    list(l=d$l, lr=d$lr, lg=d$lg, lb=d$lb, u=d$u, ur=d$ur, ug=d$ug, ub=d$ub, f=f, b=b, n=n)
+}
+
+
+makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
+                        file, breaksPerLevel=20,
+                        region=c("water", "land", "both"))
+{
+    style <- match.arg(style)
+    region <- match.arg(region)
+    if (!missing(file)) {
+        d <- readGMT(file)
+    } else {
+        if (style == "gmt_relief") {
+            text <- "
+#	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+#
+# Colortable for whole earth relief used in Wessel topomaps
+# Designed by P. Wessel and F. Martinez, SOEST
+# COLOR_MODEL = RGB
+-8000	0	0	0	-7000	0	5	25
+-7000	0	5	25	-6000	0	10	50
+-6000	0	10	50	-5000	0	80	125
+-5000	0	80	125	-4000	0	150	200
+-4000	0	150	200	-3000	86	197	184
+-3000	86	197	184	-2000	172	245	168
+-2000	172	245	168	-1000	211	250	211
+-1000	211	250	211	0	250	255	255
+0	70	120	50	500	120	100	50
+500	120	100	50	1000	146	126	60
+1000	146	126	60	2000	198	178	80
+2000	198	178	80	3000	250	230	100
+3000	250	230	100	4000	250	234	126
+4000	250	234	126	5000	252	238	152
+5000	252	238	152	6000	252	243	177
+6000	252	243	177	7000	253	249	216
+7000	253	249	216	8000	255	255	255
+F	255	255	255				
+B	0	0	0
+N	255	255	255"
+        } else if (style == "gmt_ocean") {
+            text <- "
+#	$Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+#
+# Colortable for oceanic areas as used in Wessel maps
+# Designed by P. Wessel and F. Martinez, SOEST.
+# COLOR_MODEL = RGB
+-8000	0	0	0	-7000	0	5	25
+-7000	0	5	25	-6000	0	10	50
+-6000	0	10	50	-5000	0	80	125
+-5000	0	80	125	-4000	0	150	200
+-4000	0	150	200	-3000	86	197	184
+-3000	86	197	184	-2000	172	245	168
+-2000	172	245	168	-1000	211	250	211
+-1000	211	250	211	0	250	255	255
+F	255	255	255
+B	0	0	0"
+        } else if (style == "oce_shelf") {
+            text <- "
+-500	0	0	0	-200	0	10	55
+-200	0	10	55	-175	0	40	80
+-175	0	40	80	-150	0	80	125
+-150	0	80	125	-125	0	115     162	
+-125	0	150	200	-100	43	173     192	
+-100	86	197	184	-75	129     221     176
+-75	172     245     168	-50	191     247     189
+-50	211     250     211	-25     220     250     240	
+-25	220	250	240	0	250	255	255"
+        }
+        d <- readGMT(text=text)
+    }
+    nlevel <- length(d$l)
+    breaks <- NULL
+    col <- NULL
+    for (l in 1:nlevel) {
+        lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
+        upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
+        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=1+breaksPerLevel))
+        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(1+breaksPerLevel))
+    }
+    if (region == "water") {
+        wet <- breaks <= 0
+        breaks <- breaks[wet]
+        col <- col[wet]
+    } else if (region == "land") {
+        dry <- breaks >= 0
+        breaks <- breaks[dry]
+        col <- col[dry]
+    }
+    ## drop a colour for length match with breaks
+    col <- col[-1]                     
+    list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
+}
+
+
+## internal function for palettes
+palette2breakscolor <- function(name,
+                                breaksPerLevel=1,
+                                topoRegion=c("water", "land", "both"))
+{
+    knownPalettes <- c("GMT_relief", "GMT_ocean", "globe")
+    palette <- pmatch(name, knownPalettes)
+    if (is.na(palette))
+       stop("unknown palette name \"", name, "\"")
+    name <- knownPalettes[palette]
+    if (name == "GMT_relief") {
+        ## GMT based on
+        ## GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+        d <- list(l=1000*c(-8,-7,-6,-5,-4,-3,-2,-1,0,0.5,1,2,3,4,5,6,7),
+                  lr=c(0,0,0,0,0,86,172,211,70,120,146,198,250,250,252,252,253),
+                  lg=c(0,5,10,80,150,197,245,250,120,100,126,178,230,234,238,243,249),
+                  lb=c(0,25,50,125,200,184,168,211,50,50,60,80,100,126,152,177,216),
+                  u=1000*c(-7,-6,-5,-4,-3,-2,-1,0,0.5,1,2,3,4,5,6,7,8),
+                  ur=c(0,0,0,0,86,172,211,250,120,146,198,250,250,252,252,253,255),
+                  ug=c(5,10,80,150,197,245,250,255,100,126,178,230,234,238,243,249,255),
+                  ub=c(25,50,125,200,184,168,211,255,50,60,80,100,126,152,177,216,255),
+                  f="#FFFFFF",
+                  b="#000000",
+                  n="#FFFFFF")
+    } else if (name == "GMT_ocean") {
+        d <- list(l=1000*c(-8,-7,-6,-5,-4,-3,-2,-1),
+                  lr=c(0,0,0,0,0,86,172,211),
+                  lg=c(0,5,10,80,150,197,245,250),
+                  lb=c(0,25,50,125,200,184,168,211),
+                  u=1000*c(-7,-6,-5,-4,-3,-2,-1,0),
+                  ur=c(0,0,0,0,0,86,172,211,250),
+                  ug=c(5,10,80,150,197,245,250,255),
+                  ub=c(25,50,125,200,184,168,211,255),
+                  f="#FFFFFF",
+                  b="#000000",
+                  n="#FFFFFF")
+    } else if (name == "globe") {
+        d <- list(l=1000*c(-10,-9.5,-9,-8.5,-8,-7.5,-7,-6.5,-6,-5.5,-5,-4.5,-4,-3.5,-3,-2.5,-2,-1.5,-1,-0.5,-0.2,0,0.1,0.2,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5),
+                  lr=c(153,153,153,136,119,102,85,68,51,34,17,0,27,54,81,108,134,161,188,215,241,51,51,187,255,243,230,217,168,164,162,159,156,153,162,178,183,194,204,229,242,255,255),
+                  lg=c(0,0,0,17,34,51,68,85,102,119,136,153,164,175,186,197,208,219,230,241,252,102,204,228,220,202,184,166,154,144,134,123,113,102,89,118,147,176,204,229,242,255,255),
+                  lb=c(255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,0,102,146,185,137,88,39,31,25,19,13,7,0,89,118,147,176,204,229,242,255,255),
+                  u=1000*c(-9.5,-9,-8.5,-8,-7.5,-7,-6.5,-6,-5.5,-5,-4.5,-4,-3.5,-3,-2.5,-2,-1.5,-1,-0.5,-0.2,0,0.1,0.2,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10),
+                  ur=c(153,153,153,136,119,102,85,68,51,34,17,0,27,54,81,108,134,161,188,215,241,51,187,255,243,230,217,168,164,162,159,156,153,162,178,183,194,204,229,242,255,255,255),
+                  ug=c(0,0,0,17,34,51,68,85,102,119,136,153,164,175,186,197,208,219,230,241,252,204,228,220,202,184,166,154,144,134,123,113,102,89,118,147,176,204,229,242,255,255,255),
+                  ub=c(255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,102,146,185,137,88,39,31,25,19,13,7,0,89,118,147,176,204,229,242,255,255,255),
+                  f="#FFFFFF",
+                  b="#000000",
+                  n="#808080")
+    } else {
+        stop("'", palette, "' is not a recognized value for 'palette'")
+    }
+    nlevel <- length(d$l)
+    breaks <- NULL
+    col <- NULL
+    for (l in 1:nlevel) {
+        lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
+        upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
+        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=1+breaksPerLevel))
+        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(1+breaksPerLevel))
+    }
+    if (palette %in% c("GMT_relief")) {
+        if (topoRegion == "water") {
+            wet <- breaks <= 0
+            breaks <- breaks[wet]
+            col <- col[wet]
+        } else if (topoRegion == "land") {
+            dry <- breaks >= 0
+            breaks <- breaks[dry]
+            col <- col[dry]
+        }
+    }
+    ## remove last colour since must have 1 more break than color
+    col <- head(col, -1)
+    list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
+}
+
