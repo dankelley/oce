@@ -1,9 +1,9 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
 colorize <- function(z, breaks, colors=oceColorsJet,
-                     palette, breaksPerLevel=1)
+                     colormap, breaksPerLevel=1)
 {
-    if (missing(palette)) {
+    if (missing(colormap)) {
         if (is.function(colors)) {
             if (missing(breaks)) { # Won't be doing it this way if e.g. colors="gmt"
                 breaks <- pretty(z, n=10)
@@ -24,10 +24,10 @@ colorize <- function(z, breaks, colors=oceColorsJet,
         }
     } else {
         if (!missing(colors))
-            stop("cannot supply 'colors' and 'palette' at the same time")
+            stop("cannot supply 'colors' and 'colormap' at the same time")
         if (!missing(breaks))
-            stop("cannot supply 'breaks' and 'palette' at the same time")
-        pal <- palette2breakscolor(palette) # FIXME what about extra args?
+            stop("cannot supply 'breaks' and 'colormap' at the same time")
+        pal <- palette2breakscolor(colormap) # FIXME what about extra args?
         col <- pal$col
         breaks <- pal$breaks
         ## FIXME: next might miss top colour
