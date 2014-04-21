@@ -8,3 +8,4 @@ src
 *.swp
 .Rproj.user
 .DS_Store
+.RData
