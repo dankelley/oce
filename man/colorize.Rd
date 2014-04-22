@@ -76,11 +76,9 @@ plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
 
-\dontrun{
 data(topoWorld)
 cm <- colorizeAlpha(colormap="gmt_globe")
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
-}
 }
 
 \references{Information on GMT software is given at
