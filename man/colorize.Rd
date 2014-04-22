@@ -76,9 +76,15 @@ plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
 
+## 2. images, showing two colourmaps
 data(topoWorld)
-cm <- colorizeAlpha(colormap="gmt_globe")
-imagep(topoWorld, breaks=cm$breaks, col=cm$col)
+cm1 <- colormapAlpha(name='gmt_relief')
+cm2 <- colormapAlpha(file='http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
+c1 <- colorizeAlpha(colormap=cm1)
+c2 <- colorizeAlpha(colormap=cm2)
+par(mfrow=c(2,1))
+imagep(topoWorld, breaks=c1$breaks, col=c1$col)
+imagep(topoWorld, breaks=c2$breaks, col=c2$col)
 }
 
 \references{Information on GMT software is given at
