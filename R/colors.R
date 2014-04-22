@@ -1,7 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-colorize <- function(z, breaks, colors=oceColorsJet,
-                     colormap, breaksPerLevel=1)
+colorizeAlpha <- function(z, breaks, colors=oceColorsJet, colormap, segments=1)
 {
     if (missing(colormap)) {
         if (is.function(colors)) {
@@ -27,9 +26,21 @@ colorize <- function(z, breaks, colors=oceColorsJet,
             stop("cannot supply 'colors' and 'colormap' at the same time")
         if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
-        pal <- palette2breakscolor(colormap) # FIXME what about extra args?
-        col <- pal$col
-        breaks <- pal$breaks
+        if (is.character(colormap)) {
+            colormap <- colormapAlpha(name=colormap)
+        }
+        breaks <- NULL
+        col <- NULL
+        ## Could preallocate but colormaps are small so do not bother
+        n <- length(colormap$x0)
+        for (i in seq.int(1, n-1)) {
+            breaks <- c(breaks, seq(colormap$x0[i], colormap$x1[i], length.out=1+segments))
+            col <- c(col, colorRampPalette(c(colormap$col0[i], colormap$col1[i]))(1+segments))
+        }
+        nbreaks <- length(breaks)
+        ## extend a bit to the right
+        delta <- mean(diff(breaks[1:2])) / 1000
+        breaks <- c(breaks, breaks[nbreaks] + delta)
         ## FIXME: next might miss top colour
         if (missing(z)) {
             zlim <- range(breaks)
@@ -42,7 +53,193 @@ colorize <- function(z, breaks, colors=oceColorsJet,
     list(zlim=zlim, breaks=breaks, col=col, zcol=zcol)
 }
 
-colormap <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
+colormapGMT <- function(x0, x1, col0, col1, bpl=1)
+{
+    n <- length(x0)
+    if (length(x1) != n)
+        stop("mismatched lengths of x0 and x1 (", n, " and ", length(x1), ")")
+    if (length(col0) != n)
+        stop("mismatched lengths of x0 and col0 (", n, " and ", length(col0), ")")
+    if (length(col1) != n)
+        stop("mismatched lengths of x0 and col1 (", n, " and ", length(col1), ")")
+    breaks <- NULL
+    col <- NULL
+    ## Could preallocate but colormaps are small so do not bother
+    for (i in seq.int(1, n-1)) {
+        breaks <- c(breaks, seq(x0[i], x1[i], length.out=1+bpl))
+        col <- c(col, colorRampPalette(c(col0[i], col1[i]))(1+bpl))
+    }
+    nbreaks <- length(breaks)
+    ## extend a bit to the right
+    delta <- mean(diff(breaks[1:2])) / 1000
+    breaks <- c(breaks, breaks[nbreaks] + delta)
+    rval <- list(breaks=breaks, col=col)
+    rval
+}
+
+colormapFromGmt <- function(file)
+{
+    if (missing(file) && missing(text))
+        stop("must give either 'file' or 'text'\n")
+    if (missing(file)) {
+        text <- strsplit(text, '\\n')[[1]]
+    } else {
+        text <- readLines(file)
+    }
+    text1 <- text[grep("^[ ]*[-0-9]", text)]
+    d <- read.table(text=text1, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
+    col0 <- rgb(d$r0, d$g0, d$b0, maxColorValue=255)
+    col1 <- rgb(d$r1, d$g1, d$b1, maxColorValue=255)
+    if (length(grep("^[ ]*F", text))) {
+        f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
+        f <- rgb(f[1], f[2], f[3], maxColorValue=255)
+    } else {
+        f <- "#FFFFFF"
+    }
+    if (length(grep("^[ ]*B", text))) {
+        b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
+        b <- rgb(b[1], b[2], b[3], maxColorValue=255)
+    } else {
+        b <- "#000000"
+    }
+    if (length(grep("^[ ]*N", text))) {
+        n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
+        n <- rgb(n[1], n[2], n[3], maxColorValue=255)
+    } else {
+        n <- "#FFFFFF"
+    }
+    list(x0=d$x0, x1=d$x1, col0=col0, col1=col1)
+}
+
+colormapFromName <- function(name)
+{
+    names <- c("gmt_relief", "gmt_ocean", "gmt_globe")
+    id <- pmatch(name, names)
+    if (is.na(id))
+        stop("unknown colormap name; try one of: ", paste(names, collapse=", "))
+    name <- names[id]
+    if (name == "gmt_relief") {
+        ##	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+        ##
+        ## Colortable for whole earth relief used in Wessel topomaps
+        ## Designed by P. Wessel and F. Martinez, SOEST
+        ## COLOR_MODEL = RGB
+        text <- "
+        -8000	0	0	0	-7000	0	5	25
+        -7000	0	5	25	-6000	0	10	50
+        -6000	0	10	50	-5000	0	80	125
+        -5000	0	80	125	-4000	0	150	200
+        -4000	0	150	200	-3000	86	197	184
+        -3000	86	197	184	-2000	172	245	168
+        -2000	172	245	168	-1000	211	250	211
+        -1000	211	250	211	0	250	255	255
+        0	70	120	50	500	120	100	50
+        500	120	100	50	1000	146	126	60
+        1000	146	126	60	2000	198	178	80
+        2000	198	178	80	3000	250	230	100
+        3000	250	230	100	4000	250	234	126
+        4000	250	234	126	5000	252	238	152
+        5000	252	238	152	6000	252	243	177
+        6000	252	243	177	7000	253	249	216
+        7000	253	249	216	8000	255	255	255
+        F	255	255	255				
+        B	0	0	0
+        N	255	255	255"
+    } else if (name == "gmt_ocean") {
+        ##	$Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+        ##
+        ## Colortable for oceanic areas as used in Wessel maps
+        ## Designed by P. Wessel and F. Martinez, SOEST.
+        ## COLOR_MODEL = RGB
+        text <- "
+        -8000	0	0	0	-7000	0	5	25
+        -7000	0	5	25	-6000	0	10	50
+        -6000	0	10	50	-5000	0	80	125
+        -5000	0	80	125	-4000	0	150	200
+        -4000	0	150	200	-3000	86	197	184
+        -3000	86	197	184	-2000	172	245	168
+        -2000	172	245	168	-1000	211	250	211
+        -1000	211	250	211	0	250	255	255
+        F	255	255	255
+        B	0	0	0"
+    } else if (name == "gmt_globe") {
+        ##       $Id: GMT_globe.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+        ##
+        ## Colormap using in global relief maps
+        ## Bathymetry colours manually redefined for blue-shade effect and
+        ## new topography colour scheme for use with Generic Mapping Tools.
+        ## Designed by Lester M. Anderson (CASP, UK) lester.anderson@casp.cam.ac.uk
+        ## COLOR_MODEL = RGB
+        text <- "
+        -10000	153	0	255	-9500	153	0	255
+        -9500	153	0	255	-9000	153	0	255
+        -9000	153	0	255	-8500	153	0	255
+        -8500	136	17	255	-8000	136	17	255  
+        -8000	119	34	255	-7500	119	34	255
+        -7500	102	51	255	-7000	102	51	255
+        -7000	85	68	255	-6500	85	68	255
+        -6500	68	85	255	-6000	68	85	255
+        -6000	51	102	255	-5500	51	102	255
+        -5500	34	119	255	-5000	34	119	255  
+        -5000	17	136	255	-4500	17	136	255
+        -4500	0	153	255	-4000	0	153	255
+        -4000	27	164	255	-3500	27	164	255
+        -3500	54	175	255	-3000	54	175	255
+        -3000	81	186	255	-2500	81	186	255
+        -2500	108	197	255	-2000	108	197	255
+        -2000	134	208	255	-1500	134	208	255
+        -1500	161	219	255	-1000	161	219	255
+        -1000	188	230	255	-500	188	230	255
+        -500	215	241	255	-200	215	241	255
+        -200	241	252	255	0	241	252	255
+        0	51	102	0	100	51	204	102
+        100	51	204	102	200	187	228	146
+        200	187	228	146	500	255	220	185
+        500	255	220	185	1000	243	202	137
+        1000	243	202	137	1500	230	184	88
+        1500	230	184	88	2000	217	166	39
+        2000	217	166	39	2500	168	154	31
+        2500	168	154	31	3000	164	144	25
+        3000	164	144	25	3500	162	134	19
+        3500	162	134	19	4000	159	123	13
+        4000	159	123	13	4500	156	113	7
+        4500	156	113	7	5000	153	102	0
+        5000	153	102	0	5500	162	89	89
+        5500	162	89	89	6000	178	118	118
+        6000	178	118	118	6500	183	147	147
+        6500	183	147	147	7000	194	176	176
+        7000	194	176	176	7500	204	204	204
+        7500	204	204	204	8000	229	229	229
+        8000	229	229	229	8500	242	242	242
+        8500	242	242	242	9000	255	255	255
+        9000	255	255	255	9500	255	255	255
+        9500	255	255	255	10000	255	255	255
+        F	255	255	255				
+        B	0	0	0
+        N	128	128	128"
+    } else {
+        stop("unknown colormap name; try one of: ", paste(names, collapse=", "))
+    }
+    colormapFromGmt(file=textConnection(text))
+}
+
+
+colormapAlpha <- function(name, file, x0, x1, col0, col1, n=1)
+{
+    if (!missing(name) && !missing(file))
+        stop('may not give both "name" and "file"')
+    if (!missing(name)) {
+        return(colormapFromName(name))
+    } else if (!missing(file)) {
+        return(colormapFromGmt(file))
+    } else {
+        return(list(x0=x0, x1=x1, col0=col0, col1=col1))
+    }
+}
+
+
+
+colormapAlphaOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
 {
     if (!missing(name)) { # takes precedence over all
         nameList <- c("gmt_relief", "gmt_ocean", "gmt_globe")
@@ -54,8 +251,7 @@ colormap <- function(name, file, breaks, col, type=c("level", "gradient"), mcol=
         return(NULL)
     } else if (!missing(file)) {
         ## colormap(file='http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
-        rval <- readGMT(file)
-        return(rval)
+        return(colormapFromGmt(file))
     } else {                           # use lower, upper, and color
         if (missing(breaks) || missing(col)) {
             stop("provide 'breaks' and 'color' if both 'name' and 'file' are missing")
@@ -96,38 +292,6 @@ colormap <- function(name, file, breaks, col, type=c("level", "gradient"), mcol=
     }
 }
 
-readGMT <- function(file, text)
-{
-    if (missing(file) && missing(text))
-        stop("must give either 'file' or 'text'\n")
-    if (missing(file)) {
-        text <- strsplit(text, '\\n')[[1]]
-    } else {
-        text <- readLines(file)
-    }
-    text1 <- text[grep("^[ ]*[-0-9]", text)]
-    d <- read.table(text=text1, col.names=c("l", "lr", "lg", "lb", "u", "ur", "ug", "ub"))
-    if (length(grep("^[ ]*F", text))) {
-        f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
-        f <- rgb(f[1]/255, f[2]/255, f[3]/255)
-    } else {
-        f <- "#FFFFFF"
-    }
-    if (length(grep("^[ ]*B", text))) {
-        b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
-        b <- rgb(b[1]/255, b[2]/255, b[3]/255)
-    } else {
-        b <- "#000000"
-    }
-    if (length(grep("^[ ]*N", text))) {
-        n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
-        n <- rgb(n[1]/255, n[2]/255, n[3]/255)
-    } else {
-        n <- "#FFFFFF"
-    }
-    list(l=d$l, lr=d$lr, lg=d$lg, lb=d$lb, u=d$u, ur=d$ur, ug=d$ug, ub=d$ub, f=f, b=b, n=n)
-}
-
 
 makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
                         file, breaksPerLevel=20,
@@ -136,7 +300,7 @@ makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
     style <- match.arg(style)
     region <- match.arg(region)
     if (!missing(file)) {
-        d <- readGMT(file)
+        d <- colormapFromGmt(file)
     } else {
         if (style == "gmt_relief") {
             text <- "
@@ -193,17 +357,18 @@ B	0	0	0"
 -75	172     245     168	-50	191     247     189
 -50	211     250     211	-25     220     250     240	
 -25	220	250	240	0	250	255	255"
+        } else {
+            stop("unknown colormap name")
         }
-        d <- readGMT(text=text)
+        d <- colormapFromGmt(file=textConnection(text))
     }
-    nlevel <- length(d$l)
+    nlevel <- length(d$x0)
     breaks <- NULL
     col <- NULL
+    str(d)
     for (l in 1:nlevel) {
-        lowerColor <- rgb(d$lr[l]/255, d$lg[l]/255, d$lb[l]/255)
-        upperColor <- rgb(d$ur[l]/255, d$ug[l]/255, d$ub[l]/255)
-        breaks <- c(breaks, seq(d$l[l], d$u[l], length.out=1+breaksPerLevel))
-        col <- c(col, colorRampPalette(c(lowerColor, upperColor))(1+breaksPerLevel))
+        breaks <- c(breaks, seq(d$x0[l], d$x1[l], length.out=1+breaksPerLevel))
+        col <- c(col, colorRampPalette(c(d$col0[l], d$col1[l]))(1+breaksPerLevel))
     }
     if (region == "water") {
         wet <- breaks <= 0

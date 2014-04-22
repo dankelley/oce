@@ -2,9 +2,12 @@
 
 \alias{makePalette}
 
-\title{Make a palette}
+\title{Make a palette [DEPRECATED]}
 
-\description{Make a palette, e.g. for bathymetric images}
+\description{Make a palette, e.g. for bathymetric images.  DEPRECATION NOTICE
+    -- this function will be replaced by \code{\link{colormapAlpha}} by end of
+    April, 2014.}
+
 
 \usage{
 makePalette(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
@@ -57,8 +60,6 @@ z <- outer(x, y, function(x,y) -300*(x-1)/N)
 imagep(x, y, z, breaks=pal$breaks, col=pal$col)
 contour(x, y, z, add=TRUE, col='red', labcex=1,
         levels=-c(seq(0, 200, 25), 250, 300))
-
-
 }
 
 \references{The GMT documentation is at (\url{http://gmt.soest.hawaii.edu}, and

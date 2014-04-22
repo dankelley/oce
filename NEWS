@@ -1,5 +1,5 @@
 0.9-14
-- colorize() added
+- colorize() and colormap() added
 - data(nao) added; data(soi) updated, and names improved in latter
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
 - landsat support added
@@ -13,7 +13,6 @@
 - drawPalette() gets arguments levels and cex.axis
 - runlm() added
 - mapScalebar() added
-- makePalette() added
 - subset.topo() added
 - read.topo() now handles GEBCO netcdf files
 - decimate() now handles topo objects

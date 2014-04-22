@@ -1,12 +1,13 @@
-\name{colorize}
+\name{colorizeAlpha}
 
 \alias{colorize}
+\alias{colorizeAlpha}
 
-\title{Calculate colors (DRAFT VERSION)}
+\title{Calculate colors (Draft Alpha Version)}
 
 \description{Calculate colors for use in palettes and plots}
 
-\usage{colorize(z, breaks, colors=oceColorsJet, colormap, breaksPerLevel=1)}
+\usage{colorizeAlpha(z, breaks, colors=oceColorsJet, colormap, segments=1)}
 
 \arguments{
 
@@ -24,16 +25,18 @@
       provided.}
 
   \item{colormap}{a character string naming a built-in colormap, or a colormap
-      that was created with \code{\link{colormap}}.  If \code{colormap} is
+      that was created with \code{\link{colormapAlpha}}.  If \code{colormap} is
       given, then it takes precedence over both \code{breaks} and
       \code{colors}.  The only built-in choices are \code{"GMT_relief"},
       \code{"GMT_ocean"} and \code{"globe"}.  See \sQuote{References} for more
       about these GMT-based schemes.}
   
-  \item{breaksPerLevel}{number of breaks per level; only used if
-      \code{colormap} is given.  If \code{breaksPerLevel} is a large enough
-      number (say 10 or more) then the colors will blend smoothly between the
-      discrete values.} }
+  \item{segments}{number of segments between any two breaks.  This is only used
+      if \code{colormap} is not given.  The default value of 1 yields uniform
+      color between breakpoints, and higher values yield more sub-steps, with
+      \code{segments} exceeding 10 or so yielding reasonably smooth blending of
+      colors between breaks.}
+}
 
 \details{This function may be used to calculate \code{breaks} and \code{col}
     for \code{\link{image}}, \code{\link{imagep}} or \code{\link{drawPalette}},
@@ -58,7 +61,7 @@
 \section{Development status}{Devised in April 2014, this function is likely to
     be somewhat unstable until mid-summer 2014.  In particular, the argument
     list may change, becuase there is a possibility of combining this with the
-    existing (and again, preliminary) function \code{\link{colormap}}.}
+    existing (and again, preliminary) function \code{\link{colormapAlpha}}.}
 
 \examples{
 library(oce)
@@ -67,16 +70,15 @@ y <- sin(2 * pi * x)
 
 ## 1. scatterplot
 mar <- par('mar') # prevent margin creep by drawPalette()
-c <- colorize(y)
+c <- colorizeAlpha(y)
 drawPalette(c$zlim, col=c$col, breaks=c$breaks)
 plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
 
 \dontrun{
-## 2. imagep()
 data(topoWorld)
-cm <- colormap(palette="GMT_relief")
+cm <- colorizeAlpha(colormap="gmt_globe")
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 }
 }
@@ -84,7 +86,7 @@ imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 \references{Information on GMT software is given at
     \url{http://gmt.soest.hawaii.edu}.  Diagrams showing the GMT color schemes
     are at \url{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html}, and
-    their numerical specifications are at
+    their numerical specifications are at e.g.
     \url{http://www.beamreach.org/maps/gmt/share/cpt}.}
 
 \author{Dan Kelley}

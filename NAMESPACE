@@ -43,7 +43,8 @@ export("+.section",
        bcdToInteger,
        byteToBinary,
        coastlineBest,
-       colorize,
+       colorizeAlpha, # alpha status; added 22 Apr, 2014
+       colormapAlpha, # alpha status; added 22 Apr, 2014
        coordinate,
        coriolis,
        ctdAddColumn,
@@ -104,7 +105,7 @@ export("+.section",
        "longitude<-",
        magneticField,
        makeFilter,
-       makePalette,
+       makePalette, # FIXME deprecated Apr 22, 2014
        makeSection,
        mapContour,
        mapImage,
