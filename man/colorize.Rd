@@ -7,35 +7,37 @@
 
 \description{Calculate colors for use in palettes and plots}
 
-\usage{colorizeAlpha(z, breaks, colors=oceColorsJet, colormap, segments=1)}
+\usage{colorizeAlpha(z, breaks, col=oceColorsJet, colormap, segments=1)}
 
 \arguments{
 
-  \item{z}{a vector or other set of numerical values to be examined.}
+  \item{z}{an optional vector or other set of numerical values to be examined.}
 
-  \item{breaks}{optional vector of numerical values for break points between
-      color levels.  If this is not provided, and if \code{colormap} is
-      missing, then \code{pretty(z,n=10)} is used.  If \code{breaks} is
-      provided but consists of only a single number, then again
-      \code{\link{pretty}} is called, but with \code{n} set to that number.}
+  \item{breaks}{an optional vector of numerical values for break points between
+      color levels (see \code{\link{image}}).  If this is not provided, and if
+      \code{colormap} is missing, then \code{pretty(z,n=10)} is used.  If
+      \code{breaks} is provided but consists of only a single number, then
+      again \code{\link{pretty}} is called, but with \code{n} set to that
+      number.}
   
-  \item{colors}{either a vector of colors or a function taking a numerical
-      value as its single argument and returning a vector of colours.  The
-      value of \code{colors} is ignored if Ignored if \code{palette} is
-      provided.}
+  \item{cols}{either a vector of colors or a function taking a numerical value
+      as its single argument and returning a vector of colors (see
+      \code{\link{image}}.  The value of \code{col} is ignored if
+      \code{palette} is provided.}
 
   \item{colormap}{a character string naming a built-in colormap, or a colormap
       that was created with \code{\link{colormapAlpha}}.  If \code{colormap} is
       given, then it takes precedence over both \code{breaks} and
-      \code{colors}.  The only built-in choices are \code{"GMT_relief"},
-      \code{"GMT_ocean"} and \code{"globe"}.  See \sQuote{References} for more
-      about these GMT-based schemes.}
+      \code{colors}.  The only built-in choices are \code{"gmt_relief"},
+      \code{"gmt_ocean"} and \code{"gmt_globe"}.  See \sQuote{References} for
+      more about these GMT-based schemes.}
   
-  \item{segments}{number of segments between any two breaks.  This is only used
-      if \code{colormap} is not given.  The default value of 1 yields uniform
+  \item{segments}{number of segments between any two \code{breaks} This is only
+      used if \code{colormap} is given.  The default value of 1 yields uniform
       color between breakpoints, and higher values yield more sub-steps, with
       \code{segments} exceeding 10 or so yielding reasonably smooth blending of
       colors between breaks.}
+
 }
 
 \details{This function may be used to calculate \code{breaks} and \code{col}
@@ -60,7 +62,7 @@
 
 \section{Development status}{Devised in April 2014, this function is likely to
     be somewhat unstable until mid-summer 2014.  In particular, the argument
-    list may change, becuase there is a possibility of combining this with the
+    list may change, because there is a possibility of combining this with the
     existing (and again, preliminary) function \code{\link{colormapAlpha}}.}
 
 \examples{

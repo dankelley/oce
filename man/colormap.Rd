@@ -43,9 +43,13 @@
     values \code{breaks} and \code{col}.  Setting \code{n} to 1 yields a
     quantized palette.}
 
-\value{A list (called a "colormap" in e.g. \code{\link{colorize}}) containing
-    \code{breaks} and \code{col}, as used by e.g.  \code{\link{image}} or
-    \code{\link{imagep}}.}
+\value{A list containing \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
+    Typically this is used as the value of the \code{colormap} argument of
+    \code{\link{colorize}}, which in turn is used to calculate the conventional
+    arguments \code{breaks} and \code{col}, as used by R functions such as
+    \code{\link{image}}.  The class of the return value is \code{c("list",
+        "colormap")}, although this fact is not used at the present version of
+    Oce.}
 
 \section{Development status}{Devised in April 2014, this function is likely to
     be somewhat unstable until mid-summer 2014.  In particular, the argument

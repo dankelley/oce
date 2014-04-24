@@ -1,17 +1,17 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-colorizeAlpha <- function(z, breaks, colors=oceColorsJet, colormap, segments=1)
+colorizeAlpha <- function(z, breaks, col=oceColorsJet, colormap, segments=1)
 {
     if (missing(colormap)) {
-        if (is.function(colors)) {
-            if (missing(breaks)) { # Won't be doing it this way if e.g. colors="gmt"
+        if (is.function(col)) {
+            if (missing(breaks)) {
                 breaks <- pretty(z, n=10)
             }
             if (length(breaks) == 1)
                 breaks <- pretty(z, n=breaks)
-            col <- colors(length(breaks) - 1)
+            col <- col(length(breaks) - 1)
         } else {
-            stop("'colors' must be a function")
+            stop("'col' must be a function (more flexibility available upon request to author)")
         }
         ## FIXME: next might miss top colour
         if (missing(z)) {
@@ -22,8 +22,8 @@ colorizeAlpha <- function(z, breaks, colors=oceColorsJet, colormap, segments=1)
             zcol <- col[findInterval(z, breaks)]
         }
     } else {
-        if (!missing(colors))
-            stop("cannot supply 'colors' and 'colormap' at the same time")
+        if (!missing(col))
+            stop("cannot supply 'col' and 'colormap' at the same time")
         if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
         if (is.character(colormap)) {
@@ -108,7 +108,9 @@ colormapFromGmt <- function(file)
     } else {
         n <- "#FFFFFF"
     }
-    list(x0=d$x0, x1=d$x1, col0=col0, col1=col1)
+    rval <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1)
+    class(rval) <- c("list", "colormap")
+    rval
 }
 
 colormapFromName <- function(name)
@@ -116,7 +118,7 @@ colormapFromName <- function(name)
     names <- c("gmt_relief", "gmt_ocean", "gmt_globe")
     id <- pmatch(name, names)
     if (is.na(id))
-        stop("unknown colormap name; try one of: ", paste(names, collapse=", "))
+        stop("unknown colormap name \"", name, "\"; try one of: ", paste(names, collapse=", "))
     name <- names[id]
     if (name == "gmt_relief") {
         ##	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
@@ -228,14 +230,18 @@ colormapAlpha <- function(name, file, x0, x1, col0, col1, n=1)
 {
     if (!missing(name) && !missing(file))
         stop('may not give both "name" and "file"')
+    rval <- NULL
     if (!missing(name)) {
-        return(colormapFromName(name))
+        rval <- colormapFromName(name)
     } else if (!missing(file)) {
-        return(colormapFromGmt(file))
+        rval <- colormapFromGmt(file)
     } else {
-        return(list(x0=x0, x1=x1, col0=col0, col1=col1))
+        rval <- list(x0=x0, x1=x1, col0=col0, col1=col1)
+        class(rval) <- c("list", "colormap")
     }
+    rval
 }
+colormap <- colormapAlpha
 
 
 
@@ -358,7 +364,7 @@ B	0	0	0"
 -50	211     250     211	-25     220     250     240	
 -25	220	250	240	0	250	255	255"
         } else {
-            stop("unknown colormap name")
+            stop("unknown colormap name \"", name, "\"")
         }
         d <- colormapFromGmt(file=textConnection(text))
     }
