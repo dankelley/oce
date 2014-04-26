@@ -20,7 +20,7 @@
       again \code{\link{pretty}} is called, but with \code{n} set to that
       number.}
   
-  \item{cols}{either a vector of colors or a function taking a numerical value
+  \item{col}{either a vector of colors or a function taking a numerical value
       as its single argument and returning a vector of colors (see
       \code{\link{image}}.  The value of \code{col} is ignored if
       \code{palette} is provided.}

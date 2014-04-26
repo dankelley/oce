@@ -364,7 +364,7 @@ B	0	0	0"
 -50	211     250     211	-25     220     250     240	
 -25	220	250	240	0	250	255	255"
         } else {
-            stop("unknown colormap name \"", name, "\"")
+            stop("unknown colormap style \"", style, "\"")
         }
         d <- colormapFromGmt(file=textConnection(text))
     }
