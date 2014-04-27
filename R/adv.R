@@ -120,7 +120,8 @@ setMethod(f="[[",
                   }
                   return(rval)
               } else {
-                  return(as(x, "oce")[[i, j, drop]])
+                  ##return(as(x, "oce")[[i, j, drop]])
+                  return(as(x, "oce")[[i]])
               }
           })
 

@@ -61,7 +61,8 @@ setMethod(f="[[",
                   x@data$model$coef
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 

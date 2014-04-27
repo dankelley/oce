@@ -83,7 +83,8 @@ setMethod(f="[[",
                       TS
                   }
               } else {
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
