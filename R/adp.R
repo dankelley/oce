@@ -135,7 +135,7 @@ setMethod(f="summary",
           })
 
 setMethod(f="[[",
-          signature="adp",
+          signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i == "a") {
                   if (!missing(j) && j == "numeric") {
@@ -168,7 +168,8 @@ setMethod(f="[[",
                   }
                   rval
               } else {
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 

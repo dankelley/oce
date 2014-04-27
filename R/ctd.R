@@ -47,7 +47,8 @@ setMethod(f="summary",
           })
 
 setMethod(f="[[",
-          signature="ctd",
+          signature(x="ctd", i="ANY", j="ANY"),
+          ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
@@ -96,7 +97,8 @@ setMethod(f="[[",
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  rval <- as(x, "oce")[[i, j, drop]]
+                  ## rval <- as(x, "oce")[[i, j, drop]]
+                  rval <- as(x, "oce")[[i]]
                   if (is.null(rval))
                       stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
                   rval

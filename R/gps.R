@@ -36,7 +36,8 @@ setMethod(f="[[",
           signature="gps",
           definition=function(x, i, j, drop) {
               ## I use 'as' because I could not figure out callNextMethod() etc
-              as(x, "oce")[[i, j, drop]]
+              #as(x, "oce")[[i, j, drop]]
+              as(x, "oce")[[i]]
           })
 
 setMethod(f="plot",
