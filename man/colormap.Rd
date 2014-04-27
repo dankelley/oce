@@ -57,16 +57,16 @@
     \code{\link{colorize}}.}
     
 \examples{
+\dontrun{
 library(oce)
 data(topoWorld)
-par(mfrow=c(3, 1))
 
-## Top panel: topo map with GMT "globe" scheme
+## Topo map with GMT "globe" scheme
 cm <- colormap("gmt_globe")
 cz <- colorize(colormap=cm)
 imagep(topoWorld, breaks=cz$breaks, col=cz$col)
 
-## Middle panel: modify to red for depths < 1km
+## Modify to red for depths < 1km
 cm <- colormap("gmt_globe")
 km <- which(-1000 <= cm$x0 & cm$x0 < 0)
 cm$col0[km] <- 'red'
@@ -74,14 +74,14 @@ cm$col1[km] <- 'red'
 cz <- colorize(colormap=cm)
 imagep(topoWorld, breaks=cz$breaks, col=cz$col)
 
-## Bottom panel: violet for deep waters
+## Construct color map
 cm <- colormap(x0=c(-8000, -4000, 0, 100),
                x1=c(-8000, -4000, 0, 100),
                col0=c("violet","blue","white","tan"),
                col1=c("violet","blue","white","tan"),n=10)
 cz <- colorize(colormap=cm)
 imagep(topoWorld, breaks=cz$breaks, col=cz$col)
-
+}
 }
 
 \references{Information on GMT software is given at

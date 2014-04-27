@@ -82,10 +82,12 @@ grid()
 par(mar=mar)
 
 ## 2. colorize image of N. Atl. topography
+\dontrun{
 data(topoWorld)
 natl <- subset(subset(topoWorld, longitude > 270), latitude > 0)
 c <- colorize(colormap="gmt_relief")
 imagep(natl, breaks=c$breaks, col=c$col)
+}
 }
 
 \references{Information on GMT software is given at
