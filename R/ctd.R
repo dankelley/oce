@@ -47,8 +47,8 @@ setMethod(f="summary",
           })
 
 setMethod(f="[[",
-          signature="ctd",
-          definition=function(x, i, j, drop) {
+          signature(x="ctd", i="ANY", j="ANY"),
+          definition=function(x, i, j=NULL, drop=NULL) {
               if (i == "N2") {
                   swN2(x)
               } else if (i %in% c("theta", "potential temperature")) { # FIXME: theta conflicts with TEOS and should be removed
@@ -96,7 +96,7 @@ setMethod(f="[[",
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  rval <- as(x, "oce")[[i, j, drop]]
+                  rval <- as(x, "oce")[[i, drop]]
                   if (is.null(rval))
                       stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
                   rval

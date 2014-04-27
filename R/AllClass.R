@@ -44,7 +44,7 @@ setMethod(f="subset",
 
 
 setMethod(f="[[",
-          signature="oce",
+          signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i == "metadata") {
                   return(x@metadata)
