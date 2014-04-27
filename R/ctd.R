@@ -48,7 +48,8 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
-          definition=function(x, i, j=NULL, drop=NULL) {
+          ##definition=function(x, i, j=NULL, drop=NULL) {
+          definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
               } else if (i %in% c("theta", "potential temperature")) { # FIXME: theta conflicts with TEOS and should be removed
