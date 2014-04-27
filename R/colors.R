@@ -263,11 +263,22 @@ colormap <- function(name, x0, x1, col0, col1, n=1)
         if (length(col1) != xlen)
             stop('lengths of "x0" and "col1" must agree')
         x0r <- x1r <- col0r <- col1r <- NULL
+        if (length(n) != xlen - 1)
+            n <- rep(n[1], length.out=xlen)
+        ##cat("n:", n, "\n")
         for (i in 2:xlen) {
-            x0r <- c(x0r, seq(x0[i-1], x0[i], length.out=n))
-            x1r <- c(x1r, seq(x1[i-1], x1[i], length.out=n))
-            col0r <- c(col0r, colorRampPalette(col0[seq.int(i-1,i)])(n))
-            col1r <- c(col1r, colorRampPalette(col1[seq.int(i-1,i)])(n))
+            dx0 <- (x0[i] - x0[i-1]) / n[i-1]
+            x0r <- c(x0r, seq(x0[i-1], by=dx0, length.out=1+n[i-1]))
+            dx1 <- (x1[i] - x1[i-1]) / n[i-1]
+            x1r <- c(x1r, seq(x1[i-1], by=dx1, length.out=1+n[i-1]))
+            col0r <- c(col0r, colorRampPalette(col0[seq.int(i-1,i)])(1+n[i-1]))
+            col1r <- c(col1r, colorRampPalette(col1[seq.int(i-1,i)])(1+n[i-1]))
+            ## cat("i=", i,
+            ##     "\n\tx0[i-1]", round(x0[i-1]), "x0[i]", round(x0[i]),
+            ##     "\n\tconcat x0:",seq(x0[i-1], by=dx0, length.out=1+n[i-1]),
+            ##     "\n\tcol0[i-1]:", col0[i-1], "col0[i]:", col0[i],
+            ##     "\n\tcol1[i-1]:", col1[i-1], "col1[i]:", col1[i],
+            ##     "\n") 
         }
         rval <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
         class(rval) <- c("list", "colormap")

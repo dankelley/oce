@@ -24,9 +24,9 @@
       \code{"red"} or in the form of the values returned by \code{\link{rgb}}
       or \code{\link{hsv}}.  }
   
-  \item{n}{number of breaks per (\code{x0}, \code{x1}) pair, used to create a
-      colormap palette from just a few levels and colors.}
-
+  \item{n}{number of sub-intervals to use between successive values of \code{x0}, 
+      etc.  This may be a single number, or a vector of numbers of length one
+      less than the length of \code{x0}.}
 } 
 
 \details{This function may be called by \code{\link{colorize}} in response to
@@ -78,7 +78,8 @@ imagep(topoWorld, breaks=cz$breaks, col=cz$col)
 cm <- colormap(x0=c(-8000, -4000, 0, 100),
                x1=c(-8000, -4000, 0, 100),
                col0=c("violet","blue","white","tan"),
-               col1=c("violet","blue","white","tan"),n=10)
+               col1=c("violet","blue","white","tan"),
+               n=c(10, 10, 1))
 cz <- colorize(colormap=cm)
 imagep(topoWorld, breaks=cz$breaks, col=cz$col)
 }
