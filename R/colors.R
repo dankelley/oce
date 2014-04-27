@@ -1,9 +1,10 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe")
+colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
-colorizeAlpha <- function(z, breaks, col=oceColorsJet, colormap, segments=1)
+colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray")
 {
+    missingColor <- "gray"
     if (missing(colormap)) {
         if (is.function(col)) {
             if (missing(breaks)) {
@@ -29,8 +30,11 @@ colorizeAlpha <- function(z, breaks, col=oceColorsJet, colormap, segments=1)
         if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
         if (is.character(colormap)) {
-            colormap <- colormapAlpha(name=colormap)
+            colormap <- colormap(colormap)
+            missingColor <- colormap$missingColor
         }
+        if (inherits(colormap, "colormap"))
+            missingColor <- colormap$missingColor
         breaks <- NULL
         col <- NULL
         ## Could preallocate but colormaps are small so do not bother
@@ -52,9 +56,8 @@ colorizeAlpha <- function(z, breaks, col=oceColorsJet, colormap, segments=1)
             zcol <- col[findInterval(z, breaks)]
         }
     }
-    list(zlim=zlim, breaks=breaks, col=col, zcol=zcol)
+    list(zlim=zlim, breaks=breaks, col=col, zcol=zcol, missingColor=missingColor)
 }
-colorize <- colorizeAlpha              # FIXME: remove later
 
 colormapGMT <- function(x0, x1, col0, col1, bpl=1)
 {
@@ -93,25 +96,26 @@ colormapFromGmt <- function(file)
     d <- read.table(text=text1, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
     col0 <- rgb(d$r0, d$g0, d$b0, maxColorValue=255)
     col1 <- rgb(d$r1, d$g1, d$b1, maxColorValue=255)
-    if (length(grep("^[ ]*F", text))) {
-        f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
-        f <- rgb(f[1], f[2], f[3], maxColorValue=255)
-    } else {
-        f <- "#FFFFFF"
+    if (FALSE) { ## the code below may prove useful some day.
+        if (length(grep("^[ ]*F", text))) {
+            f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
+            f <- rgb(f[1], f[2], f[3], maxColorValue=255)
+        } else {
+            f <- "#FFFFFF"
+        }
+        if (length(grep("^[ ]*B", text))) {
+            b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
+            b <- rgb(b[1], b[2], b[3], maxColorValue=255)
+        } else {
+            b <- "#000000"
+        }
     }
-    if (length(grep("^[ ]*B", text))) {
-        b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
-        b <- rgb(b[1], b[2], b[3], maxColorValue=255)
-    } else {
-        b <- "#000000"
-    }
+    missingColor <- "gray"
     if (length(grep("^[ ]*N", text))) {
         n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
-        n <- rgb(n[1], n[2], n[3], maxColorValue=255)
-    } else {
-        n <- "#FFFFFF"
+        missingColor <- rgb(n[1], n[2], n[3], maxColorValue=255)
     }
-    rval <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1)
+    rval <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=missingColor)
     class(rval) <- c("list", "colormap")
     rval
 }
@@ -221,14 +225,32 @@ colormapFromName <- function(name)
         F	255	255	255				
         B	0	0	0
         N	128	128	128"
+    } else if (name == "gmt_gebco") {
+        ##	$Id: GMT_gebco.cpt,v 1.1.1.1 2000/12/28 01:23:45 gmt Exp $
+        ##
+        ## Bathymetry colors approximating the GEBCO charts
+        ## Designed by Andrew Goodwillie, Scripps
+        ## COLOR_MODEL = RGB
+        text <- "
+        -7000   0       240     255     -6000   0       240     255
+        -6000   35      255     255     -5000   35      255     255
+        -5000   90      255     255     -4000   90      255     255
+        -4000   140     255     230     -3000   140     255     230
+        -3000   165     255     215     -2000   165     255     215
+        -2000   195     255     215     -1000   195     255     215
+        -1000   210     255     215     -500    210     255     215
+        -500    230     255     240     -200    230     255     240
+        -200    235     255     255     -0      235     255     255
+        F	255	255	255				
+        B	0	0	0
+        N	128	128	128"
     } else {
-        stop("unknown colormap name; try one of: ", paste(names, collapse=", "))
+        stop("unknown colormap name; try one of: ", paste(colormapNames, collapse=", "))
     }
     colormapFromGmt(textConnection(text))
 }
 
-
-colormapAlpha <- function(name, x0, x1, col0, col1, n=1)
+colormap <- function(name, x0, x1, col0, col1, n=1)
 {
     if (missing(name)) {
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
@@ -257,9 +279,8 @@ colormapAlpha <- function(name, x0, x1, col0, col1, n=1)
     }
     rval
 }
-colormap <- colormapAlpha              # FIXME: remove later
 
-colormapAlphaOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
+colormapOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
 {
     if (!missing(name)) { # takes precedence over all
         nameList <- c("gmt_relief", "gmt_ocean", "gmt_globe")

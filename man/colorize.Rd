@@ -1,13 +1,12 @@
-\name{colorizeAlpha}
+\name{colorize}
 
 \alias{colorize}
-\alias{colorizeAlpha}
 
-\title{Calculate colors (Draft Alpha Version)}
+\title{Calculate colors (Draft Version)}
 
-\description{Calculate colors for use in palettes and plots}
+\description{Calculate colors for use in palettes and plots.}
 
-\usage{colorizeAlpha(z, breaks, col=oceColorsJet, colormap, segments=1)}
+\usage{colorize(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray")}
 
 \arguments{
 
@@ -25,19 +24,22 @@
       \code{\link{image}}.  The value of \code{col} is ignored if
       \code{palette} is provided.}
 
-  \item{colormap}{a character string naming a built-in colormap, or a colormap
-      that was created with \code{\link{colormapAlpha}}.  If \code{colormap} is
-      given, then it takes precedence over both \code{breaks} and
-      \code{colors}.  The only built-in choices are \code{"gmt_relief"},
-      \code{"gmt_ocean"} and \code{"gmt_globe"}.  See \sQuote{References} for
-      more about these GMT-based schemes.}
+  \item{colormap}{optional specification of a color map.  This may be a
+      character string naming a built-in colormap (\code{"gmt_relief"},
+      \code{"gmt_ocean"}, \code{"gmt_globe"} or \code{"gmt_gebco"}), or naming
+      a file that contains a colormap in GMT format (see \dQuote{References}).
+      Alternatively, it may be the output from \code{\link{colormap}}.  If
+      \code{colormap} is given, then \code{breaks} and \code{col} are ignored.}
   
-  \item{segments}{number of segments between any two \code{breaks} This is only
-      used if \code{colormap} is given.  The default value of 1 yields uniform
-      color between breakpoints, and higher values yield more sub-steps, with
-      \code{segments} exceeding 10 or so yielding reasonably smooth blending of
-      colors between breaks.}
+  \item{segments}{number of segments between any two color levels, used only if
+      \code{colormap} is given.  The default value of 1 yields uniform color
+      between \code{x0[1]} and \code{x0[2]}, etc.  while higher values yield
+      substeps.  This is a way to construct a color scheme from a few
+      constituents, as an alternative to specifying \code{segments} in a call
+      to \code{\link{colormap}}.}
 
+  \item{missingColor}{colour to use for missing values.  This will be set
+      automatically if \code{colormap} is given.}
 }
 
 \details{This function may be used to calculate \code{breaks} and \code{col}
@@ -57,36 +59,33 @@
     when certain values are naturally linked with certain colours, e.g. zero
     elevation or current velocity.}
 
-\value{A list containing \code{breaks} and \code{col}, as used by e.g.
-    \code{\link{image}} or \code{\link{imagep}}.}
+\value{A list containing \code{zlim}, \code{breaks}, \code{col}, \code{zcol}
+    and \code{missingColor}.  See \sQuote{Examples} for how these may be used
+    in plotting.}
 
 \section{Development status}{Devised in April 2014, this function is likely to
-    be somewhat unstable until mid-summer 2014.  In particular, the argument
-    list may change, because there is a possibility of combining this with the
-    existing (and again, preliminary) function \code{\link{colormapAlpha}}.}
+    be somewhat unstable until mid-summer 2014, with changes to the argument
+    list and return value.  The same may be said of its cousin,
+    \code{\link{colormap}}.}
 
 \examples{
 library(oce)
+
+## 1. colorize points on xy plot
 x <- seq(0, 1, length.out=40)
 y <- sin(2 * pi * x)
-
-## 1. scatterplot
 mar <- par('mar') # prevent margin creep by drawPalette()
-c <- colorizeAlpha(y)
+c <- colorize(y)
 drawPalette(c$zlim, col=c$col, breaks=c$breaks)
 plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
 
-## 2. images, showing two colourmaps
+## 2. colorize image of N. Atl. topography
 data(topoWorld)
-cm1 <- colormapAlpha("gmt_relief")
-cm2 <- colormapAlpha("http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt")
-c1 <- colorizeAlpha(colormap=cm1)
-c2 <- colorizeAlpha(colormap=cm2)
-par(mfrow=c(2,1))
-imagep(topoWorld, breaks=c1$breaks, col=c1$col)
-imagep(topoWorld, breaks=c2$breaks, col=c2$col)
+natl <- subset(subset(topoWorld, longitude > 270), latitude > 0)
+c <- colorize(colormap="gmt_relief")
+imagep(natl, breaks=c$breaks, col=c$col)
 }
 
 \references{Information on GMT software is given at

@@ -1,20 +1,19 @@
-\name{colormapAlpha}
+\name{colormap}
 
 \alias{colormap}
-\alias{colormapAlpha}
 
-\title{Calculate colors (Draft Alpha Version)}
+\title{Calculate colors (Draft Version)}
 
 \description{Calculate colors for use in palettes and plots}
 
-\usage{colormapAlpha(name, x0, x1, col0, col1, n=1)}
+\usage{colormap(name, x0, x1, col0, col1, n=1)}
 
 \arguments{
 
   \item{name}{an optional character string naming a built-in colormap (one of
-      \code{"gmt_relief"}, \code{"gmt_ocean"}, or \code{"gmt_globe"}) or a
-      filename containing information describing the colormap in GMT format,
-      e.g.
+      \code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
+      \code{"gmt_gebco"}) or a filename containing information describing the
+      colormap in GMT format, e.g.
       \code{"http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt"}). If
       \code{name} is provided, then all other arguments to the function are
       ignored.}
@@ -48,16 +47,14 @@
     the colors \code{col0} and \code{col1}.  In this way, a colormap can be
     constructed by specifying a few points.}
 
-\value{A list containing \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
-    This may be used as the \code{colormap} argument of \code{\link{colorize}},
-    which in turn calculates \code{breaks} and \code{col}, as used by R
-    functions such as \code{\link{image}}.}
+\value{A list (containing \code{x0}, \code{x1}, \code{col0}, \code{col1}, and
+    \code{missingColor}) suitable as the \code{colormap} argument of
+    \code{\link{colorize}}.}
 
 \section{Development status}{Devised in April 2014, this function is likely to
-    be somewhat unstable until mid-summer 2014.  In particular, the argument
-    list may change.  The suffix \code{Alpha} is a signal that the function may
-    change as it is used in practice, and it will be dropped when the function is
-    ready for broad use.}
+    be somewhat unstable until mid-summer 2014, with changes to the argument
+    list and return value.  The same may be said of its cousin,
+    \code{\link{colorize}}.}
     
 \examples{
 library(oce)

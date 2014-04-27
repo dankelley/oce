@@ -4,10 +4,9 @@
 
 \title{Make a palette [DEPRECATED]}
 
-\description{Make a palette, e.g. for bathymetric images.  DEPRECATION NOTICE
-    -- this function will be replaced by \code{\link{colormapAlpha}} by end of
-    April, 2014.}
-
+\description{Make a palette, e.g. for bathymetric images.  DEPRECATION NOTICE:
+    this function will be replaced by \code{\link{colormap}} by early May of
+    2014.}
 
 \usage{
 makePalette(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),

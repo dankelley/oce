@@ -43,8 +43,8 @@ export("+.section",
        bcdToInteger,
        byteToBinary,
        coastlineBest,
-       colorize, colorizeAlpha, # alpha status; added 22 Apr, 2014
-       colormap, colormapAlpha, # alpha status; added 22 Apr, 2014
+       colorize, # beta status; added 22 Apr, 2014
+       colormap, # beta status; added 22 Apr, 2014
        coordinate,
        coriolis,
        ctdAddColumn,
