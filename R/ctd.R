@@ -97,7 +97,8 @@ setMethod(f="[[",
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  rval <- as(x, "oce")[[i, drop]]
+                  ## rval <- as(x, "oce")[[i, j, drop]]
+                  rval <- as(x, "oce")[[i]]
                   if (is.null(rval))
                       stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
                   rval
