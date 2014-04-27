@@ -63,8 +63,8 @@ setMethod(f="[[",
           })
 
 setMethod(f="[[<-",
-          signature="oce",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+          signature(x="oce", i="ANY", j="ANY"),
+          function(x, i, j, ..., value) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else if (i %in% names(x@data)) {
