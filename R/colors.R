@@ -233,9 +233,21 @@ colormapAlpha <- function(name, x0, x1, col0, col1, n=1)
     if (missing(name)) {
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
             stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
-        if (n != 1)
-            warning("FIXME: ignoring n\n")
-        rval <- list(x0=x0, x1=x1, col0=col0, col1=col1)
+        xlen <- length(x0)
+        if (length(x1) != xlen)
+            stop('lengths of "x0" and "x1" must agree')
+        if (length(col0) != xlen)
+            stop('lengths of "x0" and "col0" must agree')
+        if (length(col1) != xlen)
+            stop('lengths of "x0" and "col1" must agree')
+        x0r <- x1r <- col0r <- col1r <- NULL
+        for (i in 2:xlen) {
+            x0r <- c(x0r, seq(x0[i-1], x0[i], length.out=n))
+            x1r <- c(x1r, seq(x1[i-1], x1[i], length.out=n))
+            col0r <- c(col0r, colorRampPalette(col0[seq.int(i-1,i)])(n))
+            col1r <- c(col1r, colorRampPalette(col1[seq.int(i-1,i)])(n))
+        }
+        rval <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
         class(rval) <- c("list", "colormap")
     } else {
         id <- pmatch(name, colormapNames)
