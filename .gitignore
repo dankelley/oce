@@ -9,3 +9,4 @@ src
 .Rproj.user
 .DS_Store
 .RData
+.Rapp.history
