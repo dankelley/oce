@@ -80,8 +80,8 @@ par(mar=mar)
 
 ## 2. images, showing two colourmaps
 data(topoWorld)
-cm1 <- colormapAlpha(name='gmt_relief')
-cm2 <- colormapAlpha(file='http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
+cm1 <- colormapAlpha("gmt_relief")
+cm2 <- colormapAlpha("http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt")
 c1 <- colorizeAlpha(colormap=cm1)
 c2 <- colorizeAlpha(colormap=cm2)
 par(mfrow=c(2,1))

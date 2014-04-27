@@ -1,5 +1,7 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
+colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe")
+
 colorizeAlpha <- function(z, breaks, col=oceColorsJet, colormap, segments=1)
 {
     if (missing(colormap)) {
@@ -52,6 +54,7 @@ colorizeAlpha <- function(z, breaks, col=oceColorsJet, colormap, segments=1)
     }
     list(zlim=zlim, breaks=breaks, col=col, zcol=zcol)
 }
+colorize <- colorizeAlpha              # FIXME: remove later
 
 colormapGMT <- function(x0, x1, col0, col1, bpl=1)
 {
@@ -115,11 +118,10 @@ colormapFromGmt <- function(file)
 
 colormapFromName <- function(name)
 {
-    names <- c("gmt_relief", "gmt_ocean", "gmt_globe")
-    id <- pmatch(name, names)
+    id <- pmatch(name, colormapNames)
     if (is.na(id))
         stop("unknown colormap name \"", name, "\"; try one of: ", paste(names, collapse=", "))
-    name <- names[id]
+    name <- colormapNames[id]
     if (name == "gmt_relief") {
         ##	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
         ##
@@ -222,28 +224,28 @@ colormapFromName <- function(name)
     } else {
         stop("unknown colormap name; try one of: ", paste(names, collapse=", "))
     }
-    colormapFromGmt(file=textConnection(text))
+    colormapFromGmt(textConnection(text))
 }
 
 
-colormapAlpha <- function(name, file, x0, x1, col0, col1, n=1)
+colormapAlpha <- function(name, x0, x1, col0, col1, n=1)
 {
-    if (!missing(name) && !missing(file))
-        stop('may not give both "name" and "file"')
-    rval <- NULL
-    if (!missing(name)) {
-        rval <- colormapFromName(name)
-    } else if (!missing(file)) {
-        rval <- colormapFromGmt(file)
-    } else {
+    if (missing(name)) {
+        if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
+            stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
+        if (n != 1)
+            warning("FIXME: ignoring n\n")
         rval <- list(x0=x0, x1=x1, col0=col0, col1=col1)
         class(rval) <- c("list", "colormap")
+    } else {
+        id <- pmatch(name, colormapNames)
+        ## NB> next two functions not in NAMESPACE
+        rval <- if (is.na(id)) colormapFromGmt(name) else
+            colormapFromName(colormapNames[id])
     }
     rval
 }
-colormap <- colormapAlpha
-
-
+colormap <- colormapAlpha              # FIXME: remove later
 
 colormapAlphaOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
 {
@@ -256,7 +258,7 @@ colormapAlphaOLD <- function(name, file, breaks, col, type=c("level", "gradient"
         stop("should handle name '", name, "' now")
         return(NULL)
     } else if (!missing(file)) {
-        ## colormap(file='http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
+        ## colormap('http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
         return(colormapFromGmt(file))
     } else {                           # use lower, upper, and color
         if (missing(breaks) || missing(col)) {
@@ -366,7 +368,7 @@ B	0	0	0"
         } else {
             stop("unknown colormap style \"", style, "\"")
         }
-        d <- colormapFromGmt(file=textConnection(text))
+        d <- colormapFromGmt(textConnection(text))
     }
     nlevel <- length(d$x0)
     breaks <- NULL
