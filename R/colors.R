@@ -250,6 +250,14 @@ colormapFromName <- function(name)
     colormapFromGmt(textConnection(text))
 }
 
+Colormap <- function(z,
+                     breaks, col=oceColorsJet,
+                     name, x0, x1, col0, col1, n=1,
+                     missingColor="gray")
+{
+    message("skeleton Colormap\n")
+}
+
 colormap <- function(name, x0, x1, col0, col1, n=1)
 {
     if (missing(name)) {
