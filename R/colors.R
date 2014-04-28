@@ -4,7 +4,6 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray")
 {
-    missingColor <- "gray"
     if (missing(colormap)) {
         if (is.function(col)) {
             if (missing(breaks)) {
@@ -256,6 +255,15 @@ Colormap <- function(z,
                      missingColor="gray")
 {
     message("skeleton Colormap\n")
+    zGiven <- !missing(z)
+    breaksGiven <- !missing(breaks)
+    nameGiven <- !missing(name)
+
+    if (!missing(breaks)) {
+        message("breaks given\n")
+    } else {
+        message("breaks not given\n")
+    }
 }
 
 colormap <- function(name, x0, x1, col0, col1, n=1)

@@ -8,7 +8,9 @@
 
 \usage{Colormap(z,
          breaks, col=oceColorsJet,
-         name, x0, x1, col0, col1, n=1,
+         name,
+         x0, x1, col0, col1,
+         n=1,
          missingColor="gray")}
 
 \arguments{
@@ -49,39 +51,57 @@
       automatically if \code{colormap} is given.}
 } 
 
-\details{This function may be used in several ways.
+\details{(FIXME: add sentence or two on goal.)
+
+    There are three ways of specifying color schemes:
+    \enumerate{
+
+        \item Supply \code{breaks}.  In this case, \code{breaks} and \code{col}
+        are used together to specify a colour scheme.  If \code{col} is a
+        function, then it is expected to take a single numerical argument that
+        specifies the number of colors, and this number will be set to
+        \code{length(breaks)-1}.  Otherwise, \code{col} may be a vector of
+        colours, and its length must be one less than the number of breaks.
+        (NB. if \code{breaks} is given, then all other arguments except
+        \code{missingColor} are ignored.)
+
+        \item Do not supply \code{breaks}, but supply \code{name} instead.
+        This \code{name} may be the name of a pre-defined colour palette
+        (\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
+        \code{"gmt_gebco"}), or it may be the name of a file (including a URL)
+        containing a color map in the GMT format (see \dQuote{References}).
+        (NB. if \code{name} is given, then all other arguments except
+        \code{missingColor} are ignored.)
         
-    This function may be called by \code{\link{colorize}} in response to
-    its \code{colormap} argument, and may also be called directly by the user
-    (see \dQuote{Examples}).  There are two methods for use.
+        \item Do not supply either \code{breaks} or \code{name}, but instead
+        supply each of \code{x0}, \code{x1}, \code{col0}, and \code{col1}.
+        These values are specify a value-color mapping that is similar to that
+        used for GMT color maps.  The method works by using \code{\link{seq}}
+        to interpolate between the elements of the \code{x0} vector.  (FIXME
+        state more clearly) The same is done for \code{x1}.  Similarly,
+        \code{\link{colorRampPalette}} is used to interpolate between the
+        colors in the \code{col0} vector, and the same is done for \code{col1}.
+        (FIXME: explain more, perhaps by repeating a statement about how GMT is
+        done.) In this way, a colormap can be constructed by specifying a few
+        points.
+    }
+}
+ 
 
-    Method 1. If \code{name} is given, a color map is selected from a list of
-    built-in choices, or scanned from a file in GMT format.  As illustrated in
-    \dQuote{Examples}, this color map may be modified before being passed to
-    \code{\link{colorize}}, and this is perhaps the easiest way to create
-    customized color maps.
+\value{FIXME: -- the below is rough --
     
-    Method 2. If \code{name} is not given, a colormap is constructed by
-    interpolating within \code{x0}, \code{x1}, etc.  This is done pair-wise
-    within each vector, e.g. \code{\link{seq}} is used to create \code{n}
-    output values between \code{x0[1]} and \code{x0[2]}, then between
-    \code{x0[2]} and \code{x0[3]}, etc.  The same is done for \code{x1} and for
-    the colors \code{col0} and \code{col1}.  In this way, a colormap can be
-    constructed by specifying a few points.}
+    A list containing \code{zcol} (FIXME: explain this), \code{breaks},
+    \code{col}, \code{x0}, \code{x1}, \code{col0}, \code{col1}, and
+    \code{missingColor}. (FIXME: note that breaks and col etc are all new;
+    these are not copies of the input.)}
 
-\value{FIXME: -- the below is wrong now, but I think I'll keep these and add
-    zcol etc
-    
-    A list (containing \code{x0}, \code{x1}, \code{col0}, \code{col1}, and
-    \code{missingColor}) suitable as the \code{colormap} argument of
-    \code{\link{colorize}}.}
-
-\section{Development status}{Devised in April 2014, this function is likely to
-    be somewhat unstable until mid-summer 2014, with changes to the argument
-    list and return value.  The same may be said of its cousin,
-    \code{\link{colorize}}.}
+\section{Development status}{Devised in early May 2014, this function is likely
+    to be somewhat unstable until mid-summer 2014, with changes to the argument
+    list and return value.
+}
     
 \examples{
+## FIXME: these examples are all wrong, of course
 \dontrun{
 library(oce)
 data(topoWorld)
