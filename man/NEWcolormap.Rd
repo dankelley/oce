@@ -11,7 +11,8 @@
          name,
          x0, x1, col0, col1,
          n=1,
-         missingColor="gray")}
+         missingColor,
+         debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -55,6 +56,10 @@
 
   \item{missingColor}{color to use for missing values.  This will be set
       automatically if \code{name} is used to specify the color mapping.}
+
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+      moderate amount of debugging information, or to 2 to get more.} 
+
 } 
 
 \details{This is a multi-purpose function that generally links (``maps'')
@@ -107,34 +112,28 @@
 \value{A list containing the following (not necessarily in this order) 
     \itemize{
 
-        \item \code{zcol}, a vector of colors for \code{z}, if provided, otherwise
-        \code{"black"}
+        \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
+        provided, otherwise \code{"black"}
 
         \item \code{zlim}, a two-element vector
         suitable as the argument of the same name supplied to \code{\link{image}}
         or \code{\link{imagep}}
 
-        \item \code{breaks}, a vector of breakpoints suitable as the same-named
-        argument to \code{\link{image}} or \code{\link{imagep}}
+        \item \code{breaks} and \code{col}, vectors of breakpoints and colors,
+        suitable as the same-named arguments to \code{\link{image}} or
+        \code{\link{imagep}}
 
-        \item \code{col}, a vector of colors corresponding to the intervals
-        between these breakpoints, suitable as the same-named argument to
-        \code{\link{image}} or \code{\link{imagep}}.  Note that the
-        length of \code{breaks} exceeds that of \code{col} by 1.
-
-        \item \code{x0}, a numerical vector of the ``left-hand'' side of
-        intervals
+        \item \code{x0} and \code{x1}, numerical vectors of the sides of color
+        intervals, and \code{col0} and \code{col1}, vectors of colors between
+        which those intervals blend.  The intervals are each decomposed into
+        \code{n} sub-intervals.
         
-        \item \code{x1}, a numerical vector of the ``right-hand'' side of
-        intervals
-
-        \item \code{col0}, a vector of colors corresponding to \code{x0}
-        
-        \item \code{col1}, a vector of colors corresponding to \code{x1}
-
         \item \code{missingColor}, a color that could be used to specify
         missing values, e.g. as the same-named argument to
-        \code{\link{imagep}}.
+        \code{\link{imagep}}.  If this is supplied as an argument, its value is
+        repeated in the return value.  Otherwise, its value is either
+        \code{"gray"} or, in the case of \code{name} being given, the value in
+        the GMT color map specification.
 
     }
 
@@ -157,33 +156,30 @@ x <- seq(0, 1, length.out=40)
 y <- sin(2 * pi * x)
 par(mfrow=c(2, 1), mar=c(3, 3, 1, 1))
 mar <- par('mar') # prevent margin creep by drawPalette()
-## Case 1
+## Top panel: default breaks
 c <- Colormap(y)
 drawPalette(c$zlim, col=c$col, breaks=c$breaks)
 plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
-## Case 2
-c <- Colormap(y, breaks=100) # smooth palette
+## Bottom panel: 100 breaks, yielding a smoother palette
+c <- Colormap(y, breaks=100)
 drawPalette(c$zlim, col=c$col, breaks=c$breaks)
 plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
 
-## Example 2. standard color scheme for images
+## Example 2. image with a standard color scheme
 par(mfrow=c(1,1))
 data(topoWorld)
-
-## Topo map with GMT "globe" scheme
 cm <- Colormap(name="gmt_globe")
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 
-## Example 3. modify a color scheme for images
+## Example 3. image with a modified color scheme
 cm <- Colormap(name="gmt_globe")
-## Red ink depth < 1km
-km <- which(-1000 <= cm$x0 & cm$x0 < 0)
-cm$col0[km] <- 'red'
-cm$col1[km] <- 'red'
+deep <- cm$x0 <= -4000
+cm$col0[deep] <- 'black'
+cm$col1[deep] <- 'black'
 cm <- Colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 
@@ -193,7 +189,7 @@ cm <- Colormap(x0=c(-8000, -4000, 0, 100),
                x1=c(-8000, -4000, 0, 100),
                col0=c("violet","blue","white","tan"),
                col1=c("violet","blue","white","tan"),
-               n=1)#c(10, 10, 1))
+               n=c(10, 10, 1))
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 }
 }

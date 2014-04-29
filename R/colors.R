@@ -252,18 +252,19 @@ colormapFromName <- function(name)
 Colormap <- function(z,
                      breaks, col=oceColorsJet,
                      name, x0, x1, col0, col1, n=1,
-                     missingColor="gray")
+                     missingColor,
+                     debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "colormap() {\n", unindent=1)
     zGiven <- !missing(z)
+    missingColorGiven <- !missing(missingColor)
     if (!missing(z) && missing(breaks) && missing(name)
         && missing(x0) && missing(x1) && missing(col0) && missing(col1)) {
-        ## CASE A in docs
-        message("colormap() processing case A\n")
+        oceDebug(debug, "processing case A\n")
         breaks <- pretty(z, n=10)
     }
     if (!missing(breaks)) {
-        ## CASE B in docs
-        message("colormap() processing case B\n")
+        oceDebug(debug, "processing case B\n")
         if (missing(z)) {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
@@ -279,16 +280,14 @@ Colormap <- function(z,
         rval$col1 <- rval$col
     } else {
         if (!missing(name)) {
-            ## CASE C in docs
-            message("colormap() processing case C\n")
+            oceDebug(debug, "processing case C\n")
             rval <- colormap(name)
         } else {
             if (!missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)) {
-                ## CASE D in docs
-                message("colormap() processing case D\n")
+                oceDebug(debug, "processing case D\n")
                 rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1)
             } else {
-                stop('must give "breaks", "name", or "x0", "x1", "col0", plus "col1"')
+                stop('must give "breaks", "name", or each of "x0", "x1", "col0", and "col1"')
             }
         }
         ## must add breaks and col
@@ -302,6 +301,8 @@ Colormap <- function(z,
             rval$zcol <- col[findInterval(z, rval$breaks)]
         }
     }
+    ## FIXME: check on missingColor behaviour
+    oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
 }
 
