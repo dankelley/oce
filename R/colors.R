@@ -254,16 +254,55 @@ Colormap <- function(z,
                      name, x0, x1, col0, col1, n=1,
                      missingColor="gray")
 {
-    message("skeleton Colormap\n")
     zGiven <- !missing(z)
-    breaksGiven <- !missing(breaks)
-    nameGiven <- !missing(name)
-
-    if (!missing(breaks)) {
-        message("breaks given\n")
-    } else {
-        message("breaks not given\n")
+    if (!missing(z) && missing(breaks) && missing(name)
+        && missing(x0) && missing(x1) && missing(col0) && missing(col1)) {
+        ## CASE A in docs
+        message("colormap() processing case A\n")
+        breaks <- pretty(z, n=10)
     }
+    if (!missing(breaks)) {
+        ## CASE B in docs
+        message("colormap() processing case B\n")
+        if (missing(z)) {
+            if (length(breaks) < 2)
+                stop('must supply "z" if length(breaks)==1')
+            rval <- colorize(breaks=breaks, col=col)
+            rval$zcol <- "black"
+        } else {
+            rval <- colorize(z=z, breaks=breaks, col=col)
+        }
+        ## must add x0, x1, col0, col1
+        rval$x0 <- rval$breaks[-1] # FIXME: not sure on which to drop
+        rval$x1 <- rval$breaks[-1] # FIXME: not sure on which to drop
+        rval$col0 <- rval$col
+        rval$col1 <- rval$col
+    } else {
+        if (!missing(name)) {
+            ## CASE C in docs
+            message("colormap() processing case C\n")
+            rval <- colormap(name)
+        } else {
+            if (!missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)) {
+                ## CASE D in docs
+                message("colormap() processing case D\n")
+                rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1)
+            } else {
+                stop('must give "breaks", "name", or "x0", "x1", "col0", plus "col1"')
+            }
+        }
+        ## must add breaks and col
+        rval$zlim <- if (missing(z)) range(c(rval$x0, rval$x1)) else range(z)
+        rval$breaks <- rval$x0
+        rval$col <- rval$col0[-1] # FIXME: not sure on which to drop
+        rval$zlim <- if (missing(z)) range(c(rval$x0, rval$x1)) else range(z)
+        if (missing(z)) {
+            rval$zcol <- "black"
+        } else {
+            rval$zcol <- col[findInterval(z, rval$breaks)]
+        }
+    }
+    rval
 }
 
 colormap <- function(name, x0, x1, col0, col1, n=1)
