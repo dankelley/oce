@@ -292,7 +292,7 @@ Colormap <- function(z,
         }
         ## must add breaks and col
         rval$zlim <- if (missing(z)) range(c(rval$x0, rval$x1)) else range(z)
-        rval$breaks <- rval$x0
+        rval$breaks <- rval$x1
         rval$col <- rval$col0[-1] # FIXME: not sure on which to drop
         rval$zlim <- if (missing(z)) range(c(rval$x0, rval$x1)) else range(z)
         if (missing(z)) {

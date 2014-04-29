@@ -172,8 +172,12 @@ par(mar=mar)
 ## Example 2. image with a standard color scheme
 par(mfrow=c(1,1))
 data(topoWorld)
-cm <- Colormap(name="gmt_globe")
+cm <- Colormap(name="gmt_globe", debug=3)
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
+## visualize color map
+# plot(seq_along(cm$x0), cm$x0, pch=21, bg=cm$col0)
+# grid()
+# points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 
 ## Example 3. image with a modified color scheme
 cm <- Colormap(name="gmt_globe")
