@@ -180,7 +180,7 @@ imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 
 ## Example 3. topographic image with modified colors
 cm <- Colormap(name="gmt_globe")
-deep <- cm$x0 <= -4000
+deep <- cm$x0 < -4000
 cm$col0[deep] <- 'black'
 cm$col1[deep] <- 'black'
 cm <- Colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
