@@ -285,7 +285,7 @@ Colormap <- function(z,
         } else {
             if (!missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)) {
                 oceDebug(debug, "processing case D\n")
-                rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1)
+                rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n)
             } else {
                 stop('must give "breaks", "name", or each of "x0", "x1", "col0", and "col1"')
             }
