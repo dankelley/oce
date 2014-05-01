@@ -7,7 +7,8 @@
 \description{Draw a palette on the right-hand side of plot device}
 
 \usage{drawPalette(zlim, zlab="",
-    breaks, col, mai, cex.axis=par("cex.axis"), pos=4,
+    breaks, col, colormap,
+    mai, cex.axis=par("cex.axis"), pos=4,
     labels=NULL, at=NULL,
     levels, drawContours=FALSE,
     fullpage=FALSE, drawTriangles=FALSE,
@@ -26,6 +27,8 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+    \item{colormap}{a color map as created by \code{\link{Colormap}}.  If
+        provided, this takes precedence over \code{breaks} and \code{col}.}
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.  If not given, reasonable values are inferred from
         the existence of a non-blank \code{zlab}.}
@@ -87,37 +90,37 @@
 \seealso{This is used by \code{\link{imagep}}. }
 
 \examples{
-    library(oce)
-    par(mgp=getOption("oceMgp"))
-    par(mar=c(3,3,1,1))
-    par(mfrow=c(4,1))
+library(oce)
+par(mgp=getOption("oceMgp"))
+par(mar=c(3,3,1,1))
 
-    omar <- par('mar')                 # save initial margin
-    drawPalette(zlim=c(0,1),col=oceColorsJet(5))
-    plot(1:5, 1:5, col=oceColorsJet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y')
-    par(mar=omar)                      # reset margin
+## 1. A three-panel plot
+par(mfrow=c(3,1))
+omar <- par('mar')                 # save initial margin
+## Top panel: simple case
+drawPalette(zlim=c(0,1), col=oceColorsJet(10))
+plot(1:10, 1:10, col=oceColorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+par(mar=omar)                      # reset margin
 
-    ## put space for palette to right of next graph (so x scales line up in stacked plot)
-    drawPalette()
-    plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y')
-    par(mar=omar)                      # reset margin
+## Middle panel: colormap
+cm <- Colormap(name="gmt_globe")
+drawPalette(colormap=cm)
+plot(seq_along(cm$breaks), cm$breaks, pch=20, cex=2, col=cm$col,
+     xlab="Palette index", ylab="Palette breaks")
+par(mar=omar)                      # reset margin
 
-    drawPalette(zlim=c(0,1),zlab="Image Scale",col=oceColorsPalette)
-    plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10], col='black',xlab='x',ylab='y')
-    par(mar=omar)                      # reset margin
+## Bottom panel: space for palette (to line up graphs)
+drawPalette()
+plot(1:10, 1:10, col=oceColorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
+par(mar=omar)                      # reset margin
 
-    ## put space for palette to right of next graph (so x scales line up in stacked plot)
-    drawPalette(zlab="Image Scale")
-    plot(1:10, 1:10, col=oceColorsPalette(10)[1:10], xlab='x', ylab='y')
-    par(mar=omar)                      # reset margin
-
-    # Use layout to mimic the action of imagep(), with the width
-    # of the palette region being 14 percent of figure width.
-    d <- 0.14
-    layout(matrix(1:2,nrow=1), widths=c(1-d,d))
-    image(volcano, col=oceColorsJet(100), zlim=c(90, 200))
-    contour(volcano, add=TRUE)
-    drawPalette(c(90, 200), fullpage=TRUE, col=oceColorsJet)
+# 2. Use layout to mimic the action of imagep(), with the width
+# of the palette region being 14 percent of figure width.
+d <- 0.14
+layout(matrix(1:2,nrow=1), widths=c(1-d,d))
+image(volcano, col=oceColorsJet(100), zlim=c(90, 200))
+contour(volcano, add=TRUE)
+drawPalette(c(90, 200), fullpage=TRUE, col=oceColorsJet)
 }
 
 \author{Dan Kelley, with help from Clark Richards}

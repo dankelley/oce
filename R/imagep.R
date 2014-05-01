@@ -140,7 +140,8 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 }
 
 drawPalette <- function(zlim, zlab="",
-                        breaks, col, mai, cex.axis=par("cex.axis"), pos=4,
+                        breaks, col, colormap,
+                        mai, cex.axis=par("cex.axis"), pos=4,
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
                         fullpage=FALSE, drawTriangles=FALSE,
@@ -163,6 +164,7 @@ drawPalette <- function(zlim, zlab="",
                  unindent=1, sep="")
     else
         oceDebug(debug, "drawPalette() with no zlim argument: set space to right of a graph\n", sep="", unindent=1)
+    colormapGiven <- !missing(colormap)
     maiGiven <- !missing(mai)
     oceDebug(debug, "maiGiven =", maiGiven, "\n")
     if (maiGiven)
@@ -182,32 +184,45 @@ drawPalette <- function(zlim, zlab="",
         mai <- rep(0, 4)
     pc <- paletteCalculations(maidiff=mai, pos=pos, zlab=zlab, debug=debug-1)
     contours <- if (breaksGiven) breaks else NULL
-    if (zlimGiven) {
-        if (breaksGiven) {
-            breaksOrig <- breaks
-            contours <- breaks
-        } else {
-            zrange <- zlim
-            if (missing(col)) {
-                breaks <- pretty(zlim)
+    if (colormapGiven) {
+        breaks <- colormap$breaks
+        col <- colormap$col
+        ## Trick the code below, to avoid auto-creating breaks
+        breaksGiven <- TRUE
+        colGiven <- TRUE
+        if (!zlimGiven)
+            zlim <- range(breaks)
+        zlimGiven <- TRUE
+        breaksOrig <- breaks
+        contours <- breaks
+    } else {
+        if (zlimGiven) {
+            if (breaksGiven) {
+                breaksOrig <- breaks
                 contours <- breaks
             } else {
-                if (is.function(col)) {
-                    breaks <- seq(zlim[1], zlim[2], length.out=128) # smooth image colorscale
-                    contours <- pretty(zlim)
+                zrange <- zlim
+                if (missing(col)) {
+                    breaks <- pretty(zlim)
+                    contours <- breaks
                 } else {
-                    breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
-                    contours <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                    if (is.function(col)) {
+                        breaks <- seq(zlim[1], zlim[2], length.out=128) # smooth image colorscale
+                        contours <- pretty(zlim)
+                    } else {
+                        breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                        contours <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                    }
                 }
+                breaksOrig <- breaks
+                breaks[1] <- zrange[1]
+                breaks[length(breaks)] <- zrange[2]
             }
-            breaksOrig <- breaks
-            breaks[1] <- zrange[1]
-            breaks[length(breaks)] <- zrange[2]
+            if (missing(col))
+                col <- oceColorsPalette(n=length(breaks)-1)
+            if (is.function(col))
+                col <- col(n=length(breaks)-1)
         }
-        if (missing(col))
-            col <- oceColorsPalette(n=length(breaks)-1)
-        if (is.function(col))
-            col <- col(n=length(breaks)-1)
     }
     if (zlimGiven) {
         if (fullpage)
@@ -368,6 +383,7 @@ imagep <- function(x, y, z,
                    flipy=FALSE,
                    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
                    breaks, col,
+                   colormap,
                    labels=NULL, at=NULL,
                    drawContours=FALSE,
                    drawPalette=TRUE,
@@ -496,72 +512,80 @@ imagep <- function(x, y, z,
 
     zlimHistogram <- !missing(zlim) && zlim == "histogram"
     breaksGiven <- !missing(breaks)
+    colormapGiven <- !missing(colormap)
     zrange <- range(z, na.rm=TRUE)
 
-    ## Determine breaks unless zlim=="histogram".
-    if (zlimHistogram) {
-        if (missing(col))
-            col <- oceColorsPalette(200) # FIXME: how many colours to use?
+    if (colormapGiven) {
+        breaks <- colormap$breaks
+        breaks2 <- breaks
+        col <- colormap$col
+        col2 <- col
     } else {
-        if (!breaksGiven) {
-            oceDebug(debug, "breaks were not given\n")
-            nbreaks <- 128                 # smooth image colorscale
-            if (missing(zlim)) {
-                if (missing(col)) {
-                    breaks <- pretty(zrange, n=nbreaks)
-                    if (breaks[1] < zrange[1])
-                        breaks[1] <- zrange[1]
-                    if (breaks[length(breaks)] > zrange[2])
-                        breaks[length(breaks)] <- zrange[2]
-                } else {
-                    breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
-                }
-                breaksOrig <- breaks
-            } else {
-                ## zlim given, but breaks not given
-                if (missing(col)) {
-                    ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
-                    breaks <- pretty(zlim, n=nbreaks)
-                    oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
-                } else {
-                    breaks <- seq(zlim[1], zlim[2],
-                                  length.out=if(is.function(col))128 else 1+length(col))
-                    oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
-                }
-                breaksOrig <- breaks
-                oceDebug(debug, 'range(z):', zrange, '\n')
-                oceDebug(debug, 'ORIG  range(breaks):', range(breaks), '\n')
-                breaks[1] <- min(max(zlim[1], zrange[1]), breaks[1])
-                breaks[length(breaks)] <- max(breaks[length(breaks)], min(zlim[2], zrange[2]))
-                oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
-            }
+        ## Determine breaks unless zlim=="histogram".
+        if (zlimHistogram) {
+            if (missing(col))
+                col <- oceColorsPalette(200) # FIXME: how many colours to use?
         } else {
-            oceDebug(debug, "breaks were given\n")
-            breaksOrig <- breaks
-            if (1 == length(breaks)) {
-                breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
+            if (!breaksGiven) {
+                oceDebug(debug, "breaks were not given\n")
+                nbreaks <- 128                 # smooth image colorscale
+                if (missing(zlim)) {
+                    if (missing(col)) {
+                        breaks <- pretty(zrange, n=nbreaks)
+                        if (breaks[1] < zrange[1])
+                            breaks[1] <- zrange[1]
+                        if (breaks[length(breaks)] > zrange[2])
+                            breaks[length(breaks)] <- zrange[2]
+                    } else {
+                        breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+                    }
+                    breaksOrig <- breaks
+                } else {
+                    ## zlim given, but breaks not given
+                    if (missing(col)) {
+                        ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
+                        breaks <- pretty(zlim, n=nbreaks)
+                        oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+                    } else {
+                        breaks <- seq(zlim[1], zlim[2],
+                                      length.out=if(is.function(col))128 else 1+length(col))
+                        oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+                    }
+                    breaksOrig <- breaks
+                    oceDebug(debug, 'range(z):', zrange, '\n')
+                    oceDebug(debug, 'ORIG  range(breaks):', range(breaks), '\n')
+                    breaks[1] <- min(max(zlim[1], zrange[1]), breaks[1])
+                    breaks[length(breaks)] <- max(breaks[length(breaks)], min(zlim[2], zrange[2]))
+                    oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
+                }
+            } else {
+                oceDebug(debug, "breaks were given\n")
+                breaksOrig <- breaks
+                if (1 == length(breaks)) {
+                    breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
+                }
             }
+            if (missing(col))
+                col <- oceColorsPalette(n=length(breaks)-1)
         }
-        if (missing(col))
-            col <- oceColorsPalette(n=length(breaks)-1)
-    }
-    breaks2 <- if (missing(breaks)) NULL else breaks
-    col2 <- if (missing(col)) NULL else col
-    ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
-    if (!zclip && !zlimHistogram) {
-        db <- median(diff(breaks), na.rm=TRUE)
-        breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
+        breaks2 <- if (missing(breaks)) NULL else breaks
+        col2 <- if (missing(col)) NULL else col
+        ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
+        if (!zclip && !zlimHistogram) {
+            db <- median(diff(breaks), na.rm=TRUE)
+            breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
                          breaks,
                          max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
-        if (!is.function(col))
-            col2 <- c(col[1], col, col[length(col)])
-    }
+            if (!is.function(col))
+                col2 <- c(col[1], col, col[length(col)])
+        }
 
-    if (is.function(col)) {
-        if (zlimHistogram)
-            col <- col(n=200)          # FIXME: decide on length
-        else
-            col <- col(n=length(breaks)-1)
+        if (is.function(col)) {
+            if (zlimHistogram)
+                col <- col(n=200)          # FIXME: decide on length
+            else
+                col <- col(n=length(breaks)-1)
+        }
     }
     if (drawPalette == "space") {
         oceDebug(debug, "not drawing a palette, since drawPalette=\"space\"\n")

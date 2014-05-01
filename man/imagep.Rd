@@ -11,7 +11,7 @@
     zclip=FALSE,
     flipy=FALSE,
     xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
-    breaks, col,
+    breaks, col, colormap,
     labels=NULL, at=NULL,
     drawContours=FALSE,
     drawPalette=TRUE,
@@ -33,16 +33,22 @@
 }
 
 \arguments{
+
     \item{x,y}{optional locations of grid lines along which values of \code{z}
-        are measured.   The values must be finite and distinct.  If they are out
-        of order, they will be ordered (and the \code{z} data will be ordered in
-        a matching way).  If \code{x} and \code{y} are not provided, they are
-        constructed to indicate the indices of the matrix, in contrast to the
-        range of 0 to 1, as is the case for \code{\link{image}}.  If \code{x} is
-        a list, its components \code{x$x} and \code{x$y} are used for \code{x}
-        and \code{y}, respectively. If the list has component \code{z} this is
-        used for \code{z}. (NOTE: these arguments are meant to mimic those of
-        \code{\link{image}}, which explains the same description here.)}
+        are measured.   The values must be finite and distinct.  If they are
+        out of order, they will be ordered (and the \code{z} data will be
+        ordered in a matching way).  If \code{x} and \code{y} are not provided,
+        they are constructed to indicate the indices of the matrix, in contrast
+        to the range of 0 to 1, as is the case for \code{\link{image}}.  If
+        \code{x} is a list, its components \code{x$x} and \code{x$y} are used
+        for \code{x} and \code{y}, respectively. If the list has component
+        \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
+        mimic those of \code{\link{image}}, which explains the same description
+        here.)  There are also some special cases, e.g. if \code{x} is a
+        topographic object such as can be created with \code{\link{read.topo}}
+        or \code{\link{as.topo}}, then longitude and latitude are used for
+        axes, and topographic height is drawn.}
+
     \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
         that x can be used instead of z for convenience. (NOTE: these arguments
         are meant to mimic those of \code{\link{image}}, which explains the same
@@ -68,6 +74,8 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+    \item{colormap}{a color map as created by \code{\link{Colormap}}.  If
+        provided, this takes precedence over \code{breaks} and \code{col}.}
     \item{labels}{optional vector of labels for ticks on palette axis (must
         correspond with \code{at})}
     \item{at}{optional vector of positions for the \code{label}s}
@@ -172,6 +180,12 @@
            col=c("lightgray", "darkgray"),
            at=c(0, pi/4, pi/2),
            labels=c(0, expression(pi/4), expression(pi/2)))
+
+    ## 4. a colormap case
+    data(topoWorld)
+    source('~/src/oce/R/imagep.R')
+    cm <- Colormap(name="gmt_globe")
+    imagep(topoWorld, colormap=cm)
 }
 
 \author{Dan Kelley, with help from Clark Richards}
