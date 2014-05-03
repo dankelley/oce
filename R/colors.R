@@ -13,7 +13,8 @@ colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingC
                 breaks <- pretty(z, n=breaks)
             col <- col(length(breaks) - 1)
         } else {
-            stop("'col' must be a function (more flexibility available upon request to author)")
+            ## FIMXE: should perhaps check it's a colour
+            col <- col
         }
         ## FIXME: next might miss top colour
         if (missing(z)) {
