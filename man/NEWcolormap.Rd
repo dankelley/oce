@@ -140,19 +140,17 @@
     Unless the user wishes to alter a color mapping, the last four of these are
     not needed (but see example 3 in \dQuote{Examples}).
 
-    The figure below explains the (\code{breaks},\code{col}) method of
-    specifying a color mapping.  Note that there must be one more break than
-    color.  This is the method used by e.g. \code{\link{image}}.
+    \if{html}{The figure below explains the (\code{breaks}, \code{col}) method
+        of specifying a color mapping.  Note that there must be one more break
+        than color.  This is the method used by e.g. \code{\link{image}}.
+        \figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap\_fig\_1.png"}}
 
-    \if{html}{\figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap_fig_1.png"}}
-
-    The figure below explains the (\code{x0}, \code{x1}, \code{col0},
-    \code{col1}) method of specifying a color mapping.  Note that the each of
-    the items has the same length. (FIXME: make new diagram for this case.)
-
-    \if{html}{\figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap_fig_1.png"}}
-
-
+    \if{html}{The figure below explains the (\code{x0}, \code{x1}, \code{col0},
+        \code{col1}) method of specifying a color mapping.  Note that the each
+        of the items has the same length. The color between \code{x0[1]} and
+        \code{x1[1]} is \code{col0[1]}, unless \code{n>1} in which case
+        the color there blends from \code{col0[1]} to \code{col1[1]}.
+        \figure{colormap_fig_2.png}{options: width=400px alt="Figure: colormap\_fig\_2.png"}}
 
 }
 
