@@ -94,40 +94,60 @@ colormapFromGmt <- function(file)
     } else {
         text <- readLines(file)
     }
-    text1 <- text[grep("^[ ]*[-0-9]", text)]
-    d <- read.table(text=text1, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
+    textData <- text[grep("^[ ]*[-0-9]", text)]
+    textData <- gsub("/", " ", textData) # sometimes it is R/G/B
+    d <- read.table(text=textData, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
     col0 <- rgb(d$r0, d$g0, d$b0, maxColorValue=255)
     col1 <- rgb(d$r1, d$g1, d$b1, maxColorValue=255)
     ## Decode (F, B) and N=missingColor.  Note step by step approach,
     ## which may be useful in debugging different formats, e.g.
     ## tabs and spaces etc.
     ## "F" unused at present
+    F <- "#FFFFFF"
     if (length(grep("^\\sF", text))) {
         line <- text[grep("\\s*F", text)]
         line <- gsub("^\\sF", "", line)
-        f <- scan(text=line, quiet=TRUE)
-        f <- rgb(f[1], f[2], f[3], maxColorValue=255)
-    } else {
-        f <- "#FFFFFF"
+        F <- scan(text=line, quiet=TRUE)
+        Flen <- length(F)
+        if (1 == Flen) {
+            F <- if (length(grep("[a-zA-Z]", F))) F else gray(as.numeric(F) / 255)
+        } else if (3 == Flen) {
+            F <- rgb(F[1], F[2], F[3], maxColorValue=255)
+        } else {
+            warning("cannot decode \"F\" from \"", line, "\"")
+        }
     }
     ## "B" unused at present
+    B <- "#000000"
     if (length(grep("^\\sB", text))) {
         line <- text[grep("\\s*B", text)]
         line <- gsub("^\\sB", "", line)
-        b <- scan(text=line, quiet=TRUE)
-        b <- rgb(b[1], b[2], b[3], maxColorValue=255)
-    } else {
-        b <- "#000000"
+        B <- scan(text=line, quiet=TRUE)
+        Blen <- length(B)
+        if (1 == Blen) {
+            B <- if (length(grep("[a-zA-Z]", B))) B else gray(as.numeric(B) / 255)
+        } else if (3 == Blen) {
+            B <- rgb(B[1], B[2], B[3], maxColorValue=255)
+        } else {
+            warning("cannot decode \"B\" from \"", line, "\"")
+        }
     }
     ## "N" named here as missingColor to match e.g. imagep()
-    missingColor <- "gray"
-    if (length(grep("^\\sN", text))) {
-        line <- text[grep("^\\sN", text)]
+    N <- "gray"
+    if (length(grep("^\\s*N", text))) {
+        line <- text[grep("^\\s*N", text)]
         line <- gsub("\\s*N", "", line)
-        n <- scan(text=line, quiet=TRUE)
-        missingColor <- rgb(n[1], n[2], n[3], maxColorValue=255)
+        N <- scan(text=line, what=character(), quiet=TRUE)
+        Nlen <- length(N)
+        if (1 == Nlen) {
+            missingColor <- if (length(grep("[a-zA-Z]", N))) N else gray(as.numeric(N) / 255)
+        } else if (3 == Nlen) {
+            missingColor <- rgb(N[1], N[2], N[3], maxColorValue=255)
+        } else {
+            warning("cannot decode missingColor from \"", line, "\"")
+        }
     }
-    rval <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=missingColor)
+    rval <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=N)
     class(rval) <- c("list", "colormap")
     rval
 }
