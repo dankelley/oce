@@ -40,8 +40,10 @@ colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingC
         ## Could preallocate but colormaps are small so do not bother
         n <- length(colormap$x0)
         for (i in seq.int(1, n-1)) {
-            breaks <- c(breaks, seq(colormap$x0[i], colormap$x1[i], length.out=1+segments))
-            col <- c(col, colorRampPalette(c(colormap$col0[i], colormap$col1[i]))(1+segments))
+            ## FIXME: should below be segments or 1+segments?
+            delta <- (colormap$x0[i+1] - colormap$x0[i]) / segments
+            breaks <- c(breaks, seq(from=colormap$x0[i], by=delta, length.out=segments))
+            col <- c(col, colorRampPalette(c(colormap$col0[i], colormap$col1[i]))(segments))
         }
         nbreaks <- length(breaks)
         ## extend a bit to the right
@@ -96,23 +98,33 @@ colormapFromGmt <- function(file)
     d <- read.table(text=text1, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
     col0 <- rgb(d$r0, d$g0, d$b0, maxColorValue=255)
     col1 <- rgb(d$r1, d$g1, d$b1, maxColorValue=255)
-    if (FALSE) { ## the code below may prove useful some day.
-        if (length(grep("^[ ]*F", text))) {
-            f <- as.numeric(strsplit(text[grep("^[ ]*F",text)], '\\t')[[1]][-1])
-            f <- rgb(f[1], f[2], f[3], maxColorValue=255)
-        } else {
-            f <- "#FFFFFF"
-        }
-        if (length(grep("^[ ]*B", text))) {
-            b <- as.numeric(strsplit(text[grep("^[ ]*B",text)], '\\t')[[1]][-1])
-            b <- rgb(b[1], b[2], b[3], maxColorValue=255)
-        } else {
-            b <- "#000000"
-        }
+    ## Decode (F, B) and N=missingColor.  Note step by step approach,
+    ## which may be useful in debugging different formats, e.g.
+    ## tabs and spaces etc.
+    ## "F" unused at present
+    if (length(grep("^\\sF", text))) {
+        line <- text[grep("\\s*F", text)]
+        line <- gsub("^\\sF", "", line)
+        f <- scan(text=line, quiet=TRUE)
+        f <- rgb(f[1], f[2], f[3], maxColorValue=255)
+    } else {
+        f <- "#FFFFFF"
     }
+    ## "B" unused at present
+    if (length(grep("^\\sB", text))) {
+        line <- text[grep("\\s*B", text)]
+        line <- gsub("^\\sB", "", line)
+        b <- scan(text=line, quiet=TRUE)
+        b <- rgb(b[1], b[2], b[3], maxColorValue=255)
+    } else {
+        b <- "#000000"
+    }
+    ## "N" named here as missingColor to match e.g. imagep()
     missingColor <- "gray"
-    if (length(grep("^[ ]*N", text))) {
-        n <- as.numeric(strsplit(text[grep("^[ ]*N",text)], '\\t')[[1]][-1])
+    if (length(grep("^\\sN", text))) {
+        line <- text[grep("^\\sN", text)]
+        line <- gsub("\\s*N", "", line)
+        n <- scan(text=line, quiet=TRUE)
         missingColor <- rgb(n[1], n[2], n[3], maxColorValue=255)
     }
     rval <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=missingColor)
@@ -257,22 +269,45 @@ Colormap <- function(z,
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
-    zGiven <- !missing(z)
-    missingColorGiven <- !missing(missingColor)
-    if (!missing(z) && missing(breaks) && missing(name)
-        && missing(x0) && missing(x1) && missing(col0) && missing(col1)) {
+    zKnown <- !missing(z)
+    breaksKnown <- !missing(breaks)
+    nameKnown <- !missing(name)
+    missingColorKnown <- !missing(missingColor)
+    xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
+    n <- as.integer(floor(0.5 + n))
+    if (zKnown && !breaksKnown && !nameKnown && !xcolKnown) {
         oceDebug(debug, "processing case A\n")
         breaks <- pretty(z, n=10)
+        breaksKnown <- TRUE            # trick following code
     }
-    if (!missing(breaks)) {
+    if (breaksKnown) {
         oceDebug(debug, "processing case B\n")
-        if (missing(z)) {
+        if (n > 1L) {
+            warning('n is ignored for the breaks+col method')
+            ## FIXME: check if this is better than other code
+            ## nbreaks <- length(breaks)
+            ## breaks2 <- NULL
+            ## for (bi in 2:nbreaks) {
+            ##     delta <- (breaks[bi] - breaks[bi-1]) / n
+            ##     breaks2 <- c(breaks2, seq(from=breaks[bi-1], by=delta, length.out=n))
+            ## }
+            ## breaks <- breaks2
+            ## if (!is.function(col)) {
+            ##     ncol <- length(col)
+            ##     col2 <- NULL
+            ##     for (ci in 2:ncol) {
+            ##         col2 <- c(col2, colorRampPalette(c(col[bi-1], col[bi]))(1+n))
+            ##     }
+            ##     col <- col2
+            ## }
+        }
+        if (zKnown) {
+            rval <- colorize(z=z, breaks=breaks, col=col)
+        } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
             rval <- colorize(breaks=breaks, col=col)
             rval$zcol <- "black"
-        } else {
-            rval <- colorize(z=z, breaks=breaks, col=col)
         }
         ## must add x0, x1, col0, col1
         rval$x0 <- rval$breaks[-1] # FIXME: not sure on which to drop
@@ -280,29 +315,28 @@ Colormap <- function(z,
         rval$col0 <- rval$col
         rval$col1 <- rval$col
     } else {
-        if (!missing(name)) {
+        if (nameKnown) {
             oceDebug(debug, "processing case C\n")
             rval <- colormap(name)
         } else {
-            if (!missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)) {
+            if (xcolKnown) {
                 oceDebug(debug, "processing case D\n")
                 rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n)
             } else {
+                breaks <- pretty(z)
                 stop('must give "breaks", "name", or each of "x0", "x1", "col0", and "col1"')
             }
         }
-        ## must add breaks and col
-        rval$zlim <- if (missing(z)) range(c(rval$x0, rval$x1)) else range(z)
-        rval$breaks <- rval$x1
-        rval$col <- rval$col0[-1] # FIXME: not sure on which to drop
-        rval$zlim <- if (missing(z)) range(c(rval$x0, rval$x1)) else range(z)
-        if (missing(z)) {
-            rval$zcol <- "black"
-        } else {
-            rval$zcol <- col[findInterval(z, rval$breaks)]
-        }
+        ## issue 435 work below
+        rval$zlim <- if (zKnown) range(z) else range(c(rval$x0, rval$x1))
+        nx0 <- length(rval$x0)
+        eps <- diff(rval$x0[1:2]) / 100
+        rval$breaks <- c(rval$x0[1]-eps, rval$x0, rval$x0[nx0] + eps)
+        ##rval$col <- rval$col0 # misses last col1
+        rval$col <- c(rval$col0, tail(rval$col1,1))
+        rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
+        rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
-    ## FIXME: check on missingColor behaviour
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
 }

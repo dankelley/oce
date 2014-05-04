@@ -140,6 +140,20 @@
     Unless the user wishes to alter a color mapping, the last four of these are
     not needed (but see example 3 in \dQuote{Examples}).
 
+    The figure below explains the (\code{breaks},\code{col}) method of
+    specifying a color mapping.  Note that there must be one more break than
+    color.  This is the method used by e.g. \code{\link{image}}.
+
+    \if{html}{\figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap_fig_1.png"}}
+
+    The figure below explains the (\code{x0}, \code{x1}, \code{col0},
+    \code{col1}) method of specifying a color mapping.  Note that the each of
+    the items has the same length. (FIXME: make new diagram for this case.)
+
+    \if{html}{\figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap_fig_1.png"}}
+
+
+
 }
 
 \section{Development status}{Devised in early May 2014, this function is likely
