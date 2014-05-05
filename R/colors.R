@@ -348,7 +348,7 @@ Colormap <- function(z,
                 oceDebug(debug, "length(col0)=", length(col0), "; length(rval$col0)=", length(rval$col0), "\n")
             } else {
                 breaks <- pretty(z)
-                stop('must give "breaks", "name", or each of "x0", "x1", "col0", and "col1"')
+                stop('must give "breaks" or "name", or each of "x0", "x1", "col0", and "col1"')
             }
         }
         ## issue 435 work below
@@ -360,8 +360,8 @@ Colormap <- function(z,
         ## may 5, 1120 rval$col <- c(rval$col0, tail(rval$col1,1))
 
         nx <- length(rval$x0)
-        rval$breaks <- c(rval$x0, tail(rval$x1))
-        rval$breaks <- rval$x0
+        rval$breaks <- c(rval$x0, tail(rval$x1, 1))# FIXME this seems better than just x0
+        #rval$breaks <- rval$x0
         col <- rval$col0
         if (0 <= blend && blend <= 1) {
             for (i in 1:nx) {
@@ -373,10 +373,11 @@ Colormap <- function(z,
             warning("cannot handle blend>1 yet")
             col <- rval$col0
         }
-        rval$col <- col[seq.int(1, nx-1)]
+        rval$col <- col#[seq.int(1, nx-1)]
         rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
         rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
+    str(rval)
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
 }
