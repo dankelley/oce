@@ -9,8 +9,7 @@
 \usage{Colormap(z,
          breaks, col,
          name,
-         x0, x1, col0, col1,
-         n=1,
+         x0, x1, col0, col1, blend=0,
          missingColor,
          debug=getOption("oceDebug"))}
 
@@ -24,8 +23,8 @@
 
   \item{breaks}{an optional indication of break points between color levels
       (see \code{\link{image}}).  If this is provided, the arguments
-      \code{name} through \code{n} are all ignored (see \dQuote{Details}).  If
-      it is provided, then it may either be a vector of break points, or a
+      \code{name} through \code{blend} are all ignored (see \dQuote{Details}).
+      If it is provided, then it may either be a vector of break points, or a
       single number indicating the desired number of break points to be
       computed with \code{\link{pretty}(z, breaks)}.  In either case of
       non-missing \code{breaks}, the resultant break points must number 1 plus
@@ -50,9 +49,13 @@
       (e.g. \code{"red"}) or colors as defined by \code{\link{rgb}} or
       \code{\link{hsv}}.  }
   
-  \item{n}{number of sub-intervals to use between successive values of
-      \code{x0}, etc.  This may be a single number, or a vector of numbers of
-      length one less than the length of \code{x0}.}
+  \item{blend}{an indication of how to blend colors within each band.  A value
+      of 0 means to use \code{col0[i]} through the interval \code{x0[i]} to
+      \code{x1[i]}, while a value of 1 means to use \code{col1[i]} in that
+      interval, and values between 0 and 1 mean to blend between the two colors
+      according to the stated fraction.  Values exceeding 1 mean to break up
+      the domain into sub-intervals, with the number being 1 plus the value of
+      \code{blend}.  See \dQuote{Details}, Case C.}
 
   \item{missingColor}{color to use for missing values.  This will be set
       automatically if \code{name} is used to specify the color mapping.}
@@ -110,14 +113,14 @@
         Similarly, \code{\link{colorRampPalette}} is used to interpolate
         between the colors in the \code{col0} vector, and the same is done for
         \code{col1}.  (FIXME: explain more, perhaps by repeating a statement
-        about how GMT is done.) In this way, a colormap can be constructed by
+        about how GMT is done.) In this way, a color map can be constructed by
         specifying a few points.
         \if{html}{The figure below explains the (\code{x0}, \code{x1}, \code{col0},
         \code{col1}) method of specifying a color mapping.  Note that the each
         of the items has the same length. The color between \code{x0[i]} and
         \code{x1[i]} is \code{col0[i]} (as shown in the diagram), unless
-        \code{n>1} in which case the color there blends from \code{col0[i]} to
-        \code{col1[i]}.
+        \code{blend!=0} in which case the color is blended between
+        \code{col0[i]} and \code{col1[i]}.
 
         \figure{colormap_fig_2.png}{options: width=400px alt="Figure: colormap\_fig\_2.png"}}
     }
@@ -138,11 +141,10 @@
         \code{\link{imagep}}
 
         \item \code{x0} and \code{x1}, numerical vectors of the sides of color
-        intervals, and \code{col0} and \code{col1}, vectors of colors between
-        which those intervals blend.  The intervals are each decomposed into
-        \code{n} sub-intervals.  The purpose of returning these four vectors is
-        to permit users to alter color mapping, as in example 3 in
-        \dQuote{Examples}.
+        intervals, and \code{col0} and \code{col1}, vectors of corresponding
+        colors.  The meaning is the same as on input.  The purpose of returning
+        these four vectors is to permit users to alter color mapping, as in
+        example 3 in \dQuote{Examples}.
         
         \item \code{missingColor}, a color that could be used to specify
         missing values, e.g. as the same-named argument to
