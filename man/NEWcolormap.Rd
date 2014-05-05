@@ -85,15 +85,22 @@
         breaks.  \emph{FIXME: discuss existence of z here}  (NB. if
         \code{breaks} is given, then all other arguments except \code{col} and
         \code{missingColor} are ignored.)
+        \if{html}{The figure below explains the (\code{breaks}, \code{col})
+            method of specifying a color mapping.  Note that there must be one
+            more break than color.  This is the method used by e.g.
+            \code{\link{image}}.
 
+            \figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap\_fig\_1.png"}}
+
+ 
         \item\emph{Case C.} Do not supply \code{breaks}, but supply \code{name}
         instead.  This \code{name} may be the name of a pre-defined color
         palette (\code{"gmt_relief"}, \code{"gmt_ocean"}, \code{"gmt_globe"} or
         \code{"gmt_gebco"}), or it may be the name of a file (including a URL)
         containing a color map in the GMT format (see \dQuote{References}).
         (NB. if \code{name} is given, then all other arguments except
-        \code{missingColor} are ignored.)
-        
+        \code{z} and \code{missingColor} are ignored.)
+       
         \item\emph{Case D.} Do not supply either \code{breaks} or \code{name},
         but instead supply each of \code{x0}, \code{x1}, \code{col0}, and
         \code{col1}.  These values are specify a value-color mapping that is
@@ -105,8 +112,15 @@
         \code{col1}.  (FIXME: explain more, perhaps by repeating a statement
         about how GMT is done.) In this way, a colormap can be constructed by
         specifying a few points.
-    }
+        \if{html}{The figure below explains the (\code{x0}, \code{x1}, \code{col0},
+        \code{col1}) method of specifying a color mapping.  Note that the each
+        of the items has the same length. The color between \code{x0[i]} and
+        \code{x1[i]} is \code{col0[i]} (as shown in the diagram), unless
+        \code{n>1} in which case the color there blends from \code{col0[i]} to
+        \code{col1[i]}.
 
+        \figure{colormap_fig_2.png}{options: width=400px alt="Figure: colormap\_fig\_2.png"}}
+    }
 }
  
 \value{A list containing the following (not necessarily in this order) 
@@ -126,7 +140,9 @@
         \item \code{x0} and \code{x1}, numerical vectors of the sides of color
         intervals, and \code{col0} and \code{col1}, vectors of colors between
         which those intervals blend.  The intervals are each decomposed into
-        \code{n} sub-intervals.
+        \code{n} sub-intervals.  The purpose of returning these four vectors is
+        to permit users to alter color mapping, as in example 3 in
+        \dQuote{Examples}.
         
         \item \code{missingColor}, a color that could be used to specify
         missing values, e.g. as the same-named argument to
@@ -136,28 +152,14 @@
         the GMT color map specification.
 
     }
-
-    Unless the user wishes to alter a color mapping, the last four of these are
-    not needed (but see example 3 in \dQuote{Examples}).
-
-    \if{html}{The figure below explains the (\code{breaks}, \code{col}) method
-        of specifying a color mapping.  Note that there must be one more break
-        than color.  This is the method used by e.g. \code{\link{image}}.
-        \figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap\_fig\_1.png"}}
-
-    \if{html}{The figure below explains the (\code{x0}, \code{x1}, \code{col0},
-        \code{col1}) method of specifying a color mapping.  Note that the each
-        of the items has the same length. The color between \code{x0[1]} and
-        \code{x1[1]} is \code{col0[1]}, unless \code{n>1} in which case
-        the color there blends from \code{col0[1]} to \code{col1[1]}.
-        \figure{colormap_fig_2.png}{options: width=400px alt="Figure: colormap\_fig\_2.png"}}
-
 }
 
 \section{Development status}{Devised in early May 2014, this function is likely
     to be somewhat unstable until mid-summer 2014, with changes to the argument
-    list and return value.
-}
+    list and return value.  The plan is to remove the functions
+    \code{\link{colormap}} and \code{\link{colorize}} once the present function
+    is complete, whereupon the first letter of the present function will revert
+    to lower case.  }
     
 \examples{
 library(oce)
@@ -217,8 +219,8 @@ contour(lon, lat, z, levels=0, add=TRUE)
 \references{Information on GMT software is given at
     \url{http://gmt.soest.hawaii.edu}.  Diagrams showing the GMT color schemes
     are at \url{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html}, and
-    their numerical specifications are at e.g.
-    \url{http://www.beamreach.org/maps/gmt/share/cpt}.}
+    numerical specifications for some color maps are at
+    \url{http://www.beamreach.org/maps/gmt/share/cpt} and many other sources.}
 
 \author{Dan Kelley}
 
