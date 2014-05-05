@@ -345,6 +345,7 @@ Colormap <- function(z,
                 oceDebug(debug, "processing case D\n")
                 oceDebug(debug, "length(col0)", length(col0), "\n")
                 rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n)
+                oceDebug(debug, "length(col0)=", length(col0), "; length(rval$col0)=", length(rval$col0), "\n")
             } else {
                 breaks <- pretty(z)
                 stop('must give "breaks", "name", or each of "x0", "x1", "col0", and "col1"')
@@ -362,7 +363,6 @@ Colormap <- function(z,
         rval$breaks <- c(rval$x0, tail(rval$x1))
         rval$breaks <- rval$x0
         col <- rval$col0
-        oceDebug(debug, "length(col0)=", length(col0), "; length(rval$col0)=", length(rval$col0), "\n")
         if (0 <= blend && blend <= 1) {
             for (i in 1:nx) {
                 b <- colorRamp(c(rval$col0[i], rval$col1[i]))(blend)
