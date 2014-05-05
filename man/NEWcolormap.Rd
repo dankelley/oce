@@ -210,7 +210,7 @@ cm <- Colormap(x0=c(-8000, -4000, 0, 100),
                x1=c(-8000, -4000, 0, 100),
                col0=c("violet","blue","white","tan"),
                col1=c("violet","blue","white","tan"),
-               n=c(100, 8, 1))
+               blend=c(100, 8, 0))
 lon <- topoWorld[['longitude']]
 lat <- topoWorld[['latitude']]
 z <- topoWorld[['z']]

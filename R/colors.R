@@ -366,11 +366,12 @@ Colormap <- function(z,
         if (0 <= blend && blend <= 1) {
             for (i in 1:nx) {
                 b <- colorRamp(c(rval$col0[i], rval$col1[i]))(blend)
-                col[i] <- rgb(b[1], b[2], b[3], max=255)
+                col[i] <- rgb(b[1], b[2], b[3], maxColorValue=255)
                 oceDebug(debug, "i=", i, "col", col[i], "col0", rval$col0[i], "col1", rval$col1[i], "\n")
             }
         } else {
-            stop("cannot handle blend>1 yet")
+            warning("cannot handle blend>1 yet")
+            col <- rval$col0
         }
         rval$col <- col[seq.int(1, nx-1)]
         rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
