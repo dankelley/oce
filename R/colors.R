@@ -344,6 +344,9 @@ Colormap <- function(z,
                 oceDebug(debug, "processing case D: 'x0', 'x1', 'col0' and 'col1' were given, all of length",
                          length(x0), "\n")
                 rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n)
+                cat("rval will be:")
+                str(rval)
+                ## FIXME stop()
                 oceDebug(debug, "length(col0)=", length(col0), "; length(rval$col0)=", length(rval$col0), "\n")
             } else {
                 breaks <- pretty(z)
@@ -360,6 +363,10 @@ Colormap <- function(z,
 
         nx <- length(rval$x0)
         rval$breaks <- c(rval$x0, tail(rval$x1, 1))# FIXME this seems better than just x0
+        cat("rval$x0=");str(rval$x0)
+        cat("rval$x1=");str(rval$x1)
+        cat("rval$breaks=");str(rval$breaks)
+        ## FIXME stop()
         #rval$breaks <- rval$x0
         col <- rval$col0
         if (0 <= blend && blend <= 1) {
@@ -397,8 +404,8 @@ colormap <- function(name, x0, x1, col0, col1, n=1)
         if (length(n) != xlen - 1)
             n <- rep(n[1], length.out=xlen)
         ##cat("n:", n, "\n")
-        cat("in colormap() x0:", x0, "\n")
-        cat("in colormap() x1:", x1, "\n")
+        cat("in colormap() x0:");str(x0)
+        cat("in colormap() x1:");str(x1)
         for (i in 2:xlen) {
             dx0 <- (x0[i] - x0[i-1]) / n[i-1]
             x0r <- c(x0r, seq(x0[i-1], by=dx0, length.out=n[i-1]))
@@ -413,7 +420,12 @@ colormap <- function(name, x0, x1, col0, col1, n=1)
             ##     "\n\tcol1[i-1]:", col1[i-1], "col1[i]:", col1[i],
             ##     "\n") 
         }
+        x0r <- c(x0r, tail(x0, 1))
+        x1r <- c(x1r, tail(x1, 1))
+        col0r <- c(col0r, tail(col0, 1))
+        col1r <- c(col1r, tail(col1, 1))
         rval <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
+        ## cat("making rval:");print(rval);stop()
         class(rval) <- c("list", "colormap")
     } else {
         id <- pmatch(name, colormapNames)
