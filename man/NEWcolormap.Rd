@@ -49,13 +49,15 @@
       (e.g. \code{"red"}) or colors as defined by \code{\link{rgb}} or
       \code{\link{hsv}}.  }
   
-  \item{blend}{an indication of how to blend colors within each band.  A value
-      of 0 means to use \code{col0[i]} through the interval \code{x0[i]} to
-      \code{x1[i]}, while a value of 1 means to use \code{col1[i]} in that
-      interval, and values between 0 and 1 mean to blend between the two colors
+  \item{blend}{a number indicating how to blend colors within each band.  This
+      is ignored except when \code{x0} through \code{col1} are supplied.  A
+      value of 0 means to use \code{col0[i]} through the interval \code{x0[i]}
+      to \code{x1[i]}.   A value of 1 means to use \code{col1[i]} in that
+      interval.  A value between 0 and 1 means to blend between the two colors
       according to the stated fraction.  Values exceeding 1 mean to break up
-      the domain into sub-intervals, with the number being 1 plus the value of
-      \code{blend}.  See \dQuote{Details}, Case C.}
+      the domain into \code{blend} sub-intervals; making this a large number
+      yields a palette that blends smoothly between the fixed colors specified
+      in \code{col0} and \code{col1}.}
 
   \item{missingColor}{color to use for missing values.  This will be set
       automatically if \code{name} is used to specify the color mapping.}
@@ -94,7 +96,6 @@
             \code{\link{image}}.
 
             \figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap\_fig\_1.png"}}
-
  
         \item\emph{Case C.} Do not supply \code{breaks}, but supply \code{name}
         instead.  This \code{name} may be the name of a pre-defined color

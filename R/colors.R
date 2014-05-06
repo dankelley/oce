@@ -2,7 +2,8 @@
 
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
-colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray")
+colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray",
+                     debug=getOptions("oceDebug"))
 {
     if (missing(colormap)) {
         if (is.function(col)) {
@@ -29,7 +30,7 @@ colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingC
         if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
         if (is.character(colormap)) {
-            colormap <- colormap(name=colormap)
+            colormap <- colormap(name=colormap, debug=debug-1)
             missingColor <- colormap$missingColor
         }
         if (inherits(colormap, "colormap"))
@@ -293,8 +294,15 @@ Colormap <- function(z,
     nameKnown <- !missing(name)
     missingColorKnown <- !missing(missingColor)
     xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
-    blend <- max(blend, 0)
-    n <- if (blend > 1) as.integer(round(blend)) else 1L
+    if (nameKnown) {
+        if (blend > 1)
+            warning('n is being ignored since "name" was provided')
+        blend <- min(1, max(blend, 0))
+        n <- 1
+    } else {
+        blend <- max(blend, 0)
+        n <- if (blend > 1) as.integer(round(blend)) else 1L
+    }
     oceDebug(debug, "blend=", blend, "; n=", n, "\n")
     if (zKnown && !breaksKnown && !nameKnown && !xcolKnown) {
         oceDebug(debug, "processing case A\n")
@@ -304,7 +312,7 @@ Colormap <- function(z,
     if (breaksKnown) {
         oceDebug(debug, "processing case B\n")
         if (n > 1L) {
-            warning('n is ignored for the breaks+col method')
+            warning('n is being ignored for the breaks+col method')
             ## FIXME: check if this is better than other code
             ## nbreaks <- length(breaks)
             ## breaks2 <- NULL
@@ -327,68 +335,55 @@ Colormap <- function(z,
         } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
-            rval <- colorize(breaks=breaks, col=col)
+            rval <- colorize(breaks=breaks, col=col, debug=debug-1)
             rval$zcol <- "black"
         }
-        ## must add x0, x1, col0, col1
-        rval$x0 <- rval$breaks[-1] # FIXME: not sure on which to drop
-        rval$x1 <- rval$breaks[-1] # FIXME: not sure on which to drop
+        rval$x0 <- rval$breaks[-1]
+        rval$x1 <- rval$breaks[-1]
         rval$col0 <- rval$col
         rval$col1 <- rval$col
     } else {
         if (nameKnown) {
             oceDebug(debug, "processing case C: 'name' was given\n")
-            rval <- colormap(name=name)
+            rval <- colormap(name=name, debug=debug-1)
         } else {
             if (xcolKnown) {
                 oceDebug(debug, "processing case D: 'x0', 'x1', 'col0' and 'col1' were given, all of length",
                          length(x0), "\n")
-                rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n)
-                cat("rval will be:")
-                str(rval)
-                ## FIXME stop()
+                rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n, debug=debug-1)
+                ## If n>1, we will have lots of levels, and will centre them
+                if (n > 1L)
+                    blend <- 0.5
                 oceDebug(debug, "length(col0)=", length(col0), "; length(rval$col0)=", length(rval$col0), "\n")
             } else {
                 breaks <- pretty(z)
                 stop('must give "breaks" or "name", or each of "x0", "x1", "col0", and "col1"')
             }
         }
-        ## issue 435 work below
+        ## FIXME: issue 435 work in next 5 to 10 lines below
         rval$zlim <- if (zKnown) range(z) else range(c(rval$x0, rval$x1))
         nx0 <- length(rval$x0)
         eps <- diff(rval$x0[1:2]) / 100
-
-        ## may 5, 1120 rval$breaks <- c(rval$x0[1]-eps, rval$x0, rval$x0[nx0] + eps)
-        ## may 5, 1120 rval$col <- c(rval$col0, tail(rval$col1,1))
-
         nx <- length(rval$x0)
-        rval$breaks <- c(rval$x0, tail(rval$x1, 1))# FIXME this seems better than just x0
-        cat("rval$x0=");str(rval$x0)
-        cat("rval$x1=");str(rval$x1)
-        cat("rval$breaks=");str(rval$breaks)
-        ## FIXME stop()
-        #rval$breaks <- rval$x0
-        col <- rval$col0
-        if (0 <= blend && blend <= 1) {
+        rval$breaks <- c(rval$x0, tail(rval$x1, n))
+        col <- c(head(rval$col0, -1), tail(rval$col1, n))
+        if (n == 1 && 0 <= blend && blend <= 1) {
             for (i in 1:nx) {
                 b <- colorRamp(c(rval$col0[i], rval$col1[i]))(blend)
                 col[i] <- rgb(b[1], b[2], b[3], maxColorValue=255)
-                oceDebug(debug, "i=", i, "col", col[i], "col0", rval$col0[i], "col1", rval$col1[i], "\n")
+                ## oceDebug(debug, "blending at i=", i, "\n")
+                ##oceDebug(debug, "i=", i, "col", col[i], "col0", rval$col0[i], "col1", rval$col1[i], "\n")
             }
-        } else {
-            warning("cannot handle blend>1 yet")
-            col <- rval$col0
         }
-        rval$col <- col#[seq.int(1, nx-1)]
+        rval$col <- col
         rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
         rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
-    str(rval)
     oceDebug(debug, "} # Colormap()\n", unindent=1)
     rval
 }
 
-colormap <- function(name, x0, x1, col0, col1, n=1)
+colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oceDebug"))
 {
     if (missing(name)) {
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
@@ -403,9 +398,9 @@ colormap <- function(name, x0, x1, col0, col1, n=1)
         x0r <- x1r <- col0r <- col1r <- NULL
         if (length(n) != xlen - 1)
             n <- rep(n[1], length.out=xlen)
-        ##cat("n:", n, "\n")
-        cat("in colormap() x0:");str(x0)
-        cat("in colormap() x1:");str(x1)
+        oceDebug(debug, "x0:", x0, "\n")
+        oceDebug(debug, "x1:", x1, "\n")
+        x0A <- c(x0, tail(x1, 1))
         for (i in 2:xlen) {
             dx0 <- (x0[i] - x0[i-1]) / n[i-1]
             x0r <- c(x0r, seq(x0[i-1], by=dx0, length.out=n[i-1]))
@@ -413,25 +408,24 @@ colormap <- function(name, x0, x1, col0, col1, n=1)
             x1r <- c(x1r, seq(x1[i-1], by=dx1, length.out=n[i-1]))
             col0r <- c(col0r, colorRampPalette(col0[seq.int(i-1,i)])(n[i-1]))
             col1r <- c(col1r, colorRampPalette(col1[seq.int(i-1,i)])(n[i-1]))
-            ## cat("i=", i,
-            ##     "\n\tx0[i-1]", round(x0[i-1]), "x0[i]", round(x0[i]),
-            ##     "\n\tconcat x0:",seq(x0[i-1], by=dx0, length.out=1+n[i-1]),
-            ##     "\n\tcol0[i-1]:", col0[i-1], "col0[i]:", col0[i],
-            ##     "\n\tcol1[i-1]:", col1[i-1], "col1[i]:", col1[i],
-            ##     "\n") 
+            oceDebug(debug, "i=", i,
+                     "\n\tx0[i-1]", x0[i-1], "x0[i]", x0[i],
+                     "\n\tconcat x0:",seq(x0[i-1], by=dx0, length.out=1+n[i-1]),
+                     "\n\tcol0[i-1]:", col0[i-1], "col0[i]:", col0[i],
+                     "\n\tcol1[i-1]:", col1[i-1], "col1[i]:", col1[i],
+                     "\n") 
         }
+        ## next is wrong -- should not just tack on one value unless n=1
         x0r <- c(x0r, tail(x0, 1))
         x1r <- c(x1r, tail(x1, 1))
         col0r <- c(col0r, tail(col0, 1))
         col1r <- c(col1r, tail(col1, 1))
         rval <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
-        ## cat("making rval:");print(rval);stop()
         class(rval) <- c("list", "colormap")
     } else {
         id <- pmatch(name, colormapNames)
         ## NB> next two functions not in NAMESPACE
-        rval <- if (is.na(id)) colormapFromGmt(name) else
-            colormapFromName(colormapNames[id])
+        rval <- if (is.na(id)) colormapFromGmt(name) else colormapFromName(colormapNames[id])
     }
     rval
 }
@@ -464,28 +458,12 @@ colormapOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mc
         upperColor <- c(col, col[ncol])
         breaks2 <- NULL
         col2 <- NULL
-        cat("breaks:", breaks, "\n")
-        cat("lower:", lower, "\n")
-        cat("upper:", upper, "\n")
         for (l in seq.int(1, nbreaks)) {
-            cat("l:", l, ", lower[l]:", lower[l], ", upper[l]:", upper[l], "\n")
+            ## cat("l:", l, ", lower[l]:", lower[l], ", upper[l]:", upper[l], "\n")
             breaks2 <- c(breaks2, seq(lower[l], upper[l], length.out=1+breaksPerLevel))
             col2 <- c(col2, colorRampPalette(c(lowerColor[l], upperColor[l]))(1+breaksPerLevel))
         }
         return(list(breaks=breaks2, col=head(col2, -1), mcol=mcol, fcol=fcol, l=breaks2, u=breaks2))# l and u wrong
-        if (F) {
-            ## centre and extend so get all colours
-            nbreaks <- length(breaks)
-            l <- c(breaks[1] - (breaks[2] - breaks[1]), breaks)
-            u <- c(breaks, breaks[nbreaks] + (breaks[nbreaks] - breaks[nbreaks-1]))
-            nb <- nbreaks
-            x <- seq(0, 1, length.out=nbreaks+1)
-            xout <- seq(0, 1, length.out=nb)
-            l <- approx(x, l, xout)$y
-            u <- approx(x, u, xout)$y
-            col <- colorRampPalette(col)(nb-1)
-            list(breaks=seq(min(l), max(u), length.out=nb), col=col, mcol=mcol, fcol=fcol, l=l, u=u)
-        }
     }
 }
 
@@ -562,7 +540,6 @@ B	0	0	0"
     nlevel <- length(d$x0)
     breaks <- NULL
     col <- NULL
-    str(d)
     for (l in 1:nlevel) {
         breaks <- c(breaks, seq(d$x0[l], d$x1[l], length.out=1+breaksPerLevel))
         col <- c(col, colorRampPalette(c(d$col0[l], d$col1[l]))(1+breaksPerLevel))
