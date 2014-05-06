@@ -13,10 +13,9 @@ colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingC
                 breaks <- pretty(z, n=breaks)
             col <- col(length(breaks) - 1)
         } else {
-            ## FIMXE: should perhaps check it's a colour
+            ## FIMXE: should check that it is indeed a color, but how?
             col <- col
         }
-        ## FIXME: next might miss top colour
         if (missing(z)) {
             zlim <- range(breaks)
             zcol <- "black"
@@ -30,7 +29,7 @@ colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingC
         if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
         if (is.character(colormap)) {
-            colormap <- colormap(colormap)
+            colormap <- colormap(name=colormap)
             missingColor <- colormap$missingColor
         }
         if (inherits(colormap, "colormap"))
@@ -338,12 +337,12 @@ Colormap <- function(z,
         rval$col1 <- rval$col
     } else {
         if (nameKnown) {
-            oceDebug(debug, "processing case C ('name' was given)\n")
+            oceDebug(debug, "processing case C: 'name' was given\n")
             rval <- colormap(name=name)
         } else {
             if (xcolKnown) {
-                oceDebug(debug, "processing case D\n")
-                oceDebug(debug, "length(col0)", length(col0), "\n")
+                oceDebug(debug, "processing case D: 'x0', 'x1', 'col0' and 'col1' were given, all of length",
+                         length(x0), "\n")
                 rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n)
                 oceDebug(debug, "length(col0)=", length(col0), "; length(rval$col0)=", length(rval$col0), "\n")
             } else {
@@ -378,7 +377,7 @@ Colormap <- function(z,
         rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
     str(rval)
-    oceDebug(debug, "} # colormap()\n", unindent=1)
+    oceDebug(debug, "} # Colormap()\n", unindent=1)
     rval
 }
 
@@ -398,6 +397,8 @@ colormap <- function(name, x0, x1, col0, col1, n=1)
         if (length(n) != xlen - 1)
             n <- rep(n[1], length.out=xlen)
         ##cat("n:", n, "\n")
+        cat("in colormap() x0:", x0, "\n")
+        cat("in colormap() x1:", x1, "\n")
         for (i in 2:xlen) {
             dx0 <- (x0[i] - x0[i-1]) / n[i-1]
             x0r <- c(x0r, seq(x0[i-1], by=dx0, length.out=n[i-1]))
