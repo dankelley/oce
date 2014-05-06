@@ -2162,6 +2162,7 @@ plotTS <- function (x,
                     Slim, Tlim,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
+                    lwd=par('lwd'), lty=par('lty'),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
                     add=FALSE, inset=FALSE,
                     debug=getOption("oceDebug"),
@@ -2236,14 +2237,14 @@ plotTS <- function (x,
     } else {
         if (add) {
             if (type == 'p') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             } else if (type == 'l') {
-                lines(salinity, y, col=col, ...)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type == 'o') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
-                lines(salinity, y, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type != 'n') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             }
         } else {
             plot(Slim, Tlim,
@@ -2257,14 +2258,14 @@ plotTS <- function (x,
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
             if (type == 'p') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
             } else if (type == 'l') {
-                lines(salinity, y, col=col, ...)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type == 'o') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
-                lines(salinity, y, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type != 'n') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
             }
         }
     }
