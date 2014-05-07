@@ -74,7 +74,7 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
-    \item{colormap}{a color map as created by \code{\link{Colormap}}.  If
+    \item{colormap}{a color map as created by \code{\link{colormap}}.  If
         provided, this takes precedence over \code{breaks} and \code{col}.}
     \item{labels}{optional vector of labels for ticks on palette axis (must
         correspond with \code{at})}
@@ -184,7 +184,7 @@
     ## 4. a colormap case
     data(topoWorld)
     source('~/src/oce/R/imagep.R')
-    cm <- Colormap(name="gmt_globe")
+    cm <- colormap(name="gmt_globe")
     imagep(topoWorld, colormap=cm)
 }
 

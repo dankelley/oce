@@ -43,9 +43,7 @@ export("+.section",
        bcdToInteger,
        byteToBinary,
        coastlineBest,
-       colorize, # beta status; added 22 Apr, 2014
        colormap, # beta status; added 22 Apr, 2014
-       Colormap, # beta status; added 28 Apr, 2014 to supersede colormap+colorize
        coordinate,
        coriolis,
        ctdAddColumn,
@@ -106,7 +104,6 @@ export("+.section",
        "longitude<-",
        magneticField,
        makeFilter,
-       makePalette, # FIXME deprecated Apr 22, 2014
        makeSection,
        mapContour,
        mapImage,

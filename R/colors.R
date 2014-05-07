@@ -2,8 +2,9 @@
 
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
-colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray",
-                     debug=getOptions("oceDebug"))
+## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
+colormap_colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray",
+                              debug=getOption("oceDebug"))
 {
     if (missing(colormap)) {
         if (is.function(col)) {
@@ -30,7 +31,7 @@ colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingC
         if (!missing(breaks))
             stop("cannot supply 'breaks' and 'colormap' at the same time")
         if (is.character(colormap)) {
-            colormap <- colormap(name=colormap, debug=debug-1)
+            colormap <- colormap_colormap(name=colormap, debug=debug-1)
             missingColor <- colormap$missingColor
         }
         if (inherits(colormap, "colormap"))
@@ -282,7 +283,8 @@ colormapFromName <- function(name)
     colormapFromGmt(textConnection(text))
 }
 
-Colormap <- function(z,
+## colormap uses helpers colormap_colorize and colormap_colormap
+colormap <- function(z,
                      breaks, col=oceColorsJet,
                      name, x0, x1, col0, col1, blend=0,
                      missingColor,
@@ -331,11 +333,11 @@ Colormap <- function(z,
             ## }
         }
         if (zKnown) {
-            rval <- colorize(z=z, breaks=breaks, col=col)
+            rval <- colormap_colorize(z=z, breaks=breaks, col=col)
         } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
-            rval <- colorize(breaks=breaks, col=col, debug=debug-1)
+            rval <- colormap_colorize(breaks=breaks, col=col, debug=debug-1)
             rval$zcol <- "black"
         }
         rval$x0 <- rval$breaks[-1]
@@ -345,12 +347,12 @@ Colormap <- function(z,
     } else {
         if (nameKnown) {
             oceDebug(debug, "processing case C: 'name' was given\n")
-            rval <- colormap(name=name, debug=debug-1)
+            rval <- colormap_colormap(name=name, debug=debug-1)
         } else {
             if (xcolKnown) {
                 oceDebug(debug, "processing case D: 'x0', 'x1', 'col0' and 'col1' were given, all of length",
                          length(x0), "\n")
-                rval <- colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n, debug=debug-1)
+                rval <- colormap_colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n, debug=debug-1)
                 ## If n>1, we will have lots of levels, and will centre them
                 if (n > 1L)
                     blend <- 0.5
@@ -379,11 +381,12 @@ Colormap <- function(z,
         rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
         rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
-    oceDebug(debug, "} # Colormap()\n", unindent=1)
+    oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
 }
 
-colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oceDebug"))
+## keeping this (which was called 'colormap' until 2014-05-07) for a while, but not in NAMESPACE.
+colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oceDebug"))
 {
     if (missing(name)) {
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
@@ -468,9 +471,10 @@ colormapOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mc
 }
 
 
-makePalette <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
-                        file, breaksPerLevel=20,
-                        region=c("water", "land", "both"))
+## keeping this for a while, but not in NAMESPACE.
+makePaletteDEPRECATED <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
+                                  file, breaksPerLevel=20,
+                                  region=c("water", "land", "both"))
 {
     style <- match.arg(style)
     region <- match.arg(region)

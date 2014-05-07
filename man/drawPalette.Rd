@@ -27,7 +27,7 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
-    \item{colormap}{a color map as created by \code{\link{Colormap}}.  If
+    \item{colormap}{a color map as created by \code{\link{colormap}}.  If
         provided, this takes precedence over \code{breaks} and \code{col}.}
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.  If not given, reasonable values are inferred from
@@ -103,7 +103,7 @@ plot(1:10, 1:10, col=oceColorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 
 ## Middle panel: colormap
-cm <- Colormap(name="gmt_globe")
+cm <- colormap(name="gmt_globe")
 drawPalette(colormap=cm)
 plot(seq_along(cm$breaks), cm$breaks, pch=20, cex=2, col=cm$col,
      xlab="Palette index", ylab="Palette breaks")
