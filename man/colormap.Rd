@@ -87,13 +87,11 @@
         numerical argument that specifies the number of colors, and this number
         will be set to \code{length(breaks)-1}.  Otherwise, \code{col} may be a
         vector of colors, and its length must be one less than the number of
-        breaks.  \emph{FIXME: discuss existence of z here}  (NB. if
-        \code{breaks} is given, then all other arguments except \code{col} and
-        \code{missingColor} are ignored.)
-        \if{html}{The figure below explains the (\code{breaks}, \code{col})
-            method of specifying a color mapping.  Note that there must be one
-            more break than color.  This is the method used by e.g.
-            \code{\link{image}}.
+        breaks.  (NB. if \code{breaks} is given, then all other arguments
+        except \code{col} and \code{missingColor} are ignored.) \if{html}{The
+            figure below explains the (\code{breaks}, \code{col}) method of
+            specifying a color mapping.  Note that there must be one more break
+            than color.  This is the method used by e.g.  \code{\link{image}}.
 
             \figure{colormap_fig_1.png}{options: width=400px alt="Figure: colormap\_fig\_1.png"}}
  
@@ -110,20 +108,16 @@
         \code{col1}.  These values are specify a value-color mapping that is
         similar to that used for GMT color maps.  The method works by using
         \code{\link{seq}} to interpolate between the elements of the \code{x0}
-        vector.  (FIXME state more clearly) The same is done for \code{x1}.
-        Similarly, \code{\link{colorRampPalette}} is used to interpolate
-        between the colors in the \code{col0} vector, and the same is done for
-        \code{col1}.  (FIXME: explain more, perhaps by repeating a statement
-        about how GMT is done.) In this way, a color map can be constructed by
-        specifying a few points.
-        \if{html}{The figure below explains the (\code{x0}, \code{x1}, \code{col0},
-        \code{col1}) method of specifying a color mapping.  Note that the each
-        of the items has the same length. The color between \code{x0[i]} and
-        \code{x1[i]} is \code{col0[i]} (as shown in the diagram), unless
-        \code{blend!=0} in which case the color is blended between
-        \code{col0[i]} and \code{col1[i]}.
+        vector.  The same is done for \code{x1}.  Similarly,
+        \code{\link{colorRampPalette}} is used to interpolate between the
+        colors in the \code{col0} vector, and the same is done for \code{col1}.
+        \if{html}{The figure below explains the (\code{x0}, \code{x1},
+            \code{col0}, \code{col1}) method of specifying a color mapping.
+            Note that the each of the items has the same length. The case of
+            \code{blend=0}, which has color \code{col0[i]} between
+            \code{x0[i]} and \code{x1[i]}, is illustrated below.
 
-        \figure{colormap_fig_2.png}{options: width=400px alt="Figure: colormap\_fig\_2.png"}}
+            \figure{colormap_fig_2.png}{options: width=400px alt="Figure: colormap\_fig\_2.png"}}
     }
 }
  
