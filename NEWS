@@ -1,5 +1,5 @@
 0.9-14
-- colorize() and colormap() added
+- colormap() added
 - data(nao) added; data(soi) updated, and names improved in latter
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
 - landsat support added

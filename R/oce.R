@@ -232,6 +232,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         debug=getOption("oceDebug"),
                         ...)
 {
+    if (is.function(x))
+        stop("x cannot be a function")
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
