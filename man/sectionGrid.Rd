@@ -6,8 +6,7 @@
 
 \description{Grid a section, by interpolating to fixed pressure levels.}
 
-\usage{sectionGrid(section, p, method=c("approx","boxcar","lm"), 
-             debug=getOption("oceDebug"), \dots)}
+\usage{sectionGrid(section, p, method="approx", debug=getOption("oceDebug"), \dots)}
 
 \arguments{
 
@@ -23,9 +22,8 @@
       maximum pressure in \code{section}.  If a list of numerical values is
       provided, then it is used as is.}
 
-  \item{method}{the algorithm to use for interpolation to the pressure levels;
-      see Details below for a sketch, and see \code{\link{ctdDecimate}} for a
-      deeper discussion.}
+  \item{method}{the method to use to decimate data within the stations; see
+      \code{\link{ctdDecimate}}, which is used for the decimation.}
 
   \item{debug}{a flag that turns on debugging.  The value indicates the depth
       within the call stack to which debugging applies.  For example,

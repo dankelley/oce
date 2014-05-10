@@ -1248,11 +1248,9 @@ read.section <- function(file, directory, sectionId="", flags,
     res
 }
 
-sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
-			 debug=getOption("oceDebug"), ...)
+sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "sectionGrid(section, p, method=\"", method, "\", ...) {\n", sep="", unindent=1)
-    method <- match.arg(method)
+    oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL

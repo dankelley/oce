@@ -1,4 +1,5 @@
 0.9-14
+- ctdDecimate() permits user-supplied method function
 - colormap() added
 - data(nao) added; data(soi) updated, and names improved in latter
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
