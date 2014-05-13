@@ -3,7 +3,9 @@
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
-colormap_colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1, missingColor="gray",
+colormap_colorize <- function(z,
+                              breaks, col=oceColorsJet, colormap, segments=1,
+                              missingColor="gray",
                               debug=getOption("oceDebug"))
 {
     if (missing(colormap)) {
@@ -23,7 +25,11 @@ colormap_colorize <- function(z, breaks, col=oceColorsJet, colormap, segments=1,
             zcol <- "black"
         } else {
             zlim <- range(z, na.rm=TRUE)
+            i <- findInterval(z, breaks)
+            missing <- i == 0
+            i[missing] <- 1            # just pick something; replaced later
             zcol <- col[findInterval(z, breaks)]
+            zcol[missing] <- missingColor
         }
     } else {
         if (!missing(col))
@@ -315,25 +321,9 @@ colormap <- function(z,
         oceDebug(debug, "processing case B\n")
         if (n > 1L) {
             warning('n is being ignored for the breaks+col method')
-            ## FIXME: check if this is better than other code
-            ## nbreaks <- length(breaks)
-            ## breaks2 <- NULL
-            ## for (bi in 2:nbreaks) {
-            ##     delta <- (breaks[bi] - breaks[bi-1]) / n
-            ##     breaks2 <- c(breaks2, seq(from=breaks[bi-1], by=delta, length.out=n))
-            ## }
-            ## breaks <- breaks2
-            ## if (!is.function(col)) {
-            ##     ncol <- length(col)
-            ##     col2 <- NULL
-            ##     for (ci in 2:ncol) {
-            ##         col2 <- c(col2, colorRampPalette(c(col[bi-1], col[bi]))(1+n))
-            ##     }
-            ##     col <- col2
-            ## }
         }
         if (zKnown) {
-            rval <- colormap_colorize(z=z, breaks=breaks, col=col)
+            rval <- colormap_colorize(z=z, breaks=breaks, col=col, debug=debug-1)
         } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
@@ -381,6 +371,7 @@ colormap <- function(z,
         rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
         rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
+    class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
 }
