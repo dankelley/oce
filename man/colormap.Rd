@@ -210,7 +210,8 @@ contour(lon, lat, z, levels=0, add=TRUE)
     \url{http://gmt.soest.hawaii.edu}.  Diagrams showing the GMT color schemes
     are at \url{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html}, and
     numerical specifications for some color maps are at
-    \url{http://www.beamreach.org/maps/gmt/share/cpt} and many other sources.}
+    \url{http://www.beamreach.org/maps/gmt/share/cpt},
+    \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.}
 
 \author{Dan Kelley}
 
