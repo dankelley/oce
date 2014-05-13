@@ -23,12 +23,12 @@ colormap_colorize <- function(z,
             col <- col
         }
         if (missing(z)) {
-            if (missing(zlim))
+            if (is.null(zlim))
                 zlim <- range(breaks)
             zcol <- "black"
         } else {
             message("FIXME: check next line re zlim for non-missing(z) in colormap_colorize()")
-            if (missing(zlim))
+            if (is.null(zlim))
                 zlim <- range(z, na.rm=TRUE)
             i <- findInterval(z, breaks)
             missing <- i == 0
@@ -71,7 +71,7 @@ colormap_colorize <- function(z,
         delta <- mean(diff(breaks[1:2])) / 1000
         breaks <- c(breaks, breaks[nbreaks] + delta)
         ## FIXME: next might miss top colour
-        if (missing(zlim)) {
+        if (is.null(zlim)) {
             if (missing(z)) {
                 zlim <- range(breaks)
             } else {
@@ -334,10 +334,11 @@ colormap <- function(z,
     xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
     zlimKnown <- !missing(zlim)
     if (!zlimKnown) {
+        ## set to NULL if must compute later
         if (nameKnown) {
             zlim <- NULL
         } else if (breaksKnown) {
-            zlim <- range(breaks, na.rm=TRUE)
+            zlim <- if (length(breaks) > 1) range(breaks, na.rm=TRUE) else NULL
         } else if (zKnown) {
             zlim <- range(z, na.rm=TRUE)
         } else if (xcolKnown) {
