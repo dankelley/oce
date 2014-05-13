@@ -2,9 +2,9 @@
 
 \alias{imagep}
 
-\title{Plot an image with a colour palette}
+\title{Plot an image with a color palette}
 
-\description{Plot an image with a colour palette}
+\description{Plot an image with a color palette}
 
 \usage{imagep(x, y, z, 
     xlim, ylim, zlim, 
@@ -55,12 +55,12 @@
         description here.)} 
     \item{xlim}{limits on x axis.}
     \item{ylim}{limits on y axis.}
-    \item{zlim}{either a pair of numbers giving the limits for the colourscale,
+    \item{zlim}{either a pair of numbers giving the limits for the colorscale,
         or \code{"histogram"} to have a flattened histogram (i.e. to maximally
         increase contrast throughout the domain.)}
-    \item{zclip}{logical, indicating whether to clip the colours to those
+    \item{zclip}{logical, indicating whether to clip the colors to those
         corresponding to \code{zlim}, if the latter is provided.  Clipped
-        regions will be coloured with \code{missingColor}.}
+        regions will be colored with \code{missingColor}.}
     \item{flipy}{logical, with \code{TRUE} indicating that the image
         should be flipped top to bottom (e.g. to produce a profile image
         for a downward-looking acoustic-doppler profile).}
@@ -68,11 +68,11 @@
     \item{zlabPosition}{string indicating where to put the label for the z axis,
         either at the top-right of the main image, or on the side, in the axis
         for the palette.}
-    \item{breaks}{the z values for breaks in the colour scheme.  If this is of
+    \item{breaks}{the z values for breaks in the color scheme.  If this is of
         length 1, the value indicates the desired number of breaks, which is
         supplied to \code{\link{pretty}}, in determining clean break points.}
-    \item{col}{either a vector of colours corresponding to the breaks, of length
-        1 plus the number of breaks, or a function specifying colours,
+    \item{col}{either a vector of colors corresponding to the breaks, of length
+        1 plus the number of breaks, or a function specifying colors,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
     \item{colormap}{a color map as created by \code{\link{colormap}}.  If
         provided, this takes precedence over \code{breaks} and \code{col}.}
@@ -80,7 +80,7 @@
         correspond with \code{at})}
     \item{at}{optional vector of positions for the \code{label}s}
     \item{drawContours}{logical value indicating whether to draw contours on the
-        image, and palette, at the colour breaks.  Images with a great deal of
+        image, and palette, at the color breaks.  Images with a great deal of
         high-wavenumber variation look poor with contours.}
     \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
         plot types that call that function.  (See \code{\link{strptime}} for the
@@ -131,11 +131,11 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates an image with a colour palette to the right.  The effect is
+\details{Creates an image with a color palette to the right.  The effect is
     similar to \code{\link{filled.contour}} except that with \code{imagep} it
     is possible to set the \code{\link{layout}} outside the function, which
     enables the creation of plots with many image-palette panels.  Note that
-    the contour lines may not coincide with the colour transitions, in the case
+    the contour lines may not coincide with the color transitions, in the case
     of coarse images.
 
     Note that this does not use \code{\link{layout}} or any of the other screen

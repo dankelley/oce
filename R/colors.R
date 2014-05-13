@@ -4,10 +4,12 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(z,
+                              zlim, zclip=FALSE,
                               breaks, col=oceColorsJet, colormap, segments=1,
                               missingColor="gray",
                               debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "colormap_colorize() {\n", unindent=1)
     if (missing(colormap)) {
         if (is.function(col)) {
             if (missing(breaks)) {
@@ -21,15 +23,23 @@ colormap_colorize <- function(z,
             col <- col
         }
         if (missing(z)) {
-            zlim <- range(breaks)
+            if (missing(zlim))
+                zlim <- range(breaks)
             zcol <- "black"
         } else {
-            zlim <- range(z, na.rm=TRUE)
+            message("FIXME: check next line re zlim for non-missing(z) in colormap_colorize()")
+            if (missing(zlim))
+                zlim <- range(z, na.rm=TRUE)
             i <- findInterval(z, breaks)
             missing <- i == 0
             i[missing] <- 1            # just pick something; replaced later
             zcol <- col[findInterval(z, breaks)]
-            zcol[missing] <- missingColor
+            if (zclip) {
+                zcol[missing] <- missingColor
+            } else {
+                zcol[z <= min(breaks)] <- col[1]
+                zcol[z >= min(breaks)] <- tail(col, 1)
+            }
         }
     } else {
         if (!missing(col))
@@ -38,6 +48,10 @@ colormap_colorize <- function(z,
             stop("cannot supply 'breaks' and 'colormap' at the same time")
         if (is.character(colormap)) {
             colormap <- colormap_colormap(name=colormap, debug=debug-1)
+            if (missing(zlim)) {
+                message("FIXME: check next on zlim from colormap$zlim")
+                zlim <- colormap$zlim
+            }
             missingColor <- colormap$missingColor
         }
         if (inherits(colormap, "colormap"))
@@ -57,15 +71,30 @@ colormap_colorize <- function(z,
         delta <- mean(diff(breaks[1:2])) / 1000
         breaks <- c(breaks, breaks[nbreaks] + delta)
         ## FIXME: next might miss top colour
+        if (missing(zlim)) {
+            if (missing(z)) {
+                zlim <- range(breaks)
+            } else {
+                zlim <- range(z, na.rm=TRUE)
+            }
+        }
         if (missing(z)) {
-            zlim <- range(breaks)
             zcol <- "black"
         } else {
+            message("FIXME: obey already-computed zlim here")
             zlim <- range(z, na.rm=TRUE)
+            i <- findInterval(z, breaks)
+            missing <- i == 0
+            i[missing] <- 1            # just pick something; replaced later
             zcol <- col[findInterval(z, breaks)]
+            message("FIXME: obey zclip here")
+            zcol[missing] <- missingColor
         }
     }
-    list(zlim=zlim, breaks=breaks, col=col, zcol=zcol, missingColor=missingColor)
+    rval <- list(zlim=zlim, breaks=breaks, col=col, zcol=zcol, missingColor=missingColor)
+    class(rval) <- c("list", "colormap")
+    oceDebug(debug, "} # colormap_colorize(), an internal function", unindent=1)
+    rval
 }
 
 colormapGMT <- function(x0, x1, col0, col1, bpl=1)
@@ -291,6 +320,7 @@ colormapFromName <- function(name)
 
 ## colormap uses helpers colormap_colorize and colormap_colormap
 colormap <- function(z,
+                     zlim, zclip=FALSE,
                      breaks, col=oceColorsJet,
                      name, x0, x1, col0, col1, blend=0,
                      missingColor,
@@ -302,6 +332,22 @@ colormap <- function(z,
     nameKnown <- !missing(name)
     missingColorKnown <- !missing(missingColor)
     xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
+    zlimKnown <- !missing(zlim)
+    if (!zlimKnown) {
+        if (nameKnown) {
+            zlim <- NULL
+        } else if (breaksKnown) {
+            zlim <- range(breaks, na.rm=TRUE)
+        } else if (zKnown) {
+            zlim <- range(z, na.rm=TRUE)
+        } else if (xcolKnown) {
+            zlim <- range(c(x0, x1))
+        } else  {
+            stop("cannot infer zlim; please specify zlim, breaks, name, or z")
+        }
+    }
+    oceDebug(debug, "zlim=", zlim, "\n")
+    oceDebug(debug, "zclip=", zclip, "\n")
     if (nameKnown) {
         if (blend > 1)
             warning('n is being ignored since "name" was provided')
@@ -323,11 +369,11 @@ colormap <- function(z,
             warning('n is being ignored for the breaks+col method')
         }
         if (zKnown) {
-            rval <- colormap_colorize(z=z, breaks=breaks, col=col, debug=debug-1)
+            rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, debug=debug-1)
         } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
-            rval <- colormap_colorize(breaks=breaks, col=col, debug=debug-1)
+            rval <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col, debug=debug-1)
             rval$zcol <- "black"
         }
         rval$x0 <- rval$breaks[-1]
@@ -353,7 +399,7 @@ colormap <- function(z,
             }
         }
         ## FIXME: issue 435 work in next 5 to 10 lines below
-        rval$zlim <- if (zKnown) range(z) else range(c(rval$x0, rval$x1))
+        rval$zlim <- if (is.null(zlim)) range(c(rval$x0, rval$x1)) else zlim
         nx0 <- length(rval$x0)
         eps <- diff(rval$x0[1:2]) / 100
         nx <- length(rval$x0)
@@ -368,7 +414,8 @@ colormap <- function(z,
             }
         }
         rval$col <- col
-        rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
+        ##message("FIXME: should already know zlim")
+        ##rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
         rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
     }
     class(rval) <- c("list", "colormap")
@@ -424,134 +471,134 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oc
     rval
 }
 
-colormapOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
-{
-    if (!missing(name)) { # takes precedence over all
-        nameList <- c("gmt_relief", "gmt_ocean", "gmt_globe")
-        n <- pmatch(name, nameList)
-        if (is.na(n))
-            stop("unknown 'name'; must be one of: ", paste(nameList, collapse=" "))
-        name <- nameList[n]
-        stop("should handle name '", name, "' now")
-        return(NULL)
-    } else if (!missing(file)) {
-        ## colormap('http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
-        return(colormapFromGmt(file))
-    } else {                           # use lower, upper, and color
-        if (missing(breaks) || missing(col)) {
-            stop("provide 'breaks' and 'color' if both 'name' and 'file' are missing")
-        }
-        ## emulate how GMT handled
-        breaksPerLevel <- 3            # FIXME
-        nbreaks <- length(breaks)
-        ncol <- length(col)
-        delta <- mean(diff(breaks))
-        upper <- c(head(breaks, -1), breaks[nbreaks]+delta) + delta / 2
-        lower <- c(breaks[1]-delta, head(breaks,-1)) + delta / 2
-        lowerColor <- c(col[1], col)
-        upperColor <- c(col, col[ncol])
-        breaks2 <- NULL
-        col2 <- NULL
-        for (l in seq.int(1, nbreaks)) {
-            ## cat("l:", l, ", lower[l]:", lower[l], ", upper[l]:", upper[l], "\n")
-            breaks2 <- c(breaks2, seq(lower[l], upper[l], length.out=1+breaksPerLevel))
-            col2 <- c(col2, colorRampPalette(c(lowerColor[l], upperColor[l]))(1+breaksPerLevel))
-        }
-        return(list(breaks=breaks2, col=head(col2, -1), mcol=mcol, fcol=fcol, l=breaks2, u=breaks2))# l and u wrong
-    }
-}
+## colormapOLD <- function(name, file, breaks, col, type=c("level", "gradient"), mcol="gray", fcol="white")
+## {
+##     if (!missing(name)) { # takes precedence over all
+##         nameList <- c("gmt_relief", "gmt_ocean", "gmt_globe")
+##         n <- pmatch(name, nameList)
+##         if (is.na(n))
+##             stop("unknown 'name'; must be one of: ", paste(nameList, collapse=" "))
+##         name <- nameList[n]
+##         stop("should handle name '", name, "' now")
+##         return(NULL)
+##     } else if (!missing(file)) {
+##         ## colormap('http://www.beamreach.org/maps/gmt/share/cpt/GMT_globe.cpt')
+##         return(colormapFromGmt(file))
+##     } else {                           # use lower, upper, and color
+##         if (missing(breaks) || missing(col)) {
+##             stop("provide 'breaks' and 'color' if both 'name' and 'file' are missing")
+##         }
+##         ## emulate how GMT handled
+##         breaksPerLevel <- 3            # FIXME
+##         nbreaks <- length(breaks)
+##         ncol <- length(col)
+##         delta <- mean(diff(breaks))
+##         upper <- c(head(breaks, -1), breaks[nbreaks]+delta) + delta / 2
+##         lower <- c(breaks[1]-delta, head(breaks,-1)) + delta / 2
+##         lowerColor <- c(col[1], col)
+##         upperColor <- c(col, col[ncol])
+##         breaks2 <- NULL
+##         col2 <- NULL
+##         for (l in seq.int(1, nbreaks)) {
+##             ## cat("l:", l, ", lower[l]:", lower[l], ", upper[l]:", upper[l], "\n")
+##             breaks2 <- c(breaks2, seq(lower[l], upper[l], length.out=1+breaksPerLevel))
+##             col2 <- c(col2, colorRampPalette(c(lowerColor[l], upperColor[l]))(1+breaksPerLevel))
+##         }
+##         return(list(breaks=breaks2, col=head(col2, -1), mcol=mcol, fcol=fcol, l=breaks2, u=breaks2))# l and u wrong
+##     }
+## }
 
 
 ## keeping this for a while, but not in NAMESPACE.
-makePaletteDEPRECATED <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
-                                  file, breaksPerLevel=20,
-                                  region=c("water", "land", "both"))
-{
-    style <- match.arg(style)
-    region <- match.arg(region)
-    if (!missing(file)) {
-        d <- colormapFromGmt(file)
-    } else {
-        if (style == "gmt_relief") {
-            text <- "
-#	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
-#
-# Colortable for whole earth relief used in Wessel topomaps
-# Designed by P. Wessel and F. Martinez, SOEST
-# COLOR_MODEL = RGB
--8000	0	0	0	-7000	0	5	25
--7000	0	5	25	-6000	0	10	50
--6000	0	10	50	-5000	0	80	125
--5000	0	80	125	-4000	0	150	200
--4000	0	150	200	-3000	86	197	184
--3000	86	197	184	-2000	172	245	168
--2000	172	245	168	-1000	211	250	211
--1000	211	250	211	0	250	255	255
-0	70	120	50	500	120	100	50
-500	120	100	50	1000	146	126	60
-1000	146	126	60	2000	198	178	80
-2000	198	178	80	3000	250	230	100
-3000	250	230	100	4000	250	234	126
-4000	250	234	126	5000	252	238	152
-5000	252	238	152	6000	252	243	177
-6000	252	243	177	7000	253	249	216
-7000	253	249	216	8000	255	255	255
-F	255	255	255				
-B	0	0	0
-N	255	255	255"
-        } else if (style == "gmt_ocean") {
-            text <- "
-#	$Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
-#
-# Colortable for oceanic areas as used in Wessel maps
-# Designed by P. Wessel and F. Martinez, SOEST.
-# COLOR_MODEL = RGB
--8000	0	0	0	-7000	0	5	25
--7000	0	5	25	-6000	0	10	50
--6000	0	10	50	-5000	0	80	125
--5000	0	80	125	-4000	0	150	200
--4000	0	150	200	-3000	86	197	184
--3000	86	197	184	-2000	172	245	168
--2000	172	245	168	-1000	211	250	211
--1000	211	250	211	0	250	255	255
-F	255	255	255
-B	0	0	0"
-        } else if (style == "oce_shelf") {
-            text <- "
--500	0	0	0	-200	0	10	55
--200	0	10	55	-175	0	40	80
--175	0	40	80	-150	0	80	125
--150	0	80	125	-125	0	115     162	
--125	0	150	200	-100	43	173     192	
--100	86	197	184	-75	129     221     176
--75	172     245     168	-50	191     247     189
--50	211     250     211	-25     220     250     240	
--25	220	250	240	0	250	255	255"
-        } else {
-            stop("unknown colormap style \"", style, "\"")
-        }
-        d <- colormapFromGmt(textConnection(text))
-    }
-    nlevel <- length(d$x0)
-    breaks <- NULL
-    col <- NULL
-    for (l in 1:nlevel) {
-        breaks <- c(breaks, seq(d$x0[l], d$x1[l], length.out=1+breaksPerLevel))
-        col <- c(col, colorRampPalette(c(d$col0[l], d$col1[l]))(1+breaksPerLevel))
-    }
-    if (region == "water") {
-        wet <- breaks <= 0
-        breaks <- breaks[wet]
-        col <- col[wet]
-    } else if (region == "land") {
-        dry <- breaks >= 0
-        breaks <- breaks[dry]
-        col <- col[dry]
-    }
-    ## drop a colour for length match with breaks
-    col <- col[-1]                     
-    list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
-}
+## makePaletteDEPRECATED <- function(style=c("gmt_relief", "gmt_ocean", "oce_shelf"),
+##                                   file, breaksPerLevel=20,
+##                                   region=c("water", "land", "both"))
+## {
+##     style <- match.arg(style)
+##     region <- match.arg(region)
+##     if (!missing(file)) {
+##         d <- colormapFromGmt(file)
+##     } else {
+##         if (style == "gmt_relief") {
+##             text <- "
+## #	$Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+## #
+## # Colortable for whole earth relief used in Wessel topomaps
+## # Designed by P. Wessel and F. Martinez, SOEST
+## # COLOR_MODEL = RGB
+## -8000	0	0	0	-7000	0	5	25
+## -7000	0	5	25	-6000	0	10	50
+## -6000	0	10	50	-5000	0	80	125
+## -5000	0	80	125	-4000	0	150	200
+## -4000	0	150	200	-3000	86	197	184
+## -3000	86	197	184	-2000	172	245	168
+## -2000	172	245	168	-1000	211	250	211
+## -1000	211	250	211	0	250	255	255
+## 0	70	120	50	500	120	100	50
+## 500	120	100	50	1000	146	126	60
+## 1000	146	126	60	2000	198	178	80
+## 2000	198	178	80	3000	250	230	100
+## 3000	250	230	100	4000	250	234	126
+## 4000	250	234	126	5000	252	238	152
+## 5000	252	238	152	6000	252	243	177
+## 6000	252	243	177	7000	253	249	216
+## 7000	253	249	216	8000	255	255	255
+## F	255	255	255				
+## B	0	0	0
+## N	255	255	255"
+##         } else if (style == "gmt_ocean") {
+##             text <- "
+## #	$Id: GMT_ocean.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
+## #
+## # Colortable for oceanic areas as used in Wessel maps
+## # Designed by P. Wessel and F. Martinez, SOEST.
+## # COLOR_MODEL = RGB
+## -8000	0	0	0	-7000	0	5	25
+## -7000	0	5	25	-6000	0	10	50
+## -6000	0	10	50	-5000	0	80	125
+## -5000	0	80	125	-4000	0	150	200
+## -4000	0	150	200	-3000	86	197	184
+## -3000	86	197	184	-2000	172	245	168
+## -2000	172	245	168	-1000	211	250	211
+## -1000	211	250	211	0	250	255	255
+## F	255	255	255
+## B	0	0	0"
+##         } else if (style == "oce_shelf") {
+##             text <- "
+## -500	0	0	0	-200	0	10	55
+## -200	0	10	55	-175	0	40	80
+## -175	0	40	80	-150	0	80	125
+## -150	0	80	125	-125	0	115     162	
+## -125	0	150	200	-100	43	173     192	
+## -100	86	197	184	-75	129     221     176
+## -75	172     245     168	-50	191     247     189
+## -50	211     250     211	-25     220     250     240	
+## -25	220	250	240	0	250	255	255"
+##         } else {
+##             stop("unknown colormap style \"", style, "\"")
+##         }
+##         d <- colormapFromGmt(textConnection(text))
+##     }
+##     nlevel <- length(d$x0)
+##     breaks <- NULL
+##     col <- NULL
+##     for (l in 1:nlevel) {
+##         breaks <- c(breaks, seq(d$x0[l], d$x1[l], length.out=1+breaksPerLevel))
+##         col <- c(col, colorRampPalette(c(d$col0[l], d$col1[l]))(1+breaksPerLevel))
+##     }
+##     if (region == "water") {
+##         wet <- breaks <= 0
+##         breaks <- breaks[wet]
+##         col <- col[wet]
+##     } else if (region == "land") {
+##         dry <- breaks >= 0
+##         breaks <- breaks[dry]
+##         col <- col[dry]
+##     }
+##     ## drop a colour for length match with breaks
+##     col <- col[-1]                     
+##     list(breaks=breaks, col=col, f=d$f, b=d$b, n=d$n)
+## }
 
 
 ## internal function for palettes

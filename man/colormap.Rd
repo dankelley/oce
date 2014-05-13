@@ -7,6 +7,7 @@
 \description{Map values to colors, for use in palettes and plots.}
 
 \usage{colormap(z,
+         zlim, zclip=FALSE,
          breaks, col,
          name,
          x0, x1, col0, col1, blend=0,
@@ -20,6 +21,20 @@
       \code{zcol} that will be a vector of the same length as \code{z},
       containing a color for each point.  If \code{z} is not given,
       \code{zcol} will contain just one item, the color \code{"black"}.}
+
+  \item{zlim}{optional vector containing two numbers that specify the \code{z}
+      limits for the colorscale.  If not given, this will be determined from
+      the other arguments, as follows.  If \code{name} is given, then the range
+      of numerical values contained therein will be used for \code{zlim}.
+      Otherwise, if \code{breaks} is given, then its range sets \code{zlim}.
+      Otherwise, if \code{z} is given, then its range sets \code{zlim}.
+      Otherwise, if \code{x0} and \code{x1} are given, then their range sets
+      \code{zlim}.  Otherwise, there is no way to infer \code{zlim} and indeed
+      there is no way to construct a colormap, so an error is reported.}
+
+  \item{zclip}{logical, indicating whether to clip the colors to those
+      corresponding to \code{zlim}, if the latter is provided.  Clipped regions
+      will be colored with \code{missingColor}.}
 
   \item{breaks}{an optional indication of break points between color levels
       (see \code{\link{image}}).  If this is provided, the arguments
