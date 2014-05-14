@@ -269,12 +269,12 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (despike)
         y <- despike(y)
     if (marginsAsImage) {
+        message("marginsAsImage")
         ## FIXME: obey their mar?
-        the.mai <- c(pc$omai[1],
-                     pc$maiLHS,
-                     pc$omai[3],
-                     pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
+        the.mai <- pc$mai0 + mai.palette
         the.mai <- clipmin(the.mai, 0)         # just in case
+        oceDebug(debug, "the.mai=", the.mai, "\n")
+
         par(mai=the.mai, cex=cex)
         drawPalette(mai=mai.palette)
     }
