@@ -24,11 +24,11 @@ colormap_colorize <- function(z,
         }
         if (missing(z)) {
             if (is.null(zlim))
-                zlim <- range(breaks)
+                zlim <- rangeExtended(breaks)
             zcol <- "black"
         } else {
             if (is.null(zlim))
-                zlim <- range(z, na.rm=TRUE)
+                zlim <- rangeExtended(z)
             i <- findInterval(z, breaks)
             missing <- i == 0
             i[missing] <- 1            # just pick something; replaced later
@@ -71,16 +71,16 @@ colormap_colorize <- function(z,
         ## FIXME: next might miss top colour
         if (is.null(zlim)) {
             if (missing(z)) {
-                zlim <- range(breaks)
+                zlim <- rangeExtended(breaks)
             } else {
-                zlim <- range(z, na.rm=TRUE)
+                zlim <- rangeExtended(z)
             }
         }
         if (missing(z)) {
             zcol <- "black"
         } else {
             message("FIXME: obey already-computed zlim here")
-            zlim <- range(z, na.rm=TRUE)
+            zlim <- rangeExtended(z)
             i <- findInterval(z, breaks)
             missing <- i == 0
             i[missing] <- 1            # just pick something; replaced later
@@ -338,11 +338,11 @@ colormap <- function(z,
         if (nameKnown) {
             zlim <- NULL
         } else if (breaksKnown) {
-            zlim <- if (length(breaks) > 1) range(breaks, na.rm=TRUE) else NULL
+            zlim <- if (length(breaks) > 1) rangeExtended(breaks) else NULL
         } else if (zKnown) {
-            zlim <- range(z, na.rm=TRUE)
+            zlim <- rangeExtended(z)
         } else if (xcolKnown) {
-            zlim <- range(c(x0, x1))
+            zlim <- rangeExtended(c(x0, x1))
         } else  {
             stop("cannot infer zlim; please specify zlim, breaks, name, or z")
         }
@@ -402,7 +402,7 @@ colormap <- function(z,
         }
         ## FIXME: issue 435 work in next 5 to 10 lines below
         ##message("zlim: ", if (is.null(zlim)) "NULL" else paste(zlim, collapse=" to "))
-        rval$zlim <- if (is.null(zlim)) range(c(rval$x0, rval$x1)) else zlim
+        rval$zlim <- if (is.null(zlim)) rangeExtended(c(rval$x0, rval$x1)) else zlim
         nx0 <- length(rval$x0)
         eps <- diff(rval$x0[1:2]) / 100
         nx <- length(rval$x0)

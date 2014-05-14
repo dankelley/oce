@@ -1,5 +1,16 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
+{
+    if (length(x) == 1) {
+        x * c(1 - extend, 1 + extend) 
+    } else {
+        r <- range(x, na.rm=TRUE)
+        d <- diff(r)
+        c(r[1] - d * extend, r[2] + d * extend)
+    }
+}
+
 binApply1D <- function(x, f, xbreaks, FUN)
 {
     if (missing(x)) stop("must supply 'x'")
