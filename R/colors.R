@@ -32,12 +32,12 @@ colormap_colorize <- function(z,
             i <- findInterval(z, breaks)
             missing <- i == 0
             i[missing] <- 1            # just pick something; replaced later
-            zcol <- col[findInterval(z, breaks)]
+            zcol <- col[i]
             if (zclip) {
                 zcol[missing] <- missingColor
             } else {
                 zcol[z <= min(breaks)] <- col[1]
-                zcol[z >= min(breaks)] <- tail(col, 1)
+                zcol[z >= max(breaks)] <- tail(col, 1)
             }
         }
     } else {
@@ -379,6 +379,7 @@ colormap <- function(z,
         rval$x1 <- rval$breaks[-1]
         rval$col0 <- rval$col
         rval$col1 <- rval$col
+        ##message("rval$zcol:", paste(rval$zcol, collapse=", "))
     } else {
         if (nameKnown) {
             oceDebug(debug, "processing case C: 'name' was given\n")
