@@ -412,6 +412,11 @@ imagep <- function(x, y, z,
              ", ...) {\n", sep="", unindent=1)
     oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
     oceDebug(debug, "par(mai)=", paste(format(par('mai'), digits=3), collapse=" "), "\n")
+
+    if (!missing(zlim) && !missing(breaks) && length(breaks) > 1)
+        stop("cannot specify both zlim and breaks, unless length(breaks)==1")
+
+
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)

@@ -331,6 +331,8 @@ colormap <- function(z,
     missingColorKnown <- !missing(missingColor)
     xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
     zlimKnown <- !missing(zlim)
+    if (zlimKnown && breaksKnown && length(breaks) > 1)
+        stop("cannot specify both zlim and breaks, unless length(breaks)==1")
     if (!zlimKnown) {
         ## set to NULL if must compute later
         if (nameKnown) {
