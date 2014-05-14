@@ -27,7 +27,6 @@ colormap_colorize <- function(z,
                 zlim <- range(breaks)
             zcol <- "black"
         } else {
-            message("FIXME: check next line re zlim for non-missing(z) in colormap_colorize()")
             if (is.null(zlim))
                 zlim <- range(z, na.rm=TRUE)
             i <- findInterval(z, breaks)
@@ -49,7 +48,6 @@ colormap_colorize <- function(z,
         if (is.character(colormap)) {
             colormap <- colormap_colormap(name=colormap, debug=debug-1)
             if (missing(zlim)) {
-                message("FIXME: check next on zlim from colormap$zlim")
                 zlim <- colormap$zlim
             }
             missingColor <- colormap$missingColor
@@ -347,7 +345,7 @@ colormap <- function(z,
             stop("cannot infer zlim; please specify zlim, breaks, name, or z")
         }
     }
-    oceDebug(debug, "zlim=", zlim, "\n")
+    oceDebug(debug, "zlim=", if (is.null(zlim)) "NULL" else zlim, "\n")
     oceDebug(debug, "zclip=", zclip, "\n")
     if (nameKnown) {
         if (blend > 1)
@@ -400,6 +398,7 @@ colormap <- function(z,
             }
         }
         ## FIXME: issue 435 work in next 5 to 10 lines below
+        ##message("zlim: ", if (is.null(zlim)) "NULL" else paste(zlim, collapse=" to "))
         rval$zlim <- if (is.null(zlim)) range(c(rval$x0, rval$x1)) else zlim
         nx0 <- length(rval$x0)
         eps <- diff(rval$x0[1:2]) / 100
@@ -410,14 +409,26 @@ colormap <- function(z,
             for (i in 1:nx) {
                 b <- colorRamp(c(rval$col0[i], rval$col1[i]))(blend)
                 col[i] <- rgb(b[1], b[2], b[3], maxColorValue=255)
-                ## oceDebug(debug, "blending at i=", i, "\n")
+                ##oceDebug(debug, "blending at i=", i, "\n")
                 ##oceDebug(debug, "i=", i, "col", col[i], "col0", rval$col0[i], "col1", rval$col1[i], "\n")
             }
         }
         rval$col <- col
-        ##message("FIXME: should already know zlim")
-        ##rval$zlim <- 1.04*(if (zKnown) range(z) else range(c(rval$x0, rval$x1)))
-        rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
+        if (zKnown) {
+            i <- findInterval(z, rval$breaks)
+            rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
+            missing <- i == 0
+            i[missing] <- 1            # just pick something; replaced later
+            zcol <- col[findInterval(z, rval$breaks)]
+            if (zclip) {
+                rval$zcol[missing] <- missingColor
+            } else {
+                rval$zcol[z <= min(rval$breaks)] <- col[1]
+                rval$zcol[z >= min(rval$breaks)] <- tail(col, 1)
+            }
+        } else {
+            rval$zcol <- "black"
+        }
     }
     class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
@@ -427,6 +438,7 @@ colormap <- function(z,
 ## keeping this (which was called 'colormap' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "colormap_colormap() {\n", unindent=1)
     if (missing(name)) {
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
             stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
@@ -442,6 +454,8 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oc
             n <- rep(n[1], length.out=xlen)
         oceDebug(debug, "x0:", x0, "\n")
         oceDebug(debug, "x1:", x1, "\n")
+        oceDebug(debug, "col0:", col0, "\n")
+        oceDebug(debug, "col1:", col1, "\n")
         x0A <- c(x0, tail(x1, 1))
         for (i in 2:xlen) {
             dx0 <- (x0[i] - x0[i-1]) / n[i-1]
@@ -450,12 +464,11 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oc
             x1r <- c(x1r, seq(x1[i-1], by=dx1, length.out=n[i-1]))
             col0r <- c(col0r, colorRampPalette(col0[seq.int(i-1,i)])(n[i-1]))
             col1r <- c(col1r, colorRampPalette(col1[seq.int(i-1,i)])(n[i-1]))
-            oceDebug(debug, "i=", i,
-                     "\n\tx0[i-1]", x0[i-1], "x0[i]", x0[i],
-                     "\n\tconcat x0:",seq(x0[i-1], by=dx0, length.out=1+n[i-1]),
-                     "\n\tcol0[i-1]:", col0[i-1], "col0[i]:", col0[i],
-                     "\n\tcol1[i-1]:", col1[i-1], "col1[i]:", col1[i],
-                     "\n") 
+            oceDebug(debug, "i=", i, "\n")
+            oceDebug(debug, "  x0[i-1]", x0[i-1], "x0[i]", x0[i], "\n")
+            oceDebug(debug, "  concat x0:",seq(x0[i-1], by=dx0, length.out=1+n[i-1]),"\n")
+            oceDebug(debug, "  col0[i-1]:", col0[i-1], "col0[i]:", col0[i], "\n")
+            oceDebug(debug, "  col1[i-1]:", col1[i-1], "col1[i]:", col1[i], "\n")
         }
         ## next is wrong -- should not just tack on one value unless n=1
         x0r <- c(x0r, tail(x0, 1))
@@ -463,12 +476,13 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oc
         col0r <- c(col0r, tail(col0, 1))
         col1r <- c(col1r, tail(col1, 1))
         rval <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
-        class(rval) <- c("list", "colormap")
     } else {
         id <- pmatch(name, colormapNames)
         ## NB> next two functions not in NAMESPACE
         rval <- if (is.na(id)) colormapFromGmt(name) else colormapFromName(colormapNames[id])
     }
+    class(rval) <- c("list", "colormap")
+    oceDebug(debug, "} # colormap_colormap()\n", unindent=1)
     rval
 }
 
