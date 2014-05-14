@@ -25,11 +25,12 @@
       limits for the colorscale.  If not given, this will be determined from
       the other arguments, as follows.  If \code{name} is given, then the range
       of numerical values contained therein will be used for \code{zlim}.
-      Otherwise, if \code{breaks} is given, then its range sets \code{zlim}.
       Otherwise, if \code{z} is given, then its range sets \code{zlim}.
       Otherwise, if \code{x0} and \code{x1} are given, then their range sets
       \code{zlim}.  Otherwise, there is no way to infer \code{zlim} and indeed
-      there is no way to construct a colormap, so an error is reported.}
+      there is no way to construct a colormap, so an error is reported.  It is
+      an error to specify both \code{zlim} and \code{breaks}, if the length of
+      the latter does not equal 1.}
 
   \item{zclip}{logical, indicating whether to clip the colors to those
       corresponding to \code{zlim}, if the latter is provided.  Clipped regions
