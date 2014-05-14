@@ -415,19 +415,26 @@ colormap <- function(z,
             }
         }
         rval$col <- col
+        if (is.null(rval$missingColor)) 
+            rval$missingColor <- "gray"
         if (zKnown) {
+            oceDebug(debug, "z is known ... determining zcol now\n")
             i <- findInterval(z, rval$breaks)
-            rval$zcol <- if (zKnown) col[findInterval(z, rval$breaks)] else "black"
             missing <- i == 0
             i[missing] <- 1            # just pick something; replaced later
-            zcol <- col[findInterval(z, rval$breaks)]
+            rval$zcol <- col[i]
+            zcol <- col[i]
+            rval$zcol[missing] <- rval$missingColor
             if (zclip) {
-                rval$zcol[missing] <- missingColor
+                rval$zcol[missing] <- rval$missingColor
             } else {
+                if (zKnown)
+                    rval$zcol[is.na(z)] <- rval$missingColor
                 rval$zcol[z <= min(rval$breaks)] <- col[1]
                 rval$zcol[z >= max(rval$breaks)] <- tail(col, 1)
             }
         } else {
+            oceDebug(debug, 'z is missing, so zcol="black"\n')
             rval$zcol <- "black"
         }
     }
