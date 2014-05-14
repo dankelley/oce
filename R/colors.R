@@ -425,12 +425,14 @@ colormap <- function(z,
                 rval$zcol[missing] <- missingColor
             } else {
                 rval$zcol[z <= min(rval$breaks)] <- col[1]
-                rval$zcol[z >= min(rval$breaks)] <- tail(col, 1)
+                rval$zcol[z >= max(rval$breaks)] <- tail(col, 1)
             }
         } else {
             rval$zcol <- "black"
         }
     }
+    if (!nameKnown)
+        rval$missingColor <- if (missingColorKnown) missingColor else "gray"
     class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval

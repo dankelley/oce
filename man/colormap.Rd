@@ -8,9 +8,8 @@
 
 \usage{colormap(z,
          zlim, zclip=FALSE,
-         breaks, col,
-         name,
-         x0, x1, col0, col1, blend=0,
+         breaks, col=oceColorsJet,
+         name, x0, x1, col0, col1, blend=0,
          missingColor,
          debug=getOption("oceDebug"))}
 
@@ -74,8 +73,9 @@
       yields a palette that blends smoothly between the fixed colors specified
       in \code{col0} and \code{col1}.}
 
-  \item{missingColor}{color to use for missing values.  This will be set
-      automatically if \code{name} is used to specify the color mapping.}
+  \item{missingColor}{color to use for missing values.  If not provided, this
+      will be \code{"gray"}, unless \code{name} is given, in which case it
+      comes from that color table.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
       moderate amount of debugging information, or to 2 to get more.} 
