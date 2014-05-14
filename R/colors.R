@@ -9,7 +9,8 @@ colormap_colorize <- function(z,
                               missingColor="gray",
                               debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "colormap_colorize() {\n", unindent=1)
+    oceDebug(debug, "colormap_colorize() { # an internal function\n", unindent=1)
+    oceDebug(debug, "missingColor:", missingColor, "\n")
     if (missing(colormap)) {
         if (is.function(col)) {
             if (missing(breaks)) {
@@ -34,10 +35,14 @@ colormap_colorize <- function(z,
             i[missing] <- 1            # just pick something; replaced later
             zcol <- col[i]
             if (zclip) {
-                zcol[missing] <- missingColor
-            } else {
+                oceDebug(debug, "zclip is TRUE\n")
                 zcol[z <= min(breaks)] <- col[1]
                 zcol[z >= max(breaks)] <- tail(col, 1)
+            } else {
+                oceDebug(debug, "zclip is FALSE; missingColor:" ,missingColor, "\n")
+                zcol[z <= min(breaks)] <- missingColor
+                zcol[z >= max(breaks)] <- missingColor
+                zcol[missing] <- missingColor
             }
         }
     } else {
@@ -79,19 +84,18 @@ colormap_colorize <- function(z,
         if (missing(z)) {
             zcol <- "black"
         } else {
-            message("FIXME: obey already-computed zlim here")
             zlim <- rangeExtended(z)
             i <- findInterval(z, breaks)
             missing <- i == 0
             i[missing] <- 1            # just pick something; replaced later
             zcol <- col[findInterval(z, breaks)]
-            message("FIXME: obey zclip here")
+            ## FIXME: should we check zclip here?
             zcol[missing] <- missingColor
         }
     }
     rval <- list(zlim=zlim, breaks=breaks, col=col, zcol=zcol, missingColor=missingColor)
     class(rval) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap_colorize(), an internal function", unindent=1)
+    oceDebug(debug, "} # colormap_colorize(), an internal function\n", unindent=1)
     rval
 }
 
@@ -329,6 +333,8 @@ colormap <- function(z,
     breaksKnown <- !missing(breaks)
     nameKnown <- !missing(name)
     missingColorKnown <- !missing(missingColor)
+    if (missingColorKnown)
+        oceDebug(debug, 'missingColor:', missingColor, '\n')
     xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
     zlimKnown <- !missing(zlim)
     if (zlimKnown && breaksKnown && length(breaks) > 1)
@@ -370,11 +376,15 @@ colormap <- function(z,
             warning('n is being ignored for the breaks+col method')
         }
         if (zKnown) {
-            rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, debug=debug-1)
+            rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, 
+                                      missingColor=if(!missing(missingColor)) missingColor,
+                                      debug=debug-1)
         } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
-            rval <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col, debug=debug-1)
+            rval <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col,
+                                      missingColor=if(!missing(missingColor)) missingColor,
+                                      debug=debug-1)
             rval$zcol <- "black"
         }
         rval$x0 <- rval$breaks[-1]
