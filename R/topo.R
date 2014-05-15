@@ -353,16 +353,19 @@ read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
     if (is.character(file) && grep(".nc$", file)) {
+        if (!require("ncdf4"))
+            stop('must install.packages("ncdf4") to read topo data from a netCDF file')
         ## GEBCO netcdf
-        ncdf <- nc_open(file)
-        xrange <- ncvar_get(ncdf, "x_range")
-        yrange <- ncvar_get(ncdf, "y_range")
-        zrange <- ncvar_get(ncdf, "z_range")
-        spacing <- ncvar_get(ncdf, "spacing")
+        ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+        ncdf <- ncdf4::nc_open(file)
+        xrange <- ncdf4::ncvar_get(ncdf, "x_range")
+        yrange <- ncdf4::ncvar_get(ncdf, "y_range")
+        zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+        spacing <- ncdf4::ncvar_get(ncdf, "spacing")
         longitude <- seq(xrange[1], xrange[2], by=spacing[1])
         latitude <- seq(yrange[1], yrange[2], by=spacing[2])
-        z <- ncvar_get(ncdf, "z")
-        dim <- ncvar_get(ncdf, "dimension")
+        z <- ncdf4::ncvar_get(ncdf, "z")
+        dim <- ncdf4::ncvar_get(ncdf, "dimension")
         z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
         z <- z[,dim[2]:1]
         rval <- as.topo(longitude, latitude, z, filename=file)

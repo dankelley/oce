@@ -1,7 +1,6 @@
 useDynLib(oce)
 import(methods)
 importFrom("mapproj", mapproject)
-importFrom("ncdf4", nc_open, ncvar_get)
 importFrom("tiff", readTIFF)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
