@@ -35,13 +35,22 @@ setMethod(f="summary",
                                                                digits=5), "\n")
               showMetadataItem(object, "waterDepth", "Water depth: ")
               showMetadataItem(object, "levels", "Number of levels: ")
-              cat("* Statistics of subsample::\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata, ncol=3)
-              for (i in 1:ndata)
-                  threes[i,] <- threenum(object@data[[i]])
-              rownames(threes) <- paste("   ", names(object@data))
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
               colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of data::\n")
               print(threes, indent='  ')
               processingLogShow(object)
           })
@@ -2136,6 +2145,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
     names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
     names[grep("FFFF_*.*", names)[1]] <- "flag"
+    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
+    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
+    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
     ## Step 3: recognize something from moving-vessel CTDs
     names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
@@ -2146,6 +2158,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!("salinity" %in% names)) warning("missing data$salinity")
     if (!("pressure" %in% names)) warning("missing data$pressure")
     if (!("temperature" %in% names)) warning("missing data$temperature")
+    if ("time" %in% names)
+        data$time <- strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC")
     metadata$names <- names
     metadata$labels <- names
     if (missing(processingLog))
