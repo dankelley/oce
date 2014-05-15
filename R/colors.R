@@ -376,15 +376,25 @@ colormap <- function(z,
             warning('n is being ignored for the breaks+col method')
         }
         if (zKnown) {
-            rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, 
-                                      missingColor=if(!missing(missingColor)) missingColor,
-                                      debug=debug-1)
+            if (missing(missingColor)) {
+                rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, 
+                                          debug=debug-1)
+            } else {
+                rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, 
+                                          missingColor=if(!missing(missingColor)) missingColor,
+                                          debug=debug-1)
+            }
         } else {
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
-            rval <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col,
-                                      missingColor=if(!missing(missingColor)) missingColor,
-                                      debug=debug-1)
+            if (missing(missingColor)) {
+                rval <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col,
+                                          debug=debug-1)
+            } else {
+                rval <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col,
+                                          missingColor=if(!missing(missingColor)) missingColor,
+                                          debug=debug-1)
+            }
             rval$zcol <- "black"
         }
         rval$x0 <- rval$breaks[-1]
