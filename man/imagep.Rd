@@ -183,7 +183,6 @@
 
     ## 4. a colormap case
     data(topoWorld)
-    source('~/src/oce/R/imagep.R')
     cm <- colormap(name="gmt_globe")
     imagep(topoWorld, colormap=cm)
 }
