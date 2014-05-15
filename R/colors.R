@@ -34,10 +34,12 @@ colormap_colorize <- function(z,
             col <- col
         }
         if (missing(z)) {
+            message("colorize AAA")
             if (missing(zlim) || is.null(zlim))
                 zlim <- rangeExtended(breaks)
             zcol <- "black"
         } else {
+            message("colorize BBB")
             if (missing(zlim) || is.null(zlim))
                 zlim <- rangeExtended(z)
             i <- findInterval(z, breaks)
@@ -378,18 +380,21 @@ colormap <- function(z,
     }
     oceDebug(debug, "blend=", blend, "; n=", n, "\n")
     if (zKnown && !breaksKnown && !nameKnown && !xcolKnown) {
-        oceDebug(debug, "processing case A\n")
+        oceDebug(debug, "processing case A (z given, breaks not given, name not given, x0 not given)\n")
         breaks <- pretty(z, n=10)
         breaksKnown <- TRUE            # this makes next block execute also
     }
+    message("zlim:", paste(zlim, collapse=" to "))
     if (breaksKnown) {
-        oceDebug(debug, "processing case B\n")
+        oceDebug(debug, "processing case B (breaks given, or inferred from case A)\n")
         if (n > 1L) {
             warning('n is being ignored for the breaks+col method')
         }
         if (zKnown) {
             oceDebug(debug, "processing case B.1 (i.e. z is known)\n")
             if (missing(missingColor)) {
+                message("AAAA")
+                cat("zlim:", zlim, "\n")
                 rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col,
                                           debug=debug-1)
             } else {
