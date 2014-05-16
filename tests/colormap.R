@@ -41,7 +41,7 @@ stopifnot(all.equal(cm$zlim, c(-1, 1)))
 ## 4. breaks plus name (latter ignored since former given)
 cm <- colormap(breaks=0:5, name="gmt_globe")
 stopifnot(length(cm$breaks) == 1 + length(cm$col))
-stopifnot(all.equal(cm$zlim, rangeExtended(c(0, 5))))
+stopifnot(all.equal(cm$zlim, range(c(0, 5))))
 
 ## 5. (x0,col0,x1,col1) alone or with zlim
 cm <- colormap(x0=c(0,1), col0=c('red', 'blue'), x1=c(0.5, 1.5), col1=c("pink", "green"))

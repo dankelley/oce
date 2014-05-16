@@ -223,7 +223,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                        mai.palette=rep(0, 4), #c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
                         axes=TRUE, tformat,
@@ -243,7 +242,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     debug <- min(debug, 4)
     oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
     oceDebug(debug, "  mar=c(", paste(mar, collapse=", "), "),\n", sep="")
-    oceDebug(debug, "  mai.palette=c(", paste(mar, collapse=", "), "),\n", sep="")
     oceDebug(debug, "  mgp=c(",paste(mgp, collapse=", "),"),\n", sep="")
     oceDebug(debug, "  ...) {\n", sep="")
     oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
@@ -251,7 +249,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oceDebug(debug, "marginsAsImage=",marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
-    pc <- paletteCalculations(maidiff=mai.palette)
+    pc <- paletteCalculations(maidiff=rep(0, 4))
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -271,12 +269,12 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (marginsAsImage) {
         message("marginsAsImage")
         ## FIXME: obey their mar?
-        the.mai <- pc$mai0 + mai.palette
+        the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0)         # just in case
         oceDebug(debug, "the.mai=", the.mai, "\n")
 
         par(mai=the.mai, cex=cex)
-        drawPalette(mai=mai.palette)
+        drawPalette(mai=rep(0, 4))
     }
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
