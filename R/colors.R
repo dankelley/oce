@@ -465,7 +465,7 @@ colormap <- function(z,
         }
         ## FIXME: issue 435 work in next 5 to 10 lines below
         ##message("zlim: ", if (is.null(zlim)) "NULL" else paste(zlim, collapse=" to "))
-        rval$zlim <- if (is.null(zlim)) rangeExtended(c(rval$x0, rval$x1)) else zlim
+        rval$zlim <- if (is.null(zlim)) range(c(rval$x0, rval$x1)) else zlim
         nx0 <- length(rval$x0)
         eps <- diff(rval$x0[1:2]) / 100
         nx <- length(rval$x0)
