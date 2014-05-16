@@ -24,10 +24,10 @@
   \item{zlim}{optional vector containing two numbers that specify the \code{z}
       limits for the colorscale.  If not given, this will be determined from
       the other arguments, as follows.  If \code{name} is given, then the
-      \code{\link{rangeExtended}} of numerical values contained therein will be
+      \code{\link{range}} of numerical values contained therein will be
       used for \code{zlim}.  Otherwise, if \code{z} is given, then its
       \code{\link{rangeExtended}} sets \code{zlim}.  Otherwise, if \code{x0}
-      and \code{x1} are given, then their \code{\link{rangeExtended}} sets
+      and \code{x1} are given, then their \code{\link{range}} sets
       \code{zlim}.  Otherwise, there is no way to infer \code{zlim} and indeed
       there is no way to construct a colormap, so an error is reported.  It is
       an error to specify both \code{zlim} and \code{breaks}, if the length of

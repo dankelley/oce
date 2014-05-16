@@ -37,9 +37,11 @@ colormap_colorize <- function(z,
             }
             if (length(breaks) == 1) { # special case: 'breaks' means *number* of breaks
                 if (!missing(zlim) && !is.null(zlim)) {
-                    breaks <- pretty(zlim, n=breaks)
+                    breaks <- seq(zlim[1], zlim[2], length.out=breaks)
+                    ##message("pretty(zlim)")
                 } else if (!missing(z)) {
-                    breaks <- pretty(z, n=breaks)
+                    breaks <- pretty(z, n=breaks) # note use of pretty(), which extends from data
+                    ##message("pretty(z)")
                 } else {
                     stop("must give z or zlim if length(breaks)=1")
                 }
@@ -51,11 +53,11 @@ colormap_colorize <- function(z,
         }
         if (missing(z)) {
             if (missing(zlim) || is.null(zlim))
-                zlim <- rangeExtended(breaks)
+                zlim <- range(breaks)
             zcol <- "black"
         } else {
             if (missing(zlim) || is.null(zlim))
-                zlim <- rangeExtended(z)
+                zlim <- rangeExtended(z) # note the extended range
             i <- findInterval(z, breaks)
             tooLow <- i == 0
             tooHigh <- i == length(breaks)
@@ -102,9 +104,9 @@ colormap_colorize <- function(z,
         ## FIXME: next might miss top colour
         if (is.null(zlim)) {
             if (missing(z)) {
-                zlim <- rangeExtended(breaks)
+                zlim <- range(breaks)
             } else {
-                zlim <- rangeExtended(z)
+                zlim <- rangeExtended(z) # note the extended range
             }
         }
         if (missing(z)) {
@@ -423,6 +425,8 @@ colormap <- function(z,
                 rval <- colormap_colorize(zlim=zlim, zclip=zclip, z=z, breaks=breaks, col=col, 
                                           missingColor=missingColor, debug=debug-1)
             }
+            ##message(sprintf("rval$zlim: %f to %f", rval$zlim[1], rval$zlim[2]))
+            ##message(sprintf("range(rval$breaks): %f to %f", min(rval$breaks), max(rval$breaks)))
         } else {
             oceDebug(debug, "processing case B.2 (i.e. z is not known)\n")
             if (length(breaks) < 2)
