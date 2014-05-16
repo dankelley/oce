@@ -163,7 +163,7 @@ drawPalette <- function(zlim, zlab="",
                  ", drawTriangles=c(", paste(drawTriangles, collapse=","), "), ...) {\n", 
                  unindent=1, sep="")
     else
-        oceDebug(debug, "drawPalette() with no zlim argument: set space to right of a graph\n", sep="", unindent=1)
+        oceDebug(debug, "drawPalette() with no zlim argument\n", sep="", unindent=1)
     colormapGiven <- !missing(colormap)
     maiGiven <- !missing(mai)
     oceDebug(debug, "maiGiven =", maiGiven, "\n")
