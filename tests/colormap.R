@@ -28,10 +28,9 @@ stopifnot(!any(is.na(cm$zcol)))
 ## 2. breaks alone (illegal to also give zlim)
 cm <- colormap(breaks=seq(0, 3, 0.1))
 stopifnot(length(cm$breaks) == 1 + length(cm$col))
-stopifnot(all.equal(cm$zlim, rangeExtended(c(0, 3))))
+stopifnot(all.equal(cm$zlim, range(c(0, 3))))
 
 ## 3. name alone or with zlim
-source('~/src/oce/R/colors.R')
 cm <- colormap(name="gmt_globe")
 stopifnot(length(cm$breaks) == 1 + length(cm$col))
 stopifnot(all.equal(cm$zlim, rangeExtended(c(-10000, 10000))))
@@ -47,7 +46,7 @@ stopifnot(all.equal(cm$zlim, rangeExtended(c(0, 5))))
 ## 5. (x0,col0,x1,col1) alone or with zlim
 cm <- colormap(x0=c(0,1), col0=c('red', 'blue'), x1=c(0.5, 1.5), col1=c("pink", "green"))
 stopifnot(length(cm$breaks) == 1 + length(cm$col))
-stopifnot(all.equal(cm$zlim, rangeExtended(c(0, 1.5))))
+stopifnot(all.equal(cm$zlim, range(c(0, 1.5))))
 cm <- colormap(zlim=c(-10,10), x0=c(0,1), col0=c('red', 'blue'), x1=c(0.5, 1.5), col1=c("pink", "green"))
 stopifnot(length(cm$breaks) == 1 + length(cm$col))
 stopifnot(all.equal(cm$zlim, c(-10, 10)))
@@ -55,7 +54,7 @@ stopifnot(all.equal(cm$zlim, c(-10, 10)))
 ## 6. z plus breaks
 cm <- colormap(z=z, breaks=seq(0, 3, 0.1))
 stopifnot(length(cm$breaks) == 1 + length(cm$col))
-stopifnot(all.equal(cm$zlim, rangeExtended(c(0, 3))))
+stopifnot(all.equal(cm$zlim, range(c(0, 3))))
 
 ## 7. z plus name, alone or with zlim
 cm <- colormap(z=z, name="gmt_globe")

@@ -25,6 +25,7 @@ colormap_colorize <- function(z,
              ") { # an internal function\n", unindent=1)
     if (missing(colormap)) {
         if (is.function(col)) {
+            oceDebug(debug, "col is a function\n")
             if (missing(breaks)) {
                 if (!missing(zlim)) {
                     breaks <- seq(zlim[1], zlim[2], length.out=200)
@@ -35,7 +36,7 @@ colormap_colorize <- function(z,
                 }
             }
             if (length(breaks) == 1) { # special case: 'breaks' means *number* of breaks
-                if (!missing(zlim)) {
+                if (!missing(zlim) && !is.null(zlim)) {
                     breaks <- pretty(zlim, n=breaks)
                 } else if (!missing(z)) {
                     breaks <- pretty(z, n=breaks)
