@@ -1,7 +1,6 @@
 useDynLib(oce)
 import(methods)
 importFrom("mapproj", mapproject)
-importFrom("tiff", readTIFF)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 exportMethods(plot)

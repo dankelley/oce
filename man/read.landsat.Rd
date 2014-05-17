@@ -21,7 +21,9 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
       amount of debugging information, or to 2 to get more.} }
 
-\details{This follows a strict file naming code that works for Landsat-8
+\details{The \code{tiff} package must be installed for this to work.
+    
+    The function follows a strict file naming code that works for Landsat-8
     datasets but may fail otherwise.  Also, it only works for detailed data (in
     TIF format), not for preview data (in JPG format).
     

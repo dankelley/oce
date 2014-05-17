@@ -173,33 +173,12 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
          ##dimThermal=dimThermal)
 }
 
-## OLD read.landsatdata <- function(file, type=c("tiff", "jpeg"))
-## OLD {
-## OLD     type <- match.arg(type)
-## OLD     if (type == "jpg") {
-## OLD         stop("no support for jpg type")
-## OLD         ##if (!require(jpeg))
-## OLD         ##    stop("Need the 'jpeg' package")
-## OLD         ##d <- readJPEG(file)
-## OLD         ##d <- t(d)
-## OLD         ##d <- d[, seq.int(dim(d)[2], 1, -1)]
-## OLD     } else if (type == "tiff") {
-## OLD         if (!require(tiff))
-## OLD             stop("Need the 'tiff' package")
-## OLD         d <- readTIFF(file)
-## OLD         d <- t(d)
-## OLD         d <- d[, seq.int(dim(d)[2], 1, -1)]
-## OLD     } else {
-## OLD         stop("internal error with filetype")
-## OLD     }
-## OLD     d[d==0] <- NA
-## OLD     d
-## OLD }
-
 read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\", band=c(",
              paste(band, collapse=","), "), debug=", debug, ") {\n", sep="", unindent=1)
+    if (!require("tiff"))
+        stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
     headerfilename <- paste(file, "/", file, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
@@ -212,7 +191,7 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
         ##rval@metadata[["filename"]] <- bandfilename 
         oceDebug(debug, "reading ", bandnames[band[b]], " in ", bandfilename, "\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
-        d <- readTIFF(bandfilename)
+        d <- tiff::readTIFF(bandfilename)
         d <- t(d)
         d <- d[, seq.int(dim(d)[2], 1, -1)]
         d[d==0] <- NA
