@@ -111,3 +111,27 @@ stopifnot(all.equal(cm$col0,
 stopifnot(all.equal(cm$col1,
                     c("#00007F","#0000B4","#0000EA","#0021FF","#0056FF","#008CFF","#00C2FF","#00F8FF","#2EFFCF","#64FF99","#99FF64",
                       "#CFFF2E","#FFF800","#FFC200","#FF8C00","#FF5600","#FF2100","#EA0000","#B40000","#7F0000")))
+
+## Ex1 from help(colormap)
+x <- seq(0, 1, length.out=40)
+y <- sin(2 * pi * x)
+c <- colormap(y)
+stopifnot(all.equal(c$zlim,
+                    c(-1.079124,1.079124),
+                    tolerance=0.00001))
+stopifnot(all.equal(c$breaks[1:3],
+                    c(-1.079124,-1.068279,-1.057433),
+                    tolerance=0.00001))
+stopifnot(all.equal(c$col[1:4], c("#00007F","#000084","#000089","#00008E")))
+stopifnot(all.equal(c$zcol[1:4], c("#7FFF7F","#CCFF32","#FFE900","#FFA000")))
+stopifnot(all.equal(c$missingColor, "gray"))
+stopifnot(all.equal(c$x0[1:5],
+                    c(-1.068279,-1.057433,-1.046588,-1.035742,-1.024897),
+                    tolerance=0.00001))
+stopifnot(all.equal(c$x0[1:5],
+                    c(-1.068279,-1.057433,-1.046588,-1.035742,-1.024897),
+                    tolerance=0.00001))
+stopifnot(all.equal(c$col0[1:4], c("#00007F","#000084","#000089","#00008E")))
+stopifnot(all.equal(c$col1[1:4], c("#00007F","#000084","#000089","#00008E")))
+stopifnot(all.equal(class(c), c("list","colormap")))
+
