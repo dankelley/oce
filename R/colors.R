@@ -214,9 +214,9 @@ colormapFromGmt <- function(file)
         N <- scan(text=line, what=character(), quiet=TRUE)
         Nlen <- length(N)
         if (1 == Nlen) {
-            missingColor <- if (length(grep("[a-zA-Z]", N))) N else gray(as.numeric(N) / 255)
+            N <- if (length(grep("[a-zA-Z]", N))) N else gray(as.numeric(N) / 255)
         } else if (3 == Nlen) {
-            missingColor <- rgb(N[1], N[2], N[3], maxColorValue=255)
+            N <- rgb(N[1], N[2], N[3], maxColorValue=255)
         } else {
             warning("cannot decode missingColor from \"", line, "\"")
         }
