@@ -416,7 +416,6 @@ imagep <- function(x, y, z,
     if (!missing(zlim) && !missing(breaks) && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
 
-
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)

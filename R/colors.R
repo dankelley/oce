@@ -392,8 +392,7 @@ colormap <- function(z,
     oceDebug(debug, "zlim=", if (is.null(zlim)) "NULL" else zlim, "\n")
     oceDebug(debug, "zclip=", zclip, "\n")
     if (nameKnown) {
-        if (blend > 1)
-            warning('n is being ignored since "name" was provided')
+        ## limit to n=1 if 'name' provided
         blend <- min(1, max(blend, 0))
         n <- 1
     } else {
