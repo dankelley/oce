@@ -517,6 +517,8 @@ imagep <- function(x, y, z,
     zlimHistogram <- !missing(zlim) && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)
+    if (colormapGiven && missing(missingColor))
+        missingColor <- colormap$missingColor
     zrange <- range(z, na.rm=TRUE)
 
     if (colormapGiven) {
