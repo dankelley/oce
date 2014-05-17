@@ -1,24 +1,22 @@
 0.9-14
-- ctdDecimate() permits user-supplied method function
-- colormap() added
-- data(nao) added; data(soi) updated, and names improved in latter
+- colormap() added, and functionality added to imagep() and drawPalette()
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
+- drawPalette() has new args: plot, pos, levels, and cex.axis
+- ctdDecimate() permits user-supplied method function
+- data(nao) added; data(soi) updated, and names improved in latter
 - landsat support added
-- drawPalette() has new arg 'pos'
 - plotProfile() and plotTS() get new argument 'pt.bg'
 - plot.section() grids the data if needed
 - rename 'sealevelHalifax' dataset as 'sealevel'
 - translate some axis names (Spanish, French, German and Mandarin)
 - plotProfile() now has ytype="depth"
 - mapImage() and friends now demand a map exists first
-- drawPalette() gets arguments levels and cex.axis
 - runlm() added
 - mapScalebar() added
 - subset.topo() added
 - read.topo() now handles GEBCO netcdf files
 - decimate() now handles topo objects
 - reverse oceColorsGebco colours for water
-- coding changes for an upcoming version of R
 - drawIsopycnals() and plotTS(): improve isopycnal labels
 - ctdDecimate() handles new method 'unesco'
 - coastline improvements (now 3 resolutions)
