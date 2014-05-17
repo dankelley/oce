@@ -267,7 +267,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (despike)
         y <- despike(y)
     if (marginsAsImage) {
-        message("marginsAsImage")
         ## FIXME: obey their mar?
         the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0)         # just in case
