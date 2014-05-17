@@ -388,6 +388,7 @@ colormap <- function(z,
         } else  {
             stop("cannot infer zlim; please specify zlim, breaks, name, or z")
         }
+        zlimKnown <- TRUE
     }
     oceDebug(debug, "zlim=", if (is.null(zlim)) "NULL" else zlim, "\n")
     oceDebug(debug, "zclip=", zclip, "\n")
