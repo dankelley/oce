@@ -11,17 +11,14 @@
     mai, cex.axis=par("cex.axis"), pos=4,
     labels=NULL, at=NULL,
     levels, drawContours=FALSE,
-    fullpage=FALSE, drawTriangles=FALSE,
+    plot=TRUE, fullpage=FALSE, drawTriangles=FALSE,
     axisPalette, tformat,
     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
-        (This may also be a vector of any length exceeding 1, in which case its
-        range is used.) If not provided, the palette is not drawn, but space is
-        set aside for it, so that the next plotting command has a right-hand
-        margin matching the space that would have been occupied by the
-        palette.}
+        This may also be a vector of any length exceeding 1, in which case its
+        range is used.}
     \item{zlab}{label for the palette scale.}
     \item{breaks}{the z values for breaks in the colour scheme.}
     \item{col}{either a vector of colours corresponding to the breaks, of length
@@ -45,6 +42,12 @@
         \code{TRUE}.}
     \item{drawContours}{logical value indicating whether to draw contours on
         the palette, at the colour breaks.}
+
+    \item{plot}{logical value indicating whether to plot the palette, the default,
+        or whether to just alter the margins to make space for where the
+        palette would have gone.  The latter case may be useful in lining up
+        plots, as in example 1 of \dQuote{Examples}.}
+
     \item{fullpage}{logical value indicating whether to draw the palette
         filling the whole plot width (apart from \code{mai}, of course).  This
         can be helpful if the palette panel is to be created with
@@ -92,25 +95,26 @@
 \examples{
 library(oce)
 par(mgp=getOption("oceMgp"))
-par(mar=c(3,3,1,1))
 
 ## 1. A three-panel plot
-par(mfrow=c(3,1))
+par(mfrow=c(3,1), mar=c(3, 3, 1, 1))
 omar <- par('mar')                 # save initial margin
-## Top panel: simple case
+
+## 1a. top panel: simple case
 drawPalette(zlim=c(0,1), col=oceColorsJet(10))
 plot(1:10, 1:10, col=oceColorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 
-## Middle panel: colormap
+## 1b. middle panel: colormap
 cm <- colormap(name="gmt_globe")
 drawPalette(colormap=cm)
-plot(seq_along(cm$breaks), cm$breaks, pch=20, cex=2, col=cm$col,
+icol <- seq_along(cm$col)
+plot(icol, cm$breaks[icol], pch=20, cex=2, col=cm$col,
      xlab="Palette index", ylab="Palette breaks")
 par(mar=omar)                      # reset margin
 
-## Bottom panel: space for palette (to line up graphs)
-drawPalette()
+## 1c. bottom panel: space for palette (to line up graphs)
+drawPalette(plot=FALSE)
 plot(1:10, 1:10, col=oceColorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 

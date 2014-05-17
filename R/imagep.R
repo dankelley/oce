@@ -144,7 +144,7 @@ drawPalette <- function(zlim, zlab="",
                         mai, cex.axis=par("cex.axis"), pos=4,
                         labels=NULL, at=NULL,
                         levels, drawContours=FALSE,
-                        fullpage=FALSE, drawTriangles=FALSE,
+                        plot=TRUE, fullpage=FALSE, drawTriangles=FALSE,
                         axisPalette, tformat,
                         debug=getOption("oceDebug"), ...)
 {
@@ -224,7 +224,7 @@ drawPalette <- function(zlim, zlab="",
                 col <- col(n=length(breaks)-1)
         }
     }
-    if (zlimGiven) {
+    if (plot) {
         if (fullpage)
             par(mai=pc$mai1f)
         else
