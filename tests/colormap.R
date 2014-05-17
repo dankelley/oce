@@ -76,8 +76,38 @@ stopifnot(length(cm$breaks) == 1 + length(cm$col))
 stopifnot(all.equal(cm$zlim, c(-10, 10)))
 stopifnot(!any(is.na(cm$zcol)))
 
-## Below should raise an error, and it does, so no need to interrupt the flow
-## here with an error!
-##try(str(colormap(zclip=TRUE)))
-
-
+## 9. test some actual colors, based on issue 449b.R at
+##    https://github.com/dankelley/oce-issues/tree/master/449
+t <- seq(0, 1, length.out=100)
+plim <- c(38, 41)
+p <- mean(plim) + diff(plim) / 2 * cos(2 * pi * t)
+zlim <- c(38.5, 40.5)
+cm <- colormap(p, breaks=seq(zlim[1], zlim[2], 0.1))
+stopifnot(all.equal(class(cm), c("list","colormap")))
+stopifnot(all.equal(cm$zlim, zlim))
+stopifnot(all.equal(cm$breaks, seq(38.5, 40.5, 0.1)))
+stopifnot(all.equal(cm$col,
+                    c("#00007F","#0000B4","#0000EA","#0021FF","#0056FF","#008CFF","#00C2FF","#00F8FF","#2EFFCF","#64FF99","#99FF64",
+                      "#CFFF2E","#FFF800","#FFC200","#FF8C00","#FF5600","#FF2100","#EA0000","#B40000","#7F0000")))
+stopifnot(all.equal(cm$zcol,
+                    c("#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000",
+                      "#7F0000","#7F0000","#7F0000","#7F0000","#B40000","#EA0000","#EA0000","#FF2100","#FF5600","#FF8C00","#FFC200",
+                      "#FFF800","#CFFF2E","#99FF64","#64FF99","#2EFFCF","#00F8FF","#00C2FF","#00C2FF","#008CFF","#0056FF","#0021FF",
+                      "#0000EA","#0000B4","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F",
+                      "#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F",
+                      "#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#00007F","#0000B4",
+                      "#0000EA","#0021FF","#0056FF","#008CFF","#00C2FF","#00C2FF","#00F8FF","#2EFFCF","#64FF99","#99FF64","#CFFF2E",
+                      "#FFF800","#FFC200","#FF8C00","#FF5600","#FF2100","#EA0000","#EA0000","#B40000","#7F0000","#7F0000","#7F0000",
+                      "#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000","#7F0000",
+                      "#7F0000")))
+stopifnot(all.equal(cm$missingColor, "gray"))
+stopifnot(all.equal(cm$x0,
+                    c(38.6,38.7,38.8,38.9,39.0,39.1,39.2,39.3,39.4,39.5,39.6,39.7,39.8,39.9,40.0,40.1,40.2,40.3,40.4,40.5)))
+stopifnot(all.equal(cm$x1,
+                    c(38.6,38.7,38.8,38.9,39.0,39.1,39.2,39.3,39.4,39.5,39.6,39.7,39.8,39.9,40.0,40.1,40.2,40.3,40.4,40.5)))
+stopifnot(all.equal(cm$col0,
+                    c("#00007F","#0000B4","#0000EA","#0021FF","#0056FF","#008CFF","#00C2FF","#00F8FF","#2EFFCF","#64FF99","#99FF64",
+                      "#CFFF2E","#FFF800","#FFC200","#FF8C00","#FF5600","#FF2100","#EA0000","#B40000","#7F0000")))
+stopifnot(all.equal(cm$col1,
+                    c("#00007F","#0000B4","#0000EA","#0021FF","#0056FF","#008CFF","#00C2FF","#00F8FF","#2EFFCF","#64FF99","#99FF64",
+                      "#CFFF2E","#FFF800","#FFC200","#FF8C00","#FF5600","#FF2100","#EA0000","#B40000","#7F0000")))
