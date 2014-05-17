@@ -8,13 +8,15 @@
 
 \description{Plot a summary diagram for drifter data.}
 
-\usage{\S4method{plot}{drifter}(x, which = 1, level, coastline,
-                          cex=1, pch=1, type='p', col,
-                          adorn=NULL,
-                          mgp=getOption("oceMgp"),
-                          mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
-                          tformat,
-                          debug=getOption("oceDebug"), \dots)}
+\usage{\S4method{plot}{drifter}(x, which = 1, level,
+     coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                 "coastlineWorldFine", "none"),
+     cex=1, pch=1, type='p', col,
+     adorn=NULL,
+     mgp=getOption("oceMgp"),
+     mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+     tformat,
+     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{A \code{drifter} object, e.g. as read by \code{\link{read.drifter}}.}
@@ -23,11 +25,25 @@
       \itemize{
           \item \code{which=1} or \code{which="trajectory"} gives a 
           plot of the drifter trajectory, with the coastline, if one is provided.
-          \item \code{which=2} or \code{"salinity ts"} gives a time series of salinity at the indicated level(s)
-          \item \code{which=3} or \code{"temperature ts"} gives a time series of temperature at the indicated level(s)
-          \item \code{which=4} or \code{"TS"} gives a TS diagram at the indicated level(s)
-          \item \code{which=5} or \code{"salinity profile"} gives a salinity profile
-          \item \code{which=6} or \code{"temperature profile"} gives a temperature profile
+
+          \item \code{which=2} or \code{"salinity ts"} gives a time series of
+          salinity at the indicated level(s)
+
+          \item \code{which=3} or \code{"temperature ts"} gives a time series
+          of temperature at the indicated level(s)
+
+          \item \code{which=4} or \code{"TS"} gives a TS diagram at the
+          indicated level(s)
+
+          \item \code{which=5} or \code{"salinity profile"} gives a salinity
+          profile of all the data (with S and p trimmed to the 1 and 99
+          percentiles)
+
+          \item \code{which=6} or \code{"temperature profile"} gives a
+          temperature profile (with T and p trimmed to the 1 and 99
+          percentiles)
+
+
       }
   }
 
@@ -35,7 +51,9 @@
       integer, in which case it refers to an index of depth (1 being the top)
       or it may be the string "all" which means to plot all data.}
 
-  \item{coastline}{optional coastline file, to be drawn if \code{which=1}.}
+  \item{coastline}{string giving the coastline to be used in a drifter-location
+      map, or \code{"best"} to pick the one with highest resolution, or
+      \code{"none"} to avoid drawing the coastline.}
 
   \item{cex}{size of plotting symbols to be used if \code{type='p'}.}
 

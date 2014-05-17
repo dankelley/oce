@@ -16,7 +16,8 @@
     lty.grid="dotted",
     rho1000=FALSE,
     eos=getOption("eos", default='unesco'),
-    cex=par("cex"), col=par("col"), pch=par("pch"), bg,
+    cex=par("cex"), col=par("col"), pch=par("pch"),
+    bg, pt.bg="transparent",
     col.rho="darkgray",
     cex.rho=3/4*par("cex"),
     rotate=FALSE,
@@ -27,6 +28,7 @@
     Tlim,
     mgp=getOption("oceMgp"),
     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
+    lwd=par('lwd'), lty=par('lty'),
     lwd.rho=par("lwd"), lty.rho=par("lty"),
     add=FALSE, inset=FALSE,
     debug=getOption("oceDebug"),
@@ -64,6 +66,7 @@
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.
         (This is useful for cases in which \code{inset=TRUE}.)}
+    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
     \item{col}{colour for symbols.}
     \item{col.rho}{colour for isopycnal lines.}
     \item{cex.rho}{size of isopycnal labels.}
@@ -81,8 +84,10 @@
         \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS
         diagram with a palette to the right is \code{mar=par("mar")+c(0, 0, 0,
             1))}.} 
-    \item{lwd.rho}{line width for density lines.}
-    \item{lty.rho}{line type for density lines.}
+    \item{lwd}{line width of lines or symbols.}
+    \item{lty}{line type of lines or symbols.}
+    \item{lwd.rho}{line width for density curves.}
+    \item{lty.rho}{line type for density curves.}
     \item{add}{a flag that controls whether to add to an existing plot.  (It
         makes sense to use \code{add=TRUE} in the \code{panel} argument of a
         \code{\link{coplot}}, for example.)}

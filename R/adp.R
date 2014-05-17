@@ -135,7 +135,7 @@ setMethod(f="summary",
           })
 
 setMethod(f="[[",
-          signature="adp",
+          signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i == "a") {
                   if (!missing(j) && j == "numeric") {
@@ -168,7 +168,8 @@ setMethod(f="[[",
                   }
                   rval
               } else {
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
@@ -467,7 +468,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
-                              col,
+                              col, breaks,
                               zlim,
                               titles,
                               lwd=par('lwd'),
@@ -479,7 +480,7 @@ setMethod(f="plot",
                               missingColor="gray",
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-                              mai.palette=c(0, 1/8, 0, 3/8),
+                              mai.palette=rep(0, 4), #c(0, 1/8, 0, 3/8),
                               tformat,
                               marginsAsImage=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
@@ -509,8 +510,8 @@ setMethod(f="plot",
                       mode <- 'normal'
                   }
               }
-              oceDebug(debug, "\b\bplot.adp(x, which=\"", paste(which, collapse=","),
-                       "\", mode=\"", mode, "\", ...) {\n", sep="")
+              oceDebug(debug, "plot.adp(x, which=\"", paste(which, collapse=","),
+                       "\", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
               oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -765,6 +766,7 @@ setMethod(f="plot",
                                          zlim=zlim,
                                          flipy=flipy,
                                          col=if (gave.col) col else oceColorsPalette(128, 1),
+                                         breaks=breaks,
                                          ylab=resizableLabel("distance"),
                                          xlab="Time",
                                          zlab=zlab,
@@ -784,8 +786,10 @@ setMethod(f="plot",
                                   imagep(x=tt, y=x@data$distance, z=z,
                                          zlim=zlim,
                                          flipy=flipy,
-                                         ylim=if (gave.ylim) ylim[w,] else range(x@data$distance, na.rm=TRUE),
-                                         col=if (gave.col) col else oceColorsPalette(128, 1),
+                                         ylim=if (gave.ylim) ylim[w,] else
+                                             range(x@data$distance, na.rm=TRUE),
+                                         col=if (gave.col) col else
+                                             oceColorsPalette(128, 1),
                                          ylab=resizableLabel("distance"),
                                          xlab="Time",
                                          zlab=zlab,
@@ -797,7 +801,7 @@ setMethod(f="plot",
                                          mgp=mgp,
                                          mar=mar,
                                          mai.palette=mai.palette,
-                                         cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                         cex=cex*(1 - min(nw / 8, 1/4)),
                                          main=main[w],
                                          debug=debug-1,
                                          ...)
@@ -1443,13 +1447,13 @@ setMethod(f="plot",
                   }
               }
               par(cex=opar$cex)
-              oceDebug(debug, "\b\b\b} # plot.adp()\n")
+              oceDebug(debug, "} # plot.adp()\n", unindent=1)
               invisible(rval)
           })
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\btoEnuAdp() {\n")
+    oceDebug(debug, "toEnuAdp() {\n", unindent=1)
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug=debug-1), declination=declination, debug=debug-1)
@@ -1460,13 +1464,13 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     } else {
         warning("toEnuAdp cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "\b\b} # toEnuAdp()\n")
+    oceDebug(debug, "} # toEnuAdp()\n", unindent=1)
     x
 }
 
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamUnspreadAdp(...) {\n")
+    oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
     ## make compatible with old function name (will remove in Jan 2013)
@@ -1500,14 +1504,14 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
         res@metadata$oceBeamUnspreaded <- TRUE
         res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
-    oceDebug(debug, "\b\b} # beamUnspreadAdp()\n")
+    oceDebug(debug, "} # beamUnspreadAdp()\n", unindent=1)
     res
 }
 
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "\b\bbeamToXyzAdp(x, debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
     if (x@metadata$oceCoordinate != "beam")
@@ -1587,7 +1591,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     }
     res@metadata$oceCoordinate <- "xyz"
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
+    oceDebug(debug, "} # beamToXyzAdp()\n", unindent=1)
     res
 }
 
@@ -1595,7 +1599,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "\b\bxyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "xyz")
@@ -1755,7 +1759,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     res@metadata$oceCoordinate <- "enu"
     res@processingLog <- processingLog(res@processingLog,
                                        paste("xyzToEnu(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
-    oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
+    oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
 }
 
@@ -1829,7 +1833,7 @@ display.bytes <- function(b, label="", ...)
 
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bsubtractBottomVelocity(x) {\n")
+    oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
     if (!("bv" %in% names(x@data))) {
         warning("there is no bottom velocity in this object")
         return(x)
@@ -1840,14 +1844,14 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
         oceDebug(debug, "beam #", beam, "\n")
         rval@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
     }
-    oceDebug(debug, "\b\b\b} # subtractBottomVelocity()\n")
+    oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
 binmapAdp <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbinmap(x, debug) {\n")
+    oceDebug(debug, "binmap(x, debug) {\n", unindent=1)
     if (!inherits(x, "adp"))
         stop("x must be an \"adp\" object")
     v <- x[["v"]]

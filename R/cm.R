@@ -57,9 +57,9 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         debug <- 2
     if (debug < 0)
         debug  <- 0
-    oceDebug(debug, "\b\bread.cm(file=\"",file,
+    oceDebug(debug, "read.cm(file=\"",file,
               "\", from=", format(from),
-              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="")
+              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
     type <- match.arg(type)
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
@@ -75,9 +75,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (debug > 1)
         debug <- 1
-    oceDebug(debug, "\b\bread.cm.s4(file=\"",file,
+    oceDebug(debug, "read.cm.s4(file=\"",file,
               "\", from=", format(from),
-              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="")
+              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -211,7 +211,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rval@data <- data
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     rval@processingLog <- processingLog(rval@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.cm()\n")
+    oceDebug(debug, "} # read.cm()\n", unindent=1)
     rval
 }
 
@@ -233,7 +233,7 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "\b\bplot.cm() {\n")
+              oceDebug(debug, "plot.cm() {\n", unindent=1)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (!inherits(x, "cm"))
@@ -369,7 +369,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.cm()\n")
+              oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()
           })
 

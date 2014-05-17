@@ -137,7 +137,7 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "\bplot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
+              oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="", unindent=1)
               dots <- list(...)
               titlePlot <- function(x)
               {
@@ -310,7 +310,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.sealevel()\n")
+              oceDebug(debug, "} # plot.sealevel()\n", unindent=1)
               invisible()
           })
 

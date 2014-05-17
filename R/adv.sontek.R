@@ -3,7 +3,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    start, deltat,
                                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
-    oceDebug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
+    oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,
@@ -11,7 +11,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                            if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
                            "debug=", debug,
                            ", monitor=", monitor,
-                           ", processingLog=(not shown)) {\n", sep=""))
+                           ", processingLog=(not shown)) {\n", sep=""), unindent=1)
     if (missing(start))
         stop("must supply start, a POSIXct time (or suitable string for time, in UTC) at which the first observation was made")
     if (is.numeric(start))
@@ -166,7 +166,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
     ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
-    oceDebug(debug, "\b\bread.adv.sontek.adr() {\n")
+    oceDebug(debug, "read.adv.sontek.adr() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")

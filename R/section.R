@@ -390,8 +390,39 @@ setMethod(f="plot",
               drawPoints <- ztype == "points"
               coastline <- match.arg(coastline)
               legend.loc <- match.arg(legend.loc)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ztype=\"",
-                       ztype, "\", ...) {\n", sep="")
+
+              ## Make 'which' be numeric, to simplify following code
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+              lw <- length(which)
+              which <- ocePmatch(which,
+                                 list(temperature=1, salinity=2, 
+                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                      phosphate=7, silicate=8, data=20, map=99))
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+
+
+              oceDebug(debug, "plot.section(, ..., which=c(",
+                       paste(which, collapse=","), "), eos=\"", eos,
+                       "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
+
+             ## Ensure data on levels, for plot types requiring that
+              if (which != "data" && which != 'map') {
+                  p1 <- x[["station", 1]][["pressure"]]
+                  np1 <- length(p1)
+                  numStations <- length(x@data$station)
+                  for (ix in 2:numStations) {
+                      thisStation <- x@data$station[[ix]]
+                      thisPressure <- thisStation[["pressure"]]
+                      if ("points" != ztype && 
+                          np1 != length(thisPressure) ||
+                          any(p1 != x[["station", ix]][["pressure"]])) {
+                          x <- sectionGrid(x)
+                          warning("plot.section() gridded the data for plotting", call.=FALSE)
+                          break
+                      }
+                  }
+              }
+
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
               haveData <- sapply(x@data$station,
                                  function(stn) 0 < length(stn[['pressure']]))
@@ -400,6 +431,7 @@ setMethod(f="plot",
               x@metadata$latitude <- x@metadata$latitude[haveData]
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$date <- x@metadata$date[haveData]
+
 
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
@@ -413,9 +445,10 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)", "...) {\n", sep="", unindent=1)
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
+                  omar <- par('mar')
 
                   if (variable == "map") {
                       lat <- array(NA, numStations)
@@ -446,6 +479,8 @@ setMethod(f="plot",
                                xlab=gettext("Longitude", domain="R-oce"),
                                ylab=gettext("Latitude", domain="R-oce"))
                       }
+                      ## FIXME: this coastline code is reproduced in section.R; it should be DRY
+                      ## figure out coastline
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
@@ -453,11 +488,11 @@ setMethod(f="plot",
                       if (coastline == "best") {
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
-                              oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                              oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
                               data(list=bestcoastline, package="ocedata", envir=environment())
                               coastline <- get(bestcoastline)
                           } else {
-                              oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
+                              oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
                               data(coastlineWorld, envir=environment())
                               coastline <- coastlineWorld
                           }
@@ -522,13 +557,20 @@ setMethod(f="plot",
 
                       if (drawPoints || ztype == "image") {
                           if (is.null(zbreaks)) {
-                              zbreaks <- pretty(x[[variable]], 128)
+                              zRANGE <- range(x[[variable]], na.rm=TRUE)
+                              if (is.null(zcol) || is.function(zcol)) {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                              } else {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                              }
                           }
                           nbreaks <- length(zbreaks)
                           if (is.null(zcol)) 
                               zcol <- oceColorsJet(nbreaks - 1)
+                          if (is.function(zcol))
+                              zcol <- zcol(nbreaks - 1)
                           zlim <- range(zbreaks)
-                          drawPalette(zlim=range(zbreaks), zlab=variable, breaks=zbreaks, col=zcol)
+                          drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
                       }
 
 
@@ -632,7 +674,7 @@ setMethod(f="plot",
                           }
                       }
 
-                      oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
+                      ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
                       ##waterDepth <- -waterDepth
                       if (!grid)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
@@ -686,6 +728,8 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
@@ -702,6 +746,8 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
@@ -721,6 +767,9 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      ## FIXME: testing here
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else if (ztype == "points") {
@@ -739,6 +788,8 @@ setMethod(f="plot",
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
@@ -767,16 +818,16 @@ setMethod(f="plot",
                       }
                       ##axis(1, pretty(xxOrig))
                       axis(1)
+                      if (legend)
+                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
 
                       ## undo negation of the y coordinate, so further can can make sense
                       usr <- par('usr')
                       par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
-
-                      if (legend)
-                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
-                  oceDebug(debug, "\b\b} # plotSubsection()\n")
+                  par(mar=omar)
+                  oceDebug(debug, "} # plotSubsection()\n", unindent=1)
               }
               if (!inherits(x, "section"))
                   stop("method is only for objects of class '", "section", "'")
@@ -799,18 +850,19 @@ setMethod(f="plot",
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
 
-              ## Check that pressures coincide
-              if (length(which) > 1 || (which != "data" && which != 'map')) {
-                  p1 <- firstStation@data$pressure
-                  np1 <- length(p1)
-                  for (ix in 2:numStations) {
-                      thisStation <- x@data$station[[stationIndices[ix]]]
-                      thisPressure <- thisStation[["pressure"]]
-                      if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
-                          stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
-                      }
-                  }
-              }
+              ## Ensure data on levels, for plot types requiring that
+              ##if (length(which) > 1 || (which != "data" && which != 'map')) { ## FIXME: why the length here?
+              ##    p1 <- firstStation@data$pressure
+              ##    np1 <- length(p1)
+              ##    for (ix in 2:numStations) {
+              ##        thisStation <- x@data$station[[stationIndices[ix]]]
+              ##        thisPressure <- thisStation[["pressure"]]
+              ##        if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
+              ##            stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
+              ##        }
+              ##    }
+              ##}
+
               zz <- matrix(nrow=numStations, ncol=num.depths)
               xx <- array(NA, numStations)
               yy <- array(NA, num.depths)
@@ -861,14 +913,7 @@ setMethod(f="plot",
                   stop("unknown ytype")
               }
 
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-              lw <- length(which)
-              which <- ocePmatch(which,
-                                 list(temperature=1, salinity=2, 
-                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                      phosphate=7, silicate=8, data=20, map=99))
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-              par(mgp=mgp, mar=mar)
+             par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
                       layout(matrix(1:4, nrow=2, byrow=TRUE))
@@ -881,7 +926,6 @@ setMethod(f="plot",
                   adorn.length <- lw
               }
               for (w in 1:lw) {
-                  oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
                       if (missing(contourLabels))
                           contourLabels <- format(contourLevels)
@@ -970,7 +1014,7 @@ setMethod(f="plot",
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.section()\n")
+              oceDebug(debug, "} # plot.section()\n", unindent=1)
               invisible()
           })
 
@@ -1200,15 +1244,13 @@ read.section <- function(file, directory, sectionId="", flags,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.section()\n")
+    oceDebug(debug, "} # read.section()\n", unindent=1)
     res
 }
 
-sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
-			 debug=getOption("oceDebug"), ...)
+sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\bsectionGrid(section, p, method=\"", method, "\", ...) {\n", sep="")
-    method <- match.arg(method)
+    oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
@@ -1245,7 +1287,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # sectionGrid\n")
+    oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }
 
@@ -1254,7 +1296,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
+    oceDebug(debug, "sectionSmooth(section,method=\"", method, "\", ...) {\n", sep="", unindent=1)
     if (!inherits(section, "section"))
         stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
@@ -1365,7 +1407,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     }
 
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # sectionSmooth()\n")
+    oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
 }
 

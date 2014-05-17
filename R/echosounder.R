@@ -83,7 +83,8 @@ setMethod(f="[[",
                       TS
                   }
               } else {
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
@@ -247,7 +248,7 @@ setMethod(f="plot",
           {
               dots <- list(...)
               dotsNames <- names(dots)
-              oceDebug(debug, "\b\bplot() { # for echosounder\n")
+              oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (length(beam) < lw)
@@ -430,7 +431,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.echosounder()\n")
+              oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
               invisible()
           })
 
@@ -438,7 +439,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                              tz=getOption("oceTz"), debug=getOption("oceDebug"),
                              processingLog)
 {
-    oceDebug(debug, "\b\bread.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1)
     ofile <- file
     filename <- NULL
     if (is.character(file)) {

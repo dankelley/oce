@@ -1,5 +1,3 @@
-library(mapproj)
-
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -26,11 +24,30 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     col <- rep(col, nlevels)
     lty <- rep(lty, nlevels)
     lwd <- rep(lwd, nlevels)
+    xx <- seq_along(longitude)
+    yy <- seq_along(latitude)
+    if (length(xx) > 1 && diff(longitude[1:2]) < 0) {
+        xx <- rev(xx)
+        z <- z[xx,]
+        ##cat("flipped in x\n")
+    }
+    if (length(yy) > 1 && diff(latitude[1:2]) < 0) {
+        yy <- rev(yy)
+        z <- z[,yy]
+        ##cat("flipped in y\n")
+    }
     for (ilevel in 1:nlevels) {
-        cl <- contourLines(x=longitude, y=latitude, z=z, levels=levels[ilevel])
+        cl <- contourLines(x=longitude[xx],
+                           y=latitude[yy],
+                           z=z, levels=levels[ilevel])
         for (segment in 1:length(cl)) {
             if (length(cl) > 0) {
-                mapLines(cl[[segment]]$x, cl[[segment]]$y, lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+                mapLines(cl[[segment]]$x, cl[[segment]]$y,
+                         lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
+                ## if (segment == 1) {
+                ##     cat(str(cl[[segment]]$x))
+                ##     cat(str(cl[[segment]]$y))
+                ## }
             }
         }
     }
@@ -67,12 +84,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    oceDebug(debug, "\b\bmapPlot(longitude, latitude", 
+    oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(longitudelim)) "(missing)" else c("c(", paste(longitudelim, collapse=","), ")"),
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(latitudelim, collapse=","), ")"),
-             ", ...) {\n")
+             ", ...) {\n", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", envir=environment())
         longitude <- get("coastlineWorld")
@@ -268,7 +285,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         options(warn=options$warn) 
     }
-    oceDebug(debug, "\b\b} # mapPlot(...)\n")
+    oceDebug(debug, "} # mapPlot()\n", unindent=1)
 }
 
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
@@ -593,10 +610,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
 {
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
-    oceDebug(debug, "\b\bmapImage(..., ",
+    oceDebug(debug, "mapImage(..., ",
              " missingColor='", missingColor, "', ",
              " filledContour=", filledContour, ", ",
-             ", ...) {\n", sep="")
+             ", ...) {\n", sep="", unindent=1)
  
     if (filledContour)
         warning("mapImage() cannot yet handle filledContour\n")
@@ -735,7 +752,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             }
         }
     }
-    oceDebug(debug, "\b\b} # mapImage()\n")
+    oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
 }
 

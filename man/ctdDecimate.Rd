@@ -1,24 +1,34 @@
 \name{ctdDecimate}
+
 \alias{ctdDecimate}
+
 \title{Decimate a CTD profile}
+
 \description{Interpolate a CTD profile to specified pressure values.}
-\usage{ctdDecimate(x, p=1,
-             method=c("boxcar", "approx", "lm", "rr", "unesco"),
-             e=1.5, debug=getOption("oceDebug"))}
+
+\usage{ctdDecimate(x, p=1, method="approx", e=1.5, debug=getOption("oceDebug"))}
+
 \arguments{
   \item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{p}{pressure increment, or vector of pressures.  In the first case,
       pressures from 0dbar to the rounded maximum pressure are used,
       incrementing by \code{p} dbars.  If a vector of pressures is given,
       interpolation is done to these pressures.}
-  \item{method}{the method to be used for calculating decimated
-    values. The default \code{"approx"} method is based on the R
-    function \code{\link{approx}} and is a simple linear interpolation
-    between neighbouring points. The \code{"boxcar"} method is based on
-    the mean of local data , while the \code{"lm"} method is based on a
-    local linear regression model (with \code{e} setting the
-    locality, as explained below.)  The
-    \code{"unesco"} and \code{"rr"} methods use \code{\link{oceApprox}}.}
+  
+  \item{method}{the method to be used for calculating decimated values.  This
+      may be a function or a string naming a built-in method.  The built-in
+      methods are \code{"boxcar"} (the default method, based on a local
+      average), \code{"approx"} (based on linear interpolation between
+      neighboring points), \code{"lm"} (based on local regression, with
+      \code{e} setting the size of the local region), \code{"rr"} (for the
+      Reineger and Ross method, carried out with \code{\link{oceApprox}}) and
+      \code{"unesco"} (for the UNESCO method, carried out with.
+      \code{\link{oceApprox}}.  If \code{method} is a function, then it must
+      take three arguments, the first being pressure, the second being an
+      arbitrary variable in another column of the data, and the third being a
+      vector of target pressures at which the calculation is carried out, and
+      the return value must be a vector.  See \dQuote{Examples}.}
+
   \item{e}{is an expansion coefficient used to calculate the local
     neighbourhoods for the \code{"boxcar"} and \code{"lm"} methods.  If
     \code{e=1}, then the neighbourhood for the i-th pressure extends from
@@ -33,7 +43,7 @@
 
 \details{The \code{"approx"} method is best for bottle data, in which
   the usual task is to interpolate from a coarse sampling grid to a
-  finer one. For CTD data, the \code{"boxcar"} method is probably the
+  finer one. For CTD data, the \code{"boxcar"} method may be the
   best choice, because the task is normally to sub-sample, and some
   degree of smoothing is usually desired. (The \code{"lm"} method is
   quite slow, and the results are similar to those of the boxcar
@@ -57,13 +67,15 @@ xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pre
 
 \examples{
 library(oce)
-if (require(ocedata)) {
-    data(RRprofile)
-    ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
-    plotProfile(ctd, "T", Tlim=c(2,9))
-    ctd2 <- ctdDecimate(ctd, p=seq(0,2000,1))
-    lines(temperature(ctd2), pressure(ctd2), col="blue")
-}
+data(ctd)
+plotProfile(ctd, "salinity", ylim=c(10, 0))
+p <- seq(0, 45, 1)
+ctd2 <- ctdDecimate(ctd, p=p)
+lines(ctd2[["salinity"]], ctd2[["pressure"]], col="blue")
+p <- seq(0, 45, 1)
+ctd3 <- ctdDecimate(ctd, p=p, method=function(x,y,xout)
+                    predict(smooth.spline(x, y, df=30), p)$y)
+lines(ctd3[["salinity"]], ctd3[["pressure"]], col="red")
 }
 
 \references{R.F. Reiniger and C.K. Ross, 1968.  A method of

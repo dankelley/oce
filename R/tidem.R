@@ -61,7 +61,8 @@ setMethod(f="[[",
                   x@data$model$coef
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
@@ -373,8 +374,8 @@ tidemAstron <- function(t)
 tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\btidem(x, t, constituents,",
-             "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="")
+    oceDebug(debug, "tidem(x, t, constituents,",
+             "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
     if (missing(x))
         stop("must supply 'x'")
     if (inherits(x, "sealevel")) {

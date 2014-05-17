@@ -1,5 +1,5 @@
 library(oce)
-GS <- subset(section, 102<=stationId&stationId<=124)
+data(section)
+GS <- subset(section, 110<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0, 2000, 10))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld)
+plot(GSg, map.ylim=c(33,45))

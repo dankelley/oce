@@ -111,7 +111,7 @@ setMethod(f="plot",
           {
               if (!inherits(x, "topo"))
                   stop("method is only for objects of class '", "topo", "'")
-              oceDebug(debug, "\b\bplot.topo() {\n")
+              oceDebug(debug, "plot.topo() {\n", unindent=1)
 
               opar <- par(no.readonly = TRUE)
               ##on.exit(par(opar))
@@ -345,7 +345,7 @@ setMethod(f="plot",
                   o <- rev(order(legend))
                   legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
               }
-              oceDebug(debug, "\b\b} # plot.topo()\n")
+              oceDebug(debug, "} # plot.topo()\n", unindent=1)
               invisible()
           })
 
@@ -353,18 +353,19 @@ read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
     if (is.character(file) && grep(".nc$", file)) {
+        if (!require("ncdf4"))
+            stop('must install.packages("ncdf4") to read topo data from a netCDF file')
         ## GEBCO netcdf
-        if (!require(ncdf))
-            stop("need the ncdf library to read a netcdf topography file\n")
-        ncdf <- open.ncdf(file)
-        xrange <- get.var.ncdf(ncdf, "x_range")
-        yrange <- get.var.ncdf(ncdf, "y_range")
-        zrange <- get.var.ncdf(ncdf, "z_range")
-        spacing <- get.var.ncdf(ncdf, "spacing")
+        ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+        ncdf <- ncdf4::nc_open(file)
+        xrange <- ncdf4::ncvar_get(ncdf, "x_range")
+        yrange <- ncdf4::ncvar_get(ncdf, "y_range")
+        zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+        spacing <- ncdf4::ncvar_get(ncdf, "spacing")
         longitude <- seq(xrange[1], xrange[2], by=spacing[1])
         latitude <- seq(yrange[1], yrange[2], by=spacing[2])
-        z <- get.var.ncdf(ncdf, "z")
-        dim <- get.var.ncdf(ncdf, "dimension")
+        z <- ncdf4::ncvar_get(ncdf, "z")
+        dim <- ncdf4::ncvar_get(ncdf, "dimension")
         z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
         z <- z[,dim[2]:1]
         rval <- as.topo(longitude, latitude, z, filename=file)

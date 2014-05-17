@@ -14,6 +14,7 @@ setClass("ctd", contains="oce")
 setClass("drifter", contains="oce")
 setClass("echosounder", contains="oce")
 setClass("gps", contains="oce")
+setClass("landsat", contains="oce")
 setClass("lisst", contains="oce")
 setClass("lobo", contains="oce")
 setClass("met", contains="oce")
@@ -43,7 +44,7 @@ setMethod(f="subset",
 
 
 setMethod(f="[[",
-          signature="oce",
+          signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i == "metadata") {
                   return(x@metadata)
@@ -62,8 +63,8 @@ setMethod(f="[[",
           })
 
 setMethod(f="[[<-",
-          signature="oce",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+          signature(x="oce", i="ANY", j="ANY"),
+          function(x, i, j, ..., value) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else if (i %in% names(x@data)) {

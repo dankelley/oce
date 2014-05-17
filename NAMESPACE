@@ -1,7 +1,6 @@
 useDynLib(oce)
-import(mapproj)
 import(methods)
-##importFrom("methods", show)
+importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 exportMethods(plot)
@@ -42,6 +41,7 @@ export("+.section",
        bcdToInteger,
        byteToBinary,
        coastlineBest,
+       colormap, # beta status; added 22 Apr, 2014
        coordinate,
        coriolis,
        ctdAddColumn,
@@ -91,6 +91,7 @@ export("+.section",
        integrateTrapezoid,
        julianDay,
        julianCenturyAnomaly,
+       landsatTrim,
        latFormat,
        latitude,
        "latitude<-",
@@ -101,7 +102,6 @@ export("+.section",
        "longitude<-",
        magneticField,
        makeFilter,
-       makePalette,
        makeSection,
        mapContour,
        mapImage,
@@ -169,6 +169,7 @@ export("+.section",
        "pressure<-",
        prettyPosition,
        pwelch,
+       rangeExtended,
        rangeLimit,
        read.adp,
        read.adp.rdi,
@@ -194,6 +195,7 @@ export("+.section",
        read.drifter,
        read.echosounder,
        read.gps,
+       read.landsat,
        read.lisst,
        read.lobo,
        read.met,
@@ -285,5 +287,5 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
-exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, lisst, lobo, met, sealevel, section, tdr, tidem, topo, windrose)
+exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, met, sealevel, section, tdr, tidem, topo, windrose)
 

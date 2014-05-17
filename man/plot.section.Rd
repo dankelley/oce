@@ -95,9 +95,12 @@
         points.  In the first two cases, the data must be gridded, with
         identical pressures at each station.}
     
-    \item{zbreaks, zcol}{breaks and colours to be used if
-        \code{ztype="points"}.  If not provided, a reasonable default is
-        chosen.}
+    \item{zbreaks, zcol}{breaks and colours to be used if \code{ztype="points"}
+        or \code{"image"}.  If not provided, a reasonable default is chosen.
+        If \code{zcol} is a function, it will be invoked with an argument equal
+        to \code{1+length(zbreaks)}.  If \code{zbreaks} is not given, it
+        defaults to a vector of length 200, with values spanning the data
+        range.}
 
     \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
 

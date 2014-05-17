@@ -18,6 +18,7 @@
     col.N2="brown",
     col.dpdt="darkgreen",
     col.time="darkgreen",
+    pt.bg="transparent",
     grid=TRUE,
     col.grid="lightgray",
     lty.grid="dotted",
@@ -87,6 +88,7 @@
     \item{col.N2}{color for square of buoyancy frequency (see \dQuote{Details}).}
     \item{col.dpdt}{color for dP/dt.}
     \item{col.time}{color for delta-time.}
+    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
     \item{grid}{logical, set to \code{TRUE} to get a grid.}
     \item{col.grid}{colour for grid.}
     \item{lty.grid}{line type for grid.}

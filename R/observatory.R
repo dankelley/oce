@@ -6,7 +6,7 @@ read.observatory <- function(file,
 {
     if (debug > 2) debug <- 2
     if (debug < 0) debug  <- 0
-    oceDebug(debug, "\b\bread.observatory(file=\"",file, "\", ...) {\n", sep="")
+    oceDebug(debug, "read.observatory(file=\"",file, "\", ...) {\n", sep="", unindent=1)
     type <- match.arg(type)
     if (type == "ctd") {
         read.observatory.ctd(file=file, 
@@ -21,8 +21,8 @@ read.observatory.ctd <- function(file,
 {
     if (debug > 1)
         debug <- 1
-    oceDebug(debug, "\b\bread.observatory.ctd(file=\"",file,
-              "\", ...) {\n", sep="")
+    oceDebug(debug, "read.observatory.ctd(file=\"",file,
+              "\", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -56,7 +56,7 @@ read.observatory.ctd <- function(file,
     rval <- as.ctd(salinity=salinity, temperature=temperature, pressure=pressure,
                    latitude=latitude, longitude=longitude,
                    other=list(time=time))
-    oceDebug(debug, "\b\b} # read.observatory.ctd()\n")
+    oceDebug(debug, "} # read.observatory.ctd()\n", unindent=1)
     rval
 }
 

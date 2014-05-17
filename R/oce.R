@@ -24,10 +24,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                        which=c("time","distance"), indexReturn=FALSE,
                        debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bwindow.oce(...,start=",
+    oceDebug(debug, "window.oce(...,start=",
              paste(format(start),collapse=","), ",end=",
              paste(format(end),collapse=","),
-             ",indexReturn=",indexReturn,",...) {\n")
+             ",indexReturn=",indexReturn,",...) {\n", unindent=1)
     if (extend)
         stop("cannot handle extend=TRUE yet")
     if (!is.null(frequency))
@@ -117,14 +117,14 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         res@metadata$numberOfSamples <- dim(res@data$v)[1]
         res@metadata$numberOfCells <- dim(res@data$v)[2]
     }
-    oceDebug(debug, "\b\b} # window.oce()\n")
+    oceDebug(debug, "} # window.oce()\n", unindent=1)
     res
 }
 
 plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 {
 
-    oceDebug(debug, "\b\bplotPolar(...)\n")
+    oceDebug(debug, "plotPolar(...)\n", unindent=1)
     if (missing(r)) stop("must supply 'r'")
     if (missing(theta)) stop("must supply 'theta'")
     thetaRad <- theta * atan2(1, 1) / 45
@@ -143,7 +143,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     }
     abline(h=0)
     abline(v=0)
-    oceDebug(debug, "\b\b} # plotPolar()\n")
+    oceDebug(debug, "} # plotPolar()\n", unindent=1)
 }
 
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
@@ -223,7 +223,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                        mai.palette=c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
                         axes=TRUE, tformat,
@@ -232,6 +231,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         debug=getOption("oceDebug"),
                         ...)
 {
+    if (is.function(x))
+        stop("x cannot be a function")
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
@@ -239,9 +240,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "\boce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="")
+    oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
     oceDebug(debug, "  mar=c(", paste(mar, collapse=", "), "),\n", sep="")
-    oceDebug(debug, "  mai.palette=c(", paste(mar, collapse=", "), "),\n", sep="")
     oceDebug(debug, "  mgp=c(",paste(mgp, collapse=", "),"),\n", sep="")
     oceDebug(debug, "  ...) {\n", sep="")
     oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
@@ -249,7 +249,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oceDebug(debug, "marginsAsImage=",marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
-    pc <- paletteCalculations(mai=mai.palette)
+    pc <- paletteCalculations(maidiff=rep(0, 4))
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -268,13 +268,12 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         y <- despike(y)
     if (marginsAsImage) {
         ## FIXME: obey their mar?
-        the.mai <- c(pc$omai[1],
-                     pc$maiLHS,
-                     pc$omai[3],
-                     pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
+        the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0)         # just in case
+        oceDebug(debug, "the.mai=", the.mai, "\n")
+
         par(mai=the.mai, cex=cex)
-        drawPalette(mai=mai.palette)
+        drawPalette(mai=rep(0, 4))
     }
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
@@ -327,7 +326,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             warning("cannot evaluate adorn {", format(adorn), "}\n")
     }
     ##par(cex=ocex)
-    oceDebug(debug, "\b\b} # oce.plot.ts()\n")
+    oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
     invisible()
 }
 
@@ -391,7 +390,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\boceEdit() {\n")
+    oceDebug(debug, "oceEdit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (!missing(item)) {
@@ -469,7 +468,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # oceEdit() \n")
+    oceDebug(debug, "} # oceEdit()\n", unindent=1)
     x
 }
 
@@ -507,8 +506,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
     isdir<- file.info(file)$isdir
-    if (is.finite(isdir) && isdir)
+    if (is.finite(isdir) && isdir) {
+        tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
+        if (!is.na(tst) && !tst)
+            return("landsat")
         stop("please supply a file name, not a directory name")
+    }
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
         if (length(grep(".asc$", filename))) {
@@ -526,7 +529,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return("interocean/s4")
         } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            someLines <- readLines(file, encoding="UTF-8")
+            someLines <- readLines(file, n=100, encoding="UTF-8")
             dt <- grep("DATA_TYPE=", someLines)
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
@@ -537,13 +540,18 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
-            if (substr(filename, 1, 5) == "http:")
-                stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
-                     filename, "\", \"", gsub(".*/", "", filename), "\")")
-            library(ncdf)
-            f <- open.ncdf(filename)
-            if ("DATA_TYPE" %in% names(f$var) && grep("argo", get.var.ncdf(open.ncdf(filename), "DATA_TYPE"), ignore.case=TRUE))
-                return("drifter/argo")
+            if (require("ncdf4")) {
+                if (substr(filename, 1, 5) == "http:") {
+                    stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
+                         filename, "\", \"", gsub(".*/", "", filename), "\")")
+                }
+                ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+                f <- ncdf4::nc_open(filename)
+                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE))
+                    return("drifter/argo")
+            } else {
+                stop('must install.packages("ncdf4") to read a netCDF file')
+            }
         } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
         } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
@@ -709,7 +717,7 @@ read.oce <- function(file, ...)
         return(read.ctd.sbe(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/exchange")
         return(read.ctd.woce(file, processingLog=processingLog, ...))
-    if (type == "ctd/odf")
+    if (type == "ctd/odf" || type == "mctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (type == "ctd/itp")
         return(read.ctd.itp(file, processingLog=processingLog, ...))
@@ -737,8 +745,52 @@ read.oce <- function(file, ...)
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     if (type == "observatory")
         return(read.observatory(file, processingLog=processingLog, ...))
+    if (type == "landsat") {
+        return(read.landsat(file))
+    }
     stop("unknown file type \"", type, "\"")
 }
+
+
+oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+{
+    region <- match.arg(region)
+    type <- match.arg(type)
+    if (type == "fill") {
+        ## generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10,4,10))/255)
+        land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
+                  "#C79652","#BD9248","#B38E3E","#A98A34")
+        water <- rev(c("#E1FCF7","#BFF2EC","#A0E8E4","#83DEDE","#68CDD4",
+                       "#4FBBC9","#38A7BF","#2292B5","#0F7CAB"))
+    } else {
+        land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
+                  "#C79652","#BD9248","#B38E3E","#A98A34")
+        water <- rev(c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
+                       "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3"))#,"#3194B4",
+                       #"#2A7CA4","#205081","#16255E","#100C2F"))
+    }
+    if (region == "water") {
+        rgb.list <- col2rgb(water) / 255
+        l <- length(water)
+        r <- approx(1:l, rgb.list[1,1:l], xout=seq(1, l, length.out=n))$y
+        g <- approx(1:l, rgb.list[2,1:l], xout=seq(1, l, length.out=n))$y
+        b <- approx(1:l, rgb.list[3,1:l], xout=seq(1, l, length.out=n))$y
+    } else if (region == "land") {
+        rgb.list <- col2rgb(land) / 255
+        l <- length(land)
+        r <- approx(1:l, rgb.list[1,1:l], xout=seq(1, l, length.out=n))$y
+        g <- approx(1:l, rgb.list[2,1:l], xout=seq(1, l, length.out=n))$y
+        b <- approx(1:l, rgb.list[3,1:l], xout=seq(1, l, length.out=n))$y
+    } else {                            # both
+        rgb.list <- col2rgb(c(water, land)) / 255
+        l <- length(land) + length(water)
+        r <- approx(1:l, rgb.list[1,1:l], xout=seq(1, l, length.out=n))$y
+        g <- approx(1:l, rgb.list[2,1:l], xout=seq(1, l, length.out=n))$y
+        b <- approx(1:l, rgb.list[3,1:l], xout=seq(1, l, length.out=n))$y
+    }
+    rgb(r, g, b)
+}
+
 
 oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
@@ -839,7 +891,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               main="",
                               debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
+    oceDebug(debug, "oce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="", unindent=1)
     oceDebug(debug,"mar=",mar,"\n")
     oceDebug(debug,"mgp=",mgp,"\n")
     oceDebug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
@@ -1084,7 +1136,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
     par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
-    oceDebug(debug, "\b\b} # oce.axis.ts()\n")
+    oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
     invisible()
@@ -1198,10 +1250,10 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
             ytop <- usr[3] + f2 * (usr[4] - usr[3])
         }
     } else {
-        oceDebug(debug, "\bplotInset(xleft=", xleft, ", ybottom=", ybottom,
+        oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom,
                  ", xright=", xright, ", ytop=", ytop,
                  ",  ...) {\n",
-                 sep="")
+                 sep="", unindent=1)
     }
     oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
     opar <- par(no.readonly=TRUE)
@@ -1243,7 +1295,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     ## Reset some things that could have been set in the inset, and
     ## then adjust 'new' appropriately.
     par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
-    oceDebug(debug, "\b\b} # plotInset()\n")
+    oceDebug(debug, "} # plotInset()\n", unindent=1)
     invisible()
 }
 
@@ -1278,7 +1330,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
                                type=1,
                                debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bdrawDirectionField(...) {\n")
+    oceDebug(debug, "drawDirectionField(...) {\n", unindent=1)
     if (missing(x) || missing(y) || missing(u) || missing(v))
         stop("must supply x, y, u, and v")
     if ((missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)))
@@ -1311,7 +1363,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     } else {
         stop("unknown value of type ", type)
     }
-    oceDebug(debug, "\b\b} # drawDirectionField\n")
+    oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
 oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,

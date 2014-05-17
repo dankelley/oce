@@ -1,9 +1,9 @@
 coastline	plot a coastline
-ctd		summarize and plot a a CTD profile
-TS 		TS plot along 36N
+ctd		summarize and plot a CTD profile
+TS 		TS plot @36N, color-coded for longitude
 eos		demonstrate some EOS functions
 geoddist	geodesic calculation
 lobo		summarize and plot a lobo datafile
 sealevel    	summarize and plot a sealevel file         
-section     	plot a section of Halifax Harbour
-tide	    	tidal analysis of Tuktoyaktuk sea-level in 1975
+section     	plot a section along 36N
+tide	    	tidal analysis of Tuktoyaktuk sea level

@@ -9,7 +9,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ##
     ## header, of length 6 + 2 * numberOfDataTypes bytes
     ##
-    oceDebug(debug, "\b\bdecodeHeaderRDI() {\n")
+    oceDebug(debug, "decodeHeaderRDI() {\n", unindent=1)
     if (buf[1] != 0x7f || buf[2] != 0x7f)
         stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
     bytesPerEnsemble <- readBin(buf[3:4], "integer", n=1, size=2, endian="little", signed=FALSE)
