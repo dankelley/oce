@@ -6,8 +6,8 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE, breaks,
-         col, border=NA,
+\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE,
+         breaks, col, colormap, border=NA,
          lwd=par("lwd"), lty=par("lty"),
          filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))}
 
@@ -32,6 +32,10 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+
+    \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
+        If provided, this takes precedence over \code{breaks}, code{col} and
+        \code{missingColor}.}
   
     \item{border}{colour used for borders of patches (passed to
         \code{\link{polygon}}); the default \code{NA} means no border.}
