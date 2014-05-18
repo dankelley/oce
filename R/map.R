@@ -603,8 +603,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
-mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
-                     col, border=NA,
+mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
+                     breaks, col, colormap, border=NA,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
@@ -632,41 +632,47 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         }
     }
     breaksGiven <- !missing(breaks)
-    if (!breaksGiven) {
-        small <- .Machine$double.eps
-        zrange <- range(z, na.rm=TRUE)
-        if (missing(zlim)) {
-            if (missing(col)) {
-                breaks <- pretty(zrange+small*c(-1,1), n=10)
-                ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                if (breaks[1] < zrange[1])
-                    breaks[1] <- zrange[1] * (1 - small)
-                if (breaks[length(breaks)] > zrange[2])
-                    breaks[length(breaks)] <- zrange[2] * (1 + small)
-            } else {
-                breaks <- seq(zrange[1]-small, zrange[2]+small,
-                              length.out=if(is.function(col))128 else 1+length(col))
-            }
-            breaksOrig <- breaks
-        } else {
-            if (missing(col))
-                breaks <- c(zlim[1], pretty(zlim), zlim[2])
-            else
-                breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
-            breaksOrig <- breaks
-            breaks[1] <- min(zrange[1], breaks[1])
-            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
-        }
+    if (!missing(colormap)) { # takes precedence over breaks and col
+        breaks <- colormap$breaks
+        col <- colormap$col
+        missingColor <- colormap$missingColor
     } else {
-        breaksOrig <- breaks
-        if (1 == length(breaks)) {
-            breaks <- pretty(z, n=breaks)
+        if (!breaksGiven) {
+            small <- .Machine$double.eps
+            zrange <- range(z, na.rm=TRUE)
+            if (missing(zlim)) {
+                if (missing(col)) {
+                    breaks <- pretty(zrange+small*c(-1,1), n=10)
+                    ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                    if (breaks[1] < zrange[1])
+                        breaks[1] <- zrange[1] * (1 - small)
+                    if (breaks[length(breaks)] > zrange[2])
+                        breaks[length(breaks)] <- zrange[2] * (1 + small)
+                } else {
+                    breaks <- seq(zrange[1]-small, zrange[2]+small,
+                                  length.out=if(is.function(col))128 else 1+length(col))
+                }
+                breaksOrig <- breaks
+            } else {
+                if (missing(col))
+                    breaks <- c(zlim[1], pretty(zlim), zlim[2])
+                else
+                    breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+                breaksOrig <- breaks
+                breaks[1] <- min(zrange[1], breaks[1])
+                breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
+            }
+        } else {
+            breaksOrig <- breaks
+            if (1 == length(breaks)) {
+                breaks <- pretty(z, n=breaks)
+            }
         }
+        if (missing(col))
+            col <- oceColorsPalette(n=length(breaks)-1)
+        if (is.function(col))
+            col <- col(n=length(breaks)-1)
     }
-    if (missing(col))
-        col <- oceColorsPalette(n=length(breaks)-1)
-    if (is.function(col))
-        col <- col(n=length(breaks)-1)
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
