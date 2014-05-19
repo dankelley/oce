@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{adp}(x, which=1:dim(x@data$v)[3],
      mode=c("normal", "diagnostic"),
-     col,
+     col, breaks,
      zlim,
      titles,
      lwd=par('lwd'),
@@ -22,7 +22,7 @@
      missingColor="gray",
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-     mai.palette=c(0, 1/8, 0, 3/8),
+     mai.palette=rep(0, 4),
      tformat,
      marginsAsImage=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
@@ -50,16 +50,17 @@
   \item{col}{optional indication of colour(s) to use.  If not provided,
     the default for images is \code{oceColorsPalette(128,1)}, and for
     lines and points is black.}
+  \item{breaks}{optional breaks for color scheme}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
-    \code{\link{imagep}} call that is used to create the image.  If
-    omitted, \code{zlim} is set for each panel individually, to
-    encompass the data of the panel and to be centred around zero.
-    If provided as a two-element vector, then that is used for each panel.
-    If provided as a two-column matrix, then each panel of the graph uses
-    the corresponding row of the matrix; for example, setting
-    \code{zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))} might make sense for
-    \code{which=1:3}, so that the two horizontal velocities have one
-    scale, and the smaller vertical velocity has another.}
+      \code{\link{imagep}} call that is used to create the image.  If omitted,
+      \code{zlim} is set for each panel individually, to encompass the data of
+      the panel and to be centred around zero.  If provided as a two-element
+      vector, then that is used for each panel.  If provided as a two-column
+      matrix, then each panel of the graph uses the corresponding row of the
+      matrix; for example, setting \code{zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))}
+      might make sense for \code{which=1:3}, so that the two horizontal
+      velocities have one scale, and the smaller vertical velocity has another.}
+
   \item{titles}{optional vector of character strings to be used as
     labels for the plot panels.  For images, these strings will be
     placed in the right hand side of the top margin.  For timeseries,
@@ -98,7 +99,8 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{mai.palette}{margins, in inches, for the palette}
+  \item{mai.palette}{margins, in inches, to be added to those calculated
+      for the palette; alter from the default only with caution}
   \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
       plot types that call that function.  (See \code{\link{strptime}} for the
       format used.)}
@@ -132,11 +134,14 @@
   \item{grid.lwd}{line width of grid}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
+
   \item{\dots}{optional arguments passed to plotting functions.  For example,
-    supplying \code{despike=TRUE} will cause time-series panels to
-    be de-spiked with \code{\link{despike}}.  Another common action is
-    to set the colour for missing values on image plots, with the argument
-    \code{missingColor} (see \code{\link{imagep}}).}
+      supplying \code{despike=TRUE} will cause time-series panels to be
+      de-spiked with \code{\link{despike}}.  Another common action is to set
+      the colour for missing values on image plots, with the argument
+      \code{missingColor} (see \code{\link{imagep}}).  Note that it is an error
+      to give \code{breaks} in \dots, if the formal argument \code{zlim} was
+      also given, because they could contradict each other.}
 }
 
 \details{Creates a summary plot of data measured by an acoustic doppler
@@ -302,7 +307,9 @@ library(oce)
 data(adp)
 plot(adp, which=1:3)
 plot(adp, which=5, missingColor='gray',
-     adorn=expression({ lines(x[["time"]], x[["pressure"]], lwd=3, col='blue') }))
+adorn=expression({
+    lines(x[["time"]], x[["pressure"]], lwd=3, col='blue')
+    }))
 plot(adp, which='temperature', tformat='\%H:\%M')
 }
 

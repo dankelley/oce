@@ -1,52 +1,38 @@
 \name{section}
+
+\docType{data}
+
 \alias{section}
-\title{Seawater CTD section}
-\description{A CTD section running the length of Halifax Harbour}
-\usage{data(section)}
 
-\source{This section is based on measurements made during October of 2003 in
-    Halifax Harbour by students in Dan Kelley's \emph{Introduction to Physical
-        Oceanography} class at Dalhousie University.  The course was taught by
-    the author of this package, and supervision at sea was provided by N.
-    Bernier, who was then a PhD student at Dalhousie. Note the alteration of
-    two station locations, to correct errors in transcribing field notes (e.g.
-    a hand-written \code{8} was evidently typed as \code{3}).
+\title{Hydrographic section}
 
-\preformatted{
-library(oce)
-stn08 <- ctdTrim(read.ctd("BED0308.CNV", station="8"))
-stn09 <- ctdTrim(read.ctd("BED0309.CNV", station="9"))
-stn10 <- ctdTrim(read.ctd("BED0310.CNV", station="10"))
-stn01 <- ctdTrim(read.ctd("BED0301.CNV", station="1"))
-stn11 <- ctdTrim(read.ctd("BED0311.CNV", station="11"))
-stn12 <- ctdTrim(read.ctd("BED0312.CNV", station="12"))
-stn12 <- oceEdit(stn12, "latitude", 44 + 39.894 / 60,
-                 reason="typo in lat minutes", person="Dan Kelley")
-stn13 <- ctdTrim(read.ctd("BED0313.CNV", station="13"))
-stn15 <- ctdTrim(read.ctd("BED0315.CNV", station="15"))
-stn15 <- oceEdit(stn15, "latitude", stn15@metadata$latitude + 1,
-                 reason="typo in lat degrees", person="Dan Kelley")
-section <- makeSection(stn08,stn09,stn10,stn01,stn11,stn12,stn13,stn15)
-section <- oceEdit(section, "sectionId",  "Halifax-Harbour-2003-oct",
-                   person="Dan Kelley")
-section <- sectionGrid(section, p=seq(0,60,2))
-save(section, file="section.rda")
-}
-The stations cover a 14 km region running from station 308, near the
-Sackville River, seaward to station 315, at the entrance to the general
-Harbour, offshore of the aptly-named Point Pleasant Park.
-} 
+\description{This is line A03 (ExpoCode 90CT40_1, with nominal sampling date
+    1993-09-11).  The chief scientist was Tereschenkov of SOI, working aboard
+    the Russian ship Multanovsky, undertaking a westward transect from the
+    Mediterranean outflow region across to North America, with a change of
+    heading in the last few dozen stations to run across the nominal Gulf
+    Stream axis.}
 
 \examples{
+\dontrun{
+library(oce)
+# Gulf Stream
 data(section)
-data(coastlineHalifax)
-plot(section, coastline=coastlineHalifax, grid=TRUE)
+GS <- subset(section, 109<=stationId&stationId<=129)
+GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
+plot(GSg, map.xlim=c(-80,-60))
+}
 }
 
-\seealso{The documentation for \code{\link{section-class}} explains the
-    structure of section objects, and also outlines the functions dealing with
-    them.}
+\usage{data(section)}
+
+\source{This is based on a WOCE file downloaded from
+    \url{http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv}.}
+
+\seealso{The documentation for \code{section-class} in the Oce package explains
+    the structure of section objects, and also outlines the functions dealing
+    with them.}
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

@@ -15,7 +15,7 @@
 \section{Methods}{
     Data may be accessed as e.g.  \code{sealevel[["time"]]}, where the string could
     also be e.g.  \code{"elevation"} for the corresponding sea-level elevation,
-    or e.g.  \code{"latitude"} or \code{"longitude"} for scalars.  (The names
+    or e.g.  \code{"longitude"} or \code{"latitude"} for scalars.  (The names
     of the columns are displayed with \code{show()}.) The name of the source
     file is found with \code{"filename"}.
 
@@ -30,9 +30,10 @@
     dealing with them.}
 
 \examples{
-data(sealevelHalifax)
-show(sealevelHalifax)
-plot(sealevelHalifax)
+library(oce)
+data(sealevel)
+show(sealevel)
+plot(sealevel)
 }
 
 \author{Dan Kelley}

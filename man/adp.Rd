@@ -11,6 +11,7 @@
     Lawrence Internal Wave Experiment (SLEIWEX).}
 
 \examples{
+\dontrun{
 library(oce)
 data(adp)
 
@@ -19,21 +20,15 @@ plot(adp)
 
 # Note that tides have moved the mooring.
 plot(adp, which=15:18)
-
-# Do currents line up with bathymetry?
-par(mfrow=c(1,2))
-plot(adp, which="uv+ellipse+arrow")
-data(coastlineSLE)
-plot(coastlineSLE, clongitude=adp[["longitude"]], clatitude=adp[["latitude"]], span=50)
-points(adp[["longitude"]], adp[["latitude"]], pch='+', cex=2, col='red')
+}
 }
 
 \usage{data(adp)}
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{The documentation for \code{\link{adp-class}} explains the structure
-    of ADP objects, and also outlines the other functions dealing with them.}
+\seealso{The Oce documentation for \code{adp-class} explains the structure of
+    ADP objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 

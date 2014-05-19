@@ -6,8 +6,7 @@
 
 \description{Grid a section, by interpolating to fixed pressure levels.}
 
-\usage{sectionGrid(section, p, method=c("approx","boxcar","lm"), 
-             debug=getOption("oceDebug"), \dots)}
+\usage{sectionGrid(section, p, method="approx", debug=getOption("oceDebug"), \dots)}
 
 \arguments{
 
@@ -19,12 +18,12 @@
       \code{section}.  If a single numerical value is provided, it is taken as
       a step for a seq() running from 0 to the maximum pressure (rounded to
       that step).  If \code{p="levitus"}, then the levels are set to be those
-      of Levitus atlas, trimmed to the maximum pressure in \code{section}.  If
-      a list of numerical values is provided, then it is used as is.}
+      of Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
+      maximum pressure in \code{section}.  If a list of numerical values is
+      provided, then it is used as is.}
 
-  \item{method}{the algorithm to use for interpolation to the pressure levels;
-      see Details below for a sketch, and see \code{\link{ctdDecimate}} for a
-      deeper discussion.}
+  \item{method}{the method to use to decimate data within the stations; see
+      \code{\link{ctdDecimate}}, which is used for the decimation.}
 
   \item{debug}{a flag that turns on debugging.  The value indicates the depth
       within the call stack to which debugging applies.  For example,
@@ -53,13 +52,10 @@
 \examples{
 # Gulf Stream
 library(oce)
-# http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
-# a03 <- read.section("a03_hy1.csv")
-data(a03)
-GS <- subset.oce(a03, indices=124:102)
+data(section)
+GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
+plot(GSg, map.xlim=c(-80,-60))
 }
 
 \author{Dan Kelley}

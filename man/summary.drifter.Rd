@@ -1,14 +1,14 @@
 \name{summary.drifter}
 
 \alias{summary.drifter}
+\alias{summary,drifter,missing-method}
+\alias{summary,drifter-method}
 
 \title{Summarize a drifter object}
 
 \description{Summarizes some of the data in a \code{drifter} object.}
 
-\usage{
-\method{summary}{drifter}(object, \dots)
-}
+\usage{\S4method{summary}{drifter}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"drifter"}, usually, a result of a

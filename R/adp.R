@@ -12,8 +12,130 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-setMethod(f="[[",
+setMethod(f="summary",
           signature="adp",
+          definition=function(object, ...) {
+              cat("ADP Summary\n-----------\n\n", ...)
+              cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
+              cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
+              cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
+              cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
+              cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
+              if ("latitude" %in% names(object@metadata)) {
+                  cat(paste("* Location:           ",
+                            if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+              }
+              v.dim <- dim(object@data$v)
+              cat("* Number of profiles:", v.dim[1], "\n")
+              cat("* Number of cells:   ", v.dim[2], "\n")
+              cat("* Number of beams:   ", v.dim[3], "\n")
+              cat("* Cell size:         ", object@metadata$cellSize, "m\n")
+              if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
+                  resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
+                                      hardwareRevision=object@metadata$hardwareRevision,
+                                      recSize=object@metadata$recSize*65536/1024/1024,
+                                      velocityRange=object@metadata$velocityRange,
+                                      firmwareVersion=object@metadata$firmwareVersion,
+                                      config=object@metadata$config,
+                                      configPressureSensor=object@metadata$configPressureSensor,
+                                      configMagnetometerSensor=object@metadata$configMagnetometerSensor,
+                                      configTiltSensor=object@metadata$configPressureSensor,
+                                      configPressureSensor=object@metadata$configTiltSensor,
+                                      serialNumberHead=object@metadata$serialNumberHead,
+                                      blankingDistance=object@metadata$blankingDistance,
+                                      measurementInterval=object@metadata$measurementInterval,
+                                      deploymentName=object@metadata$deploymentName,
+                                      velocityScale=object@metadata$velocityScale)
+              } else if (1 == length(agrep("rdi", object@metadata$manufacturer, ignore.case=TRUE))) {
+                  resSpecific <- list(instrumentSubtype=object@metadata[["instrumentSubtype"]],
+                                      manufacturer=object@metadata$manufacturer,
+                                      numberOfDataTypes=object@metadata$numberOfDataTypes,
+                                      headingAlignment=object@metadata$headingAlignment,
+                                      headingBias=object@metadata$headingBias,
+                                      pingsPerEnsemble=object@metadata$pingsPerEnsemble,
+                                      bin1Distance=object@metadata$bin1Distance,
+                                      xmitPulseLength=object@metadata$xmitPulseLength,
+                                      oceBeamSpreaded=object@metadata$oceBeamSpreaded,
+                                      beamConfig=object@metadata$beamConfig)
+              } else if (1 == length(agrep("sontek", object@metadata$manufacturer, ignore.case=TRUE))) {
+                  resSpecific <- list(cpuSoftwareVerNum=object@metadata$cpuSoftwareVerNum,
+                                      dspSoftwareVerNum=object@metadata$dspSoftwareVerNum,
+                                      boardRev=object@metadata$boardRev,
+                                      adpType=object@metadata$adpType,
+                                      slantAngle=object@metadata$slantAngle,
+                                      orientation=object@metadata$orientation)
+              } else {
+                  stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+              }
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+                          1 / object@metadata$measurementDeltat))
+              subsampleStart <- object@data$time[1]
+              subsampleDeltat <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
+              subsampleEnd <- object@data$time[length(object@data$time)]
+              cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
+                          format(subsampleStart), attr(subsampleStart, "tzone"),
+                          format(subsampleEnd),  attr(subsampleEnd, "tzone"),
+                          1 / subsampleDeltat))
+              if (object@metadata$numberOfCells > 1)
+                  cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                              object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
+              else
+                  cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
+
+              cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
+              cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
+              cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
+                                                                              object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
+                  "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
+              if (!is.null(object@metadata$transformationMatrix)) {
+                  digits <- 4
+                  cat("* Transformation matrix::\n\n")
+                  cat("  ", format(object@metadata$transformationMatrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
+                  cat("  ", format(object@metadata$transformationMatrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
+                  cat("  ", format(object@metadata$transformationMatrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
+                  if (object@metadata$numberOfBeams > 3)
+                      cat("  ", format(object@metadata$transformationMatrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
+              }
+              cat("\n")
+              ## start building res from the header information
+              haveData <- !is.null(object@data)
+              res <- resSpecific
+              res$measurementStart <- object@metadata$measurementStart
+              res$measurementEnd <- object@metadata$measurementEnd
+              res$measurementDeltat <- object@metadata$measurementDeltat
+              res$frequency <- object@metadata$frequency
+              res$numberOfDataTypes <- object@metadata$numberOfDataType
+              res$bin1Distance <- object@metadata$bin1Distance
+              res$xmitPulseLength <- object@metadata$xmitPulseLength
+              res$oceBeamUnspreaded <- object@metadata$oceBeamUnspreaded
+              res$beamAngle <- object@metadata$beamAngle
+              res$beamConfig <- object@metadata$beamConfig
+              res$transformationMatrix <- object@metadata$transformationMatrix
+              res$orientation <- object@metadata$orientation
+              res$originalCoordinate <- object@metadata$originalCoordinate
+              res$oceCoordinate <- object@metadata$oceCoordinate
+              res$processingLog <- object@processingLog
+              dataNames <- names(object@data)
+              threes <- matrix(nrow=(-2+length(dataNames)), ncol=3)
+              ii <- 1
+              for (i in 1:length(dataNames)) {
+                  if (dataNames[i] != "time" && dataNames[i] != "distance") {
+                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- c(dataNames[dataNames != "time" & dataNames != "distance"])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of subsample::\n\n")
+              print(threes)
+              processingLogShow(object)
+          })
+
+setMethod(f="[[",
+          signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i == "a") {
                   if (!missing(j) && j == "numeric") {
@@ -45,8 +167,9 @@ setMethod(f="[[",
                       rval <- x@data$g
                   }
                   rval
-               } else {
-                  as(x, "oce")[[i, j, drop]]
+              } else {
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
@@ -55,7 +178,7 @@ setMethod(f="[[<-",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
-             } else if (i %in% names(x@data)) {
+              } else if (i %in% names(x@data)) {
                   x@data[[i]] <- value
               } else {
                   stop("there is no item named \"", i, "\" in this ", class(x), " object")
@@ -100,6 +223,113 @@ setValidity("adp",
                     return(TRUE)
                 }
             })
+
+
+setMethod(f="subset",
+          signature="adp",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (missing(subset))
+                  stop("must give 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting an adp by time\n")
+                  if (length(grep("distance", subsetString)))
+                      stop("cannot subset by both time and distance; split into multiple calls")
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  names <- names(x@data)
+                  haveDia <- "timeDia" %in% names
+                  if (haveDia) {
+                      subsetDiaString <- gsub("time", "timeDia", subsetString)
+                      keepDia <- eval(parse(text=subsetDiaString), x@data)
+                      oceDebug(debug, "for diagnostics, keeping ", 100*sum(keepDia) / length(keepDia), "% of data\n")
+                  }
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  oceDebug(debug, "number of kept bins:", sum(keep), "\n")
+                  if (sum(keep) < 2)
+                      stop("must keep at least 2 profiles")
+                  rval <- x
+                  ## FIXME: are we handling slow timescale data?
+                  for (name in names(x@data)) {
+                      if (length(grep("Dia$", name))) {
+                          if ("distance" == name)
+                              next
+                          if (name == "timeDia" || is.vector(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepDia]
+                          } else if (is.matrix(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepDia,]
+                          } else if (is.array(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
+                          }
+                      } else {
+                          if (name == "time" || is.vector(x@data[[name]])) {
+                              if ("distance" == name)
+                                  next
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                          } else if (is.matrix(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep,]
+                          } else if (is.array(x@data[[name]])) {
+                              oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                          }
+                      }
+                  }
+              } else if (length(grep("distance", subsetString))) {
+                  oceDebug(debug, "subsetting an adp by distance\n")
+                  if (length(grep("time", subsetString)))
+                      stop("cannot subset by both time and distance; split into multiple calls")
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
+                  if (sum(keep) < 2)
+                      stop("must keep at least 2 bins")
+                  rval <- x
+                  rval@data$distance <- x@data$distance[keep]
+                  for (name in names(x@data)) {
+                      if (name == "time")
+                          next
+                      if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
+                          oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
+                          oceDebug(debug, "before, dim(", name, ") =", dim(rval@data[[name]]), "\n")
+                          rval@data[[name]] <- x@data[[name]][,keep,, drop=FALSE]
+                          oceDebug(debug, "after, dim(", name, ") =", dim(rval@data[[name]]), "\n")
+                      }
+                  }
+              } else if (length(grep("pressure", subsetString))) {
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  rval <- x
+                  rval@data$v <- rval@data$v[keep,,]
+                  rval@data$a <- rval@data$a[keep,,]
+                  rval@data$q <- rval@data$q[keep,,]
+                  rval@data$time <- rval@data$time[keep]
+                  ## the items below may not be in the dataset
+                  names <- names(rval@data)
+                  if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
+                  if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
+                  if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
+                  if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
+                  if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
+                  if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
+                  if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
+                  if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
+              } else {
+                  stop("should express the subset in terms of distance or time")
+              }
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
 
 head.adp <- function(x, n = 6L, ...)
 {
@@ -190,19 +420,24 @@ is.enu <- function(x)
 
 beamName <- function(x, which)
 {
-    if (x@metadata$oceCoordinate == "beam")
-        c("beam 1", "beam 2", "beam 3", "beam 4")[which]
-    else if (x@metadata$oceCoordinate == "enu")
-        c("east", "north", "up", "error")[which]
-    else if (x@metadata$oceCoordinate == "xyz")
+    if (x@metadata$oceCoordinate == "beam") {
+        paste(gettext("beam", domain="R-oce"), 1:4)[which]
+    } else if (x@metadata$oceCoordinate == "enu") {
+        c(gettext("east", domain="R-oce"),
+          gettext("north", domain="R-oce"),
+          gettext("up", domain="R-oce"),
+          gettext("error", domain="R-oce"))[which]
+    } else if (x@metadata$oceCoordinate == "xyz") {
         c("u", "v", "w", "e")[which]
-    else if (x@metadata$oceCoordinate == "other")
+    } else if (x@metadata$oceCoordinate == "other") {
         c("u'", "v'", "w'", "e")[which]
-    else " "
+    } else {
+        " "
+    }
 }
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                     latitude=NA, longitude=NA,
+                     longitude=NA, latitude=NA, 
                      manufacturer=c("rdi", "nortek", "sontek"),
                      monitor=FALSE, despike=FALSE, processingLog,
                      debug=getOption("oceDebug"),
@@ -214,148 +449,26 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat(file, "\n", ...)
     if (manufacturer == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
-                     latitude=latitude, longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      debug=debug-1, monitor=monitor, despike=despike,
                      processingLog=processingLog, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
 }
 
-summary.adp <- function(object, ...)
-{
-    if (!inherits(object, "adp"))
-        stop("method is only for adp objects")
-    cat("ADP Summary\n-----------\n\n", ...)
-    cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
-    cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
-    cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
-    cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
-    cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
-    if ("latitude" %in% names(object@metadata)) {
-        cat(paste("* Location:           ",
-                  if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                  if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
-    }
-    v.dim <- dim(object@data$v)
-    cat("* Number of profiles:", v.dim[1], "\n")
-    cat("* Number of cells:   ", v.dim[2], "\n")
-    cat("* Number of beams:   ", v.dim[3], "\n")
-    cat("* Cell size:         ", object@metadata$cellSize, "m\n")
-    if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
-        resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
-                            hardwareRevision=object@metadata$hardwareRevision,
-                            recSize=object@metadata$recSize*65536/1024/1024,
-                            velocityRange=object@metadata$velocityRange,
-                            firmwareVersion=object@metadata$firmwareVersion,
-                            config=object@metadata$config,
-                            configPressureSensor=object@metadata$configPressureSensor,
-                            configMagnetometerSensor=object@metadata$configMagnetometerSensor,
-                            configTiltSensor=object@metadata$configPressureSensor,
-                            configPressureSensor=object@metadata$configTiltSensor,
-                            serialNumberHead=object@metadata$serialNumberHead,
-                            blankingDistance=object@metadata$blankingDistance,
-                            measurementInterval=object@metadata$measurementInterval,
-                            deploymentName=object@metadata$deploymentName,
-                            velocityScale=object@metadata$velocityScale)
-    } else if (1 == length(agrep("rdi", object@metadata$manufacturer, ignore.case=TRUE))) {
-        resSpecific <- list(instrumentSubtype=object@metadata[["instrumentSubtype"]],
-                            manufacturer=object@metadata$manufacturer,
-                            numberOfDataTypes=object@metadata$numberOfDataTypes,
-                            headingAlignment=object@metadata$headingAlignment,
-                            headingBias=object@metadata$headingBias,
-                            pingsPerEnsemble=object@metadata$pingsPerEnsemble,
-                            bin1Distance=object@metadata$bin1Distance,
-                            xmitPulseLength=object@metadata$xmitPulseLength,
-                            oceBeamSpreaded=object@metadata$oceBeamSpreaded,
-                            beamConfig=object@metadata$beamConfig)
-    } else if (1 == length(agrep("sontek", object@metadata$manufacturer, ignore.case=TRUE))) {
-        resSpecific <- list(cpuSoftwareVerNum=object@metadata$cpuSoftwareVerNum,
-                            dspSoftwareVerNum=object@metadata$dspSoftwareVerNum,
-                            boardRev=object@metadata$boardRev,
-                            adpType=object@metadata$adpType,
-                            slantAngle=object@metadata$slantAngle,
-                            orientation=object@metadata$orientation)
-    } else {
-        stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
-    }
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                1 / object@metadata$measurementDeltat))
-    subsampleStart <- object@data$time[1]
-    subsampleDeltat <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-    subsampleEnd <- object@data$time[length(object@data$time)]
-    cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                format(subsampleStart), attr(subsampleStart, "tzone"),
-                format(subsampleEnd),  attr(subsampleEnd, "tzone"),
-                1 / subsampleDeltat))
-    if (object@metadata$numberOfCells > 1)
-        cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                    object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
-    else
-        cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
-
-    cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
-    cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
-    cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
-                                                                    object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
-        "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
-    if (!is.null(object@metadata$transformationMatrix)) {
-        digits <- 4
-        cat("* Transformation matrix::\n\n")
-        cat("  ", format(object@metadata$transformationMatrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
-        cat("  ", format(object@metadata$transformationMatrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
-        cat("  ", format(object@metadata$transformationMatrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
-        if (object@metadata$numberOfBeams > 3)
-            cat("  ", format(object@metadata$transformationMatrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
-    }
-    cat("\n")
-    ## start building res from the header information
-    haveData <- !is.null(object@data)
-    res <- resSpecific
-    res$measurementStart <- object@metadata$measurementStart
-    res$measurementEnd <- object@metadata$measurementEnd
-    res$measurementDeltat <- object@metadata$measurementDeltat
-    res$frequency <- object@metadata$frequency
-    res$numberOfDataTypes <- object@metadata$numberOfDataType
-    res$bin1Distance <- object@metadata$bin1Distance
-    res$xmitPulseLength <- object@metadata$xmitPulseLength
-    res$oceBeamUnspreaded <- object@metadata$oceBeamUnspreaded
-    res$beamAngle <- object@metadata$beamAngle
-    res$beamConfig <- object@metadata$beamConfig
-    res$transformationMatrix <- object@metadata$transformationMatrix
-    res$orientation <- object@metadata$orientation
-    res$originalCoordinate <- object@metadata$originalCoordinate
-    res$oceCoordinate <- object@metadata$oceCoordinate
-    res$processingLog <- object@processingLog
-    dataNames <- names(object@data)
-    threes <- matrix(nrow=(-2+length(dataNames)), ncol=3)
-    ii <- 1
-    for (i in 1:length(dataNames)) {
-        if (dataNames[i] != "time" && dataNames[i] != "distance") {
-            threes[ii,] <- threenum(object@data[[dataNames[i]]])
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- c(dataNames[dataNames != "time" & dataNames != "distance"])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    cat("* Statistics of subsample::\n\n")
-    print(threes)
-    processingLogShow(object)
-}
 
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
-                              col,
+                              col, breaks,
                               zlim,
                               titles,
                               lwd=par('lwd'),
@@ -367,7 +480,7 @@ setMethod(f="plot",
                               missingColor="gray",
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-                              mai.palette=c(0, 1/8, 0, 3/8),
+                              mai.palette=rep(0, 4), #c(0, 1/8, 0, 3/8),
                               tformat,
                               marginsAsImage=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
@@ -397,8 +510,8 @@ setMethod(f="plot",
                       mode <- 'normal'
                   }
               }
-              oceDebug(debug, "\b\bplot.adp(x, which=\"", paste(which, collapse=","),
-                       "\", mode=\"", mode, "\", ...) {\n", sep="")
+              oceDebug(debug, "plot.adp(x, which=\"", paste(which, collapse=","),
+                       "\", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
               oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -407,7 +520,7 @@ setMethod(f="plot",
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
               if (!inherits(x, "adp"))
-                  stop("method is only for adp objects")
+                  stop("method is only for objects of class '", "adp", "'")
               if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
                   warning("there are no profiles in this dataset")
                   return
@@ -491,7 +604,7 @@ setMethod(f="plot",
               }
 
               ylim.given <- if (gave.ylim) ylim else NULL
-              #ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+                                        #ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
               if (missing(lwd))
                   lwd <- rep(par('lwd'), length.out=nw)
               else
@@ -633,7 +746,7 @@ setMethod(f="plot",
                               zlim <- c(0, max(as.numeric(x@data$amp)))
                               zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
                           }
-                     } else if (which[w] %in% 70:(69+x@metadata$numberOfBeams)) { # correlation
+                      } else if (which[w] %in% 70:(69+x@metadata$numberOfBeams)) { # correlation
                           if ("g" %in% names(x@data)) {
                               z <- as.numeric(x@data$g[,,which[w]-69])
                               dim(z) <- dim(x@data$g)[1:2]
@@ -653,6 +766,7 @@ setMethod(f="plot",
                                          zlim=zlim,
                                          flipy=flipy,
                                          col=if (gave.col) col else oceColorsPalette(128, 1),
+                                         breaks=breaks,
                                          ylab=resizableLabel("distance"),
                                          xlab="Time",
                                          zlab=zlab,
@@ -672,8 +786,10 @@ setMethod(f="plot",
                                   imagep(x=tt, y=x@data$distance, z=z,
                                          zlim=zlim,
                                          flipy=flipy,
-                                         ylim=if (gave.ylim) ylim[w,] else range(x@data$distance, na.rm=TRUE),
-                                         col=if (gave.col) col else oceColorsPalette(128, 1),
+                                         ylim=if (gave.ylim) ylim[w,] else
+                                             range(x@data$distance, na.rm=TRUE),
+                                         col=if (gave.col) col else
+                                             oceColorsPalette(128, 1),
                                          ylab=resizableLabel("distance"),
                                          xlab="Time",
                                          zlab=zlab,
@@ -685,7 +801,7 @@ setMethod(f="plot",
                                          mgp=mgp,
                                          mar=mar,
                                          mai.palette=mai.palette,
-                                         cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                         cex=cex*(1 - min(nw / 8, 1/4)),
                                          main=main[w],
                                          debug=debug-1,
                                          ...)
@@ -953,7 +1069,7 @@ setMethod(f="plot",
                                           adorn=adorn[w],
                                           debug=debug-1)
                           } else {
-                                  warning("cannot plot beam/velo 1 because the device no beams")
+                              warning("cannot plot beam/velo 1 because the device no beams")
                           }
                       } else if (which[w] == 20) {
                           if (x@metadata$numberOfBeams > 1) {
@@ -1001,7 +1117,7 @@ setMethod(f="plot",
                                           adorn=adorn[w],
                                           debug=debug-1)
                           } else {
-                                  warning("cannot plot beam/velo 3 because the device has only", x@metadata$numberOfBeams, "beams")
+                              warning("cannot plot beam/velo 3 because the device has only", x@metadata$numberOfBeams, "beams")
                           }
                       } else if (which[w] == 22) {
                           if (x@metadata$numberOfBeams > 3) {
@@ -1031,23 +1147,23 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           dt <- as.numeric(x@data$time[2]) - as.numeric(x@data$time[1])
                           oce.plot.ts(x@data$time, dt * cumsum(apply(x@data$v[,,3], 1, mean)),
-                                  xlim=if(gave.xlim) xlim[w,] else tlim,
-                                  ylim=if(gave.ylim) ylim[w,],
-                                  xaxs="i",
-                                  col=col[w],
-                                  lwd=lwd[w],
-                                  cex=cex*(1 - min(nw / 8, 1/4)),
-                                  cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                  main=main[w],
-                                  ylab="Heaving [m]",
-                                  type=type,
-                                  mgp=mgp,
-                                  mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                  mai.palette=mai.palette,
-                                  drawTimeRange=drawTimeRange,
-                                  tformat=tformat,
-                                  adorn=adorn[w],
-                                  debug=debug-1)
+                                      xlim=if(gave.xlim) xlim[w,] else tlim,
+                                      ylim=if(gave.ylim) ylim[w,],
+                                      xaxs="i",
+                                      col=col[w],
+                                      lwd=lwd[w],
+                                      cex=cex*(1 - min(nw / 8, 1/4)),
+                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                      main=main[w],
+                                      ylab="Heaving [m]",
+                                      type=type,
+                                      mgp=mgp,
+                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                      mai.palette=mai.palette,
+                                      drawTimeRange=drawTimeRange,
+                                      tformat=tformat,
+                                      adorn=adorn[w],
+                                      debug=debug-1)
                           drawTimeRange <- FALSE
                       } else if (which[w] == 100) {
                           oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
@@ -1113,7 +1229,7 @@ setMethod(f="plot",
                               warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
                           }
                       }
- 
+
                       ## FIXME delete the next block, after testing.
                       if (marginsAsImage && useLayout)  { # FIXME: I think this should be deleted
                           ## blank plot, to get axis length same as for images
@@ -1166,21 +1282,25 @@ setMethod(f="plot",
                       } else if (which[w] == 24) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,1], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 1), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 1),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                       } else if (which[w] == 25) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,2], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 2), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 2),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                       } else if (which[w] == 26) {
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,3], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 3), ylab="Distance [m]", type='l', ...)
+                          plot(value, x@data$distance, xlab=beamName(x, 3),
+                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                           ##grid()
                       } else if (which[w] == 27) {
                           if (x@metadata$numberOfBeams > 3) {
                               par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                               value <- apply(x@data$v[,,4], 2, mean, na.rm=TRUE)
-                              plot(value, x@data$distance, xlab=beamName(x, 4), ylab="Distance [m]", type='l', ...)
+                              plot(value, x@data$distance, xlab=beamName(x, 4),
+                                   ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
                               ##grid()
                           } else {
                               warning("cannot use which=27 because this device did not have 4 beams")
@@ -1213,19 +1333,28 @@ setMethod(f="plot",
                       oceDebug(debug, "uv type plot\n")
                       if (n < 5000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                           if ("type" %in% names(dots)) {
-                              plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (gave.col) col else "black",
+                              plot(u, v,
+                                   xlab=resizableLabel("u"),
+                                   ylab=resizableLabel("v"),
+                                   asp=1, col=if (gave.col) col else "black",
                                    xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                    ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                           } else {
-                              plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1,
+                              plot(u, v,
+                                   xlab=resizableLabel("u"),
+                                   ylab=resizableLabel("v"),
+                                   type='n', asp=1,
                                    xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                    ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                               points(u, v, cex=cex/2, col=if (gave.col) col else "black")
                           }
                       } else {
-                          smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
+                          smoothScatter(u, v,
+                                        xlab=resizableLabel("u"),
+                                        ylab=resizableLabel("v"),
+                                        asp=1,
                                         xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                                         ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                                         ...)
@@ -1270,7 +1399,7 @@ setMethod(f="plot",
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
                       }
-                 } else if (which[w] == 60) {
+                  } else if (which[w] == 60) {
                       oceDebug(debug, "draw(ctd, ...) of type MAP\n")
                       ## get coastline file
                       if (is.character(coastline)) {
@@ -1282,21 +1411,23 @@ setMethod(f="plot",
                               }
                           } else { # named coastline
                               if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                  if (coastline == "coastlineWorld") {
-                                      data(coastlineWorld, envir=environment())
-                                      coastline <- coastlineWorld
-                                  } else if (coastline == "coastlineMaritimes") {
-                                      data(coastlineMaritimes, envir=environment())
-                                      coastline <- coastlineMaritimes
-                                  } else if (coastline == "coastlineHalifax") {
-                                      data(coastlineHalifax, envir=environment())
-                                      coastline <- coastlineHalifax
-                                  } else if (coastline == "coastlineSLE") {
-                                      data(coastlineSLE, envir=environment())
-                                      coastline <- coastlineSLE
-                                  } else {
-                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  if (require(ocedata)) {
+                                      if (coastline == "best") {
+                                          best <- coastlineBest(span=span, debug=debug-1)
+                                          data(list=best, envir=environment())
+                                          coastline <- get(best)
+                                      } else if (coastline == "coastlineWorld") {
+                                          data("coastlineWorld", envir=environment())
+                                          coastline <- coastlineWorld
+                                      } else if (coastline == "coastlineWorldFine") {
+                                          data("coastlineWorldFine", envir=environment())
+                                          coastline <- coastlineWorldFine
+                                      } else if (coastline == "coastlineWorldMedium") {
+                                          data("coastlineWorldMedium", envir=environment())
+                                          coastline <- coastlineWorldMedium
+                                      }  else {
+                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                      }
                                   }
                               }
                           }
@@ -1316,13 +1447,13 @@ setMethod(f="plot",
                   }
               }
               par(cex=opar$cex)
-              oceDebug(debug, "\b\b\b} # plot.adp()\n")
+              oceDebug(debug, "} # plot.adp()\n", unindent=1)
               invisible(rval)
           })
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\btoEnuAdp() {\n")
+    oceDebug(debug, "toEnuAdp() {\n", unindent=1)
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug=debug-1), declination=declination, debug=debug-1)
@@ -1333,15 +1464,15 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     } else {
         warning("toEnuAdp cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "\b\b} # toEnuAdp()\n")
+    oceDebug(debug, "} # toEnuAdp()\n", unindent=1)
     x
 }
 
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamUnspreadAdp(...) {\n")
+    oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent=1)
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     ## make compatible with old function name (will remove in Jan 2013)
     if (!is.null(x@metadata$oceBeamUnattenuated) && x@metadata$oceBeamUnattenuated) {
         warning("the beams are already unspreaded in this dataset.")
@@ -1373,14 +1504,14 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
         res@metadata$oceBeamUnspreaded <- TRUE
         res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
-    oceDebug(debug, "\b\b} # beamUnspreadAdp()\n")
+    oceDebug(debug, "} # beamUnspreadAdp()\n", unindent=1)
     res
 }
 
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "\b\bbeamToXyzAdp(x, debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
     if (x@metadata$oceCoordinate != "beam")
@@ -1460,7 +1591,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     }
     res@metadata$oceCoordinate <- "xyz"
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
+    oceDebug(debug, "} # beamToXyzAdp()\n", unindent=1)
     res
 }
 
@@ -1468,9 +1599,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "\b\bxyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates")
     res <- x
@@ -1628,14 +1759,14 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     res@metadata$oceCoordinate <- "enu"
     res@processingLog <- processingLog(res@processingLog,
                                        paste("xyzToEnu(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
-    oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
+    oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
 }
 
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
-        stop("method is only for adp objects")
+        stop("method is only for objects of class '", "adp", "'")
     if (x@metadata$oceCoordinate != "enu")
         stop("input must be in enu coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     res <- x
@@ -1702,7 +1833,7 @@ display.bytes <- function(b, label="", ...)
 
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bsubtractBottomVelocity(x) {\n")
+    oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
     if (!("bv" %in% names(x@data))) {
         warning("there is no bottom velocity in this object")
         return(x)
@@ -1713,16 +1844,16 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
         oceDebug(debug, "beam #", beam, "\n")
         rval@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
     }
-    oceDebug(debug, "\b\b\b} # subtractBottomVelocity()\n")
+    oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
 binmapAdp <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbinmap(x, debug) {\n")
+    oceDebug(debug, "binmap(x, debug) {\n", unindent=1)
     if (!inherits(x, "adp"))
-       stop("x must be an \"adp\" object")
+        stop("x must be an \"adp\" object")
     v <- x[["v"]]
     a <- x[["a"]] ## FIXME: should ensure that this exist
     q <- x[["q"]]
@@ -1757,7 +1888,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         ##    cat('R : r', r, 'p', p, 'cr', cr, 'sr', sr, 'cp', cp, 'sp', sp, 'tt', tt, '\n') 
         ##    cat("R : z1      ", format(z1[1:8], width=11, digits=7), '\n')
         ##}
- 
+
         z2 <- distance * (cr + tt * sr) * cp
         z3 <- distance * (cp + tt * sp) * cr
         z4 <- distance * (cp - tt * sp) * cr

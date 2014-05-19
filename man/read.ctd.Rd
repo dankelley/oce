@@ -3,7 +3,9 @@
 \alias{read.ctd}
 \alias{read.ctd.sbe}
 \alias{read.ctd.woce}
+\alias{read.ctd.woce.other}
 \alias{read.ctd.odf}
+\alias{read.ctd.itp}
 
 \title{Read a CTD data file}
 
@@ -16,68 +18,128 @@ read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.woce.other(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
 \arguments{
-  \item{file}{a connection or a character string giving the name of the
-    file to load.}
+
+  \item{file}{a connection or a character string giving the name of the file to
+      load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be
+      a wildcard (e.g.  \code{"*.cnv"} or \code{"*.csv"}) in which case the
+      return value is a vector containing CTD objects created by reading the
+      files from \code{\link{list.files}} with \code{pattern} set to the
+      specified wildcard pattern.}
+
   \item{type}{if \code{NULL}, then the first line is studied, in order to
       determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird
           19} (or similar) CTD format is assumed. If \code{type="WOCE"} then a
-      WOCE-exchange file is assumed.}
+      WOCE-exchange file is assumed.  If \code{type="ITP"} then an ice-tethered
+      profiler file is assumed.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
-  \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column names from the
-    header.  If a list, then it will be taken to be the list
-    of columns.  The list must include \code{"pressure"}, \code{"temperature"}
-    and either \code{"conductivity"} or \code{"salinity"}, or else very little
-    can be done with the file.}
+
+  \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column
+      names from the header.  For SBE files only, the \code{column} argument
+      can control the column selection.  It is a list that names data types and
+      the columns containing them, starting at 1.  The list must include
+      \code{"pressure"}, \code{"temperature"} and \code{"salinity"}, with any
+      other values being ignored (in this version of the function).  Note that
+      SBE headers count the "name" from zero, e.g. if the header line says
+      \code{# name 1 = prDM: Pressure, Digiquartz [db]} then the correct
+      specification to get this pressure would be
+      \code{columns=list(pressure=2, ...)}.}
+
   \item{station}{optional character string containing an identifying name (or
     number) for the station. (This can be useful if the routine cannot determine
     the name automatically, or if another name is preferred.)}
   \item{missing.value}{optional missing-value flag; data matching this value will
     be set to \code{NA} upon reading.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
-    of line of data read.  (This may be useful in debugging problems in
-    reading files that are misconfigured.)}
+    of progress.  This is useful if \code{filename} is a wildcard.}
   \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
 }
 
-\details{These functions read CTD datasets that have been stored in
-  common formats, and could be extended to accommodate other formats if
-  needed.  \code{read.ctd} is a dispatch function that analyzes some of
-  the file contents, and then calls either \code{read.ctd.sbe} (for
-  files created by Seabird CTD instruments) or \code{read.ctd.woce} (for
-  files stored in the exchange format used by the World Ocean
-  Circulation Experiment.)
+\details{These functions read CTD datasets that have been stored in common
+    formats, and could be extended to accommodate other formats if needed.  The
+    basic function is \code{read.ctd}, which analyzes some of the file
+    contents, and then calls one of the following, any of which can be called
+    directly.
+    \itemize{
+        \item \code{read.ctd.sbe()} reads files files created by Seabird CTD
+        instruments.  These are recognized by a first line with first ten
+        characters ``\code{* Sea-Bird}.''
+        \item \code{read.ctd.woce()} reads files stored in the exchange format
+        used by the World Ocean Circulation Experiment (WOCE) (first 4
+        characters of the first line being ``\code{CTD,}''), and also in a
+        rarer format with the first 3 characters being ``\code{CTD}'' followed by
+        a blank or the end of the line).
+        \item \code{read.ctd.woce.other()} reads the format called ``CTD''
+        in the section of the archive websites named ``Other formats.''  These
+        data are stored in filenames ending \code{.WCT}, and they do not have 
+        a great deal of metadata (e.g. longitude), so the user is forced to infer
+        such things from a separate file.  Support for this data type is limited,
+        e.g. requiring a header of a certain length and data columns in a certain order. 
+        Improvements are unlikely to be added to the function, since
+        this data type seems to offer no advantages
+        over the type handled by \code{read.ctd.woce()}.
+        \item \code{read.ctd.odf()} reads files stored in Ocean Data Format,
+        used in some Canadian hydrographic databases.
+    }
 
-  The functions attempt to infer a wide range of meta-information from
-  file headers, but variations in these headers impose some limitations
-  on the process.  For example, in the first file tested during
-  development, the sampling rate was written as \code{* sample rate = 1
-  scan every 0.5 seconds}, while the second test file had \code{*
-  Real-Time Sample Interval = 0.125 seconds}; dealing with such
-  variations is not easy.  Similarly, the functions can be challenged in
-  parsing latitudes and longitudes in the wide variety of ways that
-  humans choose (decimal versus degree-minute-second, signed versus
-  "east" and "west", or "e" and "w".).  The solution to the challenge is
-  simple: do a reasonable job with common file formats, and provide
-  users with the tools to correct (or insert) information that would
-  ideally be gleaned from the headers.  This can be done by direct
-  manipulation of the entries in the object's \code{metadata},
-  e.g. writing \code{object@metadata$latitude <- 33 + 1/3}.
+    Different file types provide different meta-information.  For example, the
+    WOCE exchange format binds together the institute name and the initials of
+    the chief scientist into a single string that \code{read.ctd} cannot parse,
+    so both \code{object@metadata$institute} and
+    \code{object@metadata$scientist} are left blank for WOCE files.
+}
 
-  It should be noted that different file types provide different
-  meta-information.  For example, the WOCE exchange format binds
-  together the institute name and the initials of the chief scientist
-  into a single string that \code{read.ctd} cannot parse, so both
-  \code{object@metadata$institute} and \code{object@metadata$scientist} are
-  left blank for WOCE files.}
+\section{Implementation and extension}{The functions attempt to infer a wide range of
+    meta-information from file headers, but variations in these headers limit
+    general application.  For example, \code{read.ctd.sbe} handles water depths
+    in any of the following forms, but ostensibly similar forms may not work.
+    \itemize{
+        \item \preformatted{"** DEPTH = 100"}
+        \item \preformatted{"** Water Depth:   40 m"}
+        \item \preformatted{"** Depth (m): 3447 "}
+        \item \preformatted{"** Depth: 16"}
+        \item \preformatted{"** Profondeur: 92"}
+    }
+    If water depth cannot be inferred from the header, \code{read.ctd} sets it
+    to the maximum recorded pressure, and issues a warning to that effect.
+
+    Similar issues come up for essentially everything stored in CTD headers,
+    and so if odd values are found (e.g. a station in the wrong hemisphere),
+    there is a good chance that the format is not being handled correctly.
+    Given the expense of collecting data, users are well-advised to check
+    inferred values against the values in the data files, for at least on
+    profile within a given cruise.  Modifying the \code{read.ctd} code is not
+    particularly difficult, and users are encouraged to examine the source code
+    (in \code{R/ctd.R}) to see whether modification can help.  Some experience
+    with regular expressions and string manipulation may be needed; see
+    \code{\link{regexpr}} and \code{\link{sub}}.
+    Three sample files are provided with the package, in
+    \itemize{\item \code{system.file("extdata", "ctd.cnv", package="oce")}
+    \item \code{system.file("extdata", "d200321-001.ctd", package="oce")}
+    \item \code{system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce")}}
+    and an examination of these in relationship with the existing code should help
+    users to understand the present implementation, providing insights on extending it
+    for their own data.
+
+    In many cases, CTD instruments are set up to report dates in English.  This
+    can cause a problem for users running in different locales, since e.g month
+    names differ.  Therefore, if you know your datafile is written in
+    American-English notation, you might want to do
+    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.
+
+}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
   list with elements detailed below. 
@@ -130,18 +192,17 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
     of \code{ctd} objects, and also outlines the other functions dealing with
     them.}
 
-\section{note}{In many cases, CTD instruments are set up to report dates in
-    English.  This can cause a problem for users running in different locales,
-    since e.g month names differ.  Therefore, if you know your datafile is
-    written in American-English notation, you might want to do
-    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.}
-
 \examples{
 library(oce)
 \dontrun{
-woce <- read.oce(
-  "http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
-plot(woce)
+## Labrador Sea data, file 0001919.tar.gz from website
+## http://www.nodc.noaa.gov/cgi-bin/OAS/prd/accession/download
+d <- read.ctd.woce("*.csv")
+data(coastlineWorld)
+plot(coastlineWorld, clat=55, clon=-50, span=5000)
+longitude <- sapply(d, function(stn) stn[['longitude']])
+latitude <- sapply(d, function(stn) stn[['latitude']])
+points(longitude, latitude, col='red')
 }
 }
 
@@ -166,6 +227,10 @@ plot(woce)
     names of the data columns.  If anything odd happens with ODF files (e.g. if
     they cannot be plotted), the first thing to do is to reread the files with
     \code{debug=1}, to see if column names were converted properly.
+
+    Ice-tethered profile (ITF) data are available at \url{www.whoi.edu/itf};
+    note that the present version only handles data in profiler-mode, not
+    fixed-depth mode.
 
 }
 

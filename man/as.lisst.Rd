@@ -6,7 +6,7 @@
 
 \description{Coerce data into a lisst object}
 
-\usage{as.lisst(data, filename="", year=0, tz="UTC", latitude=NA, longitude=NA)}
+\usage{as.lisst(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)}
 
 \arguments{
   \item{data}{A table (or matrix) containing 42 columns, as in a LISST data file.}
@@ -16,8 +16,8 @@
       default value is odd enough to remind users to include this argument.}
   \item{tz}{Timezone of observations.  This is necessary because LISST
       timestamps do not indicate the timezone.}
-  \item{latitude}{Latitude of observation.}
   \item{longitude}{Longitude of observation.}
+  \item{latitude}{Latitude of observation.}
 }
 
 \details{If \code{data} contains fewer than 42 columns, an error is reported.

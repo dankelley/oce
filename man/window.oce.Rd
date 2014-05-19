@@ -47,14 +47,15 @@
     the \code{time} entry of the \code{data} slot (and the \code{timeSlow}, if
     it exists).}
 
-\seealso{\code{\link{subset.oce}} provides more flexible selection of
-    subsets.}
+\seealso{\code{\link{subset}} provides more flexible selection of subsets.}
 
 \examples{
 library(oce)
 data(adp)
 plot(adp)
-early <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
+early <- window(adp,
+                start="2008-06-26 00:00:00",
+                end="2008-06-26 12:00:00")
 plot(early)
 bottom <- window(adp, start=0, end=20, which="distance")
 plot(bottom)

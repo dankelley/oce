@@ -1,11 +1,8 @@
-sunAngle <- function(t, latitude, longitude, useRefraction=FALSE)
+sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 {
-    if (missing(t))
-        stop("must provide t")
-    if (missing(latitude))
-        stop("must provide latitude")
-    if (missing(longitude))
-        stop("must provide longitude")
+    if (missing(t)) stop("must provide t")
+    if (missing(longitude)) stop("must provide longitude")
+    if (missing(latitude)) stop("must provide latitude")
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -15,21 +12,19 @@ sunAngle <- function(t, latitude, longitude, useRefraction=FALSE)
         }
     }
     nt <- length(t)
-    nlat <- length(latitude)
     nlon <- length(longitude)
-    if (nlon != nlat)
-        stop("lengths of longitude and latitude must match")
+    nlat <- length(latitude)
+    if (nlon != nlat) stop("lengths of longitude and latitude must match")
     if (nlon == 1) {
         longitude <- rep(longitude, nt) # often, give a time vector but just one location
         latitude <- rep(latitude, nt)
     } else {
-        if (nt != nlon)
-            stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
+        if (nt != nlon) stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
     }
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
     t <- as.POSIXlt(t)                 # use this so we can work on hours, etc
-    if ("UTC" != attr(t, "tzone"))
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
         stop("t must be in UTC")
     year <- t$year + 1900
     if (any(year < 1950) || any(year > 2050))
@@ -112,5 +107,5 @@ sunAngle <- function(t, latitude, longitude, useRefraction=FALSE)
         stop("output argument el out of range")
     if (any(az < 0) || any(az > 360))
         stop("output argument az out of range")
-    list(azimuth=az, altitude=el, diameter=soldia, distance=soldst)
+    list(time=t, azimuth=az, altitude=el, diameter=soldia, distance=soldst)
 }

@@ -43,9 +43,13 @@ summary(section)
 s2 <- makeSection(ctd)
 s2 <- s2 + ctdWarmed
 plot(s2)
+# Below is how to create a section from well-named CSV files
+# that contain consecutive stations
 \dontrun{
-plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))
+    plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))
 }
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

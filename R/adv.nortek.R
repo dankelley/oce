@@ -1,6 +1,6 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             type=c("vector", "aquadopp"),
                             haveAnalog1=FALSE,
                             haveAnalog2=FALSE,
@@ -14,7 +14,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
     type <- match.arg(type)
-    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", latitude=", latitude, ", longitude=", longitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
+    oceDebug(debug, "read.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", longitude=", longitude, ", latitude=", latitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="", unindent=1)
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (by != 1)
@@ -53,8 +53,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata <- list(manufacturer="nortek",
                      instrumentType="vector",
                      filename=filename,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=NA, # filled in later
                      numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      measurementStart=NA, # FIXME
@@ -331,6 +330,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, vectorShow(roll, "roll"))
     temperature <- 0.01 * readBin(buf[vsdStart2 + 20], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
     oceDebug(debug, vectorShow(temperature, "temperature"))
+    salinity <- header$user$salinity
+    oceDebug(debug, "salinity (in metadata):", salinity, "\n")
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsdStart[floor(0.5*length(vsdStart))] + 23]
@@ -428,6 +429,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
     metadata$velocityResolution <- metadata$velocityScale / 2^15
+    metadata$salinity <- salinity
 
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
     data <- list(v=v, a=a, q=q,
@@ -454,7 +456,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata$velocityMaximum <- metadata$velocityScale * 2^15
     res@metadata <- metadata
     res@processingLog <- unclass(hitem)
-    oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
+    oceDebug(debug, "} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="", unindent=1)
     res
 }
 

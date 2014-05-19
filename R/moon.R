@@ -22,7 +22,7 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
     data.frame(rightAscension=alpha/RPD, declination=delta/RPD)
 }
 
-equatorialToLocalHorizontal <- function(rightAscension, declination, t, latitude, longitude)
+equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## sidereal Greenwich time (in hours)
@@ -79,8 +79,13 @@ julianCenturyAnomaly <- function(jd)
     (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
 }
 
-moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
+moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
+    if (missing(t)) stop("must give 't'")
+    if (missing(longitude)) stop("must give 'longitude'")
+    if (missing(latitude)) stop("must give 'latitude'")
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+        stop("t must be in UTC")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
@@ -258,7 +263,12 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
     ec <- eclipticalToEquatorial(lambda, beta, epsilon)
-    lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
+    ##lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
+    lh <- equatorialToLocalHorizontal(rightAscension=ec$rightAscension,
+                                      declination=ec$declination,
+                                      t=t,
+                                      longitude=longitude,
+                                      latitude=latitude)
     ## Illuminated fraction, [1] chapter 31 (second, approximate, formula)
     D <- D %% 360 # need this; could have done it earlier, actually
     illfr <- 180 - D - 6.289 * sin(RPD * Mp) +
@@ -272,14 +282,14 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
 
     ## The 180 in azimuth converts from astron convention with azimuth=westward
     ## angle from South, to eastward from North.
-    rval <- data.frame(t=t,
-                       azimuth=lh$azimuth + 180,
-                       altitude=lh$altitude,
-                       rightAscension=ec$rightAscension, declination=ec$declination,
-                       lambda=lambda %% 360, beta=beta,
-                       diameter=pi, distance=6378.14 / sin(RPD * pi),
-                       illuminatedFraction=illuminatedFraction,
-                       phase=phase)
+    rval <- list(time=t,
+                 azimuth=lh$azimuth + 180,
+                 altitude=lh$altitude,
+                 rightAscension=ec$rightAscension, declination=ec$declination,
+                 lambda=lambda %% 360, beta=beta,
+                 diameter=pi, distance=6378.14 / sin(RPD * pi),
+                 illuminatedFraction=illuminatedFraction,
+                 phase=phase)
     rval
 }
 

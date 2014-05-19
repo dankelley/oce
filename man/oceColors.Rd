@@ -52,8 +52,11 @@ oceColorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
   or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
   somewhat desaturating the yellow and cyane.
 
-  \code{oceColorsGebco} provides palettes that mimic the GEBCO altas
-  colours, with shades of blue for water and of brown for land.
+  \code{oceColorsGebco} provides palettes that mimic the GEBCO altas colours,
+  with shades of blue for water and of brown for land.  The blue values go from
+  dark to light, and the brown ones from light to dark; in this way,
+  topographic images have light values near sea-level, and get darker in either
+  deeper water or higher terrain.
 
   \code{oceColorsJet} provides a palette similar to the Matlab
   \dQuote{jet} palette.
@@ -79,7 +82,6 @@ par(mfrow=c(3,1))
 plot(adp, which='u1')
 plot(adp, which='u1', col=oceColorsJet)
 plot(adp, which='u1', col=oceColors9B)
-
 }
 
 \references{

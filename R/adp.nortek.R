@@ -22,7 +22,7 @@
 decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
-    oceDebug(debug, "\b\bdecodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="")
+    oceDebug(debug, "decodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep="", unindent=1)
     oceDebug(debug, "buf starts:", buf[1:20], "\n")
     degToRad <- atan2(1, 1) / 45
     syncCode <- as.raw(0xa5)
@@ -40,7 +40,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
         if (buf[o+1] != syncCode)
             stop("expecting syncCode 0x", syncCode, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
         if (buf[o+2] == idHardwareConfiguration) {         # see page 29 of System Integrator Guide
-            oceDebug(debug, "\n\bHARDWARE CONFIGURATION\n")
+            oceDebug(debug, "\nHARDWARE CONFIGURATION\n", unindent=1)
             hardware$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2, endian="little")
             if (hardware$size != 24)
                 stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
@@ -65,7 +65,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             oceDebug(debug, "hardware$fw.version=", hardware$fw.version, "\n")
             o <- o + 2 * hardware$size
         } else if (buf[o+2] == idHeadConfiguration) {     # see page 30 of System Integrator Guide
-            oceDebug(debug, "\n\bHEAD CONFIGURATION\n")
+            oceDebug(debug, "HEAD CONFIGURATION\n", unindent=1)
             ##buf <- readBin(file, "raw", headerLengthHead)
             head$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2)
             if (2 * head$size != headerLengthHead)
@@ -106,7 +106,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             oceDebug(debug, "head$numberOfBeams=", head$numberOfBeams, "\n")
             o <- o + 2 * head$size
         } else if (buf[o+2] == idUserConfiguration) {     # User Configuration [p30-32 of System Integrator Guide]
-            oceDebug(debug, "\n\bUSER CONFIGURATION\n")
+            oceDebug(debug, "USER CONFIGURATION\n", unindent=1)
             user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
             if (2 * user$size != headerLengthUser)
                 stop("size of user header expected to be ", headerLengthUser, "but got ", user$size)
@@ -273,13 +273,13 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 }
 
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                          latitude=NA, longitude=NA,
+                          longitude=NA, latitude=NA,
                           orientation, distance,
                           monitor=FALSE, despike=FALSE, processingLog,
                           debug=getOption("oceDebug"), ...)
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           latitude=latitude, longitude=longitude,
+                           longitude=longitude, latitude=latitude,
                            type="aquadopp",
                            orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
@@ -287,13 +287,13 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             orientation=orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"), ...)
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           latitude=latitude, longitude=longitude,
+                           longitude=longitude, latitude=latitude,
                            type="aquadoppHR",
                            orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
@@ -301,13 +301,13 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                  latitude=NA, longitude=NA,
+                                  longitude=NA, latitude=NA,
                                   orientation, distance,
                                   monitor=FALSE, despike=FALSE, processingLog,
                                   debug=getOption("oceDebug"), ...)
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
-                           latitude=latitude, longitude=longitude,
+                           longitude=longitude, latitude=latitude,
                            type="aquadoppProfiler",
                            orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
@@ -316,7 +316,7 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            latitude=NA, longitude=NA,
+                            longitude=NA, latitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
                             orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,

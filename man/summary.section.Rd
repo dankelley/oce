@@ -1,14 +1,14 @@
 \name{summary.section}
 
 \alias{summary.section}
+\alias{summary,section,missing-method}
+\alias{summary,section-method}
 
 \title{Summarize a CTD section}
 
 \description{Summarize a CTD section.}
 
-\usage{
-\method{summary}{section}(object, \dots)
-}
+\usage{\S4method{summary}{section}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"section"}, usually, a result of a

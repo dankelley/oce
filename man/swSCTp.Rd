@@ -2,7 +2,7 @@
 
 \alias{swSCTp}
 
-\title{Seawater salinity from electrical conductivity, temperature and pressure}
+\title{Salinity from electrical conductivity, temperature and pressure}
 
 \description{Compute salinity based on electrical conductivity, temperature, and pressure.}
 

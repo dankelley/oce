@@ -27,8 +27,8 @@ data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
 mapPlot(longitude, latitude, type='l',
-        longitudelim=c(-70,-50), latitudelim=c(45,50),
-        projection="mercator", grid=1)
+longitudelim=c(-70,-50), latitudelim=c(45,50),
+projection="mercator", grid=1)
 lon <- -63.5744 # Halifax
 lat <- 44.6479
 mapPoints(lon, lat, pch=20, col="red")
@@ -36,4 +36,6 @@ mapText(lon, lat, "Halifax", col="red", pos=1, offset=1)
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

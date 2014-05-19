@@ -12,6 +12,48 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="echosounder",
+          definition=function(object, ...) {
+              cat("Echosounder Summary\n-------------------\n\n")
+              showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
+              showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
+              metadataNames <- names(object@metadata)
+              cat(sprintf("* File type:           %s\n", object[["fileType"]]))
+              if ("beamType" %in% metadataNames)
+                  cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
+              time <- object[["time"]]
+              tz <- attr(time[1], "tzone")
+              nt <- length(time)
+              cat(sprintf("* Channel:             %d\n", object[["channel"]]))
+              cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
+              cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
+              ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+              if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
+              cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
+              cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
+              cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
+              cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
+              cat("* Statistics::\n")
+              dataNames <- c(names(object@data), "Sv", "TS")
+              ndata <- length(dataNames)
+              threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (0 == length(grep("^time", dataNames[i]))) {
+                      threes[ii,] <- threenum(object[[dataNames[i]]])
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes)
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="echosounder",
           definition=function(x, i, j, drop) {
@@ -41,7 +83,8 @@ setMethod(f="[[",
                       TS
                   }
               } else {
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
@@ -68,6 +111,76 @@ setMethod(f="[[<-",
               ## validObject(x)
               invisible(x)
           })
+
+setMethod(f="subset",
+          signature="echosounder",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              if (missing(subset))
+                  stop("must give 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting an echosounder object by time\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
+                  rval <- x
+                  ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
+                  dataNames <- names(rval@data)
+                  rval@data$a <- x@data$a[keep,]
+                  if ("b" %in% dataNames)
+                      rval@data$b <- x@data$b[keep,]
+                  if ("c" %in% dataNames)
+                      rval@data$c <- x@data$c[keep,]
+                  ## lots of debugging in here, in case other data types have other variable names
+                  oceDebug(debug, "dataNames (orig):", dataNames, "\n")
+                  if (length(grep('^a$', dataNames)))
+                      dataNames <- dataNames[-grep('^a$', dataNames)]
+                  if (length(grep('^b$', dataNames)))
+                      dataNames <- dataNames[-grep('^b$', dataNames)]
+                  if (length(grep('^c$', dataNames)))
+                      dataNames <- dataNames[-grep('^c$', dataNames)]
+                  oceDebug(debug, "dataNames (step 2):", dataNames, "\n")
+                  if (length(grep('^depth$', dataNames)))
+                      dataNames <- dataNames[-grep('^depth$', dataNames)]
+                  oceDebug(debug, "dataNames (step 3):", dataNames, "\n")
+                  if (length(grep('Slow', dataNames)))
+                      dataNames <- dataNames[-grep('Slow', dataNames)]
+                  oceDebug(debug, "dataNames (final), i.e. fast dataNames to be trimmed by time:", dataNames, "\n")
+                  for (dataName in dataNames) {
+                      oceDebug(debug, "fast variable:", dataName, "orig length", length(x@data[[dataName]]), "\n")
+                      rval@data[[dataName]] <- x@data[[dataName]][keep]
+                      oceDebug(debug, "fast variable:", dataName, "new length", length(rval@data[[dataName]]), "\n")
+                  }
+                  ## trim slow variables
+                  subsetStringSlow <- gsub("time", "timeSlow", subsetString)
+                  oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
+                  keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+                  oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
+                  for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
+                      oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
+                      rval@data[[slowName]] <- x@data[[slowName]][keepSlow]
+                      oceDebug(debug, "slow variable:", slowName, "new length", length(rval@data[[slowName]]), "\n")
+                  }
+              } else if (length(grep("depth", subsetString))) {
+                  oceDebug(debug, "subsetting an echosounder object by depth\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  rval <- x
+                  rval[["depth"]] <- rval[["depth"]][keep]
+                  dataNames <- names(rval@data)
+                  rval[["a"]] <- rval[["a"]][,keep]
+                  if ("b" %in% dataNames)
+                      rval@data$b <- x@data$b[,keep]
+                  if ("c" %in% dataNames)
+                      rval@data$c <- x@data$c[,keep]
+              } else {
+                  stop("can only subset an echosounder object by 'time' or 'depth'")
+              }
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
 
 as.echosounder <- function(time, depth, a, src="",
                            sourceLevel=220,
@@ -135,7 +248,7 @@ setMethod(f="plot",
           {
               dots <- list(...)
               dotsNames <- names(dots)
-              oceDebug(debug, "\b\bplot() { # for echosounder\n")
+              oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (length(beam) < lw)
@@ -239,7 +352,7 @@ setMethod(f="plot",
                       latitude <- x[["latitude"]]
                       longitude <- x[["longitude"]]
                       jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
-                      distance <- geodDist(jitter + latitude, longitude, alongPath=TRUE) ## FIXME: jitter should be in imagep
+                      distance <- geodDist(longitude, jitter+latitude, alongPath=TRUE) ## FIXME: jitter should be in imagep
                       depth <- x[["depth"]]
                       a <- x[["a"]]
                       if (despike)
@@ -289,11 +402,11 @@ setMethod(f="plot",
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
                       if (missing(radius))
-                          radius <- max(geodDist(latm, lonm, lat, lon))
+                          radius <- max(geodDist(lonm, latm, lon, lat))
                       else
-                          radius <- max(radius, geodDist(latm, lonm, lat, lon))
-                      km_per_lat_deg <- geodDist(latm, lonm, latm+1, lonm) 
-                      km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
+                          radius <- max(radius, geodDist(lonm, latm, lon, lat))
+                      km_per_lat_deg <- geodDist(lonm, latm, lonm, latm+1) 
+                      km_per_lon_deg <- geodDist(lonm, latm, lonm+1, latm) 
                       lonr <- lonm + radius / km_per_lon_deg * c(-2, 2)
                       latr <- latm + radius / km_per_lat_deg * c(-2, 2)
                       plot(lonr, latr, asp=asp, type='n',
@@ -318,14 +431,15 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.echosounder()\n")
+              oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
               invisible()
           })
 
 read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),
-                             tz=getOption("oceTz"), debug=getOption("oceDebug"))
+                             tz=getOption("oceTz"), debug=getOption("oceDebug"),
+                             processingLog)
 {
-    oceDebug(debug, "\b\bread.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1)
     ofile <- file
     filename <- NULL
     if (is.character(file)) {
@@ -670,48 +784,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         res@data$b <- NULL
         res@data$c <- NULL
     }
-
-    res@processingLog <- processingLog(res@processingLog,
-                                       paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
-}
-
-summary.echosounder <- function(object, ...)
-{
-    cat("Echosounder Summary\n-------------------\n\n")
-    showMetadataItem(object, "filename",               "File source:         ", quote=TRUE)
-    showMetadataItem(object, "transducerSerialNumber", "Transducer serial #: ", quote=FALSE)
-    metadataNames <- names(object@metadata)
-    cat(sprintf("* File type:           %s\n", object[["fileType"]]))
-    if ("beamType" %in% metadataNames)
-        cat(sprintf("* Beam type:           %s\n", object[["beamType"]]))
-    time <- object[["time"]]
-    tz <- attr(time[1], "tzone")
-    nt <- length(time)
-    cat(sprintf("* Channel:             %d\n", object[["channel"]]))
-    cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
-    cat(sprintf("* Sound speed:         %.2f m/s\n", object[["soundSpeed"]]))
-    ##cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
-    if ("pulseDuration" %in% metadataNames) cat(sprintf("* Pulse duration:      %g s\n", object[["pulseDuration"]]/1e6))
-    cat(sprintf("* Frequency:           %f\n", object[["frequency"]]))
-    cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
-    cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
-    cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
-    cat("* Statistics::\n")
-    dataNames <- c(names(object@data), "Sv", "TS")
-    ndata <- length(dataNames)
-    threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
-    ii <- 1
-    for (i in 1:ndata) {
-        if (0 == length(grep("^time", dataNames[i]))) {
-            threes[ii,] <- threenum(object[[dataNames[i]]])
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes)
-    processingLogShow(object)
 }
 

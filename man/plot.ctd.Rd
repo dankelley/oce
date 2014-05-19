@@ -6,16 +6,21 @@
 
 \title{Plot seawater CTD data}
 
-\description{Plot CTD data}
+\description{Plot CTD data, by default in a four-panel display showing (a)
+    profiles of salinity and temperature, (b) profiles of density and the
+    square of buoyancy frequency, (c) a TS diagram and (d) a coastline diagram
+    indicating the station location.}
 
-\usage{\S4method{plot}{ctd}(x, which=1:4, 
+\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), col=par("fg"),
      eos=getOption("eos", default='unesco'),
      ref.lat=NaN, ref.lon=NaN, 
-     grid=TRUE, col.grid="lightgray", lty.grid="dotted",
-     coastline="coastlineWorld",
-     Slim, Tlim, plim, densitylim, N2lim,
+     grid=TRUE,
+     coastline="best",
+     Slim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
-     lonlim, latlim, span,
+     lonlim, latlim,
+     clongitude, clatitude, span, showHemi=TRUE,
+     projection=NULL, parameters=NULL, orientation=NULL,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
      pch=1,
@@ -43,11 +48,10 @@
       \item \code{which=3} or \code{which="TS"} gives a TS plot
       \item \code{which=4} or \code{which="text"} gives a textual
       summary of some aspects of the data
-      \item \code{which=5} or \code{which="map"} gives a map, with a dot
-      for the station location.  If a coastline is given, that is drawn as
-      well.  Notes near the top boundary of the map give the station number,
-      the sampling date, and the name of the chief scientist, if these are
-      known.
+      \item \code{which=5} or \code{which="map"} gives a map, with a dot for
+      the station location.  Notes near the top boundary of the map give the
+      station number, the sampling date, and the name of the chief scientist,
+      if these are known.
       \item \code{which=5.1} as for \code{which=5}, except that the file name
       is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
@@ -66,6 +70,7 @@
       \item \code{which=14} or \code{which="tritium"} gives a tritium profile
     }
   }
+  \item{col}{colour of lines or symbols}
   \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
       computer must have the TEOS library installed; see \code{\link{teos}}.
       The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
@@ -77,31 +82,42 @@
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
-  \item{col.grid}{colour for the grid.}
-  \item{lty.grid}{line type for grid.}
-  \item{coastline}{a \code{coastline} object, or a character string naming one.
-      There are several built-in datasets: \code{coastlineWorld} (the default),
-      \code{coastlineMaritimes}, \code{coastlineHalifax}, and
-      \code{coastlineSLE}, and any other coastline object (e.g. as read by
-      \code{\link{read.coastline}}) may be used also.  There is a speed penalty
-      for providing \code{coastline} as a character string, because it forces
-      \code{plot.coastline} to load it on every call.  So, if
+  \item{coastline}{a specification of the coastline to be used for
+      \code{which="map"}.  This may be a coastline object, whether built-in or
+      supplied by the user, or a character string.  If the later, it may be the
+      name of a built-in coastline (\code{"coastlineWorld"},
+      \code{"coastlineWorldFine"}, or
+      \code{"coastlineWorldCoarse"}), or \code{"best"}, to choose 
+      a suitable coastline for the locale, or \code{"none"} to prevent
+      the drawing of a coastline.  There is a speed penalty for providing
+      \code{coastline} as a character string, because it forces
+      \code{\link{plot.coastline}} to load it on every call.  So, if
       \code{plot.coastline} is to be called several times for a given
       coastline, it makes sense to load it in before the first call, and to
-      supply the object as an argument, as opposed to the name of the object.
-      If no coastline is desired, use \code{coastline="none"}.}
+      supply the object as an argument, as opposed to the name of the object.}
   \item{Slim}{optional limits of salinity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
   \item{densitylim}{optional limits of density axis}
   \item{N2lim}{optional limits of \eqn{N^2}{N^2} axis}
+  \item{Rrholim}{optional limits of \eqn{R_rho}{R_rho} axis}
   \item{dpdtlim}{optional limits of dP/dt axis}
   \item{timelim}{optional limits of delta-time axis}
   \item{lonlim}{optional limits of longitude axis of map (ignored if no
-    map plotted)} 
+    map plotted) DEPRECATED 2014-01-07} 
   \item{latlim}{optional limits of latitude axis of map (ignored if no
-    map plotted)} 
-  \item{span}{optional span of map, in km (ignored unless a map is being drawn)}
+    map plotted) DEPRECATED 2014-01-07} 
+  \item{clongitude}{center longitude}
+  \item{clatitude}{center latitude}
+  \item{span}{optional span of map, in km.  If not given, the map scale is
+      chosen to include some points on the nearby coastline.}
+  \item{showHemi}{logical indicating whether to show hemisphere in axis tick
+      labels.}
+  \item{projection}{projection for map, passed to
+      \code{\link[mapproj]{mapproject}} by \code{plot} with a \code{coastline}
+      object; \code{NULL} for none.}
+  \item{parameters}{parameters for map, as for \code{projection}.}
+  \item{orientation}{orientation for map, as for \code{projection}.}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
@@ -164,7 +180,7 @@
 library(oce)
 data(ctd) 
 plot(ctd)
-plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
 }
+
 \author{Dan Kelley}
 \keyword{hplot}

@@ -7,6 +7,7 @@
 # Below is R code to test (without building package)
 
 library(oce)
+library(ocedata)
 data(topoMaritimes)
 lat <- seq(43, 53, 1/60/10)
 lon <- -(63+36/60) + rep(0, length(lat)) # Halifax

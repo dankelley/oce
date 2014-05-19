@@ -6,13 +6,13 @@
 
 \description{Lunar angle as function of space and time.}
 
-\usage{moonAngle(t, latitude, longitude, useRefraction=TRUE)}
+\usage{moonAngle(t, longitude=0, latitude=0, useRefraction=TRUE)}
 
 \arguments{
     \item{t}{time, a POSIXt object (must be in timezone UTC), or a numeric
         value that corresponds to such a time.}
-    \item{latitude}{observer latitude in degrees north}
     \item{longitude}{observer longitude in degrees east}
+    \item{latitude}{observer latitude in degrees north}
     \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for
         atmospheric refraction.  (Ignored at present.)} }
 
@@ -27,7 +27,7 @@
     18.4.  Equatorial coordinates (right ascension and declination) are
     computed with equations 8.3 and 8.4 from Meeus [1982], using
     \code{\link{eclipticalToEquatorial}}.  The hour angle (\eqn{H}{H}) is
-    computed using the un-numbered equation preceeding Meeus's [1982] equation
+    computed using the unnumbered equation preceding Meeus's [1982] equation
     8.1.  Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the
     local azimuth and altitude of the moon, using
     \code{\link{equatorialToLocalHorizontal}}.
@@ -38,17 +38,17 @@
 \section{Alternate formulations}{Formulae provide by Meeus [1982] are used for
     all calculations here.  Meeus [1991] provides formulae that are similar,
     but that differ in the 5th or 6th digits.  For example, the formula for
-    ephermeris time in Meeus [1991] differs from that in Meeus [1992] at the
+    ephemeris time in Meeus [1991] differs from that in Meeus [1992] at the
     5th digit, and almost all of the approximately 200 coefficients in the
-    revelevant formulae also differ in the 5th and 6th digits.  Discussion of
+    relevant formulae also differ in the 5th and 6th digits.  Discussion of
     the changing formulations is best left to members of the astronomical
     community.  For the present purpose, it may be sufficient to note that
     \code{moonAngle}, based on Meeus [1982], reproduces the values provided in
     example 45.a of Meeus [1991] to 4 significant digits, e.g. with all angles
     matching to under 2 minutes of arc.}
 
-\value{A data frame containing the following.
-    \item{t}{time}
+\value{A list containing the following.
+    \item{time}{time}
     \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360.
         Note: this is not the convention used by Meeus, who uses degrees
         westward of South.  (See diagram below.)}
@@ -84,7 +84,7 @@ latitude <- 44.65
 longitude <- -63.6
 for (i in 1:3) {
     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
-    ma <- moonAngle(t, latitude, longitude)
+    ma <- moonAngle(t, longitude, latitude)
     oce.plot.ts(t, ma$altitude, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Altitude")
     abline(h=0)
     points(rises[i], 0, col='red', pch=3, lwd=2, cex=1.5)

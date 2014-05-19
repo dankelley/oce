@@ -2,7 +2,7 @@
 
 \alias{plotTS}
 
-\title{Plot temperature-salinity diagram for seawater (CTD) data}
+\title{Plot temperature-salinity diagram}
 
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 
@@ -10,16 +10,17 @@
     inSitu=FALSE,
     type="p",
     referencePressure=0,
-    rhoLevels=6,
+    nlevels=6, levels,
     grid=TRUE,
     col.grid="lightgray",
     lty.grid="dotted",
     rho1000=FALSE,
     eos=getOption("eos", default='unesco'),
-    cex=par("cex"), col=par("col"), pch=par("pch"), bg,
+    cex=par("cex"), col=par("col"), pch=par("pch"),
+    bg, pt.bg="transparent",
     col.rho="darkgray",
     cex.rho=3/4*par("cex"),
-    rotateRhoLabels=FALSE,
+    rotate=FALSE,
     useSmoothScatter=FALSE,
     xlab,
     ylab,
@@ -27,6 +28,7 @@
     Tlim,
     mgp=getOption("oceMgp"),
     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
+    lwd=par('lwd'), lty=par('lty'),
     lwd.rho=par("lwd"), lty.rho=par("lty"),
     add=FALSE, inset=FALSE,
     debug=getOption("oceDebug"),
@@ -45,9 +47,9 @@
         connecting lines, or \code{"n"} for no indication.}
     \item{referencePressure}{reference pressure, to be used in calculating
         potential temperature, if \code{inSitu} is \code{FALSE}.}
-    \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
-        lines, or a suggestion for the number of levels.  In the latter case,
-        \code{pretty()} is used to select levels.}
+    \item{nlevels}{Number of automatically-selected isopycnal levels (ignored
+        if \code{levels} is supplied).}
+    \item{levels}{Optional vector of desired isopycnal levels.}
     \item{grid}{a flag that can be set to \code{TRUE} to get a grid.}
     \item{col.grid}{colour for grid.}
     \item{lty.grid}{line type for grid.}
@@ -64,10 +66,11 @@
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.
         (This is useful for cases in which \code{inset=TRUE}.)}
+    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
     \item{col}{colour for symbols.}
     \item{col.rho}{colour for isopycnal lines.}
     \item{cex.rho}{size of isopycnal labels.}
-    \item{rotateRhoLabels}{if TRUE, labels in right-hand margin are written vertically}
+    \item{rotate}{if TRUE, labels in right-hand margin are written vertically}
     \item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}
     \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
     \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
@@ -77,11 +80,14 @@
         also for \code{par(mar)}, computed from this.  The default is
         tighter than the R default, in order to use more space for the data
         and less for the axes.}
-    \item{mar}{value to be used with \code{\link{par}("mar")}.  If set to \code{NULL},
-        then the margins are left as they are, which can be useful for e.g.
-        drawing a TS diagram with a colour palette.}
-    \item{lwd.rho}{line width for density lines.}
-    \item{lty.rho}{line type for density lines.}
+    \item{mar}{value to be used with \code{\link{par}("mar")}.  If set to
+        \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS
+        diagram with a palette to the right is \code{mar=par("mar")+c(0, 0, 0,
+            1))}.} 
+    \item{lwd}{line width of lines or symbols.}
+    \item{lty}{line type of lines or symbols.}
+    \item{lwd.rho}{line width for density curves.}
+    \item{lty.rho}{line type for density curves.}
     \item{add}{a flag that controls whether to add to an existing plot.  (It
         makes sense to use \code{add=TRUE} in the \code{panel} argument of a
         \code{\link{coplot}}, for example.)}
@@ -104,9 +110,9 @@
 }
 
 \examples{
-    library(oce)
-    data(ctd)
-    plotTS(ctd)
+library(oce)
+data(ctd)
+plotTS(ctd)
 }
 
 \author{Dan Kelley}

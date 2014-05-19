@@ -61,6 +61,16 @@ S <- c(30,30,38,38)
 T <- c(-2,-2,30,30)
 p <- 1000 * runif(n=4)
 print(max(abs(swTheta(S,T,p) - swTheta(S,T,p,0,"bryden"))))
+
+
+# Example from a cross-Atlantic section
+data(section)
+stn <- section[['station', 70]]
+plotProfile(stn, 'theta', ylim=c(6000, 1000))
+lines(stn[['temperature']], stn[['pressure']], lty=2)
+legend("topleft", lty=1:2,
+       legend=c("potential", "in-situ"),
+       bg='white', title="Station 70")
 }
 
 \references{Bryden, H. L., 1973. New polynomials for thermal expansion,

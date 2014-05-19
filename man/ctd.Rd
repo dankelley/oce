@@ -4,23 +4,27 @@
 
 \alias{ctd}
 
-\title{Seawater CTD profile}
+\title{A CTD profile in Halifax Harbour}
 
-\description{This is sample CTD profile provided for testing, created by
-  the code given in \dQuote{Examples}.}
+\description{A CTD profile measured in Halifax Harbour in 2003, by students
+    enrolled in the author's Physical Oceanography class at Dalhousie
+    University.}
 
 \usage{data(ctd)}
 
 \examples{
+\dontrun{
 library(oce)
 data(ctd)
-plot(ctd, which=c(1,2,3,5), coastline="coastlineMaritimes")
+plot(ctd, which=c(1,2,3,5), coastline="coastlineWorldFine")
+}
 }
 
 \source{This is a station within the \code{\link{section}} dataset, and details
    are provided in the documentation for the latter.}
 
-\seealso{The documentation for \code{\link{ctd-class}} explains the structure
-    of CTD objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{ctd-class} in the Oce package explains the
+    structure of CTD objects, and also outlines the other functions dealing
+    with them.}
 
 \keyword{datasets}

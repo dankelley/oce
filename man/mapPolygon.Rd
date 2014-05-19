@@ -10,9 +10,10 @@
     border=NULL, col=NA, lty=par('lty'), \dots, fillOddEven=FALSE)}
 
 \arguments{
-    \item{longitude}{longitudes of points to be plotted, or a coastline object
-        from which longitude and latitude are to be taken (see e.g.
-        \code{\link{read.coastline}}).}
+    \item{longitude}{longitudes of points to be plotted, or an object from
+        which longitude and latitude can be inferred (e.g. a coastline file, or
+        the return value from \code{\link{mapLocator}}), in which case the
+        following two arguments are ignored.}
     \item{latitude}{latitudes of points to be plotted}
     \item{density}{as for \code{\link{polygon}}}
     \item{angle}{as for \code{\link{polygon}}}
@@ -34,16 +35,18 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-        latitudelim=c(40,50), longitudelim=c(-70,-50),
-        proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
-data(topoMaritimes)
-tlon <- topoMaritimes[['longitude']][seq(1, 500, 10)]
-tlat <- topoMaritimes[['latitude']][seq(1, 500, 10)]
-z <- topoMaritimes[['z']][seq(1, 500, 10), seq(1, 500, 10)]
+longitudelim=c(-70,-50), latitudelim=c(40,50),
+proj="polyconic", orientation=c(90, -90,0), grid=TRUE)
+data(topoWorld)
+tlon <- topoWorld[['longitude']][550:650]
+tlat <- topoWorld[['latitude']][240:300]
+z <- topoWorld[['z']][550:650, 240:300]
 mapImage(tlon, tlat, z)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 }
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}
+

@@ -16,10 +16,10 @@
     The examples given below use \code{s} to represent the name of a section.
 
     \subsection{Extracting values}{A \code{\link{list}} of stations is
-        retrieved by \code{s[["section"]]}.  Individual stations are retrieved
+        retrieved by \code{s[["station"]]}.  Individual stations are retrieved
         by providing a station number as a second argument in the index, e.g.
-        the first station is \code{s[["section", 1]]} (which is a 
-        \code{\link{ctd-class}} object).  
+        the first station is \code{s[["station", 1]]} (which is a
+        \code{\link{ctd-class}} object).
         
         Aggregated values of the quantities measured at each level of the CTD
         profiles contained within the section may be accessed as e.g.
@@ -27,7 +27,7 @@
         is present in the constituent profiles.   
 
         Since it is often useful to pair such quantities with locations,
-        \code{section[["latitude"]]} and \code{section[["longitude"]]} return
+        \code{section[["longitude"]]} and \code{section[["latitude"]]} return
         vectors with values repeated for each level in each CTD (see the
         \code{pairs()} call in the example section).  If just one latitude or
         longitude is desired per station, e.g. \code{section[["latitude",
@@ -49,31 +49,34 @@
     \code{\link{makeSection}} or by combining an existing section with a CTD
     object with the \code{+} operator.  
     
-    Sections may be sorted with \code{\link{sectionSort}}, smoothed with
-    \code{\link{sectionSmooth}}, and gridded with \code{\link{sectionGrid}}.
-    Gridded sections may be plotted with \code{\link{plot.section}}.  
+    Sections may be sorted with \code{\link{sectionSort}}, subsetted with
+    \code{\link{subset.section}}, smoothed with \code{\link{sectionSmooth}},
+    and gridded with \code{\link{sectionGrid}}.  Gridded sections may be
+    plotted with \code{\link{plot.section}}.  
     
     Statistical summaries are provided by \code{\link{summary.section}}, while
     overviews are provided by \code{show.section}.  
     
-    Two section datasets are provided in the package: \code{\link{a03}},
-    containing data along WOCE line A03, and \code{\link{section}}, containing
-    data in Halifax Harbour.}
+    The sample dataset \code{\link{section}} contains data along WOCE line A03.
+
+}
 
 \examples{
 library(oce)
-data(a03)
-plot(a03[['station', 1]])
-pairs(cbind(z=-a03[["pressure"]],T=a03[["temperature"]],S=a03[["salinity"]]))
-## T profiles for first few stations in a03, at common scale
+data(section)
+plot(section[['station', 1]])
+pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["salinity"]]))
+## T profiles for first few stations in section, at common scale
 par(mfrow=c(3,3))
-Tlim <- range(a03[["temperature"]])
-ylim <- rev(range(a03[["pressure"]]))
-for (stn in a03[["station",1:9]])
-    plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
+Tlim <- range(section[["temperature"]])
+ylim <- rev(range(section[["pressure"]]))
+for (stn in section[["station",1:9]])
+plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 }
 
 \author{Dan Kelley}
+
 \keyword{classes}
+
 \keyword{oce}
 

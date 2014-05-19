@@ -16,7 +16,7 @@
     \subsection{Extracting values}{Data may be accessed as e.g.
         code{cm[["time"]]}, where the string could also be e.g.
         \code{"u"} or \code{"v"} for column data, or
-        \code{"latitude"} or \code{"longitude"} for scalars.  (The names of the
+        \code{"longitude"} or \code{"latitude"} for scalars.  (The names of the
         columns are displayed with \code{show().} The name of the source file
         is found with \code{"filename"}.}
 

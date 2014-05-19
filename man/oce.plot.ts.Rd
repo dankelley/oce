@@ -12,7 +12,6 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-            mai.palette=c(0, 1/8, 0, 3/8),
             main="",
             despike=FALSE,
             axes=TRUE, tformat,
@@ -27,26 +26,30 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{type}{plot type, \code{"l"} for lines, \code{"p"} for points.}
 \item{xlim}{optional limit for x axis.}
 \item{ylim}{optional limit for y axis.}
-\item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of times 
-  in the top-left margin.}
-\item{adorn}{optional \code{\link{expression}} to be performed
-  immediately after drawing the panel. (See \code{\link{plot.adp}} for
-  an example.)}
-\item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
-  does incorrectly if there are missing values in \code{y}).}
+\item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of
+    times in the top-left margin.}
+\item{adorn}{optional \code{\link{expression}} to be performed immediately
+    after drawing the panel. (See \code{\link{plot.adp}} for an example.)}
+\item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it does
+    incorrectly if there are missing values in \code{y}).}
 \item{xlab}{name for x axis; defaults to \code{""}.}
 \item{ylab}{name for y axis; defaults to the plotted item.}
 \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
 \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
 \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
-  also for \code{par(mar)}, computed from this.  The default is
-  tighter than the R default, in order to use more space for the
-  data and less for the axes.}
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
-\item{mai.palette}{margins, in inches, for the palette}
+\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
+    \code{par(mar)}, computed from this.  The default is tighter than the R
+    default, in order to use more space for the data and less for the axes.}
+\item{mar}{value to be used with \code{\link{par}("mar")} to set margins.  THe
+    default value uses significantly tighter margins than is the norm in R,
+    which gives more space for the data.  However, in doing this, the existing
+    \code{par("mar")} value is ignored, which contradicts values that may have
+    been set by a previous call to \code{\link{drawPalette}}.  To get plot with
+    a palette, first call \code{\link{drawPalette}}, then call \code{oce.plot.ts}
+    with \code{mar=par("mar")}.}
 \item{main}{title of plot.}
-\item{despike}{boolean flag that can turn on despiking with \code{\link{despike}}.}
+\item{despike}{boolean flag that can turn on despiking with
+    \code{\link{despike}}.}
 \item{axes}{boolean, set to \code{TRUE} to get axes plotted}
 \item{tformat}{optional format for labels on the time axis}
 \item{marginsAsImage}{boolean indicatingn whether to set the right-hand margin

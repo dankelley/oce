@@ -1,0 +1,55 @@
+\name{mapScalebar}
+
+\alias{mapScalebar}
+
+\title{Draw a scalebar on an existing map}
+
+\description{Draw a scalebar on an existing map}
+
+\usage{mapScalebar(x, y=NULL, length,
+            lwd=4*par("lwd"), cex=1.2*par("cex"), col="black")
+}
+
+\arguments{
+
+    \item{x, y}{position of the scalebar.  Eventually this should be similar to
+        the corresponding arguments in \code{\link{legend}}, but at the moment
+        \code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.}
+
+    \item{length}{length to indicate, in kilometres.  If not provided, a
+        possibly reasonable choice is made.}
+
+    \item{lwd}{scalebar line width}
+
+    \item{col}{colour}
+    
+    \item{cex}{character size for label}
+
+}
+
+\details{The scale is appropriate to the centre of the plot, and will become
+    increasingly inaccurate away from that spot, with the error depending on
+    the projection and the fraction of the earth that is shown.}
+
+\seealso{See \code{\link{mapPlot}} for general information on plotting maps,
+    including other functions.}
+
+\examples{
+\dontrun{
+library(oce)
+## Arctic Ocean
+data(coastlineWorld)
+latlim <- 90 + 25 * c(-1, 1)
+lonlim <- c(-130, -50)
+orientation <- c(90, -90, 0)
+proj <- "stereographic"
+fill <- "lightgray"
+mapPlot(coastlineWorld, latitudelim=latlim, longitudelim=lonlim,
+        proj=proj, orientation=orientation,
+        axes=FALSE, fill=fill)
+mapScalebar()
+}
+}
+
+\author{Dan Kelley}
+\keyword{hplot}

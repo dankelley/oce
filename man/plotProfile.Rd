@@ -8,7 +8,7 @@
 
 \usage{plotProfile(x,
     xtype="salinity+temperature", 
-    ytype=c("pressure", "z", "sigmaTheta"),
+    ytype=c("pressure", "z", "depth", "sigmaTheta"),
     eos=getOption("eos", default='unesco'),
     xlab=NULL, ylab=NULL,
     col="black",
@@ -18,10 +18,11 @@
     col.N2="brown",
     col.dpdt="darkgreen",
     col.time="darkgreen",
+    pt.bg="transparent",
     grid=TRUE,
     col.grid="lightgray",
     lty.grid="dotted",
-    Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
+    Slim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
     lwd=par("lwd"),
     xaxs="r", yaxs="r",
     cex=1, pch=1,
@@ -65,17 +66,21 @@
                 a \code{time} column in the \code{data} slot, or a \code{sample.rate}
                 in the \code{metadata} slot. }
             \item{\code{"spice"}}{Profile of spice}
+            \item{\code{"Rrho"}}{Profile of Rrho, defined in the diffusive sense}
+            \item{\code{"RrhoSF"}}{Profile of Rrho, defined in the salt-finger sense}
             \item{an expression}{an expression to be evaluated, in the calling
                 environment, for some quantity; in this case, it makes sense to
                 specify also \code{xlab}.}
         }
     }
-    \item{ytype}{variable to use on y axis.}
+    \item{ytype}{variable to use on y axis; note that \code{z} is the negative
+        of \code{depth}.}
     \item{eos}{name of equation of state to be used, either \code{"unesco"} or
         \code{"teos"}.  If the latter, then the computer must have the TEOS
         library installed; see \code{\link{teos}}.}
-    \item{xlab}{optional label for x axis}
-    \item{ylab}{optional label for y axis}
+    \item{xlab}{optional label for x axis (at top of plot).}
+    \item{ylab}{optional label for y axis.  Set to \code{""} to prevent labelling
+    the axis.}
     \item{col}{colour for a general profile.}
     \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
     \item{col.temperature}{color for temperature (see \dQuote{Details}).}
@@ -83,6 +88,7 @@
     \item{col.N2}{color for square of buoyancy frequency (see \dQuote{Details}).}
     \item{col.dpdt}{color for dP/dt.}
     \item{col.time}{color for delta-time.}
+    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
     \item{grid}{logical, set to \code{TRUE} to get a grid.}
     \item{col.grid}{colour for grid.}
     \item{lty.grid}{line type for grid.}
@@ -90,6 +96,7 @@
     \item{Tlim}{Optional limit for T axis}
     \item{densitylim}{Optional limit for density axis}
     \item{N2lim}{Optional limit for N2 axis}
+    \item{Rrholim}{Optional limit for Rrho axis}
     \item{dpdtlim}{Optional limit for dp/dt axis}
     \item{timelim}{Optional limit for delta-time axis}
     \item{ylim}{Optional limit for y axis}
@@ -133,9 +140,9 @@
 }
 
 \examples{
-    library(oce)
-    data(ctd)
-    plotProfile(ctd, xtype="temperature")
+library(oce)
+data(ctd)
+plotProfile(ctd, xtype="temperature")
 }
 
 \author{Dan Kelley}

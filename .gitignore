@@ -1,3 +1,4 @@
+_site
 TAGS
 *.o
 *.so
@@ -15,3 +16,8 @@ man/figures/*pdf
 man/figures/*png
 !man/figures/starCoords.png
 inst/doc/oce.R
+.DS_Store
+.Rproj.user
+.RData
+
+vignettes/.build.timestamp

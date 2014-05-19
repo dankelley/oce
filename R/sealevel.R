@@ -10,6 +10,35 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="sealevel",
+          definition=function(object, ...) {
+              threes <- matrix(nrow=1, ncol=3)
+              cat("Sealevel Summary\n----------------\n\n")
+              showMetadataItem(object, "stationNumber",  "number:              ")
+              showMetadataItem(object, "version", "version:             ")
+              showMetadataItem(object, "stationName",    "name:                ")
+              showMetadataItem(object, "region",  "region:              ")
+              showMetadataItem(object, "deltat",  "sampling delta-t:    ")
+              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                               object@metadata$longitude,
+                                                               digits=5), "\n")
+              showMetadataItem(object, "year",    "year:                ")
+              ndata <- length(object@data$elevation)
+              cat("* number of observations:  ", ndata, "\n")
+              cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
+              cat("* Statistics of subsample::\n")
+              threes <- matrix(nrow=1, ncol=3)
+              threes[1,] <- threenum(object@data$elevation)
+              rownames(threes) <- paste("   ", "elevation")
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='   ')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="sealevel",
           definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
@@ -41,6 +70,7 @@ setValidity("sealevel",
                     return(TRUE)
             })
 
+
 as.sealevel <- function(elevation,
                         time,
                         header=NULL,
@@ -49,8 +79,7 @@ as.sealevel <- function(elevation,
                         stationName=NULL,
                         region=NULL,
                         year=NA,
-                        latitude=NA,
-                        longitude=NA,
+                        longitude=NA, latitude=NA,
                         GMTOffset=NA,
                         decimationMethod=NA,
                         referenceOffset=NA,
@@ -108,13 +137,13 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "\bplot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
+              oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="", unindent=1)
               dots <- list(...)
               titlePlot <- function(x)
               {
                   title <- ""
                   if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
-                      title <- paste(title, "Station ",
+                      title <- paste(title, gettext("Station ", domain="R-oce"),
                                      if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
                                      " ",
                                      if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
@@ -142,7 +171,7 @@ setMethod(f="plot",
               }
 
               if (!inherits(x, "sealevel"))
-                  stop("method is only for sealevel objects")
+                  stop("method is only for objects of class '", "sealevel", "'")
               opar <- par(no.readonly = TRUE)
               par(mgp=mgp, mar=mar)
               lw <- length(which)
@@ -187,7 +216,9 @@ setMethod(f="plot",
                   oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
                   if (which2[w] == 1) {
                       plot(x@data$time, x@data$elevation-MSL,
-                           xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
+                           xlab="",
+                           ylab=resizableLabel("elevation"),
+                           type='l', ylim=ylim, xaxs="i",
                            lwd=0.5, axes=FALSE, ...)
                       tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
                       box()
@@ -211,7 +242,9 @@ setMethod(f="plot",
                                      min(xx@data$elevation-MSL,na.rm=TRUE))/2)[2]
                       ylim <- c(-tmp,tmp)
                       plot(xx@data$time, xx@data$elevation - MSL,
-                           xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
+                           xlab="",
+                           ylab=resizableLabel("elevation"),
+                           type='l',ylim=ylim, xaxs="i",
                            axes=FALSE)
                       oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
                       yax <- axis(2)
@@ -230,7 +263,9 @@ setMethod(f="plot",
                           xlim <- c(0, 0.1) # FIXME: should be able to set this
                           ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
                           plot(s$freq,s$spec,xlim=xlim, ylim=ylim,
-                               xlab="Frequency [cph]", ylab="Spectral density [m^2/cph]",
+                               xlab=resizableLabel("frequency cph"),
+                               ylab=resizableLabel("spectral density m2/cph"),
+                               #[m^2/cph]",
                                type='l',log="y")
                           grid()
                           drawConstituents()
@@ -247,7 +282,7 @@ setMethod(f="plot",
                           e <- x@data$elevation - mean(x@data$elevation)
                           par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
                           plot(s$freq, cumSpec,
-                               xlab="Frequency [ cph ]",
+                               xlab=resizableLabel("frequency cph"),
                                ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
                                type='l',xlim=c(0,0.1))
                           if (adornLength > 3) {
@@ -275,7 +310,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.sealevel()\n")
+              oceDebug(debug, "} # plot.sealevel()\n", unindent=1)
               invisible()
           })
 
@@ -432,30 +467,4 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     rval
 }
 
-summary.sealevel <- function(object, ...)
-{
-    if (!inherits(object, "sealevel"))
-        stop("method is only for sealevel objects")
-    threes <- matrix(nrow=1, ncol=3)
-    cat("Sealevel Summary\n----------------\n\n")
-    showMetadataItem(object, "stationNumber",  "number:              ")
-    showMetadataItem(object, "version", "version:             ")
-    showMetadataItem(object, "stationName",    "name:                ")
-    showMetadataItem(object, "region",  "region:              ")
-    showMetadataItem(object, "deltat",  "sampling delta-t:    ")
-    cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                     object@metadata$longitude,
-                                                     digits=5), "\n")
-    showMetadataItem(object, "year",    "year:                ")
-    ndata <- length(object@data$elevation)
-    cat("* number of observations:  ", ndata, "\n")
-    cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-    cat("* Statistics of subsample::\n")
-    threes <- matrix(nrow=1, ncol=3)
-    threes[1,] <- threenum(object@data$elevation)
-    rownames(threes) <- paste("   ", "elevation")
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes, indent='   ')
-    processingLogShow(object)
-}
 

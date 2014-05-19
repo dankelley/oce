@@ -7,7 +7,7 @@
 }
 \usage{as.sealevel(elevation,  time,  header=NULL,
   stationNumber=NA, stationVersion=NA, stationName=NULL,
-  region=NULL, year=NA, latitude=NA, longitude=NA, GMTOffset=NA,
+  region=NULL, year=NA, longitude=NA, latitude=NA, GMTOffset=NA,
   decimationMethod=NA, referenceOffset=NA, referenceCode=NA, deltat)
 }
 \arguments{
@@ -23,10 +23,10 @@
   \item{region}{the name of the region or country of station (at most 19
     characters).}
   \item{year}{the year of observation.}
-  \item{latitude}{the latitude in decimal degrees, positive north of the
-    equator.}
   \item{longitude}{the longitude in decimal degrees, positive east of
     Greenwich.}
+  \item{latitude}{the latitude in decimal degrees, positive north of the
+    equator.}
   \item{GMTOffset}{offset from GMT, in hours.}
   \item{decimationMethod}{a coded value, with 1 meaning filtered, 2
     meaning a simple average of all samples, 3 meaning spot readings,

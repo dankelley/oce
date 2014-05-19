@@ -34,6 +34,7 @@ processingLogShow(x)
 \value{The updated processingLog.}
 
 \examples{
+library(oce)
 data(ctd)
 ctd@metadata$latitude <- ctd@metadata$latitude + 1
 processingLog(ctd) <- "correct the latitude"

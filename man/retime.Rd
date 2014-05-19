@@ -39,14 +39,14 @@ the start or end.  The new time will be as given by the formula above.
 Note that if the drift is large enough, the sampling rate will be
 changed.  It is a good idea to start with an object that has an
 extended time range, so that, after this is called,
-\code{\link{subset.oce}} can be used to trim to a desired time range.}
+\code{\link{subset}} can be used to trim to a desired time range.}
 
 \value{A new object, with time and other data adjusted.}
 
 \examples{
 library(oce)
 data(adv)
-adv2 <- retime(adv, 0, 1e-4, as.POSIXct("2008-07-01 00:00:00", tz="UTC"))
+adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00",tz="UTC"))
 plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
 }
 

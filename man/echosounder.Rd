@@ -24,9 +24,9 @@ plot(echosounder, which=2, drawBottom=TRUE, atTop=pretty(echosounder[["time"]]))
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{The documentation for \code{\link{echosounder-class}} explains the
-    structure of echosounder objects, and also outlines the other functions
-    dealing with them.}
+\seealso{The documentation for \code{echosounder-class} in the Oce package
+    explains the structure of echosounder objects, and also outlines the other
+    functions dealing with them.}
 
 \author{Dan Kelley}
 

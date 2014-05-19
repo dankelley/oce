@@ -6,6 +6,28 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="windrose",
+          definition=function(object, ...) {
+              cat("Windrose data\n-------------\n\n")
+              n <- length(object@data$theta)
+              dtheta <- abs(diff(object@data$theta[1:2]))
+              cat("* Have n=", n, "angles, separated by dtheta=", dtheta,"\n\n")
+              ##cat("* Statistics by angle::\n\n", ...)
+              ##threes <- matrix(nrow=2, ncol=3)
+              ##threes[1,] <- threenum(object@data$theta)
+              ##threes[2,] <- threenum(object@data$count)
+              ##colnames(threes) <- c("Min.", "Mean", "Max.")
+              ##rownames(threes) <- c("theta", "count")
+              ##print(threes)
+              ##cat('\n')
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
+
 setMethod(f="[[",
           signature="windrose",
           definition=function(x, i, j, drop) {
@@ -20,7 +42,7 @@ setMethod(f="[[",
 
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\bas.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (inherits(x, "met")) {
         tmp <- x
         x <- tmp[["u"]]
@@ -66,7 +88,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
                      count=count, mean=mean, fives=fives)
     res@metadata <- list(dtheta=dtheta)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b} # as.windrose()\n", sep="")
+    oceDebug(debug, "} # as.windrose()\n", sep="", unindent=1)
     res
 }
 
@@ -81,7 +103,7 @@ setMethod(f="plot",
                               ...)
           {
               if (!inherits(x, "windrose"))
-                  stop("method is only for wind-rose objects")
+                  stop("method is only for objects of class '", "windrose", "'")
               type <- match.arg(type)
               convention <- match.arg(convention)
               nt <- length(x@data$theta)
@@ -171,22 +193,4 @@ setMethod(f="plot",
               invisible()
           })
 
-summary.windrose <- function(object, ...)
-{
-    if (!inherits(object, "windrose"))
-        stop("method is only for windrose objects")
-    cat("Windrose data\n-------------\n\n")
-    n <- length(object@data$theta)
-    dtheta <- abs(diff(object@data$theta[1:2]))
-    cat("* Have n=", n, "angles, separated by dtheta=", dtheta,"\n\n")
-    ##cat("* Statistics by angle::\n\n", ...)
-    ##threes <- matrix(nrow=2, ncol=3)
-    ##threes[1,] <- threenum(object@data$theta)
-    ##threes[2,] <- threenum(object@data$count)
-    ##colnames(threes) <- c("Min.", "Mean", "Max.")
-    ##rownames(threes) <- c("theta", "count")
-    ##print(threes)
-    ##cat('\n')
-    processingLogShow(object)
-}
 

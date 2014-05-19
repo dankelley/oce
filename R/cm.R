@@ -1,4 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+## cm.R current-meter support (interocean S4)
+
 setMethod(f="initialize",
           signature="cm",
           definition=function(.Object) {
@@ -6,39 +8,76 @@ setMethod(f="initialize",
               .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
           })
-## the default 'oce' object is sufficient for other methods
 
-## cm.R current-meter support (interocean S4)
+setMethod(f="summary",
+          signature="cm",
+          definition=function(object, ...) {
+              dataNames <- names(object@data)
+              threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
+              ii <- 1
+              for (i in 1:length(dataNames)) {
+                  if (names(object@data)[i] != "time") {
+                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              vDim <- dim(object@data$v)
+
+              cat("cm Summary\n----------\n\n", ...)
+              cat(paste("* Instrument:         ", object@metadata$instrumentType, ", serial number ``", paste(object@metadata$serialNumber, collapse=""), "``\n", sep=""), ...)
+              cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
+              if ("latitude" %in% names(object@metadata)) {
+                  cat(paste("* Location:           ", if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+              }
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+                          1 / object@metadata$measurementDeltat), ...)
+              cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
+                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
+                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
+                          1 / object@metadata$subsampleDeltat), ...)
+              cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                          object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
+              cat("* Statistics of subsample\n  ::\n\n", ...)
+              print(threes)
+              cat("\n")
+              processingLogShow(object)
+          })
+
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
-                    latitude=NA, longitude=NA,
+                    longitude=NA, latitude=NA,
                     debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 2)
         debug <- 2
     if (debug < 0)
         debug  <- 0
-    oceDebug(debug, "\b\bread.cm(file=\"",file,
+    oceDebug(debug, "read.cm(file=\"",file,
               "\", from=", format(from),
-              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="")
+              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
     type <- match.arg(type)
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
-                   latitude=latitude, longitude=longitude,
+                   longitude=longitude, latitude=latitude,
                    debug=debug-1, monitor=monitor, processingLog=processingLog, ...)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                       latitude=NA, longitude=NA,
+                       longitude=NA, latitude=NA,
                        debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 1)
         debug <- 1
-    oceDebug(debug, "\b\bread.cm.s4(file=\"",file,
+    oceDebug(debug, "read.cm.s4(file=\"",file,
               "\", from=", format(from),
-              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="")
+              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -172,65 +211,11 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rval@data <- data
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     rval@processingLog <- processingLog(rval@processingLog, processingLog)
-    oceDebug(debug, "\b\b} # read.cm()\n")
+    oceDebug(debug, "} # read.cm()\n", unindent=1)
     rval
 }
 
 
-summary.cm <- function(object, ...)
-{
-    if (!inherits(object, "cm"))
-        stop("method is only for cm objects")
-    res <- list()
-    res$latitude <- object@metadata$latitude
-    res$longitude <- object@metadata$longitude
-    res$filename <- object@metadata$filename
-    res$instrumentType <- object@metadata$instrumentType
-    res$serialNumber <- object@metadata$serialNumber
-    res$measurementStart <- object@metadata$measurementStart
-    res$measurementEnd <- object@metadata$measurementEnd
-    res$measurementDeltat <- object@metadata$measurementDeltat
-    res$processingLog <- object@processingLog
-    dataNames <- names(object@data)
-    threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
-    ii <- 1
-    for (i in 1:length(dataNames)) {
-        if (names(object@data)[i] != "time") {
-            threes[ii,] <- threenum(object@data[[dataNames[i]]])
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    vDim <- dim(object@data$v)
-    res$subsampleStart <- object@data$time[1]
-    res$subsampleEndTime <- object@data$time[length(object@data$time)]
-    res$subsampleDeltat <- mean(diff(as.numeric(object@data$time)),na.rm=TRUE)
-    res$distance <- object@data$distance
-    res$time <- object@data$time
-    res$dataNames <- names(object@data)
-    cat("cm Summary\n----------\n\n", ...)
-    cat(paste("* Instrument:         ", object@metadata$instrumentType, ", serial number ``", paste(object@metadata$serialNumber, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
-    if ("latitude" %in% names(object@metadata)) {
-        cat(paste("* Location:           ", if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                  if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
-    }
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                1 / object@metadata$measurementDeltat), ...)
-    cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                1 / object@metadata$subsampleDeltat), ...)
-    cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
-    cat("* Statistics of subsample\n  ::\n\n", ...)
-    print(threes)
-    cat("\n")
-    processingLogShow(object)
-}
 
 setMethod(f="plot",
           signature=signature("cm"),
@@ -248,11 +233,11 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "\b\bplot.cm() {\n")
+              oceDebug(debug, "plot.cm() {\n", unindent=1)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (!inherits(x, "cm"))
-                  stop("method is only for cm objects")
+                  stop("method is only for objects of class '", "cm", "'")
               if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
                   warning("there are no profiles in this dataset")
                   return
@@ -293,11 +278,15 @@ setMethod(f="plot",
                   oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
                   if (which[w] == 1) {
                       oce.plot.ts(x@data$time, x@data$u,
-                                  type=type, xlab="", ylab="u [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("u"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 2) {
                       oce.plot.ts(x@data$time, x@data$v,
-                                  type=type, xlab="", ylab="v [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("v"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 3) {     # or "progressive vector"
                       oceDebug(debug, "progressive vector plot\n")
@@ -309,13 +298,19 @@ setMethod(f="plot",
                       v[is.na(v)] <- 0
                       x.dist <- cumsum(u) * dt / m.per.km
                       y.dist <- cumsum(v) * dt / m.per.km
-                      plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
+                      plot(x.dist, y.dist,
+                           xlab=resizableLabel("km"), ylab=resizableLabel("km"),
+                           type='l', asp=1, ...)
                   } else if (which[w] %in% 4:6) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
                       oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                       if (len <= small)
-                          plot(x@data$u, x@data$v, type=type, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                          plot(x@data$u, x@data$v, type=type,
+                               xlab=resizableLabel("u"), ylab=resizableLabel("v"),
+                               asp=1, ...)
                       else
-                          smoothScatter(x@data$u, x@data$v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                          smoothScatter(x@data$u, x@data$v,
+                                        xlab=resizableLabel("u"), ylab=resizableLabel("v"),
+                                        asp=1, ...)
                       if (which[w] >= 5) {
                           oceDebug(debug, "\"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                           ok <- !is.na(x@data$u) & !is.na(x@data$v)
@@ -341,19 +336,27 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 7) {
                       oce.plot.ts(x@data$time, x@data$depth,
-                                  type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("depth"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 8) {
                       oce.plot.ts(x@data$time, x@data$salinity,
-                                  type=type, xlab="", ylab=resizableLabel("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("S", "y"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 9) {
                       oce.plot.ts(x@data$time, x@data$temperature,
-                                  type=type, xlab="", ylab=resizableLabel("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("T", "y"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 10) {
                       oce.plot.ts(x@data$time, x@data$heading,
-                                  type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  type=type,
+                                  xlab="", ylab=resizableLabel("heading"),
+                                  main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 11) {
                       plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$depth), main=main, ...) 
@@ -366,7 +369,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.cm()\n")
+              oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()
           })
 

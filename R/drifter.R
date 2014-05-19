@@ -15,68 +15,70 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="summary",
+          signature="drifter",
+          definition=function(object, ...) {
+              cat("Drifter Summary\n---------------\n\n")
+              cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
+              cat("* id:         \"", object@metadata$id, "\"\n", sep="")
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
+              for (i in 2:ndata)
+                  threes[i-1,] <- threenum(object@data[[i]])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              rownames(threes) <- names(object@data)[-1]
+              print(threes)
+              processingLogShow(object)
+          })
+
 ##setMethod(f="[[",
 ##          signature="drifter",
 ##          definition=function(x, i, j, drop) {
 ##              as(x, "oce")[[i, j, drop]]
 ##          })
 
-summary.drifter <- function(object, ...)
-{
-    if (!inherits(object, "drifter"))
-        stop("method is only for drifter objects")
-    cat("Drifter Summary\n---------------\n\n")
-    cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
-    cat("* id:         \"", object@metadata$id, "\"\n", sep="")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
-    for (i in 2:ndata)
-        threes[i-1,] <- threenum(object@data[[i]])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- names(object@data)[-1]
-    print(threes)
-    processingLogShow(object)
-}
 
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!require("ncdf4"))
+        stop('must install.packages("ncdf4") to read drifter data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    library(ncdf)
     ofile <- file
     filename <- ""
+    ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- ncdf::open.ncdf(file)
-        on.exit(ncdf::close.ncdf(file))
+        file <- ncdf4::nc_open(file)
+        on.exit(ncdf4::nc_close(file))
     } else {
         if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
         if (!isOpen(file)) {
-            d <- ncdf::open.ncdf(file)
-            on.exit(ncdf::close.ncdf(file))
+            file <- ncdf4::nc_open(file)
+            on.exit(ncdf4::nc_close(file))
         }
     }
-    id <- ncdf::get.var.ncdf(file, "PLATFORM_NUMBER")[1]
+    id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
-    t0s <- ncdf::get.var.ncdf(file, "REFERENCE_DATE_TIME")
+    t0s <- ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME")
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
-    julianDayTime <- ncdf::get.var.ncdf(file, "JULD")
+    julianDayTime <- ncdf4::ncvar_get(file, "JULD")
     time <- t0 + julianDayTime * 86400
-    longitude <- ncdf::get.var.ncdf(file, "LONGITUDE")
-    longitudeNA <- ncdf::att.get.ncdf(file, "LONGITUDE","_FillValue")$value
+    longitude <- ncdf4::ncvar_get(file, "LONGITUDE")
+    longitudeNA <- ncdf4::ncatt_get(file, "LONGITUDE","_FillValue")$value
     longitude[longitude == longitudeNA] <- NA
-    latitude <- ncdf::get.var.ncdf(file, "LATITUDE")
-    latitudeNA <- ncdf::att.get.ncdf(file, "LATITUDE","_FillValue")$value
+    latitude <- ncdf4::ncvar_get(file, "LATITUDE")
+    latitudeNA <- ncdf4::ncatt_get(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
-    salinity <- ncdf::get.var.ncdf(file, "PSAL")
-    salinityNA <- ncdf::att.get.ncdf(file, "PSAL","_FillValue")$value
+    salinity <- ncdf4::ncvar_get(file, "PSAL")
+    salinityNA <- ncdf4::ncatt_get(file, "PSAL","_FillValue")$value
     salinity[salinity == salinityNA] <- NA
-    temperature <- ncdf::get.var.ncdf(file, "TEMP")
-    temperatureNA <- ncdf::att.get.ncdf(file, "TEMP","_FillValue")$value
+    temperature <- ncdf4::ncvar_get(file, "TEMP")
+    temperatureNA <- ncdf4::ncatt_get(file, "TEMP","_FillValue")$value
     temperature[temperature == temperatureNA] <- NA
-    pressure <- ncdf::get.var.ncdf(file, "PRES")
-    pressureNA <- ncdf::att.get.ncdf(file, "PRES","_FillValue")$value
+    pressure <- ncdf4::ncvar_get(file, "PRES")
+    pressureNA <- ncdf4::ncatt_get(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
     ## make things into matrices, even for a single profile
     if (1 == length(dim(salinity))) {
@@ -127,7 +129,8 @@ as.drifter <- function(time, longitude, latitude,
 setMethod(f="plot",
           signature=signature("drifter"),
           definition=function (x, which = 1, level,
-                               coastline,
+                               coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                                           "coastlineWorldFine", "none"),
                                cex=1,
                                pch=1,
                                type='p',
@@ -140,11 +143,12 @@ setMethod(f="plot",
                                ...)
           {
               if (!inherits(x, "drifter"))
-                  stop("method is only for drifter objects")
-              oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "),",
+                  stop("method is only for objects of class '", "drifter", "'")
+              oceDebug(debug, "plot.drifter(x, which=c(", paste(which,collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
-                      " ...) {\n", sep="")
+                      " ...) {\n", sep="", unindent=1)
+              coastline <- match.arg(coastline)
               #opar <- par(no.readonly = TRUE)
               lw <- length(which)
               ##if (lw > 1) on.exit(par(opar))
@@ -184,7 +188,53 @@ setMethod(f="plot",
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
                            type=type, cex=cex, pch=pch,
                            col=if (missing(col)) "black" else col,
-                           xlab="Longitude", ylab="Latitude", ...)
+                           xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
+                      ## FIXME: this coastline code is reproduced in section.R; it should be DRY
+                      ## figure out coastline
+                      haveCoastline <- FALSE
+                      if (!is.character(coastline)) 
+                          stop("coastline must be a character string")
+                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      lonr <- range(x[["longitude"]], na.rm=TRUE)
+                      latr <- range(x[["latitude"]], na.rm=TRUE)
+                      if (coastline == "best") {
+                          if (haveOcedata) {
+                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                              oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              coastline <- get(bestcoastline)
+                          } else {
+                              oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
+                              data(coastlineWorld, envir=environment())
+                              coastline <- coastlineWorld
+                          }
+                          haveCoastline <- TRUE
+                      } else {
+                          if (coastline != "none") {
+                              if (coastline == "coastlineWorld") {
+                                  data("coastlineWorld", envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                                  data("coastlineWorldFine", package="ocedata", envir=environment())
+                                  coastline <- coastlineWorldFine
+                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                  coastline <- coastlineWorldMedium
+                              }  else {
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
+                              }
+                              haveCoastline <- TRUE
+                          }
+                      }
+                      if (haveCoastline) {
+                          if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                              polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                              polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                          } else {
+                              lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                              lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                          }
+                      }
                       if (!missing(coastline)) {
                           polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
                           if (type[w] == 'l')
@@ -241,7 +291,7 @@ setMethod(f="plot",
                       stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
-              oceDebug(debug, "\b\b} # plot.drifter()\n")
+              oceDebug(debug, "} # plot.drifter()\n", unindent=1)
               invisible()
           })
 

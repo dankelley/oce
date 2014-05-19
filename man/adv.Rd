@@ -13,6 +13,7 @@
     a normal distribution with standard deviation of 2 percent of signal.}
 
 \examples{
+\dontrun{
 library(oce)
 data(adv)
 
@@ -25,14 +26,17 @@ plot(log10(s$freq), log10(s$spec), type='l')
 for (a in seq(-20, 20, by=1))
     abline(a=a, b=-5/3, col='gray', lty='dotted')
 }
+}
 
 \usage{data(adv)}
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{The documentation for \code{\link{adv-class}} explains the structure
-    of ADV objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{adv-class} in the Oce package explains the
+    structure of ADV objects, and also outlines the other functions dealing
+    with them.}
 
 \author{Dan Kelley}
 
 \keyword{datasets}
+

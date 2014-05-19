@@ -17,10 +17,11 @@
   Although Foreman's Appendix 7.2 states that times are in Mountain standard
   time, the timezone is set to \code{UTC} in the present case, so that the
   results will be similar to those he provides in his Appendix 7.3.  
-  
-} % description
+}
 
 \examples{
+\dontrun{
+library(oce)
 data(sealevelTuktoyaktuk)
 time <- sealevelTuktoyaktuk[["time"]]
 elevation <- sealevelTuktoyaktuk[["elevation"]]
@@ -31,25 +32,14 @@ tide <- tidem(sealevelTuktoyaktuk)
 detided <- elevation - predict(tide)
 lines(time, detided, col="red")
 }
+}
 
 \usage{data(sealevelTuktoyaktuk)}
 
 \source{The data were based on the \code{T_TIDE} dataset,  which in turn seems
     to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on file
-    format, and then the \code{sealevelTuktoyaktuk} object was created as
-    follows.
-\preformatted{
-# Note: the data file is not supplied with Oce.
-tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
-time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT"), tz="GMT")
-elevation <- tuk$V2
-sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
-  stationName="Tuktoyaktuk", region="NWT", stationNumber=6485,
-  longitude=-133.0292, latitude=69.43889,
-  year=1975, GMTOffset=0)
-#save(sealevelTuktoyaktuk, file="oce/data/sealevelTuktoyaktuk.rda")
-} % preformatted
-} % source
+    format, and then the \code{sealevelTuktoyaktuk} object was created using
+    \code{as.sealevel} in the Oce package.}
 
 \references{
   Foreman, M. G. G., 1977.
@@ -62,8 +52,10 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
   Computers and Geosciences, 28, 929-937.
 }
 
-\seealso{The documentation for \code{\link{sealevel-class}} explains the
-    structure of sea-level objects, and also outlines the other functions
-    dealing with them.}
+\seealso{The documentation for \code{sealevel-class} in the Oce package
+    explains the structure of sea-level objects, and also outlines the other
+    functions dealing with them.  Data for Halifax harbour are stored in
+    \code{\link{sealevel}}.}
 
 \keyword{datasets}
+

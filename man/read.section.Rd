@@ -64,23 +64,6 @@ and
     structure of section objects, and also outlines the other functions dealing
     with them.}
 
-\examples{
-library(oce)
-data(a03)
-GS <- subset.oce(a03, indices=124:102)
-GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
-\dontrun{
-# Plot stations individually (good for quality-control)
-pdf("a03_stations.pdf")
-for (s in seq_along(a03[["stationId"]])) {
-    plot(a03[["station", s]])
-}
-dev.off()
-}
-}
-
 \references{Several repository sites provide section data. An example that is
     perhaps likely to exist for years is \url{http://cchdo.ucsd.edu}, but a
     search on \code{"WOCE bottle data"} should turn up other sites, if this one

@@ -1,14 +1,14 @@
 \name{summary.echosounder}
 
 \alias{summary.echosounder}
+\alias{summary,echosounder,missing-method}
+\alias{summary,echosounder-method}
 
 \title{Summarize an echosounder object}
 
 \description{Summarizes some of the data in an \code{echosounder} object.}
 
-\usage{
-\method{summary}{echosounder}(object, \dots)
-}
+\usage{\S4method{summary}{echosounder}(object, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"echosounder"}, usually, a result of a
@@ -20,8 +20,7 @@
 \details{Pertinent summary information is presented, including the
   sampling location, data ranges, etc.}
 
-\value{An object of class \code{"summary.echosounder"}, which contains
-    pertinent information about the echosounder record and its processing.}
+\value{\code{NULL}}
 
 \seealso{The documentation for \code{\link{echosounder-class}} explains the
     structure of echosounder objects, and also outlines the other functions

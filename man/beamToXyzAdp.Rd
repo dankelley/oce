@@ -2,7 +2,7 @@
 
 \alias{beamToXyzAdp}
 
-\title{Convert ADP from beam coordinates to xyz coordinates}
+\title{Change ADP coordinate system}
 
 \description{Convert ADP velocity components from a beam-based
   coordinate system to a xyz-based coordinate system.}

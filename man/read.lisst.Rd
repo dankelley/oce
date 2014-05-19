@@ -6,15 +6,15 @@
 
 \description{Read a LISST data file, producing an object of type \code{lisst}.}
 
-\usage{read.lisst(file, year=0, tz="UTC", latitude=NA, longitude=NA)}
+\usage{read.lisst(file, year=0, tz="UTC", longitude=NA, latitude=NA)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{year}{year in which the measurement of the series was made.}
   \item{tz}{time zone.}
-  \item{latitude}{latitude of observation (stored in metadata)}
   \item{longitude}{longitude of observation (stored in metadata)}
+  \item{latitude}{latitude of observation (stored in metadata)}
 }
 
 \details{The file should contain 42 columns, with no header.  If there are

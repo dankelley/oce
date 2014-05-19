@@ -6,6 +6,52 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="tidem",
+          definition=function(object, p, constituent, ...) {
+              n <- length(object[["p"]])
+              ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
+              haveP <- any(!is.na(object@data$p))
+              if (missing(constituent)) {
+                  fit <- data.frame(Const=object@data$const[ok],
+                                    Name=object@data$name[ok],
+                                    Freq=object@data$freq[ok],
+                                    Amplitude=object@data$amplitude[ok],
+                                    Phase=object@data$phase[ok],
+                                    p=object@data$p[ok])
+              } else {
+                  i <- which(object@data$name==constituent)
+                  if (length(i) == 0)
+                      stop("there is no such constituent '", constituent, "'")
+                  fit <- data.frame(Const=object@data$const[i],
+                                    Name=object@data$name[i],
+                                    Freq=object@data$freq[i],
+                                    Amplitude=object@data$amplitude[i],
+                                    Phase=object@data$phase[i],
+                                    p=p)
+              }
+              cat("tidem summary\n-------------\n")
+              cat("\nCall:\n")
+              cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
+              cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
+              cat("\nFitted model:\n")
+              f <- fit[3:6]
+              rownames(f) <- as.character(fit[,2])
+              digits <- 3
+              if (haveP) {
+                  printCoefmat(f, digits=digits,
+                               signif.stars=getOption("show.signif.stars"),
+                               signif.legend=TRUE,
+                               P.values=TRUE, has.Pvalue=TRUE, ...)
+              } else {
+                  printCoefmat(f[,-4], digits=digits)
+              }
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="tidem",
           definition=function(x, i, j, drop) {
@@ -15,7 +61,8 @@ setMethod(f="[[",
                   x@data$model$coef
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  as(x, "oce")[[i, j, drop]]
+                  ##as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
               }
           })
 
@@ -59,7 +106,7 @@ setMethod(f="plot",
                   }
               }
               if (!inherits(x, "tidem"))
-                  stop("method is only for tidal analysis objects")
+                  stop("method is only for objects of class '", "tidem", "'")
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (lw > 1) on.exit(par(opar))
@@ -89,7 +136,7 @@ tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata", envir=environment())
-    tidedata <- get("tidedata", pos=globalenv())
+    tidedata <- get("tidedata")#, pos=globalenv())
 
     a <- tidemAstron(t)
 
@@ -327,8 +374,8 @@ tidemAstron <- function(t)
 tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\btidem(x, t, constituents,",
-             "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="")
+    oceDebug(debug, "tidem(x, t, constituents,",
+             "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
     if (missing(x))
         stop("must supply 'x'")
     if (inherits(x, "sealevel")) {
@@ -360,7 +407,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
     data("tidedata", envir=environment())
-    tidedata <- get("tidedata", pos=globalenv())
+    tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
 
@@ -541,48 +588,6 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     rval
 }
 
-summary.tidem <- function(object, p, constituent, ...)
-{
-    n <- length(object[["p"]])
-    ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
-    haveP <- any(!is.na(object@data$p))
-    if (missing(constituent)) {
-        fit <- data.frame(Const=object@data$const[ok],
-                          Name=object@data$name[ok],
-                          Freq=object@data$freq[ok],
-                          Amplitude=object@data$amplitude[ok],
-                          Phase=object@data$phase[ok],
-                          p=object@data$p[ok])
-    } else {
-        i <- which(object@data$name==constituent)
-        if (length(i) == 0)
-            stop("there is no such constituent '", constituent, "'")
-        fit <- data.frame(Const=object@data$const[i],
-                          Name=object@data$name[i],
-                          Freq=object@data$freq[i],
-                          Amplitude=object@data$amplitude[i],
-                          Phase=object@data$phase[i],
-                          p=p)
-    }
-    cat("tidem summary\n-------------\n")
-    cat("\nCall:\n")
-    cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
-    cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
-    cat("\nFitted model:\n")
-    f <- fit[3:6]
-    rownames(f) <- as.character(fit[,2])
-    digits <- 3
-    if (haveP) {
-        printCoefmat(f, digits=digits,
-                     signif.stars=getOption("show.signif.stars"),
-                     signif.legend=TRUE,
-                     P.values=TRUE, has.Pvalue=TRUE, ...)
-    } else {
-        printCoefmat(f[,-4], digits=digits)
-    }
-
-    processingLogShow(object)
-}
 
 predict.tidem <- function(object, newdata, ...)
 {
@@ -615,43 +620,71 @@ predict.tidem <- function(object, newdata, ...)
     as.numeric(rval)
 }
 
-webtide <- function(action=c("map", "predict"), latitude, longitude, time,
-                    basedir="/usr/local/WebTide", region="nwatl",
-                    plot=TRUE, tformat)
+webtide <- function(action=c("map", "predict"),
+                    longitude, latitude, node, time,
+                    basedir=getOption("webtide"),
+                    region="nwatl",
+                    plot=TRUE, tformat, ...)
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
     filename <- paste(subdir, "/", region, "_ll.nod", sep="")
     triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
     if (action == "map") {
-        if (interactive() && missing(latitude) && missing(longitude)) {
+        if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
-            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
-            point <- locator(1)
-            node <- which.min(geodDist(triangles$latitude, triangles$longitude, point$y, point$x))
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
+                 asp=asp, xlab="", ylab="", ...)
+            usr <- par('usr')
+            best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            warning("tidem: using default coastline for testing")
+            data("coastlineWorld", envir=environment())
+            coastlineWorld <- get("coastlineWorld")
+            ##data(best, envir=environment(), debug=debug-1)
+            ##coastline <- get(best)
+            lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+            if (missing(node)) {
+                point <- locator(1)
+                node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
+            }
             longitude <- triangles$longitude[node]
             latitude <- triangles$latitude[node]
-            points(longitude, latitude, pch=20, cex=2, col='red')
+            points(longitude, latitude, pch=20, cex=2, col='blue')
+            legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
+                   legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
         } else  {
-            node <- 1
-            longitude <- triangles$longitude[node]
-            latitude <- triangles$latitude[node]
+            node <- seq_along(triangles$longitude)
+            longitude <- triangles$longitude
+            latitude <- triangles$latitude
         }
-        return(list(latitude=latitude, longitude=longitude))
-    } else {
+        return(list(node=node, latitude=latitude, longitude=longitude))
+    } else if (action == "predict") {
         if (missing(time))
-            stop("must supply list of times in 'time'")
-        node <- which.min(geodDist(triangles$latitude, triangles$longitude, latitude, longitude))
+            time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
+        if (missing(node)) {
+            if (missing(longitude) || missing(latitude))
+                stop("'longitude' and 'latitude' must be given unless 'node' is given")
+            node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
+        } else {
+            latitude <- triangles$latitude[node]
+            longitude <- triangles$longitude[node]
+        }
         constituentse <- dir(path=subdir, pattern="*.s2c")
         abbrev <- substr(constituentse, 1, 2)
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
         data("tidedata", envir=environment())
-        tidedata  <- get("tidedata",   pos=globalenv())
+        tidedata  <- get("tidedata")#,   pos=globalenv())
         for (i in 1:nconstituents) {
             period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            ## Elevation file contains one entry per node, starting with e.g.:
+            ##tri
+            ## period 23.934470 (hours) first harmonic 
+            ##260.000000 (days) 
+            ##1 0.191244 223.820954
+            ##2 0.188446 223.141200
             cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
             ampe[i] <- cone[[2]]
             phasee[i] <- cone[[3]]
@@ -667,7 +700,7 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
-            vuf <- oce:::tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
@@ -677,14 +710,18 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
         if (plot) {
             par(mfrow=c(3,1))
             oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
-                        main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""),
+                        main=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
                         tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
             oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"),
                         drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
             oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
                         drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
         }
     }
-    invisible(list(time=time, elevation=elevation, u=u, v=v, node=node, basedir=basedir, region=region))
+    invisible(list(time=time, elevation=elevation, u=u, v=v,
+                   node=node, basedir=basedir, region=region))
 }
 

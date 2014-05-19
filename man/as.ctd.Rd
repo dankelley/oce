@@ -9,9 +9,10 @@
        scan, other,
        missingValue,
        quality, 
+       filename="", type="", model="", serialNumber="",
        ship="", scientist="", institute="", address="", cruise="", station="", 
        date="", startTime="", recovery="",
-       latitude=NA, longitude=NA, 
+       longitude=NA, latitude=NA,
        waterDepth=NA, sampleInterval=NA, src="")
 }
 \arguments{
@@ -43,6 +44,10 @@
      data.  (In WOCE, \code{quality=2} indicates good data, 
      \code{quality=3} means questionable data, and \code{quality=4}
      means bad data.}
+  \item{filename}{filename to be stored in the object}
+  \item{type}{type of CTD, e.g. "SBE"}
+  \item{model}{model of instrument}
+  \item{serialNumber}{serial number of instrument}
   \item{ship}{optional string containing the ship from which the observations were made.}
   \item{scientist}{optional string containing the chief scientist on the cruise.}
   \item{institute}{optional string containing the institute behind the work.}
@@ -52,8 +57,8 @@
   \item{date}{optional string containing the date at which the profile was started.}
   \item{startTime}{optional string containing the start time.}
   \item{recovery}{optional string indicating the recovery time.}
-  \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
   \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
+  \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
   \item{waterDepth}{optional numerical value indicating the water depth in metres.}
   \item{sampleInterval}{optional numerical value indicating the time
     between samples in the profile.}

@@ -14,13 +14,13 @@
 
 \usage{
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   type=c("workhorse"),
   monitor=FALSE, despike=FALSE, processingLog,
   testing=FALSE,
@@ -28,26 +28,27 @@ read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   \dots)
 
 read.aquadopp(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
+
 read.aquadoppHR(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
 read.aquadoppProfiler(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
 
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
@@ -55,13 +56,14 @@ read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   \dots)
 
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   type=c("adp","pcadp"),
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
+
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
-  latitude=NA, longitude=NA,
+  longitude=NA, latitude=NA,
   type=c("adp", "pcadp"),
   beamAngle=25, orientation,
   monitor=FALSE, processingLog,
@@ -102,10 +104,10 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
       Nortek System Integrator Guide (2008 edition, page 31), so the function
       must rely on word-of-mouth formulae that do not work in all cases.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  \item{latitude}{optional signed number indicating the latitude in 
-    degrees North.}
   \item{longitude}{optional signed number indicating the longitude in 
     degrees East.}
+  \item{latitude}{optional signed number indicating the latitude in 
+    degrees North.}
   \item{beamAngle}{angle between instrument axis and beams, in degrees.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     (with numbers and dots) of every profile read.}

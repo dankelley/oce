@@ -409,7 +409,7 @@ distance <- function(x, time)
     if (inherits(x, "adp")) {
         x@data$distance
     } else {
-        stop("x must be an object of class \"adp\"")
+        stop("method is only for objects of class '", "adp", "'")
     }
 }
 

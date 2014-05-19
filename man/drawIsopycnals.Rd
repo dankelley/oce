@@ -1,18 +1,26 @@
 \name{drawIsopycnals}
+
 \alias{drawIsopycnals}
-\title{Draw isopycnal curves on an existing temperature-salinity plot}
+
+\title{Add isopycnal curves to TS plot}
+
 \description{Draw isopycnal curves on an existing temperature-salinity plot}
 
 \usage{
-drawIsopycnals(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
+drawIsopycnals(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                eos=getOption("eos", default="unesco"),
-               cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+               cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 }
 
 \arguments{
-  \item{rhoLevels}{suggested number of density levels (i.e. isopycnal curves).}
-  \item{rotateRhoLabels}{boolean, set to \code{TRUE} to write all density labels horizontally.}
-  \item{rho1000}{boolean, set to \code{TRUE} to write isopycnal labels as e.g. 1024 instead of 24.}
+  \item{nlevels}{suggested number of density levels (i.e. isopycnal curves);
+      ignored if \code{levels} is supplied.}
+  \item{levels}{optional density levels to draw.}
+  \item{rotate}{boolean, set to \code{TRUE} to write all density labels horizontally.}
+  \item{rho1000}{boolean, set to \code{TRUE} to write isopycnal labels as e.g.
+      1024 instead of 24.}
+  \item{digits}{number of decimal digits to use in label (supplied to
+      \code{\link{round}}).}
   \item{eos}{name of equation of state to be used, either \code{"unesco"} or
       \code{"teos"}.  If the latter, then the computer must have the TEOS
       library installed; see \code{\link{teos}}.}

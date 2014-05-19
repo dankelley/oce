@@ -1,4 +1,4 @@
-library(oce);
-data(sealevelHalifax)
-summary(sealevelHalifax)
-plot(sealevelHalifax)
+library(oce)
+data(sealevel)
+summary(sealevel)
+plot(sealevel)

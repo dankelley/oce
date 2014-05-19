@@ -2,7 +2,7 @@
 
 \alias{prettyPosition}
 
-\title{Round a geographical positions in degrees, minutes, and seconds}
+\title{Pretty lat/lon in deg, min, sec}
 
 \description{Round a geographical positions in degrees, minutes, and seconds}
 

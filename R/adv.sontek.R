@@ -1,9 +1,9 @@
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   latitude=NA, longitude=NA,
+                                   longitude=NA, latitude=NA,
                                    start, deltat,
                                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
-    oceDebug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
+    oceDebug(debug, paste("read.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,
@@ -11,7 +11,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                            if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
                            "debug=", debug,
                            ", monitor=", monitor,
-                           ", processingLog=(not shown)) {\n", sep=""))
+                           ", processingLog=(not shown)) {\n", sep=""), unindent=1)
     if (missing(start))
         stop("must supply start, a POSIXct time (or suitable string for time, in UTC) at which the first observation was made")
     if (is.numeric(start))
@@ -105,8 +105,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv",
                      filename=filename,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=len,
                      numberOfBeams=3,
                      serialNumber="?",
@@ -137,7 +136,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),      # FIXME (twoTimescales)
                                 header=TRUE,
-                                latitude=NA, longitude=NA,
+                                longitude=NA, latitude=NA,
                                 debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {
@@ -167,7 +166,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
     ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
-    oceDebug(debug, "\b\bread.adv.sontek.adr() {\n")
+    oceDebug(debug, "read.adv.sontek.adr() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -199,8 +198,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"???
                      filename=filename,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=NA, # fill in later
                      numberOfBeams=NA, # fill in later
                      measurementDeltat=1,
@@ -603,7 +601,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
 read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz"),
                                  originalCoordinate="xyz", transformationMatrix,
-                                 latitude=NA, longitude=NA,
+                                 longitude=NA, latitude=NA,
                                  debug=getOption("oceDebug"), monitor=FALSE,
                                  processingLog)
 {
@@ -730,8 +728,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"?
                      filename=basefile,
-                     latitude=latitude,
-                     longitude=longitude,
+                     longitude=longitude, latitude=latitude,
                      numberOfSamples=dim(v)[1],
                      numberOfBeams=dim(v)[2],
                      velocityResolution=velocityScale/10, # FIXME: guessing on the resolution for text files

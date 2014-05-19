@@ -134,8 +134,7 @@
 \examples{
 library(oce)
 data(echosounder)
-data(coastlineSLE)
-plot(echosounder, which=c(1,3), coastline=coastlineSLE, radius=2, drawBottom=TRUE)
+plot(echosounder, which=c(1,2), drawBottom=TRUE)
 }
 
 \author{Dan Kelley, with extensive help from Clark Richards}

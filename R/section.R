@@ -6,11 +6,49 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+setMethod(f="summary",
+          signature="section",
+          definition=function(object, ...) {
+              numStations <- length(object@data$station)
+              lat1 <- object@data$station[[1]]@metadata$latitude
+              lon1 <- object@data$station[[1]]@metadata$longitude
+              cat("Section Summary\n---------------\n\n")
+              cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
+              cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
+              stn.sum <- matrix(nrow=numStations, ncol=5)
+              if (numStations > 0) {
+                  cat("* Summary of", numStations, "stations (first column is station ID)\n")
+                  for (i in 1:numStations) {
+                      stn <- object@data$station[[i]]
+                      stn.sum[i, 1] <- stn@metadata$longitude
+                      stn.sum[i, 2] <- stn@metadata$latitude
+                      stn.sum[i, 3] <- length(stn@data$pressure)
+                      if (is.finite(stn@metadata$waterDepth)) {
+                          stn.sum[i, 4] <- stn@metadata$waterDepth
+                      } else {
+                          temp <- stn@data$temperature
+                          wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
+                          stn.sum[i, 4] <- stn@data$pressure[wdi]
+                      }
+                      stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
+                  }
+                  colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
+                  rownames(stn.sum) <- object@metadata$stationId
+                  print(stn.sum, indent="    ")
+              } else {
+                  cat("* No stations\n")
+              }
+              processingLogShow(object)
+              invisible(NULL)
+          })
+
+
 setMethod(f="[[",
           signature="section",
           definition=function(x, i, j, drop) {
               if (i %in% names(x@metadata)) {
-                  if (i %in% c("latitude", "longitude")) {
+                  if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && "byStation" == j) {
                           return(x@metadata[[i]])
                       } else {
@@ -48,18 +86,22 @@ setMethod(f="[[",
               } else if ("distance" == i) {
                   rval <- NULL
                   for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]]@metadata$latitude,
-                                           x@data$station[[stn]]@metadata$longitude,
-                                           x@data$station[[1]]@metadata$latitude,
-                                           x@data$station[[1]]@metadata$longitude)
-                      rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+                      distance <- geodDist(x@data$station[[stn]]@metadata$longitude,
+                                           x@data$station[[stn]]@metadata$latitude,
+                                           x@data$station[[1]]@metadata$longitude,
+                                           x@data$station[[1]]@metadata$latitude)
+                      if (!missing(j) && j == "byStation")
+                          rval <- c(rval, distance)
+                      else
+                          rval <- c(rval, rep(distance, length(x@data$station[[stn]]@data$temperature)))
+
                   }
               } else if ("depth" == i) {
                   rval <- NULL
                   for (stn in seq_along(x@data$station))
-                      rval <- c(rval, x@data$station[[stn]]@data$pressure)
+                      rval <- c(rval, x@data$station[[stn]]@data$pressure) # FIXME not really depth
               } else {
-                  stop("cannot access item named \"", i, "\" in this section object")
+                  rval <- unlist(lapply(x@data$station, function(X) X[[i]]))
               }
               rval
           })
@@ -84,6 +126,114 @@ setMethod(f="show",
               }
           })
 
+
+
+setMethod(f="subset",
+          signature="section",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              dotsNames <- names(dots)
+              indicesGiven <- length(dots) && ("indices" %in% dotsNames)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (indicesGiven) {        # select a portion of the stations
+                  if (!missing(subset))
+                      stop("cannot give both 'subset' and 'indices'")
+                  oceDebug(debug, "subsetting by indices\n")
+                  rval <- new("section")
+                  indices <- dots$indices
+                  n <- length(indices)
+                  if (is.logical(indices))
+                      indices <- (1:n)[indices]
+                  station <- vector("list", n)
+                  stn <- vector("character", n)
+                  lon <- vector("numeric", n)
+                  lat <- vector("numeric", n)
+                  for (i in 1:n) {
+                      ii <- indices[i]
+                      stn[i] <- x@metadata$stationId[ii]
+                      lat[i] <- x@metadata$latitude[ii]
+                      lon[i] <- x@metadata$longitude[ii]
+                      station[[i]] <- x@data$station[[ii]]
+                  }
+                  data <- list(station=station)
+                  metadata <- x@metadata
+                  metadata$stationId <- stn
+                  metadata$longitude <- lon
+                  metadata$latitude <- lat
+                  rval@metadata <- metadata
+                  rval@data <- data
+                  rval@processingLog <- x@processingLog
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+              } else if (length(grep("stationId", subsetString))) {
+                  keep <- eval(substitute(subset),
+                               envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
+                  rval@metadata$stationId <- x@metadata$stationId[keep]
+                  rval@metadata$longitude <- x@metadata$longitude[keep]
+                  rval@metadata$latitude <- x@metadata$latitude[keep]
+                  rval@metadata$date <- x@metadata$date[keep]
+                  rval@data$station <- x@data$station[keep]
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+              } else {                        # subset within the stations
+                  if ("indices" %in% dotsNames)
+                      stop("2. cannot give both 'subset' and 'indices'")
+                  oceDebug(debug, "subsetting by 'subset'\n")
+                  ##subsetString <- deparse(substitute(subset))
+                  ##oceDebug(debug, "subsetString='", subsetString, "'\n")
+                  rval <- x
+                  if (length(grep("distance", subsetString))) {
+                      l <- list(distance=geodDist(rval))
+                      keep <- eval(substitute(subset), l, parent.frame())
+                      rval@metadata$longitude <- rval@metadata$longitude[keep]
+                      rval@metadata$latitude <- rval@metadata$latitude[keep]
+                      rval@metadata$stationId <- rval@metadata$stationId[keep]
+                      rval@data$station <- rval@data$station[keep]
+                  } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
+                      n <- length(x@data$station)
+                      keep <- vector(length=n)
+                      for (i in 1:n)
+                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame())
+                      nn <- sum(keep)
+                      station <- vector("list", nn)
+                      stn <- vector("character", nn)
+                      lon <- vector("numeric", nn)
+                      lat <- vector("numeric", nn)
+                      j <- 1
+                      for (i in 1:n) {
+                          if (keep[i]) {
+                              stn[j] <- x@metadata$stationId[i]
+                              lon[j] <- x@metadata$longitude[i]
+                              lat[j] <- x@metadata$latitude[i]
+                              station[[j]] <- x@data$station[[i]]
+                              j <- j + 1
+                          }
+                      }
+                      data <- list(station=station)
+                      metadata <- list(header=x@metadata$header,
+                                       sectionId=x@metadata$sectionId,
+                                       stationId=stn,
+                                       longitude=lon, latitude=lat)
+                      rval <- new('section')
+                      rval@data <- data
+                      rval@metadata <- metadata
+                      rval@processingLog <- x@processingLog
+                  } else {
+                      n <- length(x@data$station)
+                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
+                      for (i in 1:n) {
+                          rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
+                      }
+                  }
+                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+              }
+              rval
+          })
+
+ 
+
 sectionSort <- function(section, by=c("stationId", "distance"))
 {
     by <- match.arg(by)
@@ -91,8 +241,8 @@ sectionSort <- function(section, by=c("stationId", "distance"))
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
 	rval@metadata$stationId <- rval@metadata$stationId[o]
-	rval@metadata$latitude <- rval@metadata$latitude[o]
 	rval@metadata$longitude <- rval@metadata$longitude[o]
+	rval@metadata$latitude <- rval@metadata$latitude[o]
 	rval@data$station <- rval@data$station[o]
     } else if (by == "distance") {
 	warning("sort.section() cannot yet handle argument by=\"distance\"")
@@ -113,16 +263,16 @@ makeSection <- function(item, ...)
 	lon <- vector("numeric", numStations)
 	lat <- vector("numeric", numStations)
 	stn[1] <- item@metadata$station
-	lat[1] <- item@metadata$latitude
 	lon[1] <- item@metadata$longitude
+	lat[1] <- item@metadata$latitude
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
                 ##cat("adding station i=", i, "\n")
                 thisStn <- extra.args[[i-1]]
 		stn[i] <- thisStn@metadata$station
-		lat[i] <- thisStn@metadata$latitude
 		lon[i] <- thisStn@metadata$longitude
+		lat[i] <- thisStn@metadata$latitude
 		station[[i]] <- thisStn
 	    }
 	}
@@ -136,8 +286,8 @@ makeSection <- function(item, ...)
 	    for (i in 1:numStations) {
                 thisItem <- item[[i]]
 		stn[i] <- thisItem@metadata$station
-		lat[i] <- thisItem@metadata$latitude
 		lon[i] <- thisItem@metadata$longitude
+		lat[i] <- thisItem@metadata$latitude
 		station[[i]] <- thisItem
 	    }
 	} else {
@@ -157,8 +307,8 @@ makeSection <- function(item, ...)
 	    for (i in 1:numStations) {
                 thisItem <- get(item[[i]])
 		stn[i] <- thisItem@metadata$station
-		lat[i] <- thisItem@metadata$latitude
 		lon[i] <- thisItem@metadata$longitude
+		lat[i] <- thisItem@metadata$latitude
 		station[[i]] <- thisItem
 	    }
 	} else {
@@ -168,16 +318,16 @@ makeSection <- function(item, ...)
 		##oceDebug(1, "file named", item[i], "\n")
 		ctd <- read.ctd(item[i])
 		stn[i] <- ctd@metadata$station
-		lat[i] <- ctd@metadata$latitude
 		lon[i] <- ctd@metadata$longitude
-		station[[i]] <- ctd
+                lat[i] <- ctd@metadata$latitude
+                station[[i]] <- ctd
 	    }
 	}
     } else {
 	stop("first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
     }
     res <- new("section")
-    res@metadata <- list(sectionId="", stationId=stn, latitude=lat, longitude=lon)
+    res@metadata <- list(sectionId="", stationId=stn, longitude=lon, latitude=lat)
     res@data <- list(station=station)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -197,8 +347,8 @@ makeSection <- function(item, ...)
 	s[[i]] <- section@data$station[[i]]
     s[[n.orig + 1]] <- station
     res@data$station <- s
-    res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$longitude <- c(res@metadata$longitude, station@metadata$longitude)
+    res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$stationId <- c(res@metadata$stationId, station@metadata$station)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -207,20 +357,22 @@ makeSection <- function(item, ...)
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
-                              which,
+                              which=c(1, 2, 3, 99),
                               eos=getOption("eos", default='unesco'),
                               at=NULL,
                               labels=TRUE,
-                              grid = FALSE,
+                              grid=FALSE,
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline="coastlineWorld",
+                              coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
+                                          "coastlineWorldFine", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
-                              xtype=c("distance", "track", "latitude", "longitude"),
+                              xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
-                              ztype=c("contour", "image"),
+                              ztype=c("contour", "image", "points"),
+                              zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
@@ -231,34 +383,80 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              debug <- if (debug > 2) 2 else floor(0.5 + debug)
-              if (missing(which))
-                  which <- "temperature"
+              debug <- if (debug > 4) 4 else floor(0.5 + debug)
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
+              drawPoints <- ztype == "points"
+              coastline <- match.arg(coastline)
               legend.loc <- match.arg(legend.loc)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n", sep="")
+
+              ## Make 'which' be numeric, to simplify following code
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+              lw <- length(which)
+              which <- ocePmatch(which,
+                                 list(temperature=1, salinity=2, 
+                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                      phosphate=7, silicate=8, data=20, map=99))
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+
+
+              oceDebug(debug, "plot.section(, ..., which=c(",
+                       paste(which, collapse=","), "), eos=\"", eos,
+                       "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
+
+             ## Ensure data on levels, for plot types requiring that
+              if (which != "data" && which != 'map') {
+                  p1 <- x[["station", 1]][["pressure"]]
+                  np1 <- length(p1)
+                  numStations <- length(x@data$station)
+                  for (ix in 2:numStations) {
+                      thisStation <- x@data$station[[ix]]
+                      thisPressure <- thisStation[["pressure"]]
+                      if ("points" != ztype && 
+                          np1 != length(thisPressure) ||
+                          any(p1 != x[["station", ix]][["pressure"]])) {
+                          x <- sectionGrid(x)
+                          warning("plot.section() gridded the data for plotting", call.=FALSE)
+                          break
+                      }
+                  }
+              }
+
+              ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
+              haveData <- sapply(x@data$station,
+                                 function(stn) 0 < length(stn[['pressure']]))
+              x@data$station <- x@data$station[haveData]
+              x@metadata$stationId <- x@metadata$stationId[haveData]
+              x@metadata$latitude <- x@metadata$latitude[haveData]
+              x@metadata$longitude <- x@metadata$longitude[haveData]
+              x@metadata$date <- x@metadata$date[haveData]
+
+
               plotSubsection <- function(variable="temperature", vtitle="T",
                                          eos=getOption("eos", default='unesco'),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
-                                         ztype=c("contour", "image"),
+                                         zbreaks=NULL, zcol=NULL,
+                                         ztype=c("contour", "image", "points"),
                                          legend=TRUE,
                                          debug=0,
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ztype=\"", ztype, "\", ...) {\n", sep="")
+                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)", "...) {\n", sep="", unindent=1)
                   ztype <- match.arg(ztype)
+                  drawPoints <- "points" == ztype
+                  omar <- par('mar')
+
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
-                          lat[i] <- thisStation[["latitude"]]
                           lon[i] <- thisStation[["longitude"]]
+                          lat[i] <- thisStation[["latitude"]]
                       }
                       lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -268,38 +466,55 @@ setMethod(f="plot",
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
                       if (!is.null(map.xlim)) {
                           map.xlim <- sort(map.xlim)
-                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       } else if (!is.null(map.ylim)) {
                           map.ylim <- sort(map.ylim)
-                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       } else {
-                          plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                          plot(lonr, latr, asp=asp, type='n',
+                               xlab=gettext("Longitude", domain="R-oce"),
+                               ylab=gettext("Latitude", domain="R-oce"))
                       }
-                      if (!is.null(coastline)) {
-                          if (is.character(coastline)) {
-                              if (coastline == "none") {
-                                  next
-                              } else { # named coastline
-                                  if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                      oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
-                                      if (coastline == "coastlineWorld") {
-                                          data(coastlineWorld, envir=environment())
-                                          coastline <- coastlineWorld
-                                      } else if (coastline == "coastlineMaritimes") {
-                                          data(coastlineMaritimes, envir=environment())
-                                          coastline <- coastlineMaritimes
-                                      } else if (coastline == "coastlineHalifax") {
-                                          data(coastlineHalifax, envir=environment())
-                                          coastline <- coastlineHalifax
-                                      } else if (coastline == "coastlineSLE") {
-                                          data(coastlineSLE, envir=environment())
-                                          coastline <- coastlineSLE
-                                      } else {
-                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
-                                      }
-                                  }
-                              }
+                      ## FIXME: this coastline code is reproduced in section.R; it should be DRY
+                      ## figure out coastline
+                      haveCoastline <- FALSE
+                      if (!is.character(coastline)) 
+                          stop("coastline must be a character string")
+                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      if (coastline == "best") {
+                          if (haveOcedata) {
+                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
+                              oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              coastline <- get(bestcoastline)
+                          } else {
+                              oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
+                              data(coastlineWorld, envir=environment())
+                              coastline <- coastlineWorld
                           }
+                          haveCoastline <- TRUE
+                      } else {
+                          if (coastline != "none") {
+                              if (coastline == "coastlineWorld") {
+                                  data("coastlineWorld", envir=environment())
+                                  coastline <- coastlineWorld
+                              } else if (haveOcedata && coastline == "coastlineWorldFine") {
+                                  data("coastlineWorldFine", package="ocedata", envir=environment())
+                                  coastline <- coastlineWorldFine
+                              } else if (haveOcedata && coastline == "coastlineWorldMedium") {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                  coastline <- coastlineWorldMedium
+                              }  else {
+                                  stop("there is no built-in coastline file of name \"", coastline, "\"")
+                              }
+                              haveCoastline <- TRUE
+                          }
+                      }
+                      if (haveCoastline) {
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
@@ -308,6 +523,8 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
+
+                      ## add station data
                       lines(lon, lat, col="lightgray")
                       ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
@@ -323,21 +540,40 @@ setMethod(f="plot",
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
                       }
                       if (indicate.stations) {
-                          dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           dy <- 5 * mean(diff(sort(x@metadata$latitude)),na.rm=TRUE)
-                          xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
+                          dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
+                          xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
                           text(xlab, ylab, x@metadata$stationId[1])
-                          xlab <- x@metadata$longitude[numStations] -
-                          dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
-                          ylab <- x@metadata$latitude[numStations]  -
-                          dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
+                          xlab <- x@metadata$longitude[numStations] - dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
+                          ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                           text(xlab, ylab, x@metadata$stationId[numStations])
                       }
-                 } else {                        # not a map
-                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient" && variable != "data") {
+                  } else {                        
+                      ## not a map
+                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "data") {
                           stop("this section does not contain a variable named '", variable, "'")
                       }
+
+                      if (drawPoints || ztype == "image") {
+                          if (is.null(zbreaks)) {
+                              zRANGE <- range(x[[variable]], na.rm=TRUE)
+                              if (is.null(zcol) || is.function(zcol)) {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                              } else {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                              }
+                          }
+                          nbreaks <- length(zbreaks)
+                          if (is.null(zcol)) 
+                              zcol <- oceColorsJet(nbreaks - 1)
+                          if (is.function(zcol))
+                              zcol <- zcol(nbreaks - 1)
+                          zlim <- range(zbreaks)
+                          drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                      }
+
+
                       ## FIXME: contours don't get to plot edges
                       xxrange <- range(xx, na.rm=TRUE)
                       yyrange <- range(yy, na.rm=TRUE)
@@ -345,15 +581,27 @@ setMethod(f="plot",
 
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
-                      ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [m]" }
-
+                      ylab <- if ("ylab" %in% names(list(...))) {
+                          list(...)$ylab 
+                      } else {
+                          if (which.ytype==1) {
+                              resizableLabel("p")
+                          } else {
+                              resizableLabel("depth")
+                          }
+                      }
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               xlab=switch(which.xtype, "Distance [ km ]", "Along-track Distance [km]", "Latitude", "Longitude"),
+                               ## FIXME: below should use gettext() or resizableLabel.
+                               xlab=switch(which.xtype, 
+                                           resizableLabel("distance km"),
+                                           resizabelLabel("along-track distance km"),
+                                           gettext("Longitude", domain="R-oce"),
+                                           gettext("Latitude", domain="R-oce")),
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)
@@ -377,25 +625,32 @@ setMethod(f="plot",
                       usr <- par("usr")
                       graph.bottom <- usr[3]
                       waterDepth <- NULL
+                      ## For ztype == "points", plot the points.  Otherwise, collect them in zz
+                      ## for the contour or image plot.
                       for (i in 1:numStations) {
-                          if (variable == "salinity gradient") {
-                              dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
-                                          / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
-                              zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
-                          } else if (variable != "data") {
-                              if (eos == "teos") {
-                                  if (variable == "salinity") {
-                                      zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
-                                  } else if (variable == "temperature") {
-                                      zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
-                                  } else {
-                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
-                                  }
+                          if (variable != "data") {
+                              if (drawPoints) {
+                                  p <- x@data$station[[stationIndices[i]]]@data$pressure
+                                  if (eos == "teos" && variable == "temperature")
+                                      v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
+                                  else if (eos == "teos" && variable == "salinity")
+                                      v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
+                                  else
+                                      v <- x@data$station[[stationIndices[i]]]@data[[variable]]
+                                  points(rep(xx[i], length(p)), -p,
+                                         pch=pch, cex=cex,
+                                         col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
-                                  zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                                  if (eos == "teos" && variable == "temperature")
+                                      zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
+                                  else if (eos == "teos" && variable == "salinity")
+                                      zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                  else
+                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
                               }
                           }
-                          if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
+                          if (grid && !drawPoints)
+                              points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                           temp <- x@data$station[[stationIndices[i]]]@data$temperature
                           len <- length(temp)
                           if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
@@ -419,7 +674,7 @@ setMethod(f="plot",
                           }
                       }
 
-                      oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
+                      ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
                       ##waterDepth <- -waterDepth
                       if (!grid)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
@@ -458,7 +713,7 @@ setMethod(f="plot",
                                   points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               }
                           }
-                      } else {
+                      } else if (!drawPoints) {
                           zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
@@ -467,12 +722,16 @@ setMethod(f="plot",
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               axes=FALSE, add=TRUE, labcex=0.8,
                                               levels=contourLevels, labels=contourLabels,
+                                              col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [1]")
                                   }
@@ -481,12 +740,16 @@ setMethod(f="plot",
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE, add=TRUE,
                                           levels=contourLevels, labels=contourLabels,
+                                          col=col,
                                           xaxs="i", yaxs="i",
                                           ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [2]")
                                   }
@@ -498,12 +761,19 @@ setMethod(f="plot",
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               axes=FALSE, labcex=0.8,
                                               add=TRUE,
+                                              col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      ## FIXME: testing here
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
+                                  } else if (ztype == "points") {
+                                      ## nothing to do now
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [3]")
                                   }
@@ -512,57 +782,61 @@ setMethod(f="plot",
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               axes=FALSE,
                                               add=TRUE,
+                                              col=col,
                                               xaxs="i", yaxs="i",
                                               ...)
-                                  } else if (ztype == 'image') {
+                                  } else if (ztype == "image") {
+                                      zz[zz < min(zbreaks)] <- min(zbreaks)
+                                      zz[zz > max(zbreaks)] <- max(zbreaks)
+                                      if (is.function(zcol))
+                                          zcol <- zcol(1+length(zbreaks))
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                                      levels=seq(zrange[1], zrange[2], length.out=100),
-                                                      col=oceColorsJet(100))
+                                                      levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unkown ztype: \"", ztype, "\" [4]")
                                   }
                               }
                           }
-                          if (is.character(showBottom) || showBottom) {
-                              type <- "polygon"
-                              if (is.character(showBottom))
-                                  type <- showBottom
-                              if (length(bottom.x) == length(bottom.y)) {
-                                  bottom <- par('usr')[3]
-                                  if (type == "polygon") {
-                                      polygon(bottom.x, bottom.y, col="lightgray")
-                                  } else if (type == "lines") {
-                                      for (s in seq_along(bottom.x))
-                                          lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
-                                  } else if (type == "points") {
-                                      for (s in seq_along(bottom.x))
-                                          points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
-                                  }
+                      }
+                      if (is.character(showBottom) || showBottom) {
+                          type <- "polygon"
+                          if (is.character(showBottom))
+                              type <- showBottom
+                          if (length(bottom.x) == length(bottom.y)) {
+                              bottom <- par('usr')[3]
+                              if (type == "polygon") {
+                                  polygon(bottom.x, bottom.y, col="lightgray")
+                              } else if (type == "lines") {
+                                  for (s in seq_along(bottom.x))
+                                      lines(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
+                              } else if (type == "points") {
+                                  for (s in seq_along(bottom.x))
+                                      points(rep(bottom.x[s], 2), c(bottom.y[s], bottom), col="lightgray")
                               }
-                              box()
                           }
+                          box()
                       }
                       ##axis(1, pretty(xxOrig))
                       axis(1)
+                      if (legend)
+                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
 
                       ## undo negation of the y coordinate, so further can can make sense
                       usr <- par('usr')
                       par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
-
-                      if (legend)
-                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
-                  oceDebug(debug, "\b\b} # plotSubsection()\n")
+                  par(mar=omar)
+                  oceDebug(debug, "} # plotSubsection()\n", unindent=1)
               }
               if (!inherits(x, "section"))
-                  stop("method is only for section objects")
+                  stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
-              which.xtype <- pmatch(xtype, c("distance", "track", "latitude", "longitude"), nomatch=0)
+              which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude"), nomatch=0)
               if (0 == which.xtype)
-                  stop('xtype must be one of: "distance", "track", "latitude", or "longitude"')
-              xtype <- c("distance", "track", "latitude", "longitude")[which.xtype]
+                  stop('xtype must be one of: "distance", "track", "longitude", or "latitude"')
+              xtype <- c("distance", "track", "longitude", "latitude")[which.xtype]
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -576,40 +850,46 @@ setMethod(f="plot",
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
 
-              ## Check that pressures coincide
-              if (length(which) > 1 || (which != "data" && which != 'map')) {
-                  p1 <- firstStation@data$pressure
-                  for (ix in 2:numStations) {
-                      thisStation <- x@data$station[[stationIndices[ix]]]
-                      if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
-                          stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
-                  }
-              }
+              ## Ensure data on levels, for plot types requiring that
+              ##if (length(which) > 1 || (which != "data" && which != 'map')) { ## FIXME: why the length here?
+              ##    p1 <- firstStation@data$pressure
+              ##    np1 <- length(p1)
+              ##    for (ix in 2:numStations) {
+              ##        thisStation <- x@data$station[[stationIndices[ix]]]
+              ##        thisPressure <- thisStation[["pressure"]]
+              ##        if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
+              ##            stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
+              ##        }
+              ##    }
+              ##}
+
               zz <- matrix(nrow=numStations, ncol=num.depths)
               xx <- array(NA, numStations)
               yy <- array(NA, num.depths)
               if (is.null(at)) {
-                  lat0 <- firstStation@metadata$latitude
                   lon0 <- firstStation@metadata$longitude
+                  lat0 <- firstStation@metadata$latitude
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) {
-                          xx[ix] <- geodDist(lat0, lon0, x@data$station[[j]]@metadata$latitude, x@data$station[[j]]@metadata$longitude)
+                          xx[ix] <- geodDist(lon0, lat0,
+                                             x@data$station[[j]]@metadata$longitude,
+                                             x@data$station[[j]]@metadata$latitude)
                       } else if (which.xtype == 2) {
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {
-                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
-                                                            x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
-                                                            x@data$station[[j]]@metadata$latitude,
-                                                            x@data$station[[j]]@metadata$longitude)
+                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
+                                                            x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
+                                                            x@data$station[[j]]@metadata$longitude,
+                                                            x@data$station[[j]]@metadata$latitude)
                           }
                       } else if (which.xtype == 3) {
-                          xx[ix] <- x@data$station[[j]]@metadata$latitude
-                      } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$longitude
+                      } else if (which.xtype == 4) {
+                          xx[ix] <- x@data$station[[j]]@metadata$latitude
                       } else {
-                          stop('unkown xtype; it must be one of: "distance", "track", "latitude", or "longitude"')
+                          stop('unkown xtype; it must be one of: "distance", "track", "longitude", or "latitude"')
                       }
                   }
               } else {
@@ -618,27 +898,22 @@ setMethod(f="plot",
 
               ## Grid is regular (so need only first station) unless which=="data"
               if (which.ytype == 1) {
-                  if (which[1] == "data") # FIXME: why checking just first?
+                  if (which[1] == "data" || ztype == "points") { # FIXME: why checking just first which[] value?
                       yy <- c(0, -max(x[["pressure"]]))
-                  else
+                  } else {
                       yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+                  }
               } else if (which.ytype == 2) {
-                  if (which[1] == "data") # FIXME: why checking just first?
+                  if (which[1] == "data" || ztype == "points") { # FIXME: why checking just first which[] value?
                       yy <- c(-max(x[["pressure"]]), 0)
-                  else
+                  } else {
                       yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                  }
               } else {
                   stop("unknown ytype")
               }
 
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-              lw <- length(which)
-              which <- ocePmatch(which,
-                                 list(temperature=1, salinity=2, 
-                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                      phosphate=7, silicate=8, data=20, map=99))
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-              par(mgp=mgp, mar=mar)
+             par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
                       layout(matrix(1:4, nrow=2, byrow=TRUE))
@@ -651,76 +926,83 @@ setMethod(f="plot",
                   adorn.length <- lw
               }
               for (w in 1:lw) {
-                  oceDebug(debug, " plotting for which[", w, "] = ", which[w], "\n", sep='')
                   if (!missing(contourLevels)) {
                       if (missing(contourLabels))
                           contourLabels <- format(contourLevels)
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate", "nitrate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite", "nitrite",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen", "oxygen",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate", "phosphate",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...)
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate", "silicate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         debug=debug-1, ...) 
+                                         col=col, debug=debug-1, ...) 
                       }
                   } else {
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate",     "nitrate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite",     "nitrite",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen",      "oxygen",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate",   "phosphate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate",    "silicate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         debug=debug-1, ...)
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         col=col, debug=debug-1, ...)
                       }
                   }
                   if (which[w] == 20)
@@ -732,7 +1014,7 @@ setMethod(f="plot",
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.section()\n")
+              oceDebug(debug, "} # plot.section()\n", unindent=1)
               invisible()
           })
 
@@ -761,6 +1043,7 @@ read.section <- function(file, directory, sectionId="", flags,
     if (!inherits(file, "connection")) {
 	stop("argument `file' must be a character string or connection")
     }
+    res <- new("section")
     if (!isOpen(file)) {
 	filename <- "(connection)"
 	open(file, "r")
@@ -823,18 +1106,29 @@ read.section <- function(file, directory, sectionId="", flags,
     ## has a bad flag value, we try SALNTY as a second option.  But
     ## if both CTDSAL and SALNTY are flagged, we just give up on the
     ## depth.
+    oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
+    haveSalinity <- FALSE
     if (length(which(var.names=="CTDSAL"))) {
+        haveSalinity <- TRUE
 	ctdsal <- as.numeric(data[,which(var.names=="CTDSAL") - col.start + 1])
-    } else if (length(which(var.names=="SALNTY"))) {
-        ctdsal <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
-    } else {
+    } 
+    if (length(which(var.names=="SALNTY"))) {
+        haveSalinity <- TRUE
+        salnty <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1]) # spelling not a typo
+    }
+    if (!haveSalinity) {
         stop("no column named \"CTDSAL\" or \"SALNTY\"; have:", paste(var.names, collapse=", "))
     }
+    haveSalinityFlag <- FALSE
     if (length(which(var.names=="CTDSAL_FLAG_W"))) {
+        haveSalinityFlag <- TRUE
 	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
-    } else if (length(which(var.names=="SALNTY_FLAG_W"))) {
-        ctdsal.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
-    } else {
+    } 
+    if (length(which(var.names=="SALNTY_FLAG_W"))) {
+        haveSalinityFlag <- TRUE
+        salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1]) # spelling not a typo
+    }
+    if (!haveSalinityFlag) {
         stop("no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:", paste(var.names, collapse=", "))
     }
     if (length(which(var.names=="DATE")))
@@ -887,8 +1181,8 @@ read.section <- function(file, directory, sectionId="", flags,
 
     waterDepth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
-    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
     longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - col.start + 1])
+    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
     stationId <- data[,which(var.names=="STNNBR") - col.start + 1]
     stationId <- sub(" *$","",sub("^ *","",stationId)) #remove blanks
     stationList <- unique(stationId)
@@ -901,17 +1195,18 @@ read.section <- function(file, directory, sectionId="", flags,
     tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
     trefn <- as.numeric(tref)
     for (i in 1:numStations) {
-	oceDebug(debug, "processing station ", i, "\n")
+	oceDebug(debug, "reading station", i, "... ")
 	select <- which(stationId == stationList[i])
 	# "199309232222"
 	# "1993-09-23 22:22:00"
 	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""),
 				       "%Y%m%d%H%M", tz="UTC")) - trefn
 	stn[i] <- sub("^ *", "", stationId[select[1]])
-	lat[i] <- latitude[select[1]]
 	lon[i] <- longitude[select[1]]
+	lat[i] <- latitude[select[1]]
 	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
-	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], NA)
+	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], 
+                               ifelse(salnty.flag[select] %in% flags, salnty[select], NA))
 	ok <- !is.na(goodSalinity)
 	ok <- ok & pressure[select] >= 0
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
@@ -929,32 +1224,33 @@ read.section <- function(file, directory, sectionId="", flags,
 			       date=time[i] + tref,
 			       scientist=scientist,
 			       institute=institute,
-			       latitude=lat[i],
-			       longitude=lon[i],
+			       longitude=lon[i], latitude=lat[i],
 			       cruise=stnSectionId[select[1]],
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
-	oceDebug(debug, "  ", length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
+	if (debug) cat(length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
+        if (sum(ok) == 0)
+            warning("station ", i, " has no data\n")
 	station[[i]] <- thisStation
     }
     data <- list(station=station)
-    metadata <- list(header=header,sectionId=sectionId,stationId=stn,latitude=lat,longitude=lon,date=time+tref,filename=filename)
+    metadata <- list(header=header,sectionId=sectionId,stationId=stn,longitude=lon,latitude=lat,date=time+tref,filename=filename)
     if (missing(processingLog))
 	processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- new("section")
     res@metadata <- metadata
     res@data <- data
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
+    oceDebug(debug, "} # read.section()\n", unindent=1)
     res
 }
 
-sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
-			 debug=getOption("oceDebug"), ...)
+sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\bsectionGrid(section, p, method=\"", method, "\", ...) {\n", sep="")
-    method <- match.arg(method)
+    oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
@@ -973,18 +1269,13 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
     } else {
 	if (length(p) == 1) {
 	    if (p=="levitus") {
-		pt <- c(0,   10,   20,   30,   50,   75,  100,  125,  150,  200,
-			250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
-			1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
-			4500, 5000, 5500)
+		pt <- standardDepths()
                 pt <- pt[pt < max(section[["pressure"]])]
-	    } else { # FIXME should insist numeric
-		p.max <- 0
-		for (i in 1:n) {
-		    p <- section@data$station[[i]]@data$pressure
-		    p.max <- max(c(p.max, p))
-		}
-		pt <- seq(0, p.max, p)
+	    } else {
+                if (!is.numeric(p))
+                    stop("p must be numeric")
+                pMax <- max(section[["pressure"]])
+		pt <- seq(0, pMax, p)
 	    }
 	} else {
 	    pt <- p
@@ -996,7 +1287,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # sectionGrid\n")
+    oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }
 
@@ -1005,9 +1296,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
+    oceDebug(debug, "sectionSmooth(section,method=\"", method, "\", ...) {\n", sep="", unindent=1)
     if (!inherits(section, "section"))
-        stop("method is only for section objects")
+        stop("method is only for objects of class '", "section", "'")
     nstn <- length(section@data$station)
     if (method == "spline") {
         stn1pressure <- section[["station", 1]][["pressure"]]
@@ -1027,8 +1318,8 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         ## to 10 etc but 1 to 10 etc.
         x <- geodDist(section)
         o <- order(x)
-        res@metadata$latitude <- section@metadata$latitude[o]
         res@metadata$longitude <- section@metadata$longitude[o]
+        res@metadata$latitude <- section@metadata$latitude[o]
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
         x <- geodDist(res)
@@ -1098,7 +1389,6 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
             if (FALSE) {
                 for (istn in 1:nstn) {
                     oceDebug(debug, "station", istn, "\n")
-                                        #browser()
                     stn <- section[["station", istn]]
                     v <- c(v, stn[[var]])
                 }
@@ -1117,47 +1407,12 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
     }
 
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # sectionSmooth()\n")
+    oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
 }
 
-summary.section <- function(object, ...)
-{
-    if (!inherits(object, "section"))
-        stop("method is only for section objects")
-    numStations <- length(object@data$station)
-    lon1 <- object@data$station[[1]]@metadata$longitude
-    lat1 <- object@data$station[[1]]@metadata$latitude
-    cat("Section Summary\n---------------\n\n")
-    cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
-    cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
-    stn.sum <- matrix(nrow=numStations, ncol=5)
-    if (numStations > 0) {
-        cat("* Summary of", numStations, "stations (first column is station ID)\n")
-        for (i in 1:numStations) {
-            stn <- object@data$station[[i]]
-            stn.sum[i, 1] <- stn@metadata$longitude
-            stn.sum[i, 2] <- stn@metadata$latitude
-            stn.sum[i, 3] <- length(stn@data$pressure)
-            if (is.finite(stn@metadata$waterDepth)) {
-                stn.sum[i, 4] <- stn@metadata$waterDepth
-            } else {
-                temp <- stn@data$temperature
-                wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
-                stn.sum[i, 4] <- stn@data$pressure[wdi]
-            }
-            stn.sum[i, 5] <- geodDist(lat1, lon1, stn@metadata$latitude, stn@metadata$longitude)
-        }
-        colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
-        rownames(stn.sum) <- object@metadata$stationId
-        print(stn.sum, indent="    ")
-    } else {
-        cat("* No stations\n")
-    }
-    ##processingLogShow(object)
-}
 
-as.section <- function(salinity, temperature, pressure, longitude, latitude, station) # FIXME: code this
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station)
 {
     stationFactor <- factor(station)
     stationLevels <- levels(stationFactor)

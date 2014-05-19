@@ -10,7 +10,7 @@ SETUP <- FALSE # set TRUE during coding, to set up the .rda file (see below)
 
 debug <- 0                              # 0, 1 or 2
 
-file <- file("tide3.dat", "r")
+file <- file("tide3.dat.gz", "r")
 
 ############################
 ## Constituents [const]   ##
@@ -236,7 +236,7 @@ stopifnot(nshallow[143:146] == c(3, 1, 2, 4))
 ## equilibrium ##
 ##################
 
-efile <- file("t_equilib.dat", "r")
+efile <- file("t_equilib.dat.gz", "r")
 edat <- readLines(efile)
 ne <- length(edat)
 for (i in 10:ne) {                      # 9 lines of header

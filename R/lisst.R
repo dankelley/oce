@@ -1,21 +1,51 @@
 setMethod(f="initialize",
           signature="lisst",
-          definition=function(.Object, filename="", latitude=NA, longitude=NA) {
+          definition=function(.Object, filename="", longitude=NA, latitude=NA) {
               .Object@metadata$filename <- filename
-              .Object@metadata$latitude <- latitude
               .Object@metadata$longitude <- longitude
+              .Object@metadata$latitude <- latitude
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- paste("create 'lisst' object with", 
                                                    " filename=\"", filename, "\"", 
-                                                   ", latitude=", latitude,
-                                                   ", longitude=", longitude, sep="")
+                                                   ", longitude=", longitude,
+                                                   ", latitude=",
+                                                   latitude, sep="")
               return(.Object)
           })
+
+
+setMethod(f="summary",
+          signature="lisst",
+          definition=function(object, ...) {
+              cat("LISST Summary\n-------------\n\n")
+              showMetadataItem(object, "filename", "File source:        ")
+              start <- object@data$time[1]
+              dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
+              end <- object@data$time[length(object@data$time)]
+              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+                          format(start), attr(start, "tzone"),
+                          format(end), attr(end, "tzone"),
+                          1 / dt))
+              cat("* Statistics of subsample::\n")
+              ndata <- length(object@data)
+              threes <- matrix(nrow=ndata-1, ncol=3)
+              names <- names(object@data)
+              for (i in 1:ndata) {
+                  if (names[i] != "time") {
+                      threes[i,] <- threenum(object@data[[i]])
+                  }
+              }
+              rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
 
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
-              oceDebug(debug, "\b\bplot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="")
+              oceDebug(debug, "plot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="", unindent=1)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
               which <- ocePmatch(which,
@@ -30,19 +60,39 @@ setMethod(f="plot",
               time <- x[["time"]]
               for (w in 1:nw) {
                   ww <- which[w]
-                  if      (ww <= 32) oce.plot.ts(time, x@data[[which[w]]], ylab=paste("Size Class #", ww, sep=""), tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 33) oce.plot.ts(time, x[["lts"]], ylab="Laser Trans. Sensor", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 34) oce.plot.ts(time, x[["voltage"]], ylab="Voltage", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 35) oce.plot.ts(time, x[["aux"]], ylab="Ext. Aux. Input", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 36) oce.plot.ts(time, x[["lrs"]], ylab="Laser Ref. Sensor", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 37) oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p"), tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 38) oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T"), tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 41) oce.plot.ts(time, x[["transmission"]], ylab="Transmission [%]", tformat=tformat, debug=debug-1, ...)
-                  else if (ww == 42) oce.plot.ts(time, x[["beam"]], ylab="Beam-C [1/m]", tformat=tformat, debug=debug-1, ...)
+                  if      (ww <= 32) oce.plot.ts(time, x@data[[which[w]]],
+                                                 ylab=paste(gettext("Size Class #", domain="R-oce"), ww, sep=""),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 33) oce.plot.ts(time, x[["lts"]],
+                                                 ylab=gettext("Laser Trans. Sensor", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 34) oce.plot.ts(time, x[["voltage"]],
+                                                 ylab=gettext("Voltage", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 35) oce.plot.ts(time, x[["aux"]],
+                                                 ylab=gettext("Ext. Aux. Input", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 36) oce.plot.ts(time, x[["lrs"]],
+                                                 ylab=gettext("Laser Ref. Sensor", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 37) oce.plot.ts(time, x[["pressure"]],
+                                                 ylab=resizableLabel("p"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 38) oce.plot.ts(time, x[["temperature"]],
+                                                 ylab=resizableLabel("T"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 41) oce.plot.ts(time, x[["transmission"]],
+                                                 ylab=gettext("Transmission %", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
+                  else if (ww == 42) oce.plot.ts(time, x[["beam"]],
+                                                 ylab=gettext("Beam-C [1/m]", domain="R-oce"),
+                                                 tformat=tformat, debug=debug-1, ...)
               }
           })
 
-as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude=NA)
+
+
+as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
@@ -78,7 +128,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude
     rval
 }
 
-read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
+read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
 
@@ -98,29 +148,4 @@ read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
     as.lisst(data, filename, year, tz, latitude, longitude)
 }
 
-summary.lisst <- function(object, ...)
-{
-    cat("LISST Summary\n-------------\n\n")
-    showMetadataItem(object, "filename", "File source:        ")
-    start <- object@data$time[1]
-    dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-    end <- object@data$time[length(object@data$time)]
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(start), attr(start, "tzone"),
-                format(end), attr(end, "tzone"),
-                1 / dt))
-    cat("* Statistics of subsample::\n")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata-1, ncol=3)
-    names <- names(object@data)
-    for (i in 1:ndata) {
-        if (names[i] != "time") {
-            threes[i,] <- threenum(object@data[[i]])
-        }
-    }
-    rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes, indent='  ')
-    processingLogShow(object)
-}
 

@@ -7,7 +7,9 @@
 \description{This provides something analagous to \code{\link{contour}}, but
     with the ability to flip x and y.}
 
-\usage{oceContour(x, y, z, revx=FALSE, revy=FALSE, \dots)}
+\usage{oceContour(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+           tformat, drawTimeRange=getOption("oceDrawTimeRange"),
+           debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{values for x grid.}
@@ -18,6 +20,17 @@
       the x axis are drawn}
   \item{revy}{set to \code{TRUE} to reverse the order in which the labels on
       the y axis are drawn}
+  \item{add}{logical value indicating whether the contours should be
+      added to a pre-existing plot.}
+  \item{tformat}{time format; if not supplied, a reasonable choice will be made
+      by \code{\link{oce.axis.POSIXct}}, which draws time axes.}
+  \item{drawTimeRange}{logical, only used if the \code{x} axis is a
+      time.  If \code{TRUE}, then an indication of the time range of the
+      data (not the axis) is indicated at the top-left margin of the
+      graph.  This is useful because the labels on time axes only indicate
+      hours if the range is less than a day, etc.}
+  \item{debug}{a flag that turns on debugging; set to 1 to information 
+      about the processing.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

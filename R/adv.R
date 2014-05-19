@@ -11,6 +11,57 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="summary",
+          signature="adv",
+          definition=function(object, ...) {
+              cat("ADV Summary\n-----------\n\n", ...)
+              cat(paste("* Instrument:             ", object@metadata$instrumentType,
+                        ", serial number ``", object@metadata$serialNumber, "``\n",sep=""))
+              cat(paste("* Source filename:        ``", object@metadata$filename, "``\n", sep=""))
+              if ("latitude" %in% names(object@metadata)) {
+                  cat(paste("* Location:              ",
+                            if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+              }
+              cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
+                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+                          1 / object@metadata$measurementDeltat), ...)
+              cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
+                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
+                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
+                          1 / object@metadata$subsampleDeltat), ...)
+              if ("samplingMode" %in% names(object@metadata)) {
+                  if ("burst" == object@metadata$samplingMode) {
+                      cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
+                  } else {
+                      cat("* Sampling in continuous mode\n")
+                  }
+              }
+              cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
+              cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
+              cat("* Orientation:           ", object@metadata$orientation, "\n")
+              cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
+              dataNames <- names(object@data)
+              nrow <- length(dataNames) - length(grep("^time", dataNames))
+              threes <- matrix(nrow=nrow, ncol=3)
+              ii <- 1
+              for (name in dataNames) {
+                  if (0 == length(grep("^time", name))) {
+                      if (0 == length(object@data[[name]])) {
+                          threes[ii,] <- c(NA, NA, NA)
+                      } else {
+                          threes[ii,] <- threenum(as.numeric(object@data[[name]]))
+                      }
+                      ii <- ii + 1
+                  }
+              }
+              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              print(threes)
+              processingLogShow(object)
+          })
+
 setMethod(f="[[",
           signature="adv",
           definition=function(x, i, j, drop) {
@@ -69,7 +120,8 @@ setMethod(f="[[",
                   }
                   return(rval)
               } else {
-                  return(as(x, "oce")[[i, j, drop]])
+                  ##return(as(x, "oce")[[i, j, drop]])
+                  return(as(x, "oce")[[i]])
               }
           })
 
@@ -95,10 +147,74 @@ setMethod(f="[[<-",
           })
 
 
+setMethod(f="subset",
+          signature="adv",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              if (missing(subset))
+                  stop("must give 'subset'")
+
+              if (missing(subset))
+                  stop("must specify a 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting an adv object by time\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  sum.keep <- sum(keep)
+                  if (sum.keep < 2)
+                      stop("must keep at least 2 profiles")
+                  oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  rval <- x
+                  names <- names(x@data)
+                  haveSlow <- "timeSlow" %in% names
+                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  if (haveSlow) {
+                      subsetStringSlow <- gsub("time", "timeSlow", subsetString)
+                      keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+                  }
+                  if ("timeBurst" %in% names) {
+                      subsetStringBurst <- gsub("time", "timeBurst", subsetString)
+                      keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
+                  }
+                  for (name in names(x@data)) {
+                      if ("distance" == name)
+                          next
+                      if (length(grep("Burst$", name))) {
+                          rval@data[[name]] = x@data[[name]][keepBurst]
+                      } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
+                          if (1 == length(agrep("Slow$", name))) {
+                              oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keepSlow]
+                          } else {
+                              oceDebug(debug, "subsetting data$", name, "\n", sep="")
+                              rval@data[[name]] <- x@data[[name]][keep]
+                          }
+                      } else if (is.matrix(rval@data[[name]])) {
+                          oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
+                          rval@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(rval@data[[name]])) {
+                          oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
+                          rval@data[[name]] <- x@data[[name]][keep,,]
+                      }
+                  }
+              } else {
+                  stop("only 'time' is permitted for subsetting")
+              }
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
+
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
-                     latitude=NA, longitude=NA,
+                     longitude=NA, latitude=NA,
                      start, deltat,
                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -107,75 +223,23 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
-                        latitude=latitude, longitude=longitude,
+                        longitude=longitude, latitude=latitude,
                         debug=debug, monitor=monitor, processingLog=processingLog)
     else if (type == "sontek") # guess
         read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
-                               latitude=latitude, longitude=longitude,
+                               longitude=longitude, latitude=latitude,
                                start=start, deltat=deltat,
                                debug=debug, monitor=monitor, processingLog=processingLog)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
-                            latitude=latitude, longitude=longitude,
+                            longitude=longitude, latitude=latitude,
                             debug=debug, processingLog=processingLog)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
-                             latitude=latitude, longitude=longitude,
+                             longitude=longitude, latitude=latitude,
                              debug=debug, processingLog=processingLog)
     else
         stop("read.adv() cannot understand type = \"", type, "\"")
-}
-
-summary.adv <- function(object, ...)
-{
-    if (!inherits(object, "adv"))
-        stop("method is only for adv objects")
-    cat("ADV Summary\n-----------\n\n", ...)
-    cat(paste("* Instrument:             ", object@metadata$instrumentType,
-              ", serial number ``", object@metadata$serialNumber, "``\n",sep=""))
-    cat(paste("* Source filename:        ``", object@metadata$filename, "``\n", sep=""))
-    if ("latitude" %in% names(object@metadata)) {
-        cat(paste("* Location:              ",
-                  if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                  if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
-    }
-    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                1 / object@metadata$measurementDeltat), ...)
-    cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                1 / object@metadata$subsampleDeltat), ...)
-    if ("samplingMode" %in% names(object@metadata)) {
-        if ("burst" == object@metadata$samplingMode) {
-            cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-        } else {
-            cat("* Sampling in continuous mode\n")
-        }
-    }
-    cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-    cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
-    cat("* Orientation:           ", object@metadata$orientation, "\n")
-    cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
-    dataNames <- names(object@data)
-    nrow <- length(dataNames) - length(grep("^time", dataNames))
-    threes <- matrix(nrow=nrow, ncol=3)
-    ii <- 1
-    for (name in dataNames) {
-        if (0 == length(grep("^time", name))) {
-            if (0 == length(object@data[[name]])) {
-                threes[ii,] <- c(NA, NA, NA)
-            } else {
-                threes[ii,] <- threenum(as.numeric(object@data[[name]]))
-            }
-            ii <- ii + 1
-        }
-    }
-    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    print(threes)
-    processingLogShow(object)
 }
 
 setMethod(f="plot",
@@ -201,13 +265,13 @@ setMethod(f="plot",
                               ...)
           {
               debug <- min(4, max(0, round(debug)))
-              oceDebug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
+              oceDebug(debug, "plot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="", unindent=1)
               have.brushCorrelation <- !missing(brushCorrelation)
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
               oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
               oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
               if (!inherits(x, "adv"))
-                  stop("method is only for adv objects")
+                  stop("method is only for objects of class '", "adv", "'")
               opar <- par(no.readonly = TRUE)
               dots <- names(list(...))
               ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))
@@ -317,7 +381,7 @@ setMethod(f="plot",
                       else if (ww == "q2") which2[w] <- 10
                       else if (ww == "q3") which2[w] <- 11
                       ## 4 not allowed since ADV is 3-beam
-                      ## 13 not allowed since ADV do not measure salinity
+                      else if (ww == "salinity") which2[w] <- 13
                       else if (ww == "temperature") which2[w] <- 14
                       else if (ww == "pressure") which2[w] <- 15
                       else if (ww == "heading") which2[w] <- 16
@@ -454,6 +518,40 @@ setMethod(f="plot",
                                       debug=debug-1)
                       }
                       rm(y)                       # space may be tight
+                  } else if (which[w] == 13 || which[w] == "salinity") {
+                      if ("salinity" %in% names(x@metadata)) {
+                          if ("timeSlow" %in% names(x@data)) {
+                              salinity <- rep(x@metadata$salinity, length(x@data$temperatureSlow))
+                              oce.plot.ts(x@data$timeSlow, salinity, ylab=resizableLabel("S", "y"),
+                                          drawTimeRange=drawTimeRange,
+                                          adorn=adorn[w],
+                                          xlim=if (gave.xlim) xlim[w,] else tlim,
+                                          ylim=if (gave.ylim) ylim[w,] else x@metadata$salinity+c(0.5, -0.5),
+                                          type=type,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          lwd=lwd[w], col=if(col.per.point) col else col[w],
+                                          main=main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                          } else {
+                              salinity <- rep(x@metadata$salinity, length(x@data$temperature))
+                              oce.plot.ts(x@data$time, salinity, ylab=resizableLabel("S", "y"),
+                                          drawTimeRange=drawTimeRange,
+                                          adorn=adorn[w],
+                                          xlim=if (gave.xlim) xlim[w,] else tlim,
+                                          ylim=if (gave.ylim) ylim[w,] else x@metadata$salinity+c(0.5, -0.5),
+                                          type=type,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          lwd=lwd[w], col=if(col.per.point) col else col[w],
+                                          main=main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                          }
+                      } else {
+                          warning("no salinity in this ADV object")
+                      }
                   } else if (which[w] == 14 || which[w] == "temperature") {
                       if ("timeSlow" %in% names(x@data) && "temperatureSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$temperatureSlow, ylab=resizableLabel("T", "y"),
@@ -585,13 +683,17 @@ setMethod(f="plot",
                       q <- as.numeric(x@data$q[,1])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(a, c, xlab="Amplitude", ylab="Correlation",
+                          plot(a, c,
+                               xlab=gettext("Amplitude", domain="R-oce"),
+                               ylab=gettext("Correlation", domain="R-oce"),
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
                                main=main,
                                debug=debug-1)
                       } else {
-                          smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          smoothScatter(a, c, nbin=64,
+                                        xlab=gettext("Amplitude", domain="R-oce"),
+                                        ylab=gettext("Correlation", domain="R-oce"),
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
                                         main=main,
@@ -603,13 +705,17 @@ setMethod(f="plot",
                       q <- as.numeric(x@data$q[,2])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(a, c, xlab="Amplitude", ylab="Correlation",
+                          plot(a, c,
+                               xlab=gettext("Amplitude", domain="R-oce"),
+                               ylab=gettext("Correlation", domain="R-oce"),
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
                                main=main,
                                debug=debug-1)
                       } else {
-                          smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          smoothScatter(a, c, nbin=64,
+                                        xlab=gettext("Amplitude", domain="R-oce"),
+                                        ylab=gettext("Correlation", domain="R-oce"),
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
                                         main=main,
@@ -621,12 +727,16 @@ setMethod(f="plot",
                       q <- as.numeric(x@data$q[,3])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(a, c, xlab="Amplitude", ylab="Correlation",
+                          plot(a, c,
+                               xlab=gettext("Amplitude", domain="R-oce"),
+                               ylab=gettext("Correlation", domain="R-oce"),
                                xlim=if (gave.xlim) xlim[w,] else range(a),
                                ylim=if (gave.ylim) ylim[w,] else range(c),
                                main=main)
                       } else {
-                          smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          smoothScatter(a, c, nbin=64,
+                                        xlab=gettext("Amplitude", domain="R-oce"),
+                                        ylab=gettext("Correlation", domain="R-oce"),
                                         xlim=if (gave.xlim) xlim[w,] else range(a),
                                         ylim=if (gave.ylim) ylim[w,] else range(c),
                                         main=main)
@@ -651,12 +761,17 @@ setMethod(f="plot",
                       par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                       n <- length(x@data$time)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                          plot(x@data$v[,1], x@data$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
+                          plot(x@data$v[,1], x@data$v[,2],
+                               xlab=resizableLabel("u"),
+                               ylab=resizableLabel("v"),
+                               type=type,
                                cex=cex, cex.axis=cex.axis, cex.main=cex.main, asp=1,
                                xlim=if(gave.xlim)xlim, ylim=if(gave.ylim) ylim,
                                lwd=lwd[w], col=col[w], main=main, ...)
                       } else {
-                          smoothScatter(x@data$v[,1], x@data$v[,2], xlab="u [m/s]", ylab="v [m/s]",
+                          smoothScatter(x@data$v[,1], x@data$v[,2],
+                                        xlab=resizableLabel("u"),
+                                        ylab=resizableLabel("v"),
                                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                         asp=1, xlim=xlim, ylim=ylim, ...)
                       }
@@ -717,13 +832,13 @@ setMethod(f="plot",
                       par(mar=omar)
                   }
               }
-              oceDebug(debug, "\b\b} # plot.adv()\n")
+              oceDebug(debug, "} # plot.adv()\n", unindent=1)
               invisible()
           })
 
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\badv.2enu() {\n")
+    oceDebug(debug, "adv.2enu() {\n", unindent=1)
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdv(beamToXyzAdv(x, debug=debug-1), declination=declination, debug=debug-1)
@@ -734,15 +849,15 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
     } else {
         warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "\b\b} # adv.2enu()\n")
+    oceDebug(debug, "} # adv.2enu()\n", unindent=1)
     x
 }
 
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
+    oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
     if (!inherits(x, "adv"))
-        stop("method is only for objects of class \"adv\"")
+        stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if (is.null(x@metadata$transformationMatrix)) {
@@ -768,7 +883,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     x@data$v[,3] <- w
     x@metadata$oceCoordinate <- "xyz"
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # beamToXyzAdv()\n")
+    oceDebug(debug, "} # beamToXyzAdv()\n", unindent=1)
     x
 }
 
@@ -777,13 +892,13 @@ xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bxyzToEnuAdv(x, declination=", declination,
+    oceDebug(debug, "xyzToEnuAdv(x, declination=", declination,
               ",cabled=",cabled,
               ",horizontalCase=",if (missing(horizontalCase)) "(not provided)" else horizontalCase,
               ",sensorOrientation=",if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
-              ",debug) {\n")
+              ",debug) {\n", unindent=1)
     if (!inherits(x, "adv"))
-        stop("method is only for objects of class \"adv\"")
+        stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if ("ts" %in% names(x@data) || "ma" %in% names(x@data))
@@ -926,18 +1041,18 @@ xyzToEnuAdv <- function(x, declination=0,
                                            ", horizontalCase=", if (missing(horizontalCase)) "(missing)" else horizontalCase,
                                            ", sensorOrientiation=", if (missing(sensorOrientation)) "(missing)" else sensorOrientation,
                                            ", debug=", debug, ")", sep=""))
-    oceDebug(debug, "\b\b} # xyzToEnuAdv()\n")
+    oceDebug(debug, "} # xyzToEnuAdv()\n", unindent=1)
     x
 }
 
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))
-        stop("method is only for objects of class \"adv\"")
+        stop("method is only for objects of class '", "adv", "'")
     if (x@metadata$oceCoordinate != "enu")
         stop("input must be in \"enu\" coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
-    oceDebug(debug, "\b\benuToOtherAdv(x, heading=", heading, ", pitch=", 
-             pitch, ", roll=", roll, ", debug=", debug, ")")
+    oceDebug(debug, "enuToOtherAdv(x, heading=", heading, ", pitch=", 
+             pitch, ", roll=", roll, ", debug=", debug, ")", unindent=1)
     np <- dim(x@data$v)[1]
     other <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
@@ -958,6 +1073,6 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
     x@data$v[,3] <- other$v3new
     x@metadata$oceCoordinate <- "other"
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # enuToOtherAdv()\n")
+    oceDebug(debug, "} # enuToOtherAdv()\n", unindent=1)
     x
 }

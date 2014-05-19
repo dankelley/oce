@@ -81,7 +81,7 @@ read.sealevel(file, tz=getOption("oceTz"),
 \examples{
 \dontrun{
 library(oce)
-# sealevelHalifax
+# this yields the sealevel dataset
 sl <- read.oce("h275a96.dat")
 summary(sl)
 plot(sl)

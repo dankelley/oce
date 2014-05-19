@@ -1,11 +1,11 @@
 Package: oce
-Version: 0.9-12
-Date: 2013-07-04
+Version: 0.9-14
+Date: 2014-05-18
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, mapproj
-Suggests: ncdf, foreign
+Suggests: ocedata, foreign, ncdf4, tiff
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data,
  including ADP measurements, CTD measurements, sectional
@@ -17,5 +17,5 @@ Description: Supports the analysis of Oceanographic data,
 License: GPL (>= 2)
 URL: http://dankelley.github.com/oce/
 LazyLoad: yes
-LazyData: yes
+LazyData: no
 Packaged: Dan Kelley

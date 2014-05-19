@@ -2,7 +2,7 @@
 
 \alias{secondsToCtime}
 
-\title{Convert a time interval to a colon-separated string}
+\title{Time interval as colon-separated string}
 
 \description{Convert a time interval to a colon-separated string}
 
