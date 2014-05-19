@@ -1,5 +1,5 @@
 0.9-15
-- updates since 0.9-14 submitted to CRAN on Mon 2014-05-19
+- fix compile-time warning
 
 0.9-14
 - colormap() added, and functionality added to imagep() and drawPalette()
