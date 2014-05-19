@@ -1,4 +1,5 @@
 0.9-14
+- fix compile-time warning
 - colormap() added, and functionality added to imagep() and drawPalette()
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
 - drawPalette() has new args: plot, pos, levels, and cex.axis
@@ -48,10 +49,6 @@
 - as.ctd(): new arguments filename etc
 - remove oceBisect(), which merely reproduces uniroot()
 - move large/specialized datasets to library(ocedata)
-<<<<<<< HEAD
-
-=======
->>>>>>> layout
 
 0.9-13
 - prepare for an upcoming release of R-devel
