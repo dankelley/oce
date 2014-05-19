@@ -1,7 +1,5 @@
-0.9-15
-- fix compile-time warning
-
 0.9-14
+- fix compile-time warning
 - colormap() added, and functionality added to imagep() and drawPalette()
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
 - drawPalette() has new args: plot, pos, levels, and cex.axis
