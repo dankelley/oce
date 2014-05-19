@@ -1,3 +1,6 @@
+0.9-15
+- updates since 0.9-14 submitted to CRAN on Mon 2014-05-19
+
 0.9-14
 - colormap() added, and functionality added to imagep() and drawPalette()
 - imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
