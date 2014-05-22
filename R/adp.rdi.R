@@ -202,6 +202,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     if (soundSpeed < 1400 || soundSpeed > 1600)
         warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
                 1600 m/s.  Something went wrong in decoding the data.")
+    cat("about to create the list to be returned\n")
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
          firmwareVersionMajor=firmwareVersionMajor,
@@ -258,7 +259,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          ##headingAlignment,
          ##headingBias,
          haveActualData=haveActualData)
-}                                       # read.header.rdi()
+}                                       # decodeHeaderRDI
 
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
@@ -341,7 +342,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
+        cat("about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+        cat("successfully called ldc_rdi\n")
 
 
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
