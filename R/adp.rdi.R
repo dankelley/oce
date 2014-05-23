@@ -346,7 +346,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
         cat("successfully called ldc_rdi\n")
 
-
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
