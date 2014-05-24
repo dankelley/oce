@@ -196,13 +196,13 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
     bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     soundSpeed <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    oceDebug(1+debug, "soundSpeed= ", soundSpeed, "\n") # FIXME
+    oceDebug(debug, "soundSpeed= ", soundSpeed, "\n") # FIXME possibly wrong
     transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
     oceDebug(debug, "transducerDepth = ", transducerDepth, "\n")
     if (soundSpeed < 1400 || soundSpeed > 1600)
         warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
                 1600 m/s.  Something went wrong in decoding the data.")
-    cat("about to create the list to be returned\n")
+    oceDebug(debug, "about to create the list to be returned\n")
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
          firmwareVersionMajor=firmwareVersionMajor,
@@ -342,9 +342,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
-        cat("about to call ldc_rdi\n")
+        oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        cat("successfully called ldc_rdi\n")
+        oceDebug(debug, "successfully called ldc_rdi\n")
 
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
         # offset for data type 1 (velocity)

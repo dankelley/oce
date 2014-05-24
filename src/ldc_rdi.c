@@ -3,17 +3,17 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#define DEBUG
+//#define DEBUG
 
 /* 
 
-This code was based on similar for sontek.  But, the best plan is
-always to figure out the algorithm (how many bytes to skip, etc.)
-using R.  Below are some notes on how I did that; I'll retain them in
-the code as a guide.  All of the below is in R (but some comments are
-instructions).
+   This code was based on similar for sontek.  But, the best plan is
+   always to figure out the algorithm (how many bytes to skip, etc.)
+   using R.  Below are some notes on how I did that; I'll retain them in
+   the code as a guide.  All of the below is in R (but some comments are
+   instructions).
 
-library(oce)
+   library(oce)
 # Temporarily instrument read.adp.rdi() to output ''b'' for ''buf'' in the code.
 source("../R/adp.rdi.R")
 d <- read.adp.rdi('/data/archive/sleiwex/2008/moorings/m11/adp/rdi_10485/raw/adp_rdi_10485.000',from=1,to=1000)
@@ -68,37 +68,31 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
       if (matches == 0) {
 	bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
       }
+      if ((i + bytes_to_check) < lbuf) {
+	check_sum = 0;
+	for (int c = 0; c < bytes_to_check; c++) {
 #ifdef DEBUG
-	Rprintf("byte match at i=%d; bytes_to_check=%d; limit_test %d\n", i, bytes_to_check, lbuf-i+bytes_to_check);
+	  if (i >= 5722000) Rprintf("check byte at i+c=%d (max_lres: %d)\n", i+c, max_lres);
 #endif
-      check_sum = 0;
-      for (int c = 0; c < bytes_to_check; c++) {
+	  check_sum += (unsigned short int)pbuf[i + c];
 #ifdef DEBUG
-	if (i >= 5720673) {
-	  Rprintf("check byte at i+c=%d (max_lres: %d)\n", i+c, max_lres);
+	  if (i >= 5722000) Rprintf("check_sum is now %d\n", check_sum);
+#endif
 	}
-#endif
-	check_sum += (unsigned short int)pbuf[i + c];
+	desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check+0]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
+	if (check_sum == desired_check_sum) {
+	  matches++;
 #ifdef DEBUG
-	if (i >= 5720673) {
-	  Rprintf("check_sum is now %d\n", check_sum);
+	  Rprintf("buf[%d] ok\n", i);
+#endif
+	  if (max_lres != 0 && matches >= max_lres) {
+	    break;
+	  }
+	} else {
+#ifdef DEBUG
+	  Rprintf("buf[%d] checksum %d (needed %d)\n", i, check_sum, desired_check_sum);
+#endif
 	}
-#endif
-
-      }
-      desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check+0]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
-      if (check_sum == desired_check_sum) {
-	matches++;
-#ifdef DEBUG
-	Rprintf("buf[%d] ok\n", i);
-#endif
-	if (max_lres != 0 && matches >= max_lres) {
-	  break;
-	}
-      } else {
-#ifdef DEBUG
-	Rprintf("buf[%d] checksum %d (needed %d)\n", i, check_sum, desired_check_sum);
-#endif
       }
     }
   }
@@ -113,16 +107,17 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
 #endif
     unsigned int ires = 0;
     for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
-      check_sum = 0;
-      if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-	for (int c = 0; c < bytes_to_check; c++)
-	  check_sum += (unsigned short int)pbuf[i + c];
-	desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
-	if (check_sum == desired_check_sum) {
+      if ((i + bytes_to_check) < lbuf) {
 #ifdef DEBUG
-	  Rprintf("pres[%d] = %d; max index %d\n", i+1, ires, lres-1);
+	if ((bytes_to_check + i) >= (lbuf - 10)) Rprintf("CAUTION will get close to buffer end; space= %d\n", lbuf - (bytes_to_check + i));
 #endif
-	  pres[ires++] = i + 1; /* the +1 is to get R pointers */
+	check_sum = 0;
+	if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
+	  for (int c = 0; c < bytes_to_check; c++)
+	    check_sum += (unsigned short int)pbuf[i + c];
+	  desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
+	  if (check_sum == desired_check_sum)
+	    pres[ires++] = i + 1; /* the +1 is to get R pointers */
 	}
 	if (ires >= lres) {
 #ifdef DEBUG
