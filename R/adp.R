@@ -24,7 +24,9 @@ setMethod(f="summary",
               if ("latitude" %in% names(object@metadata)) {
                   cat(paste("* Location:           ",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E",
+                                                                                                   object@metadata$longitude),
+                            "\n", sep=''))
               }
               v.dim <- dim(object@data$v)
               cat("* Number of profiles:", v.dim[1], "\n")

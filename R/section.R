@@ -234,21 +234,27 @@ setMethod(f="subset",
 
  
 
-sectionSort <- function(section, by=c("stationId", "distance"))
+sectionSort <- function(section, by)
 {
-    by <- match.arg(by)
+    if (missing(by)) {
+        by <- "stationId"
+    } else {
+        byChoices <- c("stationId", "distance", "longitude", "latitude")
+        iby <- pmatch(by, byChoices, nomatch=0)
+        if (0 == iby)
+            stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
+        by <- byChoices[iby]
+    }
     rval <- section
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
-	rval@metadata$stationId <- rval@metadata$stationId[o]
-	rval@metadata$longitude <- rval@metadata$longitude[o]
-	rval@metadata$latitude <- rval@metadata$latitude[o]
-	rval@data$station <- rval@data$station[o]
-    } else if (by == "distance") {
-	warning("sort.section() cannot yet handle argument by=\"distance\"")
     } else {
-	stop("argument 'by' is incorrect")
+	o <- order(section[[by, "byStation"]])
     }
+    rval@metadata$stationId <- rval@metadata$stationId[o]
+    rval@metadata$longitude <- rval@metadata$longitude[o]
+    rval@metadata$latitude <- rval@metadata$latitude[o]
+    rval@data$station <- rval@data$station[o]
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
