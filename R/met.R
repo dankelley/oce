@@ -58,7 +58,7 @@ read.met <- function(file, type=NULL, skip,
                      tz=getOption("oceTz"),
                      debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "\b\bread.met() {\n")
+    oceDebug(debug, "read.met() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -144,7 +144,7 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
            {
-               oceDebug(debug, "\b\bplot.met() {\n")
+               oceDebug(debug, "plot.met() {\n", unindent=1)
                opar <- par(no.readonly = TRUE)
                nw <- length(which)
                if (nw > 1) on.exit(par(opar))

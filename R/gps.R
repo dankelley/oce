@@ -36,7 +36,8 @@ setMethod(f="[[",
           signature="gps",
           definition=function(x, i, j, drop) {
               ## I use 'as' because I could not figure out callNextMethod() etc
-              as(x, "oce")[[i, j, drop]]
+              #as(x, "oce")[[i, j, drop]]
+              as(x, "oce")[[i]]
           })
 
 setMethod(f="plot",
@@ -57,14 +58,14 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
-              oceDebug(debug, "\bplot.gps(...",
+              oceDebug(debug, "plot.gps(...",
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
-                       ", ...) {\n", sep="")
+                       ", ...) {\n", sep="", unindent=1)
               if (!missing(projection)) {
                   if (missing(span))
                       span <- 1000
@@ -255,7 +256,7 @@ setMethod(f="plot",
               }
               ##box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
-              oceDebug(debug, "\b\b} # plot.gps()\n")
+              oceDebug(debug, "} # plot.gps()\n", unindent=1)
               invisible()
           })
 
@@ -273,7 +274,7 @@ as.gps <- function(longitude, latitude, filename="")
 
 read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog)
 {
-    oceDebug(debug, "\bread.gps(...) {\n", sep="")
+    oceDebug(debug, "read.gps(...) {\n", sep="", unindent=1)
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -303,7 +304,7 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)
     rval <- new("gps", longitude=latlon[,2], latitude=latlon[,1], file=filename)
-    oceDebug(debug, "\b} # read.gps()\n", sep="")
+    oceDebug(debug, "} # read.gps()\n", sep="", unindent=1)
     rval
 }
 

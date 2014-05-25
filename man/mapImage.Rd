@@ -6,8 +6,8 @@
 
 \description{Plot an image on an existing map}
 
-\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE, breaks,
-         col, border=NA,
+\usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE,
+         breaks, col, colormap, border=NA,
          lwd=par("lwd"), lty=par("lty"),
          filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))}
 
@@ -32,6 +32,10 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+
+    \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
+        If provided, this takes precedence over \code{breaks}, code{col} and
+        \code{missingColor}.}
   
     \item{border}{colour used for borders of patches (passed to
         \code{\link{polygon}}); the default \code{NA} means no border.}
@@ -86,20 +90,18 @@ mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
-if (require(ncdf)) {
-    con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
-    ##con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
-    lon <- get.var.ncdf(con, "lon")
-    lat <- get.var.ncdf(con, "lat")
-    SST <- get.var.ncdf(con, "t_an")[,,1]
-    ##SST <- get.var.ncdf(con, "t_mn")[,,1]
-    par(mar=rep(1, 4))
-    Tlim <- c(-2, 30)
-    drawPalette(Tlim, col=oceColorsJet)
-    mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-    mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, debug=99)
-    mapPolygon(coastlineWorld, col='gray')
-}
+con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
+##con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
+lon <- get.var.ncdf(con, "lon")
+lat <- get.var.ncdf(con, "lat")
+SST <- get.var.ncdf(con, "t_an")[,,1]
+##SST <- get.var.ncdf(con, "t_mn")[,,1]
+par(mar=rep(1, 4))
+Tlim <- c(-2, 30)
+drawPalette(Tlim, col=oceColorsJet)
+mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
+mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, debug=99)
+mapPolygon(coastlineWorld, col='gray')
 }
 }
 

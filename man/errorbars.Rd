@@ -24,8 +24,6 @@
     bars, e.g. to \code{\link{segments}} for \code{style=0}.}
 }
 
-\details{Only \code{style=0} is permitted at the moment.}
-
 \examples{
 library(oce)
 data(ctd)

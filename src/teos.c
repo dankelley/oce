@@ -66,7 +66,10 @@ void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
   double (*f2)(double, double) = (void*)GetProcAddress(teos_handle, *name);
 #else
-  double (*f2)(double, double) = dlsym(teos_handle, *name);
+  // OLD double (*f2)(double, double) = dlsym(teos_handle, *name);
+  // REF http://linux.die.net/man/3/dlsym
+  double (*f2)(double, double);
+  *(void **)(&f2) = dlsym(teos_handle, *name);
 #endif
   if (!f2) {
 #if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
@@ -101,7 +104,10 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
   double (*f3)(double, double, double) = (void*)GetProcAddress(teos_handle, *name);
 #else
-  double (*f3)(double, double, double) = dlsym(teos_handle, *name);
+  // OLD double (*f3)(double, double, double) = dlsym(teos_handle, *name);
+  // REF http://linux.die.net/man/3/dlsym
+  double (*f3)(double, double, double);
+  *(void **)(&f3) = dlsym(teos_handle, *name);
 #endif
   if (!f3) {
 #if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)
@@ -113,10 +119,6 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
     rval[i] = (*f3)(a1[i], a2[i], a3[i]);
   }
 }
-
-#if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
-typedef double (*F4)(double, double, double, double);
-#endif
 
 void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *a4, double *rval)
 {
@@ -138,9 +140,12 @@ void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
     first_teos_call = 0;
   }
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
-  F4 f4 = (F4)GetProcAddress(teos_handle, *name);
+  double (*f4)(double, double, double, double) = (void*)GetProcAddress(teos_handle, *name);
 #else
-  double (*f4)(double, double, double, double) = dlsym(teos_handle, *name);
+  // OLD double (*f4)(double, double, double, double) = dlsym(teos_handle, *name);
+  // REF http://linux.die.net/man/3/dlsym
+  double (*f4)(double, double, double, double);
+  *(void **)(&f4) = dlsym(teos_handle, *name);
 #endif
   if (!f4) {
 #if !defined(WIN32) && !defined(WIN64) && !defined(_WIN32) && !defined(_WIN64)

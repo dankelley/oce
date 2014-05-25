@@ -6,7 +6,7 @@
 
 \description{Solar angle as function of space and time.}
 
-\usage{sunAngle(t, longitude, latitude, useRefraction=FALSE)}
+\usage{sunAngle(t, longitude=0, latitude=0, useRefraction=FALSE)}
 
 \arguments{
     \item{t}{Time, a POSIXt object (must be in timezone UTC), or a numeric value that corresponds to
@@ -17,7 +17,7 @@
         refraction}
 }
 
-\details{Based on NASA-provided fortran program, in turn (according to
+\details{Based on NASA-provided Fortran program, in turn (according to
     comments in the code) based on "The Astronomical Almanac".}
 
 \value{A list containing the following.

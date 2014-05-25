@@ -1,6 +1,6 @@
 useDynLib(oce)
 import(methods)
-##importFrom("methods", show)
+importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 exportMethods(plot)
@@ -41,6 +41,7 @@ export("+.section",
        bcdToInteger,
        byteToBinary,
        coastlineBest,
+       colormap, # beta status; added 22 Apr, 2014
        coordinate,
        coriolis,
        ctdAddColumn,
@@ -101,7 +102,6 @@ export("+.section",
        "longitude<-",
        magneticField,
        makeFilter,
-       makePalette,
        makeSection,
        mapContour,
        mapImage,
@@ -169,6 +169,7 @@ export("+.section",
        "pressure<-",
        prettyPosition,
        pwelch,
+       rangeExtended,
        rangeLimit,
        read.adp,
        read.adp.rdi,

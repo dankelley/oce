@@ -7,15 +7,16 @@ library(oce)
 RPD <- atan2(1, 1) / 45            # radians per degree
 
 ## [1] chapter 3 page 24-25
-t <- ISOdatetime(1957, 10, 4, hour=0, min=0, sec=0, tz="ET")+0.81*86400
-stopifnot(all.equal(julianDay(t), 2436116.31, tolerance=0.01))
+## FIXME: previously this had the unintelligble tz="ET" but it is *exact* as is
+t <- ISOdatetime(1957, 10, 4, hour=0, min=0, sec=0, tz="UTC")+0.81*86400
+stopifnot(all.equal(julianDay(t), 2436116.31, tolerance=0.01, scale=1))
 
 ## [1] example 15.a
 t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz="UTC")
 jd <- julianDay(t)
 jca <- julianCenturyAnomaly(jd)
-stopifnot(all.equal(jd, 2443825.69, tolerance=0.01))
-stopifnot(all.equal(jca, 0.788656810, tolerance=1e-7)) # fractional error 3e-8
+stopifnot(all.equal(jd, 2443825.69, tolerance=0.01, scale=1))
+stopifnot(all.equal(jca, 0.788656810, tolerance=1e-7, scale=1)) # fractional error 3e-8
 
 ## [1] page 40
 t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")

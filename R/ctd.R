@@ -35,19 +35,29 @@ setMethod(f="summary",
                                                                digits=5), "\n")
               showMetadataItem(object, "waterDepth", "Water depth: ")
               showMetadataItem(object, "levels", "Number of levels: ")
-              cat("* Statistics of subsample::\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata, ncol=3)
-              for (i in 1:ndata)
-                  threes[i,] <- threenum(object@data[[i]])
-              rownames(threes) <- paste("   ", names(object@data))
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
               colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of data::\n")
               print(threes, indent='  ')
               processingLogShow(object)
           })
 
 setMethod(f="[[",
-          signature="ctd",
+          signature(x="ctd", i="ANY", j="ANY"),
+          ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
@@ -96,7 +106,8 @@ setMethod(f="[[",
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  rval <- as(x, "oce")[[i, j, drop]]
+                  ## rval <- as(x, "oce")[[i, j, drop]]
+                  rval <- as(x, "oce")[[i]]
                   if (is.null(rval))
                       stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
                   rval
@@ -219,7 +230,7 @@ as.ctd <- function(salinity, temperature, pressure,
 ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the unit
-    oceDebug(debug, "\bctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="")
+    oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
         stop("must supply column data")
     if (length(column) != length(x@data[[1]]))
@@ -237,15 +248,24 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
         res@metadata$labels <- c(res@metadata$labels, label)
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b} # ctdAddColumn()\n", sep="")
+    oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
 
-ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco"),
-                        e=1.5, debug=getOption("oceDebug"))
-    ## SHOULD ADD: spline; supsmu; ...
+##method=c("boxcar", "approx", "lm", "rr", "unesco"),
+## SHOULD ADD: spline; supsmu; ...
+ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\bctdDecimate(x, p, method=\"", method, "\", ...) {\n", sep="")
+    methodFunction <- is.function(method)
+    if (!methodFunction) {
+        methods <- c("boxcar", "approx", "lm", "rr", "unesco")
+        imethod <- pmatch(method, methods, nomatch=0)
+        if (imethod > 0) method <- methods[imethod] else
+            stop('unknown method "', method, '"')
+    }
+    oceDebug(debug, "ctdDecimate(x, p, method=\"",
+             if (methodFunction) "(a function)" else method,
+             "\", ...) {\n", sep="", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     res <- x
@@ -261,95 +281,108 @@ ctdDecimate <- function(x, p=1, method=c("boxcar", "approx", "lm", "rr", "unesco
         pt <- p
     }
     npt <- length(pt)
-    data.names <- names(x@data)         # Step through each variable.
-    data.new <- vector("list", length(data.names)) # as.data.frame(array(NA, dim=c(npt, length(data.names))))
-    names(data.new) <- data.names
-    method <- match.arg(method)
-    if (method == "approx") {
-        too.deep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
-        for (datum.name in data.names) {
-            oceDebug(debug, "decimating \"", datum.name, "\"\n", sep="")
-            if (datum.name != "pressure") {
-                good <- sum(!is.na(x@data[[datum.name]]))
-                if (good > 2) {
-                    data.new[[datum.name]] <- approx(x@data[["pressure"]], x@data[[datum.name]], pt, rule=2)$y
-                    data.new[[datum.name]][too.deep] <- NA
-                } else {
-                    oceDebug(debug, " note: fewer than 2 good data in the above\n")
-                }
-            }
+    dataNames <- names(x@data)         # Step through each variable.
+    dataNew <- vector("list", length(dataNames)) # as.data.frame(array(NA, dim=c(npt, length(dataNames))))
+    names(dataNew) <- dataNames
+    if (methodFunction ) {
+        ##message("function must have take three args: x, y and xout; x will be pressure.")
+        pressure <- x[["pressure"]]
+        tooDeep <- pt > max(pressure, na.rm=TRUE)
+        for (datumName in names(x@data)) {
+            if ("pressure" == datumName)
+                next
+            oceDebug(debug, 'about to apply method() to "', datumName, '"\n', sep='')
+            dataNew[[datumName]] <- method(pressure, x[[datumName]], pt)
+            ##dataNew[[datumName]][tooDeep] <- NA
         }
-    } else if ("rr" == method || "unesco" == method) {
-        oceDebug(debug, "Reiniger-Ross method\n")
-        xvar <- x@data[["pressure"]]
-        for (datum.name in data.names) {
-            if (datum.name != "pressure") {
-                yvar <- x@data[[datum.name]]
-                pred <- oceApprox(xvar, yvar, pt, method=method)
-                data.new[[datum.name]] <- pred
-            }
-        }
-    } else if ("boxcar" == method) {
-        dp <- diff(pt[1:2])
-        pbreaks <- -dp / 2 + c(pt, tail(pt, 1) + dp)
-        p <- x@data[["pressure"]]
-        for (name in data.names) {
-            oceDebug(debug, "decimating", name)
-            if (name != "pressure") {
-                ## FIXME: we should probably not e averaging scan, flag, etc
-                data.new[[name]] <- binMean1D(p, x@data[[name]], xbreaks=pbreaks)$result
-            }
-        }
+        dataNew[["pressure"]] <- pt
     } else {
-        for (i in 1:npt) {
-            if (i==1) {
-                focus <- (x@data$pressure >= (pt[i] - e*(pt[i+1] - pt[ i ]))) & (x@data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
-            } else if (i == npt) {
-                focus <- (x@data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x@data$pressure <= (pt[i] + e*(pt[ i ] - pt[i-1])))
-            } else {
-                focus <- (x@data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x@data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
-            }
-            if (sum(focus, na.rm=TRUE) > 0) {
-                if ("boxcar" == method) {
-                    for (datum.name in data.names) {
-                        if (datum.name != "pressure") {
-                            ##cat("i=",i,"datum=",datum.name,"avg=",mean(x@data[[datum.name]][focus]),"\n")
-                            data.new[[datum.name]][i] <- mean(x@data[[datum.name]][focus],na.rm=TRUE)
-                        }
+        if (method == "approx") {
+            tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
+            for (datumName in dataNames) {
+                oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
+                if (datumName != "pressure") {
+                    good <- sum(!is.na(x@data[[datumName]]))
+                    if (good > 2) {
+                        dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=2)$y
+                        dataNew[[datumName]][tooDeep] <- NA
+                    } else {
+                        oceDebug(debug, " note: fewer than 2 good data in the above\n")
                     }
-                } else if ("lm" == method) { # FIXME: this is far too slow
-                    xvar <- x@data[["pressure"]][focus]
-                    for (datum.name in data.names) {
-                        if (datum.name != "pressure") {
-                            yvar <- x@data[[datum.name]][focus]
-                            t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
-                            if (class(t) != "try-error")
-                                data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
-                            else
-                                data.new[[datum.name]][i] <- NA
-                        }
-                    }
-                } else {
-                    stop("impossible to get here -- developer error")
                 }
-            } else {                    # No data in the focus region
-                for (datum.name in data.names) {
-                    ##cat("i=",i,"NO DATA IN focus =\n")
-                    if (datum.name != "pressure") {
-                        data.new[[datum.name]][i] <- NA
+            }
+        } else if ("rr" == method || "unesco" == method) {
+            oceDebug(debug, "Reiniger-Ross method\n")
+            xvar <- x@data[["pressure"]]
+            for (datumName in dataNames) {
+                if (datumName != "pressure") {
+                    yvar <- x@data[[datumName]]
+                    pred <- oceApprox(xvar, yvar, pt, method=method)
+                    dataNew[[datumName]] <- pred
+                }
+            }
+        } else if ("boxcar" == method) {
+            dp <- diff(pt[1:2])
+            pbreaks <- -dp / 2 + c(pt, tail(pt, 1) + dp)
+            p <- x@data[["pressure"]]
+            browser()
+            for (datumName in dataNames) {
+                oceDebug(debug, "decimating", datumName)
+                if (datumName != "pressure") {
+                    ## FIXME: we should probably not e averaging scan, flag, etc
+                    dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
+                }
+            }
+        } else {
+            for (i in 1:npt) {
+                if (i==1) {
+                    focus <- (x@data$pressure >= (pt[i] - e*(pt[i+1] - pt[ i ]))) & (x@data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
+                } else if (i == npt) {
+                    focus <- (x@data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x@data$pressure <= (pt[i] + e*(pt[ i ] - pt[i-1])))
+                } else {
+                    focus <- (x@data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x@data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
+                }
+                if (sum(focus, na.rm=TRUE) > 0) {
+                    if ("boxcar" == method) {
+                        for (datumName in dataNames) {
+                            if (datumName != "pressure") {
+                                dataNew[[datumName]][i] <- mean(x@data[[datumName]][focus],na.rm=TRUE)
+                            }
+                        }
+                    } else if ("lm" == method) { # FIXME: this is far too slow
+                        xvar <- x@data[["pressure"]][focus]
+                        for (datumName in dataNames) {
+                            if (datumName != "pressure") {
+                                yvar <- x@data[[datumName]][focus]
+                                t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
+                                if (class(t) != "try-error")
+                                    dataNew[[datumName]][i] <- predict(m, newdata=list(xvar=pt[i]))
+                                else
+                                    dataNew[[datumName]][i] <- NA
+                            }
+                        }
+                    } else {
+                        stop("impossible to get here -- developer error")
+                    }
+                } else {                    # No data in the focus region
+                    for (datumName in dataNames) {
+                        ##cat("i=",i,"NO DATA IN focus =\n")
+                        if (datumName != "pressure") {
+                            dataNew[[datumName]][i] <- NA
+                        }
                     }
                 }
             }
         }
     }
-    data.new[["pressure"]] <- pt
+    dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
-    for (i in 1:length(data.new)) {
-        data.new[[i]][is.nan(data.new[[i]])] <- NA
+    for (i in 1:length(dataNew)) {
+        dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
-    res@data <- data.new
+    res@data <- dataNew
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # ctdDecimate()\n")
+    oceDebug(debug, "} # ctdDecimate()\n", unindent=1)
     res
 }
 
@@ -359,11 +392,11 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
                            arr.ind=FALSE, 
                            debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "\b\bctdFindProfiles(x, cutoff=", cutoff, 
+    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff, 
              ", minLength=", minLength,
              ", minHeight=", minHeight,
              ", direction=\"", direction, "\"",
-             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="")
+             ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     direction <- match.arg(direction)
@@ -419,7 +452,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
     indices <- data.frame(start=start[keep], end=end[keep])
     if (debug) print(indices)
     if (is.logical(arr.ind) && arr.ind) {
-        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
+        oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
         return(indices)
     } else {
         ncasts <- length(indices$start)
@@ -433,7 +466,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
                                                 " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
-        oceDebug(debug, "\b\b} # ctdFindProfiles()\n", sep="")
+        oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
         return(casts)
     }
 }
@@ -443,7 +476,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     inferWaterDepth=TRUE, removeDepthInversions=FALSE, 
                     parameters, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bctdTrim() {\n")
+    oceDebug(debug, "ctdTrim() {\n", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     res <- x
@@ -602,7 +635,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
         res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
-    oceDebug(debug, "\b\b} # ctdTrim()\n")
+    oceDebug(debug, "} # ctdTrim()\n", unindent=1)
     res
 }
 
@@ -681,8 +714,8 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "teos"))
-              oceDebug(debug, "\b\bplot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
-                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="")
+              oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
               lw <- length(which)
               dots <- list(...)
               dotsNames <- names(dots)
@@ -765,7 +798,7 @@ setMethod(f="plot",
 
               oceDebug(debug, "which:", which, "(before matching character strings)\n")
               which <- ocePmatch(which,
-                                 list("temperature+salinity"=1,
+                                 list("salinity+temperature"=1,
                                       "density+N2"=2,
                                       TS=3,
                                       text=4,
@@ -1122,7 +1155,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "\b\b} # plot.ctd()\n")
+              oceDebug(debug, "} # plot.ctd()\n", unindent=1)
               invisible()
           })
 
@@ -1262,7 +1295,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                           debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file))) {
-        oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n")
+        oceDebug(debug, "bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
         if (monitor)
@@ -1277,7 +1310,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         return(rval)
     }
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
-    oceDebug(debug, "\b\bread.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="")
+    oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -1565,7 +1598,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res@processingLog <- processingLog(res@processingLog, processingLog)
     if (waterDepthWarning)
         res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
-    oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
+    oceDebug(debug, "} # read.ctd.woce()\n" , unindent=1) # FIXME: use S4 for ctd / woce
     res
 }
 
@@ -1637,7 +1670,7 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
         stop("cannot decode latitude or longitude from \"", line, "\"")
     }
     rval <- rval * sign
-    oceDebug(debug, "\b} # parseLatLon()\n")
+    oceDebug(debug, "} # parseLatLon()\n", unindent=1)
     rval
 }
 
@@ -1654,7 +1687,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
 
     if (length(grep("\\*", file))) {
-        oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") { # will read a series of files\n")
+        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
         if (monitor)
@@ -1668,7 +1701,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         oceDebug(debug, "} # read.ctd.sbe() {\n")
         return(rval)
     }
-    oceDebug(debug, "\b\bread.ctd.sbe(file=\"", file, "\") {\n")
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
 
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -2006,7 +2039,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         else
             gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
     }
-    oceDebug(debug, "\b\bread.ctd.odf() {\n")
+    oceDebug(debug, "read.ctd.odf() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -2112,6 +2145,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
     names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
     names[grep("FFFF_*.*", names)[1]] <- "flag"
+    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
+    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
+    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
     ## Step 3: recognize something from moving-vessel CTDs
     names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
@@ -2122,6 +2158,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!("salinity" %in% names)) warning("missing data$salinity")
     if (!("pressure" %in% names)) warning("missing data$pressure")
     if (!("temperature" %in% names)) warning("missing data$temperature")
+    if ("time" %in% names)
+        data$time <- strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC")
     metadata$names <- names
     metadata$labels <- names
     if (missing(processingLog))
@@ -2160,16 +2198,17 @@ plotTS <- function (x,
                     Slim, Tlim,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
+                    lwd=par('lwd'), lty=par('lty'),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
                     add=FALSE, inset=FALSE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
+    oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
              "eos=\"", eos, "\", ",
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
-             "...) {\n", sep="")
+             "...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "teos"))
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
@@ -2234,14 +2273,14 @@ plotTS <- function (x,
     } else {
         if (add) {
             if (type == 'p') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             } else if (type == 'l') {
-                lines(salinity, y, col=col, ...)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type == 'o') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
-                lines(salinity, y, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type != 'n') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty)
             }
         } else {
             plot(Slim, Tlim,
@@ -2255,14 +2294,14 @@ plotTS <- function (x,
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
             if (type == 'p') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
             } else if (type == 'l') {
-                lines(salinity, y, col=col, ...)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type == 'o') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
-                lines(salinity, y, col=col, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
+                lines(salinity, y, col=col, lwd=lwd, lty=lty, ...)
             } else if (type != 'n') {
-                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, ...)
+                points(salinity, y, cex=cex, pch=pch, col=col, bg=pt.bg, lwd=lwd, lty=lty, ...)
             }
         }
     }
@@ -2275,7 +2314,7 @@ plotTS <- function (x,
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0)) # old: darkblue that looked black
     box()                              # redraw box (otherwise overdrawn with isopycnals)
-    oceDebug(debug, "\b} # plotTS(...)\n", sep="")
+    oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
 }
 
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
@@ -2368,15 +2407,15 @@ plotProfile <- function (x,
                          debug=getOption("oceDebug"),
                          ...)
 {
-    oceDebug(debug, "\bplotProfile(x, xtype[1]=\"", xtype[1],
-             "\", debug=", debug, ", ...) {\n", sep="")
+    oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
+             "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "teos"))
     plotJustProfile <- function(x, y, col="black", type="l",
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
-        oceDebug(debug, "\bplotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="")
+        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="", unindent=1)
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -2974,13 +3013,13 @@ plotProfile <- function (x,
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
         }
     }
-    oceDebug(debug, "\b\b} # plotProfile()\n")
+    oceDebug(debug, "} # plotProfile()\n", unindent=1)
 }
 
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "\b\bread.ctd.itp() {\n")
+    oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -3036,7 +3075,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     } else {
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
-    oceDebug(debug, "\b\b} # read.ctd.itp()\n")
+    oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
     rval
 }
  

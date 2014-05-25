@@ -6,7 +6,7 @@
 
 \description{Print a debugging message}
 
-\usage{oceDebug(debug=0, \dots)}
+\usage{oceDebug(debug=0, \dots, unindent=0)}
 
 \arguments{
   \item{debug}{an integer, less than or equal to zero for no message,
@@ -14,6 +14,8 @@
     greater than 4 are treated like 4.}
   \item{\dots}{items to be supplied to \code{\link{cat}}, which does the
     printing.  Almost always, this should include a trailing newline.}
+  \item{unindent}{Number of levels to un-indent, e.g. for start and end
+    lines from a called function.}
 }
 
 \examples{

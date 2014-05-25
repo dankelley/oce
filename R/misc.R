@@ -1,5 +1,16 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
+{
+    if (length(x) == 1) {
+        x * c(1 - extend, 1 + extend) 
+    } else {
+        r <- range(x, na.rm=TRUE)
+        d <- diff(r)
+        c(r[1] - d * extend, r[2] + d * extend)
+    }
+}
+
 binApply1D <- function(x, f, xbreaks, FUN)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -220,26 +231,27 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
         stop("must supply x")
     if (missing(y))
         stop("must supply y")
-    if (missing(xe) && missing(ye))
-        stop("must give either xe or ye")
     n <- length(x)
-    if (1 == length(xe))
-        xe <- rep(xe, n)
-    if (1 == length(ye))
-        ye <- rep(ye, n)
     if (n != length(y))
         stop("x and y must be of same length\n")
+    if (missing(xe) && missing(ye))
+        stop("must give either xe or ye")
+    if (1 == length(xe))
+        xe <- rep(xe, n) # FIXME probably gives wrong length
+    if (1 == length(ye))
+        ye <- rep(ye, n)
     if (!missing(xe)) {
         if (n != length(xe))
             stop("x and xe must be of same length\n")
         if (percent)
             xe <- xe * x / 100
+        look <- xe != 0
         if (style == 0) {
-            segments(x, y, x+xe, y, ...)
-            segments(x, y, x-xe, y, ...)
+            segments(x[look], y[look], x[look]+xe[look], y[look], ...)
+            segments(x[look], y[look], x[look]-xe[look], y[look], ...)
         } else if (style == 1) {
-            arrows(x, y, x + xe, y, angle=90, length=length, ...)
-            arrows(x, y, x - xe, y, angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look] + xe[look], y[look], angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look] - xe[look], y[look], angle=90, length=length, ...)
         } else {
             stop("unknown value ", style, " of style; must be 0 or 1\n")
         }
@@ -249,12 +261,13 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
             stop("y and ye must be of same length\n")
         if (percent)
             ye <- ye * y / 100
+        look <- ye != 0
         if (style == 0) {
-            segments(x, y, x, y+ye, ...)
-            segments(x, y, x, y-ye, ...)
+            segments(x[look], y[look], x[look], y[look]+ye[look], ...)
+            segments(x[look], y[look], x[look], y[look]-ye[look], ...)
         } else if (style == 1) {
-            arrows(x, y, x, y + ye, angle=90, length=length, ...)
-            arrows(x, y, x, y - ye, angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look], y[look] + ye[look], angle=90, length=length, ...)
+            arrows(x[look], y[look], x[look], y[look] - ye[look], angle=90, length=length, ...)
         } else {
             stop("unknown value ", style, " of style; must be 0 or 1\n")
         }
@@ -349,7 +362,7 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 
 prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\bprettyPosition(...) {\n", sep="")
+    oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
     r <- diff(range(x, na.rm=TRUE))
     oceDebug(debug, 'range(x)=', range(x), 'r=', r, '\n')
     if (r > 5) {                       # D only
@@ -370,7 +383,7 @@ prettyPosition <- function(x, debug=getOption("oceDebug"))
         rval <- (1 / 3600) * pretty(3600 * x)
         if (debug) cat("case 5: rval=", rval, "\n")
     }
-    oceDebug(debug, "\b\b} # prettyPosition\n")
+    oceDebug(debug, "} # prettyPosition\n", unindent=1)
     rval
 }
 
@@ -421,7 +434,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         stop("must give argument 'b'")
     if (missing(t0))
         stop("must give argument 't0'")
-    oceDebug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
+    oceDebug(debug, paste("retime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="", unindent=1)
     rval <- x
     oceDebug(debug, "retiming x@data$time")
     rval@data$time <- x@data$time + a + b * (as.numeric(x@data$time) - as.numeric(t0))
@@ -430,7 +443,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         rval@data$timeSlow <- x@data$timeSlow + a + b * (as.numeric(x@data$timeSlow) - as.numeric(t0))
     }
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # retime.adv()\n")
+    oceDebug(debug, "} # retime.adv()\n", unindent=1)
     rval
 }
 
@@ -691,6 +704,8 @@ fullFilename <- function(filename)
     if (first.char == '/' || first.char == '~')
         return(filename)
     if (substr(filename, 1, 5) == "http:")
+        return(filename)
+    if (substr(filename, 1, 4) == "ftp:")
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
@@ -1365,7 +1380,7 @@ interpBarnes <- function(x, y, z, w,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "\b\binterpBarnes(x, ...) {\n")
+    oceDebug(debug, "interpBarnes(x, ...) {\n", unindent=1)
     if (!is.vector(x))
         stop("x must be a vector")
     n <- length(x)
@@ -1420,7 +1435,7 @@ interpBarnes <- function(x, y, z, w,
                as.double(xr), as.double(yr),
                as.double(gamma),
                as.integer(iterations))
-    oceDebug(debug, "\b\b} # interpBarnes(...)\n")
+    oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
         g$zg[bad] <- NA
@@ -1665,6 +1680,11 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         res[["longitude"]] <- x[["longitude"]][lonlook]
         res[["latitude"]] <- x[["latitude"]][latlook]
         res[["z"]] <- x[["z"]][lonlook, latlook]
+    } else if (inherits(x, "landsat")) {
+        for (i in seq_along(x@data)) {
+            dim <- dim(x@data[[i]])
+            res@data[[i]] <- x@data[[i]][seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+        }
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
@@ -1859,7 +1879,7 @@ integerToAscii <- function(i)
 
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bapplyMagneticDeclination(x,declination=", declination, ") {\n", sep="")
+    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
     if (inherits(x, "cm")) {
         oceDebug(debug, "object is of type 'cm'\n")
         rval <- x
@@ -1877,7 +1897,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # applyMagneticDeclination\n")
+    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
     rval
 }
 
@@ -1984,12 +2004,14 @@ ctimeToSeconds <- function(ctime)
 ##    res
 ##}
 
-oceDebug <- function(debug=0, ...)
+oceDebug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
-        cat(paste(rep("  ", 5 - debug), collapse=""), ...)
-        ##cat(paste(rep("  ", debug), collapse=""), ...)
+        n <- 5 - debug - unindent
+        if (n > 0)
+            cat(paste(rep("  ", n), collapse=""))
+        cat(...)
     }
     flush.console()
     invisible()

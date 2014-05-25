@@ -79,7 +79,7 @@ julianCenturyAnomaly <- function(jd)
     (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
 }
 
-moonAngle <- function(t, longitude, latitude, useRefraction=TRUE)
+moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
     if (missing(t)) stop("must give 't'")
     if (missing(longitude)) stop("must give 'longitude'")
@@ -263,7 +263,12 @@ moonAngle <- function(t, longitude, latitude, useRefraction=TRUE)
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
     ec <- eclipticalToEquatorial(lambda, beta, epsilon)
-    lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
+    ##lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
+    lh <- equatorialToLocalHorizontal(rightAscension=ec$rightAscension,
+                                      declination=ec$declination,
+                                      t=t,
+                                      longitude=longitude,
+                                      latitude=latitude)
     ## Illuminated fraction, [1] chapter 31 (second, approximate, formula)
     D <- D %% 360 # need this; could have done it earlier, actually
     illfr <- 180 - D - 6.289 * sin(RPD * Mp) +

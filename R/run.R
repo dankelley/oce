@@ -2,6 +2,8 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
+    x <- as.vector(x)
+    y <- as.vector(y)
     nx <- length(x)
     ny <- length(y)
     if (nx != ny)

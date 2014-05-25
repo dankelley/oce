@@ -1,5 +1,11 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+bandnames <-c("aerosol", "blue", "green", "red",
+              "nir", "swir1", "swir2",
+              "panchromatic",
+              "cirrus",
+              "tirs1", "tirs2")
+
 setMethod(f="initialize",
           signature="landsat",
           definition=function(.Object,filename="") {
@@ -18,8 +24,12 @@ setMethod(f="summary",
               showMetadataItem(object, "spacecraft", "Spacecraft:          ")
               cat(sprintf("* Header file:         %s\n", object@metadata$headerfilename))
               datadim <- dim(object@data[[1]])
-              cat(sprintf("* Data:                %s, which has dim=c(%d,%d)\n",
-                          names(object@data), datadim[1], datadim[2]))
+              cat(sprintf("* Data:\n"))
+              for (b in seq_along(object@data)) {
+                  dim <- dim(object@data[[b]])
+                  cat(sprintf("*     band %d has dim=c(%d,%d)\n",
+                              object@metadata$bands[b], dim[1], dim[2]))
+              }
               cat(sprintf("* Lower left:          %fE %fN\n", object@metadata$lllon, object@metadata$lllat)) 
               cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat)) 
               cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat)) 
@@ -31,18 +41,63 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature="landsat",
           definition=function(x, i, j, drop) {
-              error("no indexing yet\n")
+              if (missing(i))
+                  stop("need to give 'i', perhaps 'band'")
+              if (i == "band") {
+                  if (missing(j))
+                      stop("need to give 'j', a band number")
+                  if (is.character(j)) {
+                      ## FIXME: can later add e.g. "natural" etc
+                      jj <- pmatch(j, bandnames)
+                      if (is.na(jj))
+                          stop("band \"", j, "\" unknown; try one of: ",
+                               paste(bandnames, collapse=", "), "\n")
+                      j <- round(jj)
+                  } else {
+                      j <- round(as.numeric(j))
+                  }
+                  if (j < 1 || j > 11)
+                      stop("band must be between 1 and 11, not ", j, " as given")
+                  return(x@data[[j]])
+              } else if (i %in% names(x@metadata)) {
+                  return(x@metadata[[i]])
+              }
+              stop("can only index for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n")
           })
 
 setMethod(f="plot",
           signature=signature("landsat"),
-          definition=function(x, which=1, decimate=1, zlim, col=oceColorsJet,
+          definition=function(x, which=1, band, decimate=1, zlim, col=oceColorsPalette,
                               debug=getOption("oceDebug"), ...)
           {
+              if (missing(band)) {
+                  if ("panchromatic" %in% names(x@data)) {
+                      oceDebug(debug, "using panchromatic\n")
+                      d <- x@data$panchromatic
+                      band <- "panchromatic"
+                  }  else {
+                      oceDebug(debug, "using band", x@metadata$bands[1], "\n")
+                      d <- x@data[[1]]
+                      band <- x@metadata$bands[1]
+                  }
+              } else {
+                  if (length(band) > 1)
+                      warning("only plotting first requested band\n")
+                  band <- band[1]
+                  if (is.character(band)) {
+                      oceDebug(debug, "using band named", band, "\n")
+                      d <- x[["band", band]]
+                  } else {
+                      oceDebug(debug, "using band", band, "\n")
+                      if (length(which(x@metadata$bands == band)))
+                          d <- x@data[[which(x@metadata$bands == band)]]
+                      else
+                          stop("[[\"band\", ", band, "]] not available; try one of: ",
+                               paste(x@metadata$bands, collapse=", "), "\n",
+                               call.=FALSE)
+                  }
+              }
               if (which == 1) {
-                  hist(x@data[[1]], xlab="Image value", main="", ...)
-              } else if (which == 2) {
-                  d <- x@data[[1]]
                   dim <- dim(d)
                   if (decimate > 1) {
                       d <- d[seq(1, dim[1], by=decimate), seq(1, dim[2], by=decimate)]
@@ -51,7 +106,12 @@ setMethod(f="plot",
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
+                  if (missing(zlim))
+                      zlim <- quantile(d, c(0.01, 0.99))
                   imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
+                  mtext(band, side=3, adj=1, line=0, cex=1)
+              } else if (which == 2) {
+                  hist(d, xlab="Image value", main="", ...)
               } else {
                   stop("unknown value of 'which'")
               }
@@ -70,7 +130,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
             rval <- gsub("[ ]+$", "", rval)
         }
         rval <- if (numeric) as.numeric(rval) else gsub("\"", "", rval)
-        oceDebug(debug, "read item", name, "\n")
+        ##oceDebug(debug, "read item", name, "\n")
         rval
     }
     info <- readLines(file)
@@ -113,54 +173,35 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
          ##dimThermal=dimThermal)
 }
 
-## OLD read.landsatdata <- function(file, type=c("tiff", "jpeg"))
-## OLD {
-## OLD     type <- match.arg(type)
-## OLD     if (type == "jpg") {
-## OLD         stop("no support for jpg type")
-## OLD         ##if (!require(jpeg))
-## OLD         ##    stop("Need the 'jpeg' package")
-## OLD         ##d <- readJPEG(file)
-## OLD         ##d <- t(d)
-## OLD         ##d <- d[, seq.int(dim(d)[2], 1, -1)]
-## OLD     } else if (type == "tiff") {
-## OLD         if (!require(tiff))
-## OLD             stop("Need the 'tiff' package")
-## OLD         d <- readTIFF(file)
-## OLD         d <- t(d)
-## OLD         d <- d[, seq.int(dim(d)[2], 1, -1)]
-## OLD     } else {
-## OLD         stop("internal error with filetype")
-## OLD     }
-## OLD     d[d==0] <- NA
-## OLD     d
-## OLD }
-
-read.landsat <- function(file, band=8, debug=getOption("oceDebug"))
+read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.landsat(file=\"", file, "\", band=", band, ", ...) {", sep="")
+    oceDebug(debug, "read.landsat(file=\"", file, "\", band=c(",
+             paste(band, collapse=","), "), debug=", debug, ") {\n", sep="", unindent=1)
+    if (!require("tiff"))
+        stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
     headerfilename <- paste(file, "/", file, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     rval@metadata <- header
-    bandfilename <- paste(file, "/", file, "_B", band, ".TIF", sep="")
     rval@metadata[["headerfilename"]] <- headerfilename
-    rval@metadata[["filename"]] <- bandfilename 
-    oceDebug(debug, "about to read landsat data from ", bandfilename, ", which may take several moments.\n")
-    ## FIXME: should also handle JPG data (i.e. previews)
-    if (!require(tiff))
-        stop("Need the 'tiff' package")
-    d <- readTIFF(bandfilename)
-    d <- t(d)
-    d <- d[, seq.int(dim(d)[2], 1, -1)]
-    d[d==0] <- NA
-    oceDebug(debug, " done reading landsat data\n")
-    bandname <- paste("band", band, sep="")
-    rval@data[[bandname]] <- d
-    rm(d)
+    rval@metadata[["bands"]] <- bandnames[band]
+    rval@metadata[["bandfiles"]] <- paste(file,"/",file,"_B",band,".TIF",sep="")
+    for (b in seq_along(band)) {
+        bandfilename <- paste(file, "/", file, "_B", b, ".TIF", sep="")
+        ##rval@metadata[["filename"]] <- bandfilename 
+        oceDebug(debug, "reading ", bandnames[band[b]], " in ", bandfilename, "\n", sep="")
+        ## FIXME: should also handle JPG data (i.e. previews)
+        d <- tiff::readTIFF(bandfilename)
+        d <- t(d)
+        d <- d[, seq.int(dim(d)[2], 1, -1)]
+        d[d==0] <- NA
+        bandname <- bandnames[band[b]]
+        rval@data[[bandname]] <- d
+    }
     oceDebug(debug, "} # read.landsat()\n")
     rval@processingLog <- processingLog(rval@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # read.landsat", unindent=1)
     rval
 }
 
@@ -180,26 +221,25 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     ll$latitude <- max(ll$latitude, x@metadata$lllat)
     ur$latitude <- min(ur$latitude, x@metadata$urlat)
     ## Convert lat-lon limits to i-j indices
-    dim <- dim(x@data[[1]])
-
-    1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ll$longitude-x@metadata$lllon)
-
-
-    ilim <- round(c(1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ll$longitude-x@metadata$lllon),
-                    1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ur$longitude-x@metadata$lllon)))
-    ilim[1] <- max(1, ilim[1])
-    ilim[2] <- min(ilim[2], dim[1])
-    jlim <- round(c(1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ll$latitude-x@metadata$lllat),
-                    1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ur$latitude-x@metadata$lllat)))
-    jlim[1] <- max(1, jlim[1])
-    jlim[2] <- min(jlim[2], dim[2])
-    if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
-        stop("no intersection between landsat image and trimming box")
-    oceDebug(debug, "Trimming i to range", ilim[1], "to", ilim[2], "inclusive, or percent range",
-             ilim[1]/dim[1], "to", ilim[2]/dim[1], "inclusive\n")
-    oceDebug(debug, "Trimming j to range", jlim[1], "to", jlim[2], "inclusive, or percent range",
-             jlim[1]/dim[2], "to", jlim[2]/dim[2], "inclusive\n")
-    x@data[[1]] <- x@data[[1]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+    for (b in seq_along(x@data)) {
+        oceDebug(debug, "trimming band", x@metadata$bands[b], "\n")
+        dim <- dim(x@data[[b]])
+        ilim <- round(c(1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ll$longitude-x@metadata$lllon),
+                        1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ur$longitude-x@metadata$lllon)))
+        ilim[1] <- max(1, ilim[1])
+        ilim[2] <- min(ilim[2], dim[1])
+        jlim <- round(c(1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ll$latitude-x@metadata$lllat),
+                        1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ur$latitude-x@metadata$lllat)))
+        jlim[1] <- max(1, jlim[1])
+        jlim[2] <- min(jlim[2], dim[2])
+        if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
+            stop("no intersection between landsat image and trimming box")
+        oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
+                 ilim[1]/dim[1], "to", ilim[2]/dim[1], sep="", "\n")
+        oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
+                 jlim[1]/dim[2], "to", jlim[2]/dim[2], sep="", "\n")
+        x@data[[b]] <- x@data[[b]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+    }
     ## Update bounding box but FIXME: this is not quite right, owing to projections
     x@metadata$lllon <- ll$longitude
     x@metadata$ullon <- ll$longitude

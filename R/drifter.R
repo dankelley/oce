@@ -40,44 +40,45 @@ setMethod(f="summary",
 
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
+    if (!require("ncdf4"))
+        stop('must install.packages("ncdf4") to read drifter data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    if (!require(ncdf4))
-        stop("need the ncdf4 package to read netcdf-formatted drifter files\n")
     ofile <- file
     filename <- ""
+    ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- nc_open(file)
-        on.exit(nc_close(file))
+        file <- ncdf4::nc_open(file)
+        on.exit(ncdf4::nc_close(file))
     } else {
         if (!inherits(file, "connection"))
             stop("argument `file' must be a character string or connection")
         if (!isOpen(file)) {
-            file <- nc_open(file)
-            on.exit(nc_close(file))
+            file <- ncdf4::nc_open(file)
+            on.exit(ncdf4::nc_close(file))
         }
     }
-    id <- ncvar_get(file, "PLATFORM_NUMBER")[1]
+    id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
-    t0s <- ncvar_get(file, "REFERENCE_DATE_TIME")
+    t0s <- ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME")
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
-    julianDayTime <- ncvar_get(file, "JULD")
+    julianDayTime <- ncdf4::ncvar_get(file, "JULD")
     time <- t0 + julianDayTime * 86400
-    longitude <- ncvar_get(file, "LONGITUDE")
-    longitudeNA <- ncatt_get(file, "LONGITUDE","_FillValue")$value
+    longitude <- ncdf4::ncvar_get(file, "LONGITUDE")
+    longitudeNA <- ncdf4::ncatt_get(file, "LONGITUDE","_FillValue")$value
     longitude[longitude == longitudeNA] <- NA
-    latitude <- ncvar_get(file, "LATITUDE")
-    latitudeNA <- ncatt_get(file, "LATITUDE","_FillValue")$value
+    latitude <- ncdf4::ncvar_get(file, "LATITUDE")
+    latitudeNA <- ncdf4::ncatt_get(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
-    salinity <- ncvar_get(file, "PSAL")
-    salinityNA <- ncatt_get(file, "PSAL","_FillValue")$value
+    salinity <- ncdf4::ncvar_get(file, "PSAL")
+    salinityNA <- ncdf4::ncatt_get(file, "PSAL","_FillValue")$value
     salinity[salinity == salinityNA] <- NA
-    temperature <- ncvar_get(file, "TEMP")
-    temperatureNA <- ncatt_get(file, "TEMP","_FillValue")$value
+    temperature <- ncdf4::ncvar_get(file, "TEMP")
+    temperatureNA <- ncdf4::ncatt_get(file, "TEMP","_FillValue")$value
     temperature[temperature == temperatureNA] <- NA
-    pressure <- ncvar_get(file, "PRES")
-    pressureNA <- ncatt_get(file, "PRES","_FillValue")$value
+    pressure <- ncdf4::ncvar_get(file, "PRES")
+    pressureNA <- ncdf4::ncatt_get(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
     ## make things into matrices, even for a single profile
     if (1 == length(dim(salinity))) {
@@ -143,10 +144,10 @@ setMethod(f="plot",
           {
               if (!inherits(x, "drifter"))
                   stop("method is only for objects of class '", "drifter", "'")
-              oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "),",
+              oceDebug(debug, "plot.drifter(x, which=c(", paste(which,collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
-                      " ...) {\n", sep="")
+                      " ...) {\n", sep="", unindent=1)
               coastline <- match.arg(coastline)
               #opar <- par(no.readonly = TRUE)
               lw <- length(which)
@@ -290,7 +291,7 @@ setMethod(f="plot",
                       stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
-              oceDebug(debug, "\b\b} # plot.drifter()\n")
+              oceDebug(debug, "} # plot.drifter()\n", unindent=1)
               invisible()
           })
 

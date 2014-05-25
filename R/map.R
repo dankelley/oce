@@ -12,8 +12,6 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
@@ -58,8 +56,6 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if (missing(longitude))
         stop("must give 'longitude' and possibly 'latitude'")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
@@ -88,14 +84,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
-    oceDebug(debug, "\b\bmapPlot(longitude, latitude", 
+    oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(longitudelim)) "(missing)" else c("c(", paste(longitudelim, collapse=","), ")"),
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(latitudelim, collapse=","), ")"),
-             ", ...) {\n")
+             ", ...) {\n", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", envir=environment())
         longitude <- get("coastlineWorld")
@@ -291,13 +285,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         options(warn=options$warn) 
     }
-    oceDebug(debug, "\b\b} # mapPlot(...)\n")
+    oceDebug(debug, "} # mapPlot()\n", unindent=1)
 }
 
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if (missing(latitude))
         latitude <- TRUE
     if (is.logical(latitude)) {
@@ -381,8 +373,6 @@ mapScalebar <- function(x, y=NULL, length,
 
 mapText <- function(longitude, latitude, labels, ...)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     ok <- !is.na(longitude) & !is.na(latitude)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
@@ -398,8 +388,6 @@ mapText <- function(longitude, latitude, labels, ...)
 
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if (missing(longitude))
         longitude <- TRUE
     if (is.logical(longitude)) {
@@ -428,8 +416,6 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -457,8 +443,6 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 
 mapPoints <- function(longitude, latitude, ...)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -558,8 +542,6 @@ mapLocator <- function(n=512, type='n', ...)
 
 map2lonlat <- function(xusr, yusr, tolerance=1e-4)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     n <- length(xusr)
     if (length(yusr) != n)
         error("lengths of x and y must match")
@@ -603,8 +585,6 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -623,19 +603,17 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
             density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
 }
 
-mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
-                     col, border=NA,
+mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
+                     breaks, col, colormap, border=NA,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    if (!require(mapproj))
-        stop("'mapproj' package must be installed to work with maps")
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
-    oceDebug(debug, "\b\bmapImage(..., ",
+    oceDebug(debug, "mapImage(..., ",
              " missingColor='", missingColor, "', ",
              " filledContour=", filledContour, ", ",
-             ", ...) {\n", sep="")
+             ", ...) {\n", sep="", unindent=1)
  
     if (filledContour)
         warning("mapImage() cannot yet handle filledContour\n")
@@ -654,41 +632,47 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
         }
     }
     breaksGiven <- !missing(breaks)
-    if (!breaksGiven) {
-        small <- .Machine$double.eps
-        zrange <- range(z, na.rm=TRUE)
-        if (missing(zlim)) {
-            if (missing(col)) {
-                breaks <- pretty(zrange+small*c(-1,1), n=10)
-                ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                if (breaks[1] < zrange[1])
-                    breaks[1] <- zrange[1] * (1 - small)
-                if (breaks[length(breaks)] > zrange[2])
-                    breaks[length(breaks)] <- zrange[2] * (1 + small)
-            } else {
-                breaks <- seq(zrange[1]-small, zrange[2]+small,
-                              length.out=if(is.function(col))128 else 1+length(col))
-            }
-            breaksOrig <- breaks
-        } else {
-            if (missing(col))
-                breaks <- c(zlim[1], pretty(zlim), zlim[2])
-            else
-                breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
-            breaksOrig <- breaks
-            breaks[1] <- min(zrange[1], breaks[1])
-            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
-        }
+    if (!missing(colormap)) { # takes precedence over breaks and col
+        breaks <- colormap$breaks
+        col <- colormap$col
+        missingColor <- colormap$missingColor
     } else {
-        breaksOrig <- breaks
-        if (1 == length(breaks)) {
-            breaks <- pretty(z, n=breaks)
+        if (!breaksGiven) {
+            small <- .Machine$double.eps
+            zrange <- range(z, na.rm=TRUE)
+            if (missing(zlim)) {
+                if (missing(col)) {
+                    breaks <- pretty(zrange+small*c(-1,1), n=10)
+                    ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                    if (breaks[1] < zrange[1])
+                        breaks[1] <- zrange[1] * (1 - small)
+                    if (breaks[length(breaks)] > zrange[2])
+                        breaks[length(breaks)] <- zrange[2] * (1 + small)
+                } else {
+                    breaks <- seq(zrange[1]-small, zrange[2]+small,
+                                  length.out=if(is.function(col))128 else 1+length(col))
+                }
+                breaksOrig <- breaks
+            } else {
+                if (missing(col))
+                    breaks <- c(zlim[1], pretty(zlim), zlim[2])
+                else
+                    breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+                breaksOrig <- breaks
+                breaks[1] <- min(zrange[1], breaks[1])
+                breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
+            }
+        } else {
+            breaksOrig <- breaks
+            if (1 == length(breaks)) {
+                breaks <- pretty(z, n=breaks)
+            }
         }
+        if (missing(col))
+            col <- oceColorsPalette(n=length(breaks)-1)
+        if (is.function(col))
+            col <- col(n=length(breaks)-1)
     }
-    if (missing(col))
-        col <- oceColorsPalette(n=length(breaks)-1)
-    if (is.function(col))
-        col <- col(n=length(breaks)-1)
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
@@ -774,7 +758,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE, breaks,
             }
         }
     }
-    oceDebug(debug, "\b\b} # mapImage()\n")
+    oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
 }
 

@@ -42,7 +42,7 @@ setMethod(f="[[",
 
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\bas.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="")
+    oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (inherits(x, "met")) {
         tmp <- x
         x <- tmp[["u"]]
@@ -88,7 +88,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
                      count=count, mean=mean, fives=fives)
     res@metadata <- list(dtheta=dtheta)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b} # as.windrose()\n", sep="")
+    oceDebug(debug, "} # as.windrose()\n", sep="", unindent=1)
     res
 }
 
