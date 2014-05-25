@@ -325,7 +325,6 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
             dp <- diff(pt[1:2])
             pbreaks <- -dp / 2 + c(pt, tail(pt, 1) + dp)
             p <- x@data[["pressure"]]
-            browser()
             for (datumName in dataNames) {
                 oceDebug(debug, "decimating", datumName)
                 if (datumName != "pressure") {
