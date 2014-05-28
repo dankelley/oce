@@ -1289,7 +1289,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
                                          debug=debug, processingLog=processingLog, ...),
                    ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
-                   ODV = read.ctd.odV(file, columns=columns, station=station, monitor=monitor,
+                   ODV = read.ctd.odv(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
                    ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
