@@ -120,12 +120,14 @@ read.met <- function(file, type=NULL, skip,
     ## It would be good if someone from Environment Canada would take pity on a
     ## poor user, and convince the powers-that-be to settle on a single format
     ## and even (gasp) to document it.
-    Tcol <- grep("^Temp.*C\\.", names) # sometimes they use a degree symbol in this name
-    if (length(Tcol)) temperature <- as.numeric(rawData[,Tcol[1]])
-    else temperature <- rep(NA, ntime)
-    pressure <- as.numeric(rawData[["Stn.Press..kPa."]])
-    speed <- as.numeric(rawData[["Wind.Spd..km.h."]]) * 1000 / 3600
-    direction <- 10 * as.numeric(rawData[["Wind.Dir..10.s.deg."]])
+    j <- grep("^Temp.*C.*$", names(rawData))[1]
+    temperature <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
+    pressure <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
+    speed <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    j <- grep("^Wind.*deg.*$", names(rawData))[1]
+    direction <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
     u <- -speed * sin(direction * atan2(1, 1) / 45)
     v <- -speed * cos(direction * atan2(1, 1) / 45)
     res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v)
