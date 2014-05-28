@@ -29,15 +29,21 @@
 }
 
 \details{Reads a comma-separated value file in the format used by the
-    Meterological Service of Canada (MSC).  The agency does not publish a
+    Meteorological Service of Canada (MSC).  The agency does not publish a
     format for these files, so this function was based on a study of a few
     sample files, and it may fail for other files, if MSC changes the format.}
     
 \value{An object of \code{\link[base]{class}} \code{"met"}, of which the
     \code{data} slot contains vectors \code{time}, \code{temperature},
-    \code{pressure}, \code{u}, and \code{v}.}
-  
- \seealso{The documentation for \code{\link{met-class}} explains the structure
+    \code{pressure}, \code{u}, and \code{v}.  The velocity components have
+    units m/s and are the components of the vector of wind direction.  In other
+    words, the oceanographic convention on velocity is employed, not the
+    meteorological one; the weather forecaster's "North wind" has positive
+    \code{v} and zero \code{u}.  In addition to these things, \code{data} also
+    contains items called \code{wind} (in km/h) and \code{direction} (in tenths
+    of a degree), taken straight from the data file.}
+
+\seealso{The documentation for \code{\link{met-class}} explains the structure
      of meteorological objects, and also outlines the other functions dealing
      with them.}
 

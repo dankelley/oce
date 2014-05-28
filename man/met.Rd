@@ -20,8 +20,10 @@ plot(met)
 }
 
 \source{Downloaded from the Environment Canada website
-    \url{http://climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=6358&Year=2011&Month=7&Day=15&format=csv}
-    on November 17, 2011.}
+    \url{http://climate.weather.gc.ca/climateData/bulkdata_e.html?format=csv&stationID=6358&Year=2011&Month=7&Day=15&timeframe=1&submit=Download+Data}
+    on May 28, 2014.  (Note: the URL used to be
+    \url{http://climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=6358&Year=2011&Month=7&Day=15&format=csv}.)
+}
 
 \seealso{The documentation for \code{met-class} in the Oce package explains the
     structure of \code{met} objects, and also outlines the other functions
