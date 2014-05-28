@@ -37,6 +37,24 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
+setMethod(f="subset",
+          signature="met",
+          definition=function(x, subset, ...) {
+              rval <- new("met") # start afresh in case x@data is a data.frame
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              names(rval@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+ 
+
 
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
@@ -135,6 +153,9 @@ read.met <- function(file, type=NULL, skip,
     ## Note the (-) to get from "wind from" to "wind speed towards"
     u <- -speed * sin(theta)
     v <- -speed * cos(theta)
+    zero <- is.na(direction) & wind == 0
+    u[zero] <- 0
+    v[zero] <- 0
     res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v,
                      wind=wind, direction=direction)
     if (missing(processingLog))
@@ -156,7 +177,10 @@ setMethod(f="plot",
                opar <- par(no.readonly = TRUE)
                nw <- length(which)
                if (nw > 1) on.exit(par(opar))
-               par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+               if (nw > 1)
+                   par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+               else
+                   par(mgp=mgp, mar=mar)
                for (w in 1:nw) {
                    oceDebug(debug, "which=", w, "\n")
                    if (which[w] == 1 && any(!is.na(x@data$temperature))) {
@@ -169,6 +193,7 @@ setMethod(f="plot",
                        oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("northward", "y"), tformat=tformat)
                    }
                }
+               oceDebug(debug, "} # plot.met()\n", unindent=1)
            })
 
 
