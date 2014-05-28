@@ -5,6 +5,7 @@
 \alias{read.ctd.woce}
 \alias{read.ctd.woce.other}
 \alias{read.ctd.odf}
+\alias{read.ctd.odv}
 \alias{read.ctd.itp}
 
 \title{Read a CTD data file}
@@ -21,6 +22,8 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
 read.ctd.woce.other(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.odv(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
@@ -39,7 +42,9 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
       determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird
           19} (or similar) CTD format is assumed. If \code{type="WOCE"} then a
       WOCE-exchange file is assumed.  If \code{type="ITP"} then an ice-tethered
-      profiler file is assumed.}
+      profiler file is assumed. If \code{type="ODF"} an ODF file is assumed.
+      If \code{type="ODV"} an ascii-ODV file is assumed.}
+
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
 
@@ -227,6 +232,10 @@ points(longitude, latitude, col='red')
     names of the data columns.  If anything odd happens with ODF files (e.g. if
     they cannot be plotted), the first thing to do is to reread the files with
     \code{debug=1}, to see if column names were converted properly.
+
+    The \code{ODV} format, used by the ODV software and some European/British
+    data providers, is described at
+    \url{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
 
     Ice-tethered profile (ITF) data are available at \url{www.whoi.edu/itf};
     note that the present version only handles data in profiler-mode, not

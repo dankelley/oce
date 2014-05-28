@@ -1265,13 +1265,22 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
-        if ("CTD" == substr(line, 1, 3))              type <- "WOCE"
-        else if ("* Sea-Bird" == substr(line, 1, 10)) type <- "SBE19"
-        else stop("Cannot discover type in line '", line, "'\n")
+        ## FIXME: detect ODV type in first or second line; see oceMagic().
+        if ("CTD" == substr(line, 1, 3)) {
+            type <- "WOCE"
+        } else if ("* Sea-Bird" == substr(line, 1, 10)) {
+            type <- "SBE19"
+        } else {
+            stop("Cannot discover type in line '", line, "'\n")
+        }
     } else {
-        if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
-        else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
-        else stop("type must be SBE19, WOCE, ODF, or ITP, not ", type)
+        if (!is.na(pmatch(type, "SBE19"))) {
+            type <- "SBE19"
+        } else if (!is.na(pmatch(type, "WOCE"))) {
+            type <- "WOCE"
+        } else {
+            stop("type must be SBE19, WOCE, ODF, ODV, or ITP, not ", type)
+        }
     }                                   # FIXME: should just use oceMagic() here
     rval <- switch(type,
                    SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
@@ -1279,6 +1288,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
                    WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
                                          debug=debug, processingLog=processingLog, ...),
                    ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
+                                      debug=debug, processingLog=processingLog, ...),
+                   ODV = read.ctd.odV(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
                    ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
@@ -2174,6 +2185,12 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     oceDebug(debug, "} # read.ctd.odf()\n")
     res
+}
+
+read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+                         debug=getOption("oceDebug"), processingLog, ...)
+{
+    stop("FIXME: make read.ctd.odv() work")
 }
 
 

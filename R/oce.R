@@ -567,8 +567,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    line2 <- scan(file, what='char', sep="\n", skip=1, n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
+    line2 <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found second line of file to be as follows:\n", line2, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
@@ -682,6 +683,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is section\n")
         return("section")
     }
+    if (length(grep("^//SDN_parameter_mapping", line)) ||
+        length(grep("^//SDN_parameter_mapping", line2))) {
+        oceDebug(debug, "this is ODV\n")
+        return("ctd/odv")
+    }
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
@@ -719,6 +725,8 @@ read.oce <- function(file, ...)
         return(read.ctd.woce(file, processingLog=processingLog, ...))
     if (type == "ctd/odf" || type == "mctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "ctd/odv")
+        return(read.ctd.odv(file, processingLog=processingLog, ...))
     if (type == "ctd/itp")
         return(read.ctd.itp(file, processingLog=processingLog, ...))
     if (type == "gpx")
