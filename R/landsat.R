@@ -70,6 +70,10 @@ setMethod(f="plot",
           definition=function(x, which=1, band, decimate=1, zlim, col=oceColorsPalette,
                               debug=getOption("oceDebug"), ...)
           {
+              oceDebug(debug, "plot.landsat(..., which=c(", which,
+                       ", decimate=", decimate,
+                       ", zlim=", if(missing(zlim)) "(missing)" else zlim,
+                       ", ...) {\n", sep="", unindent=1)
               if (missing(band)) {
                   if ("panchromatic" %in% names(x@data)) {
                       oceDebug(debug, "using panchromatic\n")
@@ -115,6 +119,7 @@ setMethod(f="plot",
               } else {
                   stop("unknown value of 'which'")
               }
+              oceDebug(debug, "} # plot.landsat()\n", unindent=1)
           })
 
 
