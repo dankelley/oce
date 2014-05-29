@@ -107,7 +107,7 @@ setMethod(f="plot",
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
                   if (missing(zlim))
-                      zlim <- quantile(d, c(0.01, 0.99))
+                      zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
                   imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
                   mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
