@@ -27,8 +27,12 @@
       the desired number of colours.}
 
   \item{band}{if given, the number of the band to plot (between 1 and 11 for
-      Landsat-8).  If not given, 8 will be used if band8 exists in the object
-      data, or otherwise the first band will be used.}
+      Landsat-8), or the name of the band, one of: \code{"aerosol"},
+      \code{"blue"}, \code{"green"}, \code{"red"}, \code{"nir"},
+      \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"}, \code{"cirrus"},
+      \code{"tirs1"}, \code{"tirs2"} (again, for Landsat-8).  If not given, 8
+      (\code{"panchromatic"}) will be used if band 8 exists in the object data,
+      or otherwise the first band will be used.}
       
   \item{decimate}{decimation interval for images plots; e.g. setting to 10
       means to show only every 10-th point in both directions, for a plot
