@@ -180,8 +180,22 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 
 read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.landsat(file=\"", file, "\", band=c(",
+    oceDebug(1+debug, "read.landsat(file=\"", file, "\", band=c(",
              paste(band, collapse=","), "), debug=", debug, ") {\n", sep="", unindent=1)
+    ## convert to numerical bands (checks also that named bands are OK)
+    band2 <- rep(NA, length(band))
+    for (b in seq_along(band)) {
+        if (is.character(band[b])) {
+            m <- pmatch(band[b], bandnames, nomatch=0)
+            if (0 == m)
+                stop('band "', band[b], '" unknown; must be one of: ', paste(bandnames, collapse=", "))
+            else
+                band2[b] <- m
+        } else {
+            band2[b] <- b
+        }
+    }
+    band <- band2
     if (!require("tiff"))
         stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
@@ -203,10 +217,9 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
         bandname <- bandnames[band[b]]
         rval@data[[bandname]] <- d
     }
-    oceDebug(debug, "} # read.landsat()\n")
     rval@processingLog <- processingLog(rval@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.landsat", unindent=1)
+    oceDebug(debug, "} # read.landsat()\n")
     rval
 }
 
