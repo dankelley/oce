@@ -35,11 +35,11 @@ latitude <- 45.62391
 easting <- 767.700
 northing <- 5058.000
 zone <- 20
-lonlat <- utm2lonlat(northing, easting, zone, "N")
+lonlat <- utm2lonlat(easting, northing, zone, "N")
 lonlat2utm(lonlat$longitude, lonlat$latitude)
 }
 
-\references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system#cite_note-kawase2012-8},
+\references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
     downloaded May 31, 2014.}
 
 \author{Dan Kelley}

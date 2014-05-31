@@ -811,15 +811,14 @@ lonlat2utm <- function(longitude, latitude, km=TRUE)
     A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
     t <- sinh(atanh(sin(phi)) - (2*sqrt(n))/(1+n) * atanh((2*sqrt(n))/(1+n)*sin(phi)))
     zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
-    if (zone > 60)
-        zone <- zone - 60
+    zone <- ifelse(zone > 60, zone-60, zone)
     lambda0 <- rpd * (zone * 6 - 183)
     xiprime <- atan(t / cos(lambda - lambda0))
     etaprime <- atanh(sin(lambda - lambda0) / sqrt(1 + t^2))
     alpha1 <- (1/2)*n - (2/3)*n^2 + (5/16)*n^3
     alpha2 <- (13/48)*n^2 - (3/5)*n^3
     alpha3 <- (61/240)*n^3
-    ## sigma and taul needed only if calculating k and gamma, which we are not.
+    ## sigma and tau needed only if calculating k and gamma, which we are not.
     ## sigma <- 1 + 2*(  alpha1*cos(2*xiprime)*cosh(2*etaprime) +
     ##                 2*alpha2*cos(4*xiprime)*cosh(4*etaprime) +
     ##                 3*alpha3*cos(6*xiprime)*cosh(6*etaprime))
@@ -837,7 +836,8 @@ lonlat2utm <- function(longitude, latitude, km=TRUE)
                                     alpha3*sin(6*xiprime)*cosh(6*etaprime)))
     easting <- if (km) E else 1000 * E
     northing <- if (km) N else 1000 * N
-    list(easting=easting, northing=northing, zone=zone, hemisphere=if(latitude>0) "N" else "S")
+    list(easting=easting, northing=northing, zone=zone,
+         hemisphere=ifelse(latitude>0, "N", "S"))
 }
 
 utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=TRUE) 
