@@ -18,6 +18,8 @@ lonlat2utm(longitude, latitude, km=TRUE)
   \item{northing}{northing coordinate (in km or m, depending on value of
       \code{km})}
   \item{zone}{UTM zone}
+  \item{hemisphere}{indication of hemisphere; \code{"N"} for North, anything
+      else for South.}
   \item{longitude}{decimal longitude}
   \item{latitude}{decimal latitude}
   \item{km}{logical value indicating whether \code{easting} and \code{northing}
