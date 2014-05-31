@@ -798,3 +798,80 @@ geodGc <- function(longitude, latitude, dmax)
     list(longitude=lon, latitude=lat)
 }
 
+lonlat2utm <- function(longitude, latitude, km=TRUE)
+{
+    ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
+    longitude <- ifelse(longitude < 0, longitude+360, longitude)
+    rpd <- atan2(1, 1) / 45
+    lambda <- longitude * rpd
+    phi <- latitude * rpd
+    a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
+    f <- 1 / 298.257223563                 # flatening
+    n <- f / (2 - f)
+    A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
+    t <- sinh(atanh(sin(phi)) - (2*sqrt(n))/(1+n) * atanh((2*sqrt(n))/(1+n)*sin(phi)))
+    zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
+    if (zone > 60)
+        zone <- zone - 60
+    lambda0 <- rpd * (zone * 6 - 183)
+    xiprime <- atan(t / cos(lambda - lambda0))
+    etaprime <- atanh(sin(lambda - lambda0) / sqrt(1 + t^2))
+    alpha1 <- (1/2)*n - (2/3)*n^2 + (5/16)*n^3
+    alpha2 <- (13/48)*n^2 - (3/5)*n^3
+    alpha3 <- (61/240)*n^3
+    ## sigma and taul needed only if calculating k and gamma, which we are not.
+    ## sigma <- 1 + 2*(  alpha1*cos(2*xiprime)*cosh(2*etaprime) +
+    ##                 2*alpha2*cos(4*xiprime)*cosh(4*etaprime) +
+    ##                 3*alpha3*cos(6*xiprime)*cosh(6*etaprime))
+    ## tau <-       2*(  alpha1*sin(2*xiprime)*sinh(2*etaprime) +
+    ##                 2*alpha2*sin(4*xiprime)*sinh(4*etaprime) +
+    ##                 3*alpha3*sin(6*xiprime)*sinh(6*etaprime))
+    k0 <- 0.9996
+    E0 <- 500                              # km
+    E <- E0 + k0 * A * (etaprime + (alpha1*cos(2*xiprime)*sinh(2*etaprime)+
+                                    alpha2*cos(4*xiprime)*sinh(4*etaprime)+
+                                    alpha3*cos(6*xiprime)*sinh(6*etaprime)))
+    N0 <- ifelse(latitude>0, 0, 10000)
+    N <- N0 + k0 * A * (xiprime  + (alpha1*sin(2*xiprime)*cosh(2*etaprime)+
+                                    alpha2*sin(4*xiprime)*cosh(4*etaprime)+
+                                    alpha3*sin(6*xiprime)*cosh(6*etaprime)))
+    easting <- if (km) E else 1000 * E
+    northing <- if (km) N else 1000 * N
+    list(easting=easting, northing=northing, zone=zone, hemisphere=if(latitude>0) "N" else "S")
+}
+
+utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=TRUE) 
+{
+    ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
+    a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
+    f <- 1 / 298.257223563                 # flatening
+    n <- f / (2 - f)
+    A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
+    beta1 <- (1/2)*n - (2/3)*n^2 + (37/96)*n^3
+    beta2 <- (1/48)*n^2 + (1/15)*n^3
+    beta3 <- (17/480)*n^3
+    delta1 <- 2*n - (2/3)*n^2 - 2*n^3
+    delta2 <- (7/3)*n^2 - (8/5)*n^3
+    delta3 <- (56/15)*n^3
+    if (!km) {
+        northing <- northing / 1000
+        easting <- easting / 1000
+    }
+    N0 <- if (hemisphere=="N") 0 else 10000
+    k0 <- 0.9996
+    E0 <- 500                              # km
+    xi <- (northing - N0) / (k0 * A)
+    eta <- (easting - E0) / (k0 * A)
+    xiprime <-   xi -   (beta1*sin(2*xi)*cosh(2*eta) +  beta2*sin(4*xi)*cosh(4*eta) +  beta3*sin(6*xi)*cosh(6*eta))
+    etaprime <- eta -   (beta1*cos(2*xi)*sinh(2*eta) +  beta2*cos(4*xi)*sinh(4*eta) +  beta3*cos(6*xi)*sinh(6*eta))
+    ## sigmaprime and tauprime not needed in present calculation
+    ##sigmaprime <- 1 - 2*(beta1*cos(2*xi)*cosh(2*eta) +2*beta2*cos(4*xi)*cosh(4*eta) +3*beta3*cos(6*xi)*cosh(6*eta))
+    ##tauprime <-       2*(beta1*sin(2*xi)*sinh(2*eta) +2*beta2*sin(4*xi)*sinh(4*eta) +3*beta3*sin(6*xi)*sinh(6*eta))
+    chi <- asin(sin(xiprime)/cosh(etaprime)) # Q: in deg or radian?
+    phi <- chi + (delta1*sin(2*chi) + delta2*sin(4*chi) + delta3*sin(6*chi))
+    latitude <- 45 * phi / atan2(1, 1)
+    lambda0 <- zone * 6 - 183
+    longitude <- lambda0 + 45/atan2(1,1)*atan(sinh(etaprime) / cos(xiprime))
+    list(longitude=longitude, latitude=latitude)
+}
+

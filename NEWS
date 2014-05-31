@@ -1,4 +1,5 @@
 0.9-15
+- utm2lonlat() and lonlat2utm() added
 - landsat summary and plot improvements
 - change data(met) to be during Hurricane Juan
 
