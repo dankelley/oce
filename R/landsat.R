@@ -199,14 +199,16 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     if (!require("tiff"))
         stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
-    headerfilename <- paste(file, "/", file, "_MTL.txt", sep="")
+    actualfilename <- gsub(".*/", "", file)
+    headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     rval@metadata <- header
     rval@metadata[["headerfilename"]] <- headerfilename
     rval@metadata[["bands"]] <- bandnames[band]
-    rval@metadata[["bandfiles"]] <- paste(file,"/",file,"_B",band,".TIF",sep="")
+    actualfilename <- gsub(".*/", "", file)
+    rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     for (b in seq_along(band)) {
-        bandfilename <- paste(file, "/", file, "_B", b, ".TIF", sep="")
+        bandfilename <- paste(file, "/", actualfilename, "_B", b, ".TIF", sep="")
         ##rval@metadata[["filename"]] <- bandfilename 
         oceDebug(debug, "reading ", bandnames[band[b]], " in ", bandfilename, "\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
@@ -238,6 +240,9 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     ur$longitude <- min(ur$longitude, x@metadata$urlon)
     ll$latitude <- max(ll$latitude, x@metadata$lllat)
     ur$latitude <- min(ur$latitude, x@metadata$urlat)
+    ##> ## Find easting-northing box
+    ##> #lonlat2utm(c(ll$longitude, ur$longitude), c(ll$latitude, c(ur$latitude)))
+    ##> #browser()
     ## Convert lat-lon limits to i-j indices
     for (b in seq_along(x@data)) {
         oceDebug(debug, "trimming band", x@metadata$bands[b], "\n")
