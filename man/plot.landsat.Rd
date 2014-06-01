@@ -8,8 +8,8 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=1, zlim, col=oceColorsPalette,
-    debug=getOption("oceDebug"), \dots)
+\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=1, zlim, utm=FALSE,
+    col=oceColorsPalette, debug=getOption("oceDebug"), \dots)
 }
 \arguments{
 
@@ -22,6 +22,9 @@
       or \code{"histogram"} to have a flattened histogram (i.e. to maximally
       increase contrast throughout the domain.)  If not given, the 1 and 99
       percent quantiles are calculated and used as limits.}
+
+  \item{utm}{logical indicating whether to use UTS (easting and northing) instead
+      of longitude and latitude on plot}
 
   \item{col}{a function yielding colours, taking a single integer argument with
       the desired number of colours.}

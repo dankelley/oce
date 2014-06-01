@@ -19,14 +19,16 @@
     the portion of the image to retain.}
   
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
-    information, or to 2 to get more.} 
+    information, or a higher value for more debugging.}
 
 }
 
 \details{An error results if there is no intersection between the trimming box and the image box.
-  Note that since the image is not bounded by a rectangular box, this method is only approximate.}
+  Although the trimming box is specified in longitude-latitude coordinates, the actual trimming is
+  done in UTM coordinates, because this is how Landsat image data are georeferenced.}
   
-\value{An object of \code{\link[base]{class}} \code{"landsat"}, with data having been trimmed in some way.}
+\value{An object of \code{\link[base]{class}} \code{"landsat"}, with data having been trimmed in
+  some way.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the structure
     of landsat objects, and also outlines the other functions dealing with them.}

@@ -3,8 +3,8 @@ library(oce)
 
 longitude <- -59.56594
 latitude <- 45.62391
-easting <- 767700.000 / 1000           # convert to km
-northing <- 5058000.000 / 1000         # convert to km
+easting <- 767700.000
+northing <- 5058000.000
 zone <- 20
 
 lonlat <- utm2lonlat(easting, northing, zone, "N")

@@ -1,45 +1,37 @@
-\name{utm}
+\name{utm2lonlat}
 
 \alias{utm2lonlat}
-\alias{lonlat2utm}
 
-\title{Convert between lat-lon and UTM}
+\title{Convert from UTM to longitude and latitude}
 
-\description{Convert between lat-lon and UTM coordinates}
+\description{Convert from UTM to longitude and latitude}
 
-\usage{
-utm2lonlat(easting, northing, zone=1, hemisphere="N", km=TRUE)
-lonlat2utm(longitude, latitude, km=TRUE)
-}
+\usage{utm2lonlat(easting, northing, zone=1, hemisphere="N", km=FALSE)}
 
 \arguments{
   \item{easting}{easting coordinate (in km or m, depending on value of
-      \code{km})}
+      \code{km}).  Alternatively, a list containing items named \code{easting},
+      \code{northing}, and \code{zone}, in which case these are taken from the
+      list and the arguments named \code{northing}, \code{zone} and are
+      ignored.}
   \item{northing}{northing coordinate (in km or m, depending on value of
-      \code{km})}
+      \code{km}).}
   \item{zone}{UTM zone}
   \item{hemisphere}{indication of hemisphere; \code{"N"} for North, anything
       else for South.}
-  \item{longitude}{decimal longitude}
-  \item{latitude}{decimal latitude}
   \item{km}{logical value indicating whether \code{easting} and \code{northing}
       are in kilometers or meters.}
 }
 
-\value{For \code{utm2lonlat}, a list containing \code{longitude} and
-    \code{latitude}. For \code{lonlat2utm}, a list containing \code{easting},
-    \code{northing}, \code{zone} and \code{hemisphere}.}
+\value{A list containing \code{longitude} and \code{latitude}.}
 
 \examples{
 library(oce)
-longitude <- -59.56594
-latitude <- 45.62391
-easting <- 767.700
-northing <- 5058.000
-zone <- 20
-lonlat <- utm2lonlat(easting, northing, zone, "N")
-lonlat2utm(lonlat$longitude, lonlat$latitude)
+## Cape Split, in the Minas Basin of the Bay of Fundy
+utm2lonlat(852863, 5029997, 19)
 }
+
+\seealso{\code{lonlat2utm} does the inverse operation.}
 
 \references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
     downloaded May 31, 2014.}

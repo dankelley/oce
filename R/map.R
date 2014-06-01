@@ -798,8 +798,17 @@ geodGc <- function(longitude, latitude, dmax)
     list(longitude=lon, latitude=lat)
 }
 
-lonlat2utm <- function(longitude, latitude, km=TRUE)
+lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 {
+    names <- names(longitude)
+    if (!is.null(names)) {
+        if ("zone" %in% names)
+            zone <- longitude$zone
+        if ("longitude" %in% names && "latitude" %in% names) {
+            latitude <- longitude$latitude
+            longitude <- longitude$longitude
+        }
+    }
     ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
     longitude <- ifelse(longitude < 0, longitude+360, longitude)
     rpd <- atan2(1, 1) / 45
@@ -810,8 +819,10 @@ lonlat2utm <- function(longitude, latitude, km=TRUE)
     n <- f / (2 - f)
     A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
     t <- sinh(atanh(sin(phi)) - (2*sqrt(n))/(1+n) * atanh((2*sqrt(n))/(1+n)*sin(phi)))
-    zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
-    zone <- ifelse(zone > 60, zone-60, zone)
+    if (missing(zone)) {
+        zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
+        zone <- ifelse(zone > 60, zone-60, zone)
+    }
     lambda0 <- rpd * (zone * 6 - 183)
     xiprime <- atan(t / cos(lambda - lambda0))
     etaprime <- atanh(sin(lambda - lambda0) / sqrt(1 + t^2))
@@ -840,8 +851,16 @@ lonlat2utm <- function(longitude, latitude, km=TRUE)
          hemisphere=ifelse(latitude>0, "N", "S"))
 }
 
-utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=TRUE) 
+utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE) 
 {
+    names <- names(easting)
+    if (!is.null(names)) {
+        if ("easting" %in% names && "northing" %in% names && "zone" %in% names) {
+            zone <- easting$zone
+            northing <- easting$northing
+            easting <- easting$easting
+        }
+    }
     ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
     a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
     f <- 1 / 298.257223563                 # flatening
