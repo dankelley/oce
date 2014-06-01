@@ -121,6 +121,10 @@ setMethod(f="plot",
                   if (missing(zlim))
                       zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
                   if (utm) {
+                      if (!("llUTM" %in% names(x@metadata))) {
+                          x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat)
+                          x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$llUTM$zone)
+                      }
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
                              z=d, asp=1, zlim=zlim, col=col, ...)
