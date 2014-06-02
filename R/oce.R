@@ -695,6 +695,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 read.oce <- function(file, ...)
 {
     type <- oceMagic(file)
+    debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
+    oceDebug(debug,
+             "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
+             sep="", unindent=1)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         return(read.coastline.shapefile(file, processingLog=processingLog, ...))
@@ -754,7 +758,7 @@ read.oce <- function(file, ...)
     if (type == "observatory")
         return(read.observatory(file, processingLog=processingLog, ...))
     if (type == "landsat") {
-        return(read.landsat(file))
+        return(read.landsat(file, ...))
     }
     stop("unknown file type \"", type, "\"")
 }
