@@ -66,7 +66,7 @@ setMethod(f="[[",
                       j <- round(as.numeric(j))
                   }
                   if (j < 1 || j > length(x@data))
-                      stop("band must be between 1 and 11, not ", j, " as given")
+                      stop("band must be between 1 and ", length(x@data), ", not ", j, " as given")
                   return(x@data[[j]])
               } else if (i %in% names(x@metadata)) {
                   return(x@metadata[[i]])
