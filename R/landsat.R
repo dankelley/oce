@@ -56,15 +56,16 @@ setMethod(f="[[",
                       stop("need to give 'j', a band number")
                   if (is.character(j)) {
                       ## FIXME: can later add e.g. "natural" etc
-                      jj <- pmatch(j, bandnames)
-                      if (is.na(jj))
+                      jj <- pmatch(j, names(x@data))
+                      if (is.na(jj)) {
                           stop("band \"", j, "\" unknown; try one of: ",
-                               paste(bandnames, collapse=", "), "\n")
+                               paste(names(x@data), collapse=", "), "\n")
+                      }
                       j <- round(jj)
                   } else {
                       j <- round(as.numeric(j))
                   }
-                  if (j < 1 || j > 11)
+                  if (j < 1 || j > length(x@data))
                       stop("band must be between 1 and 11, not ", j, " as given")
                   return(x@data[[j]])
               } else if (i %in% names(x@metadata)) {
@@ -280,12 +281,16 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     trimmedNorthingRange <- c(llTrimUTM$northing, urTrimUTM$northing)
     eStart <- (trimmedEastingRange[1] - oldEastingRange[1])/(diff(oldEastingRange))
     eEnd <- (trimmedEastingRange[2] - oldEastingRange[1])/(diff(oldEastingRange))
-    if (eStart < 0 || eStart > 1) stop("internal error trimming (eStart)")
-    if (eEnd < 0 || eEnd > 1) stop("internal error trimming (eEnd)")
+    eStart <- min(max(eStart, 0), 1)
+    eEnd <- min(max(eEnd, 0), 1)
+    #if (eStart < 0 || eStart > 1) stop("internal error trimming (eStart)")
+    #if (eEnd < 0 || eEnd > 1) stop("internal error trimming (eEnd)")
     nStart <- (trimmedNorthingRange[1] - oldNorthingRange[1])/(diff(oldNorthingRange))
     nEnd <- (trimmedNorthingRange[2] - oldNorthingRange[1])/(diff(oldNorthingRange))
-    if (nStart < 0 || nStart > 1) stop("internal error trimming (nStart)")
-    if (nEnd < 0 || nEnd > 1) stop("internal error trimming (nEnd)")
+    nStart <- min(max(nStart, 0), 1)
+    nEnd <- min(max(nEnd, 0), 1)
+    #if (nStart < 0 || nStart > 1) stop("internal error trimming (nStart)")
+    #if (nEnd < 0 || nEnd > 1) stop("internal error trimming (nEnd)")
 
     oceDebug(debug, "Easting trim range:", eStart, "to", eEnd, "\n")
     oceDebug(debug, "Northing trim range:", nStart, "to", nEnd, "\n")
