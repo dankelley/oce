@@ -352,7 +352,7 @@ setMethod(f="plot",
 read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
-    if (is.character(file) && grep(".nc$", file)) {
+    if (is.character(file) && length(grep(".nc$", file))) {
         if (!require("ncdf4"))
             stop('must install.packages("ncdf4") to read topo data from a netCDF file')
         ## GEBCO netcdf
