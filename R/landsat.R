@@ -76,7 +76,7 @@ setMethod(f="[[",
 
 setMethod(f="plot",
           signature=signature("landsat"),
-          definition=function(x, which=1, band, decimate=1, zlim, utm=FALSE,
+          definition=function(x, which=1, band, decimate, zlim, utm=FALSE,
                               col=oceColorsPalette, debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.landsat(..., which=c(", which,
@@ -112,6 +112,15 @@ setMethod(f="plot",
               }
               if (which == 1) {
                   dim <- dim(d)
+                  if (missing(decimate)) {
+                      if (prod(dim) > 1000000L) {
+                          max <- max(dim)
+                          decimate <- as.integer(floor(max / 800))
+                          warning("auto-decimating image with decimate=", decimate, ", since it has more than a million pixels")
+                      } else {
+                          decimate <- 1
+                      }
+                  }
                   if (decimate > 1) {
                       d <- d[seq(1, dim[1], by=decimate), seq(1, dim[2], by=decimate)]
                       dim <- dim(d)
@@ -192,7 +201,24 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
     ## l <- getItem("THERMAL_LINES")
     ## s <- getItem("THERMAL_SAMPLES")
     ## dimThermal <- c(l, s)
-    list(info=info,
+    ## Select just certain lines.  The header is short, so doing it by
+    ## steps, just in case the data format changes later and adjustment
+    ## is required.
+    info2 <- info[grep("GROUP", info, invert=TRUE)] # delete grouping commands
+    info3 <- info2[grep("=", info2)] # select assignments
+    info4 <- gsub("^\\s+", "", info3) # remove leading whitespace
+    info5 <- gsub("\\s+$", "", info4) # remove trailing whitespace
+    S <- strsplit(info5, ' = ')
+    names <- as.character(lapply(S, function(s) s[[1]]))
+    values <- gsub('"', '', as.character(lapply(S, function(s) s[[2]]))) # FIXME: some are numeric
+    header <- as.vector(values)
+    names(header) <- tolower(names)
+    header <- as.list(header)
+    ## Make numeric if possible
+    for (i in seq_along(header)) {
+        try(header[[i]] <- scan(text=header[[i]], quiet=TRUE), silent=TRUE)
+    }
+    list(header=header,
          time=time, spacecraft=spacecraft,
          ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon, ## possibly not needed with UTM
          lllat=lllat, lllon=lllon, lrlat=lrlat, lrlon=lrlon, ## possibly not needed with UTM

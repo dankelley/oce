@@ -8,7 +8,7 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=1, zlim, utm=FALSE,
+\usage{\S4method{plot}{landsat}(x, which=1, band, decimate, zlim, utm=FALSE,
     col=oceColorsPalette, debug=getOption("oceDebug"), \dots)
 }
 \arguments{
@@ -37,11 +37,14 @@
       (\code{"panchromatic"}) will be used if band 8 exists in the object data,
       or otherwise the first band will be used.}
       
-  \item{decimate}{decimation interval for images plots; e.g. setting to 10
-      means to show only every 10-th point in both directions, for a plot
-      simplification by a factor 100.  The purpose is mainly to speed up
-      plotting, which can be slow on large landsat images.}
-
+  \item{decimate}{optional decimation interval for images plots; e.g. setting
+      to 10 means to show only every 10-th point in each direction.  Large
+      images can be very slow to plot, so the main purpose of \code{decimate}
+      is to speed plotting.  If \code{decimate} is not supplied, then images
+      with more than a million pixels are automatically decimated for speed,
+      which is generally a good idea for interactive work since it yields
+      typical rendering times of under a second.}
+  
   \item{debug}{set to a positive value to get debugging information during
       processing.}
 
