@@ -37,8 +37,12 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
     and their typical uses.}
 
 \value{An object of class \code{landsat}, with the conventional Oce slots
-    \code{metadata}, \code{data} and \code{processingLog}.  The \code{data}
-    slot holds matrices of the data in the requested bands.} 
+    \code{metadata}, \code{data} and \code{processingLog}.  The \code{metadata}
+    is mainly intended for use by Oce functions, but for generality it also
+    contains an entry named \code{header} that represents the full image header
+    in a list (with names made lower-case).  The \code{data} slot holds
+    matrices of the data in the requested bands, and users may add extra
+    matrices if desired, e.g. to store calculated quantities.} 
 
 \references{
 1. \url{http://glovis.usgs.gov} 
