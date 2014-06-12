@@ -1677,7 +1677,8 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
         rval <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
         oceDebug(debug, "  step 4b. \"", rval, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
     } else {
-        stop("cannot decode latitude or longitude from \"", line, "\"")
+        warning("cannot decode latitude or longitude from \"", line, "\"")
+        rval <- NA
     }
     rval <- rval * sign
     oceDebug(debug, "} # parseLatLon()\n", unindent=1)
