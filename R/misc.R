@@ -1090,11 +1090,9 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
     rval <- vector("character", n)
-    if (!is.numeric(lat) || !is.numeric(lon))
-        return(paste("non-numeric lat (", lat, ") or lon (", lon, ")", sep=""))
     for (i in 1:n) {
         if (is.na(lat[i]) || is.na(lon[i]))
-            rval[i] <- ""
+            rval[i] <- "Lat and lon unknown"
         else
             rval[i] <- paste(format(abs(lat[i]), digits=digits),
                              if (lat[i] > 0) "N  " else "S  ",
