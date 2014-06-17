@@ -1677,7 +1677,8 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
         rval <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
         oceDebug(debug, "  step 4b. \"", rval, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
     } else {
-        warning("cannot decode latitude or longitude from \"", line, "\"")
+        ## 2014-06-17 it's annoying to see this error msg
+        ##warning("cannot decode latitude or longitude from \"", line, "\"")
         rval <- NA
     }
     rval <- rval * sign
@@ -1975,7 +1976,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     col.names.inferred <- tolower(col.names.inferred)
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
+        t <- try(data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric")), silent=TRUE)
+        if (class(t) == "try-error") {
+            stop("data-header conflict; check that #names matches #columns")
+        }
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
