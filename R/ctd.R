@@ -782,7 +782,7 @@ setMethod(f="plot",
                   return(invisible())
               }
               last.good <- which(rev(is.na(x@data$salinity))==FALSE)[1]
-              if (length(last.good) > 0) {
+              if (!is.na(last.good) && length(last.good) > 0) {
                   last.good <- length(x@data$temperature) - last.good + 1
                   for (nc in seq_along(x@data)) {
                       if (!is.null(x@data[[nc]])) {
@@ -2256,6 +2256,14 @@ plotTS <- function (x,
         y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure)
         salinity <- x[["salinity"]]
     }
+    if (!any(is.finite(salinity))) {
+        warning("no valid salinity data")
+        return(invisible())
+    }
+    if (!any(is.finite(y))) {
+        warning("no valid temperature data")
+        return(invisible())
+    }
     if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
     if (!add) {
@@ -2440,6 +2448,10 @@ plotProfile <- function (x,
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
             y <- y[keep]
+            if (length(x) < 1 || length(y) < 1) {
+                warning("no good data to plot")
+                return(invisible())
+            }
         }
         if (type == 'l') {
             lines(x, y, col = col, lwd=lwd)
@@ -2652,6 +2664,10 @@ plotProfile <- function (x,
         }
     } else if (xtype == "S" || xtype == "salinity") {
         salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
+        if (!any(is.finite(salinity))) {
+            warning("no valid salinity data")
+            return(invisible())
+        }
         if (missing(Slim)) {
             if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(salinity, na.rm=TRUE)
         }
@@ -2758,6 +2774,10 @@ plotProfile <- function (x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
+        if (!any(is.finite(temperature))) {
+            warning("no valid temperature data")
+            return(invisible())
+        }
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(temperature, na.rm=TRUE)
         }
@@ -2867,6 +2887,10 @@ plotProfile <- function (x,
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
+        if (!any(is.finite(st))) {
+            warning("no valid sigma-theta data")
+            return(invisible())
+        }
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         if (missing(densitylim))
             densitylim <- range(st, na.rm=TRUE)
@@ -2895,6 +2919,10 @@ plotProfile <- function (x,
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        if (0 == sum(look)) {
+            warning("no valid N2 data")
+            return(invisible())
+        }
         plot(N2[look], y[look],
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
@@ -2972,6 +3000,14 @@ plotProfile <- function (x,
             warning("argument 'add' is ignored for xtype=\"salinity+temperature\"")
         salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
         temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
+        if (!any(is.finite(salinity))) {
+            warning("no valid salinity data")
+            return(invisible())
+        }
+        if (!any(is.finite(temperature))) {
+            warning("no valid temperature data")
+            return(invisible())
+        }
         if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
