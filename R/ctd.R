@@ -1817,11 +1817,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
         }
         ##* NMEA UTC (Time) = Jul 28 2011  04:17:53 
+        ##* system upload time = jan 26 2010 13:02:57
         if (length(grep("^\\* .*time.*=.*$", lline))) {
-            d <- sub(".*=", "", lline)
-            d <- sub("^ *", "", d)
-            d <- sub(" *$", "", d)
-            date <- decodeTime(d)
+            if (0 == length(grep("real-time sample interval", lline))) {
+                d <- sub(".*=", "", lline)
+                d <- sub("^ *", "", d)
+                d <- sub(" *$", "", d)
+                date <- decodeTime(d)
+            }
         }
         if (0 < (r<-regexpr("filename", lline)))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
