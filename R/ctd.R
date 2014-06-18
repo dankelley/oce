@@ -20,6 +20,8 @@ setMethod(f="summary",
               showMetadataItem(object, "type", "Instrument: ")
               showMetadataItem(object, "model", "Instrument model:  ")
               showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
+              showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
+              showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
               showMetadataItem(object, "filename", "File source:         ")
               showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
               showMetadataItem(object, "institute", "Institute:      ")
@@ -1745,7 +1747,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
-    serialNumber <- ""
+    serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
@@ -1813,6 +1815,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
+        if (length(grep("^\\* temperature sn", lline)))
+            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
+        if (length(grep("^\\* conductivity sn", lline)))
+            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline)
             date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
@@ -1952,6 +1958,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      type="SBE",
                      hexfilename=hexfilename, # from instrument
                      serialNumber=serialNumber,
+                     serialNumberConductivity=serialNumberConductivity,
+                     serialNumberTemperature=serialNumberTemperature,
                      systemUploadTime=systemUploadTime,
                      ship=ship,
                      scientist=scientist,
