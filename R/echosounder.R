@@ -616,9 +616,9 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (debug > 1) cat('corr: ', corr, ' user-defined calibration correction in dB (expect 0 for 01-Fish.dt4)\n', sep='')
 
             if (1 == length(channelNumber)) { # get space
-                a <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
-                b <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
-                c <- matrix(NA, nrow=pingsInFile, ncol=samplesPerPing)
+                a <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
+                b <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
+                c <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
             }
             if (debug > 3) cat(" channel descriptor ",
                            " number=", tail(channelNumber, 1),
