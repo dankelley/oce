@@ -457,8 +457,8 @@ setMethod(f="plot",
                   omar <- par('mar')
 
                   if (variable == "map") {
-                      lat <- array(NA, numStations)
-                      lon <- array(NA, numStations)
+                      lat <- array(NA_real_, numStations)
+                      lon <- array(NA_real_, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
                           lon[i] <- thisStation[["longitude"]]
@@ -870,8 +870,8 @@ setMethod(f="plot",
               ##}
 
               zz <- matrix(nrow=numStations, ncol=num.depths)
-              xx <- array(NA, numStations)
-              yy <- array(NA, num.depths)
+              xx <- array(NA_real_, numStations)
+              yy <- array(NA_real_, num.depths)
               if (is.null(at)) {
                   lon0 <- firstStation@metadata$longitude
                   lat0 <- firstStation@metadata$latitude
@@ -1101,8 +1101,6 @@ read.section <- function(file, directory, sectionId="", flags,
 	pressure <- as.numeric(data[,which(var.names=="CTDPRS") - col.start + 1])
     else
 	stop("no column named \"CTDPRS\"")
-
-
     if (length(which(var.names=="CTDTMP")))
 	temperature <- as.numeric(data[,which(var.names=="CTDTMP") - col.start + 1])
     else
@@ -1329,9 +1327,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
         x <- geodDist(res)
-        temperatureMat <- array(dim=c(npressure, nstn))
-        salinityMat <- array(dim=c(npressure, nstn))
-        sigmaThetaMat <- array(dim=c(npressure, nstn))
+        temperatureMat <- array(double(), dim=c(npressure, nstn))
+        salinityMat <- array(double(), dim=c(npressure, nstn))
+        sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
         for (s in 1:nstn) {
             thisStation <- res@data$station[[s]]
             temperatureMat[,s] <- thisStation@data$temperature

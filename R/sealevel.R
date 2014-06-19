@@ -425,7 +425,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
         oceDebug(debug, "units=", units, "\n")
         if (tolower(units) != "mm")
             stop("require units to be 'mm' or 'MM', not '", units, "'")
-        elevation <- array(NA, 12*(n-1))
+        elevation <- array(NA_real_, 12*(n-1))
         first.twelve.hours  <- 3600 * (0:11)
         second.twelve.hours <- 3600 * (12:23)
         twelve <- seq(1, 12, 1)

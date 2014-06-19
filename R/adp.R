@@ -1870,7 +1870,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     ## vectorizing across the loop, by combining into a single vector
     ## for (distance, cr, ...), but it was no faster, and the code was
     ## more complicated to read.
-    vbm <- array(dim=dim(v))
+    vbm <- array(double(), dim=dim(v))
     abm <- array(raw(), dim=dim(v))
     qbm <- array(raw(), dim=dim(v))
     gbm <- array(raw(), dim=dim(v))

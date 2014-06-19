@@ -446,7 +446,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             }
 
             items <- numberOfBeams * numberOfCells
-            v <- array(dim=c(profilesToRead, numberOfCells, numberOfBeams))
+            v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
             a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # echo amplitude
             q <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # correlation
             g <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # percent good
