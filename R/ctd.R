@@ -1140,11 +1140,9 @@ setMethod(f="plot",
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                              mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
-                          if (!is.null(x@metadata$startTime))
-                              mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
-                          ##if (!is.null(x@metadata$scientist))
-                          ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
+                              mtext(x@metadata$station, side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime))
+                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
                       }
                       oceDebug(debug, "} # plot(ctd, ...) of type MAP\n")
                   } else {
@@ -1214,7 +1212,7 @@ plotScan <- function(x,
          xlab=name, ylab=resizableLabel("p", "y"),
          yaxs='r',
          type=type)
-    mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=1, cex=par('cex'))
+    mtext(x@metadata$station, side=3, adj=1, cex=par('cex'))
     mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
     if (1 <= adorn.length) {
         t <- try(eval(adorn[1]), silent=TRUE)
