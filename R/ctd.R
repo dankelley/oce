@@ -63,13 +63,13 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
-              } else if (i %in% c("theta", "potential temperature", "potentialTemperature")) {
+              } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
               } else if (i == "Rrho") {
                   swRrho(x)
               } else if (i == "spice") {
                   swSpice(x)
-              } else if (i %in% c("absolute salinity", "absoluteSalinity", "SA")) {
+              } else if (i %in% c("absolute salinity", "SA")) {
                   Sp <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
@@ -97,7 +97,7 @@ setMethod(f="[[",
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
                   teos("gsw_sa_from_sp", Sp, p, lon, lat)
-              } else if (i %in% c("Theta", "conservative temperature", "conservativeTemperature", "CT")) {
+              } else if (i %in% c("conservative temperature", "CT")) {
                   Sp <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
