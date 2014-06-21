@@ -27,14 +27,16 @@
     these are calculated using \code{\link{swDepth}} and \code{\link{swZ}}, and
     that any values that may have been read in a data file are ignored. 
   
-    Potential temperature is calculated with \code{ctd[["potential
-        temperature"]]}.  The TEOS-10 defined quantity called ``absolute
-    salinity'' is retrieved with \code{ctd[["absolute salinity"]]},
+    Potential temperature is calculated with \code{ctd[["theta"]]},
+    \code{ctd[["potential temperature"]]} or
+    \code{ctd[["potentialTemperature"]]}.  The TEOS-10 defined quantity called
+    ``absolute salinity'' is retrieved with \code{ctd[["absolute salinity"]]},
     \code{ctd[["absoluteSalinity"]]}, or \code{ctd[["SA"]]}, while
-    ``conservative temperature'' is retrieved with \code{ctd[["conservative
-        temperature"]]}, \code{ctd[["conservativeTemperature"]]}, or
-    \code{ctd[["CT"]]}.  (None of the TEOS-10 quantities are stored in the
-    data; rather, they are computed if requested.)
+    ``conservative temperature'' is retrieved with \code{ctd[["Theta"]]},
+    \code{ctd[["conservative temperature"]]},
+    \code{ctd[["conservativeTemperature"]]}, or \code{ctd[["CT"]]}.  (None of
+    the TEOS-10 quantities are stored in the data; rather, they are computed if
+    requested.)
     
     \emph{Accessing scalar values.}
   

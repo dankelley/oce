@@ -63,7 +63,7 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
-              } else if (i %in% c("theta", "potential temperature")) { # FIXME: theta conflicts with TEOS and should be removed
+              } else if (i %in% c("theta", "potential temperature", "potentialTemperature")) {
                   swTheta(x)
               } else if (i == "Rrho") {
                   swRrho(x)
@@ -97,7 +97,7 @@ setMethod(f="[[",
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
                   teos("gsw_sa_from_sp", Sp, p, lon, lat)
-              } else if (i %in% c("conservative temperature", "conservativeTemperature", "CT")) {
+              } else if (i %in% c("Theta", "conservative temperature", "conservativeTemperature", "CT")) {
                   Sp <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
