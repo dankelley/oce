@@ -16,43 +16,46 @@
 
     Consider a CTD object named \code{ctd}.
 
-    \emph{Accessing column values.}
+    \emph{Accessing metadata.}
+  
+    Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
+    or set by name, \code{ctd[["longitude"]] <- ctd[["longitude"]] + 1}
+    corrects a one-degree error.
+
+    \emph{Accessing data.}
+
+    The data may be accessed by name or by partial name, if the latter matches
+    the full name uniquely.
    
     Column data may be accessed as e.g.  \code{ctd[["salinity"]]},
     \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  There may be
-    other columns also, depending on the CTD configuration.
+    other columns also, depending on the CTD configuration; use
+    \code{\link{str}} or \code{\link{summary.ctd}} to find the names.
   
     Depth is accessed with e.g. \code{ctd[["depth"]]}, while its negative, the
     vertical coordinate, is accessed with e.g.  \code{ctd[["z"]]}; note that
     these are calculated using \code{\link{swDepth}} and \code{\link{swZ}}, and
     that any values that may have been read in a data file are ignored. 
-  
-    Potential temperature is calculated with \code{ctd[["theta"]]},
-    \code{ctd[["potential temperature"]]} or
-    \code{ctd[["potentialTemperature"]]}.  The TEOS-10 defined quantity called
-    ``absolute salinity'' is retrieved with \code{ctd[["absolute salinity"]]},
-    \code{ctd[["absoluteSalinity"]]}, or \code{ctd[["SA"]]}, while
-    ``conservative temperature'' is retrieved with \code{ctd[["Theta"]]},
-    \code{ctd[["conservative temperature"]]},
-    \code{ctd[["conservativeTemperature"]]}, or \code{ctd[["CT"]]}.  (None of
-    the TEOS-10 quantities are stored in the data; rather, they are computed if
-    requested.)
     
-    \emph{Accessing scalar values.}
+    \emph{Accessing derived data.}
   
-    Various scalar quantities are also available, e.g.
-    \code{ctd[["longitude"]]}, etc.
+    Potential temperature defined according to UNESCO-1980 is calculated with
+    \code{ctd[["theta"]]} or \code{ctd[["potential temperature"]]}.  Salinity
+    is retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
 
-    \emph{Accessing derived values.}
-  
-    The square of buoyancy frequency \eqn{N}{N} is retrieved with
-    \code{ctd[["N2"]]} or \code{\link{swN2}}, density ratio with
-    \code{ctd[["Rrho"]]} and spiciness with \code{ctd[["spice"]]}.
+    Conservative temperature defined according to TEOS-2010 (see
+    \code{\link{teos}}) is calculated with \code{ctd[["CT"]]} or
+    \code{ctd[["conservative temperature"]]}.  Absolute salinity is calculated
+    with \code{ctd[["SA"]]} or \code{ctd[["absolute salinity"]]}.
+    
+    The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
+    \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness
+    with \code{ctd[["spice"]]}.
 
     \emph{Assigning values.}
    
     Items stored in the object may be altered with e.g.
-    \code{ctd[["salinity"]] <- rep(35,10)}.  Note that this method will not
+    \code{ctd[["salinity"]] <- rep(35,10)}.  Of course this method does not
     work with derived quantities such as conservative temperature, etc.
 
     \emph{Overview of contents.}
