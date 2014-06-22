@@ -382,6 +382,7 @@ setMethod(f="plot",
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
+                              showStart=TRUE,
                               showBottom=TRUE,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
@@ -541,7 +542,7 @@ setMethod(f="plot",
                           text(lon, lat, stationId, pos=2)
                           text(lon-360, lat, stationId, pos=2)
                       }
-                      if (xtype == "distance") {
+                      if (xtype == "distance" && showStart) {
                           points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
                       }
