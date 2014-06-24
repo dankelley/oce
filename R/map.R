@@ -179,7 +179,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "latlabs:", latlabs, "\n")
         usr <- par('usr')
         labelAt <- NULL
-        lab <- vector("expression", length(latlabs))
+        ##lab <- vector("expression", length(latlabs))
+        lab <- vector("character", length(latlabs))
         nlab <- 0
         lastAtY <- NA
         ##cat("inc:", inc, "\n")
@@ -198,12 +199,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                             ##cat("lonlab:", lonlab, " INSIDE\n")
                             labelAt <- c(labelAt, at$y)
                             nlab <- nlab + 1
-                            lab[nlab] <- formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi)
+                            lab[nlab] <- formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi)
                             oceDebug(debug, "  y axis: ",
                                      formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
                             if (debug>90) {
-                                mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi),
+                                mtext(formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
                                       line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
                                       side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
                                 warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
@@ -243,7 +244,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
             mapZones(lonlabs)
         }
-        lab <- vector("expression", length(latlabs))
+        ##lab <- vector("expression", length(latlabs))
+        lab <- vector("character", length(latlabs))
         nlab <- 0
         lastx <- NA
         dxMin <- (usr[2] - usr[1]) / 10
@@ -259,10 +261,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     if (usr[1] < at$x && at$x < usr[2]) {
                         labelAt <- c(labelAt, at$x)
                         nlab <- nlab + 1
-                        lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi)
+                        lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi)
                         if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
                             if (debug>90) {
-                                mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi),
+                                mtext(formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi),
                                       side=1,
                                       line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
                                       at=at$x, cex=par('cex'), ...)
@@ -497,12 +499,14 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
         else
             rval <- list(degrees, minutes, seconds, hemispheres)
     } else if (type == "string") {
-        if (noMinutes)
-            rval <- sprintf("%02d %s", degrees, hemispheres)
-        else if (noSeconds)
-            rval <- sprintf("%02d %02d %s", degrees, minutes, hemispheres)
-        else
-            rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
+        if (noMinutes) {
+            rval <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
+        } else if (noSeconds) {
+            rval <- sprintf("%02d %02d' %s", degrees, minutes, hemispheres)
+        } else {
+            rval <- sprintf("%02d %02d' %04.2f\" %s", degrees, minutes, seconds, hemispheres)
+        }
+        Encoding(rval) <- "latin1"
     } else if (type == "expression") {
         n <- length(degrees)
         rval <- vector("expression", n)
