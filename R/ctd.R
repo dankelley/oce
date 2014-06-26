@@ -698,6 +698,7 @@ setMethod(f="plot",
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               clongitude, clatitude, span, showHemi=TRUE,
+                              lonlabel=NULL, latlabel=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -1100,14 +1101,18 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       debug=debug-1)
                               }
                               if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
                                   mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
@@ -1121,14 +1126,18 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       debug=debug-1)
                               }
                           }
                           oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
@@ -1140,9 +1149,17 @@ setMethod(f="plot",
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                              mtext(x@metadata$station, side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                              mtext(x@metadata$station,
+                                    side=3, adj=0, cex=0.8*par("cex"), line=1.125)
                           if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime))
-                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
+                                    side=3, adj=1, cex=0.8*par("cex"), line=1.125)
+                      }
+                      if (debug==50) {
+                          message("testing position of axis labels")
+                          mtext("012",side=2,line=0.2,cex=0.83)
+                          mtext("012",side=3,line=0.2,cex=0.83)
+                          mtext("012",side=4,line=0.2,cex=0.83)
                       }
                       oceDebug(debug, "} # plot(ctd, ...) of type MAP\n")
                   } else {

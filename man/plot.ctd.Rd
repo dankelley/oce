@@ -20,6 +20,7 @@
      dpdtlim, timelim,
      lonlim, latlim,
      clongitude, clatitude, span, showHemi=TRUE,
+     lonlabel=NULL, latlabel=NULL,
      projection=NULL, parameters=NULL, orientation=NULL,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
@@ -113,6 +114,8 @@
       chosen to include some points on the nearby coastline.}
   \item{showHemi}{logical indicating whether to show hemisphere in axis tick
       labels.}
+  \item{lonlabel,latlabel}{optional vectors of longitude and latitude to label
+      on edges of plot, passed to \code{\link{plot.coastline}}.}
   \item{projection}{projection for map, passed to
       \code{\link[mapproj]{mapproject}} by \code{plot} with a \code{coastline}
       object; \code{NULL} for none.}

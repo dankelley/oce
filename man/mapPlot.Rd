@@ -6,9 +6,11 @@
 
 \description{Plot a map}
 
-\usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
-    polarCircle=0,
+\usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
+    grid=TRUE,
+    bg, fill=NULL, type='l',
+    axes=TRUE, drawBox=TRUE, showHemi=TRUE,
+    polarCircle=0, lonlabel=NULL, latlabel=NULL,
     projection="mollweide", parameters=NULL, orientation=NULL,
     debug=getOption("oceDebug"),
     \dots)
@@ -56,6 +58,9 @@
 
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
+
+    \item{lonlabel,latlabel}{optional vectors of longitude and latitude to
+        label on edges of plot.}
 
     \item{projection}{projection; see \code{\link[mapproj]{mapproject}}.}
 
