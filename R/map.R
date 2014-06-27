@@ -151,7 +151,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
-    if (debug==50) {
+    if (debug > 45 && debug < 55) {
         message("lonlabel: ", paste(lonlabel, collapse=" "))
         message("latlabel: ", paste(latlabel, collapse=" "))
     }
@@ -191,6 +191,41 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "lonlabs:", lonlabs, "\n")
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0)
             mapZones(lonlabs)
+
+        if (debug > 45 && debug < 55) {
+            if (!is.null(lonlabel)) {
+                message("trying new (lonlabel and latlabel) axis-labelling method")
+                ## bottom side
+                AT <- NULL
+                LAB <- NULL
+                for (lab in lonlabel) {
+                    o <- optimize(function(lat) abs(mapproject(lab,lat)$y-usr[3]),lower=-180,upper=180)
+                    message("testing lab=", lab)
+                    if (is.na(o$objective) || o$objective > 0.01) next
+                    xy <- mapproject(lab, o$minimum)
+                    message("xy$x=", xy$x, ", xy$y:", xy$y)
+                    AT <- c(AT, xy$x)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                }
+                for (lab in latlabel) {
+                    message("lab: ", lab, "N")
+                    t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$y-usr[3]),lower=-180,upper=180)})
+                    message(class(t))
+                    print(o)
+                    message("testing lab=", lab)
+                    if (is.na(o$objective) || o$objective > 0.01) next
+                    xy <- mapproject(o$minimum, lab)
+                    message("xy$x=", xy$x, ", xy$y:", xy$y)
+                    AT <- c(AT, xy$x)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                }
+                if (!is.null(AT)) {
+                    axis(side=1, at=AT, lab=LAB, cex=2)
+                }
+            }
+            message("par('usr'): ", paste(par('usr'), collapse=" "))
+            return()
+        }
 
         ## Now label the grid lines, outside the plot (like axes)
         usr <- par('usr')
