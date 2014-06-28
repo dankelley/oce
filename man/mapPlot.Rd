@@ -10,7 +10,7 @@
     grid=TRUE,
     bg, fill=NULL, type='l',
     axes=TRUE, drawBox=TRUE, showHemi=TRUE,
-    polarCircle=0, lonlabel=NULL, latlabel=NULL,
+    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
     projection="mollweide", parameters=NULL, orientation=NULL,
     debug=getOption("oceDebug"),
     \dots)
@@ -59,9 +59,12 @@
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
 
-    \item{lonlabel,latlabel}{optional vectors of longitude and latitude to
-        label on edges of plot.}
-
+    \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude
+        to label on the indicated sides of plot, passed to
+        \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+        simple customization.  If they are are not provided, reasonable
+        defaults will be used.}
+ 
     \item{projection}{projection; see \code{\link[mapproj]{mapproject}}.}
 
     \item{parameters}{parameters for projection; see

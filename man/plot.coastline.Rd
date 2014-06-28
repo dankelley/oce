@@ -12,7 +12,7 @@
      xlab="", ylab="", showHemi=TRUE,
      asp,
      clongitude, clatitude, span,
-     lonlabel=NULL, latlabel=NULL,
+     lonlabel=NULL, latlabel=NULL, sides=NULL,
      projection=NULL, parameters=NULL, orientation=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
@@ -54,9 +54,11 @@
       plotting device, the radius may be smaller than \code{span}.  A value for
       \code{span} must be supplied, if \code{clongitude} and \code{clatitude}
       are supplied.}
-  \item{lonlabel,latlabel}{optional vectors of longitude and latitude to label
-      on edges of plot.  These are ignored if \code{projection} is
-      \code{NULL}.}
+  \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
+      label on the indicated sides of plot, passed to
+      \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+      simple customization.  If they are are not provided, reasonable defaults
+      will be used.}
   \item{projection}{optional map projection to use (see \code{\link{mapPlot}});
       if not given, a cartesian frame is used, scaled so that coastline shapes
       near the centre of the plot are preserved.  If a projection is provided,

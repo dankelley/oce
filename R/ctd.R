@@ -698,7 +698,7 @@ setMethod(f="plot",
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               clongitude, clatitude, span, showHemi=TRUE,
-                              lonlabel=NULL, latlabel=NULL,
+                              lonlabel=NULL, latlabel=NULL, sides=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -1065,13 +1065,13 @@ setMethod(f="plot",
                               projection <- "stereographic"
                           oceDebug(debug, "span=", span, "km\n")
                           if (is.character(coastline)) {
-                              oceDebug(debug, " coastline is a string: \"", coastline, "\"\n", sep="")
+                              oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (require(ocedata, quietly=TRUE)) {
                                   library(ocedata)
                                   oceDebug(debug, "ocedata is present\n")
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
-                                      oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                      oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
                                       data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
@@ -1102,7 +1102,7 @@ setMethod(f="plot",
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
@@ -1111,7 +1111,7 @@ setMethod(f="plot",
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
                               }
                               if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
@@ -1127,7 +1127,7 @@ setMethod(f="plot",
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
@@ -1136,7 +1136,7 @@ setMethod(f="plot",
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
                               }
                           }
@@ -1155,13 +1155,7 @@ setMethod(f="plot",
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
-                      if (debug==50) {
-                          message("testing position of axis labels")
-                          mtext("012",side=2,line=0.2,cex=0.83)
-                          mtext("012",side=3,line=0.2,cex=0.83)
-                          mtext("012",side=4,line=0.2,cex=0.83)
-                      }
-                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n")
+                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n", unindent=1)
                   } else {
                       stop("unknown value of which, ", which[w])
                   }

@@ -70,7 +70,7 @@ setMethod(f="plot",
                                xlab="", ylab="", showHemi=TRUE,
                                asp,
                                clongitude, clatitude, span,
-                               lonlabel=NULL, latlabel=NULL,
+                               lonlabel=NULL, latlabel=NULL, sides=NULL,
                                projection=NULL, parameters=NULL, orientation=NULL,
                                ## center, span,
                                expand=1,
@@ -103,13 +103,16 @@ setMethod(f="plot",
                       latitudelim <- c(-90, 90)
                   else
                       latitudelim <- clatitude + c(-1, 1) * span / 111 / 2
-                  return(mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
-                                 showHemi=showHemi,
-                                 mgp=mgp, mar=mar,
-                                 bg="white", fill=fill, type='l', axes=TRUE,
-                                 lonlabel=lonlabel, latlabel=latlabel,
-                                 projection=projection, parameters=parameters, orientation=orientation,
-                                 debug=debug, ...))
+                  mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
+                          showHemi=showHemi,
+                          mgp=mgp, mar=mar,
+                          bg="white", fill=fill, type='l', axes=TRUE,
+                          lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                          projection=projection, parameters=parameters, orientation=orientation,
+                          debug=debug-1, ...)
+
+                  oceDebug(debug, "} # plot.coastline()\n", unindent=1)
+                  return(invisible())
               }
               geographical <- round(geographical)
               if (geographical < 0 || geographical > 2)
