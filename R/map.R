@@ -117,8 +117,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (length(grid) == 1)
         grid <- rep(grid[1], 2)
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
-    ## if (is.logical(grid[1]) && grid[1])
-    ##     grid <- rep(15, 2)
     xy <- mapproject(longitude, latitude,
                      projection=projection, parameters=parameters, orientation=orientation)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
@@ -186,44 +184,53 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         xur <- par('usr')[2]
         yur <- par('usr')[4]
         ur <- map2lonlat(xur, yur)
+        span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
         if (missing(latitudelim)) {
-            grid[2] <- 15 
-            latlabs <- seq(-90, 90, grid[2])
+            latlabs <- pretty(c(ll$latitude, ur$latitude))
+            grid[2] <- diff(latlabs[1:2])
+            oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
         } else {
-            span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+            ##span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
             if (span > 45) {
                 grid[2] <- 15 
                 latlabs <- seq(-90, 90, grid[2])
+                oceDebug(debug, "span=", span, "exceeds 45 so setting grid to ", grid[2], "\n")
             } else if (5 < span && span <= 45) {
                 grid[2] <- 5 
                 latlabs <- seq(-90, 90, grid[2])
+                oceDebug(debug, "span=", span, "between 5 and 45 so setting grid to ", grid[2], "\n")
             } else {
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
                 grid[2] <- diff(latlabs[1:2])
+                oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
             }
         }
 
         if (missing(longitudelim)) {
-            grid[1] <- 15 
-            lonlabs <- seq(-180, 180, grid[1])
+            oceDebug(debug, "lon case C")
+            lonlabs <- pretty(c(ll$longitude, ur$longitude))
+            grid[1] <- diff(lonlabs[1:2])
+            oceDebug(debug, "span=", span, "and setting grid to ", grid[1], "\n")
         } else {
-            span <- if (is.na(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
-            oceDebug(debug, "span:", span)
+            span <- if (is.na(ur$longitude - ll$longitude))
+                abs(diff(longitudelim)) else
+                    abs(ur$longitude - ll$longitude)
+            oceDebug(debug, "span:", span, "\n")
             if (45 < span) {
-                oceDebug(debug, "lon case A")
+                oceDebug(debug, "lon case A", "\n")
                 grid[1] <- 15          # divides 45 evenly
                 lonlabs <- seq(-180, 180, grid[1])
             } else if (5 < span && span <= 45) {
-                oceDebug(debug, "lon case B")
+                oceDebug(debug, "lon case B", "\n")
                 grid[1] <- 5 
                 lonlabs <- seq(-180, 180, grid[1])
             } else {
-                oceDebug(debug, "lon case C")
+                oceDebug(debug, "lon case C", "\n")
                 lonlabs <- pretty(c(ll$longitude, ur$longitude))
                 grid[1] <- diff(lonlabs[1:2])
             }
         }
-        oceDebug(debug, "grid:", grid[1], " ", grid[2])
+        oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         ## if (FALSE) { # before 2014-06-29
         ##     inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
         ##     latlabs <- seq(-90, 90, inc)
@@ -268,8 +275,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             latlabel <- latlabs
         if (is.null(sides))
             sides <- 1:2
-        TICK <- FALSE # experiment with no ticks, and numbers close by axes
-        LINE <- -0.50 # where to put label (no ticks anymore)
+        TICK <- FALSE                  # ticks look bad for angled grid lines
+        LINE <- -3/4                   # labels snug to box
         if (1 %in% sides) {    # bottom side
             AT <- NULL
             LAB <- NULL
