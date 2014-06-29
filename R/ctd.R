@@ -1036,34 +1036,32 @@ setMethod(f="plot",
                           else 
                               waterDepth <- max(x[["pressure"]], na.rm=TRUE)
                           if (missing(span)) {
-                              if (waterDepth < 50)
-                                  span <- 50
-                              else if (waterDepth < 100)
-                                  span <- 100
-                              else if (waterDepth < 200)
-                                  span <- 500
-                              else if (waterDepth < 2000)
-                                  span <- 1000
-                              else
-                                  span <- 5000
-                              oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
-                              if (TRUE) {
-                                  ## find nearest point on (coarse) globe
-                                  data("coastlineWorld", envir=environment())
-                                  d <- geodDist(coastlineWorld[['longitude']],
-                                                coastlineWorld[['latitude']],
-                                                x[['longitude']],
-                                                x[['latitude']])
-                                  nearest <- d[which.min(d)] # in km
-                                  span <- 3 * nearest
-                                  oceDebug(debug, "**NEW METHOD** span not given, and nearest point is=", nearest,
-                                           "km away (coarse coastline), so set span=", span, "\n")
-                              }
+                              ## if (waterDepth < 50)
+                              ##     span <- 50
+                              ## else if (waterDepth < 100)
+                              ##     span <- 100
+                              ## else if (waterDepth < 200)
+                              ##     span <- 500
+                              ## else if (waterDepth < 2000)
+                              ##     span <- 1000
+                              ## else
+                              ##     span <- 5000
+                              ## oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
+                              ## find nearest point on (coarse) globe
+                              data("coastlineWorld", envir=environment())
+                              d <- geodDist(coastlineWorld[['longitude']],
+                                            coastlineWorld[['latitude']],
+                                            x[['longitude']],
+                                            x[['latitude']])
+                              nearest <- d[which.min(d)] # in km
+                              span <- 3 * nearest
+                              oceDebug(debug, "span not given, and nearest point is=", nearest,
+                                       "km away (coarse coastline), so set span=", span, "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
-                          if (x[["latitude"]][1] > 70 && missing(projection))
-                              projection <- "stereographic"
-                          oceDebug(debug, "span=", span, "km\n")
+                          if (missing(projection))
+                              projection <- if (x[["latitude"]][1] > 70) "stereographic" else "mercator"
+                          oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (require(ocedata, quietly=TRUE)) {

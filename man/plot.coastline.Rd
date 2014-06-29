@@ -65,13 +65,10 @@
       the coordinate system will bear an indirect relationship to longitude and
       longitude, and further adornment of the plot must be done with
       e.g.  \code{\link{mapPoints}} instead of \code{\link{points}}.}
-  
   \item{parameters}{optional parameters to map projection (see
       \code{\link{mapPlot}}.}
-
   \item{orientation}{optional orientation of map projection (see
       \code{\link{mapPlot}}.}
-
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
