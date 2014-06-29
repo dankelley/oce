@@ -560,7 +560,7 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
         try({
             error <- FALSE
             ## FIXME: find better way to do the inverse mapping
-            message("init:", init[1], " ", init[2])
+            ## message("init:", init[1], " ", init[2])
             o <- optim(init,
                        function(x) {
                            message(" x:", x[1], " ", x[2])
@@ -569,7 +569,7 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
                            sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
                        },
                        control=list(abstol=1e-6, trace=TRUE))
-            message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
+            ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
             if (o$convergence == 0 && !error && o$value < tolerance) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
