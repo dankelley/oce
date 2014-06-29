@@ -550,27 +550,32 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
     ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
     ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
     t <- try({
-            or <- get(".Last.projection", envir = globalenv())$orientation
+        or <- get(".Last.projection", envir = globalenv())$orientation
     }, silent=TRUE)
     if (class(t) == "try-error") {
         or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
     }
+    init <- c(0, 0) # won't work if this is off the map
     for (i in 1:n) {
-        t <- try({
+        try({
             error <- FALSE
             ## FIXME: find better way to do the inverse mapping
-            ## FIXME: here, try two starting points and pick best
-            o <- optim(c(or[2], or[1]), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
-            if (o$value > 100*tolerance) {
-                oo <- optim(c(0, 0), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
-                if (oo$value < o$value)
-                    o <- oo
-            }
-            ##cat(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
+            message("init:", init[1], " ", init[2])
+            o <- optim(init,
+                       function(x) {
+                           message(" x:", x[1], " ", x[2])
+                           xy <- mapproject(x[1], x[2])
+                           error <<- xy$error
+                           sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
+                       },
+                       control=list(abstol=1e-6, trace=TRUE))
+            message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
             if (o$convergence == 0 && !error && o$value < tolerance) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]
+                init[1] <- lon[i]
+                init[2] <- lat[i]
             }
         }, silent=TRUE)
     }
