@@ -174,89 +174,92 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         options(warn=-1) 
         ## Grid lines within plot
         ## 2014-06-29
-        message("grid:", grid[1], " ", grid[2])
+
+        ## Find ll and ur corners of plot, if possible, for use in calculating
+        ## lon and lat spans.  This will not work in all cases; e.g. for a
+        ## world map in mollweide projection, the bounding points will be "in
+        ## space", but we catch such problems when we calculate span below.
+        usr <- par('usr')
+        xll <- par('usr')[1]
+        yll <- par('usr')[3]
+        ll <- map2lonlat(xll, yll)
+        xur <- par('usr')[2]
+        yur <- par('usr')[4]
+        ur <- map2lonlat(xur, yur)
         if (missing(latitudelim)) {
             grid[2] <- 15 
             latlabs <- seq(-90, 90, grid[2])
         } else {
-            if (diff(latitudelim) > 45) {
+            span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+            if (span > 45) {
                 grid[2] <- 15 
                 latlabs <- seq(-90, 90, grid[2])
-            } else if (diff(latitudelim) > 5) {
+            } else if (5 < span && span <= 45) {
                 grid[2] <- 5 
                 latlabs <- seq(-90, 90, grid[2])
             } else {
-                ## Extend both by factor fac in case plot is non-square
-                fac <- 3
-                span <- diff(latitudelim)
-                low <- max(-180, latitudelim[1] - fac * span)
-                high <- min(360, latitudelim[2] + fac * span) # or 180 here
-                latlabs <- pretty(c(low, high), n=12, min.n=8)
+                latlabs <- pretty(c(ll$latitude, ur$latitude))
                 grid[2] <- diff(latlabs[1:2])
             }
         }
+
         if (missing(longitudelim)) {
             grid[1] <- 15 
-            lonlabs <- seq(longitudelim[1], longitudelim[2], grid[1])
+            lonlabs <- seq(-180, 180, grid[1])
         } else {
-            span <- diff(longitudelim)
-            message("span:", span)
-            message("longitudelim:", longitudelim[1], " ", longitudelim[2])
+            span <- if (is.na(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
+            oceDebug(debug, "span:", span)
             if (45 < span) {
-                message("case A")
-                grid[1] <- 15 
+                oceDebug(debug, "lon case A")
+                grid[1] <- 15          # divides 45 evenly
                 lonlabs <- seq(-180, 180, grid[1])
             } else if (5 < span && span <= 45) {
-                message("case B")
+                oceDebug(debug, "lon case B")
                 grid[1] <- 5 
                 lonlabs <- seq(-180, 180, grid[1])
             } else {
-                message("case C")
-                ## Extend both by factor fac in case plot is non-square
-                fac <- 3
-                low <- max(-180, longitudelim[1] - fac * span)
-                high <- min(360, longitudelim[2] + fac * span) # or 180 here
-                lonlabs <- pretty(c(low, high), n=12, min.n=8)
+                oceDebug(debug, "lon case C")
+                lonlabs <- pretty(c(ll$longitude, ur$longitude))
                 grid[1] <- diff(lonlabs[1:2])
             }
         }
-        message("grid:", grid[1], " ", grid[2])
-        if (FALSE) {
-            inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
-            latlabs <- seq(-90, 90, inc)
-            if (!missing(latitudelim)) { 
-                incBest <- diff(pretty(latitudelim, n=4, n.min=3))[1]
-                oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-                if (inc / incBest > 3) {
-                    message("initially latlabs");print(latlabs)
-                    ## extend range because the lims may not agree given the plot geometry
-                    latSmall <- mean(latitudelim) - 5 * (latitudelim[2] - latitudelim[1])
-                    latLarge <- mean(latitudelim) + 5 * (latitudelim[2] - latitudelim[1])
-                    latlabs <- pretty(c(latSmall, latLarge), n=4, n.min=3)
-                    grid[2] <- diff(latlabs[1:2])
-                    message("later latlabs");print(latlabs)
-                }
-            }
-            inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
-            lonlabs <- seq(-180, 180, inc)
-            if (!missing(longitudelim)) { 
-                oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-                incBest <- diff(pretty(longitudelim, n=4, n.min=3))[1]
-                if (inc / incBest > 3) {
-                    ## extend range because the lims may not agree given the plot geometry
-                    lonSmall <- mean(longitudelim) - 5 * (longitudelim[2] - longitudelim[1])
-                    lonLarge <- mean(longitudelim) + 5 * (longitudelim[2] - longitudelim[1])
-                    lonlabs <- pretty(c(lonSmall, lonLarge), n=4, n.min=3)
-                    grid[1] <- diff(lonlabs[1:2])
-                }
-            }
-        }
+        oceDebug(debug, "grid:", grid[1], " ", grid[2])
+        ## if (FALSE) { # before 2014-06-29
+        ##     inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
+        ##     latlabs <- seq(-90, 90, inc)
+        ##     if (!missing(latitudelim)) { 
+        ##         incBest <- diff(pretty(latitudelim, n=4, n.min=3))[1]
+        ##         oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+        ##         if (inc / incBest > 3) {
+        ##             message("initially latlabs");print(latlabs)
+        ##             ## extend range because the lims may not agree given the plot geometry
+        ##             latSmall <- mean(latitudelim) - 5 * (latitudelim[2] - latitudelim[1])
+        ##             latLarge <- mean(latitudelim) + 5 * (latitudelim[2] - latitudelim[1])
+        ##             latlabs <- pretty(c(latSmall, latLarge), n=4, n.min=3)
+        ##             grid[2] <- diff(latlabs[1:2])
+        ##             message("later latlabs");print(latlabs)
+        ##         }
+        ##     }
+        ##     inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
+        ##     lonlabs <- seq(-180, 180, inc)
+        ##     if (!missing(longitudelim)) { 
+        ##         oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+        ##         incBest <- diff(pretty(longitudelim, n=4, n.min=3))[1]
+        ##         if (inc / incBest > 3) {
+        ##             ## extend range because the lims may not agree given the plot geometry
+        ##             lonSmall <- mean(longitudelim) - 5 * (longitudelim[2] - longitudelim[1])
+        ##             lonLarge <- mean(longitudelim) + 5 * (longitudelim[2] - longitudelim[1])
+        ##             lonlabs <- pretty(c(lonSmall, lonLarge), n=4, n.min=3)
+        ##             grid[1] <- diff(lonlabs[1:2])
+        ##         }
+        ##     }
+        ## }
         if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
-            oceDebug(debug, "grid lines for latitudes:", latlabs, "\n")
+            oceDebug(debug, "grid lines for lat:", latlabs, "\n")
             mapMeridians(latlabs)
         }
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
-            oceDebug(debug, "grid lines for longitudes:", lonlabs, "\n")
+            oceDebug(debug, "grid lines for lon:", lonlabs, "\n")
             mapZones(lonlabs)
         }
         if (is.null(lonlabel))
@@ -266,31 +269,29 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (is.null(sides))
             sides <- 1:2
         TICK <- FALSE # experiment with no ticks, and numbers close by axes
-        LINE <- -0.75 # where to put label (no ticks anymore)
+        LINE <- -0.50 # where to put label (no ticks anymore)
         if (1 %in% sides) {    # bottom side
             AT <- NULL
             LAB <- NULL
             for (lab in lonlabel) {
                 o <- optimize(function(lat) abs(mapproject(lab,lat)$y-usr[3]),lower=-90,upper=90)
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 1\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(lab, o$minimum)$x
+                if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 1\n")
                 }
-                xy <- mapproject(lab, o$minimum)
-                AT <- c(AT, xy$x)
-                LAB <- c(LAB, paste(lab, "E", sep=""))
-                oceDebug(debug, "lonlabel", lab, "E intersects side 1\n")
             }
             for (lab in latlabel) {
                 t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$y-usr[3]),lower=-180,upper=180)})
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "latlabel", lab, "N does not intersect side 1\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(lab, o$minimum)$x
+                if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 1\n")
                 }
-                oceDebug(debug, "latlabel", lab, "N intersects side 1\n")
-                xy <- mapproject(o$minimum, lab)
-                AT <- c(AT, xy$x)
-                LAB <- c(LAB, paste(lab, "N", sep=""))
             }
             if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB),
                                    line=LINE, tick=TICK)
@@ -300,25 +301,23 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             LAB <- NULL
             for (lab in lonlabel) {
                 o <- optimize(function(lat) abs(mapproject(lab,lat)$x-usr[1]),lower=-90,upper=90)
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 2\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(lab, o$minimum)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 2\n")
                 }
-                xy <- mapproject(lab, o$minimum)
-                AT <- c(AT, xy$y)
-                LAB <- c(LAB, paste(lab, "E", sep=""))
-                oceDebug(debug, "lonlabel", lab, "E intersects side 2\n")
             }
             for (lab in latlabel) {
                 t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$x-usr[1]),lower=-180,upper=180)})
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "lonlabel", lab, "N does not intersect side 2\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(o$minimum, lab)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
                 }
-                xy <- mapproject(o$minimum, lab)
-                AT <- c(AT, xy$y)
-                LAB <- c(LAB, paste(lab, "N", sep=""))
-                oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
             }
             if (!is.null(AT)) axis(side=2, at=AT, labels=LAB,#fixneg(LAB),
                                    line=LINE, tick=TICK)
@@ -328,25 +327,23 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             LAB <- NULL
             for (lab in lonlabel) {
                 o <- optimize(function(lat) abs(mapproject(lab,lat)$y-usr[4]),lower=-90,upper=90)
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 3\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(lab, o$minimum)$x
+                if (!is.na(x) && usr[3] < x && x < usr[4]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 3\n")
                 }
-                xy <- mapproject(lab, o$minimum)
-                AT <- c(AT, xy$x)
-                LAB <- c(LAB, paste(lab, "E", sep=""))
-                oceDebug(debug, "lonlabel", lab, "E intersects side 3\n")
             }
             for (lab in latlabel) {
                 t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$y-usr[4]),lower=-180,upper=180)})
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "latlabel", lab, "N does not intersect side 3\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(o$minimum, lab)$x
+                if (!is.na(x) && usr[3] < x && x < usr[4]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 3\n")
                 }
-                xy <- mapproject(o$minimum, lab)
-                AT <- c(AT, xy$x)
-                LAB <- c(LAB, paste(lab, "N", sep=""))
-                oceDebug(debug, "latlabel", lab, "N intersects side 3\n")
             }
             if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB),
                                    line=LINE, tick=TICK)
@@ -356,25 +353,23 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             LAB <- NULL
             for (lab in lonlabel) {
                 o <- optimize(function(lat) abs(mapproject(lab,lat)$x-usr[2]),lower=-90,upper=90)
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 4\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(lab, o$minimum)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 4\n")
                 }
-                xy <- mapproject(lab, o$minimum)
-                AT <- c(AT, xy$y)
-                LAB <- c(LAB, paste(lab, "E", sep=""))
-                oceDebug(debug, "lonlabel", lab, "E intersects side 4\n")
             }
             for (lab in latlabel) {
                 t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$x-usr[2]),lower=-180,upper=180)})
-                if (is.na(o$objective) || o$objective > 0.01) {
-                    oceDebug(debug, "latlabel", lab, "N does not intersect side 4\n")
-                    next
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(lab, o$minimum)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
                 }
-                xy <- mapproject(o$minimum, lab)
-                AT <- c(AT, xy$y)
-                LAB <- c(LAB, paste(lab, "N", sep=""))
-                oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
             }
             if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB),
                                    line=LINE, tick=TICK)
@@ -521,7 +516,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 }
 
 mapScalebar <- function(x, y=NULL, length,
-                        lwd=4*par("lwd"), cex=1.2*par("cex"),
+                        lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
     if (!is.null(y))
@@ -529,37 +524,33 @@ mapScalebar <- function(x, y=NULL, length,
     if (missing(x))
         x <- "topleft"
     else if (is.na(match.arg(x, "topleft")))
-        stop("x must be \"topleft\" in this (early) version of mapScalebar(), but it is \"\n")
+        stop("x must be \"topleft\", but it is \"\n")
     usr <- par('usr')
-
     ## determine scale from centre of region
     x0 <- 0.5 * (usr[1] + usr[2])
     y0 <- 0.5 * (usr[3] + usr[4])
     dusr <- 0.001 * (usr[2] - usr[1])
     x1 <- x0 + dusr
-    cat("dusr:", dusr, "\n")
     y1 <- y0
     lonlat0 <- map2lonlat(x0, y0)
-    cat("lonlat0:\n")
-    print(lonlat0)
     lonlat1 <- map2lonlat(x1, y1)
     dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
                       lonlat1$longitude, lonlat1$latitude)
-    cat("dkm:", dkm, "\n")
-
     kmPerUsr <- dkm / dusr
-    cat("kmPerUsr:", kmPerUsr, "\n")
-    
-    if (missing(length))
-        length <- diff(pretty(kmPerUsr*(usr[4]-usr[3]))[1:2])
-    cat("length:", length, "\n")
+    if (missing(length)) {
+        # corner to corner distance
+        ccd <- kmPerUsr*sqrt((usr[2]-usr[1])^2+(usr[4]-usr[3])^2)
+        length <- diff(pretty(c(0, ccd), n=12)[1:2])
+    }
     frac <- length / kmPerUsr
-    cat("frac:", frac, "\n")
-    xBar <- usr[1] + 0.05 * (usr[2] - usr[1])
-    yBar <- usr[4] - 0.05 * (usr[4] - usr[3])
-    lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col)
-    text(xBar + frac / 2, yBar, pos=1, sprintf("%.0f km", length),
-         cex=cex, col=col)
+    D <- 0.1 * (usr[4] - usr[3]) # place bar 10% down from the top
+    xBar <- usr[1] + D
+    yBar <- usr[4] - D
+    lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col, lend=2)
+    lines(rep(xBar, 2), yBar + c(-D, D)/4, col=col, lwd=lwd)
+    lines(rep(xBar+frac, 2), yBar + c(-D, D)/4, col=col, lwd=lwd)
+    text(xBar+frac/2, yBar-D/4, pos=1, adj=1, offset=0.5,
+         sprintf("%.0f km", length), cex=cex, col=col)
 }
 
 mapText <- function(longitude, latitude, labels, ...)
@@ -756,14 +747,14 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
             ## message("init:", init[1], " ", init[2])
             o <- optim(init,
                        function(x) {
-                           message(" x:", x[1], " ", x[2])
+                           ##message(" x:", x[1], " ", x[2])
                            xy <- mapproject(x[1], x[2])
                            error <<- xy$error
                            sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
                        },
-                       control=list(abstol=1e-6, trace=TRUE))
+                       control=list(abstol=tolerance))
             ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-            if (o$convergence == 0 && !error && o$value < tolerance) {
+            if (o$convergence == 0 && !error) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]

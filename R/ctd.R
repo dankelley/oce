@@ -1138,11 +1138,11 @@ setMethod(f="plot",
                                        debug=debug-1)
                               }
                           }
-                          oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
                           if (is.null(projection)) {
                               points(x@metadata$longitude, x@metadata$latitude,
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
+                              mapScalebar()
                               mapPoints(x@metadata$longitude, x@metadata$latitude,
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
