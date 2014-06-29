@@ -563,7 +563,7 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
             ## message("init:", init[1], " ", init[2])
             o <- optim(init,
                        function(x) {
-                           message(" x:", x[1], " ", x[2])
+                           ##message(" x:", x[1], " ", x[2])
                            xy <- mapproject(x[1], x[2])
                            error <<- xy$error
                            sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
