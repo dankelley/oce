@@ -186,8 +186,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ur <- map2lonlat(xur, yur)
         span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
         if (missing(latitudelim)) {
-            latlabs <- pretty(c(ll$latitude, ur$latitude))
-            grid[2] <- diff(latlabs[1:2])
+            if (span > 45) {
+                grid[2] <- 15 # this looks nice on global maps
+                latlabs <- seq(-90, 90, grid[2])
+            } else {
+                latlabs <- pretty(c(ll$latitude, ur$latitude))
+                grid[2] <- diff(latlabs[1:2])
+            }
             oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
         } else {
             ##span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
@@ -207,9 +212,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
 
         if (missing(longitudelim)) {
-            oceDebug(debug, "lon case C")
-            lonlabs <- pretty(c(ll$longitude, ur$longitude))
-            grid[1] <- diff(lonlabs[1:2])
+            if (span > 45) {
+                grid[1] <- 15 # this looks nice on global maps
+                ## tweak endpoints to avoid losing things "on the edge" say for mollweid
+                lonlabs <- seq(-180+0.01, 180-0.01, length.out=24)
+                grid[1] <- lonlabs[2] - lonlabs[1]
+            } else {
+                lonlabs <- pretty(c(ll$longitude, ur$longitude))
+                grid[1] <- diff(lonlabs[1:2])
+            }
             oceDebug(debug, "span=", span, "and setting grid to ", grid[1], "\n")
         } else {
             span <- if (is.na(ur$longitude - ll$longitude))
@@ -571,9 +582,6 @@ mapText <- function(longitude, latitude, labels, ...)
         text(xy$x, xy$y, labels, ...)
     }
 }
-
-
-
 
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
