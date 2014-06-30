@@ -261,7 +261,7 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     actualfilename <- gsub(".*/", "", file)
     rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     for (b in seq_along(band)) {
-        bandfilename <- paste(file, "/", actualfilename, "_B", b, ".TIF", sep="")
+        bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
         ##rval@metadata[["filename"]] <- bandfilename 
         oceDebug(debug, "reading \"", bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
