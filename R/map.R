@@ -568,9 +568,9 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
                            error <<- xy$error
                            sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
                        },
-                       control=list(abstol=1e-6, trace=TRUE))
+                       control=list(abstol=tolerance))
             ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-            if (o$convergence == 0 && !error && o$value < tolerance) {
+            if (o$convergence == 0 && !error) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]
