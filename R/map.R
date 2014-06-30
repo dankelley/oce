@@ -561,13 +561,25 @@ mapScalebar <- function(x, y=NULL, length,
         length <- diff(pretty(c(0, ccd), n=12)[1:2])
     }
     frac <- length / kmPerUsr
+    Dy <- 0.1 * (usr[4] - usr[3])
+    Dx <- 0.1 * (usr[2] - usr[1])
     D <- 0.1 * (usr[4] - usr[3]) # place bar 10% down from the top
-    xBar <- usr[1] + D
-    yBar <- usr[4] - D
+    xBar <- usr[1] + Dx/2
+    yBar <- usr[4] - Dy/2
+    ## FIXME: this whiteout box should probably employ par('cin') etc
+    llBox <- list(x=xBar-Dx/4,y=yBar-Dy)
+    urBox <- list(x=xBar+frac+2/4*Dx,y=yBar+2/5*Dy)
+    polygon(c(llBox$x, llBox$x, urBox$x, urBox$x),
+            c(llBox$y, urBox$y, urBox$y, llBox$y),
+            border="black", col='white')
+    ## Now draw the scalebar and text below; again, placement
+    ## could be more cleverly done in page units.
     lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col, lend=2)
-    lines(rep(xBar, 2), yBar + c(-D, D)/4, col=col, lwd=lwd)
-    lines(rep(xBar+frac, 2), yBar + c(-D, D)/4, col=col, lwd=lwd)
-    text(xBar+frac/2, yBar-D/4, pos=1, adj=1, offset=0.5,
+    lines(rep(xBar, 2), yBar + c(-Dy, Dy)/5, col=col, lwd=lwd)
+    lines(rep(xBar+frac, 2), yBar + c(-Dy, Dy)/5, col=col, lwd=lwd)
+    ##text(xBar+frac/2, yBar-Dy/5, pos=1, adj=1, offset=0.5,
+    ##     sprintf("%.0f km", length), cex=cex, col=col)
+    text(xBar, yBar-3/5*Dy, pos=4, adj=0, offset=0,
          sprintf("%.0f km", length), cex=cex, col=col)
 }
 
