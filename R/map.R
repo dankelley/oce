@@ -537,49 +537,58 @@ mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
+    if (!exists(".Last.projection") || .Last.projection()$proj == "") {
+        warning("mapScalebar() only works for plots created with projections")
+        return()
+    }
     if (!is.null(y))
         stop("y must be NULL in this (early) version of mapScalebar()\n")
     if (missing(x))
         x <- "topleft"
-    else if (is.na(match.arg(x, "topleft")))
-        stop("x must be \"topleft\", but it is \"\n")
+    else if (is.na(pmatch(x, c("topleft", "topright"))))
+        stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
     usr <- par('usr')
     ## determine scale from centre of region
     x0 <- 0.5 * (usr[1] + usr[2])
     y0 <- 0.5 * (usr[3] + usr[4])
-    dusr <- 0.001 * (usr[2] - usr[1])
+    dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
     x1 <- x0 + dusr
     y1 <- y0
-    lonlat0 <- map2lonlat(x0, y0)
-    lonlat1 <- map2lonlat(x1, y1)
+    ## need to increase the tolerance
+    lonlat0 <- map2lonlat(x0, y0, tolerance=1e-6)
+    lonlat1 <- map2lonlat(x1, y1, tolerance=1e-6)
     dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
                       lonlat1$longitude, lonlat1$latitude)
     kmPerUsr <- dkm / dusr
+    ##message("kmPerUsr: ", kmPerUsr)
     if (missing(length)) {
         # corner to corner distance
         ccd <- kmPerUsr*sqrt((usr[2]-usr[1])^2+(usr[4]-usr[3])^2)
         length <- diff(pretty(c(0, ccd), n=12)[1:2])
     }
     frac <- length / kmPerUsr
-    Dy <- 0.1 * (usr[4] - usr[3])
-    Dx <- 0.1 * (usr[2] - usr[1])
-    D <- 0.1 * (usr[4] - usr[3]) # place bar 10% down from the top
-    xBar <- usr[1] + Dx/2
-    yBar <- usr[4] - Dy/2
-    ## FIXME: this whiteout box should probably employ par('cin') etc
-    llBox <- list(x=xBar-Dx/4,y=yBar-Dy)
-    urBox <- list(x=xBar+frac+2/4*Dx,y=yBar+2/5*Dy)
+    cin <- par('cin')[1]
+    cinx <- xinch(cin)
+    ciny <- yinch(cin)
+    ## FIXME: when get more options for x, revisit next few lines
+    xBar <- usr[1] + cinx / 2
+    if (is.character(x) && x == "topright")
+        xBar <- usr[2] - frac - 3.5 * cinx
+    yBar <- usr[4] - ciny / 2
+    ## Draw white-out underlay box with a border, since otherwise
+    ## it's hard to see a scalebar on a complex map.
+    llBox <- list(x=xBar, y=yBar - 3 * ciny)
+    urBox <- list(x=xBar + frac + 3 * cinx, y=yBar)
     polygon(c(llBox$x, llBox$x, urBox$x, urBox$x),
             c(llBox$y, urBox$y, urBox$y, llBox$y),
             border="black", col='white')
-    ## Now draw the scalebar and text below; again, placement
-    ## could be more cleverly done in page units.
-    lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col, lend=2)
-    lines(rep(xBar, 2), yBar + c(-Dy, Dy)/5, col=col, lwd=lwd)
-    lines(rep(xBar+frac, 2), yBar + c(-Dy, Dy)/5, col=col, lwd=lwd)
-    ##text(xBar+frac/2, yBar-Dy/5, pos=1, adj=1, offset=0.5,
-    ##     sprintf("%.0f km", length), cex=cex, col=col)
-    text(xBar, yBar-3/5*Dy, pos=4, adj=0, offset=0,
+    ## Draw the scalebar and text below.
+    lines(xBar + cinx + c(0, frac), rep(yBar-ciny, 2), lwd=lwd, col=col, lend=2)
+    lines(rep(xBar+cinx, 2), yBar - ciny + c(-ciny, ciny)/3,
+          col=col, lwd=lwd)
+    lines(rep(xBar++cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
+          col=col, lwd=lwd)
+    text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0,
          sprintf("%.0f km", length), cex=cex, col=col)
 }
 
