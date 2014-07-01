@@ -46,9 +46,11 @@
 
     Consider a landsat object named \code{landsat}.
 
-    \emph{Accessing data values.} The data may be accessed with e.g.
-    \code{landsat[["band", 8]]}, for band number 8, or e.g.
-    \code{landsat[["time"]]} for the time at which the image was acquired.
+    \emph{Accessing data values.} The ``band'' data may be accessed with e.g.
+    \code{landsat[["panchromatic"]]}.  Note that some objects may not contain
+    all the standard bands, because the reader may have skipped some during
+    reading.  Furthermore, objects may contain additional ``bands'' added by
+    the user.  To learn the band names, just print the object.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply

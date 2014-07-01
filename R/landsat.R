@@ -50,29 +50,51 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature="landsat",
           definition=function(x, i, j, drop) {
+              datanames <- names(x@data)
               if (missing(i))
-                  stop("need to give 'i', perhaps 'band'")
-              if (i == "band") {
+                  stop("Must specify the desired landsat item", call.=FALSE)
+              if ("band" == i) {
                   if (missing(j))
-                      stop("need to give 'j', a band number")
+                      stop("Must specify 'j', a landsat band number", call.=FALSE)
                   if (is.character(j)) {
+                      warning("Hint: access landsat data as e.g. [[\"", j, "\"]]", call.=FALSE)
                       ## FIXME: can later add e.g. "natural" etc
-                      jj <- pmatch(j, names(x@data))
+                      jj <- pmatch(j, datanames)
                       if (is.na(jj)) {
-                          stop("band \"", j, "\" unknown; try one of: ",
-                               paste(names(x@data), collapse=", "), "\n")
+                          stop("Landsat band \"", j, "\" unknown; try one of: ",
+                               paste(datanames, collapse=", "), "\n", call.=FALSE)
                       }
                       j <- round(jj)
                   } else {
+                      ## Numeric only works with satellite-supplied bands (not bands added by user)
                       j <- round(as.numeric(j))
+                      if (1 <= j && j <= length(bandnames))
+                          warning("Hint: access landsat bands as e.g. [[\"", bandnames[j], "\"]]", call.=FALSE)
                   }
-                  if (j < 1 || j > length(x@data))
-                      stop("band must be between 1 and ", length(x@data), ", not ", j, " as given")
-                  return(x@data[[j]])
-              } else if (i %in% names(x@metadata)) {
-                  return(x@metadata[[i]])
+                  if (j < 1 || j > length(bandnames))
+                      stop("Landsat band must be between 1 and ", length(bandnames), ", not ", j, " as given", call.=FALSE)
+                  rval <- x@data[[datanames[j]]]
+                  if (is.null(rval))
+                      stop("No landsat band \"", datanames[j], "\" in this object", call.=FALSE)
+                  return(rval)
+              } else {
+                  if (!is.na(ii <- pmatch(i, bandnames))) {
+                      theband <- bandnames[ii[1]]
+                      if (!(theband %in% datanames))
+                          stop("This landsat object does not contain the band named \"", bandnames[ii[1]],
+                               "\"; the available data are named: ", paste(datanames, collapse=", "), call.=FALSE)
+                      return(x@data[[theband]])
+                  } else if (!is.na(ii <- pmatch(i, datanames))) {
+                      rval <- x@data[[datanames[ii[1]]]]
+                      if (is.null(rval))
+                          stop("No landsat band \"", datanames[ii[1]], "\" in this object", call.=FALSE)
+                      return(rval)
+                  } else if (i %in% names(x@metadata)) {
+                      return(x@metadata[[i]])
+                  }
               }
-              stop("can only index for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n")
+              stop("Can only index landsat for bands (e.g. x[[\"panchromatic\"]]) or metadata (e.g. x[[\"time\"]])\n",
+                   call.=FALSE)
           })
 
 setMethod(f="plot",
@@ -80,8 +102,8 @@ setMethod(f="plot",
           definition=function(x, which=1, band, decimate, zlim, utm=FALSE,
                               col=oceColorsPalette, debug=getOption("oceDebug"), ...)
           {
-              oceDebug(debug, "plot.landsat(..., which=c(", which,
-                       ", decimate=", decimate,
+              oceDebug(debug+1, "plot.landsat(..., which=c(", which,
+                       ", decimate=", if (missing(decimate)) "(missing)" else decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               if (missing(band)) {
@@ -99,7 +121,7 @@ setMethod(f="plot",
                       warning("only plotting first requested band\n")
                   band <- band[1]
                   if (is.character(band)) {
-                      oceDebug(debug, "using band named", band, "\n")
+                      oceDebug(1+debug, "using band named", band, "\n")
                       d <- x[["band", band]]
                   } else {
                       oceDebug(debug, "using band", band, "\n")
@@ -107,7 +129,7 @@ setMethod(f="plot",
                           d <- x@data[[which(x@metadata$bands == band)]]
                       else
                           stop("[[\"band\", ", band, "]] not available; try one of: ",
-                               paste(x@metadata$bands, collapse=", "), "\n",
+                               paste(names(x@data), collapse=", "), "\n",
                                call.=FALSE)
                   }
               }
@@ -234,6 +256,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 
 read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
 {
+    filename <- if (is.character(file)) file else "(unknown)"
     oceDebug(debug, "read.landsat(file=\"", file, "\", band=c(",
              paste(band, collapse=","), "), debug=", debug, ") {\n", sep="", unindent=1)
     ## convert to numerical bands (checks also that named bands are OK)
@@ -257,6 +280,7 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     rval@metadata <- header
+    rval@metadata[["filename"]] <- filename
     rval@metadata[["headerfilename"]] <- headerfilename
     rval@metadata[["bands"]] <- bandnames[band]
     actualfilename <- gsub(".*/", "", file)
