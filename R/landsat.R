@@ -25,10 +25,11 @@ setMethod(f="summary",
               cat(sprintf("* Header file:         %s\n", object@metadata$headerfilename))
               datadim <- dim(object@data[[1]])
               cat(sprintf("* Data:\n"))
+              thebandnames <- names(object@data) # FIXME: will fail if non-bands get added
               for (b in seq_along(object@data)) {
                   dim <- dim(object@data[[b]])
                   cat(sprintf("*     band %s has dim=c(%d,%d)\n",
-                              object@metadata$bands[b], dim[1], dim[2]))
+                              thebandnames[b], dim[1], dim[2]))
               }
 
               cat(sprintf("* UTM zone:             %d (used for whole image)\n", object@metadata$zoneUTM))
