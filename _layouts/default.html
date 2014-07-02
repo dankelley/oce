@@ -1,21 +1,60 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<link rel='stylesheet' type='text/css' href='style.css' />
-<link rel='stylesheet' type='text/css' href='syntax.css' />
+<link rel='stylesheet' type='text/css' href='{{ site.url }}/css/syntax.css' />
+<link rel='stylesheet' type='text/css' href='{{ site.url }}/css/style.css' />
 <title>{{ page.title }}</title>
 </head>
 
 <body>
+<body>
+<div class="navbar">
+    <!-- <div class="navbar-inner"> -->
+    <!-- <a class="brand" href="/index.html">Dan Kelley</a> -->
+    <!-- <div class="nav">Dan Kelley</div> -->
+    <ul class="navbar">
+        {% if page.submenu == "home" %}
+        <li><a class="highlight" href="/index.html">Overview</a></li>
+        {% else %}
+        <li><a href="/index.html">Overview</a></li>
+        {% endif %}
+
+        {% if page.submenu == "installation" %}
+        <li><a class="highlight" href="/installation.html">Installation</a></li>
+        {% else %}
+        <li><a href="/installation.html">Installation</a></li>
+        {% endif %}
+
+        {% if page.submenu == "examples" %}
+        <li><a class="highlight" href="/examples.html">Examples</a></li>
+        {% else %}
+        <li><a href="/examples.html">Examples</a></li>
+        {% endif %}
+
+        {% if page.submenu == "publications" %}
+        <li><a class="highlight" href="/publications">Publications</a></li>
+        {% else %}
+        <li><a href="/publications.html">Publications</a></li>
+        {% endif %}
+
+        {% if page.submenu == "bug_reports" %}
+        <li><a class="highlight" href="/bug_reports.html">Bug Reports</a></li>
+        {% else %}
+        <li><a href="/bug_reports.html">Bug Reports</a></li>
+        {% endif %}
+
+
+    </ul>
+</div>
+
 <div id="content">
     {{ content }}
 </div>
 
 <p class="footnote">This website is written in <a
-href="http://jekyllrb.com">Jekyll</a>, and the source is available on <a
-href="https://github.com/dankelley/oce/tree/gh-pages">GitHub</a>.</p>
+    href="http://jekyllrb.com">Jekyll</a>, and the source is available on <a
+    href="https://github.com/dankelley/oce/tree/gh-pages">GitHub</a>.</p>
 
 </body>
-
 </html>
 
