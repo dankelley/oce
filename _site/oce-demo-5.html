@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href='/css/syntax.css' />
+<link rel='stylesheet' type='text/css' href='/css/style.css' />
+<title>oce demo 5</title>
+</head>
+
+<body>
+<body>
+<div class="navbar">
+    <!-- <div class="navbar-inner"> -->
+    <!-- <a class="brand" href="/index.html">Dan Kelley</a> -->
+    <!-- <div class="nav">Dan Kelley</div> -->
+    <ul class="navbar">
+        
+        <li><a href="/index.html">Overview</a></li>
+        
+
+        
+        <li><a href="/installation.html">Installation</a></li>
+        
+
+        
+        <li><a href="/examples.html">Examples</a></li>
+        
+
+        
+        <li><a href="/publications.html">Publications</a></li>
+        
+
+        
+        <li><a href="/bug_reports.html">Bug Reports</a></li>
+        
+
+
+    </ul>
+</div>
+
+<div id="content">
+    <div class="highlight"><pre><code class="splus">library<span class="p">(</span>ocedata<span class="p">)</span>
+library<span class="p">(</span>oce<span class="p">)</span>
+par<span class="p">(</span>mar<span class="o">=</span>rep<span class="p">(</span><span class="m">0.5</span><span class="p">,</span> <span class="m">4</span><span class="p">))</span>
+data<span class="p">(</span>endeavour<span class="p">)</span>
+mapPlot<span class="p">(</span>coastlineWorld<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">,</span> proj<span class="o">=</span><span class="s">&#39;mollweide&#39;</span><span class="p">,</span> fill<span class="o">=</span><span class="s">&#39;gray&#39;</span><span class="p">)</span>
+mapPoints<span class="p">(</span>endeavour<span class="o">$</span>longitude<span class="p">,</span> endeavour<span class="o">$</span>latitude<span class="p">,</span> pch<span class="o">=</span><span class="m">20</span><span class="p">,</span> col<span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+</div>
+
+<p class="footnote">This website is written in <a
+    href="http://jekyllrb.com">Jekyll</a>, and the source is available on <a
+    href="https://github.com/dankelley/oce/tree/gh-pages">GitHub</a>.</p>
+
+</body>
+</html>
+

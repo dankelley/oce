@@ -1,0 +1,8 @@
+library(ocedata)
+library(oce)
+if (!interactive()) png("oce-demo-5.png", width=7, height=4, unit="in", res=150)
+par(mar=rep(0.5, 4))
+data(endeavour)
+mapPlot(coastlineWorld, type='l', proj='mollweide', fill='gray')
+mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col='red')
+if (!interactive()) dev.off()

@@ -1,0 +1,274 @@
+/* dankelley.github.io website */
+html {
+    height:100%;
+}
+
+a, a:visited {
+    color: #0000FF;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: red;
+}
+
+/* tag links are styled differently */
+a.tag:link, a.tag:visited {
+    color: blue;
+}
+
+a.tag:hover {
+    color: red;
+}
+
+div.topnav {
+    font-size:120%;
+    margin-left: 0px;
+    /*margin-top: -13px; /* FIXME: why do we need this? */
+}
+
+body {
+    font-family: helvetica,arial,freesans,clean,sans-serif;
+    font-size:14px;
+    color: #444444;
+    background-color: #eee;
+    line-height: 2.5ex;
+    margin:0;
+    margin-top:0;
+    padding-top:0;
+}
+
+p {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+tt {
+    font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+}
+
+code {
+    font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+}
+
+/* <table class='highlighttable'><tr><td class='linenos'><div class='linenodiv'><pre><code class='r'> */
+
+table.highlighttable tr td.linenos div.linenodiv pre code.r {
+    background-color: white;
+}
+table.highlighttable tr td.linenos div.linenodiv pre {
+    background-color: white;
+    border: none;
+}
+
+code.r {
+    color:brown;
+}
+
+pre {
+    /*
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    margin-left: 1em;
+    */
+    padding: 2px;
+    margin: 0 0 2px 2px;
+    font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    background-color: #F5F5F5;
+    font-weight: 400;
+    font-size: 95%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    white-space: pre-wrap;
+    /*word-break: break-all;*/ /* this split multi-digit line numbers */
+    word-wrap: break-word;
+
+    /* new: messes up with line numbered code */
+    /*width: 620px; /* see span8 */
+    /*display: block; */
+    /*overflow:auto; */
+    /* endnew */
+}
+
+div.slug {
+    margin-left: 3em;
+    color: black;
+    font-size:90%;
+    margin-bottom:0ex;
+}
+div.post_title {
+    font-size:160%;
+    line-height:110%;
+    font-weight:400;
+    color:black;
+    line-height:140%;
+    margin-left: 1em;
+    margin-top: 1ex;
+    margin-bottom: 0ex;
+}
+
+span.post_tags, span.post_date, span.post_summary {
+    margin-left: 0ex;
+    margin-bottom: 0ex;
+}
+
+h1 {
+    font-size:140%;
+    font-weight:400;
+    line-height:140%;
+    margin-top: 0px;
+    margin-bottom: 0.2ex;
+}
+
+h2 {
+    font-size:100%;
+    line-height:110%;
+    margin-top: 0.5em;
+    margin-bottom: 0.2em;
+}
+
+h3 {
+    font-size:100%;
+    font-weight:normal;
+    font-style: italic;
+    line-height:100%;
+    margin-left: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+}
+
+
+
+@media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
+    body{
+        padding:5px;
+        font: 2em Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    }
+    pre{
+        font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+        background-color: white;
+    }
+}
+
+
+/* TESTING */
+[class*="span"]{
+    float:left;
+    margin-left:20px;
+}
+
+post.count {
+    color: red;
+}
+.span4 { /* for RHS (date, tags, comments) */
+    /*
+    width:300px;
+    background-color: #F0FFFF;
+    */
+}
+
+.span8 { /* for LHS (main content) */
+    /*
+     width:620px;
+     */
+}
+
+.navbar {
+    display:block;
+    position:relative;
+    padding:0;
+    top:0px;
+    margin-bottom:0px;
+    right:0px;
+    width:100%;
+    line-height: 100%;
+    margin: 0;
+}
+.navbar ul {
+    padding: 0.6em 0.6em;
+    margin-top:0;
+    list-style: none;
+    /*background-color: #036;*/
+    background-color: #333333;
+    width: 100%;
+    font-weight: normal;
+}
+.navbar li {
+    display:inline;
+}
+.navbar li a {
+    color: #999999;
+    text-decoration:none;
+    padding: 0.5em 0.5em;
+    font-weight: 100;
+    /*border-right: 1px solid #fff;*/
+}
+.navbar li a.brand {
+    font-size: 120%;
+}
+.navbar li a:hover {
+    color: #eeeeee;
+}
+.navbar li a.highlight {
+    color: white;
+    background-color: #333333;
+}
+
+a.pagination { /* Previous Next */
+    text-decoration:none;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    margin-top: 1ex;
+    margin-left:0.5em;
+    margin-right:0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    float:right;
+    font-size:80%;
+    background-color:#AAA;
+    color:#FFF;
+}
+a.pagination:hover {
+    background-color:white;
+    color: #333;
+}
+
+#content {
+    margin-top: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+    background-color: #FFF;
+}
+
+p.footnote {
+    font-size: 90%;
+}
+
+/* posts */
+ul.posts {
+    list-style-type: none;
+    margin-bottom: 0em;
+    margin-left: -25px;
+}
+
+ul.posts li {
+    line-height: 1.3em;
+    margin-left: 0em;
+}
+
+ul.posts span {
+    color: #aaa;
+    font-family: Monaco, "Courier New", monospace;
+    font-size: 80%;
+    margin-left: 0;
+}
+
+div.page-header {
+    background-color: #d0d0d0;
+    /*padding: 20px 20px 10px;*/
+    padding: 5px 20px 10px;
+    margin: -20px -20px 00px; /* last was 20px */
+}
+
+img[alt=tg] { border-style: solid; border-color: red, border-width: 2px;}
+
