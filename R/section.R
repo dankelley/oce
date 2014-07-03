@@ -375,6 +375,8 @@ setMethod(f="plot",
                                           "coastlineWorldFine", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
+                              clongitude, clatitude, span, # FIXME 2014-07-03 need to doc
+                              projection=NULL, parameters=NULL, orientation=NULL, # FIXME 2014-07-03 need to doc
                               xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
                               ztype=c("contour", "image", "points"),
@@ -445,6 +447,8 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         #FIXME: clongitude, clatitude, span,
+                                         #FIXME: projection=NULL, parameters=NULL, orientation=NULL,
                                          zbreaks=NULL, zcol=NULL,
                                          ztype=c("contour", "image", "points"),
                                          legend=TRUE,
@@ -471,6 +475,10 @@ setMethod(f="plot",
                       lonm <- mean(lon, na.rm=TRUE)
                       lonr <- lonm + sqrt(2) * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
+                      ## FIXME: should handle projection as CTD does, but how to get no-projection?
+                      ## FIXME: I think both should have missing() means auto-pick and NULL means none
+                      #message("projection:")
+                      #print(projection)
                       if (!is.null(map.xlim)) {
                           map.xlim <- sort(map.xlim)
                           plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
@@ -1014,8 +1022,12 @@ setMethod(f="plot",
                   }
                   if (which[w] == 20)
                       plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
-                  if (which[w] == 99)
-                      plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
+                  if (which[w] == 99) {
+                      plotSubsection("map", indicate.stations=FALSE,
+                                         clongitude=clongitude, clatitude=clatitude, span=span,
+                                         projection=projection, parameters=parameters, orientation=orientation,
+                                         debug=debug-1, ...)
+                  }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
