@@ -1,4 +1,4 @@
-/* dankelley.github.io website */
+/* dankelley.github.io/oce */
 html {
     height:100%;
 }
@@ -66,11 +66,6 @@ code.r {
 }
 
 pre {
-    /*
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-    margin-left: 1em;
-    */
     padding: 2px;
     margin-left: 0.5em;
     margin-right: 0.5em;
@@ -83,14 +78,7 @@ pre {
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     white-space: pre-wrap;
-    /*word-break: break-all;*/ /* this split multi-digit line numbers */
     word-wrap: break-word;
-
-    /* new: messes up with line numbered code */
-    /*width: 620px; /* see span8 */
-    /*display: block; */
-    /*overflow:auto; */
-    /* endnew */
 }
 
 div.slug {
