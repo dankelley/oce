@@ -9,3 +9,5 @@ src
 .DS_Store
 .RData
 .Rapp.history
+_site/vignettes
+

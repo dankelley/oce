@@ -26,7 +26,7 @@
         
 
         
-        <li><a href="/oce/publications.html">Publications</a></li>
+        <li><a href="/oce/documentation.html">Documentation</a></li>
         
 
         
@@ -54,19 +54,16 @@
 <div class="highlight"><pre><code class="bash">R CMD build oce
 R CMD install oce_0.9-15.tar.gz
 R CMD build ocedata_0.1.1.gz
-R CMD install ocedata_0.1.1.gz
-</code></pre></div>
+R CMD install ocedata_0.1.1.gz</code></pre></div>
 (where similar commands work for zipballs, and of course the version numbers may need adjustment)
    <li> Acquire the sources through Git using
 <div class="highlight"><pre><code class="bash">git clone https://dankelley@github.com/dankelley/oce.git
-git clone https://dankelley@github.com/dankelley/ocedata.git
-</code></pre></div>
+git clone https://dankelley@github.com/dankelley/ocedata.git</code></pre></div>
     and then build them as described in #1.
     <li> Download and build using install_github()
 <div class="highlight"><pre><code class="r">library<span class="p">(</span>devtools<span class="p">)</span>
 install_github<span class="p">(</span><span class="s">&quot;oce&quot;</span><span class="p">,</span> <span class="s">&quot;dankelley&quot;</span><span class="p">,</span> <span class="s">&quot;develop&quot;</span><span class="p">)</span>
-install_github<span class="p">(</span><span class="s">&quot;ocedata&quot;</span><span class="p">,</span> <span class="s">&quot;dankelley&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
-</code></pre></div>
+install_github<span class="p">(</span><span class="s">&quot;ocedata&quot;</span><span class="p">,</span> <span class="s">&quot;dankelley&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span></code></pre></div>
 </ol>
 
 <p>Some Windows users find it hard to install from source, so they may visit <a href="https://www.dropbox.com/sh/awlz31v1jj7w0ct/620Tf2ZkGz">dropbox.com</a> to get binary (zip) files.  Since these files tend to be somewhat out of date, the best plan is to get set up to build packages.</p>
