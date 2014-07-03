@@ -31,6 +31,7 @@ body {
     font-family: helvetica,arial,freesans,clean,sans-serif;
     font-size:14px;
     color: #444444;
+    background-color:white;
     line-height: 2.5ex;
     margin:0;
     margin-top:0;
@@ -38,8 +39,8 @@ body {
 }
 
 p {
-    margin-left: 1em;
-    margin-right: 1em;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
 }
 
 tt {
@@ -71,7 +72,10 @@ pre {
     margin-left: 1em;
     */
     padding: 2px;
-    margin: 0 0 2px 2px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    margin-top: 1px;
+    margin-bottom: 1px;
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     background-color: #F5F5F5;
     font-weight: 400;
