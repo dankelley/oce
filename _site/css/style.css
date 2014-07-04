@@ -1,6 +1,7 @@
 /* dankelley.github.io/oce */
 html {
     height:100%;
+    width: 960px; 
 }
 
 a, a:visited {
