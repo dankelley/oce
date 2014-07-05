@@ -289,6 +289,8 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     rval@metadata[["bands"]] <- bandnames[band]
     actualfilename <- gsub(".*/", "", file)
     rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
+    options <- options('warn') # avoid readTIFF() warnings about geo tags
+    options(warn=-1) 
     for (b in seq_along(band)) {
         bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
         ##rval@metadata[["filename"]] <- bandfilename 
@@ -301,6 +303,7 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
         bandname <- bandnames[band[b]]
         rval@data[[bandname]] <- d
     }
+    options(warn=options$warn) 
     rval@processingLog <- processingLog(rval@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.landsat()\n", unindent=1)
