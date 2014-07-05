@@ -46,6 +46,7 @@ setMethod(f="summary",
               processingLogShow(object)
           })
 
+
 setMethod(f="[[",
           signature="landsat",
           definition=function(x, i, j, drop) {
@@ -66,16 +67,39 @@ setMethod(f="[[",
                       }
                       j <- round(jj)
                   } else {
+                      ## Numeric only works with satellite-supplied bands (not bands added by user)
                       j <- round(as.numeric(j))
+                      if (1 <= j && j <= length(bandnames))
+                          warning("Hint: access landsat bands as e.g. [[\"", bandnames[j], "\"]]", call.=FALSE)
+                  }
+                  if (j < 1 || j > length(bandnames))
+                      stop("Landsat band must be between 1 and ", length(bandnames), ", not ", j, " as given", call.=FALSE)
+                  rval <- x@data[[datanames[j]]]
+                  if (is.null(rval))
+                      stop("No landsat band \"", datanames[j], "\" in this object", call.=FALSE)
+                  return(rval)
+              } else {
+                  if (is.numeric(i))
+                      stop("Cannot access landsat items by number", call.=FALSE)
+                  if (!is.na(ii <- pmatch(i, bandnames))) {
+                      theband <- bandnames[ii[1]]
+                      if (!(theband %in% datanames))
+                          stop("This landsat object does not contain the band named \"", bandnames[ii[1]],
+                               "\"; the available data are named: ", paste(datanames, collapse=", "), call.=FALSE)
+                      return(x@data[[theband]])
+                  } else if (!is.na(ii <- pmatch(i, datanames))) {
+                      rval <- x@data[[datanames[ii[1]]]]
+                      if (is.null(rval))
+                          stop("No landsat band \"", datanames[ii[1]], "\" in this object", call.=FALSE)
+                      return(rval)
+                  } else if (i %in% names(x@metadata)) {
+                      return(x@metadata[[i]])
                   }
                   rval <- x@data[[j]]
                   if (is.null(rval))
                       stop("No data for requested Landsat band", call.=FALSE)
                   return(x@data[[j]])
-              } else if (i %in% names(x@metadata)) {
-                  return(x@metadata[[i]])
-              } else if (is.numeric(i))
-                  stop("Cannot access landsat items by number", call.=FALSE)
+              }
               stop("Landsat indexing is only for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n", call.=FALSE)
           })
 
