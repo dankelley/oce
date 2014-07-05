@@ -275,7 +275,7 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
             else
                 band2[b] <- m
         } else {
-            band2[b] <- b
+            band2[b] <- band[b]
         }
     }
     band <- band2
