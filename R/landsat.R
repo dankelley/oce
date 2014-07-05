@@ -50,28 +50,33 @@ setMethod(f="[[",
           signature="landsat",
           definition=function(x, i, j, drop) {
               if (missing(i))
-                  stop("need to give 'i', perhaps 'band'")
+                  stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
+              datanames <- names(x@data) # user may have added items
+              if (!is.na(ii <- pmatch(i, datanames)))
+                  return(x@data[[datanames[ii]]])
               if (i == "band") {
                   if (missing(j))
-                      stop("need to give 'j', a band number")
+                      stop("Must give a landsat band number or name", call.=FALSE)
                   if (is.character(j)) {
-                      ## FIXME: can later add e.g. "natural" etc
-                      jj <- pmatch(j, names(x@data))
+                      ## FIXME: can later add e.g. "temperature" etc
+                      jj <- pmatch(j, datanames)
                       if (is.na(jj)) {
-                          stop("band \"", j, "\" unknown; try one of: ",
-                               paste(names(x@data), collapse=", "), "\n")
+                          stop("Landsat band \"", j, "\" is not in this object; try one of: ",
+                               paste(datanames, collapse=", "), "\n", call.=FALSE)
                       }
                       j <- round(jj)
                   } else {
                       j <- round(as.numeric(j))
                   }
-                  if (j < 1 || j > length(x@data))
-                      stop("band must be between 1 and ", length(x@data), ", not ", j, " as given")
+                  rval <- x@data[[j]]
+                  if (is.null(rval))
+                      stop("No data for requested Landsat band", call.=FALSE)
                   return(x@data[[j]])
               } else if (i %in% names(x@metadata)) {
                   return(x@metadata[[i]])
-              }
-              stop("can only index for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n")
+              } else if (is.numeric(i))
+                  stop("Cannot access landsat items by number", call.=FALSE)
+              stop("Landsat indexing is only for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n", call.=FALSE)
           })
 
 setMethod(f="plot",
