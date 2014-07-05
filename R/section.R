@@ -375,8 +375,8 @@ setMethod(f="plot",
                                           "coastlineWorldFine", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
-                              clongitude, clatitude, span, # FIXME 2014-07-03 need to doc
-                              projection=NULL, parameters=NULL, orientation=NULL, # FIXME 2014-07-03 need to doc
+                              clongitude, clatitude, span,
+                              projection=NULL, parameters=NULL, orientation=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
                               ztype=c("contour", "image", "points"),
@@ -447,8 +447,8 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
-                                         #FIXME: clongitude, clatitude, span,
-                                         #FIXME: projection=NULL, parameters=NULL, orientation=NULL,
+                                         clongitude, clatitude, span,
+                                         projection=NULL, parameters=NULL, orientation=NULL,
                                          zbreaks=NULL, zcol=NULL,
                                          ztype=c("contour", "image", "points"),
                                          legend=TRUE,
@@ -538,10 +538,9 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
-
                       ## add station data
                       lines(lon, lat, col="lightgray")
-                      ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
+                      ## replot with shifted longitude
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
