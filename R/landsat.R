@@ -145,7 +145,8 @@ setMethod(f="plot",
                       if (prod(dim) > 1000000L) {
                           max <- max(dim)
                           decimate <- as.integer(floor(max / 800))
-                          warning("auto-decimating image with decimate=", decimate, ", since it has more than a million pixels")
+                          warning("Auto-decimating landsat image with decimate=", decimate, ", since it has > 1e6 pixels",
+                                  call.=FALSE)
                       } else {
                           decimate <- 1
                       }
