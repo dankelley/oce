@@ -266,4 +266,21 @@
 	.half-bottom { margin-bottom: 10px !important; }
 	.add-bottom { margin-bottom: 20px !important; }
 
+/* DEK */
+pre {
+    padding: 2px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    background-color: #F5F5F5;
+    font-weight: 400;
+    font-size: 95%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
 
