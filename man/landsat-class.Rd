@@ -40,6 +40,15 @@
     in \code{\link{plot.landsat}}. Note that \code{tirs1} and \code{tirs2} are
     subsampled to 30m in the data stream, but the true resolution is as stated
     above.
+
+    See Reference [3] for information about the evolution of Landsat 8
+    calibration coefficients, which as of summer 2014 are still subject to
+    change.
+
+    See Reference [4] for a blog posting about inferring temperature from the
+    \code{tirs1} band, and Reference [5] for another posting about ocean
+    surface emissivity (not taken into account in reference [4]).
+
 }
 
 \section{Methods}{
@@ -47,8 +56,9 @@
     Consider a landsat object named \code{landsat}.
 
     \emph{Accessing data values.} The data may be accessed with e.g.
-    \code{landsat[["band", 8]]}, for band number 8, or e.g.
-    \code{landsat[["time"]]} for the time at which the image was acquired.
+    \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
+    ``band'' is added by calculation, it may also be referred to by name (see
+    Reference [4] for an example of the estimation of surface temperature).
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
@@ -75,6 +85,13 @@
 1. \url{http://glovis.usgs.gov} 
 
 2. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}
+
+3. \url{https://landsat.usgs.gov/calibration_notices.php}
+
+4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
+
+5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+
 }
 
 \author{Dan Kelley}
