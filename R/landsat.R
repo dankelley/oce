@@ -298,9 +298,13 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
         oceDebug(debug, "reading \"", bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
         d <- tiff::readTIFF(bandfilename)
-        d <- t(d)
-        d <- d[, seq.int(dim(d)[2], 1, -1)]
-        d[d==0] <- NA
+        if (!is.null(getOption("testLandsat1"))) {
+            d <- .Call("transpose_flip", d)
+        } else {
+            d <- t(d)
+            d <- d[, seq.int(dim(d)[2], 1, -1)]
+        }
+        d[d==0] <- NA                  # FIXME: move to transpose_flip *if* it's right
         bandname <- bandnames[band[b]]
         rval@data[[bandname]] <- d
     }
