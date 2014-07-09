@@ -1,6 +1,7 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-// QUESTION: can this be done in-place?
+// NB. breaking work up into two functions may slow things down but
+// it makes it simpler to check.
 
 #include <R.h>
 #include <Rdefines.h>
@@ -13,7 +14,7 @@
 # Part 1: calculate bytes
 system("R CMD SHLIB landsat.c")
 dyn.load('landsat.so')
-m <- matrix(seq(0, 1, length.out=12), nrow=3, byrow=TRUE)
+m <- matrix(seq(0, 500/2^16, length.out=12), nrow=3, byrow=TRUE)
 r1 <- .Call("landsat_numeric_to_bytes", m)
 
 
@@ -95,8 +96,10 @@ SEXP landsat_numeric_to_bytes(SEXP m)
 
   int nrow = INTEGER(GET_DIM(m))[0];
   int ncol = INTEGER(GET_DIM(m))[1];
+#ifdef DEBUG
   Rprintf("landsat_numeric_to_bytes() given matrix with nrow %d and ncol %d\n",
       nrow, ncol);
+#endif
   SEXP lres;
   SEXP lres_names;
   PROTECT(lres = allocVector(VECSXP, 2));
@@ -111,18 +114,36 @@ SEXP landsat_numeric_to_bytes(SEXP m)
   unsigned int x = 1;
   char *c = (char*) &x;
   int little_endian = (int)*c;
+#ifdef DEBUG
   Rprintf("little_endian: %d\n", little_endian);
+#endif
   // fill up arrays
   double *mp = REAL(m);
-  for (int i = 0; i < nrow; i++) {
-    for (int j = 0; j < ncol; j++) {
-      double mij = mp[ij_m(i, j)];
+  // No need to index by i and j here; this will speed up
+  int n = nrow * ncol;
+  if (little_endian) {
+    for (int i = 0; i < n; i++) {
+      double mij = mp[i];
       int mij_int = (int)(65535*mij);
+      unsigned char ms = (mij_int & 0xFF00) >> 8;
       unsigned char ls = mij_int & 0x00FF;
-      unsigned char ms = (mij_int & 0xFF00 >> 8);
-      Rprintf("i %d, j %d, m: %f -> %d -> %d %d\n", i, j, mij, mij_int, ls, ms);
-      lsbp[ij_m(i, j)] = ls;
-      msbp[ij_m(i, j)] = ms;
+#ifdef DEBUG
+      Rprintf("i %d, m: %f -> %d -> msb 0x%02d lsb 0x%02d (little endian)\n", i, mij, mij_int, ms, ls);
+#endif
+      lsbp[i] = ls;
+      msbp[i] = ms;
+    }
+  } else {
+    for (int i = 0; i < n; i++) {
+      double mij = mp[i];
+      int mij_int = (int)(65535*mij);
+      unsigned char ls = (mij_int & 0xFF00) >> 8;
+      unsigned char ms = mij_int & 0x00FF;
+#ifdef DEBUG
+      Rprintf("i %d, m: %f -> %d -> msb 0x%02d lsb 0x%02d (big endian)\n", i, mij, mij_int, ms, ls);
+#endif
+      lsbp[i] = ls;
+      msbp[i] = ms;
     }
   }
   SET_VECTOR_ELT(lres, 0, lsb);
