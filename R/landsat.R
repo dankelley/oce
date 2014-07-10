@@ -113,7 +113,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                           stop("This landsat object does not contain the band named \"", bandnames[ii[1]],
                                "\"; the available data are named: ", paste(datanames, collapse=", "), call.=FALSE)
                       dim <- dim(x@data[[theband]]$msb)
-                      rval <- 256 * as.numeric(x@data[[theband]]$msb) + as.numeric(x@data[[theband]]$lsb)
+                      rval <- 256L * as.integer(x@data[[theband]]$msb) + as.integer(x@data[[theband]]$lsb)
                       dim(rval) <- dim
                       return(rval)
                   } else if (!is.na(ii <- pmatch(i, datanames))) {

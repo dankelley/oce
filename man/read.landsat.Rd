@@ -32,18 +32,18 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
     6), "swir2" (band 7), "panchromatic" (band 8), "cirrus" (band 9), "tirs1"
     (band 10), and "tirs2" (band 11).
 
-    See \code{\link{landsat-class}} for more information on the bands, and also
-    for references on Landsat data sources and processing.}
+    See \code{\link{landsat-class}} for more information on the data storage
+    scheme, and also on the bands and their processing.}
 
-\section{Storage requirements}{Landsat images are large, e.g. a panchromatic
-    image has 16000 pixels on a side, and since the data are stored in a matrix
-    with 8 bytes per entry, this works out to 2Gb of storage.  (The other bands
-    require 1/4 this storage.)  Working with images this large demands a
-    computer of 8Gb or more, because most operations will involve copying the
-    matrix, which overhelms the memory capacity of a 4Gb machine.  As of summer
-    2014, 8Gb of memory is about a hundred dollars, so upgrading may be an
-    option in most science laboratories.}
-
+\section{Storage requirements}{Landsat images are large, with the given scene
+    requiring about a gigabyte of storage, adding the full suite of bands.  The
+    storage of the Oce object is similar (see \code{\link{landsat-class}}).  In
+    R, many operations involving copying data, so that dealing with full-scale
+    landsat images can overwhelm computers with storage under 8GB.
+    For this reason, it is typical to read just the bands that are of interest.
+    It is also helpful to use \code{\link{landsatTrim}} to trim the data to a
+    geographical range.}
+   
 \value{An object of class \code{landsat}, with the conventional Oce slots
     \code{metadata}, \code{data} and \code{processingLog}.  The \code{metadata}
     is mainly intended for use by Oce functions, but for generality it also

@@ -14,7 +14,16 @@
 
     Landsat data are available at several websites; see e.g. Reference [1].
 
-    Band information is as follows
+    The satellite has 11 frequency bands (see below), and the resultant data
+    are made available in 16-bit resolution.  Oce breaks these 16 bits up into
+    most-sigifnicand and least-significant bytes.  For example, the aerosol
+    band of a landsat object named \code{x} are contained within
+    \code{x@data$aerosol$msb} and \code{x@data$aerosol$lsb}, each of which is a
+    matrix of raw values.  The results may be combined as e.g.
+    \code{256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb)}, and
+    this is what is returned by executing \code{x[["aerosol"]]}.
+    
+    Band information is as follows (see Reference 2 for more information).
 \preformatted{
 .------------------------------------------------------------------------------.
 | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -34,12 +43,10 @@
 .------------------------------------------------------------------------------.
 }
 
-    See Reference [2] for information on the bands for Landsat 8, paying
-    particular attention to the resolutions and wavelengths.  Band 8 is
-    panchromatic, and has the highest resolution, so this is the default used
-    in \code{\link{plot.landsat}}. Note that \code{tirs1} and \code{tirs2} are
-    subsampled to 30m in the data stream, but the true resolution is as stated
-    above.
+    Band 8 is panchromatic, and has the highest resolution, so this is the
+    default used in \code{\link{plot.landsat}}. Note that \code{tirs1} and
+    \code{tirs2} are subsampled to 30m in the data stream, but the true
+    resolution is as stated above.
 
     See Reference [3] for information about the evolution of Landsat 8
     calibration coefficients, which as of summer 2014 are still subject to
@@ -48,6 +55,13 @@
     See Reference [4] for a blog posting about inferring temperature from the
     \code{tirs1} band, and Reference [5] for another posting about ocean
     surface emissivity (not taken into account in reference [4]).
+
+    Landsat data files typically occupy approximately a gigabyte of storage.
+    That means that corresponding Oce objects are about the same size, and this
+    can pose significant problems on computers with less than 8GB of memory.
+    It is sensible to specify bands of interest when reading data with
+    \code{\link{read.landsat}}, and also to use \code{\link{landsatTrim}} to
+    isolate geographical regions that need processing.
 
 }
 
