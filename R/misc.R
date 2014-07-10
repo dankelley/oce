@@ -1680,8 +1680,16 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         res[["z"]] <- x[["z"]][lonlook, latlook]
     } else if (inherits(x, "landsat")) {
         for (i in seq_along(x@data)) {
-            dim <- dim(x@data[[i]])
-            res@data[[i]] <- x@data[[i]][seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+            b <- x@data[[i]]
+            if (is.list(b)) {
+                dim <- dim(b$msb)
+                res@data[[i]]$msb <- b$msb[seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+                dim <- dim(b$lsb)
+                res@data[[i]]$lsb <- b$lsb[seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+            } else {
+                dim <- dim(x@data[[i]])
+                res@data[[i]] <- b[seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+            }
         }
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
