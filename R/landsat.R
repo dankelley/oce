@@ -70,9 +70,13 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
               datanames <- names(x@data) # user may have added items
               if (!is.na(ii <- pmatch(i, datanames))) {
                   b <- x@data[[datanames[ii]]]
-                  rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
-                  dim(rval) <- dim(b$msb)
-                  return(rval)
+                  if (is.list(b)) {
+                      rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
+                      dim(rval) <- dim(b$msb)
+                      return(rval)
+                  } else {
+                      return(b)
+                  }
               }
               if (i == "band") {
                   if (missing(j))
@@ -334,6 +338,20 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     rval
 }
 
+landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
+{
+    if (!is.matrix(data))
+        stop("data must be a matrix")
+    if (missing(name))
+        stop("must provide a name for the data")
+    dimNew <- dim(data) 
+    dimOld <- dim(x@data[[1]]$msb)
+    if (any(dimNew != dimOld))
+        stop("dim(data) = c(", dimNew[1], ",", dimNew[2], ") must match existing dimension c(", dimOld[1], ",", dimOld[2], ")")
+    rval <- x
+    rval@data[[name]] <- data
+    rval
+}
 landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))
