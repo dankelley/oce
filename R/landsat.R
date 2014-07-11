@@ -160,7 +160,6 @@ setMethod(f="plot",
               } else {
                   if (length(band) > 1) warning("only plotting first requested band\n")
                   if ("temperature" == band) {
-                      message("should calculate T now")
                       if ("tirs1" %in% names(x@data)) {
                           d <- x[["tirs1"]]
                           na <- d == 0
@@ -344,10 +343,6 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
         d <- .Call("landsat_numeric_to_bytes", d) # reuse 'd' to try to save storage
         rval@data[[bandname]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
                                       lsb=.Call("landsat_transpose_flip", d$lsb))
-        ## 2014-07-10  d <- t(d)
-        ## 2014-07-10  d <- d[, seq.int(dim(d)[2], 1, -1)]
-        ## 2014-07-10  d[d==0] <- NA                  # FIXME: move to transpose_flip *if* it's right
-        ## 2014-07-10  rval@data[[bandname]] <- d
     }
     options(warn=options$warn) 
     rval@processingLog <- processingLog(rval@processingLog,
