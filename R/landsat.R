@@ -159,7 +159,25 @@ setMethod(f="plot",
                   }
               } else {
                   if (length(band) > 1) warning("only plotting first requested band\n")
-                  d <- x[[band[1]]]
+                  if ("temperature" == band) {
+                      message("should calculate T now")
+                      if ("tirs1" %in% names(x@data)) {
+                          d <- x[["tirs1"]]
+                          na <- d == 0
+                          ML <- x@metadata$header$radiance_mult_band_10
+                          AL <- x@metadata$header$radiance_add_band_10
+                          K1 <- x@metadata$header$k1_constant_band_10
+                          K2 <- x@metadata$header$k2_constant_band_10
+                          Llambda <- ML * d + AL
+                          d <- K2 / log(K1 / Llambda + 1)
+                          d <- d - 273.15
+                          d[na] <- NA
+                      } else {
+                          stop("cannot plot temperature because there is no \"tirs1\" band in the object")
+                      }
+                  } else {
+                      d <- x[[band[1]]]
+                  }
               }
               d[d == 0] <- NA
               if (which == 1) {
