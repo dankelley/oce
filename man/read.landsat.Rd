@@ -27,15 +27,23 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
     datasets but may fail otherwise.  Also, it only works for detailed data (in
     TIF format), not for preview data (in JPG format).
     
-    Landsat data are provided on several websites, e.g. [1].  Reference [2]
-    provides information on the bands.
-
     The bands are stored in the object with names "aerosol" (band 1), "blue"
     (band 2), "green" (band 3), "red" (band 4), "nir" (band 5), "swir1" (band
     6), "swir2" (band 7), "panchromatic" (band 8), "cirrus" (band 9), "tirs1"
-    (band 10), and "tirs2" (band 11).  See [2] for information on these bands
-    and their typical uses.}
+    (band 10), and "tirs2" (band 11).
 
+    See \code{\link{landsat-class}} for more information on the data storage
+    scheme, and also on the bands and their processing.}
+
+\section{Storage requirements}{Landsat images are large, with the given scene
+    requiring about a gigabyte of storage, adding the full suite of bands.  The
+    storage of the Oce object is similar (see \code{\link{landsat-class}}).  In
+    R, many operations involving copying data, so that dealing with full-scale
+    landsat images can overwhelm computers with storage under 8GB.
+    For this reason, it is typical to read just the bands that are of interest.
+    It is also helpful to use \code{\link{landsatTrim}} to trim the data to a
+    geographical range.}
+   
 \value{An object of class \code{landsat}, with the conventional Oce slots
     \code{metadata}, \code{data} and \code{processingLog}.  The \code{metadata}
     is mainly intended for use by Oce functions, but for generality it also
@@ -43,12 +51,6 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
     in a list (with names made lower-case).  The \code{data} slot holds
     matrices of the data in the requested bands, and users may add extra
     matrices if desired, e.g. to store calculated quantities.} 
-
-\references{
-1. \url{http://glovis.usgs.gov} 
-
-2. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}
-}
 
 \seealso{See \code{\link{landsat-class}} for more information on \code{landsat}
     objects.  A sample dataset named \code{landsat} is available in the

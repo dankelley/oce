@@ -25,10 +25,15 @@ setMethod(f="summary",
               cat(sprintf("* Header file:         %s\n", object@metadata$headerfilename))
               datadim <- dim(object@data[[1]])
               cat(sprintf("* Data:\n"))
+              datanames <- names(object@data)
               for (b in seq_along(object@data)) {
-                  dim <- dim(object@data[[b]])
-                  cat(sprintf("*     band %s has dim=c(%d,%d)\n",
-                              object@metadata$bands[b], dim[1], dim[2]))
+                  d <- object@data[[b]]
+                  if (is.list(d)) {
+                      dim <- dim(d$msb)
+                      cat(sprintf("*     band %s has dim=c(%d,%d)\n",
+                                  datanames[b], dim[1], dim[2]))
+                  } else {
+                  }
               }
 
               cat(sprintf("* UTM zone:             %d (used for whole image)\n", object@metadata$zoneUTM))
@@ -47,14 +52,48 @@ setMethod(f="summary",
           })
 
 
-setMethod(f="[[",
+setMethod(f="[[", # FIXME: ensure working on all the many possibilities, including user-created (not broken by byte??)
           signature="landsat",
           definition=function(x, i, j, drop) {
               if (missing(i))
                   stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
+              i <- i[1]                # drop extras if more than one given
+              if (is.numeric(i)) {
+                  if (is.list(x@data[[i]])) {
+                      rval <- (256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb))
+                      dim(rval) <- dim(x@data[[i]]$msb)
+                      return(rval)
+                  } else {
+                      return(x@data[[i]])
+                  }
+              }
               datanames <- names(x@data) # user may have added items
-              if (!is.na(ii <- pmatch(i, datanames)))
-                  return(x@data[[datanames[ii]]])
+              if (!(is.na(pmatch(i, "temperature")))) {
+                  if ("tirs1" %in% names(x@data)) {
+                      d <- x[["tirs1"]]
+                      na <- d == 0
+                      ML <- x@metadata$header$radiance_mult_band_10
+                      AL <- x@metadata$header$radiance_add_band_10
+                      K1 <- x@metadata$header$k1_constant_band_10
+                      K2 <- x@metadata$header$k2_constant_band_10
+                      Llambda <- ML * d + AL
+                      d <- K2 / log(K1 / Llambda + 1)
+                      d <- d - 273.15
+                      d[na] <- NA
+                      return(d)
+                  } else {
+                      stop("cannot calculate temperature without \"tirs1\" data in the landsat object", call.=FALSE)
+                  }
+              } else if (!is.na(ii <- pmatch(i, datanames))) {
+                  b <- x@data[[datanames[ii]]]
+                  if (is.list(b)) {
+                      rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
+                      dim(rval) <- dim(b$msb)
+                      return(rval)
+                  } else {
+                      return(b)
+                  }
+              }
               if (i == "band") {
                   if (missing(j))
                       stop("Must give a landsat band number or name", call.=FALSE)
@@ -79,14 +118,24 @@ setMethod(f="[[",
                       stop("No landsat band \"", datanames[j], "\" in this object", call.=FALSE)
                   return(rval)
               } else {
-                  if (is.numeric(i))
-                      stop("Cannot access landsat items by number", call.=FALSE)
+                  if (is.numeric(i)) {
+                      nband <- floor(length(x@data) / 2)
+                      if (i > nband)
+                          stop("no landsat band numbered ", i, "; maximum allowed number is ", nband, call.=FALSE)
+                      ii <- floor(i / 2 + 1)
+                      rval <- (256L*as.integer(x@data[[ii]]) + as.integer(x@data[[ii+1]]))
+                      dim(rval) <- dim(x@data[[ii]])
+                      return(rval)
+                  }
                   if (!is.na(ii <- pmatch(i, bandnames))) {
                       theband <- bandnames[ii[1]]
                       if (!(theband %in% datanames))
                           stop("This landsat object does not contain the band named \"", bandnames[ii[1]],
                                "\"; the available data are named: ", paste(datanames, collapse=", "), call.=FALSE)
-                      return(x@data[[theband]])
+                      dim <- dim(x@data[[theband]]$msb)
+                      rval <- 256L * as.integer(x@data[[theband]]$msb) + as.integer(x@data[[theband]]$lsb)
+                      dim(rval) <- dim
+                      return(rval)
                   } else if (!is.na(ii <- pmatch(i, datanames))) {
                       rval <- x@data[[datanames[ii[1]]]]
                       if (is.null(rval))
@@ -94,6 +143,8 @@ setMethod(f="[[",
                       return(rval)
                   } else if (i %in% names(x@metadata)) {
                       return(x@metadata[[i]])
+                  } else {
+                      stop("No item named \"", i, "\" in this landsat object", call.=FALSE)
                   }
                   rval <- x@data[[j]]
                   if (is.null(rval))
@@ -109,35 +160,24 @@ setMethod(f="plot",
                               col=oceColorsPalette, debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.landsat(..., which=c(", which,
-                       ", decimate=", decimate,
+                       ", decimate=", if (missing(decimate)) "(missing)" else decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               if (missing(band)) {
                   if ("panchromatic" %in% names(x@data)) {
                       oceDebug(debug, "using panchromatic\n")
-                      d <- x@data$panchromatic
+                      d <- x[["panchromatic"]]
                       band <- "panchromatic"
                   }  else {
                       oceDebug(debug, "using band", x@metadata$bands[1], "\n")
-                      d <- x@data[[1]]
-                      band <- x@metadata$bands[1]
+                      d <- x[[1]]
+                      band <- x@metadata$bands[1] # FIXME: would prefer to get band name from names()
                   }
+                  band[band == 0] <- NA # only makes sense for count data
               } else {
-                  if (length(band) > 1)
-                      warning("only plotting first requested band\n")
-                  band <- band[1]
-                  if (is.character(band)) {
-                      oceDebug(debug, "using band named", band, "\n")
-                      d <- x[["band", band]]
-                  } else {
-                      oceDebug(debug, "using band", band, "\n")
-                      if (length(which(x@metadata$bands == band)))
-                          d <- x@data[[which(x@metadata$bands == band)]]
-                      else
-                          stop("[[\"band\", ", band, "]] not available; try one of: ",
-                               paste(x@metadata$bands, collapse=", "), "\n",
-                               call.=FALSE)
-                  }
+                  d <- x[[band[1]]]
+                  if (is.na(pmatch(band[1], "temperature")))
+                      d[d == 0] <- NA  # only makes sense for count data
               }
               if (which == 1) {
                   dim <- dim(d)
@@ -298,11 +338,11 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
         oceDebug(debug, "reading \"", bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
         d <- tiff::readTIFF(bandfilename)
-        d <- t(d)
-        d <- d[, seq.int(dim(d)[2], 1, -1)]
-        d[d==0] <- NA
+        ## if (FALSE && !is.null(getOption("testLandsat1"))) { # FIXME: disable
         bandname <- bandnames[band[b]]
-        rval@data[[bandname]] <- d
+        d <- .Call("landsat_numeric_to_bytes", d) # reuse 'd' to try to save storage
+        rval@data[[bandname]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
+                                      lsb=.Call("landsat_transpose_flip", d$lsb))
     }
     options(warn=options$warn) 
     rval@processingLog <- processingLog(rval@processingLog,
@@ -311,6 +351,20 @@ read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
     rval
 }
 
+landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
+{
+    if (!is.matrix(data))
+        stop("data must be a matrix")
+    if (missing(name))
+        stop("must provide a name for the data")
+    dimNew <- dim(data) 
+    dimOld <- dim(x@data[[1]]$msb)
+    if (any(dimNew != dimOld))
+        stop("dim(data) = c(", dimNew[1], ",", dimNew[2], ") must match existing dimension c(", dimOld[1], ",", dimOld[2], ")")
+    rval <- x
+    rval@data[[name]] <- data
+    rval
+}
 landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))
@@ -330,7 +384,6 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     if (!("llUTM" %in% names(x@metadata))) {
         x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
         x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
-        message("created llUTM and urUTM")
     }
     llTrimUTM <- lonlat2utm(ll, zone=x@metadata$llUTM$zone)
     urTrimUTM <- lonlat2utm(ur, zone=x@metadata$llUTM$zone)
@@ -358,8 +411,9 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     ## Convert lat-lon limits to i-j indices
 
     for (b in seq_along(x@data)) {
-        oceDebug(debug, "trimming band", x@metadata$bands[b], "\n")
-        dim <- dim(x@data[[b]])
+        oceDebug(debug, "Trimming band", x@metadata$bands[b], "\n")
+        isList <- is.list(x@data[[b]])
+        dim <- if (isList) dim(x@data[[b]]$msb) else dim(x@data[[b]])
         ilim <- round(c(1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ll$longitude-x@metadata$lllon),
                         1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ur$longitude-x@metadata$lllon)))
         ilim[1] <- max(1, ilim[1])
@@ -367,27 +421,27 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         oceDebug(debug, "ilim:", ilim[1], "to", ilim[2], "\n")
         ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
         ilim <- ilimUTM # FIXME: clean up this code
-
-
         oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
         jlim <- round(c(1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ll$latitude-x@metadata$lllat),
                         1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ur$latitude-x@metadata$lllat)))
         jlim[1] <- max(1, jlim[1])
         jlim[2] <- min(jlim[2], dim[2])
         oceDebug(debug, "jlim:", jlim[1], "to", jlim[2], "\n")
-
         jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
         oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
         jlim <- jlimUTM # FIXME: clean up this code
-
-
         if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
             stop("no intersection between landsat image and trimming box")
         oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
                  ilim[1]/dim[1], " to ", ilim[2]/dim[1], sep="", "\n")
         oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
                  jlim[1]/dim[2], " to ", jlim[2]/dim[2], sep="", "\n")
-        x@data[[b]] <- x@data[[b]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+        if (isList) {
+            x@data[[b]]$msb <- x@data[[b]]$msb[seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+            x@data[[b]]$lsb <- x@data[[b]]$lsb[seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+        } else {
+            x@data[[b]] <- x@data[[b]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+        }
     }
     ## FIXME: there is diminishing need for the ll and ur numbers in lon-lat space
     x@metadata$lllon <- ll$longitude
@@ -444,4 +498,4 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
                                              ll$longitude, ll$latitude, ur$longitude, ur$latitude))
     x
 }
-#lt<-landsatTrim(landsat, list(longitude=-71, latitude=48), list(longitude=-72, latitude=48.3));dim(lt@data$band8)
+
