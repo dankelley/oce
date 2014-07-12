@@ -468,17 +468,19 @@ imagep <- function(x, y, z,
         dim <- dim(z)
         if (is.logical(decimate)) { # find value from image
             maxdim <- max(dim)
-            decimate <- as.integer(round(maxdim / 800))
+            decimate <- max(as.integer(round(maxdim / 800)), 1)
             oceDebug(debug, "set auto decimation\n")
         }
         if (decimate < 1)
             stop("decimate must be a positive integer or a logical value")
         oceDebug(debug, "decimate:", decimate, "\n")
-        ilook <- seq.int(1, dim[1], by=decimate)
-        jlook <- seq.int(1, dim[2], by=decimate)
-        x <- x[ilook]
-        y <- y[jlook]
-        z <- z[ilook, jlook]
+        if (decimate > 1) {
+            ilook <- seq.int(1, dim[1], by=decimate)
+            jlook <- seq.int(1, dim[2], by=decimate)
+            x <- x[ilook]
+            y <- y[jlook]
+            z <- z[ilook, jlook]
+        }
     }
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
