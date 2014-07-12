@@ -72,8 +72,12 @@
     \emph{Accessing data values.} The data may be accessed with e.g.
     \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
     ``band'' is added with \code{\link{landsatAdd}}, it may be referred by
-    name.  Finally, using e.g. \code{landsat[["temperature"]]} will yield an
-    estimate of the at-satellite brightness temperature, computing from the
+    name.
+  
+    \emph{Accessing derived data.}  One may retrieve several derived quantities
+    that are calculated from data stored in the object: \code{"longitude"} and
+    \code{"latitude"} give pixel locations, and \code{"temperature"} yields a
+    matrix of at-satellite brightness temperature as computed from the
     \code{tirs1} band using the method given in Reference 6.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by

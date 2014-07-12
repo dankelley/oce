@@ -84,6 +84,14 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   } else {
                       stop("cannot calculate temperature without \"tirs1\" data in the landsat object", call.=FALSE)
                   }
+              } else if (!(is.na(pmatch(i, "longitude")))) {
+                  b1 <- x@data[[1]]
+                  dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
+                  return(x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon))
+              } else if (!(is.na(pmatch(i, "latitude")))) {
+                  b1 <- x@data[[1]]
+                  dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
+                  return(x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat))
               } else if (!is.na(ii <- pmatch(i, datanames))) {
                   b <- x@data[[datanames[ii]]]
                   if (is.list(b)) {
