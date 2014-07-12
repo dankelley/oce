@@ -68,7 +68,23 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   }
               }
               datanames <- names(x@data) # user may have added items
-              if (!is.na(ii <- pmatch(i, datanames))) {
+              if (!(is.na(pmatch(i, "temperature")))) {
+                  if ("tirs1" %in% names(x@data)) {
+                      d <- x[["tirs1"]]
+                      na <- d == 0
+                      ML <- x@metadata$header$radiance_mult_band_10
+                      AL <- x@metadata$header$radiance_add_band_10
+                      K1 <- x@metadata$header$k1_constant_band_10
+                      K2 <- x@metadata$header$k2_constant_band_10
+                      Llambda <- ML * d + AL
+                      d <- K2 / log(K1 / Llambda + 1)
+                      d <- d - 273.15
+                      d[na] <- NA
+                      return(d)
+                  } else {
+                      stop("cannot calculate temperature without \"tirs1\" data in the landsat object", call.=FALSE)
+                  }
+              } else if (!is.na(ii <- pmatch(i, datanames))) {
                   b <- x@data[[datanames[ii]]]
                   if (is.list(b)) {
                       rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
@@ -157,28 +173,12 @@ setMethod(f="plot",
                       d <- x[[1]]
                       band <- x@metadata$bands[1] # FIXME: would prefer to get band name from names()
                   }
+                  band[band == 0] <- NA # only makes sense for count data
               } else {
-                  if (length(band) > 1) warning("only plotting first requested band\n")
-                  if ("temperature" == band) {
-                      if ("tirs1" %in% names(x@data)) {
-                          d <- x[["tirs1"]]
-                          na <- d == 0
-                          ML <- x@metadata$header$radiance_mult_band_10
-                          AL <- x@metadata$header$radiance_add_band_10
-                          K1 <- x@metadata$header$k1_constant_band_10
-                          K2 <- x@metadata$header$k2_constant_band_10
-                          Llambda <- ML * d + AL
-                          d <- K2 / log(K1 / Llambda + 1)
-                          d <- d - 273.15
-                          d[na] <- NA
-                      } else {
-                          stop("cannot plot temperature because there is no \"tirs1\" band in the object")
-                      }
-                  } else {
-                      d <- x[[band[1]]]
-                  }
+                  d <- x[[band[1]]]
+                  if (is.na(pmatch(band[1], "temperature")))
+                      d[d == 0] <- NA  # only makes sense for count data
               }
-              d[d == 0] <- NA
               if (which == 1) {
                   dim <- dim(d)
                   if (missing(decimate)) {

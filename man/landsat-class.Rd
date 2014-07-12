@@ -71,8 +71,10 @@
 
     \emph{Accessing data values.} The data may be accessed with e.g.
     \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
-    ``band'' is added by calculation, it may also be referred to by name (see
-    Reference [4] for an example of the estimation of surface temperature).
+    ``band'' is added with \code{\link{landsatAdd}}, it may be referred by
+    name.  Finally, using e.g. \code{landsat[["temperature"]]} will yield an
+    estimate of the at-satellite brightness temperature, computing from the
+    \code{tirs1} band using the method given in Reference 6.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
@@ -105,6 +107,8 @@
 4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
 
 5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
+
+6. \url{http://landsat.usgs.gov/Landsat8_Using_Product.php}
 
 }
 
