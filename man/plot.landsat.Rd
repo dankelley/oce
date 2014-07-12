@@ -8,7 +8,7 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, band, decimate, zlim, utm=FALSE,
+\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
     col=oceColorsPalette, debug=getOption("oceDebug"), \dots)
 }
 \arguments{
@@ -39,13 +39,10 @@
       using \code{band="temperature"} will plot an estimate of at-satellite
       brightness temperature, computed from the \code{tirs1} band.}
       
-  \item{decimate}{optional decimation interval for images plots; e.g. setting
-      to 10 means to show only every 10-th point in each direction.  Large
-      images can be very slow to plot, so the main purpose of \code{decimate}
-      is to speed plotting.  If \code{decimate} is not supplied, then images
-      with more than a million pixels are automatically decimated for speed,
-      which is generally a good idea for interactive work since it yields
-      typical rendering times of under a second.}
+  \item{decimate}{decimation passed to \code{\link{imagep}} for image plots.
+      The default yields faster plotting.  Some decimation is sensible for
+      full-size images, since no graphical displays can show 16 thousand pixels
+      on a side.}
   
   \item{debug}{set to a positive value to get debugging information during
       processing.}
@@ -55,13 +52,13 @@
 }
 
 \details{Since landsat images are very detailed, it is sensible to use a fast
-    plotting device, e.g. \code{\link{x11}}, and to use perhaps
-    \code{decimate=10} for initial images.  The histogram plot can be handy in
-    setting scales, e.g. when an image has a fair bit of land, the histogram
-    will be double-lobed, and so quick examination can help in setting a good
-    value for \code{zlim}.  Using \code{zlim="histogram"} is probably the
-    fastest way to explore an image for detail, but it is important to bear in
-    mind that it yields a nonlinear colourscale.}
+    plotting device, e.g. \code{\link{x11}}, and to set values of
+    \code{decimate} appropriate to the data and plotting device.  The histogram
+    plot can be handy in setting scales, e.g. when an image has a fair bit of
+    land, the histogram will be double-lobed, and so quick examination can help
+    in setting a good value for \code{zlim}.  Using \code{zlim="histogram"} is
+    probably the fastest way to explore an image for detail, but it is
+    important to bear in mind that it yields a nonlinear colourscale.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing

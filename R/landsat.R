@@ -156,11 +156,11 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
 
 setMethod(f="plot",
           signature=signature("landsat"),
-          definition=function(x, which=1, band, decimate, zlim, utm=FALSE,
+          definition=function(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
                               col=oceColorsPalette, debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.landsat(..., which=c(", which,
-                       ", decimate=", if (missing(decimate)) "(missing)" else decimate,
+                       ", decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               if (missing(band)) {
@@ -179,22 +179,8 @@ setMethod(f="plot",
                   if (is.na(pmatch(band[1], "temperature")))
                       d[d == 0] <- NA  # only makes sense for count data
               }
+              dim <- dim(d)
               if (which == 1) {
-                  dim <- dim(d)
-                  if (missing(decimate)) {
-                      if (prod(dim) > 1000000L) {
-                          max <- max(dim)
-                          decimate <- as.integer(floor(max / 800))
-                          warning("Auto-decimating landsat image with decimate=", decimate, ", since it has > 1e6 pixels",
-                                  call.=FALSE)
-                      } else {
-                          decimate <- 1
-                      }
-                  }
-                  if (decimate > 1) {
-                      d <- d[seq(1, dim[1], by=decimate), seq(1, dim[2], by=decimate)]
-                      dim <- dim(d)
-                  }
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
@@ -207,9 +193,9 @@ setMethod(f="plot",
                       }
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
-                             z=d, asp=1, zlim=zlim, col=col, ...)
+                             z=d, asp=1, zlim=zlim, col=col, decimate=decimate, ...)
                   } else {
-                      imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, ...)
+                      imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=decimate, ...)
                   }
                   mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
@@ -365,6 +351,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
     rval@data[[name]] <- data
     rval
 }
+
 landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))
