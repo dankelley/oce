@@ -172,10 +172,10 @@ setMethod(f="plot",
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               if (missing(band)) {
-                  if ("panchromatic" %in% names(x@data)) {
-                      oceDebug(debug, "using panchromatic\n")
-                      d <- x[["panchromatic"]]
-                      band <- "panchromatic"
+                  if ("tirs1" %in% names(x@data)) {
+                      oceDebug(debug, "using tirs1\n")
+                      d <- x[["tirs1"]]
+                      band <- "tirs1"
                   }  else {
                       oceDebug(debug, "using band", x@metadata$bands[1], "\n")
                       d <- x[[1]]
