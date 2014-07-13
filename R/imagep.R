@@ -381,12 +381,10 @@ drawPalette <- function(zlim, zlab="",
 
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
-                   zclip=FALSE,
-                   flipy=FALSE,
+                   zclip=FALSE, flipy=FALSE,
                    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
-                   breaks, col,
-                   colormap,
-                   labels=NULL, at=NULL,
+                   decimate=TRUE,
+                   breaks, col, colormap, labels=NULL, at=NULL,
                    drawContours=FALSE,
                    drawPalette=TRUE,
                    drawTriangles=FALSE,
@@ -465,7 +463,25 @@ imagep <- function(x, y, z,
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
     oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
-
+    # Handle decimation
+    if (!missing(decimate) && !(is.logical(decimate) && !decimate)) {
+        dim <- dim(z)
+        if (is.logical(decimate)) { # find value from image
+            maxdim <- max(dim)
+            decimate <- max(as.integer(round(maxdim / 800)), 1)
+            oceDebug(debug, "set auto decimation\n")
+        }
+        if (decimate < 1)
+            stop("decimate must be a positive integer or a logical value")
+        oceDebug(debug, "decimate:", decimate, "\n")
+        if (decimate > 1) {
+            ilook <- seq.int(1, dim[1], by=decimate)
+            jlook <- seq.int(1, dim[2], by=decimate)
+            x <- x[ilook]
+            y <- y[jlook]
+            z <- z[ilook, jlook]
+        }
+    }
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
