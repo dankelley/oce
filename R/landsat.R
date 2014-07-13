@@ -181,7 +181,7 @@ setMethod(f="plot",
                       d <- x[[1]]
                       band <- x@metadata$bands[1] # FIXME: would prefer to get band name from names()
                   }
-                  band[band == 0] <- NA # only makes sense for count data
+                  d[d == 0] <- NA # only makes sense for count data
               } else {
                   d <- x[[band[1]]]
                   if (is.na(pmatch(band[1], "temperature")))
