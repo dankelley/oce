@@ -408,7 +408,7 @@ imagep <- function(x, y, z,
              " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
              " filledContour=", filledContour, ", ",
-             " missingColor='", missingColor,
+             " missingColor=", if (is.null(missingColor)) "NULL" else missingColor,
              ", ...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
