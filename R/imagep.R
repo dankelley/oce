@@ -408,6 +408,7 @@ imagep <- function(x, y, z,
              " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
              " filledContour=", filledContour, ", ",
+             " drawTriangles=", drawTriangles, ", ",
              " missingColor=", if (is.null(missingColor)) "NULL" else missingColor,
              ", ...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai')=c(",
@@ -624,8 +625,8 @@ imagep <- function(x, y, z,
             }
         }
         drawTriangles <- rep(drawTriangles, length.out=2)
-        drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
-        drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
+        drawTriangles[1] <- drawTriangles[1] && any(z < zlim[1], na.rm=TRUE)
+        drawTriangles[2] <- drawTriangles[2] && any(z > zlim[2], na.rm=TRUE)
         oceDebug(debug, "mai.palette=c(", paste(mai.palette, collapse=", "), ")\n")
         if (zlimHistogram) {
             oceDebug(debug, "palette with zlim=\"histogram\"\n")
