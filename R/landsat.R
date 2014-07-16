@@ -203,7 +203,11 @@ setMethod(f="plot",
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
                              z=d, asp=1, zlim=zlim, col=col, decimate=decimate, ...)
                   } else {
-                      imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=decimate, ...)
+                      if ("breaks" %in% names(list(...))) {
+                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=decimate, ...)
+                      } else {
+                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=decimate, ...)
+                      }
                   }
                   mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
