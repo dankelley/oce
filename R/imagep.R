@@ -608,10 +608,11 @@ imagep <- function(x, y, z,
         }
         if (TRUE) { # 2014-07-17/#489 trial code
             warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
-            breaks2 <- breaks
-            col2 <- col
+            if (!missing(breaks))
+                breaks2 <- breaks
+            if (!missing(col))
+                col2 <- col
         }
-
         if (is.function(col)) {
             if (zlimHistogram)
                 col <- col(n=200)          # FIXME: decide on length
