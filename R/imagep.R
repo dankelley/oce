@@ -597,6 +597,7 @@ imagep <- function(x, y, z,
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
         ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
+        oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
         if (!zclip && !zlimHistogram) {
             db <- median(diff(breaks), na.rm=TRUE)
             breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
@@ -604,6 +605,11 @@ imagep <- function(x, y, z,
                          max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
             if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
+        }
+        if (TRUE) { # 2014-07-17/#489 trial code
+            warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
+            breaks2 <- breaks
+            col2 <- col
         }
 
         if (is.function(col)) {
