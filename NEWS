@@ -1,4 +1,5 @@
 0.9-15
+- mapArrows() added
 - read.index() added
 - utm2lonlat() and lonlat2utm() added
 - landsat summary and plot improvements

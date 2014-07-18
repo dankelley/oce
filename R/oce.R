@@ -1349,14 +1349,19 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 }
 
 drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
-                               type=1,
-                               debug=getOption("oceDebug"), ...)
+                               type=1, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "drawDirectionField(...) {\n", unindent=1)
     if (missing(x) || missing(y) || missing(u) || missing(v))
         stop("must supply x, y, u, and v")
     if ((missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)))
         stop("either 'scalex' or 'scaley' must be specified (but not both)")
+    if (length(x) != length(y))
+        stop("lengths of x and y must match")
+    if (length(x) != length(u))
+        stop("lengths of x and u must match")
+    if (length(x) != length(v))
+        stop("lengths of x and v must match")
     usr <- par('usr')
     pin <- par('pin')
     mai <- par('mai')
@@ -1368,6 +1373,8 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
         uPerX <- 1 / scalex
         vPerY <- uPerX * xPerInch / yPerInch
     } else {
+        vPerY <- 1 / scaley
+        uPerX <- vPerY * yPerInch / xPerInch
         oceDebug(debug, "scaling for y\n")
     }
     oceDebug(debug, 'uPerX=', uPerX, '\n')
