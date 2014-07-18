@@ -15,13 +15,14 @@ usage.  This is the branch favoured by users who need new features or would
 like to contribute to Oce development.  The easy way to install the ``develop``
 branch of Oce is to execute the following commands in R.
 ```splus
-    library(devtools)
-    install_github('oce', 'dankelley', 'develop')
+library(devtools)
+install_github('oce', 'dankelley', 'develop')
 ```
 
 Most readers should also install the Ocedata package::
-
-    install_github('ocedata', 'dankelley', 'master')
+```splus
+install_github('ocedata', 'dankelley', 'master')
+```
 
 Oce is emphatically an open-source system, and so the participation of users is
 very important.  This is why Git is used for version control of the Oce source
