@@ -575,6 +575,14 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     bytes <- readBin(file, what="raw", n=4)
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
+    ##read.index()  ## check for an ocean index file e.g.
+    ##read.index()  # http://www.esrl.noaa.gov/psd/data/correlation/ao.data
+    ##read.index()  tokens <- scan(text=line, what='integer', n=2, quiet=TRUE)
+    ##read.index()  if (2 == length(tokens)) {
+    ##read.index()      tokens2 <- scan(text=line2, what='integer', quiet=TRUE)
+    ##read.index()      if (tokens[1] == tokens2[1])
+    ##read.index()          return("index")
+    ##read.index()  }
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
         return("shapefile")
@@ -700,6 +708,8 @@ read.oce <- function(file, ...)
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    ## read.index if (type == "index")
+    ## read.index     return(read.index(file))
     if (type == "shapefile")
         return(read.coastline.shapefile(file, processingLog=processingLog, ...))
     if (type == "openstreetmap")
