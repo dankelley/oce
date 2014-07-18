@@ -1,6 +1,9 @@
-``Oce`` is an R package for processing oceanographic data.  Stable versions of
-the package are normally installed from within R, with the code presented here
-being intended for advanced users.  
+``Oce`` is an R package for processing oceanographic data.  Its [official
+webpage](http://dankelley.github.com/oce/) provides details, of which this
+README file is just a sketch.
+
+Stable versions of the package are normally installed from within R, with the
+code presented here being intended for advanced users.  
 
 The git branching model is used to organize the code. The ``master`` branch
 holds the code used in the official releases, and is mainly provided to
