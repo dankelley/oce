@@ -9,15 +9,16 @@ submenu: installation
 
 <p>Users who are set up to build packages (which requires a C compiler, etc) may stay at the cutting edge by installing a development version.  This may be done in several ways, of which the third is probably the best for most users.</p>
 <ol>
-    <li> Download the source for oce and ocedata as tarballs (
-    <a href="http://github.com/dankelley/oce/tarball/develop">oce</a>
+    <li> Download the source for oce and ocedata as tarballs
+    (<a href="http://github.com/dankelley/oce/tarball/develop">oce</a>
     and
     <a href="http://github.com/dankelley/ocedata/tarball/master">ocedata</a>),
     or as zip files
     (<a href="http://github.com/dankelley/oce/zipball/develop">oce</a>
     and
     <a href="http://github.com/dankelley/ocedata/zipball/master">ocedata</a>),
-    and then build both with the following OS commands
+    then rename to match the lines given below, and then execute those lines
+    in your OS shell.
 {% highlight bash %}
 R CMD build oce
 R CMD install oce_0.9-15.tar.gz
