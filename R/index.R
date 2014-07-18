@@ -27,6 +27,6 @@ read.index <- function(file, tz=getOption("oceTz"), debug=getOption("oceDebug"))
     t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
     data <- as.vector(t(d[,-1]))
     data[data == missingValue] <- NA
-    list(t=t, index=data)
+    data.frame(t=t, index=data)
 }
 

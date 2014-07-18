@@ -25,8 +25,8 @@
   the missing value.  Then there are some headers lines (which are ignored in the present version of
   \code{read.index}.}
 
-\value{A list containing \code{t}, a POSIX time, and \code{index}, the numerical index.  The times
-  are set to the 15th day of each month, which is a guess that may need to be changed if so
+\value{A data frame containing \code{t}, a POSIX time, and \code{index}, the numerical index.  The
+  times are set to the 15th day of each month, which is a guess that may need to be changed if so
   indicated by documentation (yet to be located).}
 
 \examples{
@@ -34,7 +34,8 @@
 library(oce)
 # Arctic oscillation
 ao <- read.index("http://www.esrl.noaa.gov/psd/data/correlation/ao.data")
-oce.plot.ts(ao$t, ao$index)
+recent <- subset(ao, t > as.POSIXct("2000-01-01"))
+oce.plot.ts(recent$t, recent$index)
 }
 }
 
