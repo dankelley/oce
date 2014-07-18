@@ -14,7 +14,7 @@ submenu: installation
     and
     <a href="http://github.com/dankelley/ocedata/tarball/master">ocedata</a>),
     expand the files, rename the resultant directories to <code>oce</code>
-    and <code>ocedata</a> and then execute the OS commands stated below.
+    and <code>ocedata</code> and then execute the OS commands stated below.
 {% highlight bash %}
 R CMD build oce
 R CMD install oce_0.9-15.tar.gz # adjust version as needed
@@ -31,7 +31,7 @@ git clone https://dankelley@github.com/dankelley/oce.git
 git clone https://dankelley@github.com/dankelley/ocedata.git
 {% endhighlight %}
     and then build them as described in #1.
-    <li> Download and build using install_github()
+    <li> Download and build using <code>install_github()</code>
 {% highlight R %}
 library(devtools)
 install_github("oce", "dankelley", "develop")
