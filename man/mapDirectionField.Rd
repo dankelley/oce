@@ -7,19 +7,20 @@
 \description{Plot a direction field on a existing map}
 
 \usage{
-mapDirectionField(longitude, latitude,
-                  u, v, scale=1, code=2, length=0.05, col=par("fg"), ...)}
+mapDirectionField(longitude, latitude, u, v,
+                  scale=1, length=0.05, code=2, col=par("fg"), ...)}
 \arguments{
     \item{longitude, latitude}{starting points for arrows}
     \item{u, v}{components of a vector to be shown as a direction
         field}
     \item{scale}{latitude degrees per unit of \code{u} or \code{v}.}
-    \item{code}{code of arrows, passed to \code{\link{arrows}}}
     \item{length}{length of arrow heads, passed to \code{\link{arrows}}}
+    \item{code}{code of arrows, passed to \code{\link{arrows}}}
     \item{col}{color of arrows.  This may be a single colour, or a matrix
         of colors of the same dimension as \code{u}.}
     \item{\dots}{optional arguments passed to \code{\link{arrows}}, e.g.
-        \code{lwd} can be useful in differentiating different fields.}
+        \code{angle} and \code{lwd} can be useful in differentiating different
+        fields.}
 }
 
 \details{Adds arrows for a direction field on an existing map.  There are
@@ -51,7 +52,7 @@ mapDirectionField(lon, lat, u, v, scale=3)
 mapDirectionField(lonm, latm, 0, 1, scale=3, col='red')
 # Color code by longitude, using thick lines
 col <- colormap(lonm)$zcol
-mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=3)
+mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
 }
 }
 

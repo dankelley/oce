@@ -54,9 +54,8 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     ## FIXME: labels, using labcex and vfont
 }
 
-mapDirectionField <- function(longitude, latitude,
-                              u, v, scale=1, code=2, col=par("fg"),
-                              length=0.05, ...)
+mapDirectionField <- function(longitude, latitude, u, v,
+                              scale=1, length=0.05, code=2, col=par("fg"), ...)
 {
     ## handle case where lon and lat are coords on edges of grid
     if (is.matrix(u)) {
