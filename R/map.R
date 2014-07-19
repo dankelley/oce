@@ -55,7 +55,8 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 }
 
 mapDirectionField <- function(longitude, latitude,
-                              u, v, scale=1, code=2, length=0.05, ...)
+                              u, v, scale=1, code=2, col=par("fg"),
+                              length=0.05, ...)
 {
     ## handle case where lon and lat are coords on edges of grid
     if (is.matrix(u)) {
@@ -74,7 +75,7 @@ mapDirectionField <- function(longitude, latitude,
     lonEnd <- longitude + u * scalex
     xy <- mapproject(longitude, latitude)
     xyEnd <- mapproject(lonEnd, latEnd)
-    arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, ...)
+    arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, col=col, ...)
 }
 
 
