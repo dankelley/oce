@@ -54,6 +54,30 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     ## FIXME: labels, using labcex and vfont
 }
 
+mapDirectionField <- function(longitude, latitude,
+                              u, v, scale=1, code=2, length=0.05, ...)
+{
+    ## handle case where lon and lat are coords on edges of grid
+    if (is.matrix(u)) {
+        if (is.vector(longitude) && is.vector(latitude)) {
+            nlon <- length(longitude)
+            nlat <- length(latitude)
+            longitude <- matrix(rep(longitude, nlat), nrow=nlon)
+            latitude <- matrix(rep(latitude, nlon), byrow=TRUE, nrow=nlon)
+        }
+    }
+    xy <- mapproject(longitude, latitude)
+    ## Calculate spatially-dependent scale (fails for off-page points)
+    ## Calculate lon-lat at ends of arrows
+    scalex <- scale / cos(pi * latitude / 180)
+    latEnd <- latitude + v * scale
+    lonEnd <- longitude + u * scalex
+    xy <- mapproject(longitude, latitude)
+    xyEnd <- mapproject(lonEnd, latEnd)
+    arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, ...)
+}
+
+
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if (missing(longitude))
@@ -483,7 +507,6 @@ mapArrows <- function(longitude0, latitude0,
                length=length, angle=angle, code=code, col=col, lty=lty, lwd=lwd, ...)
     }
 }
-
 
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
