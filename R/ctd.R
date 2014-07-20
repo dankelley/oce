@@ -1766,8 +1766,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                 found.scan <- TRUE
             }
             if (0 < regexpr("pressure", lline)) {
-                name <- "pressure"
-                found.pressure <- TRUE
+                if (0 > regexpr("deg c", lline)) {
+                    ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
+                    name <- "pressure"
+                    found.pressure <- TRUE
+                }
             }
             if (0 < regexpr("time", lline)) {
                 name <- "time"
@@ -1778,8 +1781,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                 found.salinity <- TRUE
             }
             if (0 < regexpr("temperature", lline)) {
-                name <- "temperature"
-                found.temperature <- TRUE
+                ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
+                if (0 > regexpr("pressure", lline)) {
+                    name <- "temperature"
+                    found.temperature <- TRUE
+                }
             }
             if (0 < regexpr("conductivity", lline)) {
                 if (0 < regexpr("ratio", lline)) {
@@ -2035,13 +2041,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), rep(0, length(res@data$salinity)))
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure", unit="dbar", debug=debug-1)
+            warning("created a pressure column from the depth column\n")
         }
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     }
     waterDepthWarning <- FALSE
     if (is.na(res@metadata$waterDepth)) {
-        res@metadata$waterDepth <- max(abs(data$pressure))
+        res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
         waterDepthWarning <- TRUE
     }
 
