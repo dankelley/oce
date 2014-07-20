@@ -106,37 +106,35 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     \code{object@metadata$scientist} are left blank for WOCE files.
 }
 
-\section{Implementation and extension}{The functions attempt to infer a wide range of
+\section{Issues}{The functions attempt to infer a wide range of
     meta-information from file headers, but variations in these headers limit
-    general application.  For example, \code{read.ctd.sbe} handles water depths
+    generality.  For example, \code{read.ctd.sbe} handles water depths
     in any of the following forms, but ostensibly similar forms may not work.
-    \itemize{
-        \item \preformatted{"** DEPTH = 100"}
-        \item \preformatted{"** Water Depth:   40 m"}
-        \item \preformatted{"** Depth (m): 3447 "}
-        \item \preformatted{"** Depth: 16"}
-        \item \preformatted{"** Profondeur: 92"}
+        \preformatted{
+** DEPTH = 100
+** Water Depth:   40 m
+** Depth (m): 3447
+** Depth: 16
+** Profondeur: 92
     }
-    If water depth cannot be inferred from the header, \code{read.ctd} sets it
-    to the maximum recorded pressure, and issues a warning to that effect.
-
-
-    Similar issues come up for essentially everything stored in CTD headers,
-    and so if odd values are found (e.g. a station in the wrong hemisphere),
-    there is a good chance that the format is not being handled correctly.
-    Given the expense of collecting data, users are advised to check
-    inferred values against the values in the data files, for at least on
-    profile within a given cruise.  Modifying the \code{read.ctd} code is not
-    particularly difficult, and users are encouraged to examine the source code
-    (in \code{R/ctd.R}) to see whether modification can help.  Some experience
-    with regular expressions and string manipulation may be needed; see
-    \code{\link{regexpr}} and \code{\link{sub}}.
-
-    In many cases, CTD instruments are set up to report dates in English.  This
-    can cause a problem for users running in different locales, since e.g month
-    names differ.  It is possible to get around these problems, e.g.  if a
-    datafile was created in American-English notation, call
-    \code{\link{Sys.setlocale}("LC_TIME", "en_US")} before reading the data.}
+    Similar issues come up for other items in CTD headers.  For example, date
+    variants can cause a problem if, say, a date is stored in American notation
+    but the user is in another locale, where dates are represented differently;
+    a solution is to call \code{\link{Sys.setlocale}("LC_TIME", "en_US")}
+    before reading the data.
+    
+    Even when \code{read.ctd} appears to have read the data without error, the
+    prudent user will do some plots and summaries on a sample file.  It is also
+    a good idea to examine some inferred numerical values in comparison with
+    the information in the data file.  CTD profiles are not cheap to acquire,
+    and publishing erroneous results is highly embarrassing.  The rewards of
+    having confidence in the data surely outweigh the cost of a half hour spent
+    looking at the data.
+   
+    Users should report problems with \code{read.ctd} on the Github site
+    (\url{https://github.com/dankelley/oce/issues}), ideally sending the author
+    a sample file.
+}
 
 \section{Sample files}{Three sample files are provided with the package, in
     \itemize{\item \code{system.file("extdata", "ctd.cnv", package="oce")}
@@ -146,22 +144,6 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     users to understand the present implementation, providing insights on extending it
     for their own data.}
 
-\section{Handling data variants}{Every few months, a user will raise an issue
-    of difficulty reading a data file.  The most important of these relate to
-    failing to recognize a column.  Generally this is caused by a naming
-    pattern that is new to the author.  The quick solution for the user is to
-    supply the \code{columns} argument, but it is still a good idea to report
-    the issue, so the author can extend the code to help the next person with
-    the same instrument/data setup.  Users with programming experience can try
-    to help out by finding the relevant code fragments in \code{R/ctd.R} (lines
-    calling \code{\link{regexpr}} on strings named \code{lline}, which is the
-    lower-case version of a header line that begins with the string ``\code{#
-        name}''.
-
-
-
-
-}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
   list with elements detailed below. 
@@ -251,9 +233,10 @@ points(longitude, latitude, col='red')
     data providers, is described at
     \url{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
 
-    Ice-tethered profile (ITF) data are available at \url{www.whoi.edu/itf};
-    note that the present version only handles data in profiler-mode, not
-    fixed-depth mode.
+    Information about ice-tethered profile data is provided at
+    \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+    downloading data.  Note that the present version only handles data in
+    profiler-mode, not fixed-depth mode.
 
 }
 
