@@ -120,29 +120,46 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     If water depth cannot be inferred from the header, \code{read.ctd} sets it
     to the maximum recorded pressure, and issues a warning to that effect.
 
+
     Similar issues come up for essentially everything stored in CTD headers,
     and so if odd values are found (e.g. a station in the wrong hemisphere),
     there is a good chance that the format is not being handled correctly.
-    Given the expense of collecting data, users are well-advised to check
+    Given the expense of collecting data, users are advised to check
     inferred values against the values in the data files, for at least on
     profile within a given cruise.  Modifying the \code{read.ctd} code is not
     particularly difficult, and users are encouraged to examine the source code
     (in \code{R/ctd.R}) to see whether modification can help.  Some experience
     with regular expressions and string manipulation may be needed; see
     \code{\link{regexpr}} and \code{\link{sub}}.
-    Three sample files are provided with the package, in
+
+    In many cases, CTD instruments are set up to report dates in English.  This
+    can cause a problem for users running in different locales, since e.g month
+    names differ.  It is possible to get around these problems, e.g.  if a
+    datafile was created in American-English notation, call
+    \code{\link{Sys.setlocale}("LC_TIME", "en_US")} before reading the data.}
+
+\section{Sample files}{Three sample files are provided with the package, in
     \itemize{\item \code{system.file("extdata", "ctd.cnv", package="oce")}
     \item \code{system.file("extdata", "d200321-001.ctd", package="oce")}
     \item \code{system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce")}}
     and an examination of these in relationship with the existing code should help
     users to understand the present implementation, providing insights on extending it
-    for their own data.
+    for their own data.}
 
-    In many cases, CTD instruments are set up to report dates in English.  This
-    can cause a problem for users running in different locales, since e.g month
-    names differ.  Therefore, if you know your datafile is written in
-    American-English notation, you might want to do
-    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.
+\section{Handling data variants}{Every few months, a user will raise an issue
+    of difficulty reading a data file.  The most important of these relate to
+    failing to recognize a column.  Generally this is caused by a naming
+    pattern that is new to the author.  The quick solution for the user is to
+    supply the \code{columns} argument, but it is still a good idea to report
+    the issue, so the author can extend the code to help the next person with
+    the same instrument/data setup.  Users with programming experience can try
+    to help out by finding the relevant code fragments in \code{R/ctd.R} (lines
+    calling \code{\link{regexpr}} on strings named \code{lline}, which is the
+    lower-case version of a header line that begins with the string ``\code{#
+        name}''.
+
+
+
 
 }
 
@@ -212,13 +229,10 @@ points(longitude, latitude, col='red')
 }
 
 \references{The Sea-Bird SBE 19plus profiler is described at
-    \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
-    company recommends the use of their own software, and perhaps for this
-    reason it is difficult to find a specification for the data files.
-    Inspection of data files led to most of the code used in Oce.  If the
-    company ever publishes standards for the data formats, of course Oce will
-    be adjusted.  In the meantime, it does a reasonable job in many instances.
-
+    \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some
+    more information is given in the Sea-Bird data-processing manaual
+    \url{http://www.seabird.com/pdf_documents/manuals/SBEDataProcessing_7.23.2.pdf}.
+    
     The WOCE-exchange format is described at
     \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
     and a sample file is at
