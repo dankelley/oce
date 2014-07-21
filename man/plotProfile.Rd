@@ -31,7 +31,7 @@
     keepNA=FALSE,
     type='l',
     mgp=getOption("oceMgp"),
-    mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+2, mgp[1] + 2, 2),
+    mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1.5, mgp[1]+1.5, mgp[1]),
     add=FALSE, inset=FALSE,
     debug=getOption("oceDebug"),
     \dots)
