@@ -3032,10 +3032,12 @@ plotProfile <- function (x,
              xlim=Tlim, ylim=ylim,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
-        if (eos == "teos")
-            mtext(resizableLabel("conservative temperature", "x"), side = 3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
-        else
-            mtext(resizableLabel("T", "x"), side=3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
+        if (is.null(getOption('plotProfileNoXLab'))) {
+            if (eos == "teos")
+                mtext(resizableLabel("conservative temperature", "x"), side = 3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
+            else
+                mtext(resizableLabel("T", "x"), side=3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
+        }
         axis(2)
         box()
         lines(temperature, y, col = col.temperature, lwd=lwd)
@@ -3045,10 +3047,12 @@ plotProfile <- function (x,
              xlim=Slim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
-        if (eos == "teos")
-            mtext(resizableLabel("absolute salinity", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
-        else
-            mtext(resizableLabel("S", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
+        if (is.null(getOption('plotProfileNoXLab'))) {
+            if (eos == "teos")
+                mtext(resizableLabel("absolute salinity", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
+            else
+                mtext(resizableLabel("S", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
+        }
         box()
         if (grid) {
             at <- par("yaxp")
