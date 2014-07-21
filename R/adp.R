@@ -445,8 +445,11 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      debug=getOption("oceDebug"),
                      ...)
 {
-    oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
-    type <- match.arg(type)
+    oceDebug(debug, "read.adp(...,from=", from,
+             ",to=", if (missing(to)) "(missing)" else to,
+             ",by=", by,
+             ",manufacturer=", if (missing(manufacturer)) "(missing)" else manufacturer, ",...)\n")
+    manufacturer <- match.arg(manufacturer)
     if (monitor)
         cat(file, "\n", ...)
     if (manufacturer == "rdi")
