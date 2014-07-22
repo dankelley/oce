@@ -6,6 +6,18 @@ bandnames <-c("aerosol", "blue", "green", "red",
               "cirrus",
               "tirs1", "tirs2")
 
+setMethod(f="show",
+          signature="landsat",
+          definition=function(object) {
+              cat("Landsat object, ID", object@metadata$header$landsat_scene_id, "\n")
+              cat("Bands:\n")
+              bandnames <- names(object@data)
+              for (b in seq_along(bandnames)) {
+                  dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$msb) else dim(object@data[[b]])
+                  cat("  \"", bandnames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep='')
+              }
+          })
+
 setMethod(f="initialize",
           signature="landsat",
           definition=function(.Object,filename="") {
@@ -58,6 +70,8 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
               if (missing(i))
                   stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
               i <- i[1]                # drop extras if more than one given
+              if (!is.character(i))
+                  stop("landsat item must be specified by name", call.=FALSE)
               ## Handle cases one by one, starting with simplest.
               if (!(is.na(pmatch(i, "longitude")))) { # FIXME: ignoring decimation (may be best, anyway)
                   b1 <- x@data[[1]]
@@ -258,40 +272,46 @@ setMethod(f="plot",
               if (missing(band)) {
                   if ("tirs1" %in% names(x@data)) {
                       oceDebug(debug, "using tirs1\n")
-                      d <- x[["tirs1"]]
+                      d <- x[["tirs1", decimate]]
                       band <- "tirs1"
                   }  else {
                       oceDebug(debug, "using band", x@metadata$bands[1], "\n")
-                      d <- x[[1]]
+                      d <- x[[x@metadata$bands[1], decimate]]
                       band <- x@metadata$bands[1] # FIXME: would prefer to get band name from names()
                   }
                   d[d == 0] <- NA # only makes sense for count data
               } else {
-                  d <- x[[band[1]]]
-                  if (is.na(pmatch(band[1], "temperature")))
+                  ## See if band is stored in this object
+                  knownBands <- c("temperature", names(x@data))
+                  band <- band[1]
+                  i <- pmatch(band, knownBands)
+                  if (is.na(i))
+                      stop("there is no landsat band named \"", band, "\"", call.=FALSE)
+                  band <- knownBands[i]
+                  d <- x[[band, decimate]]
+                  if (is.na(pmatch(band, "temperature")))
                       d[d == 0] <- NA  # only makes sense for count data
               }
               dim <- dim(d)
-              ## figure out about decimation
-              if ((is.logical(decimate) && decimate)) {
-             } else if (is.numeric(decimate)) {
-                  decimate <- as.integer(round(decimate))
-                  if (decimate > 1) {
-                      oceDebug(debug, "using decimate=", decimate, "\n")
-                      ilook <- seq.int(1, dim[1], by=decimate)
-                      jlook <- seq.int(1, dim[2], by=decimate)
-                      oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
-                      oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
-                      lon <- lon[ilook]
-                      lat <- lat[jlook]
-                      d <- d[ilook, jlook]
-                      dim <- dim(d)
-                  } else {
-                      warning("'decimate' should exceed 1")
-                  }
-              } else {
-                  stop("'decimate' must be logical or positive numeric")
-              }
+              ##20140722c if ((is.logical(decimate) && decimate)) {
+              ##20140722c } else if (is.numeric(decimate)) {
+              ##20140722c     decimate <- as.integer(round(decimate))
+              ##20140722c     if (decimate > 1) {
+              ##20140722c         oceDebug(debug, "using decimate=", decimate, "\n")
+              ##20140722c         ilook <- seq.int(1, dim[1], by=decimate)
+              ##20140722c         jlook <- seq.int(1, dim[2], by=decimate)
+              ##20140722c         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+              ##20140722c         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
+              ##20140722c         lon <- lon[ilook]
+              ##20140722c         lat <- lat[jlook]
+              ##20140722c         d <- d[ilook, jlook]
+              ##20140722c         dim <- dim(d)
+              ##20140722c     } else {
+              ##20140722c         warning("'decimate' should exceed 1")
+              ##20140722c     }
+              ##20140722c } else {
+              ##20140722c     stop("'decimate' must be logical or positive numeric")
+              ##20140722c }
               if (which == 1) {
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
@@ -305,12 +325,12 @@ setMethod(f="plot",
                       }
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
-                             z=d, asp=1, zlim=zlim, col=col, decimate=decimate, debug=debug-1, ...)
+                             z=d, asp=1, zlim=zlim, col=col, decimate=FALSE, debug=debug-1, ...)
                   } else {
                       if ("breaks" %in% names(list(...))) {
-                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=decimate, debug=debug-1, ...)
+                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=FALSE, debug=debug-1, ...)
                       } else {
-                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=decimate, debug=debug-1, ...)
+                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=FALSE, debug=debug-1, ...)
                       }
                   }
                   mtext(band, side=3, adj=1, line=0, cex=1)

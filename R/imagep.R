@@ -573,11 +573,11 @@ imagep <- function(x, y, z,
                     if (missing(col)) {
                         ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
                         breaks <- pretty(zlim, n=nbreaks)
-                        oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim given but not breaks or col; inferred head(breaks)=", head(breaks), "\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
                                       length.out=if(is.function(col))128 else 1+length(col))
-                        oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
                     oceDebug(debug, 'range(z):', zrange, '\n')
