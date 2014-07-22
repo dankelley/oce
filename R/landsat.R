@@ -58,17 +58,79 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
               if (missing(i))
                   stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
               i <- i[1]                # drop extras if more than one given
+              ## Handle cases one by one, starting with simplest.
+              if (!(is.na(pmatch(i, "longitude")))) {
+                  b1 <- x@data[[1]]
+                  dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
+                  return(x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon))
+              }
+              if (!(is.na(pmatch(i, "latitude")))) {
+                  b1 <- x@data[[1]]
+                  dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
+                  return(x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat))
+              } 
+ 
+
+
+
+              isList <- is.list(x@data[[i]])
+              if (isList) {
+                  msb <- x@data[[i]]$msb
+                  lsb <- x@data[[i]]$lsb
+              } else {
+                  d <- x@data[[i]]
+              }
+              dim <- if (isList) dim(x@data[[i]]$msb) else dim(x@data[[i]]) # altered if decimation
+              message("dim=c(", dim[1], ",", dim[2], ") originally")
+              decimate <- FALSE
+              if (!missing(j)) { # decimation requested if logical or numeric
+                  if (is.logical(j)) {
+                      maxdim <- max(dim)
+                      if (maxdim > 800) {
+                          decimate <- max(as.integer(round(maxdim / 800)), 1)
+                          message("autodecimate by factor ", decimate)
+                          ilook <- seq.int(1, dim[1], by=decimate)
+                          jlook <- seq.int(1, dim[2], by=decimate)
+                          if (isList) {
+                              msb <- msb[ilook, jlook]
+                              lsb <- lsb[ilook, jlook]
+                              dim <- dim(msb)
+                          } else {
+                              d <- d[ilook, jlook]
+                              dim <- dim(d)
+                          }
+                      }
+                  } else if (is.numeric(j)) {
+                      j <- as.integer(round(j))
+                      if (j > 1) {
+                          message("decimate by factor ", decimate)
+                          ilook <- seq.int(1, dim[1], by=decimate)
+                          jlook <- seq.int(1, dim[2], by=decimate)
+                          if (isList) {
+                              msb <- msb[ilook, jlook]
+                              lsb <- lsb[ilook, jlook]
+                              dim <- dim(msb)
+                          } else {
+                              d <- d[ilook, jlook]
+                              dim <- dim(d)
+                          }
+                      }
+                  } else stop("landsat[[..., j]] requires j to be logical or numeric", call.=FALSE)
+              }
+              message("dim=c(", dim[1], ",", dim[2], ") after possible decimation")
               if (is.numeric(i)) {
+                  message("numerical band: decimation mixed up because based on band 1, not this one")
                   if (is.list(x@data[[i]])) {
+                      msb <- msb[seq.int(1L, dim[1], by=decimate), seq.int(1L, dim[2], by=decimate)]
                       rval <- (256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb))
-                      dim(rval) <- dim(x@data[[i]]$msb)
+                      dim(rval) <- dim
                       return(rval)
                   } else {
-                      return(x@data[[i]])
+                      return(d)
                   }
               }
-              datanames <- names(x@data) # user may have added items
               if (!(is.na(pmatch(i, "temperature")))) {
+                  warning("landsat[band=\"temperature\"] ignoring decimation", call.=FALSE)
                   if ("tirs1" %in% names(x@data)) {
                       d <- x[["tirs1"]]
                       na <- d == 0
@@ -84,15 +146,11 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   } else {
                       stop("cannot calculate temperature without \"tirs1\" data in the landsat object", call.=FALSE)
                   }
-              } else if (!(is.na(pmatch(i, "longitude")))) {
-                  b1 <- x@data[[1]]
-                  dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
-                  return(x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon))
-              } else if (!(is.na(pmatch(i, "latitude")))) {
-                  b1 <- x@data[[1]]
-                  dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
-                  return(x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat))
-              } else if (!is.na(ii <- pmatch(i, datanames))) {
+              }
+              
+              datanames <- names(x@data) # user may have added items
+              if (!is.na(ii <- pmatch(i, datanames))) {
+                  message("working with a named band: decimation NOT handled yet")
                   b <- x@data[[datanames[ii]]]
                   if (is.list(b)) {
                       rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
@@ -102,64 +160,64 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       return(b)
                   }
               }
-              if (i == "band") {
-                  if (missing(j))
-                      stop("Must give a landsat band number or name", call.=FALSE)
-                  if (is.character(j)) {
-                      ## FIXME: can later add e.g. "temperature" etc
-                      jj <- pmatch(j, datanames)
-                      if (is.na(jj)) {
-                          stop("Landsat band \"", j, "\" is not in this object; try one of: ",
-                               paste(datanames, collapse=", "), "\n", call.=FALSE)
-                      }
-                      j <- round(jj)
-                  } else {
-                      ## Numeric only works with satellite-supplied bands (not bands added by user)
-                      j <- round(as.numeric(j))
-                      if (1 <= j && j <= length(bandnames))
-                          warning("Hint: access landsat bands as e.g. [[\"", bandnames[j], "\"]]", call.=FALSE)
-                  }
-                  if (j < 1 || j > length(bandnames))
-                      stop("Landsat band must be between 1 and ", length(bandnames), ", not ", j, " as given", call.=FALSE)
-                  rval <- x@data[[datanames[j]]]
-                  if (is.null(rval))
-                      stop("No landsat band \"", datanames[j], "\" in this object", call.=FALSE)
-                  return(rval)
-              } else {
-                  if (is.numeric(i)) {
-                      nband <- floor(length(x@data) / 2)
-                      if (i > nband)
-                          stop("no landsat band numbered ", i, "; maximum allowed number is ", nband, call.=FALSE)
-                      ii <- floor(i / 2 + 1)
-                      rval <- (256L*as.integer(x@data[[ii]]) + as.integer(x@data[[ii+1]]))
-                      dim(rval) <- dim(x@data[[ii]])
-                      return(rval)
-                  }
-                  if (!is.na(ii <- pmatch(i, bandnames))) {
-                      theband <- bandnames[ii[1]]
-                      if (!(theband %in% datanames))
-                          stop("This landsat object does not contain the band named \"", bandnames[ii[1]],
-                               "\"; the available data are named: ", paste(datanames, collapse=", "), call.=FALSE)
-                      dim <- dim(x@data[[theband]]$msb)
-                      rval <- 256L * as.integer(x@data[[theband]]$msb) + as.integer(x@data[[theband]]$lsb)
-                      dim(rval) <- dim
-                      return(rval)
-                  } else if (!is.na(ii <- pmatch(i, datanames))) {
-                      rval <- x@data[[datanames[ii[1]]]]
-                      if (is.null(rval))
-                          stop("No landsat band \"", datanames[ii[1]], "\" in this object", call.=FALSE)
-                      return(rval)
-                  } else if (i %in% names(x@metadata)) {
-                      return(x@metadata[[i]])
-                  } else {
-                      stop("No item named \"", i, "\" in this landsat object", call.=FALSE)
-                  }
-                  rval <- x@data[[j]]
-                  if (is.null(rval))
-                      stop("No data for requested Landsat band", call.=FALSE)
-                  return(x@data[[j]])
-              }
-              stop("Landsat indexing is only for bands (e.g. x[[\"band\", 8]]) or metadata (e.g. x[[\"time\"]]\n", call.=FALSE)
+              ##20140722 if (i == "band") {
+              ##20140722     if (missing(j))
+              ##20140722         stop("Must give a landsat band number or name", call.=FALSE)
+              ##20140722     if (is.character(j)) {
+              ##20140722         ## FIXME: can later add e.g. "temperature" etc
+              ##20140722         jj <- pmatch(j, datanames)
+              ##20140722         if (is.na(jj)) {
+              ##20140722             stop("Landsat band \"", j, "\" is not in this object; try one of: ",
+              ##20140722                  paste(datanames, collapse=", "), "\n", call.=FALSE)
+              ##20140722         }
+              ##20140722         j <- round(jj)
+              ##20140722     } else {
+              ##20140722         ## Numeric only works with satellite-supplied bands (not bands added by user)
+              ##20140722         j <- round(as.numeric(j))
+              ##20140722         if (1 <= j && j <= length(bandnames))
+              ##20140722             warning("Hint: access landsat bands as e.g. [[\"", bandnames[j], "\"]]", call.=FALSE)
+              ##20140722     }
+              ##20140722     if (j < 1 || j > length(bandnames))
+              ##20140722         stop("Landsat band must be between 1 and ", length(bandnames), ", not ", j, " as given", call.=FALSE)
+              ##20140722     rval <- x@data[[datanames[j]]]
+              ##20140722     if (is.null(rval))
+              ##20140722         stop("No landsat band \"", datanames[j], "\" in this object", call.=FALSE)
+              ##20140722     return(rval)
+              ##20140722 } else {
+              ##20140722     if (is.numeric(i)) {
+              ##20140722         nband <- floor(length(x@data) / 2)
+              ##20140722         if (i > nband)
+              ##20140722             stop("no landsat band numbered ", i, "; maximum allowed number is ", nband, call.=FALSE)
+              ##20140722         ii <- floor(i / 2 + 1)
+              ##20140722         rval <- (256L*as.integer(x@data[[ii]]) + as.integer(x@data[[ii+1]]))
+              ##20140722         dim(rval) <- dim(x@data[[ii]])
+              ##20140722         return(rval)
+              ##20140722     }
+              ##20140722     if (!is.na(ii <- pmatch(i, bandnames))) {
+              ##20140722         theband <- bandnames[ii[1]]
+              ##20140722         if (!(theband %in% datanames))
+              ##20140722             stop("This landsat object does not contain the band named \"", bandnames[ii[1]],
+              ##20140722                  "\"; the available data are named: ", paste(datanames, collapse=", "), call.=FALSE)
+              ##20140722         dim <- dim(x@data[[theband]]$msb)
+              ##20140722         rval <- 256L * as.integer(x@data[[theband]]$msb) + as.integer(x@data[[theband]]$lsb)
+              ##20140722         dim(rval) <- dim
+              ##20140722         return(rval)
+              ##20140722     } else if (!is.na(ii <- pmatch(i, datanames))) {
+              ##20140722         rval <- x@data[[datanames[ii[1]]]]
+              ##20140722         if (is.null(rval))
+              ##20140722             stop("No landsat band \"", datanames[ii[1]], "\" in this object", call.=FALSE)
+              ##20140722         return(rval)
+              ##20140722     } else if (i %in% names(x@metadata)) {
+              ##20140722         return(x@metadata[[i]])
+              ##20140722     } else {
+              ##20140722         stop("No item named \"", i, "\" in this landsat object", call.=FALSE)
+              ##20140722     }
+              ##20140722     rval <- x@data[[j]]
+              ##20140722     if (is.null(rval))
+              ##20140722         stop("No data for requested Landsat band", call.=FALSE)
+              ##20140722     return(x@data[[j]])
+              ##20140722 }
+              ##20140722 stop("Landsat indexing is only for bands (e.g. x[[\"panchromatic\"]]) or metadata (e.g. x[[\"time\"]]\n", call.=FALSE)
           })
 
 setMethod(f="plot",
@@ -188,6 +246,26 @@ setMethod(f="plot",
                       d[d == 0] <- NA  # only makes sense for count data
               }
               dim <- dim(d)
+              ## figure out about decimation
+              if ((is.logical(decimate) && decimate)) {
+             } else if (is.numeric(decimate)) {
+                  decimate <- as.integer(round(decimate))
+                  if (decimate > 1) {
+                      oceDebug(debug, "using decimate=", decimate, "\n")
+                      ilook <- seq.int(1, dim[1], by=decimate)
+                      jlook <- seq.int(1, dim[2], by=decimate)
+                      oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+                      oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
+                      lon <- lon[ilook]
+                      lat <- lat[jlook]
+                      d <- d[ilook, jlook]
+                      dim <- dim(d)
+                  } else {
+                      warning("'decimate' should exceed 1")
+                  }
+              } else {
+                  stop("'decimate' must be logical or positive numeric")
+              }
               if (which == 1) {
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
