@@ -20,7 +20,9 @@ stopifnot(d1[["cruise"]] == "Halifax Harbour")
 stopifnot(d1[["station"]] == "Stn 2")
 stopifnot(all.equal.numeric(d1[["latitude"]], 44.68427, tolerance=0.0001))
 stopifnot(all.equal.numeric(d1[["longitude"]], -63.64388, tolerance=0.0001))
-
+stopifnot(all.equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052)))
+stopifnot(all.equal(d1[['temperature']][1:3], c(14.2245, 14.2299, 14.2285)))
+stopifnot(all.equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206)))
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
 ## I am not sure if this was a standardized format, but I had to work
@@ -40,6 +42,10 @@ stopifnot(d2[["station"]] == "1")
 stopifnot(all.equal.numeric(d2[["date"]], as.POSIXct("2003-08-11", tz="UTC"), tolerance=0.01))
 stopifnot(all.equal.numeric(d2[["latitude"]], 71.391, tolerance=0.0001))
 stopifnot(all.equal.numeric(d2[["longitude"]], -134.001, tolerance=0.0001))
+stopifnot(all.equal.numeric(d1[['pressure']][1:3], c(1.480,1.671,2.052), tolerance=0.001))
+stopifnot(all.equal.numeric(d1[['temperature']][1:3], c(14.2245,14.2299,14.2285), tolerance=0.001))
+stopifnot(all.equal.numeric(d1[['salinity']][1:3], c(29.9210,29.9205,29.9206), tolerance=0.001))
+
 
 ## A file containing CTD data acquired in the Beaufort Sea in 20l2,
 ## in standard .cnv format (albeit with a date format that was
@@ -57,6 +63,9 @@ stopifnot(all.equal.numeric(d3[["date"]], as.POSIXct("2012-08-09 06:34:34", tz="
 stopifnot(all.equal.numeric(d3[["waterDepth"]], 87, tolerance=0.1))
 stopifnot(all.equal.numeric(d3[["latitude"]], 71+20.70/60, tolerance=0.0001))
 stopifnot(all.equal.numeric(d3[["longitude"]], -(151+47.26/60), tolerance=0.0001))
+stopifnot(all.equal.numeric(d3[['pressure']][1:3], c(1,2,3), tolerance=0.001))
+stopifnot(all.equal.numeric(d3[['temperature']][1:3], c(-0.0155,0.0005,0.0092), tolerance=0.001))
+stopifnot(all.equal.numeric(d3[['salinity']][1:3], c(25.1637,25.1964,25.3011), tolerance=0.001))
 
 ## An ODF file
 ##'  CHIEF_SCIENTIST='Glen Harrison','
@@ -72,4 +81,7 @@ stopifnot(d4[["scientist"]] == "Glen Harrison")
 stopifnot(all.equal.numeric(d4[["waterDepth"]], 161, tolerance=0.0001)) # "SOUNDING", not "MAX_DEPTH"
 stopifnot(all.equal.numeric(d4[["latitude"]], 44.2667, tolerance=0.0001))
 stopifnot(all.equal.numeric(d4[["longitude"]], -63.3167, tolerance=0.0001))
-
+stopifnot(all.equal.numeric(d4[['pressure']][1:3], c(1.0,1.5,2.0), tolerance=0.001))
+stopifnot(all.equal.numeric(d4[['temperature']][1:3], c(3.1800,3.1798,3.1804), tolerance=0.001))
+stopifnot(all.equal.numeric(d4[['salinity']][1:3], c(30.7845,30.7775,30.7735), tolerance=0.001))
+ 

@@ -54,6 +54,30 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     ## FIXME: labels, using labcex and vfont
 }
 
+mapDirectionField <- function(longitude, latitude, u, v,
+                              scale=1, length=0.05, code=2, col=par("fg"), ...)
+{
+    ## handle case where lon and lat are coords on edges of grid
+    if (is.matrix(u)) {
+        if (is.vector(longitude) && is.vector(latitude)) {
+            nlon <- length(longitude)
+            nlat <- length(latitude)
+            longitude <- matrix(rep(longitude, nlat), nrow=nlon)
+            latitude <- matrix(rep(latitude, nlon), byrow=TRUE, nrow=nlon)
+        }
+    }
+    xy <- mapproject(longitude, latitude)
+    ## Calculate spatially-dependent scale (fails for off-page points)
+    ## Calculate lon-lat at ends of arrows
+    scalex <- scale / cos(pi * latitude / 180)
+    latEnd <- latitude + v * scale
+    lonEnd <- longitude + u * scalex
+    xy <- mapproject(longitude, latitude)
+    xyEnd <- mapproject(lonEnd, latEnd)
+    arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, col=col, ...)
+}
+
+
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if (missing(longitude))
@@ -458,6 +482,29 @@ mapPoints <- function(longitude, latitude, ...)
     if (length(longitude) > 0) {
         xy <- mapproject(longitude, latitude)
         points(xy$x, xy$y, ...)
+    }
+}
+
+mapArrows <- function(longitude0, latitude0,
+                      longitude1=longitude0, latitude1=latitude0,
+                      length=0.25, angle=30,
+                      code=2, col=par("fg"), lty=par("lty"),
+                      lwd=par("lwd"), ...)
+{
+    if (length(longitude0) != length(latitude0))
+        stop("lengths of longitude0 and latitude0 must match but they are ", length(longitude0), " and ", length(longitude1))
+    if (length(longitude1) != length(latitude1))
+        stop("lengths of longitude1 and latitude1 must match but they are ", length(longitude1), " and ", length(longitude1))
+    ok <- !is.na(longitude0) & !is.na(latitude0) & !is.na(longitude1) & !is.na(latitude1)
+    longitude0 <- longitude0[ok]
+    latitude0 <- latitude0[ok]
+    longitude1 <- longitude1[ok]
+    latitude1 <- latitude1[ok]
+    if (length(longitude) > 0) {
+        xy0 <- mapproject(longitude0, latitude0)
+        xy1 <- mapproject(longitude1, latitude1)
+        arrows(xy0$x, xy0$y, xy1$x, xy1$y,
+               length=length, angle=angle, code=code, col=col, lty=lty, lwd=lwd, ...)
     }
 }
 

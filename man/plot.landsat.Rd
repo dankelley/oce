@@ -33,10 +33,10 @@
       Landsat-8), or the name of the band, one of: \code{"aerosol"},
       \code{"blue"}, \code{"green"}, \code{"red"}, \code{"nir"},
       \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"}, \code{"cirrus"},
-      \code{"tirs1"}, \code{"tirs2"} (again, for Landsat-8).  If not given, 8
-      (\code{"panchromatic"}) will be used if band 8 exists in the object data,
-      or otherwise the first band will be used.  In addition to the above,
-      using \code{band="temperature"} will plot an estimate of at-satellite
+      \code{"tirs1"}, \code{"tirs2"} (again, for Landsat-8).  If not given, the
+      (\code{"tirs1"}) will be used if it exists in the object data, or
+      otherwise the first band will be used.  In addition to the above, using
+      \code{band="temperature"} will plot an estimate of at-satellite
       brightness temperature, computed from the \code{tirs1} band.}
       
   \item{decimate}{decimation passed to \code{\link{imagep}} for image plots.

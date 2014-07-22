@@ -408,10 +408,12 @@ imagep <- function(x, y, z,
              " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
              " filledContour=", filledContour, ", ",
-             " missingColor='", missingColor,
+             " drawTriangles=", drawTriangles, ", ",
+             " missingColor=", if (is.null(missingColor)) "NULL" else missingColor,
              ", ...) {\n", sep="", unindent=1)
-    oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
-    oceDebug(debug, "par(mai)=", paste(format(par('mai'), digits=3), collapse=" "), "\n")
+    oceDebug(debug, "par('mai')=c(",
+             paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
+             paste(format(par('mar'), digits=2), collapse=","), ")\n")
 
     if (!missing(zlim) && !missing(breaks) && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
@@ -595,6 +597,7 @@ imagep <- function(x, y, z,
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
         ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
+        oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
         if (!zclip && !zlimHistogram) {
             db <- median(diff(breaks), na.rm=TRUE)
             breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
@@ -603,7 +606,13 @@ imagep <- function(x, y, z,
             if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
         }
-
+        if (TRUE) { # 2014-07-17/#489 trial code
+            warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
+            if (!missing(breaks))
+                breaks2 <- breaks
+            if (!missing(col))
+                col2 <- col
+        }
         if (is.function(col)) {
             if (zlimHistogram)
                 col <- col(n=200)          # FIXME: decide on length
@@ -612,11 +621,8 @@ imagep <- function(x, y, z,
         }
     }
     if (drawPalette == "space") {
-        oceDebug(debug, "not drawing a palette, since drawPalette=\"space\"\n")
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
-        oceDebug(debug, "drawPalette=", drawPalette, "\n")
-        oceDebug(debug, "drawing a palette\n")
         if(missing(zlim)) {
             ## use range of breaks preferably; otherwise use range z
             if (missing(breaks)) {
@@ -626,8 +632,8 @@ imagep <- function(x, y, z,
             }
         }
         drawTriangles <- rep(drawTriangles, length.out=2)
-        drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
-        drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
+        drawTriangles[1] <- drawTriangles[1] && any(z < zlim[1], na.rm=TRUE)
+        drawTriangles[2] <- drawTriangles[2] && any(z > zlim[2], na.rm=TRUE)
         oceDebug(debug, "mai.palette=c(", paste(mai.palette, collapse=", "), ")\n")
         if (zlimHistogram) {
             oceDebug(debug, "palette with zlim=\"histogram\"\n")
@@ -685,6 +691,12 @@ imagep <- function(x, y, z,
     }
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
+        if (debug > 0) {
+            message("breaks:", paste(breaks, collapse=" "))
+            message("breaks2:", paste(breaks2, collapse=" "))
+            message("col:", paste(col, collapse=" "))
+            message("col2:", paste(col2, collapse=" "))
+        }
         if (filledContour) {
             oceDebug(debug, "doing filled contours [1]\n")
             if (!is.double(z))
@@ -758,8 +770,9 @@ imagep <- function(x, y, z,
             warning("cannot evaluate adorn='", adorn, "'\n")
     }
     par(cex=ocex)
-    oceDebug(debug, "at end of imagep(), par('mai') yields c(", paste(par('mai'), collapse=","), ")\n")
-    oceDebug(debug, "at end of imagep(), par('mar') yields c(", paste(par('mar'), collapse=","), ")\n")
+    oceDebug(debug, "par('mai')=c(",
+             paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
+             paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
     invisible()
 }
