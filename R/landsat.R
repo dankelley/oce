@@ -167,8 +167,8 @@ setMethod(f="plot",
           definition=function(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
                               col=oceColorsPalette, debug=getOption("oceDebug"), ...)
           {
-              oceDebug(debug, "plot.landsat(..., which=c(", which,
-                       ", decimate=", decimate,
+              oceDebug(debug, "plot.landsat(..., which=c(", paste(which, collapse=","),
+                       "), decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               if (missing(band)) {
@@ -201,12 +201,12 @@ setMethod(f="plot",
                       }
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
-                             z=d, asp=1, zlim=zlim, col=col, decimate=decimate, ...)
+                             z=d, asp=1, zlim=zlim, col=col, decimate=decimate, debug=debug-1, ...)
                   } else {
                       if ("breaks" %in% names(list(...))) {
-                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=decimate, ...)
+                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=decimate, debug=debug-1, ...)
                       } else {
-                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=decimate, ...)
+                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=decimate, debug=debug-1, ...)
                       }
                   }
                   mtext(band, side=3, adj=1, line=0, cex=1)

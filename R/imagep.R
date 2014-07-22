@@ -479,6 +479,8 @@ imagep <- function(x, y, z,
         if (decimate > 1) {
             ilook <- seq.int(1, dim[1], by=decimate)
             jlook <- seq.int(1, dim[2], by=decimate)
+            oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+            oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
             x <- x[ilook]
             y <- y[jlook]
             z <- z[ilook, jlook]
@@ -741,6 +743,7 @@ imagep <- function(x, y, z,
                     col2 <- col2(200)
                 breaks2 <- seq(0, 1, length.out=length(col2) + 1)
             }
+            oceDebug(debug, "length(x)", length(x), "length(y)", length(y), "\n")
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
                   xlim=xlim, ylim=ylim, ...)
         }
