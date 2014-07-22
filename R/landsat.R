@@ -59,80 +59,26 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call.=FALSE)
               i <- i[1]                # drop extras if more than one given
               ## Handle cases one by one, starting with simplest.
-              if (!(is.na(pmatch(i, "longitude")))) {
+              if (!(is.na(pmatch(i, "longitude")))) { # FIXME: ignoring decimation (may be best, anyway)
                   b1 <- x@data[[1]]
                   dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
                   return(x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon))
               }
-              if (!(is.na(pmatch(i, "latitude")))) {
+              if (!(is.na(pmatch(i, "latitude")))) { # FIXME: ignoring decimation (may be best, anyway)
                   b1 <- x@data[[1]]
                   dim <- if (is.list(b1)) dim(b1$msb) else dim(b1)
                   return(x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat))
               } 
- 
-
-
-
-              isList <- is.list(x@data[[i]])
-              if (isList) {
-                  msb <- x@data[[i]]$msb
-                  lsb <- x@data[[i]]$lsb
-              } else {
-                  d <- x@data[[i]]
+              if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
+                  return(x@metadata[[i]])
               }
-              dim <- if (isList) dim(x@data[[i]]$msb) else dim(x@data[[i]]) # altered if decimation
-              message("dim=c(", dim[1], ",", dim[2], ") originally")
-              decimate <- FALSE
-              if (!missing(j)) { # decimation requested if logical or numeric
-                  if (is.logical(j)) {
-                      maxdim <- max(dim)
-                      if (maxdim > 800) {
-                          decimate <- max(as.integer(round(maxdim / 800)), 1)
-                          message("autodecimate by factor ", decimate)
-                          ilook <- seq.int(1, dim[1], by=decimate)
-                          jlook <- seq.int(1, dim[2], by=decimate)
-                          if (isList) {
-                              msb <- msb[ilook, jlook]
-                              lsb <- lsb[ilook, jlook]
-                              dim <- dim(msb)
-                          } else {
-                              d <- d[ilook, jlook]
-                              dim <- dim(d)
-                          }
-                      }
-                  } else if (is.numeric(j)) {
-                      j <- as.integer(round(j))
-                      if (j > 1) {
-                          message("decimate by factor ", decimate)
-                          ilook <- seq.int(1, dim[1], by=decimate)
-                          jlook <- seq.int(1, dim[2], by=decimate)
-                          if (isList) {
-                              msb <- msb[ilook, jlook]
-                              lsb <- lsb[ilook, jlook]
-                              dim <- dim(msb)
-                          } else {
-                              d <- d[ilook, jlook]
-                              dim <- dim(d)
-                          }
-                      }
-                  } else stop("landsat[[..., j]] requires j to be logical or numeric", call.=FALSE)
-              }
-              message("dim=c(", dim[1], ",", dim[2], ") after possible decimation")
-              if (is.numeric(i)) {
-                  message("numerical band: decimation mixed up because based on band 1, not this one")
-                  if (is.list(x@data[[i]])) {
-                      msb <- msb[seq.int(1L, dim[1], by=decimate), seq.int(1L, dim[2], by=decimate)]
-                      rval <- (256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb))
-                      dim(rval) <- dim
-                      return(rval)
-                  } else {
-                      return(d)
-                  }
-              }
-              if (!(is.na(pmatch(i, "temperature")))) {
-                  warning("landsat[band=\"temperature\"] ignoring decimation", call.=FALSE)
+
+              if (!is.na(pmatch(i, "temperature"))) {
+                  if (!missing(j) && j)
+                      warning("BUG: landsat[\"temperature\",", j, "] ignoring second argument", call.=FALSE)
                   if ("tirs1" %in% names(x@data)) {
-                      d <- x[["tirs1"]]
+                      lsb <- x@data$tirs1$lsb
+                      msb <- x@data$tirs1$msb
                       na <- d == 0
                       ML <- x@metadata$header$radiance_mult_band_10
                       AL <- x@metadata$header$radiance_add_band_10
@@ -144,22 +90,102 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d[na] <- NA
                       return(d)
                   } else {
-                      stop("cannot calculate temperature without \"tirs1\" data in the landsat object", call.=FALSE)
+                      stop("cannot calculate landsat temperature without \"tirs1\" band", call.=FALSE)
                   }
               }
+              ## message("i:", i, " before")
+              iorig <- i
+              if (is.character(i)) {
+                  ii <- pmatch(i, names(x@data))
+                  if (!is.na(ii))
+                      i <- ii
+              }
+              ##message("ii:", ii, " after")
+              isList <- is.list(x@data[[i]])
+              if (isList) {
+                  msb <- x@data[[i]]$msb
+                  lsb <- x@data[[i]]$lsb
+              } else {
+                  d <- x@data[[i]]
+              }
+              rm(x)                    # may help if memory is tight
+              dim <- if (isList) dim(msb) else dim(d) # altered if decimation
+              ##message("dim=c(", dim[1], ",", dim[2], ") originally")
+              ## e.g. image[["panchromatic", TRUE]]
+              if (!missing(j) && is.logical(j) && j) {
+                  ##message("autodecimate if image is large")
+                  maxdim <- max(dim)
+                  if (maxdim > 800) {
+                      decimate <- max(as.integer(round(maxdim / 800)), 1)
+                      ##message("autodecimate by factor ", decimate)
+                      ilook <- seq.int(1, dim[1], by=decimate)
+                      jlook <- seq.int(1, dim[2], by=decimate)
+                      if (isList) {
+                          msb <- msb[ilook, jlook]
+                          lsb <- lsb[ilook, jlook]
+                          rval <- 256L*as.integer(msb) + as.integer(lsb)
+                          dim(rval) <- dim(msb)
+                          return(rval)
+                      } else {
+                          d <- d[ilook, jlook]
+                          return(d)
+                      }
+                  }
+              }
+              ## e.g. image[["panchromatic", 10]]
+              if (!missing(j) && is.numeric(j)) {
+                  j <- as.integer(round(j))
+                  if (j > 1) {
+                      ##message("decimate by factor ", j)
+                      ilook <- seq.int(1, dim[1], by=j)
+                      jlook <- seq.int(1, dim[2], by=j)
+                      if (isList) {
+                          msb <- msb[ilook, jlook]
+                          lsb <- lsb[ilook, jlook]
+                          rval <- 256L*as.integer(msb) + as.integer(lsb)
+                          dim(rval) <- dim(msb)
+                          return(rval)
+                      } else {
+                          d <- d[ilook, jlook]
+                          return(d)
+                      }
+                  }
+              }
+              ## OK, no decimation is requested, so just return the desired value.
+              if (isList) {
+                  rval <- 256L*as.integer(msb) + as.integer(lsb)
+                  dim(rval) <- dim(msb)
+                  return(rval)
+              } else {
+                  return(d)
+              }
+
+              ##20140722c message("dim=c(", dim[1], ",", dim[2], ") after possible decimation")
+              ##20140722c if (is.numeric(i)) {
+              ##20140722c     message("numerical band: decimation mixed up because based on band 1, not this one")
+              ##20140722c     if (is.list(x@data[[i]])) {
+              ##20140722c         msb <- msb[seq.int(1L, dim[1], by=decimate), seq.int(1L, dim[2], by=decimate)]
+              ##20140722c         rval <- (256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb))
+              ##20140722c         dim(rval) <- dim
+              ##20140722c         return(rval)
+              ##20140722c     } else {
+              ##20140722c         return(d)
+              ##20140722c     }
+              ##20140722c }
               
-              datanames <- names(x@data) # user may have added items
-              if (!is.na(ii <- pmatch(i, datanames))) {
-                  message("working with a named band: decimation NOT handled yet")
-                  b <- x@data[[datanames[ii]]]
-                  if (is.list(b)) {
-                      rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
-                      dim(rval) <- dim(b$msb)
-                      return(rval)
-                  } else {
-                      return(b)
-                  }
-              }
+              ##20140722b datanames <- names(x@data) # user may have added items
+              ##20140722b if (!is.na(ii <- pmatch(i, datanames))) {
+              ##20140722b     message("working with a named band: decimation NOT handled yet")
+              ##20140722b     b <- x@data[[datanames[ii]]]
+              ##20140722b     if (is.list(b)) {
+              ##20140722b         rval <- 256L*as.integer(b$msb) + as.integer(b$lsb)
+              ##20140722b         dim(rval) <- dim(b$msb)
+              ##20140722b         return(rval)
+              ##20140722b     } else {
+              ##20140722b         return(b)
+              ##20140722b     }
+              ##20140722b }
+
               ##20140722 if (i == "band") {
               ##20140722     if (missing(j))
               ##20140722         stop("Must give a landsat band number or name", call.=FALSE)

@@ -72,7 +72,19 @@
     \emph{Accessing data values.} The data may be accessed with e.g.
     \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
     ``band'' is added with \code{\link{landsatAdd}}, it may be referred by
-    name.
+    name.  In all cases, a second argument can be provided, to govern
+    decimation.  If this is missing, all the relevant data are returned.  If
+    this is present and equal to \code{TRUE}, then the data will be
+    automatically decimated (subsampled) to give approximately 800 elements in
+    the longest side of the matrix.  If this is present and numerical, then its
+    value governs decimation.  For example,
+    \code{landsat[["panchromatic",TRUE]]} will auto-decimate, typically
+    reducing the grid width and height from 16000 to about 800.  Similarly,
+    \code{landsat[["panchromatic",10]]} will reduce width and height to about
+    1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
+    good idea in almost all processing steps.  It also makes sense for
+    plotting, and in fact is done through the \code{decimate} argument of
+    \code{\link{plot.landsat}}.
   
     \emph{Accessing derived data.}  One may retrieve several derived quantities
     that are calculated from data stored in the object: \code{"longitude"} and
