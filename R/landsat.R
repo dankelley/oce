@@ -91,16 +91,19 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   if (!missing(j) && j)
                       warning("BUG: landsat[\"temperature\",", j, "] ignoring second argument", call.=FALSE)
                   if ("tirs1" %in% names(x@data)) {
-                      d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
-                      na <- d == 0
                       ML <- x@metadata$header$radiance_mult_band_10
                       AL <- x@metadata$header$radiance_add_band_10
                       K1 <- x@metadata$header$k1_constant_band_10
                       K2 <- x@metadata$header$k2_constant_band_10
+                      d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
+                      dim <- dim(x@data$tirs1$msb)
+                      na <- d == 0
+                      rm(x) # may help if space is tight
                       Llambda <- ML * d + AL
                       d <- K2 / log(K1 / Llambda + 1)
                       d <- d - 273.15
                       d[na] <- NA
+                      dim(d) <- dim
                       return(d)
                   } else {
                       stop("cannot calculate landsat temperature without \"tirs1\" band", call.=FALSE)
