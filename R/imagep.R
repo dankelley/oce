@@ -479,6 +479,8 @@ imagep <- function(x, y, z,
         if (decimate > 1) {
             ilook <- seq.int(1, dim[1], by=decimate)
             jlook <- seq.int(1, dim[2], by=decimate)
+            oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+            oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
             x <- x[ilook]
             y <- y[jlook]
             z <- z[ilook, jlook]
@@ -571,11 +573,11 @@ imagep <- function(x, y, z,
                     if (missing(col)) {
                         ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
                         breaks <- pretty(zlim, n=nbreaks)
-                        oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim given but not breaks or col; inferred head(breaks)=", head(breaks), "\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
                                       length.out=if(is.function(col))128 else 1+length(col))
-                        oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
                     oceDebug(debug, 'range(z):', zrange, '\n')
@@ -741,6 +743,7 @@ imagep <- function(x, y, z,
                     col2 <- col2(200)
                 breaks2 <- seq(0, 1, length.out=length(col2) + 1)
             }
+            oceDebug(debug, "length(x)", length(x), "length(y)", length(y), "\n")
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
                   xlim=xlim, ylim=ylim, ...)
         }
