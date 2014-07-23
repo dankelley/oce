@@ -9,7 +9,7 @@
 \description{Plot landsat data.}
 
 \usage{\S4method{plot}{landsat}(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
-    col=oceColorsPalette, debug=getOption("oceDebug"), \dots)
+    col=oceColorsPalette, showBandName=TRUE, debug=getOption("oceDebug"), \dots)
 }
 \arguments{
 
@@ -43,6 +43,9 @@
       The default yields faster plotting.  Some decimation is sensible for
       full-size images, since no graphical displays can show 16 thousand pixels
       on a side.}
+
+  \item{showBandName}{if \code{TRUE}, the band name is plotted in the top
+      margin, near the right-hand side.}
   
   \item{debug}{set to a positive value to get debugging information during
       processing.}
