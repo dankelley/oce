@@ -91,8 +91,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   if (!missing(j) && j)
                       warning("BUG: landsat[\"temperature\",", j, "] ignoring second argument", call.=FALSE)
                   if ("tirs1" %in% names(x@data)) {
-                      lsb <- x@data$tirs1$lsb
-                      msb <- x@data$tirs1$msb
+                      d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
                       na <- d == 0
                       ML <- x@metadata$header$radiance_mult_band_10
                       AL <- x@metadata$header$radiance_add_band_10
