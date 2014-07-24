@@ -1,20 +1,14 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-bandnames <-c("aerosol", "blue", "green", "red",
-              "nir", "swir1", "swir2",
-              "panchromatic",
-              "cirrus",
-              "tirs1", "tirs2")
-
 setMethod(f="show",
           signature="landsat",
           definition=function(object) {
               cat("Landsat object, ID", object@metadata$header$landsat_scene_id, "\n")
-              cat("Bands:\n")
-              bandnames <- names(object@data)
-              for (b in seq_along(bandnames)) {
+              cat("Data (bands or calculated):\n")
+              dataNames <- names(object@data)
+              for (b in seq_along(dataNames)) {
                   dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$msb) else dim(object@data[[b]])
-                  cat("  \"", bandnames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep='')
+                  cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep='')
               }
           })
 
@@ -271,15 +265,16 @@ setMethod(f="plot",
                        "), decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
+              datanames <- names(x@data)
               if (missing(band)) {
                   if ("tirs1" %in% names(x@data)) {
                       oceDebug(debug, "using tirs1\n")
                       d <- x[["tirs1", decimate]]
                       band <- "tirs1"
                   }  else {
-                      oceDebug(debug, "using band", x@metadata$bands[1], "\n")
-                      d <- x[[x@metadata$bands[1], decimate]]
-                      band <- x@metadata$bands[1] # FIXME: would prefer to get band name from names()
+                      oceDebug(debug, "using band named", datanames[1], "\n")
+                      d <- x[[datanames[1], decimate]]
+                      band <- datanames[1]
                   }
                   d[d == 0] <- NA # only makes sense for count data
               } else {
@@ -288,7 +283,7 @@ setMethod(f="plot",
                   band <- band[1]
                   i <- pmatch(band, knownBands)
                   if (is.na(i))
-                      stop("there is no landsat band named \"", band, "\"", call.=FALSE)
+                      stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
                   band <- knownBands[i]
                   d <- x[[band, decimate]]
                   if (is.na(pmatch(band, "temperature")))
@@ -360,7 +355,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
         ##oceDebug(debug, "read item", name, "\n")
         rval
     }
-    info <- readLines(file)
+    info <- readLines(file, warn=FALSE)
     date <- getItem("DATE_ACQUIRED", numeric=FALSE)
     centerTime <- getItem("SCENE_CENTER_TIME", numeric=FALSE)
     time <- as.POSIXct(paste(date, centerTime), tz="UTC")
@@ -412,8 +407,32 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
     for (i in seq_along(header)) {
         try(header[[i]] <- scan(text=header[[i]], quiet=TRUE), silent=TRUE)
     }
+    ## Band (L4TM, L5TM, and L7ETM+) names from http://landsat.usgs.gov/best_spectral_bands_to_use.php
+    if ("LANDSAT_4" == spacecraft)  {
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir", "swir2") 
+        ##filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7") # FIXME: probably wrong
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B7") # FIXME: probably wrong
+        warning("landsat-4 file: not sure what to do with band 6")
+    } else if ("LANDSAT_5" == spacecraft)  {
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir", "swir2") 
+        ##filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7") # FIXME: probably wrong
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B7") # FIXME: probably wrong
+        warning("landsat-5 file: not sure what to do with band 6")
+    } else if ("LANDSAT_7" == spacecraft)  {
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir", "swir2", "panchromatic")
+        ##filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7", "B8") # FIXME: what about #6?
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B7", "B8") # FIXME: what about #6?
+        warning("landsat-7 file: not sure what to do with band 6")
+    } else if ("LANDSAT_8" == spacecraft)  {
+        bandnames <- c("aerosol", "blue", "green", "red", "nir", "swir1", "swir2", "panchromatic", "cirrus", "tirs1", "tirs2")
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11")
+    } else {
+        stop("spacecraft type ", spacecraft, " cannot be handled yet")
+    }
+    filesuffices <- paste(filesuffices, ".TIF", sep="")
     list(header=header,
          time=time, spacecraft=spacecraft,
+         bandnames=bandnames, filesuffices=filesuffices,
          ullat=ullat, ullon=ullon, urlat=urlat, urlon=urlon, ## possibly not needed with UTM
          lllat=lllat, lllon=lllon, lrlat=lrlat, lrlon=lrlon, ## possibly not needed with UTM
          llUTM=llUTM, urUTM=urUTM, zoneUTM=zoneUTM,
@@ -425,48 +444,63 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
          ##dimThermal=dimThermal)
 }
 
-read.landsat <- function(file, band=1:11, debug=getOption("oceDebug"))
+read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.landsat(file=\"", file, "\", band=c(",
-             paste(band, collapse=","), "), debug=", debug, ") {\n", sep="", unindent=1)
-    ## convert to numerical bands (checks also that named bands are OK)
-    band2 <- rep(NA, length(band))
-    for (b in seq_along(band)) {
-        if (is.character(band[b])) {
-            m <- pmatch(band[b], bandnames, nomatch=0)
-            if (0 == m)
-                stop('band "', band[b], '" unknown; must be one of: ', paste(bandnames, collapse=", "))
-            else
-                band2[b] <- m
-        } else {
-            band2[b] <- band[b]
-        }
-    }
-    band <- band2
+    oceDebug(debug, "read.landsat(file=\"", file, "\",",
+             if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
+                 paste("band=\"", band, "\"", sep=""),
+                 ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!require("tiff"))
         stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
     actualfilename <- gsub(".*/", "", file)
     headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
+    oceDebug(debug, "file type: ", header$spacecraft, "\n")
+
+    ## convert to numerical bands (checks also that named bands are OK)
+    if (band == "all") {
+        band <- header$bandnames
+    } else {
+        band2 <- rep(NA, length(band))
+        for (b in seq_along(band)) {
+            if (is.character(band[b])) {
+                ##message("b:", b, " band[b]:", band[b], " bandnames:", paste(header$bandnames, sep=","))
+                m <- pmatch(band[b], header$bandnames, nomatch=0)
+                if (0 == m)
+                    stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
+                else
+                    band2[b] <- m
+            } else {
+                band2[b] <- band[b]
+            }
+        }
+        band <- band2
+    }
+
     rval@metadata <- header
     rval@metadata[["headerfilename"]] <- headerfilename
-    rval@metadata[["bands"]] <- bandnames[band]
+    ## Bandnames differ by satellite.
+    rval@metadata[["bands"]] <- band # FIXME: still ok?
     actualfilename <- gsub(".*/", "", file)
-    rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
+##    rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1) 
-    for (b in seq_along(band)) {
-        bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
+    ## print(header$bandsuffices)
+    for (b in seq_along(band)) {       # 'band' is numeric
+        ## message("b:", b, " band: ", header$bandnames[b], " suffix: ", header$filesuffices[b])
+        ##bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
+        bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
+        ## message(bandfilename)
         ##rval@metadata[["filename"]] <- bandfilename 
-        oceDebug(debug, "reading \"", bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
+        oceDebug(debug, "reading \"", header$bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
         d <- tiff::readTIFF(bandfilename)
         ## if (FALSE && !is.null(getOption("testLandsat1"))) { # FIXME: disable
-        bandname <- bandnames[band[b]]
+        bandname <- header$bandnames[band[b]] # FIXME: 1 more layer of indexing?
         d <- .Call("landsat_numeric_to_bytes", d) # reuse 'd' to try to save storage
-        rval@data[[bandname]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
-                                      lsb=.Call("landsat_transpose_flip", d$lsb))
+        rval@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
+                                                       lsb=.Call("landsat_transpose_flip", d$lsb))
     }
     options(warn=options$warn) 
     rval@processingLog <- processingLog(rval@processingLog,

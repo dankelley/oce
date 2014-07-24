@@ -457,12 +457,12 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      longitude=longitude, latitude=latitude,
                      debug=debug-1, monitor=monitor, despike=despike,
                      processingLog=processingLog, ...)
-    else if (type == "nortek")
+    else if (manufacturer == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
-    else if (type == "sontek")
+    else if (manufacturer == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
