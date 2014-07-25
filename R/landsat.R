@@ -504,22 +504,21 @@ read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
     bandOrig <- band
     if (band[1] == "all") {
         band <- header$bandnames
-    } else {
-        band2 <- rep(NA, length(band))
-        for (b in seq_along(band)) {
-            if (is.character(band[b])) {
-                ##message("b:", b, " band[b]:", band[b], " bandnames:", paste(header$bandnames, sep=","))
-                m <- pmatch(band[b], header$bandnames, nomatch=0)
-                if (0 == m)
-                    stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
-                else
-                    band2[b] <- m
-            } else {
-                band2[b] <- band[b]
-            }
-        }
-        band <- band2
     }
+    band2 <- rep(NA, length(band))
+    for (b in seq_along(band)) {
+        if (is.character(band[b])) {
+            ##message("b:", b, " band[b]:", band[b], " bandnames:", paste(header$bandnames, sep=","))
+            m <- pmatch(band[b], header$bandnames, nomatch=0)
+            if (0 == m)
+                stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
+            else
+                band2[b] <- m
+        } else {
+            band2[b] <- band[b]
+        }
+    }
+    band <- band2
     oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
     rval@metadata <- header
     rval@metadata[["headerfilename"]] <- headerfilename
