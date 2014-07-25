@@ -15,6 +15,37 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="subset",
+          signature="drifter",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              if (length(grep("time", subsetString))) {
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  rval@data$time <- x@data$time[keep]
+                  rval@data$longitude <- x@data$longitude[keep]
+                  rval@data$latitude <- x@data$latitude[keep]
+                  rval@data$salinity <- x@data$salinity[,keep]
+                  rval@data$temperature <- x@data$temperature[,keep]
+                  rval@data$pressure <- x@data$pressure[,keep]
+              } else if (length(grep("longitude", subsetString)) ||
+                         length(grep("latitude", subsetString))) {
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  rval@data$time <- x@data$time[keep]
+                  rval@data$longitude <- x@data$longitude[keep]
+                  rval@data$latitude <- x@data$latitude[keep]
+                  rval@data$salinity <- x@data$salinity[,keep]
+                  rval@data$temperature <- x@data$temperature[,keep]
+                  rval@data$pressure <- x@data$pressure[,keep]
+              } else {
+                  stop("may only subset by time, longitude, or latitude, and not by combinations")
+              }
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
+
 setMethod(f="summary",
           signature="drifter",
           definition=function(object, ...) {
