@@ -266,28 +266,75 @@ setMethod(f="plot",
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               datanames <- names(x@data)
-              if (missing(band)) {
-                  if ("tirs1" %in% names(x@data)) {
-                      oceDebug(debug, "using tirs1\n")
-                      d <- x[["tirs1", decimate]]
-                      band <- "tirs1"
-                  }  else {
-                      oceDebug(debug, "using band named", datanames[1], "\n")
-                      d <- x[[datanames[1], decimate]]
-                      band <- datanames[1]
+              if (is.character(col)) {
+                  if (pmatch(col, "natural")) {
+                      if ("red" %in% datanames && 
+                          "green" %in% datanames && 
+                          "blue" %in% datanames) {
+                          message("extracting red data")
+                          r <- x[["red"]]
+                          dim <- dim(r)
+                          message("extracting green data")
+                          g <- x[["green"]]
+                          message("extracting blue data")
+                          b <- x[["blue"]]
+                          message("construcing na matrix")
+                          na <- r==0 & g==0 & b==0
+                          ## Following is from Clark Richards
+                          ## https://github.com/dankelley/oce/issues/502
+                          message("computing colours")
+                          colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                          message("clearing space")
+                          rm(list=c("r", "g", "b")) # memory is likely tight
+                          message("finding unique colours")
+                          col <- unique(colors)
+                          message("matching colors")
+                          d <- array(match(colors, col), dim=dim)
+                          ## > length(col)/prod(dim)
+                          ## [1] 0.001553854
+                          message("colour compaction: ",floor(prod(dim)/length(col)))
+                          ## Do not NA out because then image chopped excessively;
+                          ## Just leave black which is easier on the eye (although
+                          ## deceptive).
+                          if (FALSE) {
+                              message("NA-ing out")
+                              d[na] <- NA
+                          }
+                          message("plotting image")
+                          imagep(d, col=col, decimate=TRUE, drawPalette=FALSE)
+                          title("TEST PLOT ONLY, NOT SCALED")
+                          message("done -- TEST CODE ONLY")
+                          return()
+                      } else {
+                          stop("cannot use col=\"natural\" unless landsat object holds \"red\", \"green\", and \"blue\" bands")
+                      }
+                  } else {
+                      stop("if 'col' is a string, it must be 'natural'")
                   }
-                  d[d == 0] <- NA # only makes sense for count data
               } else {
-                  ## See if band is stored in this object
-                  knownBands <- c("temperature", names(x@data))
-                  band <- band[1]
-                  i <- pmatch(band, knownBands)
-                  if (is.na(i))
-                      stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
-                  band <- knownBands[i]
-                  d <- x[[band, decimate]]
-                  if (is.na(pmatch(band, "temperature")))
-                      d[d == 0] <- NA  # only makes sense for count data
+                  if (missing(band)) {
+                      if ("tirs1" %in% names(x@data)) {
+                          oceDebug(debug, "using tirs1\n")
+                          d <- x[["tirs1", decimate]]
+                          band <- "tirs1"
+                      }  else {
+                          oceDebug(debug, "using band named", datanames[1], "\n")
+                          d <- x[[datanames[1], decimate]]
+                          band <- datanames[1]
+                      }
+                      d[d == 0] <- NA # only makes sense for count data
+                  } else {
+                      ## See if band is stored in this object
+                      knownBands <- c("temperature", datanames)
+                      band <- band[1]
+                      i <- pmatch(band, knownBands)
+                      if (is.na(i))
+                          stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
+                      band <- knownBands[i]
+                      d <- x[[band, decimate]]
+                      if (is.na(pmatch(band, "temperature")))
+                          d[d == 0] <- NA  # only makes sense for count data
+                  }
               }
               dim <- dim(d)
               ##20140722c if ((is.logical(decimate) && decimate)) {

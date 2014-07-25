@@ -26,8 +26,12 @@
   \item{utm}{logical indicating whether to use UTS (easting and northing) instead
       of longitude and latitude on plot}
 
-  \item{col}{a function yielding colours, taking a single integer argument with
-      the desired number of colours.}
+  \item{col}{either a function yielding colours, taking a single integer
+      argument with the desired number of colours, or the string
+      \code{"natural"}, which combines the information in the \code{red},
+      \code{green} and \code{blue} bands and produces a natural-hue image.  In
+      the latter case, the band designation is ignored, and the object must
+      contain the three colour bands.}
 
   \item{band}{if given, the number of the band to plot (between 1 and 11 for
       Landsat-8), or the name of the band, one of: \code{"aerosol"},
