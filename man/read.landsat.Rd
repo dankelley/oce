@@ -32,15 +32,15 @@ read.landsat(file, band="all", debug=getOption("oceDebug"))
     it should be born in mind if \code{read.landsat} fails for a given dataset.
     
     For Landsat 8, there are 11 bands, with names \code{"aerosol"} (band 1),
-        \code{"blue"} (band 2), \code{"green"} (band 3), \code{"red"} (band 4),
-        \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band
-        7), \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9),
-            \code{"tirs1"} (band 10), and \code{"tirs2"} (band 11).
+    \code{"blue"} (band 2), \code{"green"} (band 3), \code{"red"} (band 4),
+    \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
+    \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9), \code{"tirs1"}
+    (band 10), and \code{"tirs2"} (band 11).
 
     For Landsat 7, there 8 bands, with names \code{"blue"} (band 1),
     \code{"green"} (band 2), \code{"red"} (band 3), \code{"nir"} (band 4),
-    \code{"swir1"} (band 5), \code{"tir"} (band 6), \code{"swir2"} (band 7) and
-        \code{"panchromatic"} (band 8).  
+    \code{"swir1"} (band 5), \code{"tir1"} (band 6A), \code{"tir2"} (band 6B),
+    \code{"swir2"} (band 7) and \code{"panchromatic"} (band 8).  
     
     For Landsat 4 and 5, the bands similar to Landsat 7 but without
     \code{"panchromatic"} (band 8).

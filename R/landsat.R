@@ -265,48 +265,46 @@ setMethod(f="plot",
                        "), decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
+              natural <- FALSE
               datanames <- names(x@data)
-              if (is.character(col)) {
+              if (which == 1 && is.character(col)) {
                   if (pmatch(col, "natural")) {
+                      natural <- TRUE
                       if ("red" %in% datanames && 
                           "green" %in% datanames && 
                           "blue" %in% datanames) {
-                          message("extracting red data")
-                          r <- x[["red"]]
+                          oceDebug(debug, "extracting red data")
+                          r <- x[["red", decimate]]
                           dim <- dim(r)
-                          message("extracting green data")
-                          g <- x[["green"]]
-                          message("extracting blue data")
-                          b <- x[["blue"]]
-                          message("construcing na matrix")
+                          oceDebug(debug, "extracting green data")
+                          g <- x[["green", decimate]]
+                          oceDebug(debug, "extracting blue data")
+                          b <- x[["blue", decimate]]
+                          oceDebug(debug, "construcing na matrix")
                           na <- r==0 & g==0 & b==0
                           ## Following is from Clark Richards
                           ## https://github.com/dankelley/oce/issues/502
-                          message("computing colours")
+                          oceDebug(debug, "computing colours")
                           colors <- rgb(r, g, b, maxColorValue=2^16-1)
-                          message("clearing space")
+                          oceDebug(debug, "clearing space")
                           rm(list=c("r", "g", "b")) # memory is likely tight
-                          message("finding unique colours")
+                          oceDebug(debug, "finding unique colours")
                           col <- unique(colors)
-                          message("matching colors")
+                          oceDebug(debug, "matching colors")
                           d <- array(match(colors, col), dim=dim)
                           ## > length(col)/prod(dim)
                           ## [1] 0.001553854
-                          message("colour compaction: ",floor(prod(dim)/length(col)))
+                          oceDebug(debug, "colour compaction: ",floor(prod(dim)/length(col)))
                           ## Do not NA out because then image chopped excessively;
                           ## Just leave black which is easier on the eye (although
                           ## deceptive).
                           if (FALSE) {
-                              message("NA-ing out")
+                              oceDebug(debug, "NA-ing out")
                               d[na] <- NA
                           }
-                          message("plotting image")
-                          imagep(d, col=col, decimate=TRUE, drawPalette=FALSE)
-                          title("TEST PLOT ONLY, NOT SCALED")
-                          message("done -- TEST CODE ONLY")
-                          return()
+                          oceDebug(debug, "finished constucting image")
                       } else {
-                          stop("cannot use col=\"natural\" unless landsat object holds \"red\", \"green\", and \"blue\" bands")
+                          stop("cannot use col=\"natural\" unless object has \"red\", \"green\", and \"blue\" bands")
                       }
                   } else {
                       stop("if 'col' is a string, it must be 'natural'")
@@ -369,15 +367,19 @@ setMethod(f="plot",
                       }
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
-                             z=d, asp=1, zlim=zlim, col=col, decimate=FALSE, debug=debug-1, ...)
+                             z=d, asp=1, zlim=zlim, col=col, decimate=FALSE, 
+                             drawPalette=!natural, debug=debug-1, ...)
                   } else {
                       if ("breaks" %in% names(list(...))) {
-                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=FALSE, debug=debug-1, ...)
+                          imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=FALSE, 
+                                 drawPalette=!natural, debug=debug-1, ...)
                       } else {
-                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=FALSE, debug=debug-1, ...)
+                          imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=FALSE, 
+                                 drawPalette=!natural, debug=debug-1, ...)
                       }
                   }
-                  mtext(band, side=3, adj=1, line=0, cex=1)
+                  if (!natural)
+                      mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
                   hist(d, xlab="Image value", main="", ...)
               } else {
@@ -456,20 +458,14 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
     }
     ## Band (L4TM, L5TM, and L7ETM+) names from http://landsat.usgs.gov/best_spectral_bands_to_use.php
     if ("LANDSAT_4" == spacecraft)  {
-        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir", "swir2") 
-        ##filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7") # FIXME: probably wrong
-        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B7") # FIXME: probably wrong
-        warning("landsat-4 file: not sure what to do with band 6")
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir1", "tir2", "swir2")
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7")
     } else if ("LANDSAT_5" == spacecraft)  {
-        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir", "swir2") 
-        ##filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7") # FIXME: probably wrong
-        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B7") # FIXME: probably wrong
-        warning("landsat-5 file: not sure what to do with band 6")
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir1", "tir2", "swir2")
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7")
     } else if ("LANDSAT_7" == spacecraft)  {
-        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir", "swir2", "panchromatic")
-        ##filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7", "B8") # FIXME: what about #6?
-        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B7", "B8") # FIXME: what about #6?
-        warning("landsat-7 file: not sure what to do with band 6")
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tir1", "tir2", "swir2", "panchromatic")
+        filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7", "B8")
     } else if ("LANDSAT_8" == spacecraft)  {
         bandnames <- c("aerosol", "blue", "green", "red", "nir", "swir1", "swir2", "panchromatic", "cirrus", "tirs1", "tirs2")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11")
@@ -504,9 +500,9 @@ read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
     headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     oceDebug(debug, "file type: ", header$spacecraft, "\n")
-
     ## convert to numerical bands (checks also that named bands are OK)
-    if (band == "all") {
+    bandOrig <- band
+    if (band[1] == "all") {
         band <- header$bandnames
     } else {
         band2 <- rep(NA, length(band))
@@ -524,7 +520,7 @@ read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
         }
         band <- band2
     }
-
+    oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
     rval@metadata <- header
     rval@metadata[["headerfilename"]] <- headerfilename
     ## Bandnames differ by satellite.
