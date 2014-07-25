@@ -20,16 +20,8 @@ setMethod(f="subset",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               rval <- x
-              if (length(grep("time", subsetString))) {
-                  keep <- eval(substitute(subset), x@data, parent.frame())
-                  rval@data$time <- x@data$time[keep]
-                  rval@data$longitude <- x@data$longitude[keep]
-                  rval@data$latitude <- x@data$latitude[keep]
-                  rval@data$salinity <- x@data$salinity[,keep]
-                  rval@data$temperature <- x@data$temperature[,keep]
-                  rval@data$pressure <- x@data$pressure[,keep]
-              } else if (length(grep("longitude", subsetString)) ||
-                         length(grep("latitude", subsetString))) {
+              if (length(grep("time", subsetString)) ||
+                  length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame())
                   rval@data$time <- x@data$time[keep]
                   rval@data$longitude <- x@data$longitude[keep]
