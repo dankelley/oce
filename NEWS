@@ -1,10 +1,11 @@
 0.9-15
+- drifterGrid() added
 - mapDirectionField() added
 - mapArrows() added
 - read.index() added
 - utm2lonlat() and lonlat2utm() added
-- landsat summary and plot improvements
-- change data(met) to be during Hurricane Juan
+- landsat summary and plot improvements, including landsat-7
+- data(met) changed to time of Hurricane Juan
 
 0.9-14
 - fix compile-time warning

@@ -15,11 +15,12 @@
   \item{p}{optional indication of the pressure levels to which interpolation
       should be done.  If this is not supplied, the pressure levels will be
       calculated based on the typical spacing in the ctd profiles stored within
-      \code{section}.  If a single numerical value is provided, it is taken as
-      a step for a seq() running from 0 to the maximum pressure (rounded to
-      that step).  If \code{p="levitus"}, then the levels are set to be those
-      of Levitus atlas, given by \code{\link{standardDepths}}, trimmed to the
-      maximum pressure in \code{section}.  If a list of numerical values is
+      \code{section}.  If \code{p="levitus"}, then pressures will be set to be
+      those of the Levitus atlas, given by \code{\link{standardDepths}},
+      trimmed to the maximum pressure in \code{section}.  If \code{p} is a
+      single numerical value, it is taken as the number of subdivisions to use
+      in a call to \code{\link{seq}} that has range from 0 to the maximum
+      pressure in \code{section}.  Finally, if a vector numerical values is
       provided, then it is used as is.}
 
   \item{method}{the method to use to decimate data within the stations; see

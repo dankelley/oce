@@ -1275,11 +1275,11 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 	if (length(p) == 1) {
 	    if (p=="levitus") {
 		pt <- standardDepths()
-                pt <- pt[pt < max(section[["pressure"]])]
+                pt <- pt[pt < max(section[["pressure"]], na.rm=TRUE)]
 	    } else {
                 if (!is.numeric(p))
                     stop("p must be numeric")
-                pMax <- max(section[["pressure"]])
+                pMax <- max(section[["pressure"]], na.rm=TRUE)
 		pt <- seq(0, pMax, p)
 	    }
 	} else {
