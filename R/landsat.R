@@ -88,7 +88,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
 
               if (!is.na(pmatch(i, "temperature"))) {
                   if (!missing(j) && j)
-                      warning("BUG: landsat[\"temperature\",", j, "] ignoring second argument", call.=FALSE)
+                      warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
                   if ("tirs1" %in% names(x@data)) {
                       if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_8") {
                           oceDebug(debug, "temperature for landsat-8\n")
@@ -105,7 +105,11 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                           na <- d == 0
                           rm(x) # may help if space is tight
                           Llambda <- ML * d + AL
+                          ## avoid warnings on the 0 Llambda values (from band gaps)
+                          options <- options('warn')
+                          options(warn=-1) 
                           d <- K2 / log(K1 / Llambda + 1)
+                          options(warn=options$warn) 
                           d <- d - 273.15
                           d[na] <- NA
                           dim(d) <- dim
@@ -126,7 +130,11 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                           na <- d == 0
                           rm(x) # may help if space is tight
                           Llambda <- ML * d + AL
+                          ## avoid warnings on the 0 Llambda values (from band gaps)
+                          options <- options('warn')
+                          options(warn=-1) 
                           d <- K2 / log(K1 / Llambda + 1)
+                          options(warn=options$warn) 
                           d <- d - 273.15
                           d[na] <- NA
                           dim(d) <- dim
