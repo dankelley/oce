@@ -881,7 +881,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
-        var <- gettext("absolute salinity", domain="R-oce")
+        var <- gettext("Absolute Salinity", domain="R-oce")
         unit <- gettext("g/kg", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")

@@ -1625,7 +1625,7 @@ msgstr ""
 msgid "Practical Salinity"
 msgstr "实用盐度"
 
-msgid "absolute salinity"
+msgid "Absolute Salinity"
 msgstr "绝对盐度"
 
 msgid "g/kg"

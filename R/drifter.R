@@ -15,6 +15,29 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="subset",
+          signature="drifter",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              if (length(grep("time", subsetString)) ||
+                  length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
+                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  rval@data$time <- x@data$time[keep]
+                  rval@data$longitude <- x@data$longitude[keep]
+                  rval@data$latitude <- x@data$latitude[keep]
+                  rval@data$salinity <- x@data$salinity[,keep]
+                  rval@data$temperature <- x@data$temperature[,keep]
+                  rval@data$pressure <- x@data$pressure[,keep]
+              } else {
+                  stop("may only subset by time, longitude, or latitude, and not by combinations")
+              }
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
+
 setMethod(f="summary",
           signature="drifter",
           definition=function(object, ...) {
@@ -31,12 +54,44 @@ setMethod(f="summary",
               processingLogShow(object)
           })
 
-##setMethod(f="[[",
-##          signature="drifter",
-##          definition=function(x, i, j, drop) {
-##              as(x, "oce")[[i, j, drop]]
-##          })
-
+drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
+{
+    oceDebug(debug, "drifterGrid() {\n", sep="", unindent=1)
+    dim <- dim(drifter@data$pressure)
+    ndepth <- dim[1]
+    nprofile <- dim[2]
+    ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
+    rval <- drifter
+    salinity <- drifter[["salinity"]]
+    temperature <- drifter[["temperature"]]
+    pressure <- drifter[["pressure"]]
+    if (missing(p)) {
+        pt <- apply(pressure, 1, median, na.rm=TRUE)
+    } else if (length(p) == 1 && p == "levitus") {
+        pt <- standardDepths()
+        pt <- pt[pt < max(pressure, na.rm=TRUE)]
+    } else if (is.numeric(p)) {
+        if (length(p) == 1) {
+            if (p < 1)
+                stop("'p' must exceed 1")
+            pt <- seq(0, max(pressure, na.rm=TRUE), length.out=p)
+        } else {
+            pt <- p
+        }
+    } else {
+        stop("value of 'p' must be numeric, or \"levitus\"")
+    }
+    ##message("pt=c(", paste(round(pt), collapse=","), ")")
+    rval@data$salinity <- matrix(0.0, ncol=nprofile, nrow=length(pt))
+    rval@data$temperature <- matrix(0.0, ncol=nprofile, nrow=length(pt))
+    rval@data$pressure <- matrix(0.0, ncol=nprofile, nrow=length(pt))
+    for (profile in 1:nprofile) {
+        rval@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
+        rval@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
+        rval@data$pressure[,profile] <- pt
+    }
+    rval
+}
 
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {

@@ -312,7 +312,9 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
-                              col=oceColorsPalette, debug=getOption("oceDebug"), ...)
+                              col=oceColorsPalette,
+                              showBandName=TRUE,
+                              debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.landsat(..., which=c(", paste(which, collapse=","),
                        "), decimate=", decimate,
@@ -435,7 +437,7 @@ setMethod(f="plot",
                                  drawPalette=!natural, debug=debug-1, ...)
                       }
                   }
-                  if (!natural)
+                  if (showBandName && !natural)
                       mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
                   hist(d, xlab="Image value", main="", ...)
