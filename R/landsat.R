@@ -338,7 +338,11 @@ setMethod(f="plot",
                           ## Following is from Clark Richards
                           ## https://github.com/dankelley/oce/issues/502
                           oceDebug(debug, "computing colours")
-                          colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                          if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_8") {
+                              colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                          } else {
+                              colors <- rgb(r, g, b, maxColorValue=2^8-1)
+                          }
                           oceDebug(debug, "clearing space")
                           rm(list=c("r", "g", "b")) # memory is likely tight
                           oceDebug(debug, "finding unique colours")
