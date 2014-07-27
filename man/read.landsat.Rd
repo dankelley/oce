@@ -7,7 +7,7 @@
 \description{Read a landsat data file, producing an object of type \code{landsat}.}
 
 \usage{
-read.landsat(file, band=1:11, debug=getOption("oceDebug"))
+read.landsat(file, band="all", debug=getOption("oceDebug"))
 }
 
 \arguments{
@@ -15,22 +15,35 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
   \item{file}{a connection or a character string giving the name of the file to
       load.  This is a directory name containing the data.}
 
-  \item{band}{the bands to read, by default all of the Landsat-8 bands.  See
-      \sQuote{Value} for the names of the bands.}
+  \item{band}{the bands to read, by default all of the bands.  See
+      \sQuote{Details} for the names of the bands.}
   
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-      amount of debugging information, or to 2 to get more.} }
+      amount of debugging information, or to 2 to get more.}
+}
 
 \details{The \code{tiff} package must be installed for this to work.
     
-    The function follows a strict file naming code that works for Landsat-8
-    datasets but may fail otherwise.  Also, it only works for detailed data (in
-    TIF format), not for preview data (in JPG format).
+    Landsat data are provided in directories that contain TIFF files and header
+    information, and \code{read.landsat} relies on a strict convention for the
+    names of the files in those directories.  Those file names were found by
+    inspection of some data, on the assumption that similar patterns will hold
+    for other datasets for any given satellite. This is a brittle approach and
+    it should be born in mind if \code{read.landsat} fails for a given dataset.
     
-    The bands are stored in the object with names "aerosol" (band 1), "blue"
-    (band 2), "green" (band 3), "red" (band 4), "nir" (band 5), "swir1" (band
-    6), "swir2" (band 7), "panchromatic" (band 8), "cirrus" (band 9), "tirs1"
-    (band 10), and "tirs2" (band 11).
+    For Landsat 8, there are 11 bands, with names \code{"aerosol"} (band 1),
+    \code{"blue"} (band 2), \code{"green"} (band 3), \code{"red"} (band 4),
+    \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
+    \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9), \code{"tirs1"}
+    (band 10), and \code{"tirs2"} (band 11).
+
+    For Landsat 7, there 8 bands, with names \code{"blue"} (band 1),
+    \code{"green"} (band 2), \code{"red"} (band 3), \code{"nir"} (band 4),
+    \code{"swir1"} (band 5), \code{"tir1"} (band 6A), \code{"tir2"} (band 6B),
+    \code{"swir2"} (band 7) and \code{"panchromatic"} (band 8).  
+    
+    For Landsat 4 and 5, the bands similar to Landsat 7 but without
+    \code{"panchromatic"} (band 8).
 
     See \code{\link{landsat-class}} for more information on the data storage
     scheme, and also on the bands and their processing.}
@@ -53,8 +66,12 @@ read.landsat(file, band=1:11, debug=getOption("oceDebug"))
     matrices if desired, e.g. to store calculated quantities.} 
 
 \seealso{See \code{\link{landsat-class}} for more information on \code{landsat}
-    objects.  A sample dataset named \code{landsat} is available in the
-    \code{ocedata} package.}
+    objects, especially band information.  Use \code{\link{landsatTrim}} to
+    trim Landsat objects geographically and \code{\link{landsatAdd}} to add new
+    ``bands.''  The accessor operator (\code{[[}) is used to access band
+    information, full or decimated, and to access certain derived quantities.
+    A sample dataset named \code{landsat} is available in the \code{ocedata}
+    package.}
 
 \author{Dan Kelley}
 

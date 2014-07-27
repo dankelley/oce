@@ -7,15 +7,16 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-//#define DEBUG // comment this out when working.
+// #define DEBUG // comment this out when working.
 
 /* 
 
 # Part 1: calculate bytes
 system("R CMD SHLIB landsat.c")
 dyn.load('landsat.so')
-m <- matrix(seq(0, 500/2^16, length.out=12), nrow=3, byrow=TRUE)
-r1 <- .Call("landsat_numeric_to_bytes", m)
+m <- matrix(seq(0, 1, length.out=256), nrow=8, byrow=FALSE)
+r1 <- .Call("landsat_numeric_to_bytes", m, 8)
+r2 <- .Call("landsat_numeric_to_bytes", m, 16)
 
 
 # Part 2: transpose and flip
@@ -91,7 +92,7 @@ SEXP landsat_transpose_flip(SEXP m)
   return(res);
 }
 
-SEXP landsat_numeric_to_bytes(SEXP m)
+SEXP landsat_numeric_to_bytes(SEXP m, SEXP bits)
 {
 
   int nrow = INTEGER(GET_DIM(m))[0];
@@ -100,16 +101,30 @@ SEXP landsat_numeric_to_bytes(SEXP m)
   Rprintf("landsat_numeric_to_bytes() given matrix with nrow %d and ncol %d\n",
       nrow, ncol);
 #endif
+  PROTECT(bits = AS_INTEGER(bits));
+  int *bitsp = INTEGER_POINTER(bits);
+  int two_byte = (*bitsp) > 8;
+#ifdef DEBUG
+  Rprintf("landsat_numeric_to_bytes has bits=%d\n", *bitsp);
+#endif
   SEXP lres;
   SEXP lres_names;
-  PROTECT(lres = allocVector(VECSXP, 2));
-  PROTECT(lres_names = allocVector(STRSXP, 2));
+
   SEXP lsb; // least-significant byte matrix
   PROTECT(lsb = allocMatrix(RAWSXP, nrow, ncol));
-  SEXP msb; // most-significant byte matrix
-  PROTECT(msb = allocMatrix(RAWSXP, nrow, ncol));
   unsigned char* lsbp = RAW_POINTER(lsb);
+  SEXP msb; // most-significant byte matrix
+  if (two_byte)
+    PROTECT(msb = allocMatrix(RAWSXP, nrow, ncol));
+  else
+    PROTECT(msb = allocVector(RAWSXP, 1));
   unsigned char* msbp = RAW_POINTER(msb);
+  if (!two_byte)
+    *msbp = 0;
+
+  PROTECT(lres = allocVector(VECSXP, 2));
+  PROTECT(lres_names = allocVector(STRSXP, 2));
+
   // Check endianness
   unsigned int x = 1;
   char *c = (char*) &x;
@@ -121,29 +136,56 @@ SEXP landsat_numeric_to_bytes(SEXP m)
   double *mp = REAL(m);
   // No need to index by i and j here; this will speed up
   int n = nrow * ncol;
-  if (little_endian) {
-    for (int i = 0; i < n; i++) {
-      double mij = mp[i];
-      int mij_int = (int)(65535*mij);
-      unsigned char ms = (mij_int & 0xFF00) >> 8;
-      unsigned char ls = mij_int & 0x00FF;
+  if (two_byte) {
+    if (little_endian) {
+      for (int i = 0; i < n; i++) {
+	double mij = mp[i];
+	unsigned int mij_int = (unsigned int)(65535*mij);
+	unsigned char ms = (mij_int & 0xFF00) >> 8;
+	unsigned char ls = mij_int & 0x00FF;
 #ifdef DEBUG
-      Rprintf("i %d, m: %f -> %d -> msb 0x%02d lsb 0x%02d (little endian)\n", i, mij, mij_int, ms, ls);
+	Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little endian two-byte)\n", i, mij, mij_int, ms, ls);
 #endif
-      lsbp[i] = ls;
-      msbp[i] = ms;
-    }
+	lsbp[i] = ls;
+	msbp[i] = ms;
+      }
+    } else {
+      // big endian below
+      for (int i = 0; i < n; i++) {
+	double mij = mp[i];
+	unsigned int mij_int = (unsigned int)(65535*mij);
+	unsigned char ls = (mij_int & 0xFF00) >> 8;
+	unsigned char ms = mij_int & 0x00FF;
+#ifdef DEBUG
+	Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (big endian two-byte)\n", i, mij, mij_int, ms, ls);
+#endif
+	lsbp[i] = ls;
+	msbp[i] = ms;
+      }
+   }
   } else {
-    for (int i = 0; i < n; i++) {
-      double mij = mp[i];
-      int mij_int = (int)(65535*mij);
-      unsigned char ls = (mij_int & 0xFF00) >> 8;
-      unsigned char ms = mij_int & 0x00FF;
+    // !two_byte: msb is scalar 0; just fill up lsb
+    if (little_endian) {
+      for (int i = 0; i < n; i++) {
+	double mij = mp[i];
+	unsigned int mij_int = (unsigned int)(255*mij);
+	unsigned char ls = mij_int; // & 0xFF00;
 #ifdef DEBUG
-      Rprintf("i %d, m: %f -> %d -> msb 0x%02d lsb 0x%02d (big endian)\n", i, mij, mij_int, ms, ls);
+	Rprintf("i=%d   %f -> %d -> lsb 0x%02x (little endian one-byte)\n", i, mij, mij_int, ls);
 #endif
-      lsbp[i] = ls;
-      msbp[i] = ms;
+	lsbp[i] = ls;
+      }
+    } else {
+      // big endian
+      for (int i = 0; i < n; i++) {
+	double mij = mp[i];
+	unsigned int mij_int = (unsigned int)(255*mij);
+	unsigned char ls = mij_int; // & 0x00FF;
+#ifdef DEBUG
+	Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian one-byte)\n", i, mij, mij_int, ls);
+#endif
+	lsbp[i] = ls;
+      }
     }
   }
   SET_VECTOR_ELT(lres, 0, lsb);
@@ -151,6 +193,6 @@ SEXP landsat_numeric_to_bytes(SEXP m)
   SET_VECTOR_ELT(lres, 1, msb);
   SET_STRING_ELT(lres_names, 1, mkChar("msb"));
   setAttrib(lres, R_NamesSymbol, lres_names);
-  UNPROTECT(4);
+  UNPROTECT(5);
   return(lres);
 }

@@ -103,6 +103,22 @@
 
 }
 
+\section{Data storage}{Experts may need to get direct access to the data, and
+    this is easy because all Landsat objects (regardless of satellite) use a
+    similar storage form.  Band information is stored in byte form, to conserve
+    space.  Two bytes are used for each pixel in Landsat-8 objects, with just
+    one for other objects.  For example, if a Landsat-8 object named \code{L}
+    contains the \code{tirs1} band, the most- and least-significant bytes will
+    be stored in matrices \code{L@data$tirs1$msb} and \code{L@data$tirs1$lsb}.
+    A similar Landsat-7 object would have the same items, but \code{msb} would
+    be just the value \code{0x00}.  
+    
+    Derived bands, which may be added to a landsat object with
+    \code{\link{landsatAdd}}, are not stored in byte matrices.  Instead they
+    are stored in numerical matrices, which means that they use 4X more storage
+    space for Landsat-8 images, and 8X more storage space for other satellites.
+    A computer needs at least 8GB of RAM to work with such data.}
+
 \seealso{A file containing Landsat data may be read with
     \code{\link{read.landsat}} or \code{\link{read.oce}}, and one such file is
     provided by the \code{ocedata} package as a dataset named \code{landsat}.
@@ -125,6 +141,8 @@
 5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
 
 6. \url{http://landsat.usgs.gov/Landsat8_Using_Product.php}
+
+7. \url{http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf}
 
 }
 
