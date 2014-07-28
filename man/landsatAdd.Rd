@@ -3,9 +3,9 @@
 
 \alias{landsatAdd}
 
-\title{Trim a landsat image to a lat-lon box}
+\title{Add a band to a landsat image}
 
-\description{Trim a landsat image to a lat-lon box.}
+\description{Add a band to a landsat image}
 
 \usage{landsatAdd(x, data, name, debug=getOption("oceDebug"))}
 
@@ -21,7 +21,7 @@
 }
 
 \details{This may be used to add new ``bands'' to a landsat object.  These are stored differently
-  than the real bands.  Real bands are stored with two byte matrices (see
+  than the real bands.  Real bands are stored in one or two byte (raw)  matrices (see
   \code{\link{landsat-class}}) but added bands are conventional numerical matrices.  See examples.}
   
 \value{An object of \code{\link[base]{class}} \code{"landsat"}, with a new ``band''.}
