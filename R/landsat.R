@@ -124,9 +124,9 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       oceDebug(debug, "AL=", AL, "# @metadata$header$radiance_add_band_6_vcid_1\n")
                       oceDebug(debug, "K1=", K1, "# Landsat7_Handbook.pdf Table 11.5")
                       oceDebug(debug, "K2=", K2, "# Landsat7_Handbook.pdf Table 11.5")
-                      ## d <- 256L*as.integer(x@data$tirsA$msb) + as.integer(x@data$tirsA$lsb)
-                      d <- as.integer(x@data$tirsA$lsb)
-                      dim <- dim(x@data$tirsA$lsb)
+                      ## d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
+                      d <- as.integer(x@data$tirs1$lsb)
+                      dim <- dim(x@data$tirs1$lsb)
                       na <- d == 0
                       rm(x) # may help if space is tight
                       Llambda <- ML * d + AL
@@ -463,14 +463,10 @@ setMethod(f="plot",
                   }
               } else {
                   if (missing(band)) {
-                      if ("tirs1" %in% names(x@data)) {
+                      if ("tirs1" %in% names(x@data)) { # different meanings landsat-8 and previous
                           oceDebug(debug, "using tirs1\n")
                           d <- x[["tirs1", decimate]]
                           band <- "tirs1"
-                      } else if ("tirsA" %in% names(x@data)) {
-                          oceDebug(debug, "using tirsA\n")
-                          d <- x[["tirsA", decimate]]
-                          band <- "tirsA"
                       }  else {
                           oceDebug(debug, "using band named", datanames[1], "\n")
                           d <- x[[datanames[1], decimate]]
@@ -615,13 +611,13 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
     }
     ## Band (L4TM, L5TM, and L7ETM+) names from http://landsat.usgs.gov/best_spectral_bands_to_use.php
     if ("LANDSAT_4" == spacecraft)  {
-        bandnames <- c("blue", "green", "red", "nir", "swir1", "tirsA", "tirsB", "swir2")
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7")
     } else if ("LANDSAT_5" == spacecraft)  {
-        bandnames <- c("blue", "green", "red", "nir", "swir1", "tirsA", "tirsB", "swir2")
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7")
     } else if ("LANDSAT_7" == spacecraft)  {
-        bandnames <- c("blue", "green", "red", "nir", "swir1", "tirsA", "tirsB", "swir2", "panchromatic")
+        bandnames <- c("blue", "green", "red", "nir", "swir1", "tirs1", "tirs2", "swir2", "panchromatic")
         filesuffices <- c("B1", "B2", "B3", "B4", "B5", "B6_VCID_1", "B6_VCID_2", "B7", "B8")
     } else if ("LANDSAT_8" == spacecraft)  {
         bandnames <- c("aerosol", "blue", "green", "red", "nir", "swir1", "swir2", "panchromatic", "cirrus", "tirs1", "tirs2")

@@ -60,10 +60,12 @@
     \emph{LANDSAT 7}
 
     Band information is as follows (from [8]).  The names are not official, but
-    are just set up to roughly Landsat-8 names, according to wavelength.  The
-    bands named \code{tirsA} and \code{tirsB} for Landsat-7 are at two
-    different gain settings, with wavelength spanning the range of \code{tirs1}
-    and \code{tirs2} combined, for Landsat-8.
+    are just set up to roughly Landsat-8 names, according to wavelength.  An
+    exception is the Landsat-7 bands named \code{tirs1} and \code{tirs2}, which
+    are at two different gain settings, with identical wavelength span for
+    each, which roughly matches the range of the Landsat-8 bands \code{tirs1}
+    and \code{tirs2} combined.  This may seem confusing, but it lets code like
+    \code{plot(im, band="tirs1")} to work with both Landsat-8 and Landsat-7.
 
 \preformatted{
 .------------------------------------------------------------------------------.
@@ -75,8 +77,8 @@
 |    3 | Red                       | red          |  0.63 -  0.69 |         30 |
 |    4 | Near IR                   | nir          |  0.77 -  0.90 |         30 |
 |    5 | SWIR                      | swir1        |  1.55 -  1.75 |         30 |
-|    6 | Thermal IR                | tirsA        | 10.4  - 12.50 |         30 |
-|    7 | Thermal IR                | tirsB        | 10.4  - 12.50 |         30 |
+|    6 | Thermal IR                | tirs1        | 10.4  - 12.50 |         30 |
+|    7 | Thermal IR                | tirs2        | 10.4  - 12.50 |         30 |
 |    8 | SWIR                      | swir2        |  2.09 -  2.35 |         30 |
 |    9 | Panchromatic              | panchromatic |  0.52 -  0.90 |         15 |
 .------------------------------------------------------------------------------.
