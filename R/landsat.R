@@ -336,7 +336,7 @@ setMethod(f="plot",
                           ## do not use green directly with Terralook algorithm (see below)
                           ## g <- x[["green", decimate]]
                           g23 <- 2 / 3 * x[["green", decimate]]
-                          oceDebug(debug, "range(green): ", paste(range(g), collapse=" to "), "\n")
+                          oceDebug(debug, "range(green): ", paste(range(g23), collapse=" to "), "\n")
                           oceDebug(debug, "extracting blue data\n")
                           ## do not use blue for Terralook algorithm (see below)
                           ## b <- x[["blue", decimate]]
@@ -351,13 +351,8 @@ setMethod(f="plot",
                           ##  red <- r
                           ##  green <- 2/3*g + 1/3*nir
                           ##  blue <- 2/3*g - 1/3*nir
-                          if (TRUE) { # two variants, depending on how terralook doc is read (math or computer)
-                              b <- g23 - nir3 # Note order of this and next line
-                              g <- g23 + nir3 # Note order of this and previous line
-                          } else {
-                              g <- g23 + nir3 # Note order of this and previous line
-                              b <- g23 - nir3 # Note order of this and next line
-                          }
+                          b <- g23 - nir3 # Note order of this and next line
+                          g <- g23 + nir3 # Note order of this and previous line
                           g[g<0] <- 0
                           b[b<0] <- 0
 
@@ -366,97 +361,7 @@ setMethod(f="plot",
                           oceDebug(debug, "computing colours\n")
                           if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_8") {
                               oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
-                              ## DEBUG: landsat=1 or 2 or 3 ...
-                              if (is.null(getOption("landsat")) || 
-                                          1==getOption("landsat", 0)) { # first method tried
-                                  message("landsat==1 so doing the natural thing")
-                                  colors <- rgb(r, g, b, maxColorValue=2^16-1)
-                              }
-                              if (2==getOption("landsat", 0)) { # trim to highest value (unhelpful)
-                                  message("landsat==2 so trimming R,G,B to overall max")
-                                  max <- max(c(r,g,b))
-                                  colors <- rgb(r, g, b, maxColorValue=max)
-                              }
-                              if (3==getOption("landsat", 0)) {
-                                  message("landsat==3 so trimming R,G,B to overall range")
-                                  range <- range(c(r[r>0], g[g>0], b[b>0]))
-                                  oceDebug(debug, "range:", paste(range, collapse="-"), "\n")
-                                  oceDebug(debug, "mean(nonzero r):", mean(r[r>0]), "\n")
-                                  oceDebug(debug, "mean(nonzero g):", mean(g[g>0]), "\n")
-                                  oceDebug(debug, "mean(nonzero b):", mean(b[b>0]), "\n")
-                                  oceDebug(debug, "sd(nonzero r):", round(sd(r[r>0])), "\n")
-                                  oceDebug(debug, "sd(nonzero g):", round(sd(g[g>0])), "\n")
-                                  oceDebug(debug, "sd(nonzero b):", round(sd(b[b>0])), "\n")
-                                  rr <- as.integer(255L * (r - range[1]) / diff(range))
-                                  gg <- as.integer(255L * (g - range[1]) / diff(range))
-                                  bb <- as.integer(255L * (b - range[1]) / diff(range))
-                                  ## trim the negatives
-                                  rr[rr<0] <- 0
-                                  gg[gg<0] <- 0
-                                  bb[bb<0] <- 0
-                                  oceDebug(debug, "rrrange:", paste(range(rr), collapse="-"), "\n")
-                                  oceDebug(debug, "ggrange:", paste(range(gg), collapse="-"), "\n")
-                                  oceDebug(debug, "bbrange:", paste(range(bb), collapse="-"), "\n")
-                                  colors <- rgb(rr, gg, bb, max=255)
-                              }
-                              if (4==getOption("landsat", 0)) { # trim to individual ranges
-                                  message("landsat==4 so trimming R,G,B to individual ranges")
-                                  rrange <- range(r[r>0])
-                                  grange <- range(g[g>0])
-                                  brange <- range(b[b>0])
-                                  oceDebug(debug, "rrange:", paste(rrange, collapse="-"), "\n")
-                                  oceDebug(debug, "grange:", paste(grange, collapse="-"), "\n")
-                                  oceDebug(debug, "brange:", paste(brange, collapse="-"), "\n")
-                                  rr <- as.integer(255L * (r - rrange[1]) / diff(rrange))
-                                  gg <- as.integer(255L * (g - grange[1]) / diff(grange))
-                                  bb <- as.integer(255L * (b - brange[1]) / diff(brange))
-                                  ## trim the negatives
-                                  rr[r==0] <- 0
-                                  gg[g==0] <- 0
-                                  bb[b==0] <- 0
-                                  oceDebug(debug, "rrrange:", paste(range(rr), collapse="-"), "\n")
-                                  oceDebug(debug, "ggrange:", paste(range(gg), collapse="-"), "\n")
-                                  oceDebug(debug, "bbrange:", paste(range(bb), collapse="-"), "\n")
-                                  colors <- rgb(rr/10, gg, bb/10, max=255)
-                              }
-                              if (5==getOption("landsat", 0)) { # trim to individual ranges
-                                  message("landsat==5 so ad-hoc trimming R,G,B")
-                                  rv <- quantile(r[r>0],c(.5,0.90))
-                                  ##   5%  95% 
-                                  ## 6623 9764 
-                                  rvr <- diff(rv)
-                                  ## 1954
-                                  gv <- quantile(g[g>0],c(.1,0.90))
-                                  ##   5%  95% 
-                                  ## 7513 9944 
-                                  gvr <- diff(gv)
-                                  ## 1898
-                                  bv <- quantile(b[b>0],c(.1,0.90))
-                                  ##    5%   95% 
-                                  ##  8244 10395 
-                                  bvr <- diff(bv)
-                                  ## 1741
-                                  ## below from inspection of histograms
-                                  rr <- as.integer(255L * (r - 6600) / (8400-6600))
-                                  gg <- as.integer(255L * (g - 7500) / (8600-5700))
-                                  bb <- as.integer(255L * (b - 8200) / (9300-8200))
-                                  
-                                  rr <- as.integer(255L * (r - 6600) / (8400-6600))
-                                  gg <- as.integer(255L * (g - 7500) / (8600-5700))
-                                  bb <- as.integer(255L * (b - 8200) / (9900-8200))
-
-                                  ## trim the negatives
-                                  rr[rr<0] <- 0
-                                  gg[gg<0] <- 0
-                                  bb[bb<0] <- 0
-                                  rr[rr>255] <- 255
-                                  gg[gg>255] <- 255
-                                  bb[bb>255] <- 255
-                                  oceDebug(debug, "rrrange:", paste(range(rr), collapse=" "), "\n")
-                                  oceDebug(debug, "ggrange:", paste(range(gg), collapse=" "), "\n")
-                                  oceDebug(debug, "bbrange:", paste(range(bb), collapse=" "), "\n")
-                                  colors <- rgb(rr, gg, bb, max=255)
-                              }
+                              colors <- rgb(r, g, b, maxColorValue=2^16-1)
                           } else {
                               oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
                               colors <- rgb(r, g, b, maxColorValue=2^8-1)
