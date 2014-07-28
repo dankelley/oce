@@ -236,6 +236,9 @@ setMethod(f="plot",
           definition=function(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
                               col=oceColorsPalette,
                               showBandName=TRUE,
+                              alpha.f=1, red.f=2, green.f=2, blue.f=4,
+                              offset=c(0, 0, 0, 0),
+                              transform=diag(c(red.f, green.f, blue.f, alpha.f)),
                               debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.landsat(..., which=c(", paste(which, collapse=","),
@@ -306,6 +309,12 @@ setMethod(f="plot",
                               oceDebug(debug, "NA-ing out\n")
                               d[na] <- NA
                           }
+                          oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
+                          col <- adjustcolor(col, alpha.f=alpha.f,
+                                             red.f=red.f, green.f=green.f, blue.f=blue.f,
+                                             offset=offset,
+                                             transform=transform)
+                          oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
                           oceDebug(debug, "finished constucting image\n")
                           #imagep(d, col=adjustcolor(col,red.f=2.5,green.f=2.5,blue.f=6))
                           ## imagep(d, col=col) # FIXME: delete

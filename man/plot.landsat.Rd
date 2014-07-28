@@ -9,7 +9,11 @@
 \description{Plot landsat data.}
 
 \usage{\S4method{plot}{landsat}(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
-    col=oceColorsPalette, showBandName=TRUE, debug=getOption("oceDebug"), \dots)
+    col=oceColorsPalette, showBandName=TRUE,
+    alpha.f=1, red.f=2, green.f=2, blue.f=4,
+    offset=c(0, 0, 0, 0),
+    transform=diag(c(red.f, green.f, blue.f, alpha.f)),
+    debug=getOption("oceDebug"), \dots)
 }
 \arguments{
 
@@ -50,6 +54,25 @@
 
   \item{showBandName}{if \code{TRUE}, the band name is plotted in the top
       margin, near the right-hand side.}
+
+
+  \item{alpha.f}{argument used if \code{col="natural"}, to adjust colours
+      with \code{\link{adjustcolor}}}
+
+  \item{red.f}{argument used if \code{col="natural"}, to adjust colours
+      with \code{\link{adjustcolor}}}
+
+  \item{green.f}{argument used if \code{col="natural"}, to adjust colours
+      with \code{\link{adjustcolor}}}
+
+  \item{blue.f}{argument used if \code{col="natural"}, to adjust colours
+      with \code{\link{adjustcolor}}}
+
+  \item{offset}{argument used if \code{col="natural"}, to adjust colours with
+      \code{\link{adjustcolor}}}
+
+  \item{transform}{argument used if \code{col="natural"}, to adjust colours
+      with \code{\link{adjustcolor}}}
   
   \item{debug}{set to a positive value to get debugging information during
       processing.}
@@ -65,12 +88,29 @@
     land, the histogram will be double-lobed, and so quick examination can help
     in setting a good value for \code{zlim}.  Using \code{zlim="histogram"} is
     probably the fastest way to explore an image for detail, but it is
-    important to bear in mind that it yields a nonlinear colourscale.}
+    important to bear in mind that it yields a nonlinear colourscale.
+
+    Setting \code{col="natural"} creates a colour scale that tends to make the
+    ocean blue and forests green, etc.  It is \emph{not} created from the red,
+    green and blue channels of the satellite, because the blue channel tends to
+    provide little information (as for a far-away mountain).  Rather, it is
+    created using the ``terralook'' method used by USGS (reference 1), in which
+    the red channel is sued as-is, but an artificial green channel is created
+    from 2/3 times the actual green channel, plus 1/3 times the NIR channel,
+    and an artificial blue channel is 2/3 times the actual green channel minus
+    1/3 times the NIR channel.  Thus, for obvious reason, this requires that
+    the image contains these three channels.  The arguments \code{red.f}, etc.
+    can be used to adjust the colour of the image, with the default values
+    provided here seeming to work in early tests, but subject to change through
+    the summer of 2014. 
+}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing
     with them.  The \code{ocedata} package provides a dataset named
     \code{landsat}.}
+
+\references{1. \url{http://terralook.cr.usgs.gov/what_is_terralook.php}}
 
 \examples{
 \dontrun{
