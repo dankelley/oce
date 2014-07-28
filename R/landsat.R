@@ -89,7 +89,8 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
               if (!is.na(pmatch(i, "temperature"))) {
                   if (!missing(j) && j)
                       warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
-                  if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_8") {
+                  spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
+                  if (spacecraft == "LANDSAT_8") {
                       oceDebug(debug, "temperature for landsat-8\n")
                       ML <- x@metadata$header$radiance_mult_band_10
                       AL <- x@metadata$header$radiance_add_band_10
@@ -113,7 +114,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d[na] <- NA
                       dim(d) <- dim
                       return(d)
-                  } else if (x@metadata$spacecraft == "LANDSAT_7") {
+                  } else if (spacecraft == "LANDSAT_7") {
                       ## band 6, tirs1
                       oceDebug(debug, "temperature for landsat-7\n")
                       ML <- x@metadata$header$radiance_mult_band_6_vcid_1
@@ -139,7 +140,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d[na] <- NA
                       dim(d) <- dim
                       return(d)
-                  } else if (x@metadata$spacecraft == "LANDSAT_5") {
+                  } else if (spacecraft == "LANDSAT_5") {
                       ## band 6, tirs1
                       message("FIXME: should handle temperature for landsat-5\n")
                       K1 <- 607.76     # Landsat7_Handbook.pdf Table 11.5
@@ -325,19 +326,41 @@ setMethod(f="plot",
                       natural <- TRUE
                       if ("red" %in% datanames && 
                           "green" %in% datanames && 
-                          "blue" %in% datanames) {
+                          ##"blue" %in% datanames) {
+                          "nir" %in% datanames) {
                           oceDebug(debug, "extracting red data\n")
                           r <- x[["red", decimate]]
                           oceDebug(debug, "range(red): ", paste(range(r), collapse=" to "), "\n")
                           dim <- dim(r)
                           oceDebug(debug, "extracting green data\n")
-                          g <- x[["green", decimate]]
+                          ## do not use green directly with Terralook algorithm (see below)
+                          ## g <- x[["green", decimate]]
+                          g23 <- 2 / 3 * x[["green", decimate]]
                           oceDebug(debug, "range(green): ", paste(range(g), collapse=" to "), "\n")
                           oceDebug(debug, "extracting blue data\n")
-                          b <- x[["blue", decimate]]
-                          oceDebug(debug, "range(blue): ", paste(range(b), collapse=" to "), "\n")
+                          ## do not use blue for Terralook algorithm (see below)
+                          ## b <- x[["blue", decimate]]
+                          ## oceDebug(debug, "range(blue): ", paste(range(b), collapse=" to "), "\n")
+                          nir3 <- x[["nir", decimate]]/3
+                          oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
                           oceDebug(debug, "constructing na matrix\n")
-                          na <- r==0 & g==0 & b==0
+                          na <- r==0 && g23==0 && nir3==0
+
+                          ## terralook algorithm
+                          ## http://terralook.cr.usgs.gov/what_is_terralook.php
+                          ##  red <- r
+                          ##  green <- 2/3*g + 1/3*nir
+                          ##  blue <- 2/3*g - 1/3*nir
+                          if (TRUE) { # two variants, depending on how terralook doc is read (math or computer)
+                              b <- g23 - nir3 # Note order of this and next line
+                              g <- g23 + nir3 # Note order of this and previous line
+                          } else {
+                              g <- g23 + nir3 # Note order of this and previous line
+                              b <- g23 - nir3 # Note order of this and next line
+                          }
+                          g[g<0] <- 0
+                          b[b<0] <- 0
+
                           ## Following is from Clark Richards
                           ## https://github.com/dankelley/oce/issues/502
                           oceDebug(debug, "computing colours\n")
@@ -456,7 +479,7 @@ setMethod(f="plot",
                           }
                           oceDebug(debug, "finished constucting image\n")
                       } else {
-                          stop("cannot use col=\"natural\" unless object has \"red\", \"green\", and \"blue\" bands")
+                          stop("cannot use col=\"natural\" unless object has \"red\", \"green\", and \"nir\" bands")
                       }
                   } else {
                       stop("if 'col' is a string, it must be 'natural'")
