@@ -22,6 +22,8 @@
     matrix of raw values.  The results may be combined as e.g.
     \code{256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb)}, and
     this is what is returned by executing \code{x[["aerosol"]]}.
+
+    \emph{lANDSAT 8}
     
     Band information is as follows (see Reference 2 for more information).
 \preformatted{
@@ -46,23 +48,41 @@
     Band 8 is panchromatic, and has the highest resolution, so this is the
     default used in \code{\link{plot.landsat}}. Note that \code{tirs1} and
     \code{tirs2} are subsampled to 30m in the data stream, but the true
-    resolution is as stated above.
-
-    See Reference [3] for information about the evolution of Landsat 8
-    calibration coefficients, which as of summer 2014 are still subject to
-    change.
+    resolution is as stated above.  See Reference [3] for information about the
+    evolution of Landsat 8 calibration coefficients, which as of summer 2014
+    are still subject to change.
 
     See Reference [4] for a blog posting about inferring temperature from the
     \code{tirs1} band, and Reference [5] for another posting about ocean
     surface emissivity (not taken into account in reference [4]).
 
-    Landsat data files typically occupy approximately a gigabyte of storage.
-    That means that corresponding Oce objects are about the same size, and this
-    can pose significant problems on computers with less than 8GB of memory.
-    It is sensible to specify bands of interest when reading data with
-    \code{\link{read.landsat}}, and also to use \code{\link{landsatTrim}} to
-    isolate geographical regions that need processing.
 
+    \emph{LANDSAT 7}
+
+    Band information is as follows (from [8]).  The names are not official, but
+    are just set up to roughly Landsat-8 names, according to wavelength.  An
+    exception is the Landsat-7 bands named \code{tirs1} and \code{tirs2}, which
+    are at two different gain settings, with identical wavelength span for
+    each, which roughly matches the range of the Landsat-8 bands \code{tirs1}
+    and \code{tirs2} combined.  This may seem confusing, but it lets code like
+    \code{plot(im, band="tirs1")} to work with both Landsat-8 and Landsat-7.
+
+\preformatted{
+.------------------------------------------------------------------------------.
+| Band | Band                      | Band         | Wavelength    | Resolution |
+| No.  | Contents                  | Name         | (micrometers) |   (meters) |
+|------+---------------------------+--------------+---------------+------------|
+|    1 | Blue                      | blue         |  0.45 -  0.52 |         30 |
+|    2 | Green                     | green        |  0.52 -  0.60 |         30 |
+|    3 | Red                       | red          |  0.63 -  0.69 |         30 |
+|    4 | Near IR                   | nir          |  0.77 -  0.90 |         30 |
+|    5 | SWIR                      | swir1        |  1.55 -  1.75 |         30 |
+|    6 | Thermal IR                | tirs1        | 10.4  - 12.50 |         30 |
+|    7 | Thermal IR                | tirs2        | 10.4  - 12.50 |         30 |
+|    8 | SWIR                      | swir2        |  2.09 -  2.35 |         30 |
+|    9 | Panchromatic              | panchromatic |  0.52 -  0.90 |         15 |
+.------------------------------------------------------------------------------.
+}
 }
 
 \section{Methods}{
@@ -103,15 +123,23 @@
 
 }
 
-\section{Data storage}{Experts may need to get direct access to the data, and
-    this is easy because all Landsat objects (regardless of satellite) use a
-    similar storage form.  Band information is stored in byte form, to conserve
-    space.  Two bytes are used for each pixel in Landsat-8 objects, with just
-    one for other objects.  For example, if a Landsat-8 object named \code{L}
-    contains the \code{tirs1} band, the most- and least-significant bytes will
-    be stored in matrices \code{L@data$tirs1$msb} and \code{L@data$tirs1$lsb}.
-    A similar Landsat-7 object would have the same items, but \code{msb} would
-    be just the value \code{0x00}.  
+\section{Data storage}{Landsat data files typically occupy approximately a
+    gigabyte of storage.  That means that corresponding Oce objects are about
+    the same size, and this can pose significant problems on computers with
+    less than 8GB of memory.  It is sensible to specify bands of interest when
+    reading data with \code{\link{read.landsat}}, and also to use
+    \code{\link{landsatTrim}} to isolate geographical regions that need
+    processing.
+    
+    Experts may need to get direct access to the data, and this is easy because
+    all Landsat objects (regardless of satellite) use a similar storage form.
+    Band information is stored in byte form, to conserve space.  Two bytes are
+    used for each pixel in Landsat-8 objects, with just one for other objects.
+    For example, if a Landsat-8 object named \code{L} contains the \code{tirs1}
+    band, the most- and least-significant bytes will be stored in matrices
+    \code{L@data$tirs1$msb} and \code{L@data$tirs1$lsb}.  A similar Landsat-7
+    object would have the same items, but \code{msb} would be just the value
+    \code{0x00}.  
     
     Derived bands, which may be added to a landsat object with
     \code{\link{landsatAdd}}, are not stored in byte matrices.  Instead they
@@ -144,6 +172,7 @@
 
 7. \url{http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf}
 
+8. \url{http://landsat.usgs.gov/band_designations_landsat_satellites.php}
 }
 
 \author{Dan Kelley}
