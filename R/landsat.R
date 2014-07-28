@@ -183,9 +183,8 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       jlook <- seq.int(1, dim[2], by=decimate)
                       if (isList) {
                           lsb <- lsb[ilook, jlook] # rewrite in place, possibly saving memory
-                          rval <- as.integer(lsb)
-                          if (!is.null(dim(msb))) 
-                              rval <- 256L*as.integer(msb[ilook,jlook]) + rval
+                          rval <- if (is.null(dim(msb))) as.integer(lsb) else
+                              256L*as.integer(msb[ilook,jlook]) + as.integer(lsb)
                           dim(rval) <- dim(lsb)
                           return(rval)
                       } else {
@@ -783,7 +782,7 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     for (b in seq_along(x@data)) {
         oceDebug(debug, "Trimming band", x@metadata$bands[b], "\n")
         isList <- is.list(x@data[[b]])
-        dim <- if (isList) dim(x@data[[b]]$msb) else dim(x@data[[b]])
+        dim <- if (isList) dim(x@data[[b]]$lsb) else dim(x@data[[b]])
         ilim <- round(c(1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ll$longitude-x@metadata$lllon),
                         1+(dim[1]-1)/(x@metadata$urlon-x@metadata$lllon)*(ur$longitude-x@metadata$lllon)))
         ilim[1] <- max(1, ilim[1])
@@ -807,7 +806,8 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
                  jlim[1]/dim[2], " to ", jlim[2]/dim[2], sep="", "\n")
         if (isList) {
-            x@data[[b]]$msb <- x@data[[b]]$msb[seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
+            if (!is.null(dim(x@data[[b]]$msb)))
+                x@data[[b]]$msb <- x@data[[b]]$msb[seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
             x@data[[b]]$lsb <- x@data[[b]]$lsb[seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
         } else {
             x@data[[b]] <- x@data[[b]][seq.int(ilim[1], ilim[2]), seq.int(jlim[1], jlim[2])]
