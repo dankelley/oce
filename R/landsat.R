@@ -113,6 +113,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d <- d - 273.15
                       d[na] <- NA
                       dim(d) <- dim
+                      oceDebug(debug, "} # landsat [[\n", unindent=1)
                       return(d)
                   } else if (spacecraft == "LANDSAT_7") {
                       ## band 6, tirs1
@@ -139,6 +140,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d <- d - 273.15
                       d[na] <- NA
                       dim(d) <- dim
+                      oceDebug(debug, "} # landsat [[\n", unindent=1)
                       return(d)
                   } else if (spacecraft == "LANDSAT_5") {
                       ## band 6, tirs1
@@ -162,7 +164,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   if (!is.na(ii))
                       i <- ii
               }
-              ##message("ii:", ii, " after")
+              oceDebug(getOption("oceDebug"), "band:", iorig, "\n")
               isList <- is.list(x@data[[i]])
               if (isList) {
                   msb <- x@data[[i]]$msb
@@ -187,8 +189,10 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                           rval <- if (is.null(dim(msb))) as.integer(lsb) else
                               256L*as.integer(msb[ilook,jlook]) + as.integer(lsb)
                           dim(rval) <- dim(lsb)
+                          oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
                           return(rval)
                       } else {
+                          oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
                           return(d[ilook, jlook])
                       }
                   }
@@ -206,9 +210,11 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                           lsb <- lsb[ilook, jlook]
                           rval <- 256L*as.integer(msb) + as.integer(lsb)
                           dim(rval) <- dim(lsb)
+                          oceDebug(debug, "} # landsat [[\n", unindent=1)
                           return(rval)
                       } else {
                           d <- d[ilook, jlook]
+                          oceDebug(debug, "} # landsat [[\n", unindent=1)
                           return(d)
                       }
                   }
@@ -217,8 +223,10 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
               if (isList) {
                   rval <- 256L*as.integer(msb) + as.integer(lsb)
                   dim(rval) <- dim(lsb)
+                  oceDebug(debug, "} # landsat [[\n", unindent=1)
                   return(rval)
               } else {
+                  oceDebug(debug, "} # landsat [[\n", unindent=1)
                   return(d)
               }
 
@@ -321,6 +329,7 @@ setMethod(f="plot",
                        ", ...) {\n", sep="", unindent=1)
               natural <- FALSE
               datanames <- names(x@data)
+              spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
               if (which == 1 && is.character(col)) {
                   if (pmatch(col, "natural")) {
                       natural <- TRUE
@@ -351,15 +360,15 @@ setMethod(f="plot",
                           ##  red <- r
                           ##  green <- 2/3*g + 1/3*nir
                           ##  blue <- 2/3*g - 1/3*nir
-                          b <- g23 - nir3 # Note order of this and next line
-                          g <- g23 + nir3 # Note order of this and previous line
+                          b <- g23 - nir3
+                          g <- g23 + nir3
                           g[g<0] <- 0
                           b[b<0] <- 0
 
                           ## Following is from Clark Richards
                           ## https://github.com/dankelley/oce/issues/502
                           oceDebug(debug, "computing colours\n")
-                          if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_8") {
+                          if (spacecraft == "LANDSAT_8") {
                               oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
                               colors <- rgb(r, g, b, maxColorValue=2^16-1)
                           } else {
@@ -383,6 +392,9 @@ setMethod(f="plot",
                               d[na] <- NA
                           }
                           oceDebug(debug, "finished constucting image\n")
+                          browser()
+                          imagep(d, col=adjustcolor(col,red.f=2.5,green.f=2.5,blue.f=6))
+                          ## imagep(d, col=col) # FIXME: delete
                       } else {
                           stop("cannot use col=\"natural\" unless object has \"red\", \"green\", and \"nir\" bands")
                       }
