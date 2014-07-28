@@ -438,7 +438,7 @@ setMethod(f="plot",
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
-                  if (missing(zlim))
+                  if (missing(zlim && !natural))
                       zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
                   if (utm) {
                       if (!("llUTM" %in% names(x@metadata))) {
