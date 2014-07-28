@@ -307,8 +307,7 @@ setMethod(f="plot",
                               d[na] <- NA
                           }
                           oceDebug(debug, "finished constucting image\n")
-                          browser()
-                          imagep(d, col=adjustcolor(col,red.f=2.5,green.f=2.5,blue.f=6))
+                          #imagep(d, col=adjustcolor(col,red.f=2.5,green.f=2.5,blue.f=6))
                           ## imagep(d, col=col) # FIXME: delete
                       } else {
                           stop("cannot use col=\"natural\" unless object has \"red\", \"green\", and \"nir\" bands")
