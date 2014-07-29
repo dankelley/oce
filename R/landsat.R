@@ -350,7 +350,7 @@ setMethod(f="plot",
               } else if (which == 2) {
                   if (missing(band))
                       error("must supply band")
-                  hist(x[[band]], xlab="Image value", main="", ...)
+                  hist(x[[band]], xlab="Value", main="", ...)
                   if (showBandName)
                       mtext(band, side=3, adj=1)
               } else {
