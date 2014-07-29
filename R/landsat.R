@@ -245,116 +245,87 @@ setMethod(f="plot",
                        "), decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
-              natural <- FALSE
+              terralook <- FALSE
               datanames <- names(x@data)
               spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
-              if (which == 1 && is.character(col)) {
-                  if (pmatch(col, "natural")) {
-                      natural <- TRUE
-                      if ("red" %in% datanames && 
-                          "green" %in% datanames && 
-                          ##"blue" %in% datanames) {
-                          "nir" %in% datanames) {
-                          oceDebug(debug, "extracting red data\n")
-                          r <- x[["red", decimate]]
-                          oceDebug(debug, "range(red): ", paste(range(r), collapse=" to "), "\n")
-                          dim <- dim(r)
-                          oceDebug(debug, "extracting green data\n")
-                          ## do not use green directly with Terralook algorithm (see below)
-                          ## g <- x[["green", decimate]]
-                          g23 <- 2 / 3 * x[["green", decimate]]
-                          oceDebug(debug, "range(green): ", paste(range(g23), collapse=" to "), "\n")
-                          oceDebug(debug, "extracting blue data\n")
-                          ## do not use blue for Terralook algorithm (see below)
-                          ## b <- x[["blue", decimate]]
-                          ## oceDebug(debug, "range(blue): ", paste(range(b), collapse=" to "), "\n")
-                          nir3 <- x[["nir", decimate]]/3
-                          oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
-                          oceDebug(debug, "constructing na matrix\n")
-                          na <- r==0 && g23==0 && nir3==0
-
-                          ## terralook algorithm
-                          ## http://terralook.cr.usgs.gov/what_is_terralook.php
-                          ##  red <- r
-                          ##  green <- 2/3*g + 1/3*nir
-                          ##  blue <- 2/3*g - 1/3*nir
-                          b <- g23 - nir3
-                          g <- g23 + nir3
-                          g[g<0] <- 0
-                          b[b<0] <- 0
-
-                          ## Following is from Clark Richards
-                          ## https://github.com/dankelley/oce/issues/502
-                          oceDebug(debug, "computing colours\n")
-                          if (spacecraft == "LANDSAT_8") {
-                              oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
-                              colors <- rgb(r, g, b, maxColorValue=2^16-1)
-                          } else {
-                              oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
-                              colors <- rgb(r, g, b, maxColorValue=2^8-1)
-                          }
-                          oceDebug(debug, "clearing space\n")
-                          rm(list=c("r", "g", "b")) # memory is likely tight
-                          oceDebug(debug, "finding unique colours\n")
-                          col <- unique(colors)
-                          oceDebug(debug, "matching colors\n")
-                          d <- array(match(colors, col), dim=dim)
-                          ## > length(col)/prod(dim)
-                          ## [1] 0.001553854
-                          oceDebug(debug, "colour compaction: ",floor(prod(dim)/length(col)), '\n')
-                          ## Do not NA out because then image chopped excessively;
-                          ## Just leave black which is easier on the eye (although
-                          ## deceptive).
-                          if (FALSE) {
-                              oceDebug(debug, "NA-ing out\n")
-                              d[na] <- NA
-                          }
-                          oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
-                          col <- adjustcolor(col, alpha.f=alpha.f,
-                                             red.f=red.f, green.f=green.f, blue.f=blue.f,
-                                             offset=offset,
-                                             transform=transform)
-                          oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
-                          oceDebug(debug, "finished constucting image\n")
-                          #imagep(d, col=adjustcolor(col,red.f=2.5,green.f=2.5,blue.f=6))
-                          ## imagep(d, col=col) # FIXME: delete
-                      } else {
-                          stop("cannot use col=\"natural\" unless object has \"red\", \"green\", and \"nir\" bands")
-                      }
-                  } else {
-                      stop("if 'col' is a string, it must be 'natural'")
-                  }
-              } else {
-                  if (missing(band)) {
-                      if ("tirs1" %in% names(x@data)) { # different meanings landsat-8 and previous
-                          oceDebug(debug, "using tirs1\n")
-                          d <- x[["tirs1", decimate]]
-                          band <- "tirs1"
-                      }  else {
-                          oceDebug(debug, "using band named", datanames[1], "\n")
-                          d <- x[[datanames[1], decimate]]
-                          band <- datanames[1]
-                      }
-                      d[d == 0] <- NA # only makes sense for count data
-                  } else {
-                      ## See if band is stored in this object
-                      knownBands <- c("temperature", datanames)
-                      band <- band[1]
-                      i <- pmatch(band, knownBands)
-                      if (is.na(i))
-                          stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
-                      band <- knownBands[i]
-                      d <- x[[band, decimate]]
-                      if (is.na(pmatch(band, "temperature")))
-                          d[d == 0] <- NA  # only makes sense for count data
-                  }
-              }
-              dim <- dim(d)
               if (which == 1) {
+                  if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
+                      terralook <- TRUE
+                      if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames))
+                          stop("band=\"terralook\" requires landsat object to contain \"red\", \"green\" and \"nir\"")
+                      oceDebug(debug, "extracting red data\n")
+                      r <- x[["red", decimate]]
+                      oceDebug(debug, "range(red): ", paste(range(r), collapse=" to "), "\n")
+                      dim <- dim(r)
+                      oceDebug(debug, "extracting green data\n")
+                      g23 <- 2 / 3 * x[["green", decimate]]
+                      oceDebug(debug, "range(green): ", paste(range(g23), collapse=" to "), "\n")
+                      oceDebug(debug, "extracting nir data\n")
+                      nir3 <- x[["nir", decimate]]/3
+                      oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
+                      na <- r==0 && g23==0 && nir3==0
+                      ## http://terralook.cr.usgs.gov/what_is_terralook.php
+                      b <- g23 - nir3
+                      g <- g23 + nir3
+                      g[g<0] <- 0
+                      b[b<0] <- 0
+                      if (spacecraft == "LANDSAT_8") {
+                          oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
+                          colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                      } else {
+                          oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
+                          colors <- rgb(r, g, b, maxColorValue=2^8-1)
+                      }
+                      rm(list=c("r", "g", "b")) # memory is likely tight
+                      col <- unique(colors)
+                      d <- array(match(colors, col), dim=dim) # method of Clark Richards
+                      oceDebug(debug, "colour compaction: ",floor(prod(dim)/length(col)), '\n')
+                      ## Do not NA out because then image chopped excessively;
+                      ## Just leave black which is easier on the eye (although
+                      ## deceptive).
+                      if (FALSE) {
+                          oceDebug(debug, "NA-ing out\n")
+                          d[na] <- NA
+                      }
+                      oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
+                      col <- adjustcolor(col, alpha.f=alpha.f,
+                                         red.f=red.f, green.f=green.f, blue.f=blue.f,
+                                         offset=offset,
+                                         transform=transform)
+                      oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
+                      oceDebug(debug, "finished constucting image\n")
+                      ## end of band="terralook"; plot below
+                  } else {
+                      ## not band="terralook"
+                      if (missing(band)) {
+                          if ("tirs1" %in% names(x@data)) { # different meanings landsat-8 and previous
+                              oceDebug(debug, "using tirs1\n")
+                              d <- x[["tirs1", decimate]]
+                              band <- "tirs1"
+                          }  else {
+                              oceDebug(debug, "using band named", datanames[1], "\n")
+                              d <- x[[datanames[1], decimate]]
+                              band <- datanames[1]
+                          }
+                          d[d == 0] <- NA # only makes sense for count data
+                      } else {
+                          ## See if band is stored in this object
+                          knownBands <- c("temperature", datanames)
+                          band <- band[1]
+                          i <- pmatch(band, knownBands)
+                          if (is.na(i))
+                              stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
+                          band <- knownBands[i]
+                          d <- x[[band, decimate]]
+                          if (is.na(pmatch(band, "temperature")))
+                              d[d == 0] <- NA  # only makes sense for count data
+                      }
+                  }
+                  dim <- dim(d)
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
-                  if (missing(zlim) && !natural)
+                  if (missing(zlim) && !terralook)
                       zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
                   if (utm) {
                       if (!("llUTM" %in% names(x@metadata))) {
@@ -364,20 +335,24 @@ setMethod(f="plot",
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
                              z=d, asp=1, zlim=zlim, col=col, decimate=FALSE, 
-                             drawPalette=!natural, debug=debug-1, ...)
+                             drawPalette=!terralook, debug=debug-1, ...)
                   } else {
                       if ("breaks" %in% names(list(...))) {
                           imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=FALSE, 
-                                 drawPalette=!natural, debug=debug-1, ...)
+                                 drawPalette=!terralook, debug=debug-1, ...)
                       } else {
                           imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=FALSE, 
-                                 drawPalette=!natural, debug=debug-1, ...)
+                                 drawPalette=!terralook, debug=debug-1, ...)
                       }
                   }
-                  if (showBandName && !natural)
+                  if (showBandName && !terralook)
                       mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
-                  hist(d, xlab="Image value", main="", ...)
+                  if (missing(band))
+                      error("must supply band")
+                  hist(x[[band]], xlab="Image value", main="", ...)
+                  if (showBandName)
+                      mtext(band, side=3, adj=1)
               } else {
                   stop("unknown value of 'which'")
               }

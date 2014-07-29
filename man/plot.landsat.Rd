@@ -90,20 +90,17 @@
     probably the fastest way to explore an image for detail, but it is
     important to bear in mind that it yields a nonlinear colourscale.
 
-    Setting \code{col="natural"} creates a colour scale that tends to make the
-    ocean blue and forests green, etc.  It is \emph{not} created from the red,
-    green and blue channels of the satellite, because the blue channel tends to
-    provide little information (as for a far-away mountain).  Rather, it is
-    created using the ``terralook'' method used by USGS (reference 1), in which
-    the red channel is sued as-is, but an artificial green channel is created
-    from 2/3 times the actual green channel, plus 1/3 times the NIR channel,
-    and an artificial blue channel is 2/3 times the actual green channel minus
-    1/3 times the NIR channel.  Thus, for obvious reason, this requires that
-    the image contains these three channels.  The arguments \code{red.f}, etc.
-    can be used to adjust the colour of the image, with the default values
-    provided here seeming to work in early tests, but subject to change through
-    the summer of 2014. 
-}
+    Setting \code{band="terralook"} creates a colour scale that tends to make
+    the ocean blue and forests green (see reference 1).  This uses the USGS
+    ``terralook'' method of combining the \code{red}, \code{green} and
+    \code{nir} bands, producing new "colors" defined as \code{R=red},
+    \code{G=2/3*green+1/3*nir} and \code{B=2/3*green-1/3*nir}.  For obvious
+    reason, this requires that the image contains these three channels.  If
+    \code{band="terralook"}, then the \code{col} argument is ignored and an
+    internal colour scheme is created.  The arguments \code{red.f}, etc. can be
+    used to adjust the colours of this scheme, with the default values provided
+    reasonable results for many images; try for example increasing the value of
+    \code{blue.f} to make water a more distinct blue.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing
