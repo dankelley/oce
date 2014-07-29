@@ -92,24 +92,29 @@
 
 \details{Since landsat images are very detailed, it is sensible to use a fast
     plotting device, e.g. \code{\link{x11}}, and to set values of
-    \code{decimate} appropriate to the data and plotting device.  The histogram
-    plot can be handy in setting scales, e.g. when an image has a fair bit of
-    land, the histogram will be double-lobed, and so quick examination can help
-    in setting a good value for \code{zlim}.  Using \code{zlim="histogram"} is
-    probably the fastest way to explore an image for detail, but it is
-    important to bear in mind that it yields a nonlinear colourscale.
+    \code{decimate} appropriate to the data and plotting device.
+  
+    Using \code{zlim="histogram"} is probably the fastest way to explore an
+    image for detail, but it is important to bear in mind that it yields a
+    nonlinear colourscale.
+
+    The histogram plot can be handy in setting scales, e.g. when an image has a
+    fair bit of land, the histogram will be double-lobed, and so quick
+    examination can help in setting a good value for \code{zlim} to emphasize
+    the water or the land.
 
     Setting \code{band="terralook"} creates a colour scale that tends to make
-    the ocean blue and forests green (see reference 1).  This uses the USGS
-    ``terralook'' method of combining the \code{red}, \code{green} and
-    \code{nir} bands, producing new "colors" defined as \code{R=red},
+    the ocean blue and forests green.  This uses the USGS ``terralook'' method
+    (reference 1) of combining the \code{red}, \code{green} and \code{nir}
+    bands, producing new pseudo colors defined as \code{R=red},
     \code{G=2/3*green+1/3*nir} and \code{B=2/3*green-1/3*nir}.  For obvious
-    reason, this requires that the image contains these three channels.  If
-    \code{band="terralook"}, then the \code{col} argument is ignored and an
-    internal colour scheme is created.  The arguments \code{red.f}, etc. can be
-    used to adjust the colours of this scheme, with the default values provided
-    reasonable results for many images; try for example increasing the value of
-    \code{blue.f} to make water a more distinct blue.}
+    reasons, this requires that the image contains these three channels.  If
+    \code{band="terralook"} the \code{col} argument is ignored, because an
+    internal colour scheme is used.  Still, this scheme may be altered through
+    the use of the arguments \code{red.f}, etc.; their action is described in
+    the documentation for \code{\link{adjustcolors}} but users can get good
+    results just by altering the default values and seeing the results, e.g.
+    increasing \code{blue.f} makes water bluer.}
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing
@@ -123,10 +128,8 @@
 library(oce)
 library(ocedata)
 data(landsat)
-plot(landsat, which=1, band=8, xlim=c(0.10, 0.15), breaks=200) # suggests z limits
-plot(landsat, which=2)
-plot(landsat, which=2, zlim=c(0.105, 0.130))
-plot(landsat, which=2, zlim="histogram") # ugly but shows details best
+plot(landsat, band="temperature")
+plot(landsat, which=2, band="temperature", breaks=100)
 }
 }
 
