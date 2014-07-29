@@ -112,7 +112,7 @@
     \code{band="terralook"} the \code{col} argument is ignored, because an
     internal colour scheme is used.  Still, this scheme may be altered through
     the use of the arguments \code{red.f}, etc.; their action is described in
-    the documentation for \code{\link{adjustcolors}} but users can get good
+    the documentation for \code{\link{adjustcolor}} but users can get good
     results just by altering the default values and seeing the results, e.g.
     increasing \code{blue.f} makes water bluer.}
 
