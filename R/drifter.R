@@ -82,13 +82,21 @@ drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
         stop("value of 'p' must be numeric, or \"levitus\"")
     }
     ##message("pt=c(", paste(round(pt), collapse=","), ")")
-    rval@data$salinity <- matrix(0.0, ncol=nprofile, nrow=length(pt))
-    rval@data$temperature <- matrix(0.0, ncol=nprofile, nrow=length(pt))
-    rval@data$pressure <- matrix(0.0, ncol=nprofile, nrow=length(pt))
+    npt <- length(pt)
+    rval@data$salinity <- matrix(0.0, ncol=nprofile, nrow=npt)
+    rval@data$temperature <- matrix(0.0, ncol=nprofile, nrow=npt)
+    rval@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
     for (profile in 1:nprofile) {
-        rval@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
-        rval@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
-        rval@data$pressure[,profile] <- pt
+        ndata <- sum(!is.na(salinity[,profile]))
+        if (ndata > 2) {
+            rval@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
+            rval@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
+            rval@data$pressure[,profile] <- pt
+        } else {
+            rval@data$salinity[,profile] <- rep(NA, npt)
+            rval@data$temperature[,profile] <- rep(NA, npt)
+            rval@data$pressure[,profile] <- pt
+        }
     }
     rval
 }
