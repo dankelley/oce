@@ -88,7 +88,7 @@ drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
     rval@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
     for (profile in 1:nprofile) {
         ndata <- sum(!is.na(salinity[,profile]))
-        if (ndata > 2) {
+        if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
             rval@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
             rval@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
             rval@data$pressure[,profile] <- pt
