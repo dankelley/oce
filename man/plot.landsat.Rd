@@ -22,7 +22,29 @@
 
   \item{which}{desired plot type; 1=image, 2=histogram.}
 
-  \item{zlim}{either a pair of numbers giving the limits for the colourscale,
+  \item{band}{if given, the name of the band.  For Landsat-8 data, this may be
+      one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
+      \code{"nir"}, \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"},
+      \code{"cirrus"}, \code{"tirs1"}, or \code{"tirs2"}.  For Landsat-7 data,
+      this may be one of \code{"blue"}, \code{"green"}, \code{"red"},
+      \code{"nir"}, \code{"swir1"}, \code{"tirs1"}, \code{"tirs2"},
+      \code{"swir2"}, or \code{"panchromatic"}.  For Landsat data prior to
+      Landsat-7, this may be one of \code{"blue"}, \code{"green"},
+      \code{"red"}, \code{"nir"}, \code{"swir1"}, \code{"tirs1"},
+      \code{"tirs2"}, or \code{"swir2"}.  If \code{band} is not given, the
+      (\code{"tirs1"}) will be used if it exists in the object data, or
+      otherwise the first band will be used.  In addition to the above, using
+      \code{band="temperature"} will plot an estimate of at-satellite
+      brightness temperature, computed from the \code{tirs1} band, and
+      \code{band="terralook"} will plot a sort of natural colour; see
+      \dQuote{Details}.}
+
+  \item{decimate}{decimation passed to \code{\link{imagep}} for image plots.
+      The default yields faster plotting.  Some decimation is sensible for
+      full-size images, since no graphical displays can show 16 thousand pixels
+      on a side.}
+
+   \item{zlim}{either a pair of numbers giving the limits for the colourscale,
       or \code{"histogram"} to have a flattened histogram (i.e. to maximally
       increase contrast throughout the domain.)  If not given, the 1 and 99
       percent quantiles are calculated and used as limits.}
@@ -37,36 +59,23 @@
       the latter case, the band designation is ignored, and the object must
       contain the three colour bands.}
 
-  \item{band}{if given, the number of the band to plot (between 1 and 11 for
-      Landsat-8), or the name of the band, one of: \code{"aerosol"},
-      \code{"blue"}, \code{"green"}, \code{"red"}, \code{"nir"},
-      \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"}, \code{"cirrus"},
-      \code{"tirs1"}, \code{"tirs2"} (again, for Landsat-8).  If not given, the
-      (\code{"tirs1"}) will be used if it exists in the object data, or
-      otherwise the first band will be used.  In addition to the above, using
-      \code{band="temperature"} will plot an estimate of at-satellite
-      brightness temperature, computed from the \code{tirs1} band.}
-      
-  \item{decimate}{decimation passed to \code{\link{imagep}} for image plots.
-      The default yields faster plotting.  Some decimation is sensible for
-      full-size images, since no graphical displays can show 16 thousand pixels
-      on a side.}
-
   \item{showBandName}{if \code{TRUE}, the band name is plotted in the top
       margin, near the right-hand side.}
-
 
   \item{alpha.f}{argument used if \code{col="natural"}, to adjust colours
       with \code{\link{adjustcolor}}}
 
-  \item{red.f}{argument used if \code{col="natural"}, to adjust colours
-      with \code{\link{adjustcolor}}}
+  \item{red.f}{argument used if \code{col="natural"}, to adjust colours with
+      \code{\link{adjustcolor}}.  Higher values of \code{red.f} cause red hues
+      to be emphasized (e.g. dry land).}
 
-  \item{green.f}{argument used if \code{col="natural"}, to adjust colours
-      with \code{\link{adjustcolor}}}
+  \item{green.f}{argument used if \code{col="natural"}, to adjust colours with
+      \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
+      green hues (e.g. forests).}
 
-  \item{blue.f}{argument used if \code{col="natural"}, to adjust colours
-      with \code{\link{adjustcolor}}}
+  \item{blue.f}{argument used if \code{col="natural"}, to adjust colours with
+      \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
+      hues (e.g. ocean).}
 
   \item{offset}{argument used if \code{col="natural"}, to adjust colours with
       \code{\link{adjustcolor}}}
