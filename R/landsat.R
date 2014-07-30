@@ -85,13 +85,13 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
                   return(x@metadata[[i]])
               }
-
+              d <- NULL                # check for this later to see found data
               if (!is.na(pmatch(i, "temperature"))) {
-                  if (!missing(j) && j)
-                      warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
                   spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
                   if (spacecraft == "LANDSAT_8") {
                       oceDebug(debug, "temperature for landsat-8\n")
+                      if (!("tirs1" %in% names(x@data)))
+                          stop("cannot calculate Landsat temperature because no \"tirs1\" band in object", call.=FALSE)
                       ML <- x@metadata$header$radiance_mult_band_10
                       AL <- x@metadata$header$radiance_add_band_10
                       K1 <- x@metadata$header$k1_constant_band_10
@@ -113,6 +113,8 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d <- d - 273.15
                       d[na] <- NA
                       dim(d) <- dim
+                      if (!missing(j) && j)
+                          warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
                       oceDebug(debug, "} # landsat [[\n", unindent=1)
                       return(d)
                   } else if (spacecraft == "LANDSAT_7") {
@@ -140,6 +142,8 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d <- d - 273.15
                       d[na] <- NA
                       dim(d) <- dim
+                      if (!missing(j) && j)
+                          warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
                       oceDebug(debug, "} # landsat [[\n", unindent=1)
                       return(d)
                   } else if (spacecraft == "LANDSAT_5") {
@@ -164,6 +168,8 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                   if (!is.na(ii))
                       i <- ii
               }
+              if (is.na(ii))
+                  stop("this landsat object lacks a band named \"", i, "\"", call.=FALSE)
               oceDebug(getOption("oceDebug"), "band:", iorig, "\n")
               isList <- is.list(x@data[[i]])
               if (isList) {
@@ -248,6 +254,7 @@ setMethod(f="plot",
               terralook <- FALSE
               datanames <- names(x@data)
               spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
+              d <- NULL
               if (which == 1) {
                   if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
                       terralook <- TRUE
@@ -316,8 +323,6 @@ setMethod(f="plot",
                           if (is.na(i))
                               stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
                           band <- knownBands[i]
-                          if (!(band %in% names(x@data)))
-                              stop('band="temperature" requires landsat object to contain "tir"', call.=FALSE)
                           d <- x[[band, decimate]]
                           if (is.na(pmatch(band, "temperature")))
                               d[d == 0] <- NA  # only makes sense for count data
