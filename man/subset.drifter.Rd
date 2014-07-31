@@ -22,7 +22,7 @@
     used in \code{subset} in any call to the function, which means that
     repeated calls will be necessary to, subset based on more than one
     independent variable.  Subsetting may be by \code{time}, \code{latitude},
-    or \code{longitude}.}
+    \code{longitude}, or \code{profile}.}
 
 \value{A new \code{drifter} object.}
 
