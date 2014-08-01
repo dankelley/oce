@@ -609,7 +609,7 @@ imagep <- function(x, y, z,
                 col2 <- c(col[1], col, col[length(col)])
         }
         if (TRUE) { # 2014-07-17/#489 trial code
-            warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
+            ##20140801 warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
             if (!missing(breaks))
                 breaks2 <- breaks
             if (!missing(col))
