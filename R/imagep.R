@@ -600,6 +600,9 @@ imagep <- function(x, y, z,
         col2 <- if (missing(col)) NULL else col
         ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
         oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
+        oceDebug(debug, "zclip:", zclip, "\n")
+        oceDebug(debug, "zlimHistogram:", zlimHistogram, "\n")
+        ## 2014-08-02: add zclip to test [issue 516]
         if (!zclip && !zlimHistogram) {
             db <- median(diff(breaks), na.rm=TRUE)
             breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
@@ -607,8 +610,9 @@ imagep <- function(x, y, z,
                          max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
             if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
-        }
-        if (TRUE) { # 2014-07-17/#489 trial code
+            oceDebug(debug, "USE breaks2 and col2 as calculated")
+        } else {
+            oceDebug(debug, "IGNORE breaks2 and col2 as calculated")
             ##20140801 warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
             if (!missing(breaks))
                 breaks2 <- breaks
@@ -673,7 +677,7 @@ imagep <- function(x, y, z,
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
 
     ## trim image to limits, so endpoint colours will indicate outliers
-    if (!zlimHistogram) {
+    if (!zclip && !zlimHistogram) {
         z[z < zlim[1]] <- zlim[1]
         z[z > zlim[2]] <- zlim[2]
     }
