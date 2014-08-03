@@ -68,7 +68,7 @@
     The results can seem ``washed out'' on some plotting devices, owing to an
     issue with anti-aliasing.  If a \code{\link{png}} device is to be used, it
     is advised to supply arguments \code{type="cairo"} and
-    \code{antialias="none"}.}
+    \code{antialias="none"}.
 
 }
 
