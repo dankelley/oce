@@ -85,10 +85,10 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
     figureWidth <- par("fin")[1]
     figureHeight <- par("fin")[2]
-    oceDebug(debug, "figureWidth = ", figureWidth, "(inches)\n")
-    oceDebug(debug, "figureHeight = ", figureHeight, "(inches)\n")
-    oceDebug(debug, "tickSpace = ", tickSpace, "(inches)\n")
-    oceDebug(debug, "textSpace = ", textSpace, "(inches)\n")
+    oceDebug(debug, "figureWidth:", format(figureWidth, digits=2), "in\n")
+    oceDebug(debug, "figureHeight:", format(figureHeight, digits=2), "in\n")
+    oceDebug(debug, "tickSpace:", tickSpace, "in\n")
+    oceDebug(debug, "textSpace:", textSpace, "in\n")
     pc <- list(mai0=par('mai'))
     pc$mai1 <- pc$mai0
     pc$mai1f <- pc$mai0
@@ -544,18 +544,20 @@ imagep <- function(x, y, z,
     zrange <- range(z, na.rm=TRUE)
 
     if (colormapGiven) {
+        oceDebug(debug, "colormap provided\n")
         breaks <- colormap$breaks
         breaks2 <- breaks
         col <- colormap$col
         col2 <- col
     } else {
         ## Determine breaks unless zlim=="histogram".
+        oceDebug(debug, "colormap not provided\n")
         if (zlimHistogram) {
             if (missing(col))
                 col <- oceColorsPalette(200) # FIXME: how many colours to use?
         } else {
             if (!breaksGiven) {
-                oceDebug(debug, "breaks were not given\n")
+                oceDebug(debug, "breaks not provided\n")
                 nbreaks <- 128                 # smooth image colorscale
                 if (missing(zlim)) {
                     if (missing(col)) {
@@ -573,7 +575,8 @@ imagep <- function(x, y, z,
                     if (missing(col)) {
                         ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
                         breaks <- pretty(zlim, n=nbreaks)
-                        oceDebug(debug, "zlim given but not breaks or col; inferred head(breaks)=", head(breaks), "\n")
+                        oceDebug(debug, "zlim given but not breaks or col\n")
+                        oceDebug(debug, "inferred breaks:", head(breaks), "...\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
                                       length.out=if(is.function(col))128 else 1+length(col))
@@ -587,7 +590,7 @@ imagep <- function(x, y, z,
                     oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
                 }
             } else {
-                oceDebug(debug, "breaks were given\n")
+                oceDebug(debug, "breaks provided\n")
                 breaksOrig <- breaks
                 if (1 == length(breaks)) {
                     breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
@@ -598,6 +601,7 @@ imagep <- function(x, y, z,
         }
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
+        ## message("imagep() col:  ", paste(col, collapse=" "))
         ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
         oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
         oceDebug(debug, "zclip:", zclip, "\n")
@@ -697,12 +701,12 @@ imagep <- function(x, y, z,
     }
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
-        if (debug > 0) {
-            message("breaks:", paste(breaks, collapse=" "))
-            message("breaks2:", paste(breaks2, collapse=" "))
-            message("col:", paste(col, collapse=" "))
-            message("col2:", paste(col2, collapse=" "))
-        }
+        ## if (debug > 0) {
+        ##     message("breaks:", paste(breaks, collapse=" "))
+        ##     message("breaks2:", paste(breaks2, collapse=" "))
+        ##     message("col:", paste(col, collapse=" "))
+        ##     message("col2:", paste(col2, collapse=" "))
+        ## }
         if (filledContour) {
             oceDebug(debug, "doing filled contours [1]\n")
             if (!is.double(z))

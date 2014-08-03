@@ -708,10 +708,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 }
                 breaksOrig <- breaks
             } else {
-                if (missing(col))
-                    breaks <- c(zlim[1], pretty(zlim), zlim[2])
-                else
+                if (missing(col)) {
+                    oceDebug(debug, "zlim provided, but not breaks or col\n")
+                    breaks <- c(zlim[1], pretty(zlim, n=128), zlim[2])
+                } else {
+                    oceDebug(debug, "zlim and col provided, but not breaks\n")
                     breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+                }
                 breaksOrig <- breaks
                 breaks[1] <- min(zrange[1], breaks[1])
                 breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
@@ -727,6 +730,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
+    ## message("mapImage() col:  ", paste(col, collapse=" "))
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
