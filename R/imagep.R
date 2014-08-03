@@ -374,7 +374,7 @@ drawPalette <- function(zlim, zlab="",
         }
     }
     oceDebug(debug, "at end of drawPalette(), par('mai') yields c(",
-             paste(par('mai'), collapse=","), ")\n")
+             paste(format(par('mai'), digits=2), collapse=","), ")\n")
     oceDebug(debug, "} # drawPalette()\n", unindent=1)
     invisible()
 }
@@ -614,9 +614,9 @@ imagep <- function(x, y, z,
                          max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
             if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
-            oceDebug(debug, "USE breaks2 and col2 as calculated")
+            oceDebug(debug, "USE breaks2 and col2 as calculated\n")
         } else {
-            oceDebug(debug, "IGNORE breaks2 and col2 as calculated")
+            oceDebug(debug, "IGNORE breaks2 and col2 as calculated\n")
             ##20140801 warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
             if (!missing(breaks))
                 breaks2 <- breaks
@@ -630,6 +630,8 @@ imagep <- function(x, y, z,
                 col <- col(n=length(breaks)-1)
         }
     }
+    oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
+    oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
@@ -714,7 +716,9 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            ## issue 489: use breaks/col instead of breaks2/col2
+            #.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             oceDebug(debug, "not doing filled contours [2]\n")
@@ -722,7 +726,9 @@ imagep <- function(x, y, z,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
                       xlim=xlim, ylim=ylim, zlim=c(0,1), ...)
             } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
+                ## issue 489: use breaks/col instead of breaks2/col2
+                ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, zlim=zlim, ...)
             }
         }
@@ -741,7 +747,9 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            ## issue 489: use breaks/col instead of breaks2/col2
+            ##.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(xlab, side=1, line=mgp[1])
             mtext(ylab, side=2, line=mgp[1])
         } else {
@@ -752,7 +760,9 @@ imagep <- function(x, y, z,
                 breaks2 <- seq(0, 1, length.out=length(col2) + 1)
             }
             oceDebug(debug, "length(x)", length(x), "length(y)", length(y), "\n")
-            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
+            ## issue 489: use breaks/col instead of breaks2/col2
+            ##image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
         }
         if (axes) {
