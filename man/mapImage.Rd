@@ -63,7 +63,14 @@
         used mainly by the developers and testers.)}
 }
     
-\details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
+\details{Adds an image to an existing map, by analogy to \code{\link{image}}.
+
+    The results can seem ``washed out'' on some plotting devices, owing to an
+    issue with anti-aliasing.  If a \code{\link{png}} device is to be used, it
+    is advised to supply arguments \code{type="cairo"} and
+    \code{antialias="none"}.}
+
+}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}
