@@ -82,8 +82,8 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-longitudelim=c(-70,-50), latitudelim=c(40,50),
-proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
+        longitudelim=c(-70,-50), latitudelim=c(40,50),
+        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
 data(topoWorld)
 mapImage(topoWorld, col=oceColorsGebco)
 mapMeridians(10, lty='dotted', col='darkgray')
@@ -93,8 +93,8 @@ mapLines(coastlineWorld)
 ## Northern polar region, with colour-coded bathymetry
 drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
 mapPlot(coastlineWorld, type='l',
-longitudelim=c(-180,180), latitudelim=c(60,120),
-proj="stereographic", grid=TRUE)
+        longitudelim=c(-180,180), latitudelim=c(60,120),
+        proj="stereographic", grid=TRUE)
 data(topoWorld)
 mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)
 mapMeridians()
@@ -102,17 +102,16 @@ mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
-con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
-##con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
-lon <- get.var.ncdf(con, "lon")
-lat <- get.var.ncdf(con, "lat")
-SST <- get.var.ncdf(con, "t_an")[,,1]
-##SST <- get.var.ncdf(con, "t_mn")[,,1]
+library(ncdf4)
+con <- nc_open("/data/oar/levitus/temperature_annual_5deg.nc")
+lon <- ncvar_get(con, "lon")
+lat <- ncvar_get(con, "lat")
+SST <- ncvar_get(con, "t_mn")[,,1]
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, debug=99)
+mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim)
 mapPolygon(coastlineWorld, col='gray')
 }
 }
