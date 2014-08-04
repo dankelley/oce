@@ -89,8 +89,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if (missing(longitude))
         stop("must give 'longitude' and possibly 'latitude'")
-    if (!exists(".Last.projection") || .Last.projection()$proj == "")
-        stop("must create a map first, with mapPlot()\n")
     if (!missing(longitude) && ("data" %in% slotNames(longitude))) {
         tmp <- longitude@data
         if (("longitude" %in% names(tmp)) && ("latitude" %in% names(tmp))) {
@@ -98,7 +96,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
             longitude <- tmp$longitude
         }
     }
-    proj <- mapproject(longitude, latitude)
+    if (usingProj4()) {
+        proj4 <- .Last.proj4()$proj
+        if (1 > nchar(proj4)) stop("must call mapPlot() first")
+        proj <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+    } else {
+        if (!exists(".Last.projection") || .Last.projection()$proj == "")
+            stop("must create a map first, with mapPlot()\n")
+        proj <- mapproject(longitude, latitude)
+    }
     list(x=proj$x, y=proj$y) # if other properties prove helpful, may add them
 } 
 
@@ -161,8 +167,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("  These functions work:")
         message("      map2lonlat()")
         message("      mapContour()")
+        message("      mapImage()")
         message("      mapLines()")
         message("      mapLocator()")
+        message("      mapLongitudeLatitudeXY()")
         message("      mapMeridians()")
         message("      mapPoints()")
         message("      mapPolygon()")
@@ -170,10 +178,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("      mapZones()")
         message("  These functions do not work:")
         message("      mapDirectionField()")
-        message("      mapLongitudeLatitudeXY()")
         message("      mapScalebar()")
         message("      mapArrows()")
-        message("      mapImage()")
     } else {
         xy <- mapproject(longitude, latitude,
                          projection=projection, parameters=parameters, orientation=orientation)
@@ -456,7 +462,7 @@ mapText <- function(longitude, latitude, labels, ...)
         if (usingProj4()) {
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            xy<- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         } else {
             xy <- mapproject(longitude, latitude)
         }
@@ -733,7 +739,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
         if (usingProj4()) {
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            xy<- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         } else {
             xy <- mapproject(longitude, latitude)
         }
