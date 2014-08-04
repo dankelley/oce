@@ -690,6 +690,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         breaks <- colormap$breaks
         col <- colormap$col
         missingColor <- colormap$missingColor
+        zclip <- colormap$zclip
     } else {
         if (!breaksGiven) {
             small <- .Machine$double.eps
@@ -789,16 +790,22 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, par('usr'),
                    NAOK=TRUE, PACKAGE="oce")
+        breaksMin <- min(breaks, na.rm=TRUE)
+        breaksMax <- max(breaks, na.rm=TRUE)
+        colFirst <- col[1]
+        colLast <- tail(col, 1)
         colorLookup <- function (ij) {
-            if (is.na(Z[ij]))
-                return(missingColor)
+            zval <- Z[ij]
+            if (is.na(zval)) return(missingColor)   # whether clipping or not
+            if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
+            if (zval > breaksMax) return(if (zclip) missingColor else colLast)
             ## w <- which(Z[ij] <= breaks * (1 + small))[1]
-            w <- which(Z[ij] <= breaks)[1]
+            w <- which(zval <= breaks)[1]
             ## if (is.na(w)) message("w=NA for Z[", ij, "] = ", Z[ij])
             ## if (w<=1) message("w<=1 for Z[", ij, "] = ", Z[ij])
             ##if (w <= 1) message("w<=1 at ij: ", ij, "; Z[ij]: ", Z[ij])
             ## FIXME: maybe should be [w] below?  And why is w=1 so bad?
-            if (!is.na(w) && w > 1) col[-1 + w] else missingColor
+            if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
         }
         ## message("range(Z): ", paste(range(Z, na.rm=TRUE), collapse=" to "))
         ## message("head(breaks): ", paste(head(breaks), collapse=" "))
@@ -809,12 +816,20 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
                 col=colPolygon[r$okPolygon & !r$clippedPolygon],
                 border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+
+        ## if (debug==5 && !is.na(missingColor)) {
+        ##     message("number missing color: ", sum(colPolygon==missingColor))
+        ##     message("zclip: ", zclip)
+        ##     browser()
+        ## }
+
         ## message("number of clipped polygons: ", sum(r$clippedPolygon))
         ## message("number of clipped points: ", sum(r$clippedPoints))
         ## message("number of NOT ok points: ", sum(!r$okPoint))
         ## message("number of NOT ok polygons: ", sum(!r$okPolygon))
     } else {
         ## EXTREMELY slow old method -- keep a while in case any good ideas here
+        ## FIXME: delete this block by middle august, 2014
         for (i in 1:ni) {
             for (j in 1:nj) {
                 xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
