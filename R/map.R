@@ -153,15 +153,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         local(proj4<<-projSpec) # FIXME: does not over-write
         message("STATUS:")
         message("  the parameters and orientation arguments are ignored")
-        message("  WORKING:")
+        message("  These functions work:")
+        message("      mapContour()")
         message("      mapLines()")
         message("      mapMeridians()")
         message("      mapPoints()")
         message("      mapPolygon()")
         message("      mapText()")
         message("      mapZones()")
-        message("  NOT WORKING:")
-        message("      mapContour()")
+        message("  These functions do not work:")
         message("      mapDirectionField()")
         message("      mapLongitudeLatitudeXY()")
         message("      mapScalebar()")
@@ -732,7 +732,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    if (!exists(".Last.projection") || .Last.projection()$proj == "")
+    if (!usingProj4() && (!exists(".Last.projection") || .Last.projection()$proj == ""))
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
@@ -854,7 +854,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##    warning("shifting longitude\n")
         ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
         ##}
-        xy <- mapproject(poly$longitude, poly$latitude)
+
+        if (usingProj4()) {
+            if (!exists("proj4")) stop("must call mapPlot() first")
+            xy <- project(list(longitude=poly$longitude, latitude=poly$latitude), proj=proj4)
+        } else {
+            xy <- mapproject(poly$longitude, poly$latitude)
+        }
         ## map_check_polygons tries to fix up longitude cut-point problem, which
         ## otherwise leads to lines crossing the graph horizontally because the
         ## x value can sometimes alternate from one end of the domain to the other.
