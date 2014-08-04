@@ -14,7 +14,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
-    if (!exists(".Last.projection") || .Last.projection()$proj == "")
+    if (!usingProj4() && (!exists(".Last.projection") || .Last.projection()$proj == ""))
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) {
