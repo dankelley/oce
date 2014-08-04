@@ -159,8 +159,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("STATUS:")
         message("  the parameters and orientation arguments are ignored")
         message("  These functions work:")
+        message("      map2lonlat()")
         message("      mapContour()")
         message("      mapLines()")
+        message("      mapLocator()")
         message("      mapMeridians()")
         message("      mapPoints()")
         message("      mapPolygon()")
@@ -171,8 +173,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("      mapLongitudeLatitudeXY()")
         message("      mapScalebar()")
         message("      mapArrows()")
-        message("      mapLocator()")
-        message("      map2lonlat()")
         message("      mapImage()")
     } else {
         xy <- mapproject(longitude, latitude,
@@ -668,37 +668,45 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
         error("lengths of x and y must match")
     lon <- rep(NA, n)
     lat <- rep(NA, n)
-    ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
-    ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
-    t <- try({
-        or <- get(".Last.projection", envir = globalenv())$orientation
-    }, silent=TRUE)
-    if (class(t) == "try-error") {
-        or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
-    }
-    init <- c(0, 0) # won't work if this is off the map
-    for (i in 1:n) {
-        try({
-            error <- FALSE
-            ## FIXME: find better way to do the inverse mapping
-            ## message("init:", init[1], " ", init[2])
-            o <- optim(init,
-                       function(x) {
-                           ##message(" x:", x[1], " ", x[2])
-                           xy <- mapproject(x[1], x[2])
-                           error <<- xy$error
-                           sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
-                       },
-                       control=list(abstol=tolerance))
-            ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-            if (o$convergence == 0 && !error) {
-                lonlat <- o$par
-                lon[i] <- lonlat[1]
-                lat[i] <- lonlat[2]
-                init[1] <- lon[i]
-                init[2] <- lat[i]
-            }
+    if (usingProj4()) {
+        proj4 <- .Last.proj4()$proj
+        if (1 > nchar(proj4)) stop("must call mapPlot() first")
+        xy <- project(list(xusr, yusr), proj=proj4, inverse=TRUE)
+        lon <- xy$x
+        lat <- xy$y
+    } else {
+        ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
+        ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
+        t <- try({
+            or <- get(".Last.projection", envir = globalenv())$orientation
         }, silent=TRUE)
+        if (class(t) == "try-error") {
+            or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
+        }
+        init <- c(0, 0) # won't work if this is off the map
+        for (i in 1:n) {
+            try({
+                error <- FALSE
+                ## FIXME: find better way to do the inverse mapping
+                ## message("init:", init[1], " ", init[2])
+                o <- optim(init,
+                           function(x) {
+                               ##message(" x:", x[1], " ", x[2])
+                               xy <- mapproject(x[1], x[2])
+                               error <<- xy$error
+                               sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
+                           },
+                           control=list(abstol=tolerance))
+                ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
+                if (o$convergence == 0 && !error) {
+                    lonlat <- o$par
+                    lon[i] <- lonlat[1]
+                    lat[i] <- lonlat[2]
+                    init[1] <- lon[i]
+                    init[2] <- lat[i]
+                }
+            }, silent=TRUE)
+        }
     }
     ## bad <- lat < -90 | lat > 90 | lon < -180 | lon > 180
     ## lon[bad] <- NA
