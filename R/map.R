@@ -160,26 +160,58 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         } else {
             stop("unknown projection \"", projection, "\"") # cannot get here
         }
+        ## http://www.remotesensing.org/geotiff/proj_list/
+        ## code: blank=not done; 1=in list but no args; 2=in list and all args
+        ##   Albers Equal-Area Conic
+        ##   Azimuthal Equidistant
+        ##   Cassini-Soldner
+        ##   Cylindrical Equal Area
+        ##   Eckert IV
+        ##   Eckert VI
+        ##   Equidistant Conic
+        ##   Equidistant Cylindrical
+        ##   Equirectangular
+        ##   Gauss-Kruger
+        ##   Gall Stereographic
+        ##   GEOS - Geostationary Satellite View
+        ##   Gnomonic
+        ##   Hotine Oblique Mercator
+        ##   Krovak
+        ##   Laborde Oblique Mercator
+        ##   Lambert Azimuthal Equal Area
+        ##   Lambert Conic Conformal (1SP)
+        ##   Lambert Conic Conformal (2SP)
+        ##   Lambert Conic Conformal (2SP Belgium)
+        ##   Lambert Cylindrical Equal Area
+        ## 1 Mercator (1SP) +proj=merc +lon_0=Longitude of natural origin +k_0=Scale factor at natural origin +x_0=False Easting +y_0=False Northing
+        ##   Mercator (2SP)
+        ##   Miller Cylindrical
+        ## 1 Mollweide +proj=moll +lon_0=Central Meridian +x_0=False Easting +y_0=False Northing
+        ##   New Zealand Map Grid
+        ##   Oblique Mercator
+        ##   Oblique Stereographic
+        ##   Orthographic
+        ##   Polar Stereographic
+        ##   Polyconic
+        ##   Robinson
+        ##   Rosenmund Oblique Mercator
+        ##   Sinusoidal
+        ##   Swiss Oblique Cylindrical
+        ##   Swiss Oblique Mercator
+        ## 1 Stereographic +proj=stere +lat_0=Latitude at projection center +lon_0=Longitude at projection center +x_0=False Easting +y_0=False Northing
+        ##   Transverse Mercator
+        ##   Transverse Mercator (Modified Alaska)
+        ##   Transverse Mercator (South Oriented)
+        ##   Tunisia Mining Grid
+        ##   VanDerGrinten
         xy <- project(list(longitude=longitude, latitude=latitude), proj=projSpec)
         .Last.proj4(list(proj=projSpec))
-        message("STATUS:")
-        message("  the parameters and orientation arguments are ignored")
-        message("  These functions work:")
-        message("      map2lonlat()")
-        message("      mapContour()")
-        message("      mapImage()")
-        message("      mapLines()")
-        message("      mapLocator()")
-        message("      mapLongitudeLatitudeXY()")
-        message("      mapMeridians()")
-        message("      mapPoints()")
-        message("      mapPolygon()")
-        message("      mapText()")
-        message("      mapZones()")
-        message("  These functions do not work:")
-        message("      mapDirectionField()")
-        message("      mapScalebar()")
-        message("      mapArrows()")
+        message("proj4 failures:")
+        message("  mapPlot() parameters and orientation arguments are ignored.")
+        message("  mapPlot() only accepts a few projections.")
+        message("  mapArrows() does not yet work")
+        message("  mapDirectionField() does not yet work")
+        message("  mapScalebar() does not yet work")
     } else {
         xy <- mapproject(longitude, latitude,
                          projection=projection, parameters=parameters, orientation=orientation)
