@@ -130,14 +130,52 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
-    xy <- mapproject(longitude, latitude,
-                     projection=projection, parameters=parameters, orientation=orientation)
+    if ("proj4" == getOption("oceProjection")) {
+        message("using proj4 because oceProjection=\"proj4\"")
+        known <- c("mollweide", "stereographic")
+        id <- pmatch(projection, known)
+        if (is.na(id))
+            stop("unknown projection (", projection, "); try one of: ", paste(known, collapse=" "))
+        if (!require("proj4", quietly=TRUE)) 
+            stop("must install the proj4 library for oceProjection=\"proj4\" to work")
+        projection <- known[id]
+        message("using projection: ", projection)
+        if (projection == "mercator") {
+            projSpec <- "+proj=merc"
+        } else if (projection == "mollweide") {
+            projSpec <- "+proj=moll"
+        } else if (projection == "stereographic") {
+            projSpec <- "+proj=stere"
+        }
+        xy <- project(list(longitude=longitude, latitude=latitude), proj=projSpec)
+        local(proj4<<-projSpec)
+        message("STATUS:")
+        message("  the parameters and orientation arguments are ignored")
+        message("  mapZones() works")
+        message("  mapMeridians() works")
+        message("  mapContour() does not work")
+        message("  mapDirectionField() does not work")
+        message("  mapLongitudeLatitudeXY() does not work")
+        message("  mapScalebar() does not work")
+        message("  mapText() does not work")
+        message("  mapLines() does not work")
+        message("  mapPoints() does not work")
+        message("  mapArrows() does not work")
+        message("  mapLocator() does not work")
+        message("  map2lonlat() does not work")
+        message("  mapPolygon() does not work")
+        message("  mapImage() does not work")
+    } else {
+        xy <- mapproject(longitude, latitude,
+                         projection=projection, parameters=parameters, orientation=orientation)
+    }
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
-    if (projection %in% c('mollweide', 'polyconic')) { ## FIXME: should probably add other proj here
+    if ("proj4" != getOption("oceProjection") &&
+        projection %in% c('mollweide', 'polyconic')) { ## FIXME: should probably add other proj here
         ## trim wild points [github issue 227]
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
@@ -325,7 +363,12 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     n <- 360                           # number of points on line
     for (l in latitude) {
         ## FIXME: should use mapLines here
-        line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
+        if ("proj4" == getOption("oceProjection")) {
+            if (!exists("proj4")) stop("must call mapPlot() first")
+            line <- project(list(longitude=seq(-180, 180, length.out=n), latitude=rep(l, n)), proj=proj4)
+        } else {
+            line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
+        }
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
@@ -425,7 +468,13 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     n <- 360                           # number of points on line
     for (l in longitude) {
         ## FIXME: should use mapLines here
-        line <- mapproject(rep(l, n), seq(-90+polarCircle, 90-polarCircle, length.out=n))
+        if ("proj4" == getOption("oceProjection")) {
+            if (!exists("proj4")) stop("must call mapPlot() first")
+            line <- project(list(longitude=rep(l, n), latitude=seq(-90+polarCircle, 90-polarCircle, length.out=n)),
+                                 proj=proj4)
+        } else {
+            line <- mapproject(rep(l, n), seq(-90+polarCircle, 90-polarCircle, length.out=n))
+        }
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
