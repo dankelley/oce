@@ -1,3 +1,5 @@
+usingProj4 <- function() !is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")
+
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -130,14 +132,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
-    if ("proj4" == getOption("oceProjection")) {
+    if (usingProj4()) {
         message("using proj4 because oceProjection=\"proj4\"")
         known <- c("mercator", "mollweide", "stereographic")
         id <- pmatch(projection, known)
         if (is.na(id))
             stop("unknown projection (", projection, "); try one of: ", paste(known, collapse=" "))
-        if (!require("proj4", quietly=TRUE)) 
-            stop("must install the proj4 library for oceProjection=\"proj4\" to work")
         projection <- known[id]
         message("using projection: ", projection)
         if (projection == "mercator") {
@@ -176,9 +176,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
-    if ("proj4" != getOption("oceProjection") &&
-        projection %in% c('mollweide', 'polyconic')) { ## FIXME: should probably add other proj here
-        ## trim wild points [github issue 227]
+    if (usingProj4() && projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
         ## FIXME: can be filled.  It might be smart to do this in C
@@ -365,7 +363,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     n <- 360                           # number of points on line
     for (l in latitude) {
         ## FIXME: should use mapLines here
-        if ("proj4" == getOption("oceProjection")) {
+        if (usingProj4()) {
             if (!exists("proj4")) stop("must call mapPlot() first")
             line <- project(list(longitude=seq(-180, 180, length.out=n), latitude=rep(l, n)), proj=proj4)
         } else {
@@ -470,7 +468,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     n <- 360                           # number of points on line
     for (l in longitude) {
         ## FIXME: should use mapLines here
-        if ("proj4" == getOption("oceProjection")) {
+        if (usingProj4()) {
             if (!exists("proj4")) stop("must call mapPlot() first")
             line <- project(list(longitude=rep(l, n), latitude=seq(-90+polarCircle, 90-polarCircle, length.out=n)),
                                  proj=proj4)
@@ -502,7 +500,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     }
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
-    if ("proj4" == getOption("oceProjection")) {
+    if (usingProj4()) {
         if (!exists("proj4")) stop("must call mapPlot() first")
         xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
     } else {
@@ -536,7 +534,7 @@ mapPoints <- function(longitude, latitude, ...)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
     if (length(longitude) > 0) {
-        if ("proj4" == getOption("oceProjection")) {
+        if (usingProj4()) {
             if (!exists("proj4")) stop("must call mapPlot() first")
             xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         } else {
