@@ -157,6 +157,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("      mapLines()")
         message("      mapMeridians()")
         message("      mapPoints()")
+        message("      mapPolygon()")
         message("      mapText()")
         message("      mapZones()")
         message("  NOT WORKING:")
@@ -167,7 +168,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("      mapArrows()")
         message("      mapLocator()")
         message("      map2lonlat()")
-        message("      mapPolygon()")
         message("      mapImage()")
     } else {
         xy <- mapproject(longitude, latitude,
@@ -711,12 +711,20 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
         longitude <- longitude$longitude
     }
     n <- length(longitude)
-    xy <- mapproject(longitude, latitude)
-    ##bad <- is.na(xy$x) | is.na(xy$y)
-    ##polygon(xy$x[!bad], xy$y[!bad],
-    ##        density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
-    polygon(xy$x, xy$y,
-            density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
+    if (n > 0) {
+        if (usingProj4()) {
+            if (!exists("proj4")) stop("must call mapPlot() first")
+            xy<- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+        } else {
+            xy <- mapproject(longitude, latitude)
+        }
+        ##bad <- is.na(xy$x) | is.na(xy$y)
+        ##polygon(xy$x[!bad], xy$y[!bad],
+        ##density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
+        polygon(xy$x, xy$y,
+                density=density, angle=angle, border=border, col=col, lty=lty, ...,
+                fillOddEven=fillOddEven)
+    }
 }
 
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
