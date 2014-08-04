@@ -67,8 +67,12 @@
         typicaly have 16000 pixels on a side).}
 
     \item{zclip}{logical, indicating whether to clip the colors to those
-        corresponding to \code{zlim}, if the latter is provided.  Clipped
-        regions will be colored with \code{missingColor}.}
+        corresponding to \code{zlim}. This only works if \code{zlim} is
+        provided. Clipped regions will be colored with \code{missingColor}.
+        Thus, clipping an image is somewhat analogous to clipping in an xy
+        plot, with clipped data being ignored, which in an image means to be be
+        colored with \code{missingColor}.}
+
     \item{flipy}{logical, with \code{TRUE} indicating that the image
         should be flipped top to bottom (e.g. to produce a profile image
         for a downward-looking acoustic-doppler profile).}

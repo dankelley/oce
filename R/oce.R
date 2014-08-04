@@ -882,9 +882,10 @@ oceColorsPalette <- function(n, which=1)
             m <- dim(rgb)[1]
             i <- 1:m
             xout <- seq(1, m, length.out=n)
-            rev(rgb(approx(i, rgb[,1], xout, rule=1)$y,
-                    approx(i, rgb[,2], xout, rule=1)$y,
-                    approx(i, rgb[,3], xout, rule=1)$y))
+            rev(rgb(red=approx(i, rgb[,1], xout, rule=1)$y,
+                    green=approx(i, rgb[,2], xout, rule=1)$y,
+                    blue=approx(i, rgb[,3], xout, rule=1)$y,
+                    alpha=1))
         } else if (which == 2) {
             ## http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
             m <- 11                         # number of classes
