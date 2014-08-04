@@ -801,7 +801,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             if (!is.na(w) && w > 1) col[-1 + w] else missingColor
         }
         ## message("range(Z): ", paste(range(Z, na.rm=TRUE), collapse=" to "))
-        ## message("breaks: ", paste(breaks, collapse=" "))
+        ## message("head(breaks): ", paste(head(breaks), collapse=" "))
         colPolygon <- sapply(1:(ni*nj), colorLookup)
         ## message("ni*nj: ", ni*nj)
         ## message("below is unique(colPolygon):")
