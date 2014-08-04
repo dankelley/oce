@@ -132,7 +132,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         grid <- rep(15, 2)
     if ("proj4" == getOption("oceProjection")) {
         message("using proj4 because oceProjection=\"proj4\"")
-        known <- c("mollweide", "stereographic")
+        known <- c("mercator", "mollweide", "stereographic")
         id <- pmatch(projection, known)
         if (is.na(id))
             stop("unknown projection (", projection, "); try one of: ", paste(known, collapse=" "))
@@ -148,23 +148,25 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             projSpec <- "+proj=stere"
         }
         xy <- project(list(longitude=longitude, latitude=latitude), proj=projSpec)
-        local(proj4<<-projSpec)
+        local(proj4<<-projSpec) # FIXME: does not over-write
         message("STATUS:")
         message("  the parameters and orientation arguments are ignored")
-        message("  mapZones() works")
-        message("  mapMeridians() works")
-        message("  mapContour() does not work")
-        message("  mapDirectionField() does not work")
-        message("  mapLongitudeLatitudeXY() does not work")
-        message("  mapScalebar() does not work")
-        message("  mapText() does not work")
-        message("  mapLines() does not work")
-        message("  mapPoints() does not work")
-        message("  mapArrows() does not work")
-        message("  mapLocator() does not work")
-        message("  map2lonlat() does not work")
-        message("  mapPolygon() does not work")
-        message("  mapImage() does not work")
+        message("  WORKING:")
+        message("      mapLines()")
+        message("      mapMeridians()")
+        message("      mapPoints()")
+        message("      mapZones()")
+        message("  NOT WORKING:")
+        message("      mapContour()")
+        message("      mapDirectionField()")
+        message("      mapLongitudeLatitudeXY()")
+        message("      mapScalebar()")
+        message("      mapText()")
+        message("      mapArrows()")
+        message("      mapLocator()")
+        message("      map2lonlat()")
+        message("      mapPolygon()")
+        message("      mapImage()")
     } else {
         xy <- mapproject(longitude, latitude,
                          projection=projection, parameters=parameters, orientation=orientation)
@@ -500,7 +502,12 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     }
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
-    xy <- mapproject(longitude, latitude)
+    if ("proj4" == getOption("oceProjection")) {
+        if (!exists("proj4")) stop("must call mapPlot() first")
+        xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+    } else {
+        xy <- mapproject(longitude, latitude)
+    }
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
     DX <- usr[2] - usr[1]
@@ -529,7 +536,12 @@ mapPoints <- function(longitude, latitude, ...)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
     if (length(longitude) > 0) {
-        xy <- mapproject(longitude, latitude)
+        if ("proj4" == getOption("oceProjection")) {
+            if (!exists("proj4")) stop("must call mapPlot() first")
+            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+        } else {
+            xy <- mapproject(longitude, latitude)
+        }
         points(xy$x, xy$y, ...)
     }
 }
