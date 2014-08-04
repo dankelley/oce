@@ -1,4 +1,9 @@
-usingProj4 <- function() !is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")
+.Last.proj4  <- local({
+    val <- list(proj="")
+    function(new) if(!missing(new)) val <<- new else val
+})
+
+usingProj4 <- function() 0 < nchar(.Last.proj4()$proj)
 
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
@@ -132,7 +137,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
-    if (usingProj4()) {
+    if (!is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")) {
         message("using proj4 because oceProjection=\"proj4\"")
         known <- c("mercator", "mollweide", "stereographic")
         id <- pmatch(projection, known)
@@ -150,7 +155,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             stop("unknown projection \"", projection, "\"") # cannot get here
         }
         xy <- project(list(longitude=longitude, latitude=latitude), proj=projSpec)
-        local(proj4<<-projSpec) # FIXME: does not over-write
+        .Last.proj4(list(proj=projSpec))
         message("STATUS:")
         message("  the parameters and orientation arguments are ignored")
         message("  These functions work:")
@@ -366,7 +371,8 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     for (l in latitude) {
         ## FIXME: should use mapLines here
         if (usingProj4()) {
-            if (!exists("proj4")) stop("must call mapPlot() first")
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
             line <- project(list(longitude=seq(-180, 180, length.out=n), latitude=rep(l, n)), proj=proj4)
         } else {
             line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
@@ -448,7 +454,8 @@ mapText <- function(longitude, latitude, labels, ...)
     labels <- labels[ok]
     if (length(longitude) > 0) {
         if (usingProj4()) {
-            if (!exists("proj4")) stop("must call mapPlot() first")
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
             xy<- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         } else {
             xy <- mapproject(longitude, latitude)
@@ -473,7 +480,8 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     for (l in longitude) {
         ## FIXME: should use mapLines here
         if (usingProj4()) {
-            if (!exists("proj4")) stop("must call mapPlot() first")
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
             line <- project(list(longitude=rep(l, n),
                                  latitude=seq(-90+polarCircle, 90-polarCircle, length.out=n)),
                                  proj=proj4)
@@ -506,7 +514,8 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
     if (usingProj4()) {
-        if (!exists("proj4")) stop("must call mapPlot() first")
+        proj4 <- .Last.proj4()$proj
+        if (1 > nchar(proj4)) stop("must call mapPlot() first")
         xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
     } else {
         xy <- mapproject(longitude, latitude)
@@ -540,7 +549,8 @@ mapPoints <- function(longitude, latitude, ...)
     latitude <- latitude[ok]
     if (length(longitude) > 0) {
         if (usingProj4()) {
-            if (!exists("proj4")) stop("must call mapPlot() first")
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
             xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         } else {
             xy <- mapproject(longitude, latitude)
@@ -713,7 +723,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
     n <- length(longitude)
     if (n > 0) {
         if (usingProj4()) {
-            if (!exists("proj4")) stop("must call mapPlot() first")
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
             xy<- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         } else {
             xy <- mapproject(longitude, latitude)
@@ -856,7 +867,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##}
 
         if (usingProj4()) {
-            if (!exists("proj4")) stop("must call mapPlot() first")
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
             xy <- project(list(longitude=poly$longitude, latitude=poly$latitude), proj=proj4)
         } else {
             xy <- mapproject(poly$longitude, poly$latitude)
