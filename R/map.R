@@ -146,6 +146,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             projSpec <- "+proj=moll"
         } else if (projection == "stereographic") {
             projSpec <- "+proj=stere"
+        } else {
+            stop("unknown projection \"", projection, "\"") # cannot get here
         }
         xy <- project(list(longitude=longitude, latitude=latitude), proj=projSpec)
         local(proj4<<-projSpec) # FIXME: does not over-write
@@ -155,13 +157,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         message("      mapLines()")
         message("      mapMeridians()")
         message("      mapPoints()")
+        message("      mapText()")
         message("      mapZones()")
         message("  NOT WORKING:")
         message("      mapContour()")
         message("      mapDirectionField()")
         message("      mapLongitudeLatitudeXY()")
         message("      mapScalebar()")
-        message("      mapText()")
         message("      mapArrows()")
         message("      mapLocator()")
         message("      map2lonlat()")
@@ -176,7 +178,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
-    if (usingProj4() && projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
+    if (!usingProj4() && projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
         ## FIXME: can be filled.  It might be smart to do this in C
@@ -445,13 +447,15 @@ mapText <- function(longitude, latitude, labels, ...)
     latitude <- latitude[ok]
     labels <- labels[ok]
     if (length(longitude) > 0) {
-        xy <- mapproject(longitude, latitude)
+        if (usingProj4()) {
+            if (!exists("proj4")) stop("must call mapPlot() first")
+            xy<- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+        } else {
+            xy <- mapproject(longitude, latitude)
+        }
         text(xy$x, xy$y, labels, ...)
     }
 }
-
-
-
 
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
@@ -470,7 +474,8 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
         ## FIXME: should use mapLines here
         if (usingProj4()) {
             if (!exists("proj4")) stop("must call mapPlot() first")
-            line <- project(list(longitude=rep(l, n), latitude=seq(-90+polarCircle, 90-polarCircle, length.out=n)),
+            line <- project(list(longitude=rep(l, n),
+                                 latitude=seq(-90+polarCircle, 90-polarCircle, length.out=n)),
                                  proj=proj4)
         } else {
             line <- mapproject(rep(l, n), seq(-90+polarCircle, 90-polarCircle, length.out=n))
