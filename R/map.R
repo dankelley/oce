@@ -1,4 +1,7 @@
-.Last.proj4  <- local({
+## Author notes on proj4: see
+##  http://stackoverflow.com/questions/tagged/proj4
+
+.Last.proj4  <- local({                # emulate mapproj
     val <- list(proj="")
     function(new) if(!missing(new)) val <<- new else val
 })
@@ -143,23 +146,28 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
-    if (!is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")) {
+
+    ## Detect proj4 projection specification
+    ##if (!is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")) {
+    if (length(grep("^\\+proj", projection))) {
+        if (!is.null(parameters)) warning("'parameters' ignored since projection=\"+proj= ...\"")
+        if (!is.null(orientation)) warning("'orientation' ignored since projection=\"+proj= ...\"")
         message("using proj4 because oceProjection=\"proj4\"")
-        known <- c("mercator", "mollweide", "stereographic")
-        id <- pmatch(projection, known)
-        if (is.na(id))
-            stop("unknown projection (", projection, "); try one of: ", paste(known, collapse=" "))
-        projection <- known[id]
-        message("using projection: ", projection)
-        if (projection == "mercator") {
-            projSpec <- "+proj=merc"
-        } else if (projection == "mollweide") {
-            projSpec <- "+proj=moll"
-        } else if (projection == "stereographic") {
-            projSpec <- "+proj=stere"
-        } else {
-            stop("unknown projection \"", projection, "\"") # cannot get here
-        }
+        ##20140804 known <- c("mercator", "mollweide", "stereographic")
+        ##20140804 id <- pmatch(projection, known)
+        ##20140804 if (is.na(id))
+        ##20140804     stop("unknown projection (", projection, "); try one of: ", paste(known, collapse=" "))
+        ##20140804 projection <- known[id]
+        ##20140804 message("using projection: ", projection)
+        ##20140804 if (projection == "mercator") {
+        ##20140804     projSpec <- "+proj=merc"
+        ##20140804 } else if (projection == "mollweide") {
+        ##20140804     projSpec <- "+proj=moll"
+        ##20140804 } else if (projection == "stereographic") {
+        ##20140804     projSpec <- "+proj=stere"
+        ##20140804 } else {
+        ##20140804     stop("unknown projection \"", projection, "\"") # cannot get here
+        ##20140804 }
         ## http://www.remotesensing.org/geotiff/proj_list/
         ## code: blank=not done; 1=in list but no args; 2=in list and all args
         ##   Albers Equal-Area Conic
@@ -204,15 +212,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ##   Transverse Mercator (South Oriented)
         ##   Tunisia Mining Grid
         ##   VanDerGrinten
-        xy <- project(list(longitude=longitude, latitude=latitude), proj=projSpec)
-        .Last.proj4(list(proj=projSpec))
-        message("proj4 failures:")
-        message("  mapPlot() parameters and orientation arguments are ignored.")
-        message("  mapPlot() only accepts a few projections.")
-        message("  mapArrows() does not yet work")
-        message("  mapDirectionField() does not yet work")
-        message("  mapScalebar() does not yet work")
+        xy <- project(list(longitude=longitude, latitude=latitude), proj=projection)
+        .Last.proj4(list(proj=projection))
+        message("proj4 BUG: mapArrows(), mapDirectionField() and mapScalebar() do not yet work")
     } else {
+        .Last.proj4(list(proj="")) # turn off proj4
         xy <- mapproject(longitude, latitude,
                          projection=projection, parameters=parameters, orientation=orientation)
     }
@@ -221,7 +225,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
     y <- xy$y
-    if (!usingProj4() && projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
+    ## FIXME: maybe *always* do this.
+    ## FIXME: maybe *skip Antarctica*.
+    if (usingProj4() ||
+        projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
         ## FIXME: can be filled.  It might be smart to do this in C
@@ -229,26 +236,50 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         d[!is.finite(d)] <- 0          # FIXME: ok?
         ##dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
         ##bad <- d > dc
-        bad <- (d / diff(range(x, na.rm=TRUE))) > 0.1
+        ##bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
+        antarctic <- latitude[-1] < -60
+        bad <- ((d / diff(range(x, na.rm=TRUE))) > 0.1) & !antarctic
         ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
         ## FIXME: should we create a series of points to a trace along the edge 
         ## FIXME: the visible earth?
-
-        if (debug > 0 && sum(bad))
-            warning("mapPlot(): trimming spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
-
+        if (debug > 0 && sum(bad))    # FIXME should be debug>0
+            warning("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
+        message("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate")
         x[bad] <- NA                       
         y[bad] <- NA
     }
 
     if (limitsGiven) {
-        box <- mapproject(c(longitudelim[1], longitudelim[1],
-                            longitudelim[2], longitudelim[2]),
-                          c(latitudelim[1], latitudelim[2],
-                            latitudelim[2], latitudelim[1]))
+        ## 
+        if (usingProj4()) {
+            proj4 <- .Last.proj4()$proj
+            if (1 > nchar(proj4)) stop("must call mapPlot() first")
+            ## transform so can do e.g. latlim=c(70, 110) to centre on pole
+            ## next broken
+            message("latitudelim: ", paste(latitudelim, collapse=" "))
+            message("longitudelim: ", paste(longitudelim, collapse=" "))
+            if (latitudelim[2] > 90) {
+                longitudelim[2] <- 360 + longitudelim[2] - 180
+                latitudelim[2] <- 180 - latitudelim[2]
+            }
+            message("latitudelim: ", paste(latitudelim, collapse=" "))
+            message("longitudelim: ", paste(longitudelim, collapse=" "))
+            box <- project(list(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
+                                c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1])),
+                                proj=proj4)
+        } else {
+            box <- mapproject(c(longitudelim[1], longitudelim[1],
+                                longitudelim[2], longitudelim[2]),
+                              c(latitudelim[1], latitudelim[2],
+                                latitudelim[2], latitudelim[1]))
+        }
         plot(x, y, type=type,
              xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
              xlab="", ylab="", asp=1, axes=FALSE, ...)
+        abline(v=box$x, col='red')
+        abline(h=box$y, col='red')
+        axis(1)
+        axis(2)
     } else {
         plot(x, y, type=type,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
@@ -406,12 +437,19 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     }
     usr <- par('usr')
     n <- 360                           # number of points on line
+
+    ## handle proj4
+    proj4 <- ""
+    if (usingProj4()) {
+        proj4 <- .Last.proj4()$proj
+        if (1 > nchar(proj4)) stop("must call mapPlot() first")
+    }
+
     for (l in latitude) {
         ## FIXME: should use mapLines here
-        if (usingProj4()) {
-            proj4 <- .Last.proj4()$proj
-            if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            line <- project(list(longitude=seq(-180, 180, length.out=n), latitude=rep(l, n)), proj=proj4)
+        if ("" != proj4) {
+            small <- 0.001
+            line <- project(list(longitude=seq(-180+small, 180-small, length.out=n), latitude=rep(l, n)), proj=proj4)
         } else {
             line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
         }
