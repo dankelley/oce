@@ -237,7 +237,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ##dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
         ##bad <- d > dc
         ##bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
-        antarctic <- latitude[-1] < -60
+        antarctic <- latitude < -60
         bad <- ((d / diff(range(x, na.rm=TRUE))) > 0.1) & !antarctic
         ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
         ## FIXME: should we create a series of points to a trace along the edge 
