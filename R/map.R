@@ -209,7 +209,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     }
 
     if (limitsGiven) {
-        ## 
         if (usingProj4()) {
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
@@ -223,9 +222,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
             message("latitudelim: ", paste(latitudelim, collapse=" "))
             message("longitudelim: ", paste(longitudelim, collapse=" "))
-            box <- project(list(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
-                                c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1])),
-                                proj=proj4)
+            n <- 100
+            BOXx <- c(rep(longitudelim[1], n), seq(longitudelim[1], longitudelim[2], length.out=n),
+                      rep(longitudelim[1], n), seq(longitudelim[2], longitudelim[1], length.out=n))
+            BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
+                      seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
+            box <- project(list(BOXx, BOXy), proj=proj4)
+            ## box <- project(list(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
+            ##                     c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1])),
+            ##                     proj=proj4)
         } else {
             box <- mapproject(c(longitudelim[1], longitudelim[1],
                                 longitudelim[2], longitudelim[2]),
@@ -235,8 +240,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         plot(x, y, type=type,
              xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
              xlab="", ylab="", asp=1, axes=FALSE, ...)
-        abline(v=box$x, col='red')
-        abline(h=box$y, col='red')
+        points(box$x, box$y, pch=20, col='red')
         axis(1)
         axis(2)
     } else {
@@ -257,7 +261,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
         inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
-        latlabs <- seq(-90, 90, inc)
+        small <- 0.001
+        latlabs <- seq(-90+small, 90-small, length.out=round(1+180/inc))
         if (!missing(latitudelim)) { 
             incBest <- diff(pretty(latitudelim, n=4, n.min=3))[1]
             oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
@@ -280,9 +285,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         nlab <- 0
         lastAtY <- NA
         ##cat("inc:", inc, "\n")
+        message("about to draw axes.  NOTE: not converted to proj4 yet")
         if (drawGrid) {
             for (latlab in latlabs) {
-                ##cat("latlab:", latlab, "\n")
+                #message("latlab:", latlab, "\n")
                 if (-90 <= latlab && latlab <= 90) {
                     try({
                         o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]),
@@ -389,10 +395,11 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 {
     if (missing(latitude))
         latitude <- TRUE
+    small <- 0.001
     if (is.logical(latitude)) {
         if (!latitude)
             return()
-        latitude <- seq(-90, 90, 15)
+        latitude <- seq(-90+small, 90-small, length.out=13)
     }
     usr <- par('usr')
     n <- 360                           # number of points on line
@@ -403,11 +410,10 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
         proj4 <- .Last.proj4()$proj
         if (1 > nchar(proj4)) stop("must call mapPlot() first")
     }
-
     for (l in latitude) {
         ## FIXME: should use mapLines here
+        message("latitude: ", l)
         if ("" != proj4) {
-            small <- 0.001
             line <- project(list(longitude=seq(-180+small, 180-small, length.out=n), latitude=rep(l, n)), proj=proj4)
         } else {
             line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
@@ -503,6 +509,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 {
     if (missing(longitude))
         longitude <- TRUE
+    small <- 0.001
     if (is.logical(longitude)) {
         if (!longitude)
             return()
@@ -518,10 +525,10 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
             line <- project(list(longitude=rep(l, n),
-                                 latitude=seq(-90+polarCircle, 90-polarCircle, length.out=n)),
+                                 latitude=seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n)),
                                  proj=proj4)
         } else {
-            line <- mapproject(rep(l, n), seq(-90+polarCircle, 90-polarCircle, length.out=n))
+            line <- mapproject(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
         }
         x <- line$x
         y <- line$y
@@ -953,7 +960,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## if (debug==5 && !is.na(missingColor)) {
         ##     message("number missing color: ", sum(colPolygon==missingColor))
         ##     message("zclip: ", zclip)
-        ##     browser()
         ## }
 
         ## message("number of clipped polygons: ", sum(r$clippedPolygon))
