@@ -57,13 +57,18 @@
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
 
-    \item{projection}{projection; see \code{\link[mapproj]{mapproject}}.}
+    \item{projection}{a string indicating the form of projection to be used.
+        This may be in either of two formats.  The first is that used by
+        \code{\link[mapproj]{mapproject}} in the \code{mapproj} package; if
+        this is used, then the next two arguments are also used.  The second
+        form is that used by \code{\link[proj4]{project}} in the \code{proj4}
+        package.  See \dQuote{Examples}.}
 
-    \item{parameters}{parameters for projection; see
-        \code{\link[mapproj]{mapproject}}.}
+    \item{parameters}{parameters, if \code{projection} is in \code{mapproj}
+        form; see \code{\link[mapproj]{mapproject}}.}
     
-    \item{orientation}{orientation for projection; see
-        \code{\link[mapproj]{mapproject}}.}
+    \item{orientation}{orientation, if \code{projection} is in \code{mapproj}
+        form; see \code{\link[mapproj]{mapproject}}.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
@@ -98,6 +103,9 @@ data(coastlineWorld)
 mapPlot(coastlineWorld, proj="mollweide")
 mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
 
+## proj4 form
+mapPlot(coastlineWorld, proj="+proj=moll")
+
 ## Orthographic projections resemble a globe, making them
 ## attractive for non-technical use, but they are neither conformal
 ## nor equal-area, so they are somewhat limited for serious
@@ -119,9 +127,16 @@ mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         orientation=c(90,-100,0))
 
 ## The stereographic projection (Snyder 1987 page 120) is conformal,
-## used below for an Arctic view with a Canadian focus.
-mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(70,110),
+## used below for an Arctic view with a Canadian focus.  Note the trick
+## of going past the equator: the second latitudelim value is
+## 180 minus the first, and the second longitudelim is the first plus
+## 180; this sets up complementary points "over" the pole.
+par(mfrow=c(1,2))
+mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
+mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
+        proj="+proj=stere +lat_0=90 +lon_0=-135") # BUG: filling fails
+
 }
 }
 

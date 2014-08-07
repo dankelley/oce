@@ -161,7 +161,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         xy <- project(list(longitude=longitude, latitude=latitude), proj=projection)
         .Last.proj4(list(proj=projection))
         .Last.projection(list(projection="")) # turn off mapproj
-        message("proj4 BUG: mapArrows(), mapDirectionField() and mapScalebar() do not yet work")
     } else {
         .Last.proj4(list(proj="")) # turn off proj4
         xy <- mapproject(longitude, latitude,
@@ -191,7 +190,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## FIXME: the visible earth?
         if (debug > 0 && sum(bad))    # FIXME should be debug>0
             warning("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
-        message("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate")
         x[bad] <- NA                       
         y[bad] <- NA
     }
@@ -273,7 +271,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         nlab <- 0
         lastAtY <- NA
         ##cat("inc:", inc, "\n")
-        message("about to draw axes.  NOTE: not converted to proj4 yet")
+        message("About to draw axes.  NOTE: not converted to proj4 yet")
         if (drawGrid) {
             for (latlab in latlabs) {
                 #message("latlab:", latlab, "\n")
@@ -400,7 +398,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     ## }
     for (l in latitude) {
         ## FIXME: should use mapLines here
-        ## message("latitude: ", l)
+        ## message("latitude: ", l, ", n=", n)
         line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
         ## message("NEW"); str(line)
         ## if ("" != proj4) {
@@ -1219,7 +1217,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (usingProj4()) {
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            proj <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
             ## .Last.proj4(list(proj="")) # turn off proj4
         } else {
             mp <- mapproject(longitude, latitude)
