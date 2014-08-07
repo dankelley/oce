@@ -158,7 +158,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## Next line is a bit of a kludge, to prevent projection
         ## problems with some fake data on Anarctica (lat < south pole)
         latitude <- ifelse(latitude < (-90), -89.999, latitude)
-        xy <- project(list(longitude=longitude, latitude=latitude), proj=projection)
+        message("FIXME here: must call project() in an apply() construct or loop :-(")
+        try({
+        xy <- project(list(x=longitude, y=latitude), proj=projection)
+        }, silent=TRUE)
+        message("AFTER")
+        browser()
         .Last.proj4(list(proj=projection))
         .Last.projection(list(projection="")) # turn off mapproj
     } else {
@@ -1218,7 +1223,9 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (usingProj4()) {
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
+            try({
             xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+            }, silent=TRUE)
             ## .Last.proj4(list(proj="")) # turn off proj4
         } else {
             mp <- mapproject(longitude, latitude)

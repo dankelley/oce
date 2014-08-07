@@ -109,10 +109,8 @@ mapPlot(coastlineWorld, proj="+proj=moll")
 ## Orthographic projections resemble a globe, making them
 ## attractive for non-technical use, but they are neither conformal
 ## nor equal-area, so they are somewhat limited for serious
-## use on large scales.  See Snyder (1987 section 20).  The
-## examples given below illustrate use for low-latitude
-## Pacific and high-latitude Atlantic/Arctic.
-par(mfrow=c(1,2), mar=rep(1, 4))
+## use on large scales.  See Snyder (1987 section 20).
+par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
 mtext("mapproj method", adj=1)
