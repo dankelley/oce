@@ -405,19 +405,22 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     n <- 360                           # number of points on line
 
     ## handle proj4
-    proj4 <- ""
-    if (usingProj4()) {
-        proj4 <- .Last.proj4()$proj
-        if (1 > nchar(proj4)) stop("must call mapPlot() first")
-    }
+    ## proj4 <- ""
+    ## if (usingProj4()) {
+    ##     proj4 <- .Last.proj4()$proj
+    ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
+    ## }
     for (l in latitude) {
         ## FIXME: should use mapLines here
-        message("latitude: ", l)
-        if ("" != proj4) {
-            line <- project(list(longitude=seq(-180+small, 180-small, length.out=n), latitude=rep(l, n)), proj=proj4)
-        } else {
-            line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
-        }
+        ## message("latitude: ", l)
+        line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
+        ## message("NEW"); str(line)
+        ## if ("" != proj4) {
+        ##     line <- project(list(longitude=seq(-180+small, 180-small, length.out=n), latitude=rep(l, n)), proj=proj4)
+        ## } else {
+        ##     line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
+        ## }
+        ## message("OLD"); str(line)
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
@@ -494,13 +497,16 @@ mapText <- function(longitude, latitude, labels, ...)
     latitude <- latitude[ok]
     labels <- labels[ok]
     if (length(longitude) > 0) {
-        if (usingProj4()) {
-            proj4 <- .Last.proj4()$proj
-            if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-        } else {
-            xy <- mapproject(longitude, latitude)
-        }
+        xy <- lonlat2map(longitude, latitude)
+        ## str(xy)
+        ## if (usingProj4()) {
+        ##     proj4 <- .Last.proj4()$proj
+        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
+        ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+        ## } else {
+        ##     xy <- mapproject(longitude, latitude)
+        ## }
+        ## str(xy)
         text(xy$x, xy$y, labels, ...)
     }
 }
@@ -521,15 +527,18 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     n <- 360                           # number of points on line
     for (l in longitude) {
         ## FIXME: should use mapLines here
-        if (usingProj4()) {
-            proj4 <- .Last.proj4()$proj
-            if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            line <- project(list(longitude=rep(l, n),
-                                 latitude=seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n)),
-                                 proj=proj4)
-        } else {
-            line <- mapproject(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
-        }
+        line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
+        ## message("NEW"); str(line)
+        ## if (usingProj4()) {
+        ##     proj4 <- .Last.proj4()$proj
+        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
+        ##     line <- project(list(longitude=rep(l, n),
+        ##                          latitude=seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n)),
+        ##                          proj=proj4)
+        ## } else {
+        ##     line <- mapproject(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
+        ## }
+        ## message("OLD"); str(line)
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
@@ -555,13 +564,16 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     }
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
-    if (usingProj4()) {
-        proj4 <- .Last.proj4()$proj
-        if (1 > nchar(proj4)) stop("must call mapPlot() first")
-        xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-    } else {
-        xy <- mapproject(longitude, latitude)
-    }
+    xy <- lonlat2map(longitude, latitude)
+    ## message("NEW"); str(xy)
+    ## if (usingProj4()) {
+    ##     proj4 <- .Last.proj4()$proj
+    ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
+    ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+    ## } else {
+    ##     xy <- mapproject(longitude, latitude)
+    ## }
+    ## message("NEW"); str(xy)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
     DX <- usr[2] - usr[1]
@@ -590,13 +602,18 @@ mapPoints <- function(longitude, latitude, ...)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
     if (length(longitude) > 0) {
-        if (usingProj4()) {
-            proj4 <- .Last.proj4()$proj
-            if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-        } else {
-            xy <- mapproject(longitude, latitude)
-        }
+        xy <- lonlat2map(longitude, latitude)
+        ## message("next is new estimate")
+        ## str(xy)
+        ## if (usingProj4()) {
+        ##     proj4 <- .Last.proj4()$proj
+        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
+        ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+        ## } else {
+        ##     xy <- mapproject(longitude, latitude)
+        ## }
+        ## message("next is old estimate")
+        ## str(xy)
         points(xy$x, xy$y, ...)
     }
 }
@@ -1133,7 +1150,7 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
     list(longitude=longitude, latitude=latitude)
 }
 
-lonlat2xy <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
+lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
     if (is.list(longitude)) {
         latitude <- longitude$latitude
@@ -1181,14 +1198,14 @@ xy2lonlat <- function(x, y)
     n <- length(x)
     if (n != length(y))
         stop("lengths of x and y must match but they are ", n, " and ", length(y))
-    ## NB. if projections are set by mapPlot() or lonlat2xy(), only one of the 
+    ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if (0 < nchar(.Last.proj4()$proj)) {
         ##message("proj4-style projection exists")
         xy <- project(list(x=x, y=y), proj=.Last.proj4()$proj, inverse=TRUE)
         return(list(longitude=xy$x, latitude=xy$y))
     } else if (0 == nchar(.Last.projection()$projection)) {
-        stop("must first set up a projection by calling mapPlot() or lonlat2xy()")
+        stop("must first set up a projection by calling mapPlot() or lonlat2map()")
     }
     ##message("mapproj-style projection exists")
     ## OK, we know we are using mapproj-style
