@@ -1,4 +1,6 @@
 0.9-15
+- xy2lonlat() and lonlat2xy() added
+- permit proj4 style map projections
 - landsat-7 (and possibly 4 and 5) support
 - landsat decimation/plotting improvements
 - drifterGrid() added
