@@ -11,12 +11,12 @@
 
 \arguments{
 
-  \item{longitude}{decimal longitude.  May also be a list containing items
-      named \code{longitude} and \code{latitude}, in which case the indicated
-      values are used, and next argument is ignored.}
+  \item{longitude}{a vector containing decimal longitudes, or a list containing
+      items named \code{longitude} and \code{latitude}, in which case the
+      indicated values are used, and next argument is ignored.}
 
-  \item{latitude}{decimal latitude (ignored if \code{longitude} is a list
-      containing both coordinates)}
+  \item{latitude}{a vector containing decimal latitude (ignored if
+      \code{longitude} is a list, as described above).}
 
   \item{projection}{optional indication of projection.  This may be in the
       format used by the \code{proj4} package (i.e. a string starting with

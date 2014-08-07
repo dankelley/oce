@@ -10,7 +10,13 @@
 
 \arguments{
 
-  \item{x,y}{coordinates of points in the projected space.}
+  \item{x}{a vector containing the x component of points in the projected
+      space, or a list containing items named \code{x} and \code{y}, in which
+      case the next argument is ignored.}
+
+  \item{y}{a vector containing the y coordinate of points in the projected
+      space (ignored if \code{x} is a list, as described above).}
+
 }
 
 \details{A projection must already have been set up, by a call to
@@ -27,8 +33,8 @@
     \code{proj4} package provides inverse functions, while \code{mapproj} does
     not.  In the latter case, \code{xy2lonlat} attempts to invert the
     projection by a minimization procedure using \code{\link{optim}}, and this
-    method can be quite inaccurate, depending on the projection and the
-    location in question.}
+    method can produce inaccurate results (or simply fail), depending on the
+    projection and the location in question.}
 
 \value{A list containing \code{longitude} and \code{latitude}.}
 
