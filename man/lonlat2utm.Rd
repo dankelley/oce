@@ -32,8 +32,8 @@ lonlat2utm(-64.496567, 45.334626)
 }
 
 \seealso{\code{\link{utm2lonlat}} does the inverse operation.  For general
-    projections and their inverses, use \code{\link{lonlat2xy}} and
-    \code{\link{xy2lonlat}}.}
+    projections and their inverses, use \code{\link{lonlat2map}} and
+    \code{\link{map2lonlat}}.}
 
 \references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
     downloaded May 31, 2014.}

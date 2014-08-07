@@ -291,7 +291,6 @@ export("+.section",
        window.oce,
        write.ctd,
        utm2lonlat,
-       xy2lonlat, # FIXME: move code to map2lonlat (docs too -- jeeze)
        xyzToEnu,
        xyzToEnuAdp,
        xyzToEnuAdv)

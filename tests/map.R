@@ -19,13 +19,13 @@ stopifnot(all.equal(utm$zone, zone, tolerance=1e-5))
 ## Projections: proj4
 ## "cs" is near Cape Split, in the Bay of Fundy
 cs <- list(longitude=-64.4966,latitude=45.3346)
-xy <- lonlat2xy(cs$longitude, cs$latitude, "+proj=merc")
-cs2 <- xy2lonlat(xy$x, xy$y)
+xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
+cs2 <- map2lonlat(xy$x, xy$y)
 stopifnot(all.equal(cs, cs2, tolerance=1e-6)) # on 64bit machine can go to 1e-15
 
 ## Projections: mapproj
 cs <- list(longitude=-64.4966,latitude=45.3346)
-xy <- lonlat2xy(cs$longitude, cs$latitude, "mercator")
-cs3 <- xy2lonlat(xy$x, xy$y)
+xy <- lonlat2map(cs$longitude, cs$latitude, "mercator")
+cs3 <- map2lonlat(xy$x, xy$y)
 stopifnot(all.equal(cs, cs3, tolerance=1e-5)) # on 64bit machine can go to 1e-7
 
