@@ -195,40 +195,25 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     }
 
     if (limitsGiven) {
-        if (usingProj4()) {
-            proj4 <- .Last.proj4()$proj
-            if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            ## transform so can do e.g. latlim=c(70, 110) to centre on pole
-            ## next broken
-            message("latitudelim: ", paste(latitudelim, collapse=" "))
-            message("longitudelim: ", paste(longitudelim, collapse=" "))
-            if (latitudelim[2] > 90) {
-                longitudelim[2] <- 360 + longitudelim[2] - 180
-                latitudelim[2] <- 180 - latitudelim[2]
-            }
-            message("latitudelim: ", paste(latitudelim, collapse=" "))
-            message("longitudelim: ", paste(longitudelim, collapse=" "))
-            n <- 100
-            BOXx <- c(rep(longitudelim[1], n), seq(longitudelim[1], longitudelim[2], length.out=n),
-                      rep(longitudelim[1], n), seq(longitudelim[2], longitudelim[1], length.out=n))
-            BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
-                      seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
-            box <- project(list(BOXx, BOXy), proj=proj4)
-            ## box <- project(list(c(longitudelim[1], longitudelim[1], longitudelim[2], longitudelim[2]),
-            ##                     c(latitudelim[1], latitudelim[2], latitudelim[2], latitudelim[1])),
-            ##                     proj=proj4)
-        } else {
-            box <- mapproject(c(longitudelim[1], longitudelim[1],
-                                longitudelim[2], longitudelim[2]),
-                              c(latitudelim[1], latitudelim[2],
-                                latitudelim[2], latitudelim[1]))
+        ## transform so can do e.g. latlim=c(70, 110) to centre on pole
+        ##message("latitudelim: ", paste(latitudelim, collapse=" "))
+        ##message("longitudelim: ", paste(longitudelim, collapse=" "))
+        if (latitudelim[2] > 90) {
+            longitudelim[2] <- 360 + longitudelim[2] - 180
+            latitudelim[2] <- 180 - latitudelim[2]
         }
+        ##message("latitudelim: ", paste(latitudelim, collapse=" "))
+        ##message("longitudelim: ", paste(longitudelim, collapse=" "))
+        n <- 10
+        BOXx <- c(rep(longitudelim[1], n), seq(longitudelim[1], longitudelim[2], length.out=n),
+                  rep(longitudelim[2], n), seq(longitudelim[2], longitudelim[1], length.out=n))
+        BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
+                  seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
+        box <- lonlat2map(BOXx, BOXy)
         plot(x, y, type=type,
              xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
              xlab="", ylab="", asp=1, axes=FALSE, ...)
-        points(box$x, box$y, pch=20, col='red')
-        axis(1)
-        axis(2)
+        ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
     } else {
         plot(x, y, type=type,
              xlab="", ylab="", asp=1, axes=FALSE, ...)
@@ -271,23 +256,31 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         nlab <- 0
         lastAtY <- NA
         ##cat("inc:", inc, "\n")
-        message("About to draw axes.  NOTE: not converted to proj4 yet")
+        ##message("About to draw axes.  NOTE: not converted to proj4 yet")
+        usr <- par('usr')
+        scale <- max(usr[2] - usr[1], usr[4] - usr[3])
+        ##message("scale: ", scale)
         if (drawGrid) {
             for (latlab in latlabs) {
-                #message("latlab:", latlab, "\n")
                 if (-90 <= latlab && latlab <= 90) {
                     try({
-                        o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]),
+                        o <- optimize(function(lon) {
+                                      abs(lonlat2map(lon, latlab)$x-usr[1])},
                                       lower=-180, upper=180)
-                        if (o$objective > 0.01)
+                        message("latlab: ", latlab, ", o$objective/scale: ", o$objective/scale)
+                        if (o$objective > scale / 100)
                             next
                         lonlab <- o$minimum
-                        at <- mapproject(lonlab, latlab)
+                        message("lonlab: ", lonlab)
+                        #if (abs(latlab - 45) < 2) browser()
+                        at <- lonlat2map(lonlab, latlab)
+                        message("at: ", paste(at, collapse=" "))
                         if (usr[3] < at$y && at$y < usr[4]) {
-                            ##cat("lonlab:", lonlab, " INSIDE\n")
+                            message("lonlab:", lonlab, " INSIDE")
                             labelAt <- c(labelAt, at$y)
                             nlab <- nlab + 1
-                            lab[nlab] <- formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi)
+                            lab[nlab] <- formatPosition(round(latlab, digits=2), # round because we avoid poles
+                                                        isLat=TRUE, type="expression", showHemi=showHemi)
                             oceDebug(debug, "  y axis: ",
                                      formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
@@ -307,7 +300,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (nlab > 0) {
             if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
-                axis(2, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray",
+                axis(2, at=labelAt,
+                     labels=lab[1:nlab],
+                     ##labels=c("DAN", "BOY", "OK?"),
+                     col.ticks="lightgray",
                      mgp=getOption('oceMgp'))
             }
         }
@@ -339,12 +335,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         mgp <- par('mgp')
         for (lonlab in lonlabs) {
             if (-180 <= lonlab && lonlab < 180) { # the limits are the lonlim
+                ##message("lonlab: ", lonlab)
                 try({
-                    o <- optimize(function(lat) abs(mapproject(lonlab, lat)$y-usr[3]), lower=-89, upper=89)
-                    if (o$object > 0.01)
+                    o <- optimize(function(lat) {
+                                  abs(lonlat2map(lonlab, lat)$y-usr[3])},
+                                  lower=-89, upper=89)
+                    if (o$object > scale / 100)
                         next
                     latlab <- o$minimum
-                    at <- mapproject(lonlab, latlab)
+                    at <- lonlat2map(lonlab, latlab)
                     if (usr[1] < at$x && at$x < usr[2]) {
                         labelAt <- c(labelAt, at$x)
                         nlab <- nlab + 1
@@ -632,7 +631,9 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     type <- match.arg(type)
     signs <- sign(latlon)
     x <- abs(latlon)
+    message("x: ", x)
     degrees <- floor(x)
+    message("degrees: ", degrees)
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
@@ -687,7 +688,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
                                                     list(d=degrees[i],
                                                          m=sprintf("%02d", minutes[i]),
-                                                         s=sprintf("%02d", seconds[i]),
+                                                         s=sprintf("%02f", seconds[i]),
                                                          hemi=hemispheres[i])))
             }
         }

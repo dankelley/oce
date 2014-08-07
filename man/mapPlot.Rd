@@ -115,9 +115,9 @@ mapPlot(coastlineWorld, proj="+proj=moll")
 par(mfrow=c(1,2), mar=rep(1, 4))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
-mapPlot(coastlineWorld, projection="orthographic",
-        orientation=c(60,-40,0))
-mtext("BUG: this panel should use proj4", font=2, col="purple")
+mtext("mapproj method", adj=1)
+mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+mtext("proj4 method", adj=1)
 
 ## The Lambert conformal conic projection is an equal-area
 ## projection recommended by Snyder for regions of large 
@@ -126,20 +126,24 @@ mtext("BUG: this panel should use proj4", font=2, col="purple")
 ## with those with a polygonic projection, which is also popular.
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
-        orientation=c(90,-100,0))
+        orientation=c(90, -100, 0))
+mtext("mapproj method", adj=1)
+mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
+        projection="+proj=lcc +lon_0=-100")
+mtext("proj4 method", adj=1)
 
 ## The stereographic projection (Snyder 1987 page 120) is conformal,
 ## used below for an Arctic view with a Canadian focus.  Note the trick
 ## of going past the pole: the second latitudelim value is
 ## 180 minus the first, and the second longitudelim is 180 plus
 ## the first; this uses image points "over" the pole.
-par(mfrow=c(1,2))
+par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
+mtext("mapproj method", adj=1)
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
-        proj="+proj=stere +lat_0=90 +lon_0=-135") # BUG: filling fails
-mtext("BUG: filling does not work yet in proj4 case", col='purple', font=2)
-mtext("BUG: axes do not work in proj4 case", line=1, col='purple', font=2)
+        proj="+proj=stere +lat_0=90 +lon_0=-135") #, fill='gray')
+mtext("proj4 method", adj=1)
 
 }
 }
