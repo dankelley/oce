@@ -112,10 +112,12 @@ mapPlot(coastlineWorld, proj="+proj=moll")
 ## use on large scales.  See Snyder (1987 section 20).  The
 ## examples given below illustrate use for low-latitude
 ## Pacific and high-latitude Atlantic/Arctic.
+par(mfrow=c(1,2), mar=rep(1, 4))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(60,-40,0))
+mtext("BUG: this panel should use proj4", font=2, col="purple")
 
 ## The Lambert conformal conic projection is an equal-area
 ## projection recommended by Snyder for regions of large 
@@ -128,14 +130,16 @@ mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
 
 ## The stereographic projection (Snyder 1987 page 120) is conformal,
 ## used below for an Arctic view with a Canadian focus.  Note the trick
-## of going past the equator: the second latitudelim value is
-## 180 minus the first, and the second longitudelim is the first plus
-## 180; this sets up complementary points "over" the pole.
+## of going past the pole: the second latitudelim value is
+## 180 minus the first, and the second longitudelim is 180 plus
+## the first; this uses image points "over" the pole.
 par(mfrow=c(1,2))
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="+proj=stere +lat_0=90 +lon_0=-135") # BUG: filling fails
+mtext("BUG: filling does not work yet in proj4 case", col='purple', font=2)
+mtext("BUG: axes do not work in proj4 case", line=1, col='purple', font=2)
 
 }
 }
