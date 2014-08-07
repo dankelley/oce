@@ -172,6 +172,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         latitude <- ifelse(latitude < (-90), -89.999, latitude)
         xy <- project(list(longitude=longitude, latitude=latitude), proj=projection)
         .Last.proj4(list(proj=projection))
+        .Last.projection(list(projection="")) # turn off mapproj
         message("proj4 BUG: mapArrows(), mapDirectionField() and mapScalebar() do not yet work")
     } else {
         .Last.proj4(list(proj="")) # turn off proj4
@@ -1146,11 +1147,12 @@ lonlat2xy <- function(longitude, latitude, projection="", parameters=NULL, orien
             proj4 <- .Last.proj4()$proj
             if (1 > nchar(proj4)) stop("must call mapPlot() first")
             proj <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
+            ## .Last.proj4(list(proj="")) # turn off proj4
         } else {
             mp <- mapproject(longitude, latitude)
             xy <- list(x=mp$x, y=mp$y)
+            ## .Last.projection(list(projection="")) # turn off mapproj
         }
-        stop("cannot handle existing projection")
     } else {
         usingMapproj <- 0 == length(grep("^\\+proj", projection))
         if (usingMapproj) {
@@ -1158,14 +1160,19 @@ lonlat2xy <- function(longitude, latitude, projection="", parameters=NULL, orien
                              projection=projection,
                              parameters=parameters, orientation=orientation)
             xy <- list(x=mp$x, y=mp$y)
+            .Last.proj4(list(proj="")) # turn off proj4
+            ## message("turned off 'proj4' projection")
         } else {
             xy <- project(list(longitude=longitude, latitude=latitude), proj=projection)
+            .Last.proj4(list(proj=projection)) # turn on proj4
+            .Last.projection(list(projection="")) # turn off mapproj
+            ## message("turned off 'mapproj' projection")
         }
     }
     xy
 }
 
-xy2lonlat <- function(x, y, projection="", parameters=NULL, orientation=NULL)
+xy2lonlat <- function(x, y)
 {
     if (is.list(x)) {
         y <- x$y
@@ -1174,71 +1181,53 @@ xy2lonlat <- function(x, y, projection="", parameters=NULL, orientation=NULL)
     n <- length(x)
     if (n != length(y))
         stop("lengths of x and y must match but they are ", n, " and ", length(y))
-    knownProjection <- FALSE
-    if ("" == projection) {
-        message("FIXME: xy2lonlat() needs to know about existing projection: is that set up OK?")
-        if (0 < nchar(.Last.projection()$projection)) {
-            lp <- .Last.projection()
-            projection <- lp$projection
-            parameters <- lp$parameters
-            orientation <- lp$orientation
-            message("mapproj case")
-        } else if (0 < nchar(.Last.proj4()$proj)) {
-            projection <- .Last.proj4()$proj
-            message("proj4 case")
-        } else {
-            stop("either supply 'projection' or use mapPlot() first")
-        }
-        knownProjection <- TRUE
+    ## NB. if projections are set by mapPlot() or lonlat2xy(), only one of the 
+    ## following two tests can be true.
+    if (0 < nchar(.Last.proj4()$proj)) {
+        ##message("proj4-style projection exists")
+        xy <- project(list(x=x, y=y), proj=.Last.proj4()$proj, inverse=TRUE)
+        return(list(longitude=xy$x, latitude=xy$y))
+    } else if (0 == nchar(.Last.projection()$projection)) {
+        stop("must first set up a projection by calling mapPlot() or lonlat2xy()")
     }
-    message("knownProjection: ", knownProjection)
-    usingMapproj <- 0 == length(grep("^\\+proj", projection))
-    if (usingMapproj) {
-        init <- c(0, 0) # FIXME: this will fail if the point is off the map
-        lon <- vector("numeric", n)
-        lat <- vector("numeric", n)
-        tolerance <- 0.001
-        for (i in 1:n) {
-            xy <- c(x[i], y[i])
-            message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
-            try({
-                error <- FALSE
-                ## FIXME: find better way to do the inverse mapping
-                message("init:", init[1], " ", init[2])
-                o <- optim(init,
-                           function(xyTrial) {
-                               ##message("START: xyTrial[1]=", xyTrial[1], ", xyTrial[2]=", xyTrial[2])
-                               if (knownProjection) {
-                                   xyp <- mapproject(xyTrial[1], xyTrial[2])
-                               } else {
-                                   xyp <- mapproject(xyTrial[1], xyTrial[2],
-                                                     projection=projection,
-                                                     parameters=parameters,
-                                                     orientation=orientation)
-                               }
-                               error <<- xyp$error
-                               misfit <- sqrt((xyp$x-xyTrial[1])^2+(xyp$y-xyTrial[2])^2)
-                               message(xyTrial[1], "E ", xyTrial[2], "N misfit=", misfit)
-                               misfit
-                           },
-                           control=list(abstol=tolerance)) #, trace=TRUE))
-                message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-                if (o$convergence == 0 && !error) {
-                    lonlat <- o$par
-                    lon[i] <- lonlat[1]
-                    lat[i] <- lonlat[2]
-                    init[1] <- lon[i]
-                    init[2] <- lat[i]
-                } else {
-                    lon[i] <- NA
-                    lat[i] <- NA
-                }
-            }, silent=TRUE)
-        }
-        lonlat <- list(longitude=lon, latitude=lat)
-    } else {
-        xy <- project(list(x=x, y=y), proj=projection, inverse=TRUE)
-        lonlat <- list(longitude=xy$x, latitude=xy$y)
+    ##message("mapproj-style projection exists")
+    ## OK, we know we are using mapproj-style
+    lp <- .Last.projection()
+    projection <- lp$projection
+    parameters <- lp$parameters
+    orientation <- lp$orientation
+    init <- c(0, 0) # FIXME: this will fail if the point is off the map
+    lon <- vector("numeric", n)
+    lat <- vector("numeric", n)
+    tolerance <- 1e-5
+    for (i in 1:n) {
+        xy <- c(x[i], y[i])
+        ##message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
+        try({
+            error <- FALSE
+            ##message("init:", init[1], " ", init[2])
+            o <- optim(init,
+                       function(xyTrial) {
+                           xyp <- mapproject(xyTrial[1], xyTrial[2],
+                                             projection=projection,
+                                             parameters=parameters,
+                                             orientation=orientation)
+                           error <<- xyp$error
+                           misfit <- sqrt((xyp$x-xy[1])^2+(xyp$y-xy[2])^2)
+                           ##message(xyTrial[1], "E ", xyTrial[2], "N misfit=", misfit)
+                           misfit
+                       })
+            if (o$convergence == 0 && !error) {
+                lonlat <- o$par
+                lon[i] <- lonlat[1]
+                lat[i] <- lonlat[2]
+                init[1] <- lon[i]
+                init[2] <- lat[i]
+            } else {
+                lon[i] <- NA
+                lat[i] <- NA
+            }
+        }, silent=TRUE)
     }
-    lonlat
+    return(list(longitude=lon, latitude=lat))
 }

@@ -45,9 +45,9 @@ library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 cs <- list(longitude=-64.49657,latitude=45.33462)
 xy <- lonlat2xy(cs, projection="+proj=merc")
-xy2lonlat(xy, projection="+proj=merc")
+xy2lonlat(xy)
 xy <- lonlat2xy(cs, projection="mercator")
-xy2lonlat(xy)#, projection="mercator") # FIXME: the lon is way off
+xy2lonlat(xy)
 }
 
 \seealso{\code{mapLongitudeLatitudeXY} is a safer alternative, if a map has

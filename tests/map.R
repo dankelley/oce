@@ -20,7 +20,12 @@ stopifnot(all.equal(utm$zone, zone, tolerance=1e-5))
 ## "cs" is near Cape Split, in the Bay of Fundy
 cs <- list(longitude=-64.4966,latitude=45.3346)
 xy <- lonlat2xy(cs$longitude, cs$latitude, "+proj=merc")
-lonlat <- xy2lonlat(xy$x, xy$y, "+proj=merc")
-##stopifnot(all.equal(cs, lonlat, tolerance=1e-15)) # this works on 64-bit
-stopifnot(all.equal(cs, lonlat, tolerance=1e-6))
+cs2 <- xy2lonlat(xy$x, xy$y)
+stopifnot(all.equal(cs, cs2, tolerance=1e-6)) # on 64bit machine can go to 1e-15
+
+## Projections: mapproj
+cs <- list(longitude=-64.4966,latitude=45.3346)
+xy <- lonlat2xy(cs$longitude, cs$latitude, "mercator")
+cs3 <- xy2lonlat(xy$x, xy$y)
+stopifnot(all.equal(cs, cs3, tolerance=1e-5)) # on 64bit machine can go to 1e-7
 
