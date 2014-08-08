@@ -407,8 +407,8 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
     ## }
     for (l in latitude) {
-        ## FIXME: should use mapLines here
-        ## message("latitude: ", l, ", n=", n)
+        ## FIXME: maybe we should use mapLines here
+        ## message("mapMeridian at ", l, " N")
         line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
         ## message("NEW"); str(line)
         ## if ("" != proj4) {
@@ -429,18 +429,22 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
         ## FIXME: can be filled.  It might be smart to do this in C
-        d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
-        d[!is.finite(d)] <- 0
-        if (0 == length(d))
-            next
-        ##2014-01-09 dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
-        dc <- as.numeric(median(d, na.rm=TRUE))
-        bad <- d > 3 * dc
-        x[bad] <- NA                   # FIXME: add, don't replace
-        y[bad] <- NA                   # FIXME: add, don't replace
+        if (FALSE) { # this was a bad idea, e.g. in orthographic, lines cross whole domain
+            d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+            d[!is.finite(d)] <- 0
+            if (0 == length(d))
+                next
+            ##2014-01-09 dc <- as.numeric(quantile(d, 0.99, na.rm=TRUE)) # FIXME: criterion
+            dc <- as.numeric(median(d, na.rm=TRUE))
+            bad <- d > 3 * dc
+            x[bad] <- NA                   # FIXME: add, don't replace
+            y[bad] <- NA                   # FIXME: add, don't replace
+        }
         ## NB. used to check for points in region but when zoomed in closely, there may be none!
         ##if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
         lines(x, y, lty=lty, lwd=lwd, col=col, ...)
+        ## message("x has ", sum(!is.na(x)), " good points")
+        ## message("y has ", sum(!is.na(y)), " good points")
         ##points(x, y, pch=20, col='red', cex=.7)
         ##}
     }
@@ -524,7 +528,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     for (l in longitude) {
         ## FIXME: should use mapLines here
         line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
-        ## message("NEW"); str(line)
+        ## message("meridian at longitude=", l)
         ## if (usingProj4()) {
         ##     proj4 <- .Last.proj4()$proj
         ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
