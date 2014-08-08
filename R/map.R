@@ -150,27 +150,33 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
 
-    ## Detect proj4 projection specification
-    ##if (!is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")) {
-    if (length(grep("^\\+proj", projection))) {
-        if (!is.null(parameters)) warning("'parameters' ignored since projection=\"+proj= ...\"")
-        if (!is.null(orientation)) warning("'orientation' ignored since projection=\"+proj= ...\"")
-        ## Next line is a bit of a kludge, to prevent projection
-        ## problems with some fake data on Anarctica (lat < south pole)
-        latitude <- ifelse(latitude < (-90), -89.999, latitude)
-        message("FIXME here: must call project() in an apply() construct or loop :-(")
-        try({
-        xy <- project(list(x=longitude, y=latitude), proj=projection)
-        }, silent=TRUE)
-        message("AFTER")
-        browser()
-        .Last.proj4(list(proj=projection))
-        .Last.projection(list(projection="")) # turn off mapproj
-    } else {
-        .Last.proj4(list(proj="")) # turn off proj4
-        xy <- mapproject(longitude, latitude,
-                         projection=projection, parameters=parameters, orientation=orientation)
-    }
+    ## Convert to map coordinates
+    ##20140808 ## Detect proj4 projection specification
+    ##20140808 ##if (!is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")) {
+    ##20140808 xy <- NULL
+    ##20140808 if (length(grep("^\\+proj", projection))) {
+    ##20140808     if (!is.null(parameters)) warning("'parameters' ignored since projection=\"+proj= ...\"")
+    ##20140808     if (!is.null(orientation)) warning("'orientation' ignored since projection=\"+proj= ...\"")
+    ##20140808     ## Next line is a bit of a kludge, to prevent projection
+    ##20140808     ## problems with some fake data on Anarctica (lat < south pole)
+    ##20140808     latitude <- ifelse(latitude < (-90), -89.999, latitude)
+    ##20140808     message("FIXME here: must call project() in an apply() construct or loop :-(")
+    ##20140808     ## FIXME: DRY: better to use lonlat2map() here
+    ##20140808     try({
+    ##20140808     xy <- project(list(x=longitude, y=latitude), proj=projection)
+    ##20140808     }, silent=TRUE)
+    ##20140808     message("AFTER")
+    ##20140808     .Last.proj4(list(proj=projection))
+    ##20140808     .Last.projection(list(projection="")) # turn off mapproj
+    ##20140808 } else {
+    ##20140808     .Last.proj4(list(proj="")) # turn off proj4
+    ##20140808     xy <- mapproject(longitude, latitude,
+    ##20140808                      projection=projection, parameters=parameters, orientation=orientation)
+    ##20140808 }
+    ##20140808 message("OLD:"); str(xy)
+
+    xy <- lonlat2map(longitude, latitude, 
+                     projection=projection, parameters=parameters, orientation=orientation)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
@@ -272,14 +278,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         o <- optimize(function(lon) {
                                       abs(lonlat2map(lon, latlab)$x-usr[1])},
                                       lower=-180, upper=180)
-                        message("latlab: ", latlab, ", o$objective/scale: ", o$objective/scale)
+                        ## message("latlab: ", latlab, ", o$objective/scale: ", o$objective/scale)
                         if (o$objective > scale / 100)
                             next
                         lonlab <- o$minimum
-                        message("lonlab: ", lonlab)
+                        ## message("lonlab: ", lonlab)
                         #if (abs(latlab - 45) < 2) browser()
                         at <- lonlat2map(lonlab, latlab)
-                        message("at: ", paste(at, collapse=" "))
+                        ## message("at: ", paste(at, collapse=" "))
                         if (usr[3] < at$y && at$y < usr[4]) {
                             message("lonlab:", lonlab, " INSIDE")
                             labelAt <- c(labelAt, at$y)
@@ -1212,6 +1218,9 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
+    ## NOTE: the proj4 method can run into errors (e.g. "ortho" for points on opposite
+    ## side of the earth) an may have to be done (slowly) point by point; a warning is
+    ## issued if so.
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
@@ -1219,34 +1228,35 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
-    if ("" == projection) {
-        if (usingProj4()) {
-            proj4 <- .Last.proj4()$proj
-            if (1 > nchar(proj4)) stop("must call mapPlot() first")
-            try({
-            xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-            }, silent=TRUE)
-            ## .Last.proj4(list(proj="")) # turn off proj4
-        } else {
-            mp <- mapproject(longitude, latitude)
-            xy <- list(x=mp$x, y=mp$y)
-            ## .Last.projection(list(projection="")) # turn off mapproj
+    ## Use proj4 if it has been set up (and still exists).
+    if ("" == projection) projection <- .Last.proj4()$proj
+    if (0 == length(grep("^\\+proj", projection))) { 
+        ## mapproj case
+        m <- mapproject(longitude, latitude,
+                        projection=projection,
+                        parameters=parameters, orientation=orientation)
+        xy <- list(x=m[,1], y=m[,2])
+        .Last.proj4(list(proj=""))     # turn proj4 off, in case it was on
+    } else {                           
+        ## proj4 case
+        ll <- cbind(longitude, latitude)
+        m <- NULL                 # for the try()
+        try({
+            m <- project(ll, proj=projection)
+        }, silent=TRUE)
+        if (is.null(m)) {
+            m <- matrix(unlist(lapply(1:n, function(i)
+                                      {
+                                          t <- try({project(ll[i,], proj=projection)}, silent=TRUE)
+                                          if (inherits(t, "try-error")) c(NA, NA) else t[1,]
+                                      })),
+                        ncol=2, byrow=TRUE)
+            warning("proj4 calculation is slow because errors meant it had to be done pointwise")
+            message("proj4 calculation is slow because errors meant it had to be done pointwise")
         }
-    } else {
-        usingMapproj <- 0 == length(grep("^\\+proj", projection))
-        if (usingMapproj) {
-            mp <- mapproject(longitude, latitude,
-                             projection=projection,
-                             parameters=parameters, orientation=orientation)
-            xy <- list(x=mp$x, y=mp$y)
-            .Last.proj4(list(proj="")) # turn off proj4
-            ## message("turned off 'proj4' projection")
-        } else {
-            xy <- project(list(longitude=longitude, latitude=latitude), proj=projection)
-            .Last.proj4(list(proj=projection)) # turn on proj4
-            .Last.projection(list(projection="")) # turn off mapproj
-            ## message("turned off 'mapproj' projection")
-        }
+        xy <- list(x=m[,1], y=m[,2])
+        .Last.proj4(list(proj=projection)) # turn on proj4
+        .Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
     xy
 }

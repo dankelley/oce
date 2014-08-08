@@ -100,11 +100,11 @@ data(coastlineWorld)
 ## Mollweide is an equal-area projection that works well for
 ## whole-globe views, below shown in default and Pacific-focus
 ## views.  See Snyder (1987 page 54).
-mapPlot(coastlineWorld, proj="mollweide")
+par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
-
-## proj4 form
-mapPlot(coastlineWorld, proj="+proj=moll")
+mtext("Mollweide/mapproj", adj=1)
+mapPlot(coastlineWorld, proj="+proj=moll +lon_0=-180")
+mtext("Mollweide/proj4", adj=1)
 
 ## Orthographic projections resemble a globe, making them
 ## attractive for non-technical use, but they are neither conformal
@@ -113,9 +113,9 @@ mapPlot(coastlineWorld, proj="+proj=moll")
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
-mtext("mapproj method", adj=1)
+mtext("Orthographic/mapproj", adj=1)
 mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
-mtext("proj4 method", adj=1)
+mtext("Orthographic/proj4", adj=1)
 
 ## The Lambert conformal conic projection is an equal-area
 ## projection recommended by Snyder for regions of large 
@@ -125,10 +125,10 @@ mtext("proj4 method", adj=1)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
         orientation=c(90, -100, 0))
-mtext("mapproj method", adj=1)
+mtext("Lambert/mapproj", adj=1)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         projection="+proj=lcc +lon_0=-100")
-mtext("proj4 method", adj=1)
+mtext("Lambert/proj4", adj=1)
 
 ## The stereographic projection (Snyder 1987 page 120) is conformal,
 ## used below for an Arctic view with a Canadian focus.  Note the trick
@@ -138,10 +138,10 @@ mtext("proj4 method", adj=1)
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
-mtext("mapproj method", adj=1)
+mtext("Stereographic/mapproj", adj=1)
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="+proj=stere +lat_0=90 +lon_0=-135") #, fill='gray')
-mtext("proj4 method", adj=1)
+mtext("Stereographic/proj4", adj=1)
 
 }
 }
