@@ -287,7 +287,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         at <- lonlat2map(lonlab, latlab)
                         ## message("at: ", paste(at, collapse=" "))
                         if (usr[3] < at$y && at$y < usr[4]) {
-                            message("lonlab:", lonlab, " INSIDE")
+                            ## message("lonlab:", lonlab, " INSIDE")
                             labelAt <- c(labelAt, at$y)
                             nlab <- nlab + 1
                             lab[nlab] <- formatPosition(round(latlab, digits=2), # round because we avoid poles
@@ -642,9 +642,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     type <- match.arg(type)
     signs <- sign(latlon)
     x <- abs(latlon)
-    message("x: ", x)
     degrees <- floor(x)
-    message("degrees: ", degrees)
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
@@ -785,13 +783,13 @@ map2lonlat <- function(x, y)
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if (0 < nchar(.Last.proj4()$proj)) {
-        ##message("proj4-style projection exists")
+        ## message("proj4-style projection exists")
         xy <- project(list(x=x, y=y), proj=.Last.proj4()$proj, inverse=TRUE)
         return(list(longitude=xy$x, latitude=xy$y))
     } else if (0 == nchar(.Last.projection()$projection)) {
+        ## message("mapproj-style projection exists")
         stop("must first set up a projection by calling mapPlot() or lonlat2map()")
     }
-    ##message("mapproj-style projection exists")
     ## OK, we know we are using mapproj-style
     lp <- .Last.projection()
     projection <- lp$projection
@@ -1232,10 +1230,9 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     if ("" == projection) projection <- .Last.proj4()$proj
     if (0 == length(grep("^\\+proj", projection))) { 
         ## mapproj case
-        m <- mapproject(longitude, latitude,
-                        projection=projection,
-                        parameters=parameters, orientation=orientation)
-        xy <- list(x=m[,1], y=m[,2])
+        xy <- mapproject(longitude, latitude,
+                         projection=projection,
+                         parameters=parameters, orientation=orientation)
         .Last.proj4(list(proj=""))     # turn proj4 off, in case it was on
     } else {                           
         ## proj4 case
@@ -1252,7 +1249,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                                       })),
                         ncol=2, byrow=TRUE)
             warning("proj4 calculation is slow because errors meant it had to be done pointwise")
-            message("proj4 calculation is slow because errors meant it had to be done pointwise")
+            ##message("proj4 calculation is slow because errors meant it had to be done pointwise")
         }
         xy <- list(x=m[,1], y=m[,2])
         .Last.proj4(list(proj=projection)) # turn on proj4
