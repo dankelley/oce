@@ -76,40 +76,60 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a map using the indicated projection.  The available
-    projections can be found in the documentation for
-    \code{\link[mapproj]{mapproject}}, which also provides information on the
-    arguments named \code{parameters} and \code{orientation}.  Further details
-    on these and other projections are provided by Snyder (1987), an exhaustive
-    treatment that includes many illustrations, an overview of the history of
-    the topic, and some notes on the strengths and weaknesses of the various
-    formulations.  See especially pages 2 through 7, which define terms and
-    provide recommendations.}
+\details{Creates a map using the indicated projection.  As noted in the
+    information on the \code{projection} argument, projections may be
+    specified in the format used by \code{\link[mapproj]{mapproject}} from
+    the \code{mapproj} package, or the one used by
+    \code{\link[proj4]{project}} from the \code{proj4} package.  The first
+    of these packages is probably easier to learn but the second is more
+    powerful and has a wider user base across multiple software systems
+    beyond R.
+    
+    Once a projection is set, the functions that add to a map will follow
+    the same projection.
+    
+    The available projections can be found in the documentation for
+    \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
+    Further details on these and other projections are provided by Snyder
+    (1987), an exhaustive treatment that includes many illustrations, an
+    overview of the history of the topic, and some notes on the strengths
+    and weaknesses of the various formulations.  See especially pages 2
+    through 7, which define terms and provide recommendations.  Other
+    materials noted in the \dQuote{References} section may also prove
+    useful.}
 
-\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines with
-    \code{\link{mapLines}}, and text with \code{\link{mapText}}.  Points on a
-    map may be found with \code{\link{mapLocator}}.  Great circle paths can be
-    calculated with \code{\link{geodGc}}.  Scale bars may be added with
-    \code{\link{mapScalebar}}.}
+\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
+    with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
+    with \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and
+    scale bars with \code{\link{mapScalebar}}..  Points on a map may be
+    determined with mouse clicks using \code{\link{mapLocator}}.  Great
+    circle paths can be calculated with \code{\link{geodGc}}.}
 
 \examples{
 \dontrun{
 library(oce)
 data(coastlineWorld)
 
-## Mollweide is an equal-area projection that works well for
-## whole-globe views, below shown in default and Pacific-focus
-## views.  See Snyder (1987 page 54).
+# Example 1.
+#
+# Mollweide (Snyder 1987 page 54) is an equal-area projection that works well
+# for whole-globe views, below shown in a Pacific-focus view using
+# both the mapproj and proj4 formats.  (This pattern of showing the two
+# formats is repeated in all the examples.)
+
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
 mtext("Mollweide/mapproj", adj=1)
 mapPlot(coastlineWorld, proj="+proj=moll +lon_0=-180")
 mtext("Mollweide/proj4", adj=1)
 
-## Orthographic projections resemble a globe, making them
-## attractive for non-technical use, but they are neither conformal
-## nor equal-area, so they are somewhat limited for serious
-## use on large scales.  See Snyder (1987 section 20).
+# Example 2.
+#
+# Orthographic projections resemble a globe, making them attractive for
+# non-technical use, but they are neither conformal nor equal-area, so they
+# are somewhat limited for serious use on large scales.  See Section 20 of
+# Snyder (1987).
+
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
@@ -117,11 +137,12 @@ mtext("Orthographic/mapproj", adj=1)
 mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
 mtext("Orthographic/proj4", adj=1)
 
-## The Lambert conformal conic projection is an equal-area
-## projection recommended by Snyder for regions of large 
-## east-west extent away from the equator, here illustrated 
-## for the USA and Canada.  Readers should compare the results
-## with those with a polygonic projection, which is also popular.
+# Example 3.
+#
+# The Lambert conformal conic projection is an equal-area projection
+# recommended by Snyder (1987 page 95) for regions of large east-west extent
+# away from the equator, here illustrated for the USA and Canada.
+
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
         orientation=c(90, -100, 0))
@@ -130,11 +151,14 @@ mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         projection="+proj=lcc +lon_0=-100")
 mtext("Lambert/proj4", adj=1)
 
-## The stereographic projection (Snyder 1987 page 120) is conformal,
-## used below for an Arctic view with a Canadian focus.  Note the trick
-## of going past the pole: the second latitudelim value is
-## 180 minus the first, and the second longitudelim is 180 plus
-## the first; this uses image points "over" the pole.
+# Example 4.
+#
+# The stereographic projection (Snyder 1987 page 120) is conformal, used
+# below for an Arctic view with a Canadian focus.  Note the trick of going
+# past the pole: the second latitudelim value is 180 minus the first, and the
+# second longitudelim is 180 plus the first; this uses image points "over"
+# the pole.
+
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
@@ -152,9 +176,8 @@ mtext("Stereographic/proj4", adj=1)
     Professional Paper: 1395 (available at
     \url{pubs.usgs.gov/pp/1395/report.pdf}). 
 
-    Jenny, B., 2012.  Adaptive composite map projections.  IEEE Transactions on
-    Visualization and Computer Graphics (Proceedings Scientific Visualization /
-    Information Visualization 2012), 18-22, p 2575-2582.
+    Wikipedia list of map projections
+    (\url{http://en.wikipedia.org/wiki/List_of_map_projections}).
 
     XKCD guide to map projections (\url{http://xkcd.com/977/}).
 }
