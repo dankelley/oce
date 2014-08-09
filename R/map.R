@@ -667,7 +667,7 @@ mapLocator <- function(n=512, type='n', ...)
     rval
 }
 
-map2lonlat <- function(x, y)
+map2lonlat <- function(x, y, init=c(0,0))
 {
     if (is.list(x)) {
         y <- x$y
@@ -691,7 +691,6 @@ map2lonlat <- function(x, y)
     projection <- lp$projection
     parameters <- lp$parameters
     orientation <- lp$orientation
-    init <- c(0, 0) # FIXME: this will fail if the point is off the map
     lon <- vector("numeric", n)
     lat <- vector("numeric", n)
     tolerance <- 1e-5
@@ -701,6 +700,8 @@ map2lonlat <- function(x, y)
         try({
             error <- FALSE
             ##message("init:", init[1], " ", init[2])
+            ## Note: using L-BFGS-B so we can limit the bounds; otherwise
+            ## it can select lat > 90 etc.
             o <- optim(init,
                        function(xyTrial) {
                            xyp <- mapproject(xyTrial[1], xyTrial[2],
@@ -709,15 +710,13 @@ map2lonlat <- function(x, y)
                                              orientation=orientation)
                            error <<- xyp$error
                            misfit <- sqrt((xyp$x-xy[1])^2+(xyp$y-xy[2])^2)
-                           ##message(xyTrial[1], "E ", xyTrial[2], "N misfit=", misfit)
+                           ## message(xyTrial[1], "E ", xyTrial[2], "N misfit=", misfit, " error: ", xyp$error)
                            misfit
-                       })
+                       }, method="L-BFGS-B", lower=c(-180, -90), upper=c(180, 90))
             if (o$convergence == 0 && !error) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]
-                init[1] <- lon[i]
-                init[2] <- lat[i]
             } else {
                 lon[i] <- NA
                 lat[i] <- NA

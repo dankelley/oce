@@ -6,7 +6,7 @@
 
 \description{Convert from x-y coordinates to longitude and latitude}
 
-\usage{map2lonlat(x, y)}
+\usage{map2lonlat(x, y, init=c(0,0))}
 
 \arguments{
 
@@ -16,6 +16,12 @@
 
   \item{y}{a vector containing the y coordinate of points in the projected
       space (ignored if \code{x} is a list, as described above).}
+
+  \item{init}{a vector containing the initial guesses for longitude and
+      latitude, used only for \code{mapproj}-style projections (see
+      \code{\link{mapPlot}}.  If the default produces inaccurate results, try
+      setting \code{init} to a point in the domain of interest (at least the
+      right hemisphere).}
 
 }
 
@@ -31,10 +37,8 @@
     The accuracy of \code{map2lonlat} tends to be higher for \code{proj4}-style
     projections than for \code{mapproj}-style projections.  This is because the
     \code{proj4} package provides inverse functions, while \code{mapproj} does
-    not.  In the latter case, \code{map2lonlat} attempts to invert the
-    projection by a minimization procedure using \code{\link{optim}}, and this
-    method can produce inaccurate results (or simply fail), depending on the
-    projection and the location in question.}
+    not, so that in the latter case the longitude and latitude are determined
+    by a minimization procedure using \code{\link{optim}}.}
 
 \value{A list containing \code{longitude} and \code{latitude}.}
 
