@@ -100,17 +100,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
         }
     }
     proj <- lonlat2map(longitude, latitude)
-    ## message("OLD:");str(proj)
-    ## if (usingProj4()) {
-    ##     proj4 <- .Last.proj4()$proj
-    ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
-    ##     proj <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-    ## } else {
-    ##     if (!exists(".Last.projection") || .Last.projection()$proj == "")
-    ##         stop("must create a map first, with mapPlot()\n")
-    ##     proj <- mapproject(longitude, latitude)
-    ## }
-    ## message("NEW:");str(proj)
     list(x=proj$x, y=proj$y) # if other properties prove helpful, may add them
 } 
 
@@ -410,13 +399,6 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
         ## FIXME: maybe we should use mapLines here
         ## message("mapMeridian at ", l, " N")
         line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
-        ## message("NEW"); str(line)
-        ## if ("" != proj4) {
-        ##     line <- project(list(longitude=seq(-180+small, 180-small, length.out=n), latitude=rep(l, n)), proj=proj4)
-        ## } else {
-        ##     line <- mapproject(seq(-180, 180, length.out=n), rep(l, n))
-        ## }
-        ## message("OLD"); str(line)
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
@@ -443,10 +425,6 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
         ## NB. used to check for points in region but when zoomed in closely, there may be none!
         ##if (length(x) & length(y) & any(usr[1] <= x & x <= usr[2] & usr[3] <= y & y <= usr[4], na.rm=TRUE)) {
         lines(x, y, lty=lty, lwd=lwd, col=col, ...)
-        ## message("x has ", sum(!is.na(x)), " good points")
-        ## message("y has ", sum(!is.na(y)), " good points")
-        ##points(x, y, pch=20, col='red', cex=.7)
-        ##}
     }
 }
 
@@ -528,17 +506,6 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     for (l in longitude) {
         ## FIXME: should use mapLines here
         line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
-        ## message("meridian at longitude=", l)
-        ## if (usingProj4()) {
-        ##     proj4 <- .Last.proj4()$proj
-        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
-        ##     line <- project(list(longitude=rep(l, n),
-        ##                          latitude=seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n)),
-        ##                          proj=proj4)
-        ## } else {
-        ##     line <- mapproject(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
-        ## }
-        ## message("OLD"); str(line)
         x <- line$x
         y <- line$y
         ok <- !is.na(x) & !is.na(y)
@@ -565,15 +532,6 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
     xy <- lonlat2map(longitude, latitude)
-    ## message("NEW"); str(xy)
-    ## if (usingProj4()) {
-    ##     proj4 <- .Last.proj4()$proj
-    ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
-    ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-    ## } else {
-    ##     xy <- mapproject(longitude, latitude)
-    ## }
-    ## message("NEW"); str(xy)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
     DX <- usr[2] - usr[1]
@@ -603,17 +561,6 @@ mapPoints <- function(longitude, latitude, ...)
     latitude <- latitude[ok]
     if (length(longitude) > 0) {
         xy <- lonlat2map(longitude, latitude)
-        ## message("next is new estimate")
-        ## str(xy)
-        ## if (usingProj4()) {
-        ##     proj4 <- .Last.proj4()$proj
-        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
-        ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-        ## } else {
-        ##     xy <- mapproject(longitude, latitude)
-        ## }
-        ## message("next is old estimate")
-        ## str(xy)
         points(xy$x, xy$y, ...)
     }
 }
@@ -720,61 +667,6 @@ mapLocator <- function(n=512, type='n', ...)
     rval
 }
 
-## OLD map2lonlat <- function(xusr, yusr, tolerance=1e-4)
-## OLD {
-## OLD     n <- length(xusr)
-## OLD     if (length(yusr) != n)
-## OLD         error("lengths of x and y must match")
-## OLD     lon <- rep(NA, n)
-## OLD     lat <- rep(NA, n)
-## OLD     if (usingProj4()) {
-## OLD         proj4 <- .Last.proj4()$proj
-## OLD         if (1 > nchar(proj4)) stop("must call mapPlot() first")
-## OLD         xy <- project(list(xusr, yusr), proj=proj4, inverse=TRUE)
-## OLD         lon <- xy$x
-## OLD         lat <- xy$y
-## OLD     } else {
-## OLD         ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
-## OLD         ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
-## OLD         t <- try({
-## OLD             or <- get(".Last.projection", envir = globalenv())$orientation
-## OLD         }, silent=TRUE)
-## OLD         if (class(t) == "try-error") {
-## OLD             or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
-## OLD         }
-## OLD         init <- c(0, 0) # won't work if this is off the map
-## OLD         for (i in 1:n) {
-## OLD             try({
-## OLD                 error <- FALSE
-## OLD                 ## FIXME: find better way to do the inverse mapping
-## OLD                 ## message("init:", init[1], " ", init[2])
-## OLD                 o <- optim(init,
-## OLD                            function(x) {
-## OLD                                ##message(" x:", x[1], " ", x[2])
-## OLD                                xy <- mapproject(x[1], x[2])
-## OLD                                error <<- xy$error
-## OLD                                sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
-## OLD                            },
-## OLD                            control=list(abstol=tolerance))
-## OLD                 ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-## OLD                 if (o$convergence == 0 && !error) {
-## OLD                     lonlat <- o$par
-## OLD                     lon[i] <- lonlat[1]
-## OLD                     lat[i] <- lonlat[2]
-## OLD                     init[1] <- lon[i]
-## OLD                     init[2] <- lat[i]
-## OLD                 }
-## OLD             }, silent=TRUE)
-## OLD         }
-## OLD     }
-## OLD     ## bad <- lat < -90 | lat > 90 | lon < -180 | lon > 180
-## OLD     ## lon[bad] <- NA
-## OLD     ## lat[bad] <- NA
-## OLD     lon <- ifelse(lon < -180, lon+360, lon)
-## OLD     lon <- ifelse(lon >  180, lon-360, lon)
-## OLD     list(longitude=lon, latitude=lat)
-## OLD }
-
 map2lonlat <- function(x, y)
 {
     if (is.list(x)) {
@@ -850,19 +742,6 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
     n <- length(longitude)
     if (n > 0) {
         xy <- lonlat2map(longitude, latitude)
-        ## message("NEW:"); str(xy)
-        ## if (usingProj4()) {
-        ##     proj4 <- .Last.proj4()$proj
-        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
-        ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
-        ## } else {
-        ##     xy <- mapproject(longitude, latitude)
-        ## }
-        ## message("OLD:"); str(xy)
-
-        ##bad <- is.na(xy$x) | is.na(xy$y)
-        ##polygon(xy$x[!bad], xy$y[!bad],
-        ##density=density, angle=angle, border=border, col=col, lty=lty, ..., fillOddEven=fillOddEven)
         polygon(xy$x, xy$y,
                 density=density, angle=angle, border=border, col=col, lty=lty, ...,
                 fillOddEven=fillOddEven)
@@ -984,104 +863,63 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             oceDebug(debug, "not clipping AND NEITHER zlim nor breaks suppled\n")
         }
     }
-    if (debug != 99) {                 # test new method (much faster)
-        ## Construct polygons centred on the specified longitudes and latitudes.  Each
-        ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
-        ## to signal the end of the polygon.  The z values (and hence the colours)
-        ## map one per polygon.
-        poly <- .Call("map_assemble_polygons", longitude, latitude, z,
-                      NAOK=TRUE, PACKAGE="oce")
-        ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
-        ##if (max(poly$longitude, na.rm=TRUE) > 180) {
-        ##    warning("shifting longitude\n")
-        ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
-        ##}
+    ## Construct polygons centred on the specified longitudes and latitudes.  Each
+    ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
+    ## to signal the end of the polygon.  The z values (and hence the colours)
+    ## map one per polygon.
+    poly <- .Call("map_assemble_polygons", longitude, latitude, z,
+                  NAOK=TRUE, PACKAGE="oce")
+    ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
+    ##if (max(poly$longitude, na.rm=TRUE) > 180) {
+    ##    warning("shifting longitude\n")
+    ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
+    ##}
 
-        xy <- lonlat2map(poly$longitude, poly$latitude)
-        ## message("OLD:"); str(xy)
-        ## if (usingProj4()) {
-        ##     proj4 <- .Last.proj4()$proj
-        ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
-        ##     xy <- project(list(longitude=poly$longitude, latitude=poly$latitude), proj=proj4)
-        ## } else {
-        ##     xy <- mapproject(poly$longitude, poly$latitude)
-        ## }
-        ## message("NEW:"); str(xy)
+    xy <- lonlat2map(poly$longitude, poly$latitude)
 
-        ## map_check_polygons tries to fix up longitude cut-point problem, which
-        ## otherwise leads to lines crossing the graph horizontally because the
-        ## x value can sometimes alternate from one end of the domain to the other.
-        Z <- matrix(z)
-        r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
-                   diff(par('usr'))[1:2]/5, par('usr'),
-                   NAOK=TRUE, PACKAGE="oce")
-        breaksMin <- min(breaks, na.rm=TRUE)
-        breaksMax <- max(breaks, na.rm=TRUE)
-        colFirst <- col[1]
-        colLast <- tail(col, 1)
-        colorLookup <- function (ij) {
-            zval <- Z[ij]
-            if (is.na(zval)) return(missingColor)   # whether clipping or not
-            if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
-            if (zval > breaksMax) return(if (zclip) missingColor else colLast)
-            ## w <- which(Z[ij] <= breaks * (1 + small))[1]
-            w <- which(zval <= breaks)[1]
-            ## if (is.na(w)) message("w=NA for Z[", ij, "] = ", Z[ij])
-            ## if (w<=1) message("w<=1 for Z[", ij, "] = ", Z[ij])
-            ##if (w <= 1) message("w<=1 at ij: ", ij, "; Z[ij]: ", Z[ij])
-            ## FIXME: maybe should be [w] below?  And why is w=1 so bad?
-            if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
-        }
-        ## message("range(Z): ", paste(range(Z, na.rm=TRUE), collapse=" to "))
-        ## message("head(breaks): ", paste(head(breaks), collapse=" "))
-        colPolygon <- sapply(1:(ni*nj), colorLookup)
-        ## message("ni*nj: ", ni*nj)
-        ## message("below is unique(colPolygon):")
-        ## str(unique(colPolygon))
-        polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
-                col=colPolygon[r$okPolygon & !r$clippedPolygon],
-                border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
-
-        ## if (debug==5 && !is.na(missingColor)) {
-        ##     message("number missing color: ", sum(colPolygon==missingColor))
-        ##     message("zclip: ", zclip)
-        ## }
-
-        ## message("number of clipped polygons: ", sum(r$clippedPolygon))
-        ## message("number of clipped points: ", sum(r$clippedPoints))
-        ## message("number of NOT ok points: ", sum(!r$okPoint))
-        ## message("number of NOT ok polygons: ", sum(!r$okPolygon))
-    } else {
-        ## EXTREMELY slow old method -- keep a while in case any good ideas here
-        ## FIXME: delete this block by middle august, 2014
-        for (i in 1:ni) {
-            for (j in 1:nj) {
-                xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),
-                                 latitude[j]+dlatitude*c(-0.5, -0.5, 0.5, 0.5))
-                ## avoid lines crossing whole domain
-                ## Speed improvement: skip offscale patches [FIXME: would be faster in latlon, skipping mapproject]
-                if (xmax < min(xy$x, na.rm=TRUE))
-                    next
-                if (max(xy$x, na.rm=TRUE) < xmin)
-                    next
-                if (ymax < min(xy$y, na.rm=TRUE))
-                    next
-                if (max(xy$y, na.rm=TRUE) < ymin)
-                    next
-                if (abs(xy$x[1] - xy$x[2]) > allowedSpan) 
-                    next
-                zz <- z[i, j]
-                if (is.finite(zz)) {
-                    thiscol <- col[-1 + which(zz < breaks * (1 + small))[1]]
-                    polygon(xy$x, xy$y, col=thiscol, border=border,
-                            lwd=lwd, lty=lty, fillOddEven=FALSE)
-                } else if (!is.null(missingColor)) {
-                    polygon(xy$x, xy$y, col=missingColor, border=border,
-                            lwd=lwd, lty=lty, fillOddEven=FALSE)
-                }
-            }
-        }
+    ## map_check_polygons tries to fix up longitude cut-point problem, which
+    ## otherwise leads to lines crossing the graph horizontally because the
+    ## x value can sometimes alternate from one end of the domain to the other.
+    Z <- matrix(z)
+    r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
+               diff(par('usr'))[1:2]/5, par('usr'),
+               NAOK=TRUE, PACKAGE="oce")
+    breaksMin <- min(breaks, na.rm=TRUE)
+    breaksMax <- max(breaks, na.rm=TRUE)
+    colFirst <- col[1]
+    colLast <- tail(col, 1)
+    colorLookup <- function (ij) {
+        zval <- Z[ij]
+        if (is.na(zval)) return(missingColor)   # whether clipping or not
+        if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
+        if (zval > breaksMax) return(if (zclip) missingColor else colLast)
+        ## w <- which(Z[ij] <= breaks * (1 + small))[1]
+        w <- which(zval <= breaks)[1]
+        ## if (is.na(w)) message("w=NA for Z[", ij, "] = ", Z[ij])
+        ## if (w<=1) message("w<=1 for Z[", ij, "] = ", Z[ij])
+        ##if (w <= 1) message("w<=1 at ij: ", ij, "; Z[ij]: ", Z[ij])
+        ## FIXME: maybe should be [w] below?  And why is w=1 so bad?
+        if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
     }
+    ## message("range(Z): ", paste(range(Z, na.rm=TRUE), collapse=" to "))
+    ## message("head(breaks): ", paste(head(breaks), collapse=" "))
+    colPolygon <- sapply(1:(ni*nj), colorLookup)
+    ## message("ni*nj: ", ni*nj)
+    ## message("below is unique(colPolygon):")
+    ## str(unique(colPolygon))
+    polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
+            col=colPolygon[r$okPolygon & !r$clippedPolygon],
+            border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+
+    ## if (debug==5 && !is.na(missingColor)) {
+    ##     message("number missing color: ", sum(colPolygon==missingColor))
+    ##     message("zclip: ", zclip)
+    ## }
+
+    ## message("number of clipped polygons: ", sum(r$clippedPolygon))
+    ## message("number of clipped points: ", sum(r$clippedPoints))
+    ## message("number of NOT ok points: ", sum(!r$okPoint))
+    ## message("number of NOT ok polygons: ", sum(!r$okPolygon))
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
 }
