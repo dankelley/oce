@@ -149,6 +149,8 @@ drawPalette <- function(zlim, zlab="",
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
+    if (!zlimGiven)
+        plot <- FALSE
     levelsGiven <- !missing(levels)
     if (zlimGiven)
         zlim <- range(zlim, na.rm=TRUE)
@@ -379,12 +381,10 @@ drawPalette <- function(zlim, zlab="",
 
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
-                   zclip=FALSE,
-                   flipy=FALSE,
+                   zclip=FALSE, flipy=FALSE,
                    xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
-                   breaks, col,
-                   colormap,
-                   labels=NULL, at=NULL,
+                   decimate=TRUE,
+                   breaks, col, colormap, labels=NULL, at=NULL,
                    drawContours=FALSE,
                    drawPalette=TRUE,
                    drawTriangles=FALSE,
@@ -408,10 +408,12 @@ imagep <- function(x, y, z,
              " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
              " filledContour=", filledContour, ", ",
-             " missingColor='", missingColor,
+             " drawTriangles=", drawTriangles, ", ",
+             " missingColor=", if (is.null(missingColor)) "NULL" else missingColor,
              ", ...) {\n", sep="", unindent=1)
-    oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
-    oceDebug(debug, "par(mai)=", paste(format(par('mai'), digits=3), collapse=" "), "\n")
+    oceDebug(debug, "par('mai')=c(",
+             paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
+             paste(format(par('mar'), digits=2), collapse=","), ")\n")
 
     if (!missing(zlim) && !missing(breaks) && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
@@ -463,7 +465,27 @@ imagep <- function(x, y, z,
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
     oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
-
+    # Handle decimation
+    if (!missing(decimate) && !(is.logical(decimate) && !decimate)) {
+        dim <- dim(z)
+        if (is.logical(decimate)) { # find value from image
+            maxdim <- max(dim)
+            decimate <- max(as.integer(round(maxdim / 800)), 1)
+            oceDebug(debug, "set auto decimation\n")
+        }
+        if (decimate < 1)
+            stop("decimate must be a positive integer or a logical value")
+        oceDebug(debug, "decimate:", decimate, "\n")
+        if (decimate > 1) {
+            ilook <- seq.int(1, dim[1], by=decimate)
+            jlook <- seq.int(1, dim[2], by=decimate)
+            oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+            oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
+            x <- x[ilook]
+            y <- y[jlook]
+            z <- z[ilook, jlook]
+        }
+    }
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
@@ -551,11 +573,11 @@ imagep <- function(x, y, z,
                     if (missing(col)) {
                         ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
                         breaks <- pretty(zlim, n=nbreaks)
-                        oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim given but not breaks or col; inferred head(breaks)=", head(breaks), "\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
                                       length.out=if(is.function(col))128 else 1+length(col))
-                        oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
                     oceDebug(debug, 'range(z):', zrange, '\n')
@@ -577,6 +599,7 @@ imagep <- function(x, y, z,
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
         ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
+        oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
         if (!zclip && !zlimHistogram) {
             db <- median(diff(breaks), na.rm=TRUE)
             breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
@@ -585,7 +608,13 @@ imagep <- function(x, y, z,
             if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
         }
-
+        if (TRUE) { # 2014-07-17/#489 trial code
+            ##20140801 warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
+            if (!missing(breaks))
+                breaks2 <- breaks
+            if (!missing(col))
+                col2 <- col
+        }
         if (is.function(col)) {
             if (zlimHistogram)
                 col <- col(n=200)          # FIXME: decide on length
@@ -594,11 +623,8 @@ imagep <- function(x, y, z,
         }
     }
     if (drawPalette == "space") {
-        oceDebug(debug, "not drawing a palette, since drawPalette=\"space\"\n")
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
-        oceDebug(debug, "drawPalette=", drawPalette, "\n")
-        oceDebug(debug, "drawing a palette\n")
         if(missing(zlim)) {
             ## use range of breaks preferably; otherwise use range z
             if (missing(breaks)) {
@@ -608,8 +634,8 @@ imagep <- function(x, y, z,
             }
         }
         drawTriangles <- rep(drawTriangles, length.out=2)
-        drawTriangles[1] <- drawTriangles[1] || any(z < zlim[1], na.rm=TRUE)
-        drawTriangles[2] <- drawTriangles[2] || any(z > zlim[2], na.rm=TRUE)
+        drawTriangles[1] <- drawTriangles[1] && any(z < zlim[1], na.rm=TRUE)
+        drawTriangles[2] <- drawTriangles[2] && any(z > zlim[2], na.rm=TRUE)
         oceDebug(debug, "mai.palette=c(", paste(mai.palette, collapse=", "), ")\n")
         if (zlimHistogram) {
             oceDebug(debug, "palette with zlim=\"histogram\"\n")
@@ -667,6 +693,12 @@ imagep <- function(x, y, z,
     }
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
+        if (debug > 0) {
+            message("breaks:", paste(breaks, collapse=" "))
+            message("breaks2:", paste(breaks2, collapse=" "))
+            message("col:", paste(col, collapse=" "))
+            message("col2:", paste(col2, collapse=" "))
+        }
         if (filledContour) {
             oceDebug(debug, "doing filled contours [1]\n")
             if (!is.double(z))
@@ -711,6 +743,7 @@ imagep <- function(x, y, z,
                     col2 <- col2(200)
                 breaks2 <- seq(0, 1, length.out=length(col2) + 1)
             }
+            oceDebug(debug, "length(x)", length(x), "length(y)", length(y), "\n")
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
                   xlim=xlim, ylim=ylim, ...)
         }
@@ -740,8 +773,9 @@ imagep <- function(x, y, z,
             warning("cannot evaluate adorn='", adorn, "'\n")
     }
     par(cex=ocex)
-    oceDebug(debug, "at end of imagep(), par('mai') yields c(", paste(par('mai'), collapse=","), ")\n")
-    oceDebug(debug, "at end of imagep(), par('mar') yields c(", paste(par('mar'), collapse=","), ")\n")
+    oceDebug(debug, "par('mai')=c(",
+             paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
+             paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
     invisible()
 }

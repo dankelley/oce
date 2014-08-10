@@ -6,7 +6,7 @@
 
 \description{Find lon-lat coordinates of a point on a map}
 
-\usage{map2lonlat(xusr, yusr, tolerance=1e-4)}
+\usage{map2lonlat(xusr, yusr, tolerance=1e-5)}
 
 \arguments{
     \item{xusr, yusr}{coordinates of points on the map.}

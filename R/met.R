@@ -37,6 +37,24 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
+setMethod(f="subset",
+          signature="met",
+          definition=function(x, subset, ...) {
+              rval <- new("met") # start afresh in case x@data is a data.frame
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              names(rval@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+ 
+
 
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
@@ -120,15 +138,26 @@ read.met <- function(file, type=NULL, skip,
     ## It would be good if someone from Environment Canada would take pity on a
     ## poor user, and convince the powers-that-be to settle on a single format
     ## and even (gasp) to document it.
-    Tcol <- grep("^Temp.*C\\.", names) # sometimes they use a degree symbol in this name
-    if (length(Tcol)) temperature <- as.numeric(rawData[,Tcol[1]])
-    else temperature <- rep(NA, ntime)
-    pressure <- as.numeric(rawData[["Stn.Press..kPa."]])
-    speed <- as.numeric(rawData[["Wind.Spd..km.h."]]) * 1000 / 3600
-    direction <- 10 * as.numeric(rawData[["Wind.Dir..10.s.deg."]])
-    u <- -speed * sin(direction * atan2(1, 1) / 45)
-    v <- -speed * cos(direction * atan2(1, 1) / 45)
-    res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v)
+    j <- grep("^Temp.*C.*$", names(rawData))[1]
+    temperature <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
+    pressure <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
+    wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    speed <- wind * 1000 / 3600        # convert from km/h to m/s
+    j <- grep("^Wind.*deg.*$", names(rawData))[1]
+    direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    rpd <- atan2(1, 1) / 45            # radian/degree
+    ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
+    theta <- (90 - 10 * direction) * rpd 
+    ## Note the (-) to get from "wind from" to "wind speed towards"
+    u <- -speed * sin(theta)
+    v <- -speed * cos(theta)
+    zero <- is.na(direction) & wind == 0
+    u[zero] <- 0
+    v[zero] <- 0
+    res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v,
+                     wind=wind, direction=direction)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
@@ -148,19 +177,23 @@ setMethod(f="plot",
                opar <- par(no.readonly = TRUE)
                nw <- length(which)
                if (nw > 1) on.exit(par(opar))
-               par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+               if (nw > 1)
+                   par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+               else
+                   par(mgp=mgp, mar=mar)
                for (w in 1:nw) {
                    oceDebug(debug, "which=", w, "\n")
-                   if (which[w] == 1) {
+                   if (which[w] == 1 && any(!is.na(x@data$temperature))) {
                        oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"), tformat=tformat)
-                   } else if (which[w] == 2) {
+                   } else if (which[w] == 2 && any(!is.na(x@data$pressure))) {
                        oce.plot.ts(x@data$time, x@data$pressure, ylab="Pressure [kPa]", tformat=tformat)
-                   } else if (which[w] == 3) {
+                   } else if (which[w] == 3 && any(!is.na(x@data$u))) {
                        oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("eastward", "y"), tformat=tformat)
-                   } else if (which[w] == 4) {
+                   } else if (which[w] == 4 && any(!is.na(x@data$v))) {
                        oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("northward", "y"), tformat=tformat)
                    }
                }
+               oceDebug(debug, "} # plot.met()\n", unindent=1)
            })
 
 

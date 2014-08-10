@@ -24,7 +24,9 @@ setMethod(f="summary",
               if ("latitude" %in% names(object@metadata)) {
                   cat(paste("* Location:           ",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
+                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E",
+                                                                                                   object@metadata$longitude),
+                            "\n", sep=''))
               }
               v.dim <- dim(object@data$v)
               cat("* Number of profiles:", v.dim[1], "\n")
@@ -443,8 +445,11 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      debug=getOption("oceDebug"),
                      ...)
 {
-    oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
-    type <- match.arg(type)
+    oceDebug(debug, "read.adp(...,from=", from,
+             ",to=", if (missing(to)) "(missing)" else to,
+             ",by=", by,
+             ",manufacturer=", if (missing(manufacturer)) "(missing)" else manufacturer, ",...)\n")
+    manufacturer <- match.arg(manufacturer)
     if (monitor)
         cat(file, "\n", ...)
     if (manufacturer == "rdi")
@@ -452,12 +457,12 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      longitude=longitude, latitude=latitude,
                      debug=debug-1, monitor=monitor, despike=despike,
                      processingLog=processingLog, ...)
-    else if (type == "nortek")
+    else if (manufacturer == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
-    else if (type == "sontek")
+    else if (manufacturer == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
                         debug=debug-1, monitor=monitor, despike=despike,
@@ -1868,7 +1873,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     ## vectorizing across the loop, by combining into a single vector
     ## for (distance, cr, ...), but it was no faster, and the code was
     ## more complicated to read.
-    vbm <- array(dim=dim(v))
+    vbm <- array(double(), dim=dim(v))
     abm <- array(raw(), dim=dim(v))
     qbm <- array(raw(), dim=dim(v))
     gbm <- array(raw(), dim=dim(v))

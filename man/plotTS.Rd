@@ -20,7 +20,7 @@
     bg, pt.bg="transparent",
     col.rho="darkgray",
     cex.rho=3/4*par("cex"),
-    rotate=FALSE,
+    rotate=TRUE,
     useSmoothScatter=FALSE,
     xlab,
     ylab,

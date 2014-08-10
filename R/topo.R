@@ -59,15 +59,17 @@ setMethod(f="subset",
               if (length(grep("longitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by longitude\n")
                   keep <- eval(substitute(subset), x@data, parent.frame())
+                  oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
                   rval[["longitude"]] <- x[["longitude"]][keep]
                   rval[["z"]] <- x[["z"]][keep,]
               } else if (length(grep("latitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by latitude\n")
                   keep <- eval(substitute(subset), x@data, parent.frame())
+                  oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
                   rval[["latitude"]] <- x[["latitude"]][keep]
                   rval[["z"]] <- x[["z"]][,keep]
               } else {
-                  stop("should express the subset in terms of distance or time")
+                  stop("the subset must be based on longitude or latitude")
               }
               rval@processingLog <- processingLog(rval@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
               rval
@@ -352,7 +354,7 @@ setMethod(f="plot",
 read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
-    if (is.character(file) && grep(".nc$", file)) {
+    if (is.character(file) && length(grep(".nc$", file))) {
         if (!require("ncdf4"))
             stop('must install.packages("ncdf4") to read topo data from a netCDF file')
         ## GEBCO netcdf

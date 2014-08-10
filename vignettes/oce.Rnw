@@ -7,13 +7,25 @@
 % \VignetteKeyword{oceanography}
 
 \usepackage{url}
-\usepackage{fullpage}
+%\usepackage{fullpage}
 \usepackage{boxedminipage}
 \usepackage{hyperref}
 \usepackage{makeidx}
 \usepackage{titlesec}
 \usepackage{color}
 \makeindex
+
+% CRAN checks don't always have fullpage.sty so simulate it (any
+% rough approximation is fine)
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt
+\evensidemargin \oddsidemargin
+\marginparwidth 0.5in
+\textwidth 6.5in
+     
 
 \parskip=1.5ex plus 1.5ex minus 1.25ex
 
@@ -225,14 +237,13 @@ this in action with \verb@?section@.)
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=\textwidth}
+\setkeys{Gin}{width=.9\textwidth}
 <<label=ctdfig, width=9, height=6, fig=TRUE, echo=FALSE>>=
 <<ctdplot>>
 @
 \end{center}
-\caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired in
-Halifax Harbour by students in the author's Physical Oceanography class
-at Dalhousie University.}
+\caption{Overview graph of the dataset \texttt{ctd}, acquired by
+the author's class at Dalhousie University.}
 \label{fig:ctd}
 \end{figure}
 
@@ -241,8 +252,8 @@ at Dalhousie University.}
 \subsection{Example with raw data}
 
 Practicing Oceanographers may be wondering how the CTD cast used in the
-preceding section was trimmed of equilibration-phase and upcast-phase data. Data
-from these sections are spurious and must be trimmed as a first step in
+preceding section was trimmed of equilibration-phase and upcast-phase data. 
+Spurious data from these phases must be trimmed as a first step in
 processing. For example, consider the following code.
 <<label=ctdrawplot,eval=FALSE>>=
 data(ctdRaw)
@@ -251,14 +262,13 @@ plotScan(ctdRaw)
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.55\textwidth}
-<<label=ctdrawfig,fig=TRUE,width=6, height=4, echo=FALSE>>=
+<<label=ctdrawfig, fig=TRUE,width=6, height=6, echo=FALSE>>=
 <<ctdrawplot>>
 @
 \end{center}
-\caption{Scanwise plot of the \texttt{ctdRaw} sample data set.  Note the wild
+\caption{Scanwise plot of the \texttt{ctdRaw} sample data set.  Note the 
 spike at the start, the equilibration phase before the downcast, and the
-spurious freshening signal near the start of the upcast.  See the text for a
-discussion of how inspection of such graphs can help in trimming CTD data.}
+spurious freshening signal near the start of the upcast.}
 \label{fig:ctdraw}
 \end{figure}
 

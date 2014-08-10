@@ -5,6 +5,7 @@
 \alias{read.ctd.woce}
 \alias{read.ctd.woce.other}
 \alias{read.ctd.odf}
+\alias{read.ctd.odv}
 \alias{read.ctd.itp}
 
 \title{Read a CTD data file}
@@ -21,6 +22,8 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
 read.ctd.woce.other(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.odv(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
@@ -39,7 +42,9 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
       determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird
           19} (or similar) CTD format is assumed. If \code{type="WOCE"} then a
       WOCE-exchange file is assumed.  If \code{type="ITP"} then an ice-tethered
-      profiler file is assumed.}
+      profiler file is assumed. If \code{type="ODF"} an ODF file is assumed.
+      If \code{type="ODV"} an ascii-ODV file is assumed.}
+
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
 
@@ -101,45 +106,44 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     \code{object@metadata$scientist} are left blank for WOCE files.
 }
 
-\section{Implementation and extension}{The functions attempt to infer a wide range of
+\section{Issues}{The functions attempt to infer a wide range of
     meta-information from file headers, but variations in these headers limit
-    general application.  For example, \code{read.ctd.sbe} handles water depths
+    generality.  For example, \code{read.ctd.sbe} handles water depths
     in any of the following forms, but ostensibly similar forms may not work.
-    \itemize{
-        \item \preformatted{"** DEPTH = 100"}
-        \item \preformatted{"** Water Depth:   40 m"}
-        \item \preformatted{"** Depth (m): 3447 "}
-        \item \preformatted{"** Depth: 16"}
-        \item \preformatted{"** Profondeur: 92"}
+        \preformatted{
+** DEPTH = 100
+** Water Depth:   40 m
+** Depth (m): 3447
+** Depth: 16
+** Profondeur: 92
     }
-    If water depth cannot be inferred from the header, \code{read.ctd} sets it
-    to the maximum recorded pressure, and issues a warning to that effect.
+    Similar issues come up for other items in CTD headers.  For example, date
+    variants can cause a problem if, say, a date is stored in American notation
+    but the user is in another locale, where dates are represented differently;
+    a solution is to call \code{\link{Sys.setlocale}("LC_TIME", "en_US")}
+    before reading the data.
+    
+    Even when \code{read.ctd} appears to have read the data without error, the
+    prudent user will do some plots and summaries on a sample file.  It is also
+    a good idea to examine some inferred numerical values in comparison with
+    the information in the data file.  CTD profiles are not cheap to acquire,
+    and publishing erroneous results is highly embarrassing.  The rewards of
+    having confidence in the data surely outweigh the cost of a half hour spent
+    looking at the data.
+   
+    Users should report problems with \code{read.ctd} on the Github site
+    (\url{https://github.com/dankelley/oce/issues}), ideally sending the author
+    a sample file.
+}
 
-    Similar issues come up for essentially everything stored in CTD headers,
-    and so if odd values are found (e.g. a station in the wrong hemisphere),
-    there is a good chance that the format is not being handled correctly.
-    Given the expense of collecting data, users are well-advised to check
-    inferred values against the values in the data files, for at least on
-    profile within a given cruise.  Modifying the \code{read.ctd} code is not
-    particularly difficult, and users are encouraged to examine the source code
-    (in \code{R/ctd.R}) to see whether modification can help.  Some experience
-    with regular expressions and string manipulation may be needed; see
-    \code{\link{regexpr}} and \code{\link{sub}}.
-    Three sample files are provided with the package, in
+\section{Sample files}{Three sample files are provided with the package, in
     \itemize{\item \code{system.file("extdata", "ctd.cnv", package="oce")}
     \item \code{system.file("extdata", "d200321-001.ctd", package="oce")}
     \item \code{system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce")}}
     and an examination of these in relationship with the existing code should help
     users to understand the present implementation, providing insights on extending it
-    for their own data.
+    for their own data.}
 
-    In many cases, CTD instruments are set up to report dates in English.  This
-    can cause a problem for users running in different locales, since e.g month
-    names differ.  Therefore, if you know your datafile is written in
-    American-English notation, you might want to do
-    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.
-
-}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
   list with elements detailed below. 
@@ -207,13 +211,10 @@ points(longitude, latitude, col='red')
 }
 
 \references{The Sea-Bird SBE 19plus profiler is described at
-    \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
-    company recommends the use of their own software, and perhaps for this
-    reason it is difficult to find a specification for the data files.
-    Inspection of data files led to most of the code used in Oce.  If the
-    company ever publishes standards for the data formats, of course Oce will
-    be adjusted.  In the meantime, it does a reasonable job in many instances.
-
+    \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some
+    more information is given in the Sea-Bird data-processing manaual
+    \url{http://www.seabird.com/pdf_documents/manuals/SBEDataProcessing_7.23.2.pdf}.
+    
     The WOCE-exchange format is described at
     \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
     and a sample file is at
@@ -228,9 +229,14 @@ points(longitude, latitude, col='red')
     they cannot be plotted), the first thing to do is to reread the files with
     \code{debug=1}, to see if column names were converted properly.
 
-    Ice-tethered profile (ITF) data are available at \url{www.whoi.edu/itf};
-    note that the present version only handles data in profiler-mode, not
-    fixed-depth mode.
+    The \code{ODV} format, used by the ODV software and some European/British
+    data providers, is described at
+    \url{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
+
+    Information about ice-tethered profile data is provided at
+    \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+    downloading data.  Note that the present version only handles data in
+    profiler-mode, not fixed-depth mode.
 
 }
 

@@ -232,7 +232,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     roll <- readBin(buf[profileStart2 + 44], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE) / 10
 
     oceDebug(debug, "time[1:10]=",format(time[1:10]),"\n")
-    v <- array(dim=c(profilesToRead, numberOfCells, numberOfBeams))
+    v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
     a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
     q <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
     nd <- numberOfCells * numberOfBeams

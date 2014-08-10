@@ -1,17 +1,17 @@
-\name{subset.adp}
+\name{subset.met}
 
-\alias{subset.adp}
-\alias{subset,adp,missing-method}
-\alias{subset,adp-method}
+\alias{subset.met}
+\alias{subset,met,missing-method}
+\alias{subset,met-method}
 
-\title{Subset an adp object}
+\title{Subset a met object}
 
-\description{Subset an adp (acoustic Doppler profile) object}
+\description{Subset a met object}
 
-\usage{\S4method{subset}{adp}(x, subset, \dots)}
+\usage{\S4method{subset}{met}(x, subset, \dots)}
 
 \arguments{
-  \item{x}{a \code{adp} object.}
+  \item{x}{a \code{met} object.}
   \item{subset}{a condition to be applied to the \code{data} portion of
     \code{x}.  See \sQuote{Details}.}
   \item{\dots}{ignored.}
@@ -22,13 +22,13 @@
     \code{distance}, but these may not be combined; use a sequence of calls to
     subset by both.}
 
-\value{A new \code{adp} object.}
+\value{A new \code{met} object.}
 
 \examples{
 library(oce)
-data(adp)
-# First part of time series
-plot(subset(adp, time < mean(range(adp[['time']]))))
+data(met)
+# Few days surrounding Hurricane Juan
+plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 }
 
 \author{Dan Kelley}

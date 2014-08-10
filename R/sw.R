@@ -322,9 +322,10 @@ swZ <- function(pressure, latitude=45, degrees=TRUE)
     -swDepth(pressure=pressure, latitude=latitude, degrees=degrees)
 }
 
-swDynamicHeight <- function(x, referencePressure=2000)
+swDynamicHeight <- function(x, referencePressure=2000,
+                            subdivisions=500, rel.tol=.Machine$double.eps^0.25)
 {
-    height <- function(ctd, referencePressure)
+    height <- function(ctd, referencePressure, subdivisions, rel.tol)
     {
         if (sum(!is.na(ctd@data$pressure)) < 2) return(NA) # cannot integrate then
         g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
@@ -333,9 +334,12 @@ swDynamicHeight <- function(x, referencePressure=2000)
         if (sum(!is.na(rho)) < 2) return(NA)
         ## 1e4 converts decibar to Pa
         dzdp <- ((1/rho - 1/swRho(rep(35,np),rep(0,np),ctd@data$pressure))/g)*1e4
-##        print(summary(ctd))
-        integrand <- approxfun(ctd@data$pressure, dzdp, rule=2)
-        integrate(integrand, 0, referencePressure)$value
+        ## Scale both pressure and dz/dp to make integration work better (issue 499)
+        max <- max(dzdp, na.rm=TRUE)
+        integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
+        ##plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
+        integrate(integrand, 0, 1,
+                  subdivisions=subdivisions, rel.tol=rel.tol)$value * referencePressure * max
     }
     if (inherits(x, "section")) {
         lon0 <- x@data$station[[1]]@metadata$longitude
@@ -343,14 +347,13 @@ swDynamicHeight <- function(x, referencePressure=2000)
         ns <- length(x@data$station)
         d <- vector("numeric", ns)
         h <- vector("numeric", ns)
-        for (i in 1:ns) {               # FIXME: avoid loops
-##            cat("i=",i,"\n")
+        for (i in 1:ns) {
             d[i] <- geodDist(x@data$station[[i]]@metadata$longitude, x@data$station[[i]]@metadata$latitude, lon0, lat0)
-            h[i] <- height(x@data$station[[i]], referencePressure)
+            h[i] <- height(x@data$station[[i]], referencePressure, subdivisions=subdivisions, rel.tol=rel.tol)
         }
         return(list(distance=d, height=h))
     } else if (inherits(x, "ctd")) {
-        return(height(x, referencePressure))
+        return(height(x, referencePressure, subdivisions=subdivisions, rel.tol=rel.tol))
     } else {
         stop("method is only for objects of class '", "section", " or '", "ctd", "'")
     }

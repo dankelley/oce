@@ -6,16 +6,24 @@
 
 \description{Compute the dynamic height of a column of seawater.}
 
-\usage{swDynamicHeight(x, referencePressure=2000)}
+\usage{swDynamicHeight(x, referencePressure=2000,
+                subdivisions=500, rel.tol=.Machine$double.eps^0.25)}
 
 \arguments{
   \item{x}{a \code{section} object, \strong{or} a \code{ctd} object.}
   \item{referencePressure}{reference pressure [dbar]}
+  \item{subdivisions}{number of subdivisions for call to
+      \code{\link{integrate}}.  (The default value is considerably larger than
+      the default for \code{\link{integrate}}, because otherwise some test
+      profiles failed to integrate.}
+  \item{rel.tol}{absolute tolerance for call to \code{\link{integrate}}.  Note
+      that this call is made in scaled coordinates, i.e. pressure is divided by
+      its maximum value, and dz/dp is also divided by its maximum.}
 }
 
-\details{If the first argument is a \code{section}, then dynamic height
-  is calculated for each station within a section, and returns a list
-  containing distance along the section along with dynamic height.
+\details{If the first argument is a \code{section}, then dynamic height is
+    calculated for each station within a section, and returns a list containing
+    distance along the section along with dynamic height.
 
   If the first argument is a \code{ctd}, then this returns just a single
   value, the dynamic height.
@@ -23,15 +31,15 @@
   Stations are analysed in steps. First, a piecewise-linear model of the
   density variation with pressure is developed using
   \code{\link[stats]{approxfun}}. (The option \code{rule=2} is used to
-  extrapolate the uppermost density up to the surface, preventing a
-  possible a bias for bottle data, in which the first depth may be a few
-  metres below the surface.) A second function is constructed as the
-  density of water with salinity 35PSU, temperature of
-  0\eqn{^\circ}{deg}C, and pressure as in the \code{ctd}. The reciprocal
-  difference of these densities is then integrated using
-  \code{\link[stats]{integrate}} with pressure limits \code{0} to
-  \code{referencePressure}, and divided by the acceleration due to gravity, to
-  calculate the dynamic height.
+  extrapolate the uppermost density up to the surface, preventing a possible a
+  bias for bottle data, in which the first depth may be a few metres below the
+  surface.) A second function is constructed as the density of water with
+  salinity 35PSU, temperature of 0\eqn{^\circ}{deg}C, and pressure as in the
+  \code{ctd}. The difference of the reciprocals of these densities, is then
+  integrated with \code{\link[stats]{integrate}} with pressure limits \code{0}
+  to \code{referencePressure}.  (For improved numerical results, the variables
+  are scaled before the integration, making both independent and dependent
+  variables be of order one.)
 
   If the water column is too short to have bottom pressure exceeding
   \code{referencePressure}, a missing value is reported.}

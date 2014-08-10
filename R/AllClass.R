@@ -52,11 +52,13 @@ setMethod(f="[[",
                   return(x@data)
               } else if (i == "processingLog") {
                   return(x@processingLog)
-              } else if (i %in% names(x@metadata)) {
-                  return(x@metadata[[i]])
-              } else if (i %in% names(x@data)) {
-                  return(x@data[[i]])
               } else {
+                  ## metadata must match exactly but data can be partially matched
+                  if (i %in% names(x@metadata))
+                      return(x@metadata[[i]])
+                  index <- pmatch(i, names(x@data))
+                  if (!is.na(index[1]))
+                      return(x@data[[index]])
                   warning("there is no item named \"", i, "\" in this ", class(x), " object")
                   return(NULL)
               }
@@ -65,19 +67,23 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
+              ## metadata must match exactly but data can be partially matched
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
-              } else if (i %in% names(x@data)) {
-                  x@data[[i]] <- value
-              } else if (i == "processingLog") {
-                  if (0 == length(x@processingLog)) {
-                      x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
-                  } else {
-                      x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
-                      x@processingLog$value <- c(x@processingLog$value, value)
-                  }
               } else {
-                  warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                  index <- pmatch(i, names(x@data))
+                  if (!is.na(index[1])) {
+                      x@data[[index]] <- value
+                  } else if (i == "processingLog") {
+                      if (0 == length(x@processingLog)) {
+                          x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
+                      } else {
+                          x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
+                          x@processingLog$value <- c(x@processingLog$value, value)
+                      }
+                  } else {
+                      warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                  }
               }
               validObject(x)
               invisible(x)

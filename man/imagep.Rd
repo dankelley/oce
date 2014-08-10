@@ -8,11 +8,10 @@
 
 \usage{imagep(x, y, z, 
     xlim, ylim, zlim, 
-    zclip=FALSE,
-    flipy=FALSE,
+    zclip=FALSE, flipy=FALSE,
     xlab="", ylab="", zlab="", zlabPosition=c("top", "side"),
-    breaks, col, colormap,
-    labels=NULL, at=NULL,
+    decimate=TRUE,
+    breaks, col, colormap, labels=NULL, at=NULL,
     drawContours=FALSE,
     drawPalette=TRUE,
     drawTriangles=FALSE,
@@ -58,6 +57,15 @@
     \item{zlim}{either a pair of numbers giving the limits for the colorscale,
         or \code{"histogram"} to have a flattened histogram (i.e. to maximally
         increase contrast throughout the domain.)}
+
+    \item{decimate}{value indicating whether to decimate the image.  If
+        \code{decimate=FALSE}, no decimation is done, i.e. all data are shown.
+        If \code{decimate=TRUE}, then the image is decimated to display at most
+        800 pixels in width or height.  If \code{decimate} is an integer, then
+        its value sets the decimation interval, e.g. \code{decimate=20} plots
+        every twentith point (suitable, for example, for landsat images that
+        typicaly have 16000 pixels on a side).}
+
     \item{zclip}{logical, indicating whether to clip the colors to those
         corresponding to \code{zlim}, if the latter is provided.  Clipped
         regions will be colored with \code{missingColor}.}

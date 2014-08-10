@@ -30,6 +30,7 @@
      legend.loc="bottomright",
      adorn=NULL,
      showStations=FALSE,
+     showStart=TRUE,
      showBottom=TRUE,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
@@ -112,6 +113,8 @@
         \dQuote{Examples}.)}
     \item{showStations}{logical indicating whether to draw station numbers
         on maps.}
+    \item{showStart}{logical indicating whether to indicate the first station
+        with a different symbol than the others.}
     \item{showBottom}{logical indicating whether to draw the bottom, or a
         character string indicating the method for plotting the bottom.  The
         allowed methods are: \code{polygon}, which fills the space to the bottom,

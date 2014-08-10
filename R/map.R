@@ -54,6 +54,30 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     ## FIXME: labels, using labcex and vfont
 }
 
+mapDirectionField <- function(longitude, latitude, u, v,
+                              scale=1, length=0.05, code=2, col=par("fg"), ...)
+{
+    ## handle case where lon and lat are coords on edges of grid
+    if (is.matrix(u)) {
+        if (is.vector(longitude) && is.vector(latitude)) {
+            nlon <- length(longitude)
+            nlat <- length(latitude)
+            longitude <- matrix(rep(longitude, nlat), nrow=nlon)
+            latitude <- matrix(rep(latitude, nlon), byrow=TRUE, nrow=nlon)
+        }
+    }
+    xy <- mapproject(longitude, latitude)
+    ## Calculate spatially-dependent scale (fails for off-page points)
+    ## Calculate lon-lat at ends of arrows
+    scalex <- scale / cos(pi * latitude / 180)
+    latEnd <- latitude + v * scale
+    lonEnd <- longitude + u * scalex
+    xy <- mapproject(longitude, latitude)
+    xyEnd <- mapproject(lonEnd, latEnd)
+    arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length=length, code=code, col=col, ...)
+}
+
+
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if (missing(longitude))
@@ -461,6 +485,29 @@ mapPoints <- function(longitude, latitude, ...)
     }
 }
 
+mapArrows <- function(longitude0, latitude0,
+                      longitude1=longitude0, latitude1=latitude0,
+                      length=0.25, angle=30,
+                      code=2, col=par("fg"), lty=par("lty"),
+                      lwd=par("lwd"), ...)
+{
+    if (length(longitude0) != length(latitude0))
+        stop("lengths of longitude0 and latitude0 must match but they are ", length(longitude0), " and ", length(longitude1))
+    if (length(longitude1) != length(latitude1))
+        stop("lengths of longitude1 and latitude1 must match but they are ", length(longitude1), " and ", length(longitude1))
+    ok <- !is.na(longitude0) & !is.na(latitude0) & !is.na(longitude1) & !is.na(latitude1)
+    longitude0 <- longitude0[ok]
+    latitude0 <- latitude0[ok]
+    longitude1 <- longitude1[ok]
+    latitude1 <- latitude1[ok]
+    if (length(longitude) > 0) {
+        xy0 <- mapproject(longitude0, latitude0)
+        xy1 <- mapproject(longitude1, latitude1)
+        arrows(xy0$x, xy0$y, xy1$x, xy1$y,
+               length=length, angle=angle, code=code, col=col, lty=lty, lwd=lwd, ...)
+    }
+}
+
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
     type <- match.arg(type)
@@ -532,6 +579,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 mapLocator <- function(n=512, type='n', ...)
 {
     xy <- locator(n, type, ...)
+    print(xy)
     rval <- map2lonlat(xy$x, xy$y)
     if (type == 'l')
         mapLines(rval$longitude, rval$latitude, ...)
@@ -540,37 +588,63 @@ mapLocator <- function(n=512, type='n', ...)
     rval
 }
 
-map2lonlat <- function(xusr, yusr, tolerance=1e-4)
+map2lonlat <- function(xusr, yusr, tolerance=1e-5)
 {
     n <- length(xusr)
     if (length(yusr) != n)
         error("lengths of x and y must match")
     lon <- rep(NA, n)
     lat <- rep(NA, n)
+    debug <- getOption("oceDebug") # permit debugging despite lack of arg
+    oceDebug(debug, "map2lonlat() {\n", unindent=1)
     ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
     ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
     t <- try({
-            or <- get(".Last.projection", envir = globalenv())$orientation
+        or <- get(".Last.projection", envir = globalenv())$orientation
     }, silent=TRUE)
     if (class(t) == "try-error") {
         or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
     }
+    oceDebug(debug, "orientation:", paste(or, collapse=" "), "\n")
+    init <- c(0, 0) # won't work if this is off the page
     for (i in 1:n) {
-        t <- try({
+        oceDebug(debug, "x[", i, "]=", xusr[i], ", y[", i, "]=", yusr[i], "\n", sep="")
+        try({
             error <- FALSE
             ## FIXME: find better way to do the inverse mapping
-            ## FIXME: here, try two starting points and pick best
-            o <- optim(c(or[2], or[1]), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
-            if (o$value > 100*tolerance) {
-                oo <- optim(c(0, 0), function(x) {xy<-mapproject(x[1], x[2]); error <<- xy$error; sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)}, control=list(abstol=1e-4))
-                if (oo$value < o$value)
-                    o <- oo
-            }
-            ##cat(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
-            if (o$convergence == 0 && !error && o$value < tolerance) {
+            ## message("init:", init[1], " ", init[2])
+            o <- optim(init,
+                       function(x) {
+                           xy <- mapproject(x[1], x[2])
+                           error <<- xy$error
+                           misfit <- sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
+                           rval <- misfit
+                           ##rval <- if (x[2] > 90) misfit + 100*(x[2]-90) else misfit
+
+                           ##if (debug) cat("lon:", x[1], ", lat:", x[2], ", misfit:", misfit, ", rval:", rval, "\n", sep="")
+                           rval
+                       },
+                       control=list(abstol=tolerance))
+            ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
+            if (o$convergence == 0 && !error) {
                 lonlat <- o$par
-                lon[i] <- lonlat[1]
-                lat[i] <- lonlat[2]
+                if (lonlat[2] > 90) {
+                    ## some projections can flip over the north pole
+                    lat[i] <- 90 - (lonlat[2] - 90)
+                    lon[i] <- 180 + lonlat[1]
+                } else if (lonlat[2] < -90) {
+                    ## FIXME: not sure if this is right
+                    lat[i] <- -90 - (lonlat[2] + 90)
+                    lon[i] <- 180 + lonlat[1]
+                } else {
+                    lon[i] <- lonlat[1]
+                    lat[i] <- lonlat[2]
+                }
+                init[1] <- lon[i]
+                init[2] <- lat[i]
+            } else {
+                cat("no convergence or error; next line is o:")
+                print(o)
             }
         }, silent=TRUE)
     }
@@ -579,6 +653,7 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
     ## lat[bad] <- NA
     lon <- ifelse(lon < -180, lon+360, lon)
     lon <- ifelse(lon >  180, lon-360, lon)
+    oceDebug(debug, "} # map2lonlat() returning lon=", lon, " lat=", lat, "\n", unindent=1)
     list(longitude=lon, latitude=lat)
 }
 
@@ -796,5 +871,101 @@ geodGc <- function(longitude, latitude, dmax)
     lon <- c(lon, longitude[n])
     lat <- c(lat, latitude[n])
     list(longitude=lon, latitude=lat)
+}
+
+lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
+{
+    names <- names(longitude)
+    if (!is.null(names)) {
+        if ("zone" %in% names)
+            zone <- longitude$zone
+        if ("longitude" %in% names && "latitude" %in% names) {
+            latitude <- longitude$latitude
+            longitude <- longitude$longitude
+        }
+    }
+    ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
+    longitude <- ifelse(longitude < 0, longitude+360, longitude)
+    rpd <- atan2(1, 1) / 45
+    lambda <- longitude * rpd
+    phi <- latitude * rpd
+    a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
+    f <- 1 / 298.257223563                 # flatening
+    n <- f / (2 - f)
+    A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
+    t <- sinh(atanh(sin(phi)) - (2*sqrt(n))/(1+n) * atanh((2*sqrt(n))/(1+n)*sin(phi)))
+    if (missing(zone)) {
+        zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
+        zone <- ifelse(zone > 60, zone-60, zone)
+    }
+    lambda0 <- rpd * (zone * 6 - 183)
+    xiprime <- atan(t / cos(lambda - lambda0))
+    etaprime <- atanh(sin(lambda - lambda0) / sqrt(1 + t^2))
+    alpha1 <- (1/2)*n - (2/3)*n^2 + (5/16)*n^3
+    alpha2 <- (13/48)*n^2 - (3/5)*n^3
+    alpha3 <- (61/240)*n^3
+    ## sigma and tau needed only if calculating k and gamma, which we are not.
+    ## sigma <- 1 + 2*(  alpha1*cos(2*xiprime)*cosh(2*etaprime) +
+    ##                 2*alpha2*cos(4*xiprime)*cosh(4*etaprime) +
+    ##                 3*alpha3*cos(6*xiprime)*cosh(6*etaprime))
+    ## tau <-       2*(  alpha1*sin(2*xiprime)*sinh(2*etaprime) +
+    ##                 2*alpha2*sin(4*xiprime)*sinh(4*etaprime) +
+    ##                 3*alpha3*sin(6*xiprime)*sinh(6*etaprime))
+    k0 <- 0.9996
+    E0 <- 500                              # km
+    E <- E0 + k0 * A * (etaprime + (alpha1*cos(2*xiprime)*sinh(2*etaprime)+
+                                    alpha2*cos(4*xiprime)*sinh(4*etaprime)+
+                                    alpha3*cos(6*xiprime)*sinh(6*etaprime)))
+    N0 <- ifelse(latitude>0, 0, 10000)
+    N <- N0 + k0 * A * (xiprime  + (alpha1*sin(2*xiprime)*cosh(2*etaprime)+
+                                    alpha2*sin(4*xiprime)*cosh(4*etaprime)+
+                                    alpha3*sin(6*xiprime)*cosh(6*etaprime)))
+    easting <- if (km) E else 1000 * E
+    northing <- if (km) N else 1000 * N
+    list(easting=easting, northing=northing, zone=zone,
+         hemisphere=ifelse(latitude>0, "N", "S"))
+}
+
+utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE) 
+{
+    names <- names(easting)
+    if (!is.null(names)) {
+        if ("easting" %in% names && "northing" %in% names && "zone" %in% names) {
+            zone <- easting$zone
+            northing <- easting$northing
+            easting <- easting$easting
+        }
+    }
+    ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
+    a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
+    f <- 1 / 298.257223563                 # flatening
+    n <- f / (2 - f)
+    A <- (a / (1 + n)) * (1 + n^2/4 + n^4/64)
+    beta1 <- (1/2)*n - (2/3)*n^2 + (37/96)*n^3
+    beta2 <- (1/48)*n^2 + (1/15)*n^3
+    beta3 <- (17/480)*n^3
+    delta1 <- 2*n - (2/3)*n^2 - 2*n^3
+    delta2 <- (7/3)*n^2 - (8/5)*n^3
+    delta3 <- (56/15)*n^3
+    if (!km) {
+        northing <- northing / 1000
+        easting <- easting / 1000
+    }
+    N0 <- if (hemisphere=="N") 0 else 10000
+    k0 <- 0.9996
+    E0 <- 500                              # km
+    xi <- (northing - N0) / (k0 * A)
+    eta <- (easting - E0) / (k0 * A)
+    xiprime <-   xi -   (beta1*sin(2*xi)*cosh(2*eta) +  beta2*sin(4*xi)*cosh(4*eta) +  beta3*sin(6*xi)*cosh(6*eta))
+    etaprime <- eta -   (beta1*cos(2*xi)*sinh(2*eta) +  beta2*cos(4*xi)*sinh(4*eta) +  beta3*cos(6*xi)*sinh(6*eta))
+    ## sigmaprime and tauprime not needed in present calculation
+    ##sigmaprime <- 1 - 2*(beta1*cos(2*xi)*cosh(2*eta) +2*beta2*cos(4*xi)*cosh(4*eta) +3*beta3*cos(6*xi)*cosh(6*eta))
+    ##tauprime <-       2*(beta1*sin(2*xi)*sinh(2*eta) +2*beta2*sin(4*xi)*sinh(4*eta) +3*beta3*sin(6*xi)*sinh(6*eta))
+    chi <- asin(sin(xiprime)/cosh(etaprime)) # Q: in deg or radian?
+    phi <- chi + (delta1*sin(2*chi) + delta2*sin(4*chi) + delta3*sin(6*chi))
+    latitude <- 45 * phi / atan2(1, 1)
+    lambda0 <- zone * 6 - 183
+    longitude <- lambda0 + 45/atan2(1,1)*atan(sinh(etaprime) / cos(xiprime))
+    list(longitude=longitude, latitude=latitude)
 }
 

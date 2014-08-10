@@ -356,7 +356,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     p.LSW <- readBin(buf[vvdStart2 + 6], "integer", size=2, n=vvdLen, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
     oceDebug(debug, vectorShow(pressure, "pressure"))
-    v <- array(dim=c(vvdLen, 3))
+    v <- array(double(), dim=c(vvdLen, 3))
     v[,1] <- metadata$velocityScale*readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     v[,2] <- metadata$velocityScale*readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     v[,3] <- metadata$velocityScale*readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")

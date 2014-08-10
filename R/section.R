@@ -234,21 +234,27 @@ setMethod(f="subset",
 
  
 
-sectionSort <- function(section, by=c("stationId", "distance"))
+sectionSort <- function(section, by)
 {
-    by <- match.arg(by)
+    if (missing(by)) {
+        by <- "stationId"
+    } else {
+        byChoices <- c("stationId", "distance", "longitude", "latitude")
+        iby <- pmatch(by, byChoices, nomatch=0)
+        if (0 == iby)
+            stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
+        by <- byChoices[iby]
+    }
     rval <- section
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
-	rval@metadata$stationId <- rval@metadata$stationId[o]
-	rval@metadata$longitude <- rval@metadata$longitude[o]
-	rval@metadata$latitude <- rval@metadata$latitude[o]
-	rval@data$station <- rval@data$station[o]
-    } else if (by == "distance") {
-	warning("sort.section() cannot yet handle argument by=\"distance\"")
     } else {
-	stop("argument 'by' is incorrect")
+	o <- order(section[[by, "byStation"]])
     }
+    rval@metadata$stationId <- rval@metadata$stationId[o]
+    rval@metadata$longitude <- rval@metadata$longitude[o]
+    rval@metadata$latitude <- rval@metadata$latitude[o]
+    rval@data$station <- rval@data$station[o]
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -376,6 +382,7 @@ setMethod(f="plot",
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
+                              showStart=TRUE,
                               showBottom=TRUE,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
@@ -451,8 +458,8 @@ setMethod(f="plot",
                   omar <- par('mar')
 
                   if (variable == "map") {
-                      lat <- array(NA, numStations)
-                      lon <- array(NA, numStations)
+                      lat <- array(NA_real_, numStations)
+                      lon <- array(NA_real_, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
                           lon[i] <- thisStation[["longitude"]]
@@ -535,7 +542,7 @@ setMethod(f="plot",
                           text(lon, lat, stationId, pos=2)
                           text(lon-360, lat, stationId, pos=2)
                       }
-                      if (xtype == "distance") {
+                      if (xtype == "distance" && showStart) {
                           points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
                       }
@@ -864,8 +871,8 @@ setMethod(f="plot",
               ##}
 
               zz <- matrix(nrow=numStations, ncol=num.depths)
-              xx <- array(NA, numStations)
-              yy <- array(NA, num.depths)
+              xx <- array(NA_real_, numStations)
+              yy <- array(NA_real_, num.depths)
               if (is.null(at)) {
                   lon0 <- firstStation@metadata$longitude
                   lat0 <- firstStation@metadata$latitude
@@ -1095,8 +1102,6 @@ read.section <- function(file, directory, sectionId="", flags,
 	pressure <- as.numeric(data[,which(var.names=="CTDPRS") - col.start + 1])
     else
 	stop("no column named \"CTDPRS\"")
-
-
     if (length(which(var.names=="CTDTMP")))
 	temperature <- as.numeric(data[,which(var.names=="CTDTMP") - col.start + 1])
     else
@@ -1270,11 +1275,11 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 	if (length(p) == 1) {
 	    if (p=="levitus") {
 		pt <- standardDepths()
-                pt <- pt[pt < max(section[["pressure"]])]
+                pt <- pt[pt < max(section[["pressure"]], na.rm=TRUE)]
 	    } else {
                 if (!is.numeric(p))
                     stop("p must be numeric")
-                pMax <- max(section[["pressure"]])
+                pMax <- max(section[["pressure"]], na.rm=TRUE)
 		pt <- seq(0, pMax, p)
 	    }
 	} else {
@@ -1323,9 +1328,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
         x <- geodDist(res)
-        temperatureMat <- array(dim=c(npressure, nstn))
-        salinityMat <- array(dim=c(npressure, nstn))
-        sigmaThetaMat <- array(dim=c(npressure, nstn))
+        temperatureMat <- array(double(), dim=c(npressure, nstn))
+        salinityMat <- array(double(), dim=c(npressure, nstn))
+        sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
         for (s in 1:nstn) {
             thisStation <- res@data$station[[s]]
             temperatureMat[,s] <- thisStation@data$temperature

@@ -28,7 +28,7 @@ setMethod(f="summary",
               ndata <- length(object@data$elevation)
               cat("* number of observations:  ", ndata, "\n")
               cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              cat("* Statistics of subsample::\n")
+              cat("* Statistics::\n")
               threes <- matrix(nrow=1, ncol=3)
               threes[1,] <- threenum(object@data$elevation)
               rownames(threes) <- paste("   ", "elevation")
@@ -38,6 +38,23 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
+setMethod(f="subset",
+          signature="sealevel",
+          definition=function(x, subset, ...) {
+              rval <- new("sealevel")
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              names(rval@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+ 
 
 setMethod(f="[[",
           signature="sealevel",
@@ -178,7 +195,8 @@ setMethod(f="plot",
               if (marginsAsImage) {
                   scale <- 0.7
                   w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-                  lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+                  if (lw > 1)
+                      lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
               } else {
                   if (lw > 1)
                       lay <- layout(cbind(1:lw))
@@ -407,7 +425,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
         oceDebug(debug, "units=", units, "\n")
         if (tolower(units) != "mm")
             stop("require units to be 'mm' or 'MM', not '", units, "'")
-        elevation <- array(NA, 12*(n-1))
+        elevation <- array(NA_real_, 12*(n-1))
         first.twelve.hours  <- 3600 * (0:11)
         second.twelve.hours <- 3600 * (12:23)
         twelve <- seq(1, 12, 1)

@@ -881,7 +881,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
-        var <- gettext("absolute salinity", domain="R-oce")
+        var <- gettext("Absolute Salinity", domain="R-oce")
         unit <- gettext("g/kg", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")
@@ -1090,11 +1090,9 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
     rval <- vector("character", n)
-    if (!is.numeric(lat) || !is.numeric(lon))
-        return(paste("non-numeric lat (", lat, ") or lon (", lon, ")", sep=""))
     for (i in 1:n) {
         if (is.na(lat[i]) || is.na(lon[i]))
-            rval[i] <- ""
+            rval[i] <- "Lat and lon unknown"
         else
             rval[i] <- paste(format(abs(lat[i]), digits=digits),
                              if (lat[i] > 0) "N  " else "S  ",
@@ -1682,8 +1680,17 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         res[["z"]] <- x[["z"]][lonlook, latlook]
     } else if (inherits(x, "landsat")) {
         for (i in seq_along(x@data)) {
-            dim <- dim(x@data[[i]])
-            res@data[[i]] <- x@data[[i]][seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+            b <- x@data[[i]]
+            if (is.list(b)) {
+                dim <- dim(b$msb)
+                if (!is.null(dim))
+                    res@data[[i]]$msb <- b$msb[seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+                dim <- dim(b$lsb)
+                res@data[[i]]$lsb <- b$lsb[seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+            } else {
+                dim <- dim(x@data[[i]])
+                res@data[[i]] <- b[seq(1, dim[1], by=by), seq(1, dim[2], by=by)] 
+            }
         }
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
@@ -2041,8 +2048,8 @@ grad <- function(h, x, y)
     if (missing(h)) stop("must give h")
     if (missing(x)) stop("must give x")
     if (missing(y)) stop("must give y")
-    if (length(x) != nrow(h)) stop("length of x (%d) must equal number of rows in h (%d)", length(x), nrow(h))
-    if (length(y) != ncol(h)) stop("length of y (%d) must equal number of cols in h (%d)", length(y), ncol(h))
+    if (length(x) != nrow(h)) stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
+    if (length(y) != ncol(h)) stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
     .Call("gradient", h, as.double(x), as.double(y))
 }
 
