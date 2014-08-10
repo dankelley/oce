@@ -2,11 +2,11 @@
 ##  http://stackoverflow.com/questions/tagged/proj4
 
 .Last.proj4  <- local({                # emulate mapproj
-    val <- list(proj="")
+    val <- list(projection="")
     function(new) if(!missing(new)) val <<- new else val
 })
 
-usingProj4 <- function() 0 < nchar(.Last.proj4()$proj)
+usingProj4 <- function() 0 < nchar(.Last.proj4()$projection)
 
 fixneg <- function(v)
 {
@@ -41,7 +41,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || .Last.projection()$proj == ""))
+    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(.Last.projection()$projection)))
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) {
@@ -131,7 +131,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 {
     oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
-             if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
+             if (missing(latitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
              ", ...) {\n", sep="", unindent=1)
@@ -242,6 +242,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             ll <- list(longitude=-180, latitude=-90)
         }
         span <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+        oceDebug(debug, "span=", span, "\n")
         if (missing(latitudelim)) {
             if (span > 45) {
                 grid[2] <- 15 # this looks nice on global maps
@@ -250,7 +251,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
                 grid[2] <- diff(latlabs[1:2])
             }
-            oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
+            oceDebug(debug,  "latitudelim not provided; grid[2]=", grid[2], "\n")
         } else {
             ##span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
             if (span > 45) {
@@ -264,7 +265,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             } else {
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
                 grid[2] <- diff(latlabs[1:2])
-                oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
+                oceDebug(debug, "latitudelim provided; setting grid[2]=", grid[2], "\n")
             }
         }
 
@@ -278,7 +279,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 lonlabs <- pretty(c(ll$longitude, ur$longitude))
                 grid[1] <- diff(lonlabs[1:2])
             }
-            oceDebug(debug, "span=", span, "and setting grid to ", grid[1], "\n")
+            oceDebug(debug, "no longitudelim provided; setting grid[1]=", grid[1], "\n")
         } else {
             span <- if (is.na(ur$longitude - ll$longitude))
                 abs(diff(longitudelim)) else
@@ -297,6 +298,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 lonlabs <- pretty(c(ll$longitude, ur$longitude))
                 grid[1] <- diff(lonlabs[1:2])
             }
+            oceDebug(debug, "longitudelim provided; setting grid[1]=", grid[1], "\n")
         }
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         ## if (FALSE) { # before 2014-06-29
@@ -403,58 +405,38 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             sides <- 1:2
         TICK <- FALSE                  # ticks look bad for angled grid lines
         LINE <- -3/4                   # labels snug to box
+        axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
         if (1 %in% sides) {    # bottom side
             AT <- NULL
             LAB <- NULL
             for (lab in lonlabel) {
-                o <- optimize(function(lat) abs(mapproject(lab,lat)$y-usr[3]),lower=-90,upper=90)
-                if (is.na(o$objective) || o$objective > 0.01) next
-                x <- mapproject(lab, o$minimum)$x
+                o <- optimize(function(lat) abs(lonlat2map(lab,lat)$y-usr[3]),lower=-89.9999,upper=89.9999)
+                if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+                x <- lonlat2map(lab, o$minimum)$x
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
                     AT <- c(AT, x)
                     LAB <- c(LAB, paste(lab, "E", sep=""))
                     oceDebug(debug, "lonlabel", lab, "E intersects side 1\n")
+                } else {
+                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 1\n")
                 }
             }
-            for (lab in latlabel) {
-                t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$y-usr[3]),lower=-180,upper=180)})
-                if (is.na(o$objective) || o$objective > 0.01) next
-                x <- mapproject(lab, o$minimum)$x
-                if (!is.na(x) && usr[1] < x && x < usr[2]) {
-                    AT <- c(AT, x)
-                    LAB <- c(LAB, paste(lab, "N", sep=""))
-                    oceDebug(debug, "latlabel", lab, "N intersects side 1\n")
-                }
-##>>>>>>> map-axes
-            }
-            if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB),
-                                   line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
         }
         if (2 %in% sides) {    # left side
             AT <- NULL
             LAB <- NULL
-            for (lab in lonlabel) {
-                o <- optimize(function(lat) abs(mapproject(lab,lat)$x-usr[1]),lower=-90,upper=90)
-                if (is.na(o$objective) || o$objective > 0.01) next
-                y <- mapproject(lab, o$minimum)$y
-                if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                    AT <- c(AT, y)
-                    LAB <- c(LAB, paste(lab, "E", sep=""))
-                    oceDebug(debug, "lonlabel", lab, "E intersects side 2\n")
-                }
-            }
             for (lab in latlabel) {
-                t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$x-usr[1]),lower=-180,upper=180)})
-                if (is.na(o$objective) || o$objective > 0.01) next
-                y <- mapproject(o$minimum, lab)$y
+                o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),lower=-180,upper=180)
+                if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+                y <- lonlat2map(o$minimum, lab)$y
                 if (!is.na(y) && usr[3] < y && y < usr[4]) {
                     AT <- c(AT, y)
                     LAB <- c(LAB, paste(lab, "N", sep=""))
                     oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
                 }
             }
-            if (!is.null(AT)) axis(side=2, at=AT, labels=LAB,#fixneg(LAB),
-                                   line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=2, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
         }
 ##<<<<<<< HEAD
 ##        ## Prevent labelling both 180W and 180E on top of each other (not sure how
@@ -500,6 +482,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 ##                }, silent=TRUE)
 ##=======
         if (3 %in% sides) {    # topside
+            warning("axis on top side of map is not working yet (contact developer)")
             AT <- NULL
             LAB <- NULL
             for (lab in lonlabel) {
@@ -523,10 +506,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 3\n")
                 }
             }
-            if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB),
-                                   line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
         }
         if (4 %in% sides) {    # right side
+            warning("axis on right-hand side of map is not working yet (contact developer)")
             AT <- NULL
             LAB <- NULL
             for (lab in lonlabel) {
@@ -549,8 +532,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
                 }
             }
-            if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB),
-                                   line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
         }
         ## 20114-06-28: below is code that used to draw axes, then only
         ## at bottom and left, and without intermixing of lats and lons.
@@ -666,7 +648,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
     ## handle proj4
     ## proj4 <- ""
     ## if (usingProj4()) {
-    ##     proj4 <- .Last.proj4()$proj
+    ##     proj4 <- .Last.proj4()$projection
     ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
     ## }
     for (l in latitude) {
@@ -706,7 +688,7 @@ mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
-    if (!exists(".Last.projection") || .Last.projection()$proj == "") {
+    if (0 == nchar(.Last.projection()$projection) && 0 == nchar(.Last.proj4()$projection)) {
         warning("mapScalebar() only works for plots created with projections")
         return()
     }
@@ -770,7 +752,7 @@ mapText <- function(longitude, latitude, labels, ...)
         xy <- lonlat2map(longitude, latitude)
         ## str(xy)
         ## if (usingProj4()) {
-        ##     proj4 <- .Last.proj4()$proj
+        ##     proj4 <- .Last.proj4()$projection
         ##     if (1 > nchar(proj4)) stop("must call mapPlot() first")
         ##     xy <- project(list(longitude=longitude, latitude=latitude), proj=proj4)
         ## } else {
@@ -973,14 +955,14 @@ map2lonlat <- function(x, y, init=c(0,0))
         stop("lengths of x and y must match but they are ", n, " and ", length(y))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
-    if (0 < nchar(.Last.proj4()$proj)) {
-        ## message("proj4-style projection exists")
-        xy <- project(list(x=x, y=y), proj=.Last.proj4()$proj, inverse=TRUE)
+    if (0 < nchar(.Last.proj4()$projection)) {
+        ##message("proj4-style projection exists")
+        xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
         return(list(longitude=xy$x, latitude=xy$y))
     } else if (0 == nchar(.Last.projection()$projection)) {
-        ## message("mapproj-style projection exists")
-        stop("must first set up a projection by calling mapPlot() or lonlat2map()")
+        ##stop("must first set up a projection by calling mapPlot() or lonlat2map()")
     }
+    message("mapproj-style projection exists")
     ## OK, we know we are using mapproj-style
     lp <- .Last.projection()
     projection <- lp$projection
@@ -990,12 +972,15 @@ map2lonlat <- function(x, y, init=c(0,0))
     lat <- vector("numeric", n)
     for (i in 1:n) {
         xy <- c(x[i], y[i])
-        ##message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
+        lon[i] <- NA
+        lat[i] <- NA
+        message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
         try({
             error <- FALSE
-            ##message("init:", init[1], " ", init[2])
+            message("init:", init[1], " ", init[2])
             ## Note: using L-BFGS-B so we can limit the bounds; otherwise
             ## it can select lat > 90 etc.
+            worstMisfit <- 0           # try to avoid errors with NA
             o <- optim(init,
                        function(xyTrial) {
                            xyp <- mapproject(xyTrial[1], xyTrial[2],
@@ -1004,19 +989,25 @@ map2lonlat <- function(x, y, init=c(0,0))
                                              orientation=orientation)
                            error <<- xyp$error
                            misfit <- sqrt((xyp$x-xy[1])^2+(xyp$y-xy[2])^2)
-                           ## message(xyTrial[1], "E ", xyTrial[2], "N misfit=", misfit, " error: ", xyp$error)
-                           misfit
-                       }, method="L-BFGS-B", lower=c(-180, -90), upper=c(180, 90))
+                           message(format(xyTrial[1], digits=4), "E ",
+                                   format(xyTrial[2], digits=4), "N ",
+                                   "misfit: ", format(misfit, digits=5), ", error: ", xyp$error)
+                           if (error) {
+                               return(worstMisfit)
+                           } else {
+                               worstMisfit <- max(misfit, worstMisfit)
+                               return(misfit)
+                           }
+                       }, method="L-BFGS-B", lower=c(-180, -89.9999), upper=c(180, 89.9999))
             if (o$convergence == 0 && !error) {
                 lonlat <- o$par
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]
-            } else {
-                lon[i] <- NA
-                lat[i] <- NA
             }
+            str(o)
         }, silent=TRUE)
     }
+    message("map2lonlat returning lon=", lon, " lat=", lat)
     return(list(longitude=lon, latitude=lat))
 }
 
@@ -1046,7 +1037,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || .Last.projection()$proj == ""))
+    if (!usingProj4() && (!exists(".Last.projection") || .Last.projection()$projection))
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
@@ -1362,13 +1353,13 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
     ## Use proj4 if it has been set up (and still exists).
-    if ("" == projection) projection <- .Last.proj4()$proj
+    if ("" == projection) projection <- .Last.proj4()$projection
     if (0 == length(grep("^\\+proj", projection))) { 
         ## mapproj case
         xy <- mapproject(longitude, latitude,
                          projection=projection,
                          parameters=parameters, orientation=orientation)
-        .Last.proj4(list(proj=""))     # turn proj4 off, in case it was on
+        .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
     } else {                           
         ## proj4 case
         ll <- cbind(longitude, latitude)
@@ -1387,7 +1378,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             ##message("proj4 calculation is slow because errors meant it had to be done pointwise")
         }
         xy <- list(x=m[,1], y=m[,2])
-        .Last.proj4(list(proj=projection)) # turn on proj4
+        .Last.proj4(list(projection=projection)) # turn on proj4
         .Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
     xy

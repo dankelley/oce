@@ -798,7 +798,6 @@ setMethod(f="plot",
               if (!missing(lonlim))
                   warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
 
-              oceDebug(debug, "which:", which, "(before matching character strings)\n")
               which <- ocePmatch(which,
                                  list("salinity+temperature"=1,
                                       "density+N2"=2,
@@ -816,7 +815,6 @@ setMethod(f="plot",
                                       tritium=14,
                                       Rrho=15,
                                       RrhoSF=16))
-              oceDebug(debug, "which:", which, "(after matching character strings)\n")
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
@@ -1060,13 +1058,12 @@ setMethod(f="plot",
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
                           if (missing(projection))
-                              projection <- if (x[["latitude"]][1] > 70) "stereographic" else "mercator"
+                              projection <- if (x[["latitude"]][1] > 70) "+proj=stere" else "+proj=merc"
                           oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (require(ocedata, quietly=TRUE)) {
                                   library(ocedata)
-                                  oceDebug(debug, "ocedata is present\n")
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
                                       oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
@@ -1094,7 +1091,7 @@ setMethod(f="plot",
                               lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                               clon <- mean(lonlim.c)
                               if (missing(latlim)) {
-                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
+                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection", projection, "\n")
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
@@ -1153,7 +1150,7 @@ setMethod(f="plot",
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
-                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n", unindent=1)
+                      oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
