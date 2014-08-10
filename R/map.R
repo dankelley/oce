@@ -962,7 +962,7 @@ map2lonlat <- function(x, y, init=c(0,0))
     } else if (0 == nchar(.Last.projection()$projection)) {
         ##stop("must first set up a projection by calling mapPlot() or lonlat2map()")
     }
-    message("mapproj-style projection exists")
+    ##message("mapproj-style projection exists")
     ## OK, we know we are using mapproj-style
     lp <- .Last.projection()
     projection <- lp$projection
@@ -974,7 +974,7 @@ map2lonlat <- function(x, y, init=c(0,0))
         xy <- c(x[i], y[i])
         lon[i] <- NA
         lat[i] <- NA
-        message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
+        ##message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
         try({
             error <- FALSE
             ## message("init:", init[1], " ", init[2])
