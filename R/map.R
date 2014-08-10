@@ -579,6 +579,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 mapLocator <- function(n=512, type='n', ...)
 {
     xy <- locator(n, type, ...)
+    print(xy)
     rval <- map2lonlat(xy$x, xy$y)
     if (type == 'l')
         mapLines(rval$longitude, rval$latitude, ...)
@@ -587,13 +588,15 @@ mapLocator <- function(n=512, type='n', ...)
     rval
 }
 
-map2lonlat <- function(xusr, yusr, tolerance=1e-4)
+map2lonlat <- function(xusr, yusr, tolerance=1e-5)
 {
     n <- length(xusr)
     if (length(yusr) != n)
         error("lengths of x and y must match")
     lon <- rep(NA, n)
     lat <- rep(NA, n)
+    debug <- getOption("oceDebug") # permit debugging despite lack of arg
+    oceDebug(debug, "map2lonlat() {\n", unindent=1)
     ## The first of the following is ok in R 2.15 but the second is needed in R 3.0.1;
     ## see http://github.com/dankelley/oce/issues/346 for more on this issue.
     t <- try({
@@ -602,27 +605,46 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
     if (class(t) == "try-error") {
         or <- .Last.projection()$orientation # was as in the above commented-out line until 2013-10-10
     }
-    init <- c(0, 0) # won't work if this is off the map
+    oceDebug(debug, "orientation:", paste(or, collapse=" "), "\n")
+    init <- c(0, 0) # won't work if this is off the page
     for (i in 1:n) {
+        oceDebug(debug, "x[", i, "]=", xusr[i], ", y[", i, "]=", yusr[i], "\n", sep="")
         try({
             error <- FALSE
             ## FIXME: find better way to do the inverse mapping
             ## message("init:", init[1], " ", init[2])
             o <- optim(init,
                        function(x) {
-                           ##message(" x:", x[1], " ", x[2])
                            xy <- mapproject(x[1], x[2])
                            error <<- xy$error
-                           sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
+                           misfit <- sqrt((xy$x-xusr[i])^2+(xy$y-yusr[i])^2)
+                           rval <- misfit
+                           ##rval <- if (x[2] > 90) misfit + 100*(x[2]-90) else misfit
+
+                           ##if (debug) cat("lon:", x[1], ", lat:", x[2], ", misfit:", misfit, ", rval:", rval, "\n", sep="")
+                           rval
                        },
                        control=list(abstol=tolerance))
             ## message(sprintf("%.2f %.2f [%.5e]\n", o$par[1], o$par[2], o$value))
             if (o$convergence == 0 && !error) {
                 lonlat <- o$par
-                lon[i] <- lonlat[1]
-                lat[i] <- lonlat[2]
+                if (lonlat[2] > 90) {
+                    ## some projections can flip over the north pole
+                    lat[i] <- 90 - (lonlat[2] - 90)
+                    lon[i] <- 180 + lonlat[1]
+                } else if (lonlat[2] < -90) {
+                    ## FIXME: not sure if this is right
+                    lat[i] <- -90 - (lonlat[2] + 90)
+                    lon[i] <- 180 + lonlat[1]
+                } else {
+                    lon[i] <- lonlat[1]
+                    lat[i] <- lonlat[2]
+                }
                 init[1] <- lon[i]
                 init[2] <- lat[i]
+            } else {
+                cat("no convergence or error; next line is o:")
+                print(o)
             }
         }, silent=TRUE)
     }
@@ -631,6 +653,7 @@ map2lonlat <- function(xusr, yusr, tolerance=1e-4)
     ## lat[bad] <- NA
     lon <- ifelse(lon < -180, lon+360, lon)
     lon <- ifelse(lon >  180, lon-360, lon)
+    oceDebug(debug, "} # map2lonlat() returning lon=", lon, " lat=", lat, "\n", unindent=1)
     list(longitude=lon, latitude=lat)
 }
 
