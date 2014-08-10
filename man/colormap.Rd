@@ -141,16 +141,18 @@
 \value{A list containing the following (not necessarily in this order) 
     \itemize{
 
-        \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
+       \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
         provided, otherwise \code{"black"}
 
         \item \code{zlim}, a two-element vector
         suitable as the argument of the same name supplied to \code{\link{image}}
         or \code{\link{imagep}}
-
+ 
         \item \code{breaks} and \code{col}, vectors of breakpoints and colors,
         suitable as the same-named arguments to \code{\link{image}} or
         \code{\link{imagep}}
+
+        \item \code{zclip} the provided value of \code{zclip}.
 
         \item \code{x0} and \code{x1}, numerical vectors of the sides of color
         intervals, and \code{col0} and \code{col1}, vectors of corresponding

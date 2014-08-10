@@ -685,6 +685,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 {
     if (!exists(".Last.projection") || .Last.projection()$proj == "")
         stop("must create a map first, with mapPlot()\n")
+    breaksGiven <- !missing(breaks)
+    zlimGiven <- !missing(zlim)
     oceDebug(debug, "mapImage(..., ",
              " missingColor='", missingColor, "', ",
              " filledContour=", filledContour, ", ",
@@ -711,6 +713,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         breaks <- colormap$breaks
         col <- colormap$col
         missingColor <- colormap$missingColor
+        zclip <- colormap$zclip
     } else {
         if (!breaksGiven) {
             small <- .Machine$double.eps
@@ -729,10 +732,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 }
                 breaksOrig <- breaks
             } else {
-                if (missing(col))
-                    breaks <- c(zlim[1], pretty(zlim), zlim[2])
-                else
+                if (missing(col)) {
+                    oceDebug(debug, "zlim provided, but not breaks or col\n")
+                    breaks <- c(zlim[1], pretty(zlim, n=128), zlim[2])
+                } else {
+                    oceDebug(debug, "zlim and col provided, but not breaks\n")
                     breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
+                }
                 breaksOrig <- breaks
                 breaks[1] <- min(zrange[1], breaks[1])
                 breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
@@ -748,6 +754,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
+    ## message("mapImage() col:  ", paste(col, collapse=" "))
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
@@ -762,15 +769,28 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ymax <- usr[4]
     allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
     small <- .Machine$double.eps
+    ## 20140802/issue516: next if block (clipping) rewritten
     if (zclip) {
         oceDebug(debug, "using missingColor for out-of-range values\n")
-        z[z < zlim[1]] <- NA
-        z[z > zlim[2]] <- NA
+        if (zlimGiven) {
+            z[z < zlim[1]] <- NA
+            z[z > zlim[2]] <- NA
+        }
     } else {
-        if (!missing(zlim)) {
-            oceDebug(debug, "using range colours for out-of-range values\n")
-            z[z <= zlim[1]] <- zlim[1] * (1 + small)
-            z[z >= zlim[2]] <- zlim[2] * (1 - small)
+        if (zlimGiven) {
+            oceDebug(debug, "using zlim colours for out-of-range values\n")
+            zlimMin <- min(zlim, na.rm=TRUE)
+            zlimMax <- max(zlim, na.rm=TRUE)
+            z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
+            z[z >= zlimMax] <- zlimMax * (1 - sign(zlimMax) * small)
+        } else if (breaksGiven) {
+            oceDebug(debug, "using min/max colours for out-of-range values\n")
+            breaksMin <- min(breaks, na.rm=TRUE)
+            breaksMax <- max(breaks, na.rm=TRUE)
+            z[z <= breaksMin] <- breaksMin * (1 + sign(breaksMin) * small)
+            z[z >= breaksMax] <- breaksMax * (1 - sign(breaksMax) * small)
+        } else {
+            oceDebug(debug, "not clipping AND NEITHER zlim nor breaks suppled\n")
         }
     }
     if (debug != 99) {                 # test new method (much faster)
@@ -788,23 +808,51 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xy <- mapproject(poly$longitude, poly$latitude)
         ## map_check_polygons tries to fix up longitude cut-point problem, which
         ## otherwise leads to lines crossing the graph horizontally because the
-        ## x value can sometimes alternate from one end of the domain to the otherr
-        ## because (I suppose) of a numerical error.
+        ## x value can sometimes alternate from one end of the domain to the other.
         Z <- matrix(z)
         r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                    diff(par('usr'))[1:2]/5, par('usr'),
                    NAOK=TRUE, PACKAGE="oce")
+        breaksMin <- min(breaks, na.rm=TRUE)
+        breaksMax <- max(breaks, na.rm=TRUE)
+        colFirst <- col[1]
+        colLast <- tail(col, 1)
         colorLookup <- function (ij) {
-            if (is.na(Z[ij]))
-                return(missingColor)
-            w <- which(Z[ij] < breaks * (1 + small))
-            if (length(w) && w[1] > 1) col[-1 + w[1]] else missingColor
+            zval <- Z[ij]
+            if (is.na(zval)) return(missingColor)   # whether clipping or not
+            if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
+            if (zval > breaksMax) return(if (zclip) missingColor else colLast)
+            ## w <- which(Z[ij] <= breaks * (1 + small))[1]
+            w <- which(zval <= breaks)[1]
+            ## if (is.na(w)) message("w=NA for Z[", ij, "] = ", Z[ij])
+            ## if (w<=1) message("w<=1 for Z[", ij, "] = ", Z[ij])
+            ##if (w <= 1) message("w<=1 at ij: ", ij, "; Z[ij]: ", Z[ij])
+            ## FIXME: maybe should be [w] below?  And why is w=1 so bad?
+            if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
         }
-        col <- sapply(1:(ni*nj), colorLookup)
-        polygon(xy$x[r$okPoint&!r$clippedPoint], xy$y[r$okPoint&!r$clippedPoint],
-                col=col[r$okPolygon&!r$clippedPolygon],
+        ## message("range(Z): ", paste(range(Z, na.rm=TRUE), collapse=" to "))
+        ## message("head(breaks): ", paste(head(breaks), collapse=" "))
+        colPolygon <- sapply(1:(ni*nj), colorLookup)
+        ## message("ni*nj: ", ni*nj)
+        ## message("below is unique(colPolygon):")
+        ## str(unique(colPolygon))
+        polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
+                col=colPolygon[r$okPolygon & !r$clippedPolygon],
                 border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+
+        ## if (debug==5 && !is.na(missingColor)) {
+        ##     message("number missing color: ", sum(colPolygon==missingColor))
+        ##     message("zclip: ", zclip)
+        ##     browser()
+        ## }
+
+        ## message("number of clipped polygons: ", sum(r$clippedPolygon))
+        ## message("number of clipped points: ", sum(r$clippedPoints))
+        ## message("number of NOT ok points: ", sum(!r$okPoint))
+        ## message("number of NOT ok polygons: ", sum(!r$okPolygon))
     } else {
+        ## EXTREMELY slow old method -- keep a while in case any good ideas here
+        ## FIXME: delete this block by middle august, 2014
         for (i in 1:ni) {
             for (j in 1:nj) {
                 xy <- mapproject(longitude[i]+dlongitude*c(-0.5, 0.5, 0.5, -0.5),

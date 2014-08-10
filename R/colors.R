@@ -366,13 +366,13 @@ colormap <- function(z,
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
     zKnown <- !missing(z)
+    zlimKnown <- !missing(zlim)
     breaksKnown <- !missing(breaks)
     nameKnown <- !missing(name)
     missingColorKnown <- !missing(missingColor)
     if (missingColorKnown)
         oceDebug(debug, 'missingColor:', missingColor, '\n')
     xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
-    zlimKnown <- !missing(zlim)
     if (zlimKnown && breaksKnown && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
     if (!zlimKnown) {
@@ -507,13 +507,14 @@ colormap <- function(z,
     }
     if (!nameKnown)
         rval$missingColor <- if (missingColorKnown) missingColor else "gray"
+    rval$zclip <- zclip
     class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
 }
 
 ## keeping this (which was called 'colormap' until 2014-05-07) for a while, but not in NAMESPACE.
-colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oceDebug"))
+colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap_colormap() {\n", unindent=1)
     if (missing(name)) {
@@ -558,6 +559,7 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, debug=getOption("oc
         ## NB> next two functions not in NAMESPACE
         rval <- if (is.na(id)) colormapFromGmt(name) else colormapFromName(colormapNames[id])
     }
+    rval$zclip <- zclip
     class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap_colormap()\n", unindent=1)
     rval
