@@ -426,7 +426,7 @@ setMethod(f="plot",
                           np1 != length(thisPressure) ||
                           any(p1 != x[["station", ix]][["pressure"]])) {
                           x <- sectionGrid(x)
-                          warning("plot.section() gridded the data for plotting", call.=FALSE)
+                          ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
                   }
