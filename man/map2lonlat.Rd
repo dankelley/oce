@@ -6,11 +6,7 @@
 
 \description{Convert from x-y coordinates to longitude and latitude}
 
-<<<<<<< HEAD
-\usage{map2lonlat(xusr, yusr, tolerance=1e-5)}
-=======
 \usage{map2lonlat(x, y, init=c(0,0))}
->>>>>>> proj4
 
 \arguments{
 
