@@ -64,8 +64,7 @@ if (require(ocedata)) {
     drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
     data(coastlineWorld)
     mapPlot(coastlineWorld, longitudelim=c(-5,20), latitudelim=c(50,66),
-    grid=5, fill='gray', proj="lambert",
-    parameters=c(lat0=50, lat1=65))
+            grid=5, fill='gray', proj="lambert", parameters=c(lat0=50, lat1=65))
     bc <- binApply2D(secchi$longitude, secchi$latitude,
     pretty(secchi$longitude, 80),
     pretty(secchi$latitude, 40),

@@ -85,10 +85,10 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
     figureWidth <- par("fin")[1]
     figureHeight <- par("fin")[2]
-    oceDebug(debug, "figureWidth = ", figureWidth, "(inches)\n")
-    oceDebug(debug, "figureHeight = ", figureHeight, "(inches)\n")
-    oceDebug(debug, "tickSpace = ", tickSpace, "(inches)\n")
-    oceDebug(debug, "textSpace = ", textSpace, "(inches)\n")
+    oceDebug(debug, "figureWidth:", format(figureWidth, digits=2), "in\n")
+    oceDebug(debug, "figureHeight:", format(figureHeight, digits=2), "in\n")
+    oceDebug(debug, "tickSpace:", tickSpace, "in\n")
+    oceDebug(debug, "textSpace:", textSpace, "in\n")
     pc <- list(mai0=par('mai'))
     pc$mai1 <- pc$mai0
     pc$mai1f <- pc$mai0
@@ -374,7 +374,7 @@ drawPalette <- function(zlim, zlab="",
         }
     }
     oceDebug(debug, "at end of drawPalette(), par('mai') yields c(",
-             paste(par('mai'), collapse=","), ")\n")
+             paste(format(par('mai'), digits=2), collapse=","), ")\n")
     oceDebug(debug, "} # drawPalette()\n", unindent=1)
     invisible()
 }
@@ -479,6 +479,8 @@ imagep <- function(x, y, z,
         if (decimate > 1) {
             ilook <- seq.int(1, dim[1], by=decimate)
             jlook <- seq.int(1, dim[2], by=decimate)
+            oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+            oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
             x <- x[ilook]
             y <- y[jlook]
             z <- z[ilook, jlook]
@@ -542,18 +544,20 @@ imagep <- function(x, y, z,
     zrange <- range(z, na.rm=TRUE)
 
     if (colormapGiven) {
+        oceDebug(debug, "colormap provided\n")
         breaks <- colormap$breaks
         breaks2 <- breaks
         col <- colormap$col
         col2 <- col
     } else {
         ## Determine breaks unless zlim=="histogram".
+        oceDebug(debug, "colormap not provided\n")
         if (zlimHistogram) {
             if (missing(col))
                 col <- oceColorsPalette(200) # FIXME: how many colours to use?
         } else {
             if (!breaksGiven) {
-                oceDebug(debug, "breaks were not given\n")
+                oceDebug(debug, "breaks not provided\n")
                 nbreaks <- 128                 # smooth image colorscale
                 if (missing(zlim)) {
                     if (missing(col)) {
@@ -571,11 +575,12 @@ imagep <- function(x, y, z,
                     if (missing(col)) {
                         ##breaks <- c(zlim[1], pretty(zlim, n=nbreaks), zlim[2])
                         breaks <- pretty(zlim, n=nbreaks)
-                        oceDebug(debug, "zlim given but not breaks or col; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim given but not breaks or col\n")
+                        oceDebug(debug, "inferred breaks:", head(breaks), "...\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
                                       length.out=if(is.function(col))128 else 1+length(col))
-                        oceDebug(debug, "zlim and col given but not breaks; inferred breaks=", breaks, "\n")
+                        oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
                     oceDebug(debug, 'range(z):', zrange, '\n')
@@ -585,7 +590,7 @@ imagep <- function(x, y, z,
                     oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
                 }
             } else {
-                oceDebug(debug, "breaks were given\n")
+                oceDebug(debug, "breaks provided\n")
                 breaksOrig <- breaks
                 if (1 == length(breaks)) {
                     breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
@@ -596,8 +601,12 @@ imagep <- function(x, y, z,
         }
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
+        ## message("imagep() col:  ", paste(col, collapse=" "))
         ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
         oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
+        oceDebug(debug, "zclip:", zclip, "\n")
+        oceDebug(debug, "zlimHistogram:", zlimHistogram, "\n")
+        ## 2014-08-02: add zclip to test [issue 516]
         if (!zclip && !zlimHistogram) {
             db <- median(diff(breaks), na.rm=TRUE)
             breaks2 <- c(min(c(zrange[1], breaks, na.rm=TRUE))-db/100,
@@ -605,9 +614,10 @@ imagep <- function(x, y, z,
                          max(c(zrange[2], breaks, na.rm=TRUE))+db/100)
             if (!is.function(col))
                 col2 <- c(col[1], col, col[length(col)])
-        }
-        if (TRUE) { # 2014-07-17/#489 trial code
-            warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
+            oceDebug(debug, "USE breaks2 and col2 as calculated\n")
+        } else {
+            oceDebug(debug, "IGNORE breaks2 and col2 as calculated\n")
+            ##20140801 warning("2014-07-17/#489 trial code: ignore breaks2 and col2")
             if (!missing(breaks))
                 breaks2 <- breaks
             if (!missing(col))
@@ -620,6 +630,8 @@ imagep <- function(x, y, z,
                 col <- col(n=length(breaks)-1)
         }
     }
+    oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
+    oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
@@ -671,7 +683,7 @@ imagep <- function(x, y, z,
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
 
     ## trim image to limits, so endpoint colours will indicate outliers
-    if (!zlimHistogram) {
+    if (!zclip && !zlimHistogram) {
         z[z < zlim[1]] <- zlim[1]
         z[z > zlim[2]] <- zlim[2]
     }
@@ -691,12 +703,12 @@ imagep <- function(x, y, z,
     }
     if (xIsTime) {
         oceDebug(debug, "the x axis represents time\n")
-        if (debug > 0) {
-            message("breaks:", paste(breaks, collapse=" "))
-            message("breaks2:", paste(breaks2, collapse=" "))
-            message("col:", paste(col, collapse=" "))
-            message("col2:", paste(col2, collapse=" "))
-        }
+        ## if (debug > 0) {
+        ##     message("breaks:", paste(breaks, collapse=" "))
+        ##     message("breaks2:", paste(breaks2, collapse=" "))
+        ##     message("col:", paste(col, collapse=" "))
+        ##     message("col2:", paste(col2, collapse=" "))
+        ## }
         if (filledContour) {
             oceDebug(debug, "doing filled contours [1]\n")
             if (!is.double(z))
@@ -704,7 +716,9 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            ## issue 489: use breaks/col instead of breaks2/col2
+            #.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             oceDebug(debug, "not doing filled contours [2]\n")
@@ -712,7 +726,9 @@ imagep <- function(x, y, z,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
                       xlim=xlim, ylim=ylim, zlim=c(0,1), ...)
             } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
+                ## issue 489: use breaks/col instead of breaks2/col2
+                ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, zlim=zlim, ...)
             }
         }
@@ -731,7 +747,9 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            ## issue 489: use breaks/col instead of breaks2/col2
+            ##.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(xlab, side=1, line=mgp[1])
             mtext(ylab, side=2, line=mgp[1])
         } else {
@@ -741,7 +759,10 @@ imagep <- function(x, y, z,
                     col2 <- col2(200)
                 breaks2 <- seq(0, 1, length.out=length(col2) + 1)
             }
-            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
+            oceDebug(debug, "length(x)", length(x), "length(y)", length(y), "\n")
+            ## issue 489: use breaks/col instead of breaks2/col2
+            ##image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
         }
         if (axes) {

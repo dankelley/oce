@@ -1,5 +1,6 @@
 useDynLib(oce)
 import(methods)
+importFrom("proj4", project)
 importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
@@ -42,7 +43,7 @@ export("+.section",
        bcdToInteger,
        byteToBinary,
        coastlineBest,
-       colormap, # beta status; added 22 Apr, 2014
+       colormap,
        coordinate,
        coriolis,
        ctdAddColumn,
@@ -60,6 +61,7 @@ export("+.section",
        drawDirectionField,
        drawIsopycnals,
        drawPalette,
+       drifterGrid,
        eclipticalToEquatorial,
        elevation,
        enuToOther,
@@ -100,6 +102,7 @@ export("+.section",
        latlonFormat,
        loggerToc,
        lonlat2utm,
+       lonlat2map,
        lonFormat,
        longitude,
        "longitude<-",

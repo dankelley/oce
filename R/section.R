@@ -375,6 +375,8 @@ setMethod(f="plot",
                                           "coastlineWorldFine", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
+                              clongitude, clatitude, span,
+                              projection=NULL, parameters=NULL, orientation=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
                               ztype=c("contour", "image", "points"),
@@ -445,6 +447,8 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         clongitude, clatitude, span,
+                                         projection=NULL, parameters=NULL, orientation=NULL,
                                          zbreaks=NULL, zcol=NULL,
                                          ztype=c("contour", "image", "points"),
                                          legend=TRUE,
@@ -471,6 +475,10 @@ setMethod(f="plot",
                       lonm <- mean(lon, na.rm=TRUE)
                       lonr <- lonm + sqrt(2) * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
+                      ## FIXME: should handle projection as CTD does, but how to get no-projection?
+                      ## FIXME: I think both should have missing() means auto-pick and NULL means none
+                      #message("projection:")
+                      #print(projection)
                       if (!is.null(map.xlim)) {
                           map.xlim <- sort(map.xlim)
                           plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
@@ -530,10 +538,9 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
-
                       ## add station data
                       lines(lon, lat, col="lightgray")
-                      ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
+                      ## replot with shifted longitude
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
@@ -1014,8 +1021,12 @@ setMethod(f="plot",
                   }
                   if (which[w] == 20)
                       plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
-                  if (which[w] == 99)
-                      plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
+                  if (which[w] == 99) {
+                      plotSubsection("map", indicate.stations=FALSE,
+                                         clongitude=clongitude, clatitude=clatitude, span=span,
+                                         projection=projection, parameters=parameters, orientation=orientation,
+                                         debug=debug-1, ...)
+                  }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
@@ -1275,11 +1286,11 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 	if (length(p) == 1) {
 	    if (p=="levitus") {
 		pt <- standardDepths()
-                pt <- pt[pt < max(section[["pressure"]])]
+                pt <- pt[pt < max(section[["pressure"]], na.rm=TRUE)]
 	    } else {
                 if (!is.numeric(p))
                     stop("p must be numeric")
-                pMax <- max(section[["pressure"]])
+                pMax <- max(section[["pressure"]], na.rm=TRUE)
 		pt <- seq(0, pMax, p)
 	    }
 	} else {
