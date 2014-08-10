@@ -356,7 +356,7 @@ setMethod(f="plot",
                       mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
                   if (missing(band))
-                      error("must supply band")
+                      stop("must supply band")
                   hist(x[[band]], xlab="Value", main="", ...)
                   if (showBandName)
                       mtext(band, side=3, adj=1)

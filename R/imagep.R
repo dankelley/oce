@@ -630,7 +630,8 @@ imagep <- function(x, y, z,
                 col <- col(n=length(breaks)-1)
         }
     }
-    oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
+    if (!missing(breaks))
+        oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
     oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)

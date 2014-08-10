@@ -415,9 +415,9 @@ colormap <- function(z,
     }
     if (breaksKnown) {
         oceDebug(debug, "processing case B (breaks given, or inferred from case A)\n")
-        if (n > 1L) {
-            warning('n is being ignored for the breaks+col method')
-        }
+        ## if (n > 1L) {
+        ##     warning('n is being ignored for the breaks+col method')
+        ## }
         if (zKnown) {
             oceDebug(debug, "processing case B.1 (i.e. z is known)\n")
             if (missing(missingColor)) {
