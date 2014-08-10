@@ -1062,7 +1062,7 @@ setMethod(f="plot",
                               projection <- if (x[["latitude"]][1] > 70) paste("+proj=stere", lon0) else
                                   paste("+proj=merc", lon0)
                           }
-                          message("projection:", projection)
+                          ##message("projection:", projection)
                           oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
