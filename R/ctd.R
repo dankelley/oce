@@ -698,6 +698,7 @@ setMethod(f="plot",
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               clongitude, clatitude, span, showHemi=TRUE,
+                              lonlabel=NULL, latlabel=NULL, sides=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -1035,42 +1036,40 @@ setMethod(f="plot",
                           else 
                               waterDepth <- max(x[["pressure"]], na.rm=TRUE)
                           if (missing(span)) {
-                              if (waterDepth < 50)
-                                  span <- 50
-                              else if (waterDepth < 100)
-                                  span <- 100
-                              else if (waterDepth < 200)
-                                  span <- 500
-                              else if (waterDepth < 2000)
-                                  span <- 1000
-                              else
-                                  span <- 5000
-                              oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
-                              if (TRUE) {
-                                  ## find nearest point on (coarse) globe
-                                  data("coastlineWorld", envir=environment())
-                                  d <- geodDist(coastlineWorld[['longitude']],
-                                                coastlineWorld[['latitude']],
-                                                x[['longitude']],
-                                                x[['latitude']])
-                                  nearest <- d[which.min(d)] # in km
-                                  span <- 3 * nearest
-                                  oceDebug(debug, "**NEW METHOD** span not given, and nearest point is=", nearest,
-                                           "km away (coarse coastline), so set span=", span, "\n")
-                              }
+                              ## if (waterDepth < 50)
+                              ##     span <- 50
+                              ## else if (waterDepth < 100)
+                              ##     span <- 100
+                              ## else if (waterDepth < 200)
+                              ##     span <- 500
+                              ## else if (waterDepth < 2000)
+                              ##     span <- 1000
+                              ## else
+                              ##     span <- 5000
+                              ## oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
+                              ## find nearest point on (coarse) globe
+                              data("coastlineWorld", envir=environment())
+                              d <- geodDist(coastlineWorld[['longitude']],
+                                            coastlineWorld[['latitude']],
+                                            x[['longitude']],
+                                            x[['latitude']])
+                              nearest <- d[which.min(d)] # in km
+                              span <- 3 * nearest
+                              oceDebug(debug, "span not given, and nearest point is=", nearest,
+                                       "km away (coarse coastline), so set span=", span, "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
-                          if (x[["latitude"]][1] > 70 && missing(projection))
-                              projection <- "stereographic"
-                          oceDebug(debug, "span=", span, "km\n")
+                          if (missing(projection))
+                              projection <- if (x[["latitude"]][1] > 70) "stereographic" else "mercator"
+                          oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
-                              oceDebug(debug, " coastline is a string: \"", coastline, "\"\n", sep="")
+                              oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (require(ocedata, quietly=TRUE)) {
                                   library(ocedata)
                                   oceDebug(debug, "ocedata is present\n")
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
-                                      oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                      oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
                                       data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
@@ -1100,14 +1099,18 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               }
                               if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
                                   mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
@@ -1121,30 +1124,36 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               }
                           }
-                          oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
                           if (is.null(projection)) {
                               points(x@metadata$longitude, x@metadata$latitude,
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
+                              mapScalebar()
                               mapPoints(x@metadata$longitude, x@metadata$latitude,
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                              mtext(x@metadata$station, side=3, adj=0, cex=0.8*par("cex"), line=0.5)
+                              mtext(x@metadata$station,
+                                    side=3, adj=0, cex=0.8*par("cex"), line=1.125)
                           if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime))
-                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
+                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
+                                    side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
-                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n")
+                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n", unindent=1)
                   } else {
                       stop("unknown value of which, ", which[w])
                   }

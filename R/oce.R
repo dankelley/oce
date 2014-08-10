@@ -1213,8 +1213,11 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "s
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
+
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
-        ## http://en.wikipedia.org/wiki/Leap_second
+        ## See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
+        ## on June 30 and December 31 of any given year.  The information below is correct as of 2014-07-01,
+        ## which is the day after the June 2014 update possibility.
         leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
                                        "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
                                        "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01",

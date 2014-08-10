@@ -8,6 +8,25 @@
 
 usingProj4 <- function() 0 < nchar(.Last.proj4()$proj)
 
+fixneg <- function(v)
+{
+    rval <- v
+    for (i in seq_along(v)) {
+        if (rval[i] == "0N") {
+            rval[i] <- "0"
+        } else if (rval[i] == "0E") {
+            rval[i] <- "0"
+        } else if ("-" == substr(v[i], 1, 1)) {
+            ##cat("rval[i]=", rval[i], "\n")
+            rval[i] <- gsub("^-", "", v[i])
+            rval[i] <- gsub("E", "W", rval[i])
+            rval[i] <- gsub("N", "S", rval[i])
+            ##cat(" -> rval[i]=", rval[i], "\n")
+        }
+    }
+    rval
+}
+
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -103,25 +122,19 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
     list(x=proj$x, y=proj$y) # if other properties prove helpful, may add them
 } 
 
-##mapLegend <- function(longitude, latitude, ...)
-##{
-##    proj <- mapproject(longitude, latitude)
-##    legend(x=proj$x, y=proj$y, ...)
-##}
-
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
-                    polarCircle=0,
+                    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="mollweide", parameters=NULL, orientation=NULL,
                     debug=getOption("oceDebug"),
                     ...)
 {
     oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
-             if (missing(longitudelim)) "(missing)" else c("c(", paste(longitudelim, collapse=","), ")"),
+             if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=",
-             if (missing(latitudelim)) "(missing)" else c("c(", paste(latitudelim, collapse=","), ")"),
-             ", ...) {\n", unindent=1)
+             if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
+             ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", envir=environment())
         longitude <- get("coastlineWorld")
@@ -138,31 +151,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
-
-    ## Convert to map coordinates
-    ##20140808 ## Detect proj4 projection specification
-    ##20140808 ##if (!is.null(getOption("oceProjection")) && "proj4" == getOption("oceProjection")) {
-    ##20140808 xy <- NULL
-    ##20140808 if (length(grep("^\\+proj", projection))) {
-    ##20140808     if (!is.null(parameters)) warning("'parameters' ignored since projection=\"+proj= ...\"")
-    ##20140808     if (!is.null(orientation)) warning("'orientation' ignored since projection=\"+proj= ...\"")
-    ##20140808     ## Next line is a bit of a kludge, to prevent projection
-    ##20140808     ## problems with some fake data on Anarctica (lat < south pole)
-    ##20140808     latitude <- ifelse(latitude < (-90), -89.999, latitude)
-    ##20140808     message("FIXME here: must call project() in an apply() construct or loop :-(")
-    ##20140808     ## FIXME: DRY: better to use lonlat2map() here
-    ##20140808     try({
-    ##20140808     xy <- project(list(x=longitude, y=latitude), proj=projection)
-    ##20140808     }, silent=TRUE)
-    ##20140808     message("AFTER")
-    ##20140808     .Last.proj4(list(proj=projection))
-    ##20140808     .Last.projection(list(projection="")) # turn off mapproj
-    ##20140808 } else {
-    ##20140808     .Last.proj4(list(proj="")) # turn off proj4
-    ##20140808     xy <- mapproject(longitude, latitude,
-    ##20140808                      projection=projection, parameters=parameters, orientation=orientation)
-    ##20140808 }
-    ##20140808 message("OLD:"); str(xy)
 
     xy <- lonlat2map(longitude, latitude, 
                      projection=projection, parameters=parameters, orientation=orientation)
@@ -231,146 +219,424 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (axes && drawGrid) {
         options <- options('warn') # optimize() makes warnings for NA, which we will get
         options(warn=-1) 
-        inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
-        small <- 0.001
-        latlabs <- seq(-90+small, 90-small, length.out=round(1+180/inc))
-        if (!missing(latitudelim)) { 
-            incBest <- diff(pretty(latitudelim, n=4, n.min=3))[1]
-            oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-            if (inc / incBest > 3) {
-                ## extend range because the lims may not agree given the plot geometry
-                latSmall <- mean(latitudelim) - 5 * (latitudelim[2] - latitudelim[1])
-                latLarge <- mean(latitudelim) + 5 * (latitudelim[2] - latitudelim[1])
-                latlabs <- pretty(c(latSmall, latLarge), n=4, n.min=3)
-                ##latlabs <- pretty(latitudelim, n=2, n.min=1)
+        ## Grid lines within plot
+        ## 2014-06-29
+
+        ## Find ll and ur corners of plot, if possible, for use in calculating
+        ## lon and lat spans.  This will not work in all cases; e.g. for a
+        ## world map in mollweide projection, the bounding points will be "in
+        ## space", but we catch such problems when we calculate span below.
+        usr <- par('usr')
+        xll <- par('usr')[1]
+        yll <- par('usr')[3]
+        ll <- map2lonlat(xll, yll)
+        xur <- par('usr')[2]
+        yur <- par('usr')[4]
+        ur <- map2lonlat(xur, yur)
+        span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+        if (missing(latitudelim)) {
+            if (span > 45) {
+                grid[2] <- 15 # this looks nice on global maps
+                latlabs <- seq(-90, 90, grid[2])
+            } else {
+                latlabs <- pretty(c(ll$latitude, ur$latitude))
                 grid[2] <- diff(latlabs[1:2])
             }
-        }
-        if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
-            mapMeridians(latlabs)
-        }
-        oceDebug(debug, "latlabs:", latlabs, "\n")
-        usr <- par('usr')
-        labelAt <- NULL
-        lab <- vector("expression", length(latlabs))
-        nlab <- 0
-        lastAtY <- NA
-        ##cat("inc:", inc, "\n")
-        ##message("About to draw axes.  NOTE: not converted to proj4 yet")
-        usr <- par('usr')
-        scale <- max(usr[2] - usr[1], usr[4] - usr[3])
-        ##message("scale: ", scale)
-        if (drawGrid) {
-            for (latlab in latlabs) {
-                if (-90 <= latlab && latlab <= 90) {
-                    try({
-                        o <- optimize(function(lon) {
-                                      abs(lonlat2map(lon, latlab)$x-usr[1])},
-                                      lower=-180, upper=180)
-                        ## message("latlab: ", latlab, ", o$objective/scale: ", o$objective/scale)
-                        if (o$objective > scale / 100)
-                            next
-                        lonlab <- o$minimum
-                        ## message("lonlab: ", lonlab)
-                        #if (abs(latlab - 45) < 2) browser()
-                        at <- lonlat2map(lonlab, latlab)
-                        ## message("at: ", paste(at, collapse=" "))
-                        if (usr[3] < at$y && at$y < usr[4]) {
-                            ## message("lonlab:", lonlab, " INSIDE")
-                            labelAt <- c(labelAt, at$y)
-                            nlab <- nlab + 1
-                            lab[nlab] <- formatPosition(round(latlab, digits=2), # round because we avoid poles
-                                                        isLat=TRUE, type="expression", showHemi=showHemi)
-                            oceDebug(debug, "  y axis: ",
-                                     formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
-                                     "at$y", at$y, "lastAtY", lastAtY, "\n")
-                            if (debug>90) {
-                                mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi),
-                                      line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
-                                      side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
-                                warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
-                            }
-                            lastAtY <- at$y
-                        } else {
-                            ##cat("lonlab:", lonlab, "OUTSIDE\n")
-                        }
-                    }, silent=TRUE)
-                }
+            oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
+        } else {
+            ##span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+            if (span > 45) {
+                grid[2] <- 15 
+                latlabs <- seq(-90, 90, grid[2])
+                oceDebug(debug, "span=", span, "exceeds 45 so setting grid to ", grid[2], "\n")
+            } else if (5 < span && span <= 45) {
+                grid[2] <- 5 
+                latlabs <- seq(-90, 90, grid[2])
+                oceDebug(debug, "span=", span, "between 5 and 45 so setting grid to ", grid[2], "\n")
+            } else {
+                latlabs <- pretty(c(ll$latitude, ur$latitude))
+                grid[2] <- diff(latlabs[1:2])
+                oceDebug(debug, "span=", span, " and setting grid to ", grid[2], "\n")
             }
         }
-        if (nlab > 0) {
-            if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
-                axis(2, at=labelAt,
-                     labels=lab[1:nlab],
-                     ##labels=c("DAN", "BOY", "OK?"),
-                     col.ticks="lightgray",
-                     mgp=getOption('oceMgp'))
+
+        if (missing(longitudelim)) {
+            if (span > 45) {
+                grid[1] <- 15 # this looks nice on global maps
+                ## tweak endpoints to avoid losing things "on the edge" say for mollweid
+                lonlabs <- seq(-180+0.01, 180-0.01, length.out=24)
+                grid[1] <- lonlabs[2] - lonlabs[1]
+            } else {
+                lonlabs <- pretty(c(ll$longitude, ur$longitude))
+                grid[1] <- diff(lonlabs[1:2])
             }
-        }
-        labelAt <- NULL
-        inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
-        lonlabs <- seq(-180, 180, inc)
-        if (!missing(longitudelim)) { 
-            oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
-            incBest <- diff(pretty(longitudelim, n=4, n.min=3))[1]
-            if (inc / incBest > 3) {
-                ## extend range because the lims may not agree given the plot geometry
-                lonSmall <- mean(longitudelim) - 5 * (longitudelim[2] - longitudelim[1])
-                lonLarge <- mean(longitudelim) + 5 * (longitudelim[2] - longitudelim[1])
-                lonlabs <- pretty(c(lonSmall, lonLarge), n=4, n.min=3)
-                ##lonlabs <- pretty(longitudelim, n=2, n.min=1)
+            oceDebug(debug, "span=", span, "and setting grid to ", grid[1], "\n")
+        } else {
+            span <- if (is.na(ur$longitude - ll$longitude))
+                abs(diff(longitudelim)) else
+                    abs(ur$longitude - ll$longitude)
+            oceDebug(debug, "span:", span, "\n")
+            if (45 < span) {
+                oceDebug(debug, "lon case A", "\n")
+                grid[1] <- 15          # divides 45 evenly
+                lonlabs <- seq(-180, 180, grid[1])
+            } else if (5 < span && span <= 45) {
+                oceDebug(debug, "lon case B", "\n")
+                grid[1] <- 5 
+                lonlabs <- seq(-180, 180, grid[1])
+            } else {
+                oceDebug(debug, "lon case C", "\n")
+                lonlabs <- pretty(c(ll$longitude, ur$longitude))
                 grid[1] <- diff(lonlabs[1:2])
             }
         }
-        ## Prevent labelling both 180W and 180E on top of each other (not sure how
-        ## axis permits this, actually).
-        oceDebug(debug, "lonlabs:", lonlabs, "\n")
+        oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
+        ## if (FALSE) { # before 2014-06-29
+        ##     inc <- if (is.logical(grid[2]) && grid[2]) 25 else grid[2]
+        ##     latlabs <- seq(-90, 90, inc)
+        ##     if (!missing(latitudelim)) { 
+        ##         incBest <- diff(pretty(latitudelim, n=4, n.min=3))[1]
+        ##         oceDebug(debug, "latitudelim:", latitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+        ##         if (inc / incBest > 3) {
+        ##             message("initially latlabs");print(latlabs)
+        ##             ## extend range because the lims may not agree given the plot geometry
+        ##             latSmall <- mean(latitudelim) - 5 * (latitudelim[2] - latitudelim[1])
+        ##             latLarge <- mean(latitudelim) + 5 * (latitudelim[2] - latitudelim[1])
+        ##             latlabs <- pretty(c(latSmall, latLarge), n=4, n.min=3)
+        ##             grid[2] <- diff(latlabs[1:2])
+        ##             message("later latlabs");print(latlabs)
+        ##         }
+        ##     }
+        ##     inc <- if (is.logical(grid[1]) && grid[1]) 15 else grid[1]
+        ##     lonlabs <- seq(-180, 180, inc)
+        ##     if (!missing(longitudelim)) { 
+        ##         oceDebug(debug, "longitudelim:", longitudelim, ", inc:", inc, ", incBest:", incBest, "\n")
+        ##         incBest <- diff(pretty(longitudelim, n=4, n.min=3))[1]
+        ##         if (inc / incBest > 3) {
+        ##             ## extend range because the lims may not agree given the plot geometry
+        ##             lonSmall <- mean(longitudelim) - 5 * (longitudelim[2] - longitudelim[1])
+        ##             lonLarge <- mean(longitudelim) + 5 * (longitudelim[2] - longitudelim[1])
+        ##             lonlabs <- pretty(c(lonSmall, lonLarge), n=4, n.min=3)
+        ##             grid[1] <- diff(lonlabs[1:2])
+        ##         }
+        ##     }
+        ## }
+        if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
+            oceDebug(debug, "grid lines for lat:", latlabs, "\n")
+            mapMeridians(latlabs)
+        }
+## <<<<<<< HEAD
+##         oceDebug(debug, "latlabs:", latlabs, "\n")
+##         usr <- par('usr')
+##         labelAt <- NULL
+##         lab <- vector("expression", length(latlabs))
+##         nlab <- 0
+##         lastAtY <- NA
+##         ##cat("inc:", inc, "\n")
+##         ##message("About to draw axes.  NOTE: not converted to proj4 yet")
+##         usr <- par('usr')
+##         scale <- max(usr[2] - usr[1], usr[4] - usr[3])
+##         ##message("scale: ", scale)
+##         if (drawGrid) {
+##             for (latlab in latlabs) {
+##                 if (-90 <= latlab && latlab <= 90) {
+##                     try({
+##                         o <- optimize(function(lon) {
+##                                       abs(lonlat2map(lon, latlab)$x-usr[1])},
+##                                       lower=-180, upper=180)
+##                         ## message("latlab: ", latlab, ", o$objective/scale: ", o$objective/scale)
+##                         if (o$objective > scale / 100)
+##                             next
+##                         lonlab <- o$minimum
+##                         ## message("lonlab: ", lonlab)
+##                         #if (abs(latlab - 45) < 2) browser()
+##                         at <- lonlat2map(lonlab, latlab)
+##                         ## message("at: ", paste(at, collapse=" "))
+##                         if (usr[3] < at$y && at$y < usr[4]) {
+##                             ## message("lonlab:", lonlab, " INSIDE")
+##                             labelAt <- c(labelAt, at$y)
+##                             nlab <- nlab + 1
+##                             lab[nlab] <- formatPosition(round(latlab, digits=2), # round because we avoid poles
+##                                                         isLat=TRUE, type="expression", showHemi=showHemi)
+##                             oceDebug(debug, "  y axis: ",
+##                                      formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
+##                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
+##                             if (debug>90) {
+##                                 mtext(formatPosition(latlab, isLat=TRUE, type="expression", showHemi=showHemi),
+##                                       line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
+##                                       side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+##                                 warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
+##                             }
+##                             lastAtY <- at$y
+##                         } else {
+##                             ##cat("lonlab:", lonlab, "OUTSIDE\n")
+##                         }
+##                     }, silent=TRUE)
+##                 }
+##             }
+##         }
+##         if (nlab > 0) {
+##             if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
+##                 axis(2, at=labelAt,
+##                      labels=lab[1:nlab],
+##                      ##labels=c("DAN", "BOY", "OK?"),
+##                      col.ticks="lightgray",
+##                      mgp=getOption('oceMgp'))
+## =======
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
+            oceDebug(debug, "grid lines for lon:", lonlabs, "\n")
             mapZones(lonlabs)
         }
-        lab <- vector("expression", length(latlabs))
-        nlab <- 0
-        lastx <- NA
-        dxMin <- (usr[2] - usr[1]) / 10
-        mgp <- par('mgp')
-        for (lonlab in lonlabs) {
-            if (-180 <= lonlab && lonlab < 180) { # the limits are the lonlim
-                ##message("lonlab: ", lonlab)
-                try({
-                    o <- optimize(function(lat) {
-                                  abs(lonlat2map(lonlab, lat)$y-usr[3])},
-                                  lower=-89, upper=89)
-                    if (o$object > scale / 100)
-                        next
-                    latlab <- o$minimum
-                    at <- lonlat2map(lonlab, latlab)
-                    if (usr[1] < at$x && at$x < usr[2]) {
-                        labelAt <- c(labelAt, at$x)
-                        nlab <- nlab + 1
-                        lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi)
-                        if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
-                            if (debug>90) {
-                                mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi),
-                                      side=1,
-                                      line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
-                                      at=at$x, cex=par('cex'), ...)
-                                warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
-                            }
-                            lastx <- at$x
-                        }
-                        oceDebug(debug, "  x axis: ",
-                                 formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi),
-                                 "at$x", at$x, "lastx", lastx, "\n")
-                    }
-                }, silent=TRUE)
+        if (is.null(lonlabel))
+            lonlabel <- lonlabs
+        if (is.null(latlabel))
+            latlabel <- latlabs
+        if (is.null(sides))
+            sides <- 1:2
+        TICK <- FALSE                  # ticks look bad for angled grid lines
+        LINE <- -3/4                   # labels snug to box
+        if (1 %in% sides) {    # bottom side
+            AT <- NULL
+            LAB <- NULL
+            for (lab in lonlabel) {
+                o <- optimize(function(lat) abs(mapproject(lab,lat)$y-usr[3]),lower=-90,upper=90)
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(lab, o$minimum)$x
+                if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 1\n")
+                }
             }
-        }
-        if (nlab > 0) {
-            if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
-                axis(1, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray",
-                     mgp=getOption('oceMgp'))
+            for (lab in latlabel) {
+                t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$y-usr[3]),lower=-180,upper=180)})
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(lab, o$minimum)$x
+                if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 1\n")
+                }
+##>>>>>>> map-axes
             }
+            if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB),
+                                   line=LINE, tick=TICK)
         }
+        if (2 %in% sides) {    # left side
+            AT <- NULL
+            LAB <- NULL
+            for (lab in lonlabel) {
+                o <- optimize(function(lat) abs(mapproject(lab,lat)$x-usr[1]),lower=-90,upper=90)
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(lab, o$minimum)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 2\n")
+                }
+            }
+            for (lab in latlabel) {
+                t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$x-usr[1]),lower=-180,upper=180)})
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(o$minimum, lab)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
+                }
+            }
+            if (!is.null(AT)) axis(side=2, at=AT, labels=LAB,#fixneg(LAB),
+                                   line=LINE, tick=TICK)
+        }
+##<<<<<<< HEAD
+##        ## Prevent labelling both 180W and 180E on top of each other (not sure how
+##        ## axis permits this, actually).
+##        oceDebug(debug, "lonlabs:", lonlabs, "\n")
+##        if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
+##            mapZones(lonlabs)
+##        }
+##        lab <- vector("expression", length(latlabs))
+##        nlab <- 0
+##        lastx <- NA
+##        dxMin <- (usr[2] - usr[1]) / 10
+##        mgp <- par('mgp')
+##        for (lonlab in lonlabs) {
+##            if (-180 <= lonlab && lonlab < 180) { # the limits are the lonlim
+##                ##message("lonlab: ", lonlab)
+##                try({
+##                    o <- optimize(function(lat) {
+##                                  abs(lonlat2map(lonlab, lat)$y-usr[3])},
+##                                  lower=-89, upper=89)
+##                    if (o$object > scale / 100)
+##                        next
+##                    latlab <- o$minimum
+##                    at <- lonlat2map(lonlab, latlab)
+##                    if (usr[1] < at$x && at$x < usr[2]) {
+##                        labelAt <- c(labelAt, at$x)
+##                        nlab <- nlab + 1
+##                        lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi)
+##                        if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
+##                            if (debug>90) {
+##                                mtext(formatPosition(lonlab, isLat=FALSE, type="expression", showHemi=showHemi),
+##                                      side=1,
+##                                      line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
+##                                      at=at$x, cex=par('cex'), ...)
+##                                warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
+##                            }
+##                            lastx <- at$x
+##                        }
+##                        oceDebug(debug, "  x axis: ",
+##                                 formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi),
+##                                 "at$x", at$x, "lastx", lastx, "\n")
+##                    }
+##                }, silent=TRUE)
+##=======
+        if (3 %in% sides) {    # topside
+            AT <- NULL
+            LAB <- NULL
+            for (lab in lonlabel) {
+                o <- optimize(function(lat) abs(mapproject(lab,lat)$y-usr[4]),lower=-90,upper=90)
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(lab, o$minimum)$x
+                if (!is.na(x) && usr[3] < x && x < usr[4]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 3\n")
+                }
+##>>>>>>> map-axes
+            }
+            for (lab in latlabel) {
+                t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$y-usr[4]),lower=-180,upper=180)})
+                if (is.na(o$objective) || o$objective > 0.01) next
+                x <- mapproject(o$minimum, lab)$x
+                if (!is.na(x) && usr[3] < x && x < usr[4]) {
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 3\n")
+                }
+            }
+            if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB),
+                                   line=LINE, tick=TICK)
+        }
+        if (4 %in% sides) {    # right side
+            AT <- NULL
+            LAB <- NULL
+            for (lab in lonlabel) {
+                o <- optimize(function(lat) abs(mapproject(lab,lat)$x-usr[2]),lower=-90,upper=90)
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(lab, o$minimum)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "E", sep=""))
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 4\n")
+                }
+            }
+            for (lab in latlabel) {
+                t <- try({o <- optimize(function(lon) abs(mapproject(lon,lab)$x-usr[2]),lower=-180,upper=180)})
+                if (is.na(o$objective) || o$objective > 0.01) next
+                y <- mapproject(lab, o$minimum)$y
+                if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    AT <- c(AT, y)
+                    LAB <- c(LAB, paste(lab, "N", sep=""))
+                    oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
+                }
+            }
+            if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB),
+                                   line=LINE, tick=TICK)
+        }
+        ## 20114-06-28: below is code that used to draw axes, then only
+        ## at bottom and left, and without intermixing of lats and lons.
+        ##
+        ## } else {
+        ##     oceDebug(debug, "sides:", paste(sides, collapse=" "), "\n")
+        ##     ## Neither lonlab and latlab was given, so use default axes
+        ##     usr <- par('usr')
+        ##     if (2 %in% sides) {            # left hand side
+        ##         labelAt <- NULL
+        ##         lab <- vector("character", length(latlabs))
+        ##         nlab <- 0
+        ##         lastAtY <- NA
+        ##         if (drawGrid) {
+        ##             for (latlab in latlabs) {
+        ##                 if (-90 <= latlab && latlab <= 90) {
+        ##                     try({
+        ##                         o <- optimize(function(lon) abs(mapproject(lon, latlab)$x-usr[1]),
+        ##                                       lower=-180, upper=180)
+        ##                         if (o$objective > 0.01)
+        ##                             next
+        ##                         lonlab <- o$minimum
+        ##                         at <- mapproject(lonlab, latlab)
+        ##                         if (usr[3] < at$y && at$y < usr[4]) {
+        ##                             labelAt <- c(labelAt, at$y)
+        ##                             nlab <- nlab + 1
+        ##                             lab[nlab] <- formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi)
+        ##                             oceDebug(debug, "  y axis: ",
+        ##                                      formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
+        ##                                      "at$y", at$y, "lastAtY", lastAtY, "\n")
+        ##                             if (debug>90) {
+        ##                                 mtext(formatPosition(latlab, isLat=TRUE, type="string", showHemi=showHemi),
+        ##                                       line=par('mgp')[2]-abs(par('tcl')), # no ticks, so move closer
+        ##                                       side=2, at=at$y, srt=90, cex=par('cex'), ...) # how to rotate?
+        ##                                 warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
+        ##                             }
+        ##                             lastAtY <- at$y
+        ##                         } else {
+        ##                             ##cat("lonlab:", lonlab, "OUTSIDE\n")
+        ##                         }
+        ##                     }, silent=TRUE)
+        ##                 }
+        ##             }
+        ##         }
+        ##         if (nlab > 0) {
+        ##             axis(2, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray",
+        ##                  mgp=getOption('oceMgp'))
+        ##         }
+        ##     } ## side 2
+        ##     if (1 %in% sides) { # bottom side
+        ##         oceDebug("drawing lon and lat on side 1 (bottom)\n")
+        ##         labelAt <- NULL
+        ##         lab <- vector("character", length(latlabs))
+        ##         nlab <- 0
+        ##         lastx <- NA
+        ##         dxMin <- (usr[2] - usr[1]) / 10
+        ##         mgp <- par('mgp')
+        ##         for (lonlab in lonlabs) {
+        ##             if (-180 <= lonlab && lonlab < 180) { # the limits are the lonlim
+        ##                 try({
+        ##                     o <- optimize(function(lat) abs(mapproject(lonlab, lat)$y-usr[3]), lower=-89, upper=89)
+        ##                     if (o$object > 0.01)
+        ##                         next
+        ##                     latlab <- o$minimum
+        ##                     at <- mapproject(lonlab, latlab)
+        ##                     if (usr[1] < at$x && at$x < usr[2]) {
+        ##                         labelAt <- c(labelAt, at$x)
+        ##                         nlab <- nlab + 1
+        ##                         lab[nlab] <- formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi)
+        ##                         if (is.na(lastx) || abs(at$x - lastx) > dxMin) {
+        ##                             if (debug>90) {
+        ##                                 mtext(formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi),
+        ##                                       side=1,
+        ##                                       line=mgp[2]-abs(par('tcl')), # no ticks, so move closer
+        ##                                       at=at$x, cex=par('cex'), ...)
+        ##                                 warning("DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' instead of 'axis'")
+        ##                             }
+        ##                             lastx <- at$x
+        ##                         }
+        ##                         oceDebug(debug, "  x axis: ",
+        ##                                  formatPosition(lonlab, isLat=FALSE, type="string", showHemi=showHemi),
+        ##                                  "at$x", at$x, "lastx", lastx, "\n")
+        ##                     }
+        ##                 }, silent=TRUE)
+        ##             }
+        ##         }
+        ##         if (nlab > 0) {
+        ##             if (debug<=90) { # FIXME: 2014-01-09 remove this eventually
+        ##                 axis(1, at=labelAt, labels=lab[1:nlab], col.ticks="lightgray",
+        ##                      mgp=getOption('oceMgp'))
+        ##             }
+        ##         }
+        ##     }
+        ## }
         options(warn=options$warn) 
     }
     oceDebug(debug, "} # mapPlot()\n", unindent=1)
@@ -429,43 +695,61 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 }
 
 mapScalebar <- function(x, y=NULL, length,
-                        lwd=4*par("lwd"), cex=1.2*par("cex"),
+                        lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
+    if (!exists(".Last.projection") || .Last.projection()$proj == "") {
+        warning("mapScalebar() only works for plots created with projections")
+        return()
+    }
     if (!is.null(y))
         stop("y must be NULL in this (early) version of mapScalebar()\n")
     if (missing(x))
         x <- "topleft"
-    else if (!match.arg(x, "topleft"))
-        stop("x must be \"topleft\"in this (early) version of mapScalebar()\n")
+    else if (is.na(pmatch(x, c("topleft", "topright"))))
+        stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
     usr <- par('usr')
-
     ## determine scale from centre of region
     x0 <- 0.5 * (usr[1] + usr[2])
     y0 <- 0.5 * (usr[3] + usr[4])
-    dusr <- 0.001 * (usr[2] - usr[1])
+    dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
     x1 <- x0 + dusr
-    ##cat("dusr:", dusr, "\n")
     y1 <- y0
     lonlat0 <- map2lonlat(x0, y0)
     lonlat1 <- map2lonlat(x1, y1)
     dkm <- geodDist(lonlat0$longitude, lonlat0$latitude,
                       lonlat1$longitude, lonlat1$latitude)
-    ##cat("dkm:", dkm, "\n")
-
     kmPerUsr <- dkm / dusr
-    ##cat("kmPerUsr:", kmPerUsr, "\n")
-    
-    if (missing(length))
-        length <- diff(pretty(kmPerUsr*(usr[4]-usr[3]))[1:2])
-    ##cat("length:", length, "\n")
+    ##message("kmPerUsr: ", kmPerUsr)
+    if (missing(length)) {
+        # corner to corner distance
+        ccd <- kmPerUsr*sqrt((usr[2]-usr[1])^2+(usr[4]-usr[3])^2)
+        length <- diff(pretty(c(0, ccd), n=12)[1:2])
+    }
     frac <- length / kmPerUsr
-    ##cat("frac:", frac, "\n")
-    xBar <- usr[1] + 0.05 * (usr[2] - usr[1])
-    yBar <- usr[4] - 0.05 * (usr[4] - usr[3])
-    lines(xBar + c(0, frac), rep(yBar, 2), lwd=lwd, col=col)
-    text(xBar + frac / 2, yBar, pos=1, sprintf("%.0f km", length),
-         cex=cex, col=col)
+    cin <- par('cin')[1]
+    cinx <- xinch(cin)
+    ciny <- yinch(cin)
+    ## FIXME: when get more options for x, revisit next few lines
+    xBar <- usr[1] + cinx / 2
+    if (is.character(x) && x == "topright")
+        xBar <- usr[2] - frac - 3.5 * cinx
+    yBar <- usr[4] - ciny / 2
+    ## Draw white-out underlay box with a border, since otherwise
+    ## it's hard to see a scalebar on a complex map.
+    llBox <- list(x=xBar, y=yBar - 3 * ciny)
+    urBox <- list(x=xBar + frac + 3 * cinx, y=yBar)
+    polygon(c(llBox$x, llBox$x, urBox$x, urBox$x),
+            c(llBox$y, urBox$y, urBox$y, llBox$y),
+            border="black", col='white')
+    ## Draw the scalebar and text below.
+    lines(xBar + cinx + c(0, frac), rep(yBar-ciny, 2), lwd=lwd, col=col, lend=2)
+    lines(rep(xBar+cinx, 2), yBar - ciny + c(-ciny, ciny)/3,
+          col=col, lwd=lwd)
+    lines(rep(xBar++cinx+frac, 2), yBar - ciny + c(-ciny, ciny)/3,
+          col=col, lwd=lwd)
+    text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0,
+         sprintf("%.0f km", length), cex=cex, col=col)
 }
 
 mapText <- function(longitude, latitude, labels, ...)
@@ -624,12 +908,14 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
         else
             rval <- list(degrees, minutes, seconds, hemispheres)
     } else if (type == "string") {
-        if (noMinutes)
-            rval <- sprintf("%02d %s", degrees, hemispheres)
-        else if (noSeconds)
-            rval <- sprintf("%02d %02d %s", degrees, minutes, hemispheres)
-        else
-            rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
+        if (noMinutes) {
+            rval <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
+        } else if (noSeconds) {
+            rval <- sprintf("%02d %02d' %s", degrees, minutes, hemispheres)
+        } else {
+            rval <- sprintf("%02d %02d' %04.2f\" %s", degrees, minutes, seconds, hemispheres)
+        }
+        Encoding(rval) <- "latin1"
     } else if (type == "expression") {
         n <- length(degrees)
         rval <- vector("expression", n)
@@ -694,7 +980,6 @@ map2lonlat <- function(x, y, init=c(0,0))
     orientation <- lp$orientation
     lon <- vector("numeric", n)
     lat <- vector("numeric", n)
-    tolerance <- 1e-5
     for (i in 1:n) {
         xy <- c(x[i], y[i])
         ##message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])

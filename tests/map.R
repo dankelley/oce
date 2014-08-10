@@ -1,6 +1,6 @@
 library(oce)
-## These numbers come from a landsat-8 image.
 
+## UTM (numbers come from a landsat-8 image).
 longitude <- -59.56594
 latitude <- 45.62391
 easting <- 767700.000
