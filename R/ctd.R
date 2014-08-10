@@ -1057,8 +1057,12 @@ setMethod(f="plot",
                                        "km away (coarse coastline), so set span=", span, "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
-                          if (missing(projection))
-                              projection <- if (x[["latitude"]][1] > 70) "+proj=stere" else "+proj=merc"
+                          if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {
+                              lon0 <- sprintf("+lon_0=%.0f", round(x[["longitude"]]))
+                              projection <- if (x[["latitude"]][1] > 70) paste("+proj=stere", lon0) else
+                                  paste("+proj=merc", lon0)
+                          }
+                          message("projection:", projection)
                           oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")

@@ -119,9 +119,16 @@
       \code{\link{plot.coastline}}.  Using these arguments permits reasonably
       simple customization.  If they are are not provided, reasonable defaults
       will be used.}
-  \item{projection}{projection for map, passed to
-      \code{\link[mapproj]{mapproject}} by \code{plot} with a \code{coastline}
-      object; \code{NULL} for none.}
+
+  \item{projection}{projection for map, if desired.  If this is \code{NULL}, no
+      projection will be used; the map will simply show longitude and latitude
+      in a cartesian frame, scaled to retain shapes at the centre.  If this is
+      the string \code{"automatic"}, then either a Mercator or Stereographic
+      projection will be used, depending on whether the CTD station is within
+      70 degrees of the equator or at higher latitudes.  Finally, if this is a
+      string in the format used by \code{\link{mapPlot}}, then it is is passed
+      to that function.}
+
   \item{parameters}{parameters for map, as for \code{projection}.}
   \item{orientation}{orientation for map, as for \code{projection}.}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}

@@ -977,7 +977,7 @@ map2lonlat <- function(x, y, init=c(0,0))
         message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
         try({
             error <- FALSE
-            message("init:", init[1], " ", init[2])
+            ## message("init:", init[1], " ", init[2])
             ## Note: using L-BFGS-B so we can limit the bounds; otherwise
             ## it can select lat > 90 etc.
             worstMisfit <- 0           # try to avoid errors with NA
@@ -989,9 +989,9 @@ map2lonlat <- function(x, y, init=c(0,0))
                                              orientation=orientation)
                            error <<- xyp$error
                            misfit <- sqrt((xyp$x-xy[1])^2+(xyp$y-xy[2])^2)
-                           message(format(xyTrial[1], digits=4), "E ",
-                                   format(xyTrial[2], digits=4), "N ",
-                                   "misfit: ", format(misfit, digits=5), ", error: ", xyp$error)
+                           ##message(format(xyTrial[1], digits=4), "E ",
+                           ##        format(xyTrial[2], digits=4), "N ",
+                           ##        "misfit: ", format(misfit, digits=5), ", error: ", xyp$error)
                            if (error) {
                                return(worstMisfit)
                            } else {
@@ -1004,10 +1004,10 @@ map2lonlat <- function(x, y, init=c(0,0))
                 lon[i] <- lonlat[1]
                 lat[i] <- lonlat[2]
             }
-            str(o)
+            ## str(o)
         }, silent=TRUE)
     }
-    message("map2lonlat returning lon=", lon, " lat=", lat)
+    ##message("map2lonlat returning lon=", lon, " lat=", lat)
     return(list(longitude=lon, latitude=lat))
 }
 
@@ -1037,7 +1037,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || .Last.projection()$projection))
+    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(.Last.projection()$projection)))
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
