@@ -69,8 +69,12 @@
         This may be in either of two formats.  The first is that used by
         \code{\link[mapproj]{mapproject}} in the \code{mapproj} package; if
         this is used, then the next two arguments are also used.  The second
-        form is that used by \code{\link[proj4]{project}} in the \code{proj4}
-        package.  See \dQuote{Examples}.}
+        form, in which \code{projection} starts with the characters
+        ``\code{+proj=}", is that used by \code{\link[proj4]{project}} in the
+        \code{proj4} package.  Note that in this second case, there is no need
+        to specify the scale parameter (\code{+k}), the easting parameter
+        (\code{+easting}) or the northing parameter (\code{+northing}), since
+        these are determined from the graph limits.  See \dQuote{Examples}.}
 
     \item{parameters}{parameters, if \code{projection} is in \code{mapproj}
         form; see \code{\link[mapproj]{mapproject}}.}

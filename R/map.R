@@ -217,23 +217,31 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
     if (axes && drawGrid) {
-        options <- options('warn') # optimize() makes warnings for NA, which we will get
-        options(warn=-1) 
-        ## Grid lines within plot
+        ## Grid lines and axes.
         ## 2014-06-29
-
         ## Find ll and ur corners of plot, if possible, for use in calculating
         ## lon and lat spans.  This will not work in all cases; e.g. for a
         ## world map in mollweide projection, the bounding points will be "in
         ## space", but we catch such problems when we calculate span below.
         usr <- par('usr')
-        xll <- par('usr')[1]
-        yll <- par('usr')[3]
+        xll <- usr[1]
+        yll <- usr[3]
+        xur <- usr[2]
+        yur <- usr[4]
+
+        options <- options('warn') # turn off warnings temporarily
+        options(warn=-1) 
+
+        ## Now next may fail for e.g. molleweide has ll and ur that are
+        ## un-invertable, since the globe may not fill the whole plotting area.
         ll <- map2lonlat(xll, yll)
-        xur <- par('usr')[2]
-        yur <- par('usr')[4]
         ur <- map2lonlat(xur, yur)
-        span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+        if (!is.finite(ll$longitude) || !is.finite(ll$latitude) ||
+            !is.finite(ur$longitude) || !is.finite(ur$latitude)) {
+            ur <- list(longitude=180, latitude=90)
+            ll <- list(longitude=-180, latitude=-90)
+        }
+        span <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
         if (missing(latitudelim)) {
             if (span > 45) {
                 grid[2] <- 15 # this looks nice on global maps
