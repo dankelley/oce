@@ -698,7 +698,6 @@ map2lonlat <- function(x, y, init=c(0,0))
     for (i in 1:n) {
         xy <- c(x[i], y[i])
         ##message("i:", i, ", xy[1]:", xy[1], ", xy[2]:", xy[2])
->>>>>>> proj4
         try({
             error <- FALSE
             ##message("init:", init[1], " ", init[2])
