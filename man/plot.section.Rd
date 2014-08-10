@@ -23,6 +23,8 @@
      ylim=NULL,
      map.xlim=NULL,
      map.ylim=NULL,
+     clongitude, clatitude, span,
+     projection=NULL, parameters=NULL, orientation=NULL,
      xtype=c("distance", "track", "longitude", "latitude"),
      ytype=c("depth", "pressure"),
      ztype=c("contour", "image", "points"),
@@ -75,12 +77,11 @@
         resolution, or \code{"none"} to avoid drawing the coastline.}
     \item{xlim}{optional limit for x axis (only in sections, not map)}
     \item{ylim}{optional limit for y axis (only in sections, not map)}
-    \item{map.xlim}{optional xlim for station location, which can be
-        helpful in ensuring that a recognizable coastline can be seen.
-        (This value is used instead of \code{map.ylim}, if both are
-        supplied.)}
-    \item{map.ylim}{optional ylim for station location, which can be
-        helpful in ensuring that a recognizable coastline can be seen}
+    \item{map.xlim, map.ylim}{optional limits for station map;
+        \code{map.ylim} is ignored if \code{map.xlim} is provided.}
+    \item{clongitude, clatitude, span}{optional map centre position and span (km)}
+    \item{projection, parameters, orientation}{parameters specifying
+         map projection; see \code{\link{mapPlot}}.}
     \item{xtype}{type of x axis, for contour plots, either
         \code{"distance"} for distance (in km) to the first point in the
         section, \code{"track"} for distance along the cruise track,

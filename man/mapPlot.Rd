@@ -6,9 +6,11 @@
 
 \description{Plot a map}
 
-\usage{mapPlot(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
-    polarCircle=0,
+\usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
+    grid=TRUE,
+    bg, fill=NULL, type='l',
+    axes=TRUE, drawBox=TRUE, showHemi=TRUE,
+    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
     projection="mollweide", parameters=NULL, orientation=NULL,
     debug=getOption("oceDebug"),
     \dots)
@@ -37,10 +39,10 @@
     \item{bg}{background colour for plot (ignored at present).}
 
     \item{fill}{colour to be used to fill land regions, or \code{NULL} to avoid
-        filling.  For some map projections (particularly if the view includes
-        the dateline), the filled region may not line up with coastlines,
-        making it sensible to set \code{fill=NULL}; see \dQuote{Examples}.}
-
+        filling.  Filling is inaccurate for projections, e.g. yielding as
+        misshaped Antarticic continent or oceans filled instead of land. In
+        such cases, it makes sense to turn filling off.}
+        
     \item{type}{value to indicate type of plot, as with
         \code{\link{par}("plot")}.}
 
@@ -57,13 +59,24 @@
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
 
-    \item{projection}{projection; see \code{\link[mapproj]{mapproject}}.}
+    \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude
+        to label on the indicated sides of plot, passed to
+        \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+        simple customization.  If they are are not provided, reasonable
+        defaults will be used.}
 
-    \item{parameters}{parameters for projection; see
-        \code{\link[mapproj]{mapproject}}.}
+    \item{projection}{a string indicating the form of projection to be used.
+        This may be in either of two formats.  The first is that used by
+        \code{\link[mapproj]{mapproject}} in the \code{mapproj} package; if
+        this is used, then the next two arguments are also used.  The second
+        form is that used by \code{\link[proj4]{project}} in the \code{proj4}
+        package.  See \dQuote{Examples}.}
+
+    \item{parameters}{parameters, if \code{projection} is in \code{mapproj}
+        form; see \code{\link[mapproj]{mapproject}}.}
     
-    \item{orientation}{orientation for projection; see
-        \code{\link[mapproj]{mapproject}}.}
+    \item{orientation}{orientation, if \code{projection} is in \code{mapproj}
+        form; see \code{\link[mapproj]{mapproject}}.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
@@ -71,57 +84,95 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a map using the indicated projection.  The available
-    projections can be found in the documentation for
-    \code{\link[mapproj]{mapproject}}, which also provides information on the
-    arguments named \code{parameters} and \code{orientation}.  Further details
-    on these and other projections are provided by Snyder (1987), an exhaustive
-    treatment that includes many illustrations, an overview of the history of
-    the topic, and some notes on the strengths and weaknesses of the various
-    formulations.  See especially pages 2 through 7, which define terms and
-    provide recommendations.}
+\details{Creates a map using the indicated projection.  As noted in the
+    information on the \code{projection} argument, projections may be
+    specified in the format used by \code{\link[mapproj]{mapproject}} from
+    the \code{mapproj} package, or the one used by
+    \code{\link[proj4]{project}} from the \code{proj4} package.  The first
+    of these packages is probably easier to learn but the second is more
+    powerful and has a wider user base across multiple software systems
+    beyond R.
+    
+    Once a projection is set, the functions that add to a map will follow
+    the same projection.
+    
+    The available projections can be found in the documentation for
+    \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
 
-\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines with
-    \code{\link{mapLines}}, and text with \code{\link{mapText}}.  Points on a
-    map may be found with \code{\link{mapLocator}}.  Great circle paths can be
-    calculated with \code{\link{geodGc}}.  Scale bars may be added with
-    \code{\link{mapScalebar}}.}
+    Further details on map projections are provided by Snyder (1987), an
+    exhaustive treatment that includes many illustrations, an overview of the
+    history of the topic, and some notes on the strengths and weaknesses of the
+    various formulations.  See especially pages 2 through 7, which define terms
+    and provide recommendations.  More accessible (but less detailed) resources
+    include a Wikipedia page
+    (\url{http://en.wikipedia.org/wiki/List_of_map_projections}), a Radical
+    Cartography website
+    (\url{http://www.radicalcartography.net/?projectionref}). The XKCD guide
+    (\url{http://xkcd.com/977/}) may also be helpful to some. 
+
+}
+
+\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
+    with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
+    with \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and
+    scale bars with \code{\link{mapScalebar}}..  Points on a map may be
+    determined with mouse clicks using \code{\link{mapLocator}}.  Great
+    circle paths can be calculated with \code{\link{geodGc}}.}
 
 \examples{
 \dontrun{
 library(oce)
 data(coastlineWorld)
 
-## Mollweide is an equal-area projection that works well for
-## whole-globe views, below shown in default and Pacific-focus
-## views.  See Snyder (1987 page 54).
-mapPlot(coastlineWorld, proj="mollweide")
+# Example 1.
+# Mollweide (Snyder 1987 page 54) is an equal-area projection that works well
+# for whole-globe views, below shown in a Pacific-focus view using
+# both the mapproj and proj4 formats.  (This pattern of showing the two
+# formats is repeated in all the examples.)
+par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
+mtext("Mollweide/mapproj", adj=1)
+mapPlot(coastlineWorld, proj="+proj=moll +lon_0=-180")
+mtext("Mollweide/proj4", adj=1)
 
-## Orthographic projections resemble a globe, making them
-## attractive for non-technical use, but they are neither conformal
-## nor equal-area, so they are somewhat limited for serious
-## use on large scales.  See Snyder (1987 section 20).  The
-## examples given below illustrate use for low-latitude
-## Pacific and high-latitude Atlantic/Arctic.
+# Example 2.
+# Orthographic projections resemble a globe, making them attractive for
+# non-technical use, but they are neither conformal nor equal-area, so they
+# are somewhat limited for serious use on large scales.  See Section 20 of
+# Snyder (1987).
+par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
-mapPlot(coastlineWorld, projection="orthographic",
-        orientation=c(60,-40,0))
+mtext("Orthographic/mapproj", adj=1)
+mapPlot(coastlineWorld, projection="+proj=ortho +lon_0=-180")
+mtext("Orthographic/proj4", adj=1)
 
-## The Lambert conformal conic projection is an equal-area
-## projection recommended by Snyder for regions of large 
-## east-west extent away from the equator, here illustrated 
-## for the USA and Canada.  Readers should compare the results
-## with those with a polygonic projection, which is also popular.
+# Example 3.
+# The Lambert conformal conic projection is an equal-area projection
+# recommended by Snyder (1987 page 95) for regions of large east-west extent
+# away from the equator, here illustrated for the USA and Canada.
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
-        orientation=c(90,-100,0))
+        orientation=c(90, -100, 0))
+mtext("Lambert/mapproj", adj=1)
+mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
+        projection="+proj=lcc +lon_0=-100")
+mtext("Lambert/proj4", adj=1)
 
-## The stereographic projection (Snyder 1987 page 120) is conformal,
-## used below for an Arctic view with a Canadian focus.
-mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(70,110),
+# Example 4.
+# The stereographic projection (Snyder 1987 page 120) is conformal, used
+# below for an Arctic view with a Canadian focus.  Note the trick of going
+# past the pole: the second latitudelim value is 180 minus the first, and the
+# second longitudelim is 180 plus the first; this uses image points "over"
+# the pole.
+par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
+mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="stereographic", orientation=c(90, -135, 0), fill='gray') 
+mtext("Stereographic/mapproj", adj=1)
+mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
+        proj="+proj=stere +lat_0=90 +lon_0=-135") #, fill='gray')
+mtext("Stereographic/proj4", adj=1)
+
 }
 }
 
@@ -129,14 +180,7 @@ mapPlot(coastlineWorld, longitudelim=c(-130,-50), latitudelim=c(70,110),
 
 \references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
-    \url{pubs.usgs.gov/pp/1395/report.pdf}). 
-
-    Jenny, B., 2012.  Adaptive composite map projections.  IEEE Transactions on
-    Visualization and Computer Graphics (Proceedings Scientific Visualization /
-    Information Visualization 2012), 18-22, p 2575-2582.
-
-    XKCD guide to map projections (\url{http://xkcd.com/977/}).
-}
+    \url{pubs.usgs.gov/pp/1395/report.pdf}).}
 
 \keyword{hplot}
 

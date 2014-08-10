@@ -503,6 +503,7 @@ read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
     rval@metadata <- header
     rval@metadata[["spacecraft"]] <- header$spacecraft
     rval@metadata[["id"]] <- header$id
+    rval@metadata[["filename"]] <- file
     rval@metadata[["headerfilename"]] <- headerfilename
     ## Bandnames differ by satellite.
     rval@metadata[["bands"]] <- band # FIXME: still ok?

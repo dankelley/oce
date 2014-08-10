@@ -21,9 +21,12 @@
     
     \item{zlim}{limit for z (colour)}
     
-    \item{zclip}{logical, indicating whether to clip the colours to those
-        corresponding to \code{zlim}, if the latter is provided.  Clipped
-        regions will be coloured with \code{missingColor}.}
+    \item{zclip}{logical, indicating whether to clip the colours by using the
+        \code{missingColor} for out-of-range values.  If if \code{zlim} is
+        given then its min and max set the range.  If \code{zlim} is not given
+        but \code{breaks} is given, then the min and max of \code{breaks} sets
+        the range.  If neither \code{zlim} nor \code{breaks} is given, clipping
+        is not done, i.e. the action is as if \code{zclip} were \code{FALSE}.}
 
     \item{breaks}{the z values for breaks in the colour scheme.  If this is of
         length 1, the value indicates the desired number of breaks, which is
@@ -60,18 +63,27 @@
         used mainly by the developers and testers.)}
 }
     
-\details{Adds an image to an existing map, by analogy to \code{\link{image}}.}
+\details{Adds an image to an existing map, by analogy to \code{\link{image}}.
+
+    The results can seem ``washed out'' on some plotting devices, owing to an
+    issue with anti-aliasing.  If a \code{\link{png}} device is to be used, it
+    is advised to supply arguments \code{type="cairo"} and
+    \code{antialias="none"}; see [1].
+
+}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}
+
+\references{1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}}
 
 \examples{
 \dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-longitudelim=c(-70,-50), latitudelim=c(40,50),
-proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
+        longitudelim=c(-70,-50), latitudelim=c(40,50),
+        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
 data(topoWorld)
 mapImage(topoWorld, col=oceColorsGebco)
 mapMeridians(10, lty='dotted', col='darkgray')
@@ -81,8 +93,8 @@ mapLines(coastlineWorld)
 ## Northern polar region, with colour-coded bathymetry
 drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
 mapPlot(coastlineWorld, type='l',
-longitudelim=c(-180,180), latitudelim=c(60,120),
-proj="stereographic", grid=TRUE)
+        longitudelim=c(-180,180), latitudelim=c(60,120),
+        proj="stereographic", grid=TRUE)
 data(topoWorld)
 mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)
 mapMeridians()
@@ -90,17 +102,16 @@ mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
-con <- open.ncdf("/data/oar/levitus/temperature_annual_1deg.nc")
-##con <- open.ncdf("/data/oar/levitus/temperature_annual_5deg.nc")
-lon <- get.var.ncdf(con, "lon")
-lat <- get.var.ncdf(con, "lat")
-SST <- get.var.ncdf(con, "t_an")[,,1]
-##SST <- get.var.ncdf(con, "t_mn")[,,1]
+library(ncdf4)
+con <- nc_open("/data/oar/levitus/temperature_annual_5deg.nc")
+lon <- ncvar_get(con, "lon")
+lat <- ncvar_get(con, "lat")
+SST <- ncvar_get(con, "t_mn")[,,1]
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oceColorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim, debug=99)
+mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim)
 mapPolygon(coastlineWorld, col='gray')
 }
 }
