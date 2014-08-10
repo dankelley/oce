@@ -31,7 +31,9 @@ library(oce)
 utm2lonlat(852863, 5029997, 19)
 }
 
-\seealso{\code{lonlat2utm} does the inverse operation.}
+\seealso{\code{\link{lonlat2utm}} does the inverse operation.  For general
+    projections and their inverses, use \code{\link{lonlat2map}} and
+    \code{\link{map2lonlat}}.}
 
 \references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
     downloaded May 31, 2014.}
