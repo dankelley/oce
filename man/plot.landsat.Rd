@@ -82,7 +82,7 @@
 
   \item{transform}{argument used if \code{col="natural"}, to adjust colours
       with \code{\link{adjustcolor}}}
-  
+
   \item{debug}{set to a positive value to get debugging information during
       processing.}
 
@@ -101,7 +101,8 @@
     The histogram plot can be handy in setting scales, e.g. when an image has a
     fair bit of land, the histogram will be double-lobed, and so quick
     examination can help in setting a good value for \code{zlim} to emphasize
-    the water or the land.
+    the water or the land.  If \code{breaks} is present in \code{\dots} then
+    its value is used in the call to \code{\link{hist}}; if not, 100 is used.
 
     Setting \code{band="terralook"} creates a colour scale that tends to make
     the ocean blue and forests green.  This uses the USGS ``terralook'' method

@@ -355,9 +355,26 @@ setMethod(f="plot",
                   if (showBandName && !terralook)
                       mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
-                  if (missing(band))
-                      stop("must supply band")
-                  hist(x[[band]], xlab="Value", main="", ...)
+                  if (missing(band)) {
+                      if ("tirs1" %in% names(x@data)) { # different meanings landsat-8 and previous
+                          oceDebug(debug, "using tirs1\n")
+                          d <- x[["tirs1", decimate]]
+                          band <- "tirs1"
+                      }  else {
+                          oceDebug(debug, "using band named", datanames[1], "\n")
+                          d <- x[[datanames[1], decimate]]
+                          band <- datanames[1]
+                      }
+                  } else {
+                      d <- x[[band]]
+                  }
+                  d[d == 0] <- NA # ignore 'data' outside footprint
+
+                  if ("breaks" %in% names(list(...))) {
+                      hist(d, xlab="Value", main="", ...)
+                  } else {
+                      hist(d, xlab="Value", main="", breaks=100, ...)
+                  }
                   if (showBandName)
                       mtext(band, side=3, adj=1)
               } else {
