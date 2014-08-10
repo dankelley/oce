@@ -87,6 +87,25 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
               }
               d <- NULL                # check for this later to see found data
               if (!is.na(pmatch(i, "temperature"))) {
+                  if (!("tirs1" %in% names(x@data))) stop("cannot compute temperature without \"tirs1\" band")
+                  if (!is.list(x@data$tirs1)) stop("the \"tirs1\" band is not stored in two-byte format")
+                  ## First, determine whether decimation is needed.
+                  decimate <- 1        # decimation step
+                  dim <- dim(x@data$tirs1$lsb)
+                  maxdim <- max(dim)
+                  ilook <- seq.int(1L, dim[1], by=1L)
+                  jlook <- seq.int(1L, dim[2], by=1L)
+                  if (!missing(j)) {
+                      if (is.logical(j) && j) {
+                          decimate <- max(as.integer(round(maxdim / 800)), 1)
+                      } else {
+                          if (round(j) < 1) stop("cannot decimate by a step smaller than 1, but got ", j)
+                          decimate <- as.integer(round(j))
+                          if (decimate > min(dim)) stop("cannot decimate by a step larger than image dimension")
+                      }
+                      ilook <- seq.int(1, dim[1], by=decimate)
+                      jlook <- seq.int(1, dim[2], by=decimate)
+                  }
                   spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
                   if (spacecraft == "LANDSAT_8") {
                       oceDebug(debug, "temperature for landsat-8\n")
@@ -100,8 +119,10 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       oceDebug(debug, "AL=", AL, "# @metadata$header$radiance_add_band_10\n")
                       oceDebug(debug, "K1=", K1, "# @metadata$header$k1_constant_band_10\n")
                       oceDebug(debug, "K2=", K2, "# @metadata$header$k2_constant_band_10\n")
-                      d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
-                      dim <- dim(x@data$tirs1$lsb)
+                      msb <- x@data$tirs1$msb[ilook,jlook]
+                      lsb <- x@data$tirs1$lsb[ilook,jlook]
+                      dim <- dim(msb)
+                      d <- 256L*as.integer(msb) + as.integer(lsb)
                       na <- d == 0
                       ## rm(x) # may help if space is tight
                       Llambda <- ML * d + AL
@@ -113,8 +134,6 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d <- d - 273.15
                       d[na] <- NA
                       dim(d) <- dim
-                      if (!missing(j) && j)
-                          warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
                       oceDebug(debug, "} # landsat [[\n", unindent=1)
                       return(d)
                   } else if (spacecraft == "LANDSAT_7") {
@@ -126,11 +145,12 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       K2 <- 1282.71 # Landsat7_Handbook.pdf Table 11.5
                       oceDebug(debug, "ML=", ML, "# @metadata$header$radiance_mult_band_6_vcid_1\n")
                       oceDebug(debug, "AL=", AL, "# @metadata$header$radiance_add_band_6_vcid_1\n")
-                      oceDebug(debug, "K1=", K1, "# Landsat7_Handbook.pdf Table 11.5")
-                      oceDebug(debug, "K2=", K2, "# Landsat7_Handbook.pdf Table 11.5")
+                      oceDebug(debug, "K1=", K1, "# Landsat7_Handbook.pdf Table 11.5\n")
+                      oceDebug(debug, "K2=", K2, "# Landsat7_Handbook.pdf Table 11.5\n")
                       ## d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
-                      d <- as.integer(x@data$tirs1$lsb)
-                      dim <- dim(x@data$tirs1$lsb)
+                      d <- x@data$tirs1$lsb[ilook,jlook]
+                      dim <- dim(d)
+                      d <- as.integer(d)
                       na <- d == 0
                       rm(x) # may help if space is tight
                       Llambda <- ML * d + AL
@@ -142,8 +162,6 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       d <- d - 273.15
                       d[na] <- NA
                       dim(d) <- dim
-                      if (!missing(j) && j)
-                          warning("BUG: landsat[\"temperature\",", j, "] not doing decimation", call.=FALSE)
                       oceDebug(debug, "} # landsat [[\n", unindent=1)
                       return(d)
                   } else if (spacecraft == "LANDSAT_5") {
@@ -153,7 +171,7 @@ setMethod(f="[[", # FIXME: ensure working on all the many possibilities, includi
                       K2 <- 1260.56    # Landsat7_Handbook.pdf Table 11.5
                       message("K1=", K1, " # Landsat7_Handbook.pdf Table 11.5")
                       message("K2=", K2, " # Landsat7_Handbook.pdf Table 11.5")
-                      d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
+                      d <- as.integer(x@data$tirs1$lsb[ilook,jlook])
                       stop("landsat-5 is not converted AT ALL\n")
                   } else {
                       stop("unknown satellite: ", x@metadata$spacecraft)
