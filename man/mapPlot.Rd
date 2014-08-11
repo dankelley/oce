@@ -4,7 +4,11 @@
 
 \title{Plot a map}
 
-\description{Plot a map}
+\description{Plot coordinates as a map, using one of many possible projections
+    calculated with the \code{mapproj} or \code{proj4} package.  The projection
+    parameters are stored in a local variable that can be retrieved by related
+    functions, making it easy to add more items so the map, including points,
+    lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE,
@@ -207,7 +211,7 @@ mtext("Stereographic/proj4", adj=1)
     meridians.  Generally, issues are tackled first for commonly used
     projections, such as those used in the examples.}
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 \references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
