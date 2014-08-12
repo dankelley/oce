@@ -11,13 +11,10 @@
     lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
-    grid=TRUE,
-    bg, fill=NULL, type='l',
-    axes=TRUE, drawBox=TRUE, showHemi=TRUE,
+    grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
     projection="mollweide", parameters=NULL, orientation=NULL,
-    debug=getOption("oceDebug"),
-    \dots)
+    debug=getOption("oceDebug"), \dots)
 }
 
 \arguments{
@@ -73,18 +70,16 @@
         This may be in either of two formats.  The first is that used by
         \code{\link[mapproj]{mapproject}} in the \code{mapproj} package; if
         this is used, then the next two arguments are also used.  The second
-        form, in which \code{projection} starts with the characters
-        ``\code{+proj=}", is that used by \code{\link[proj4]{project}} in the
-        \code{proj4} package.  Note that in this second case, there is no need
-        to specify the scale parameter (\code{+k}), the easting parameter
-        (\code{+easting}) or the northing parameter (\code{+northing}), since
-        these are determined from the graph limits.  See \dQuote{Examples}.}
+        form, in which \code{projection} starts with ``\code{+proj=}'', is that
+        used by \code{\link[proj4]{project}} in the \code{proj4} package.  Note
+        that in this second case, there is no need to specify the scale
+        parameter (\code{+k}), the easting parameter (\code{+easting}) or the
+        northing parameter (\code{+northing}), since these are determined from
+        the graph limits.  See \dQuote{Examples}.}
 
-    \item{parameters}{parameters, if \code{projection} is in \code{mapproj}
-        form; see \code{\link[mapproj]{mapproject}}.}
-    
-    \item{orientation}{orientation, if \code{projection} is in \code{mapproj}
-        form; see \code{\link[mapproj]{mapproject}}.}
+    \item{parameters, orientation}{parameters and orientation, if
+        \code{projection} is in \code{mapproj} form; see
+        \code{\link[mapproj]{mapproject}}.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 

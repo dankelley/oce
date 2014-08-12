@@ -109,22 +109,22 @@ data(coastlineWorld)
 data(topoWorld)
 
 par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
-longitudelim <- c(-70,-50)
-latitudelim <- c(40,50)
-topo <- decimate(topoWorld, by=3) # coarse to illustrate filled contours
-topo <- subset(topoWorld, latlim[1] < latitude & latitude < latlim[2])
+lonlim <- c(-70,-50)
+latlim <- c(40,50)
+topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
+topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
 topo <- subset(topo, (360+lonlim[1]) < longitude & longitude < (360+lonlim[2]))
 mapPlot(coastlineWorld, type='l',
-        longitudelim=longitudelim, latitudelim=latitudelim,
+        longitudelim=lonlim, latitudelim=latlim,
         proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
-breaks <- seq(-5000, 0, 500)
-mapImage(topo, col=oceColorsJet, breaks=breaks)
+breaks <- seq(-5000, 1000, 500)
+mapImage(topo, col=oceColorsGebco, breaks=breaks)
 mapLines(coastlineWorld)
 box()
 mapPlot(coastlineWorld, type='l',
-        longitudelim=longitudelim, latitudelim=latitudelim,
+        longitudelim=lonlim, latitudelim=latlim,
         proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
-mapImage(topo, filledContour=TRUE, col=oceColorsJet, breaks=breaks)
+mapImage(topo, filledContour=TRUE, col=oceColorsGebco, breaks=breaks)
 box()
 mapLines(coastlineWorld)
 
