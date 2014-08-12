@@ -47,8 +47,10 @@
     
     \item{lty}{line type, used if borders are drawn}
 
-    \item{filledContour}{boolean value indicating whether to use filled
-        contours to plot the image.  This is ignored at present.}
+    \item{filledContour}{either boolean value indicating whether to use filled
+        contours to plot the image, or numerical value indicating the
+        resampling rate to be used in interpolating from lon-lat coordinates to
+        x-y coordinates.  See \dQuote{Details}.}
 
     \item{missingColor}{a color to be used to indicate missing data, or
         \code{NA} to skip the drawing of such regions (which will retain
@@ -65,10 +67,26 @@
     
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.
 
-    The results can seem ``washed out'' on some plotting devices, owing to an
-    issue with anti-aliasing.  If a \code{\link{png}} device is to be used, it
-    is advised to supply arguments \code{type="cairo"} and
-    \code{antialias="none"}; see [1].
+    For the case where \code{filledContour} is \code{FALSE}, the results can
+    seem ``washed out'' on some plotting devices, owing to an issue with
+    anti-aliasing in the drawing of the pixel polygons.  If a \code{\link{png}}
+    device is to be used, it is advised to supply arguments \code{type="cairo"}
+    and \code{antialias="none"}; see [1].
+
+    For the case where \code{filledContour} is \code{TRUE} or a numerical
+    value, \code{\link{.filled.contour}} is used as follows.  First, the
+    lon-lat grid, which is regular, is converted to an intermediate irregular
+    x-y grid using lon-lat box to x-y space using \code{\link{lonlat2map}}.
+    Then, the latter is converted to a regular x-y grid  with
+    \code{\link[akima]{interp}} from the \code{akima} package.  This regular
+    x-y grid is indicated with filled contours.  If \code{filledContour} is
+    \code{TRUE}, the dimension of the regular x-y grid is the same as that of
+    the lon-lat grid; otherwise, the number of rows will be multiplied by the
+    numerical value of \code{filledContour}.
+    
+    The advantage of filling contours is that it can look less pixelated for a
+    coarse grid, but the disadvantage is that some interpolation is done, so
+    the data are not represented exactly.
 
 }
 
@@ -81,13 +99,21 @@
 \dontrun{
 library(oce)
 data(coastlineWorld)
+data(topoWorld)
+
+par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
+topo <- decimate(topoWorld, by=3) # coarse to illustrate filled contours
 mapPlot(coastlineWorld, type='l',
         longitudelim=c(-70,-50), latitudelim=c(40,50),
         proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
-data(topoWorld)
-mapImage(topoWorld, col=oceColorsGebco)
-mapMeridians(10, lty='dotted', col='darkgray')
-mapZones(10, lty='dotted', col='darkgray')
+mapImage(topo, col=oceColorsGebco, breaks=seq(-5000, 0000, 100))
+mapLines(coastlineWorld)
+box()
+mapPlot(coastlineWorld, type='l',
+        longitudelim=c(-70,-50), latitudelim=c(40,50),
+        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
+mapImage(topo, filledContour=TRUE, col=oceColorsJet)
+box()
 mapLines(coastlineWorld)
 
 ## Northern polar region, with colour-coded bathymetry
@@ -95,10 +121,7 @@ drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
 mapPlot(coastlineWorld, type='l',
         longitudelim=c(-180,180), latitudelim=c(60,120),
         proj="stereographic", grid=TRUE)
-data(topoWorld)
 mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)
-mapMeridians()
-mapZones()
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)

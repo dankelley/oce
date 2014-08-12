@@ -1046,8 +1046,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
              " filledContour=", filledContour, ", ",
              ", ...) {\n", sep="", unindent=1)
  
-    if (filledContour)
-        warning("mapImage() cannot yet handle filledContour\n")
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) { # e.g. a topo object
             z <- longitude@data$z
@@ -1062,6 +1060,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             longitude <- longitude$x   # destroys container
         }
     }
+    if (filledContour)
+        warning("mapImage() cannot yet handle filledContour\n")
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) { # takes precedence over breaks and col
         breaks <- colormap$breaks
@@ -1170,40 +1170,26 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                NAOK=TRUE, PACKAGE="oce")
     breaksMin <- min(breaks, na.rm=TRUE)
     breaksMax <- max(breaks, na.rm=TRUE)
-    colFirst <- col[1]
-    colLast <- tail(col, 1)
-    colorLookup <- function (ij) {
-        zval <- Z[ij]
-        if (is.na(zval)) return(missingColor)   # whether clipping or not
-        if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
-        if (zval > breaksMax) return(if (zclip) missingColor else colLast)
-        ## w <- which(Z[ij] <= breaks * (1 + small))[1]
-        w <- which(zval <= breaks)[1]
-        ## if (is.na(w)) message("w=NA for Z[", ij, "] = ", Z[ij])
-        ## if (w<=1) message("w<=1 for Z[", ij, "] = ", Z[ij])
-        ##if (w <= 1) message("w<=1 at ij: ", ij, "; Z[ij]: ", Z[ij])
-        ## FIXME: maybe should be [w] below?  And why is w=1 so bad?
-        if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
+    if (filledContour) {
+        oceDebug(debug, "using filled contours\n")
+        stop("should do filled contours -- not coded yet")
+    } else {
+        oceDebug(debug, "using polygons, as opposed to filled contours\n")
+        colFirst <- col[1]
+        colLast <- tail(col, 1)
+        colorLookup <- function (ij) {
+            zval <- Z[ij]
+            if (is.na(zval)) return(missingColor)   # whether clipping or not
+            if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
+            if (zval > breaksMax) return(if (zclip) missingColor else colLast)
+            w <- which(zval <= breaks)[1]
+            if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
+        }
+        colPolygon <- sapply(1:(ni*nj), colorLookup)
+        polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
+                col=colPolygon[r$okPolygon & !r$clippedPolygon],
+                border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
     }
-    ## message("range(Z): ", paste(range(Z, na.rm=TRUE), collapse=" to "))
-    ## message("head(breaks): ", paste(head(breaks), collapse=" "))
-    colPolygon <- sapply(1:(ni*nj), colorLookup)
-    ## message("ni*nj: ", ni*nj)
-    ## message("below is unique(colPolygon):")
-    ## str(unique(colPolygon))
-    polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
-            col=colPolygon[r$okPolygon & !r$clippedPolygon],
-            border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
-
-    ## if (debug==5 && !is.na(missingColor)) {
-    ##     message("number missing color: ", sum(colPolygon==missingColor))
-    ##     message("zclip: ", zclip)
-    ## }
-
-    ## message("number of clipped polygons: ", sum(r$clippedPolygon))
-    ## message("number of clipped points: ", sum(r$clippedPoints))
-    ## message("number of NOT ok points: ", sum(!r$okPoint))
-    ## message("number of NOT ok polygons: ", sum(!r$okPolygon))
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
 }
