@@ -47,8 +47,8 @@
     
     \item{lty}{line type, used if borders are drawn}
 
-    \item{filledContour}{either boolean value indicating whether to use filled
-        contours to plot the image, or numerical value indicating the
+    \item{filledContour}{either a boolean value indicating whether to use
+        filled contours to plot the image, or a numerical value indicating the
         resampling rate to be used in interpolating from lon-lat coordinates to
         x-y coordinates.  See \dQuote{Details}.}
 
@@ -67,26 +67,33 @@
     
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.
 
-    For the case where \code{filledContour} is \code{FALSE}, the results can
-    seem ``washed out'' on some plotting devices, owing to an issue with
+    The data are on a regular grid in lon-lat space, but not in the projected
+    x-y space.  This means that \code{\link{image}} cannot be used.  Instead,
+    there are two approaches, depending on the value of \code{filledContour}.
+
+    If \code{filledContour} is \code{FALSE}, the image ``pixels'' are with
+    \code{\link{polygon}}.  This can be slow for fine grids.  Also, the results
+    can seem ``washed out'' on some plotting devices, owing to an issue with
     anti-aliasing in the drawing of the pixel polygons.  If a \code{\link{png}}
     device is to be used, it is advised to supply arguments \code{type="cairo"}
     and \code{antialias="none"}; see [1].
 
-    For the case where \code{filledContour} is \code{TRUE} or a numerical
-    value, \code{\link{.filled.contour}} is used as follows.  First, the
-    lon-lat grid, which is regular, is converted to an intermediate irregular
-    x-y grid using lon-lat box to x-y space using \code{\link{lonlat2map}}.
-    Then, the latter is converted to a regular x-y grid  with
-    \code{\link[akima]{interp}} from the \code{akima} package.  This regular
-    x-y grid is indicated with filled contours.  If \code{filledContour} is
-    \code{TRUE}, the dimension of the regular x-y grid is the same as that of
-    the lon-lat grid; otherwise, the number of rows will be multiplied by the
-    numerical value of \code{filledContour}.
+    If \code{filledContour} is \code{TRUE} or a numerical value, then the the
+    ``pixels'' are remapped into a regular grid and then displayed with
+    \code{\link{.filled.contour}}.  The remapping starts by converting the
+    regular lon-lat grid to an irregular x-y grid using
+    \code{\link{lonlat2map}}.  This irregular grid is then interpolated onto a
+    regular x-y grid  with \code{\link[akima]{interp}} from the \code{akima}
+    package.   If \code{filledContour} is \code{TRUE}, the dimensions of the
+    regular x-y grid is the same as that of the original lon-lat grid;
+    otherwise, the number of rows and columns are multiplied by the numerical
+    value of \code{filledContour}, e.g. the value 2 means to make the grid
+    twice as fine.
     
-    The advantage of filling contours is that it can look less pixelated for a
-    coarse grid, but the disadvantage is that some interpolation is done, so
-    the data are not represented exactly.
+    Filling contours can produce aesthetically-pleasing results, but the method
+    involves interpolation, so the data are not represented exactly and
+    analysts are advised to compare the results from the two methods (and
+    perhaps various grid refinement values) to guard against misinterpretation.
 
 }
 
@@ -102,17 +109,22 @@ data(coastlineWorld)
 data(topoWorld)
 
 par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
+longitudelim <- c(-70,-50)
+latitudelim <- c(40,50)
 topo <- decimate(topoWorld, by=3) # coarse to illustrate filled contours
+topo <- subset(topoWorld, latlim[1] < latitude & latitude < latlim[2])
+topo <- subset(topo, (360+lonlim[1]) < longitude & longitude < (360+lonlim[2]))
 mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-70,-50), latitudelim=c(40,50),
-        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
-mapImage(topo, col=oceColorsGebco, breaks=seq(-5000, 0000, 100))
+        longitudelim=longitudelim, latitudelim=latitudelim,
+        proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
+breaks <- seq(-5000, 0, 500)
+mapImage(topo, col=oceColorsJet, breaks=breaks)
 mapLines(coastlineWorld)
 box()
 mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-70,-50), latitudelim=c(40,50),
-        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
-mapImage(topo, filledContour=TRUE, col=oceColorsJet)
+        longitudelim=longitudelim, latitudelim=latitudelim,
+        proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
+mapImage(topo, filledContour=TRUE, col=oceColorsJet, breaks=breaks)
 box()
 mapLines(coastlineWorld)
 

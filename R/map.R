@@ -1060,8 +1060,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             longitude <- longitude$x   # destroys container
         }
     }
-    if (filledContour)
-        warning("mapImage() cannot yet handle filledContour\n")
+    #if (filledContour)
+    #    warning("mapImage() cannot yet handle filledContour\n")
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) { # takes precedence over breaks and col
         breaks <- colormap$breaks
@@ -1172,7 +1172,25 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     breaksMax <- max(breaks, na.rm=TRUE)
     if (filledContour) {
         oceDebug(debug, "using filled contours\n")
-        stop("should do filled contours -- not coded yet")
+        if (!require(akima))
+            stop("must install.packages(\"akima\") to plot filled contours on maps")
+        zz <- as.vector(z)
+        g <- expand.grid(longitude, latitude)
+        longitudeGrid <- g[,1]
+        latitudeGrid <- g[,2]
+        rx <- range(xy$x, na.rm=TRUE)
+        ry <- range(xy$y, na.rm=TRUE)
+        f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
+        xg <- seq(rx[1], rx[2], length.out=f*length(longitude))
+        yg <- seq(ry[1], ry[2], length.out=f*length(latitude))
+        xy <- lonlat2map(longitudeGrid, latitudeGrid)
+        good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
+        xx <- xy$x[good]
+        yy <- xy$y[good]
+        zz <- zz[good]
+        i <- interp(xx, yy, zz, xg, yg)
+        levels <- breaks # FIXME: probably wrong
+        .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
     } else {
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
