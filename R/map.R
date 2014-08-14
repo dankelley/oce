@@ -403,10 +403,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             latlabel <- latlabs
         if (is.null(sides))
             sides <- 1:2
-        TICK <- FALSE                  # ticks look bad for angled grid lines
-        LINE <- -3/4                   # labels snug to box
+        ## Tighten axis labels since know no superscripts or names
+        TICK <- TRUE # ticks look bad for angled grid lines
+        TCL <- -0.3
+        MGP <- c(2, 0.5, 0)            # first item ignored since not writing "longitude" etc
         axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
-        if (1 %in% sides) {    # bottom side
+        if (1 %in% sides) {            # bottom side
             AT <- NULL
             LAB <- NULL
             for (lab in lonlabel) {
@@ -421,7 +423,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "lonlabel", lab, "E does not intersect side 1\n")
                 }
             }
-            if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (2 %in% sides) {    # left side
             AT <- NULL
@@ -436,7 +438,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
                 }
             }
-            if (!is.null(AT)) axis(side=2, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
 ##<<<<<<< HEAD
 ##        ## Prevent labelling both 180W and 180E on top of each other (not sure how
@@ -506,7 +508,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 3\n")
                 }
             }
-            if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (4 %in% sides) {    # right side
             warning("axis on right-hand side of map is not working yet (contact developer)")
@@ -532,7 +534,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
                 }
             }
-            if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB), line=LINE, tick=TICK)
+            if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         ## 20114-06-28: below is code that used to draw axes, then only
         ## at bottom and left, and without intermixing of lats and lons.

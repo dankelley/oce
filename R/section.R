@@ -475,27 +475,8 @@ setMethod(f="plot",
                       lonm <- mean(lon, na.rm=TRUE)
                       lonr <- lonm + sqrt(2) * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
-                      ## FIXME: should handle projection as CTD does, but how to get no-projection?
-                      ## FIXME: I think both should have missing() means auto-pick and NULL means none
-                      #message("projection:")
-                      #print(projection)
-                      if (!is.null(map.xlim)) {
-                          map.xlim <- sort(map.xlim)
-                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
-                               xlab=gettext("Longitude", domain="R-oce"),
-                               ylab=gettext("Latitude", domain="R-oce"))
-                      } else if (!is.null(map.ylim)) {
-                          map.ylim <- sort(map.ylim)
-                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
-                               xlab=gettext("Longitude", domain="R-oce"),
-                               ylab=gettext("Latitude", domain="R-oce"))
-                      } else {
-                          plot(lonr, latr, asp=asp, type='n',
-                               xlab=gettext("Longitude", domain="R-oce"),
-                               ylab=gettext("Latitude", domain="R-oce"))
-                      }
+
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
-                      ## figure out coastline
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
@@ -527,6 +508,38 @@ setMethod(f="plot",
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }
                               haveCoastline <- TRUE
+                          }
+                      }
+
+                      ## FIXME: should handle projection as CTD does, but how to get no-projection?
+                      ## FIXME: I think both should have missing() means auto-pick and NULL means none
+                      if (!is.null(projection)) {
+                          if (is.null(map.xlim)) map.xlim <- range(x[['longitude', 'byStation']])
+                          if (is.null(map.ylim)) map.ylim <- range(x[['latitude', 'byStation']])
+                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim,
+                                  proj=projection, fill='gray')
+                          mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
+                                    col=col, pch=3, lwd=1/2)
+                          if (xtype == "distance" && showStart) {
+                              mapPoints(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
+                          }
+                          message("TODO: accept proj='automatic'")
+                          return()
+                      } else {
+                          if (!is.null(map.xlim)) {
+                              map.xlim <- sort(map.xlim)
+                              plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                                   xlab=gettext("Longitude", domain="R-oce"),
+                                   ylab=gettext("Latitude", domain="R-oce"))
+                          } else if (!is.null(map.ylim)) {
+                              map.ylim <- sort(map.ylim)
+                              plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                                   xlab=gettext("Longitude", domain="R-oce"),
+                                   ylab=gettext("Latitude", domain="R-oce"))
+                          } else {
+                              plot(lonr, latr, asp=asp, type='n',
+                                   xlab=gettext("Longitude", domain="R-oce"),
+                                   ylab=gettext("Latitude", domain="R-oce"))
                           }
                       }
                       if (haveCoastline) {
