@@ -35,7 +35,7 @@
      showStart=TRUE,
      showBottom=TRUE,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
      debug=getOption("oceDebug"),
      \dots)
@@ -80,8 +80,11 @@
     \item{map.xlim, map.ylim}{optional limits for station map;
         \code{map.ylim} is ignored if \code{map.xlim} is provided.}
     \item{clongitude, clatitude, span}{optional map centre position and span (km)}
-    \item{projection, parameters, orientation}{parameters specifying
-         map projection; see \code{\link{mapPlot}}.}
+    \item{projection, parameters, orientation}{parameters specifying map
+        projection; see \code{\link{mapPlot}}.  If
+        \code{projection="automatic"}, however, a projection is devised from
+        the data, with \code{stereographic} if the mean latitude exceeds 70N
+        and \code{mollweide} otherwise.}
     \item{xtype}{type of x axis, for contour plots, either
         \code{"distance"} for distance (in km) to the first point in the
         section, \code{"track"} for distance along the cruise track,

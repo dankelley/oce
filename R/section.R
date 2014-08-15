@@ -387,7 +387,7 @@ setMethod(f="plot",
                               showStart=TRUE,
                               showBottom=TRUE,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
+                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5),
                               col=par("col"), cex=par("cex"), pch=par("pch"),
                               debug=getOption("oceDebug"),
                               ...)
@@ -511,22 +511,30 @@ setMethod(f="plot",
                           }
                       }
 
-                      ## FIXME: should handle projection as CTD does, but how to get no-projection?
                       ## FIXME: I think both should have missing() means auto-pick and NULL means none
                       if (!is.null(projection)) {
-                          if (is.null(map.xlim)) map.xlim <- range(x[['longitude', 'byStation']])
-                          if (is.null(map.ylim)) map.ylim <- range(x[['latitude', 'byStation']])
-                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim,
-                                  proj=projection, fill='gray')
+                          stnlats <- x[["latitude", "byStation"]]
+                          stnlons <- x[["longitude", "byStation"]]
+                          if (is.null(map.xlim)) map.xlim <- range(stnlons)
+                          if (is.null(map.ylim)) map.ylim <- range(stnlats)
+                          id <- pmatch(projection, "automatic")
+                          if (!is.na(id)) {
+                              meanlat <- mean(stnlats, na.rm=TRUE)
+                              meanlon <- mean(stnlons, na.rm=TRUE)
+                              ## NOTE: mercator messes up filling for data(section) but mollweide is okay 
+                              projection <- if (meanlat > 70) "stereographic" else "mollweide"
+                              orientation <- c(90, meanlon, 0)
+                              oceDebug(debug, "using", projection, "projection because mean latitude > 70N\n")
+                          }
+                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, orientation=orientation, fill='gray')
                           mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
                                     col=col, pch=3, lwd=1/2)
                           if (xtype == "distance" && showStart) {
                               mapPoints(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           }
-                          message("TODO: accept proj='automatic'")
                           return()
                       } else {
-                          if (!is.null(map.xlim)) {
+                         if (!is.null(map.xlim)) {
                               map.xlim <- sort(map.xlim)
                               plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
