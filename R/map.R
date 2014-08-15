@@ -1187,6 +1187,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         yg <- seq(ry[1], ry[2], length.out=f*length(latitude))
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
         good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
+        if (!zclip) {
+            ##message("# good: ", sum(good), " orig")
+            zz[zz < breaksMin] <- breaksMin
+            zz[zz > breaksMax] <- breaksMax
+        }
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]

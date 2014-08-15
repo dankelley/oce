@@ -37,8 +37,9 @@
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
 
     \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
-        If provided, this takes precedence over \code{breaks}, code{col} and
-        \code{missingColor}.}
+        If a \code{colormap} is provided, then its properties takes precedence
+        over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
+        specified to \code{mapImage}.}
   
     \item{border}{colour used for borders of patches (passed to
         \code{\link{polygon}}); the default \code{NA} means no border.}
