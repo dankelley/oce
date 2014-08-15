@@ -1202,13 +1202,48 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
+        if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+            message("breaksMin: ", breaksMin)
+            message("breaksMax: ", breaksMax)
+            message("Z:")
+            print(Z)
+        }
         colorLookup <- function (ij) {
             zval <- Z[ij]
-            if (is.na(zval)) return(missingColor)   # whether clipping or not
-            if (zval < breaksMin) return(if (zclip) missingColor else colFirst)
-            if (zval > breaksMax) return(if (zclip) missingColor else colLast)
-            w <- which(zval <= breaks)[1]
-            if (!is.na(w) && w > 1) return(col[-1 + w]) else return(missingColor)
+            if (is.na(zval)) {
+                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                    message("zval is NA (", zval, ")")
+                }
+                return(missingColor)   # whether clipping or not
+            }
+            if (zval < breaksMin) {
+                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                    message("zval < breaksMin (", zval, ")")
+                }
+                return(if (zclip) missingColor else colFirst)
+            }
+            if (zval > breaksMax) {
+                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                    message("zval > breaksMax (", zval, ")")
+                }
+                return(if (zclip) missingColor else colLast)
+            }
+            ## issue522: this was w <- which(zval <= breaks)[1]
+            w <- which(zval < breaks)[1]
+            if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                message("zval:", zval, ", w:", w)
+            }
+            if (!is.na(w) && w > 1) {
+                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                    message("    using non-missing col: ", col[-1+w])
+                }
+                return(col[-1 + w]) 
+            } else {
+                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                    message("    using missing col: ", missingColor)
+                }
+                return(missingColor)
+            }
         }
         colPolygon <- sapply(1:(ni*nj), colorLookup)
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
