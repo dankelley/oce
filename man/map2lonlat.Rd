@@ -38,9 +38,18 @@
     projections than for \code{mapproj}-style projections.  This is because the
     \code{proj4} package provides inverse functions, while \code{mapproj} does
     not, so that in the latter case the longitude and latitude are determined
-    by a minimization procedure using \code{\link{optim}}.}
+    by a minimization procedure using \code{\link{optim}}.  See \dQuote{Bugs}.
+
+}
 
 \value{A list containing \code{longitude} and \code{latitude}.}
+
+\section{Bugs}{The \code{mapproj}-style case can yield \code{NA} for longitude
+    and latitude, even for what would seem to be perfectly benign conditions.
+    Since \code{map2lonlat} is called by many mapping functions, this can yield
+    errors of various types, e.g. unaesthetic axis labelling.  In many cases
+    those errors can be circumvented by switching to the equivalent
+    \code{proj4}-style projection.}
 
 \examples{
 library(oce)

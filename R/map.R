@@ -234,14 +234,28 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
         ## Now next may fail for e.g. molleweide has ll and ur that are
         ## un-invertable, since the globe may not fill the whole plotting area.
+        mlat <- mean(longitude,na.rm=TRUE)
+        mlon <- mean(latitude, na.rm=TRUE)
         ll <- map2lonlat(xll, yll)
+        if (is.na(ll$longitude))
+            ll <- map2lonlat(xll, yll, init=c(mlon, mlat))
         ur <- map2lonlat(xur, yur)
+        if (is.na(ur$longitude))
+            ur <- map2lonlat(xur, yur, init=c(mlon, mlat))
+        ## message("line239: ll: ");str(ll)
+        ## message("line240: ur: ");str(ur)
+        ## message("line 241: xur: ", xur, ", yur: ", yur)
+        if (!is.finite(ur$longitude)) browser()
         if (!is.finite(ll$longitude) || !is.finite(ll$latitude) ||
             !is.finite(ur$longitude) || !is.finite(ur$latitude)) {
             ur <- list(longitude=180, latitude=90)
             ll <- list(longitude=-180, latitude=-90)
         }
+        ## message("line247: ll: ");str(ll)
+        ## message("line248: ur: ");str(ur)
         span <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+        ## message("ur:"); str(ur)
+        ## message("ll:"); str(ll)
         oceDebug(debug, "span=", span, "\n")
         if (missing(latitudelim)) {
             if (span > 45) {
@@ -270,12 +284,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
 
         if (missing(longitudelim)) {
-            if (span > 45) {
+            ##message("span: ", span)
+            if (span > 60) {
+                oceDebug(debug, "lon grid selected automatically; big-span case\n")
                 grid[1] <- 15 # this looks nice on global maps
-                ## tweak endpoints to avoid losing things "on the edge" say for mollweid
-                lonlabs <- seq(-180+0.01, 180-0.01, length.out=24)
+                lonlabs <- seq(-180, 180, length.out=25)
                 grid[1] <- lonlabs[2] - lonlabs[1]
             } else {
+                oceDebug(debug, "lon grid selected automatically; small-span case\n")
                 lonlabs <- pretty(c(ll$longitude, ur$longitude))
                 grid[1] <- diff(lonlabs[1:2])
             }
@@ -418,9 +434,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
                     AT <- c(AT, x)
                     LAB <- c(LAB, paste(lab, "E", sep=""))
-                    oceDebug(debug, "lonlabel", lab, "E intersects side 1\n")
+                    oceDebug(debug-1, "lonlabel", lab, "E intersects side 1\n")
                 } else {
-                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 1\n")
+                    oceDebug(debug-1, "lonlabel", lab, "E does not intersect side 1\n")
                 }
             }
             if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
@@ -435,7 +451,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(y) && usr[3] < y && y < usr[4]) {
                     AT <- c(AT, y)
                     LAB <- c(LAB, paste(lab, "N", sep=""))
-                    oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
+                    oceDebug(debug-1, "latlabel", lab, "N intersects side 2\n")
                 }
             }
             if (!is.null(AT)) axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
@@ -521,7 +537,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(y) && usr[3] < y && y < usr[4]) {
                     AT <- c(AT, y)
                     LAB <- c(LAB, paste(lab, "E", sep=""))
-                    oceDebug(debug, "lonlabel", lab, "E intersects side 4\n")
+                    oceDebug(debug-1, "lonlabel", lab, "E intersects side 4\n")
                 }
             }
             for (lab in latlabel) {
@@ -531,7 +547,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(y) && usr[3] < y && y < usr[4]) {
                     AT <- c(AT, y)
                     LAB <- c(LAB, paste(lab, "N", sep=""))
-                    oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
+                    oceDebug(debug-1, "latlabel", lab, "N intersects side 4\n")
                 }
             }
             if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
@@ -961,11 +977,8 @@ map2lonlat <- function(x, y, init=c(0,0))
         ##message("proj4-style projection exists")
         xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
         return(list(longitude=xy$x, latitude=xy$y))
-    } else if (0 == nchar(.Last.projection()$projection)) {
-        ##stop("must first set up a projection by calling mapPlot() or lonlat2map()")
     }
-    ##message("mapproj-style projection exists")
-    ## OK, we know we are using mapproj-style
+    ## Now we know we are using mapproj-style
     lp <- .Last.projection()
     projection <- lp$projection
     parameters <- lp$parameters
@@ -991,13 +1004,15 @@ map2lonlat <- function(x, y, init=c(0,0))
                                              orientation=orientation)
                            error <<- xyp$error
                            misfit <- sqrt((xyp$x-xy[1])^2+(xyp$y-xy[2])^2)
-                           ##message(format(xyTrial[1], digits=4), "E ",
-                           ##        format(xyTrial[2], digits=4), "N ",
-                           ##        "misfit: ", format(misfit, digits=5), ", error: ", xyp$error)
+                           ## message(format(xyTrial[1], digits=4), "E ",
+                           ##         format(xyTrial[2], digits=4), "N ",
+                           ##         "misfit: ", format(misfit, digits=5), ", error: ", xyp$error)
                            if (error) {
+                               ## message("got error so returning ", worstMisfit)
                                return(worstMisfit)
                            } else {
-                               worstMisfit <- max(misfit, worstMisfit)
+                               worstMisfit <<- max(misfit, worstMisfit, na.rm=TRUE)
+                               ## message("no error; set worstMisfit ", worstMisfit)
                                return(misfit)
                            }
                        }, method="L-BFGS-B", lower=c(-180, -89.9999), upper=c(180, 89.9999))

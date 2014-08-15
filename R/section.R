@@ -524,7 +524,9 @@ setMethod(f="plot",
                               ## NOTE: mercator messes up filling for data(section) but mollweide is okay 
                               projection <- if (meanlat > 70) "stereographic" else "mollweide"
                               orientation <- c(90, meanlon, 0)
-                              oceDebug(debug, "using", projection, "projection because mean latitude > 70N\n")
+                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
+                          } else {
+                              oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, orientation=orientation, fill='gray')
                           mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],

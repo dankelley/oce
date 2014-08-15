@@ -622,7 +622,8 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "coastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
              "), latRange=c(", paste(round(latRange, 2), collapse=","),
-             "), span=", span, ", debug=", debug, ") {\n", sep="", unindent=1)
+             "), span=", if (missing(span)) "(missing)" else span,
+             ", debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(span)) {
         if (any(lonRange > 180)) {
             lonRange <- lonRange - 360 # FIXME: does this always work?
