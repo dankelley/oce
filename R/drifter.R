@@ -198,7 +198,7 @@ setMethod(f="plot",
           definition=function (x, which = 1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
-                               cex=1, pch=1, type='p', col,
+                               cex=1, pch=1, type='p', col, fill=FALSE, 
                                adorn=NULL,
                                projection=NULL, parameters=NULL, orientation=NULL,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
@@ -286,9 +286,9 @@ setMethod(f="plot",
                           meanlat <- mean(x[['latitude']], na.rm=TRUE)
                           meanlon <- mean(x[['longitude']], na.rm=TRUE)
                           id <- pmatch(projection, "automatic")
-                          if (!is.na(id)) {
-                              projection <- if (meanlat > 70) "stereographic" else "mollweide"
-                              orientation <- c(90, meanlon, 0)
+                          if (!is.na(pmatch(projection, "automatic"))) {
+                              projection <- if (meanlat > 70)
+                                  paste("+proj=ster +lon_0=", meanLon, sep="") else "+proj=merc"
                               oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
                           } else {
                               oceDebug(debug, "using", projection, "projection (specified)\n")
@@ -296,8 +296,17 @@ setMethod(f="plot",
                           mapPlot(x[["longitude"]], x[["latitude"]],
                                   projection=projection, orientation=orientation, parameters=parameters,
                                   type='p', cex=cex, pch=pch,
-                                  col=if (missing(col)) "black" else col, debug=debug-1)
-                          mapLines(coastline[['longitude']], coastline[['latitude']])
+                                  col=if (missing(col)) "black" else col,
+                                  debug=debug-1)
+                          if (is.logical(fill) && fill) {
+                              mapPolygon(coastline[['longitude']], coastline[['latitude']], col='lightgray')
+                          } else {
+                              if (is.character(fill)) {
+                                  mapPolygon(coastline[['longitude']], coastline[['latitude']], col=fill) 
+                              } else {
+                                  mapPolygon(coastline[['longitude']], coastline[['latitude']])
+                              }
+                          }
                       } else {
                           asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
                           plot(x@data$longitude, x@data$latitude, asp=asp, 

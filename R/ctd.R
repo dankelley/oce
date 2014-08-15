@@ -689,7 +689,8 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = c(1, 2, 3, 5), col=par("fg"),
+          definition=function(x, which = c(1, 2, 3, 5),
+                              col=par("fg"), fill=FALSE,
                               eos=getOption("eos", default='unesco'),
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE,
@@ -1058,9 +1059,13 @@ setMethod(f="plot",
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
                           if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {
-                              lon0 <- sprintf("+lon_0=%.0f", round(x[["longitude"]]))
-                              projection <- if (x[["latitude"]][1] > 70) paste("+proj=stere", lon0) else
-                                  paste("+proj=merc", lon0)
+                              meanlon <- x[["longitude"]][1]
+                              meanlat <- x[["latitude"]][1]
+                              projection <- if (meanlat > 70)
+                                  paste("+proj=ster +lon_0=", meanlon, sep="") else "+proj=merc"
+                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
+                          } else {
+                              oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           ##message("projection:", projection)
                           oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
@@ -1100,6 +1105,7 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
+                                       fill=fill,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
@@ -1109,6 +1115,7 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
+                                       fill=fill,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
@@ -1125,6 +1132,7 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
+                                       fill=fill,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
@@ -1133,6 +1141,7 @@ setMethod(f="plot",
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
+                                       fill=fill,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,

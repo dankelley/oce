@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{drifter}(x, which = 1, level,
      coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                  "coastlineWorldFine", "none"),
-     cex=1, pch=1, type='p', col,
+     cex=1, pch=1, type='p', col, fill=FALSE,
      adorn=NULL,
      projection=NULL, parameters=NULL, orientation=NULL,
      mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
@@ -63,6 +63,10 @@
     \item{type}{plot type, either \code{"l"} or \code{"p"}.}
 
     \item{col}{optional list of colours for plotting.}
+
+    \item{fill}{either a logical, indicating whether to fill the land with
+        light-gray, or a color name.  Owing to problems with some projections,
+        the default is not to fill.}
 
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number 

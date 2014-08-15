@@ -11,7 +11,8 @@
     square of buoyancy frequency, (c) a TS diagram and (d) a coastline diagram
     indicating the station location.}
 
-\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), col=par("fg"),
+\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5),
+     col=par("fg"), fill=FALSE,
      eos=getOption("eos", default='unesco'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
@@ -72,6 +73,9 @@
     }
   }
   \item{col}{colour of lines or symbols}
+  \item{fill}{either a logical, indicating whether to fill the land with
+      light-gray, or a color name.  Owing to problems with some projections,
+      the default is not to fill.}
   \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
       computer must have the TEOS library installed; see \code{\link{teos}}.
       The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
