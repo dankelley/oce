@@ -243,7 +243,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## message("line239: ll: ");str(ll)
         ## message("line240: ur: ");str(ur)
         ## message("line 241: xur: ", xur, ", yur: ", yur)
-        if (!is.finite(ur$longitude)) browser()
         if (!is.finite(ll$longitude) || !is.finite(ll$latitude) ||
             !is.finite(ur$longitude) || !is.finite(ur$latitude)) {
             ur <- list(longitude=180, latitude=90)
