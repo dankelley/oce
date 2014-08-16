@@ -729,7 +729,10 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## following two tests can be true.
     if (0 < nchar(.Last.proj4()$projection)) {
         ##message("proj4-style projection exists")
-        xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
+        xy <- list(x=NA, y=NA)
+        try({
+            xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
+        }, silent=TRUE)
         return(list(longitude=xy$x, latitude=xy$y))
     }
     ## Now we know we are using mapproj-style
@@ -840,6 +843,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         missingColor <- colormap$missingColor
         zclip <- colormap$zclip
     } else {
+        ## FIXME: maybe do not do this in an else; maybe this should be done for all, yielding
+        ## FIXME: consistency e.g. in the use of 'small' on the breaks.
         if (!breaksGiven) {
             small <- .Machine$double.eps
             zrange <- range(z, na.rm=TRUE)
@@ -871,13 +876,18 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         } else {
             breaksOrig <- breaks
             if (1 == length(breaks)) {
+                oceDebug(debug, "only 1 break given, so taking that as number of breaks\n")
                 breaks <- pretty(z, n=breaks)
             }
         }
-        if (missing(col))
+        if (missing(col)) {
             col <- oceColorsPalette(n=length(breaks)-1)
-        if (is.function(col))
+            oceDebug(debug, "using default col\n")
+        }
+        if (is.function(col)) {
             col <- col(n=length(breaks)-1)
+            oceDebug(debug, "col is a function\n")
+        }
     }
     ## message("mapImage() col:  ", paste(col, collapse=" "))
     ni <- dim(z)[1]
