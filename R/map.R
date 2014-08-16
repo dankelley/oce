@@ -151,9 +151,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
     if (is.logical(grid[1]) && grid[1])
         grid <- rep(15, 2)
-
-    xy <- lonlat2map(longitude, latitude, 
-                     projection=projection, parameters=parameters, orientation=orientation)
+    xy <- lonlat2map(longitude, latitude, projection=projection, parameters=parameters, orientation=orientation)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
@@ -1158,6 +1156,28 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
     list(longitude=longitude, latitude=latitude)
 }
 
+
+knownProj4 <- c("aea", "aeqd", "airy", "aitoff", "alsk", "apian", "august",
+                "bacon", "bipc", "boggs", "bonne", "cass", "cc", "cea",
+                "chamb", "collg", "crast", "denoy", "eck1", "eck2", "eck3",
+                "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
+                "fahey", "fouc", "fouc_s", "gall", "geos", "gins8", "gn_sinu",
+                "gnom", "goode", "gs48", "gs50", "hammer", "hatano", "healpix",
+                "rhealpix", "igh", "imw_p", "isea", "kav5", "kav7", "krovak",
+                "labrd", "laea", "lagrng", "larr", "lask", "lonlat", "latlon",
+                "lcc", "lcca", "leac", "lee_os", "loxim", "lsat", "mbt_s",
+                "mbt_fps", "mbtfpp", "mbtfpq", "mbtfps", "merc", "mil_os",
+                "mill", "moll", "murd1", "murd2", "murd3", "natearth", "nell",
+                "nell_h", "nicol", "nsper", "nzmg", "ob_tran", "ocea", "oea",
+                "omerc", "ortel", "ortho", "pconic", "poly", "putp1", "putp2",
+                "putp3", "putp3p", "putp4p", "putp5", "putp5p", "putp6",
+                "putp6p", "qua_aut", "robin", "rouss", "rpoly", "sinu",
+                "somerc", "stere", "sterea", "gstmerc", "tcc", "tcea",
+                "tissot", "tmerc", "tpeqd", "tpers", "ups", "urm5", "urmfps",
+                "utm", "vandg", "vandg2", "vandg3", "vandg4", "vitk1", "wag1",
+                "wag2", "wag3", "wag4", "wag5", "wag6", "wag7", "weren",
+                "wink1", "wink2", "wintri")
+
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
     ## NOTE: the proj4 method can run into errors (e.g. "ortho" for points on opposite
@@ -1180,6 +1200,9 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
     } else {                           
         ## proj4 case
+        pr <- gsub(" .*$", "", gsub("^\\+proj=", "", projection))
+        if (!(pr %in% knownProj4))
+            stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
         ll <- cbind(longitude, latitude)
         m <- NULL                 # for the try()
         try({
@@ -1193,7 +1216,6 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                                       })),
                         ncol=2, byrow=TRUE)
             warning("proj4 calculation is slow because errors meant it had to be done pointwise")
-            ##message("proj4 calculation is slow because errors meant it had to be done pointwise")
         }
         xy <- list(x=m[,1], y=m[,2])
         .Last.proj4(list(projection=projection)) # turn on proj4

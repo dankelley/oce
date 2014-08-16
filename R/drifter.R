@@ -288,7 +288,7 @@ setMethod(f="plot",
                           id <- pmatch(projection, "automatic")
                           if (!is.na(pmatch(projection, "automatic"))) {
                               projection <- if (meanlat > 70)
-                                  paste("+proj=ster +lon_0=", meanLon, sep="") else "+proj=merc"
+                                  paste("+proj=stere +lon_0=", meanLon, sep="") else "+proj=merc"
                               oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
                           } else {
                               oceDebug(debug, "using", projection, "projection (specified)\n")

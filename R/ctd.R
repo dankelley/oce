@@ -1062,7 +1062,7 @@ setMethod(f="plot",
                               meanlon <- x[["longitude"]][1]
                               meanlat <- x[["latitude"]][1]
                               projection <- if (meanlat > 70)
-                                  paste("+proj=ster +lon_0=", meanlon, sep="") else "+proj=merc"
+                                  paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"
                               oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
                           } else {
                               oceDebug(debug, "using", projection, "projection (specified)\n")
@@ -1102,6 +1102,7 @@ setMethod(f="plot",
                               if (missing(latlim)) {
                                   oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection", projection, "\n")
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
