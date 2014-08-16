@@ -815,6 +815,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
+    colGiven <- !missing(col)
     oceDebug(debug, "mapImage(..., ",
              " missingColor='", missingColor, "', ",
              " filledContour=", filledContour, ", ",
@@ -839,57 +840,66 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) { # takes precedence over breaks and col
         breaks <- colormap$breaks
+        breaksGiven <- TRUE
         col <- colormap$col
         missingColor <- colormap$missingColor
         zclip <- colormap$zclip
-    } else {
-        ## FIXME: maybe do not do this in an else; maybe this should be done for all, yielding
-        ## FIXME: consistency e.g. in the use of 'small' on the breaks.
-        if (!breaksGiven) {
-            small <- .Machine$double.eps
-            zrange <- range(z, na.rm=TRUE)
-            if (missing(zlim)) {
-                if (missing(col)) {
-                    breaks <- pretty(zrange+small*c(-1,1), n=10)
-                    ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                    if (breaks[1] < zrange[1])
-                        breaks[1] <- zrange[1] * (1 - small)
-                    if (breaks[length(breaks)] > zrange[2])
-                        breaks[length(breaks)] <- zrange[2] * (1 + small)
-                } else {
-                    breaks <- seq(zrange[1]-small, zrange[2]+small,
-                                  length.out=if(is.function(col))128 else 1+length(col))
-                }
-                breaksOrig <- breaks
+        colGiven <- TRUE
+    } 
+    ## 20140816 (issues 517 and 522) START
+    ## 20140816 The next few blocks (down to the 'ni <-' line) used to be the 'else'
+    ## 20140816 of the above if block, but that just seemed to invite case-specific
+    ## 20140816 errors. The new approach is to unroll the code to reduce the
+    ## 20140816 number of cases.
+    if (!breaksGiven) {
+        small <- .Machine$double.eps
+        zrange <- range(z, na.rm=TRUE)
+        if (missing(zlim)) {
+            if (missing(col)) {
+                breaks <- pretty(zrange+small*c(-1,1), n=10)
+                ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                if (breaks[1] < zrange[1])
+                    breaks[1] <- zrange[1] * (1 - small)
+                if (breaks[length(breaks)] > zrange[2])
+                    breaks[length(breaks)] <- zrange[2] * (1 + small)
             } else {
-                if (missing(col)) {
-                    oceDebug(debug, "zlim provided, but not breaks or col\n")
-                    breaks <- c(zlim[1], pretty(zlim, n=128), zlim[2])
-                } else {
-                    oceDebug(debug, "zlim and col provided, but not breaks\n")
-                    breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
-                }
-                breaksOrig <- breaks
-                breaks[1] <- min(zrange[1], breaks[1])
-                breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
+                breaks <- seq(zrange[1]-small, zrange[2]+small,
+                              length.out=if(is.function(col))128 else 1+length(col))
             }
-        } else {
             breaksOrig <- breaks
-            if (1 == length(breaks)) {
-                oceDebug(debug, "only 1 break given, so taking that as number of breaks\n")
-                breaks <- pretty(z, n=breaks)
+        } else {
+            if (!colGiven) {## missing(col)) {
+                oceDebug(debug, "zlim provided, but not breaks or col\n")
+                breaks <- c(zlim[1], pretty(zlim, n=128), zlim[2])
+            } else {
+                oceDebug(debug, "zlim and col provided, but not breaks\n")
+                breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
             }
+            breaksOrig <- breaks
+            breaks[1] <- min(zrange[1], breaks[1])
+            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
         }
-        if (missing(col)) {
-            col <- oceColorsPalette(n=length(breaks)-1)
-            oceDebug(debug, "using default col\n")
-        }
-        if (is.function(col)) {
-            col <- col(n=length(breaks)-1)
-            oceDebug(debug, "col is a function\n")
+    } else {
+        breaksOrig <- breaks
+        if (1 == length(breaks)) {
+            oceDebug(debug, "only 1 break given, so taking that as number of breaks\n")
+            breaks <- pretty(z, n=breaks)
         }
     }
-    ## message("mapImage() col:  ", paste(col, collapse=" "))
+    if (missing(col)) {
+        col <- oceColorsPalette(n=length(breaks)-1)
+        oceDebug(debug, "using default col\n")
+    }
+    if (is.function(col)) {
+        col <- col(n=length(breaks)-1)
+        oceDebug(debug, "col is a function\n")
+    }
+    if (debug > 10) {
+        message("zclip: ", zclip)
+        message("breaks: ", paste(breaks, collapse=" "))
+        message("col: ", paste(col, collapse=" "))
+    }
+    ## 20140816 END
     ni <- dim(z)[1]
     nj <- dim(z)[2]
     dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
@@ -991,35 +1001,36 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             zval <- Z[ij]
             if (is.na(zval)) {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("zval is NA (", zval, ")")
+                    message("z is NA")
                 }
                 return(missingColor)   # whether clipping or not
             }
             if (zval < breaksMin) {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("zval < breaksMin (", zval, ")")
+                    message("z: ", zval, " is < breaksMin")
                 }
                 return(if (zclip) missingColor else colFirst)
             }
             if (zval > breaksMax) {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("zval > breaksMax (", zval, ")")
+                    message("z: ", zval, " is > breaksMax")
                 }
                 return(if (zclip) missingColor else colLast)
             }
             ## issue522: this was w <- which(zval <= breaks)[1]
-            w <- which(zval < breaks)[1]
-            if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-                message("zval:", zval, ", w:", w)
-            }
+            w <- which(zval <= breaks)[1]
+            #if (zval == 0) browser()
+            ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+            ##     message("zval:", zval, ", w:", w)
+            ## }
             if (!is.na(w) && w > 1) {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("    using non-missing col: ", col[-1+w])
+                    message("z: ", zval, ", w: ", w, ", using non-missing col: ", col[-1+w])
                 }
                 return(col[-1 + w]) 
             } else {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("    using missing col: ", missingColor)
+                    message("z: ", zval, ", w: ", w, ", using missing col: ", missingColor)
                 }
                 return(missingColor)
             }
