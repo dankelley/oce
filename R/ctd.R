@@ -2491,17 +2491,17 @@ plotProfile <- function (x,
             }
         }
         if (type == 'l') {
-            lines(x, y, col = col, lwd=lwd)
+            lines(x, y, col = col, lwd=lwd, ...)
         } else if (type == 's') {
             lines(x, y, col = col, lwd=lwd, type='s')
         } else if (type == 'p') {
             points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'o') {
-            lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
+            lines(x, y, col=col, lwd=lwd, ...)
+            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'b') {
-            lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
+            lines(x, y, col=col, lwd=lwd, ...)
+            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'n') {
             ; # skip it
         } else {
