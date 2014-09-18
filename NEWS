@@ -1,4 +1,5 @@
 0.9-15
+- mapGrid() added
 - data(soi) moved to ocedata package
 - lonlat2map() added
 - map2lonlat() made more accurate

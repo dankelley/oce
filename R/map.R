@@ -420,6 +420,49 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "} # mapPlot()\n", unindent=1)
 }
 
+mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
+                    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0)
+{
+    message("mapgrid() is not ready for use yet!!")
+    ## FIXME: permit args 1 to 4 to be missing, and align with axes
+    if (missing(dlongitude) && missing(longitude))
+        stop("must supply dlongitude or longitude")
+    if (missing(dlatitude) && missing(latitude))
+        stop("must supply dlatitude or latitude")
+    small <- 0.001
+    if (!missing(dlongitude))
+        longitude <- seq(-180, 180, dlongitude)
+    if (!missing(dlatitude))
+        latitude <- seq(-90+small, 90-small, dlatitude)
+    n <- 360                           # number of points on line
+    for (l in latitude) {              # FIXME: maybe we should use mapLines here
+        ## message("lat=", l, " N")
+        line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
+        x <- line$x
+        y <- line$y
+        ok <- !is.na(x) & !is.na(y)
+        x <- x[ok]
+        if (0 == length(x)) next
+        y <- y[ok]
+        if (0 == length(y)) next
+        lines(x, y, lty=lty, lwd=lwd, col=col)
+    }
+    if (polarCircle < 0 || polarCircle > 90)
+        polarCircle <- 0
+    n <- 360                           # number of points on line
+    for (l in longitude) {             # FIXME: should use mapLines here
+        line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
+        x <- line$x
+        y <- line$y
+        ok <- !is.na(x) & !is.na(y)
+        x <- x[ok]
+        if (0 == length(x)) next
+        y <- y[ok]
+        if (0 == length(y)) next
+        lines(x, y, lty=lty, lwd=lwd, col=col)
+    }
+}
+
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     if (missing(latitude))
