@@ -7,7 +7,8 @@
 \description{Plot longitude and latitude grid on an existing map}
 
 \usage{mapGrid(dlongitude, dlatitude, longitude, latitude,
-       col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0)}
+       col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
+       debug=getOption("oceDebug"))}
 
 
 \arguments{
@@ -18,15 +19,18 @@
     \item{longitude}{list of longitudes}
     
     \item{latitude}{list of latitudes}
-
-    \item{polarCircle}{a number indicating the number of degrees of latitude
-        extending from the poles, within which zones are not drawn.}
-
+    
     \item{col}{colour}
 
     \item{lty}{line type}
 
     \item{lwd}{line width}
+
+    \item{polarCircle}{a number indicating the number of degrees of latitude
+        extending from the poles, within which zones are not drawn.}
+    
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
+        amount of debugging information, or to 2 to get more.} 
 
 }
 
@@ -42,14 +46,12 @@
     including other functions.}
 
 \examples{
-\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l', grid=FALSE,
     longitudelim=c(-80,10), latitudelim=c(0,120),
     projection="orthographic", orientation=c(45,-100,0))
 mapGrid(15, 15, polarCircle=15)
-}
 }
 
 \author{Dan Kelley}

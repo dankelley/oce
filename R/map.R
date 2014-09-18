@@ -421,7 +421,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 }
 
 mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
-                    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0)
+                    col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
+                    debug=getOption("oceDebug"))
 {
     message("mapgrid() is not ready for use yet!!")
     ## FIXME: permit args 1 to 4 to be missing, and align with axes
@@ -435,8 +436,9 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
     if (!missing(dlatitude))
         latitude <- seq(-90+small, 90-small, dlatitude)
     n <- 360                           # number of points on line
+    xspan <- diff(par('usr')[1:2])
     for (l in latitude) {              # FIXME: maybe we should use mapLines here
-        ## message("lat=", l, " N")
+        oceDebug(debug, "lat=", l, " N\n")
         line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
         x <- line$x
         y <- line$y
@@ -445,6 +447,12 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
         if (0 == length(x)) next
         y <- y[ok]
         if (0 == length(y)) next
+        ## Remove ugly horizontal lines that can occur for 
+        ## projetions that show the edge of the earth.
+        horizontalJump <- c(FALSE, abs(diff(x)) / xspan > 0.5)
+        if (any(horizontalJump)) {
+            x[horizontalJump] <- NA
+        }
         lines(x, y, lty=lty, lwd=lwd, col=col)
     }
     if (polarCircle < 0 || polarCircle > 90)
