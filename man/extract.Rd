@@ -23,7 +23,7 @@ print(summary(lm(temperature~salinity, data=TS)))
 
 ## section
 data(section)
-TSlon <- extract(section, c("temperature","salinity","longitude"))
+TSlon <- extract(section, c("temperature","salinity","pressure","longitude"))
 med <- factor(-20 > TSlon$longitude, labels=c("med","other"))
 plotTS(TSlon, col=c("black","gray")[med])
 }
