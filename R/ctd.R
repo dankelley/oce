@@ -2269,17 +2269,15 @@ plotTS <- function (x,
     eos <- match.arg(eos, c("unesco", "teos"))
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
-            salinity <- salinity(x) # FIXME: new accessors?
-            temperature <- temperature(x)
-            x <- as.ctd(salinity, temperature, 0) # FIXME: what if we want theta?
+            x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
         } else {
             names <- names(x)
             if ("temperature" %in% names && "salinity" %in% names) {
-                x <- as.ctd(x$salinity, x$temperature, 0) # FIXME: what if we want theta?
+                x <- as.ctd(x$salinity, x$temperature, x$pressure)
             } else {
                 names <- names(x@data)
                 if ("temperature" %in% names && "salinity" %in% names) {
-                    x <- as.ctd(x@data$salinity, x@data$temperature, 0) # FIXME: what if we want theta?
+                    x <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
                 } else {
                     stop("cannot find salinity and temperature in 'x'")
                 }
