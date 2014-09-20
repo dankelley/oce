@@ -11,9 +11,9 @@
 \arguments{
 
     \item{longitude}{longitudes of points to be plotted, or an object from
-        which longitude and latitude can be inferred (e.g. a coastline file, or
-        the return value from \code{\link{mapLocator}}), in which case the
-        following two arguments are ignored.}
+        which longitude and latitude can be inferred in which case the
+        following two arguments are ignored.  This objects that are possible
+        include those of type \code{coastline}.}
     
     \item{latitude}{latitudes of points to be plotted}
 
@@ -30,11 +30,10 @@
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l', grid=TRUE,
-longitudelim=c(-80,0), latitudelim=c(20,50),
-projection="mercator", orientation=c(90,-40,0))
-lon <- section[["longitude", 'byStation']]
-lat <- section[["latitude", 'byStation']]
-mapPoints(lon, lat, pch=20, col='red')
+        longitudelim=c(-80,0), latitudelim=c(20,50),
+        projection="mercator", orientation=c(90,0,0))
+data(section)
+mapPoints(section)
 }
 }
 

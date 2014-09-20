@@ -12,15 +12,21 @@
 
 
 \arguments{
-    \item{dlongitude}{increment in longitude, used in sequence from -180 to 180.}
 
-    \item{dlatitude}{increment in latitude, used in sequence from -90 to 90.}
+    \item{dlongitude}{increment in longitude, used in sequence from -180 to
+        180.  This takes precedence over \code{longitude}, if the latter is
+        supplied.}
 
-    \item{longitude}{list of longitudes}
+    \item{dlatitude}{increment in latitude, used in sequence from -90 to 90.
+        This takes precedence over \code{latitude}, if the latter is supplied.}
+
+    \item{longitude}{vector of longitudes, or \code{NULL} to prevent drawing
+        longitude lines.}
     
-    \item{latitude}{list of latitudes}
+    \item{latitude}{vector of latitudes, or \code{NULL} to prevent drawing
+        latitude lines.}
     
-    \item{col}{colour}
+    \item{col}{colour of lines}
 
     \item{lty}{line type}
 

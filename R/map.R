@@ -314,11 +314,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
             oceDebug(debug, "grid lines for lat:", latlabs, "\n")
-            mapMeridians(latlabs)
+            ##mapMeridians(latlabs)
+            mapGrid(longitude=NULL, latitude=latlabs)
         }
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
             oceDebug(debug, "grid lines for lon:", lonlabs, "\n")
-            mapZones(lonlabs)
+            ##mapZones(lonlabs)
+            mapGrid(longitude=lonlabs, latitude=NULL)
         }
         if (is.null(lonlabel))
             lonlabel <- lonlabs
@@ -424,7 +426,6 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
                     debug=getOption("oceDebug"))
 {
-    message("mapgrid() is not ready for use yet!!")
     ## FIXME: permit args 1 to 4 to be missing, and align with axes
     if (missing(dlongitude) && missing(longitude))
         stop("must supply dlongitude or longitude")
@@ -475,6 +476,7 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
 
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
+    warning("Use mapGrid(longitude=NULL,latitude=latitude) instead of mapMeridians(latitude)")
     if (missing(latitude))
         latitude <- TRUE
     small <- 0.001
@@ -590,6 +592,7 @@ mapText <- function(longitude, latitude, labels, ...)
 
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
+    warning("Use mapGrid(longitude=longitude,latitude=NULL) instead of mapZones(longitude)")
     if (missing(longitude))
         longitude <- TRUE
     small <- 0.001
@@ -654,6 +657,10 @@ mapPoints <- function(longitude, latitude, ...)
     if (2 == sum(c("longitude", "latitude") %in% names(longitude))) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
+    }
+    if (inherits(longitude, "section") || inherits(longitude, "ctd")) {
+        latitude <- longitude[["latitude", "byStation"]]
+        longitude <- longitude[["longitude", "byStation"]]
     }
     ok <- !is.na(longitude) & !is.na(latitude)
     longitude <- longitude[ok]
