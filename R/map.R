@@ -1,5 +1,6 @@
 ## Author notes on proj4: see
 ##  http://stackoverflow.com/questions/tagged/proj4
+## proj4 used by: openstreetmap
 
 .Last.proj4  <- local({                # emulate mapproj
     val <- list(projection="")
@@ -333,6 +334,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         TCL <- -0.3
         MGP <- c(2, 0.5, 0)            # first item ignored since not writing "longitude" etc
         axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
+
+        xdelta <- diff(usr[1:2]) / 1000 # used to ensure label in valid domain
+        ydelta <- diff(usr[3:4]) / 1000
+
         if (1 %in% sides) {            # bottom side
             AT <- NULL
             LAB <- NULL
@@ -343,9 +348,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
                     AT <- c(AT, x)
                     LAB <- c(LAB, paste(lab, "E", sep=""))
-                    oceDebug(debug-1, "lonlabel", lab, "E intersects side 1\n")
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 1\n")
                 } else {
-                    oceDebug(debug-1, "lonlabel", lab, "E does not intersect side 1\n")
+                    oceDebug(debug, "lonlabel", lab, "E does not intersect side 1\n")
                 }
             }
             if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
@@ -354,13 +359,32 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             AT <- NULL
             LAB <- NULL
             for (lab in latlabel) {
-                o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),lower=-180,upper=180)
-                if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
-                y <- lonlat2map(o$minimum, lab)$y
-                if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                    AT <- c(AT, y)
-                    LAB <- c(LAB, paste(lab, "N", sep=""))
-                    oceDebug(debug-1, "latlabel", lab, "N intersects side 2\n")
+                oceDebug(debug, "examine lab=", lab, "N\n")
+                if (TRUE) { ## 2014-09-21 new scheme for axis labels, only on side=2 for testing [issue 526]
+                    o <- optimize(function(y) abs(map2lonlat(usr[1], y)$latitude - lab),
+                                  lower=usr[3]-ydelta, upper=usr[4]+ydelta)
+                    ## check if found inside box
+                    if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+                    if (o$minimum < usr[3] || usr[4] < o$minimum) next
+                    y <- o$minimum
+                    if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                        AT <- c(AT, y)
+                        LAB <- c(LAB, paste(lab, "N", sep=""))
+                        oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
+                    } else {
+                        oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
+                    }
+                } else {
+                    o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),lower=0,upper=360)
+                    if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+                    y <- lonlat2map(o$minimum, lab)$y
+                    if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                        AT <- c(AT, y)
+                        LAB <- c(LAB, paste(lab, "N", sep=""))
+                        oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
+                    } else {
+                        oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
+                    }
                 }
             }
             if (!is.null(AT)) axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
@@ -402,7 +426,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(y) && usr[3] < y && y < usr[4]) {
                     AT <- c(AT, y)
                     LAB <- c(LAB, paste(lab, "E", sep=""))
-                    oceDebug(debug-1, "lonlabel", lab, "E intersects side 4\n")
+                    oceDebug(debug, "lonlabel", lab, "E intersects side 4\n")
                 }
             }
             for (lab in latlabel) {
@@ -412,7 +436,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (!is.na(y) && usr[3] < y && y < usr[4]) {
                     AT <- c(AT, y)
                     LAB <- c(LAB, paste(lab, "N", sep=""))
-                    oceDebug(debug-1, "latlabel", lab, "N intersects side 4\n")
+                    oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
                 }
             }
             if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
