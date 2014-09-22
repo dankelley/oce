@@ -1302,21 +1302,22 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                          projection=projection,
                          parameters=parameters, orientation=orientation)
         .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
-        if (nchar(projection) > 1 && (!is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
+        if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
             cmd <- "+proj="
             if (projection == "mollweide")
                 cmd <- paste(cmd, "moll ", sep="")
             if (projection == "lambert")
-                cmd <- paste(cmd, "laea ", sep="")
+                cmd <- paste(cmd, "laea", sep="")
             if (projection == "stereographic")
-                cmd <- paste(cmd, "stere ", sep="")
-            if (!missing(parameters)) {
+                cmd <- paste(cmd, "stere", sep="")
+            if (!is.null(parameters)) {
                 names <- names(parameters)
-                if ("lat0" %in% names) cmd <- paste(cmd, "+lat_0=", parameters$lat0, sep="")
-                if ("lat1" %in% names) cmd <- paste(cmd, "+lat_1=", parameters$lat1, sep="")
+                if ("lat0" %in% names) cmd <- paste(cmd, " +lat_0=", parameters[["lat0"]], sep="")
+                if ("lat1" %in% names) cmd <- paste(cmd, " +lat_1=", parameters[["lat1"]], sep="")
             }
-            cmd <- paste(cmd, "+lon_0=", orientation[2], sep="")
-            message("could use proj=\"", cmd, "\"")
+            if (!is.null(orientation))
+                cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
+            message("mapPlot(): try using projection=\"", cmd, "\" if the plot is faulty.")
         }
     } else {                           
         ## proj4 case
