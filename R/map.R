@@ -1302,7 +1302,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                          projection=projection,
                          parameters=parameters, orientation=orientation)
         .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
-        if (nchar(projection) > 1 && (missing(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
+        if (nchar(projection) > 1 && (!is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
             cmd <- "+proj="
             if (projection == "mollweide")
                 cmd <- paste(cmd, "moll ", sep="")
