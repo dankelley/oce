@@ -1305,6 +1305,9 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
             cmd <- "+proj="
             proj <- "?"
+            if (projection == "aitoff") proj <- "aitoff (BROKEN!)" # FIXME: segfaults
+            if (projection == "albers") proj <- "aea" # needs lat0 lat1 http://www.remotesensing.org/geotiff/proj_list/albers_equal_area_conic.html
+            if (projection == "bonne") proj <- "bonne" # needs lat0
             if (projection == "gall") proj <- "gall"
             if (projection == "lambert") proj <- "laea"
             if (projection == "mercator") proj <- "merc"
