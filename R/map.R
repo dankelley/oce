@@ -135,6 +135,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
+             ", projection=\"", projection, "\"",
              ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", envir=environment())
@@ -253,9 +254,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## message("line248: ur: ");str(ur)
         spanLat <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
         spanLon <- if (!is.finite(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
-        span <- min(spanLat, spanLon)
-        ## message("ur:"); str(ur)
-        ## message("ll:"); str(ll)
+        span <- min(abs(spanLat), abs(spanLon))
+        #oceDebug(debug, "ur:"); str(ur)
+        #oceDebug(debug, "ll:"); str(ll)
         oceDebug(debug, "span=", span, "\n")
         if (missing(latitudelim)) {
             if (span > 45) {
@@ -359,29 +360,38 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             AT <- NULL
             LAB <- NULL
             for (lab in latlabel) {
-                oceDebug(debug, "examine lab=", lab, "N\n")
-                if (TRUE) { ## 2014-09-21 new scheme for axis labels, only on side=2 for testing [issue 526]
+                ##oceDebug(debug, "examine lab=", lab, "N\n")
+                if (!TRUE) { ## 2014-09-21 new scheme for axis labels, only on side=2 for testing [issue 526]
                     o <- optimize(function(y) abs(map2lonlat(usr[1], y)$latitude - lab),
                                   lower=usr[3]-ydelta, upper=usr[4]+ydelta)
                     ## check if found inside box
-                    if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
-                    if (o$minimum < usr[3] || usr[4] < o$minimum) next
+                    if (is.na(o$objective)) {
+                        oceDebug(debug, "objective is bad: ", o$objective, "; axisSpan=", axisSpan, "\n");
+                        next
+                    }
+                    if (o$minimum < usr[3] || usr[4] < o$minimum) {
+                        oceDebug(debug, "min ", o$minimum, " not in box usr[3]=", usr[3], " and usr[4]=", usr[4], " (", lab, "N)\n", sep="")
+                        next
+                    }
                     y <- o$minimum
                     if (!is.na(y) && usr[3] < y && y < usr[4]) {
                         AT <- c(AT, y)
                         LAB <- c(LAB, paste(lab, "N", sep=""))
-                        oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
+                        oceDebug(debug, "latlabel", lab, "N intersects side 2 at y=", y, "\n")
                     } else {
                         oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
                     }
                 } else {
-                    o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),lower=0,upper=360)
-                    if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+                    o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),
+                                 lower=ll$longitude-90,upper=ll$longitude+90) 
+                    #if (abs(lab-60)<2)browser()
+                    if (is.na(o$objective))
+                        next
                     y <- lonlat2map(o$minimum, lab)$y
-                    if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                    if (!is.na(y) && usr[3] <= y && y <= usr[4]) {
                         AT <- c(AT, y)
                         LAB <- c(LAB, paste(lab, "N", sep=""))
-                        oceDebug(debug, "latlabel", lab, "N intersects side 2\n")
+                        oceDebug(debug, "latlabel", lab, "N intersects side 2 at y=", y, "\n")
                     } else {
                         oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
                     }
