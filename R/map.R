@@ -1,6 +1,7 @@
-## Author notes on proj4: see
-##  http://stackoverflow.com/questions/tagged/proj4
-## proj4 used by: openstreetmap
+## Author notes on proj4:
+## 1. http://stackoverflow.com/questions/tagged/proj4
+## 2. proj4 used by:
+##    1. openstreetmap
 
 .Last.proj4  <- local({                # emulate mapproj
     val <- list(projection="")
@@ -338,6 +339,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
         xdelta <- diff(usr[1:2]) / 1000 # used to ensure label in valid domain
         ydelta <- diff(usr[3:4]) / 1000
+        proj4 <- usingProj4()
 
         if (1 %in% sides) {            # bottom side
             AT <- NULL
@@ -357,11 +359,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (2 %in% sides) {    # left side
+            oceDebug(debug, "side=2 proj4: ", proj4, "\n")
             AT <- NULL
             LAB <- NULL
             for (lab in latlabel) {
                 ##oceDebug(debug, "examine lab=", lab, "N\n")
-                if (!TRUE) { ## 2014-09-21 new scheme for axis labels, only on side=2 for testing [issue 526]
+                ## next is a test of two methods; ideally one will work for both projections
+                if (proj4) { ## 2014-09-21 new scheme for axis labels, only on side=2 for testing [issue 526]
+                    ## optimize(function(y) {cat(y,'\n');abs(map2lonlat(usr[1], y)$latitude - lab)},lower=usr[3]-10*ydelta, upper=usr[4]+10*ydelta)
                     o <- optimize(function(y) abs(map2lonlat(usr[1], y)$latitude - lab),
                                   lower=usr[3]-ydelta, upper=usr[4]+ydelta)
                     ## check if found inside box
@@ -369,6 +374,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         oceDebug(debug, "objective is bad: ", o$objective, "; axisSpan=", axisSpan, "\n");
                         next
                     }
+                    ## if (debug && 1>abs(lab-15)) browser()
                     if (o$minimum < usr[3] || usr[4] < o$minimum) {
                         oceDebug(debug, "min ", o$minimum, " not in box usr[3]=", usr[3], " and usr[4]=", usr[4], " (", lab, "N)\n", sep="")
                         next
@@ -1309,8 +1315,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     if (0 == length(grep("^\\+proj", projection))) { 
         ## mapproj case
         xy <- mapproject(longitude, latitude,
-                         projection=projection,
-                         parameters=parameters, orientation=orientation)
+                         projection=projection, parameters=parameters, orientation=orientation)
         .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
         if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
             cmd <- "+proj="
