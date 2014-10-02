@@ -40,7 +40,7 @@ LIBPROJ_ID[] = "$Id: PJ_geos.c 2176 2012-02-27 07:56:32Z warmerdam $";
         char *  sweep_axis; \
         int     flip_axis;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 
 PROJ_HEAD(geos, "Geostationary Satellite View") "\n\tAzi, Sph&Ell\n\th=";
 

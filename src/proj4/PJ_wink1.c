@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double	cosphi1;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(wink1, "Winkel I") "\n\tPCyl., Sph.\n\tlat_ts=";
 FORWARD(s_forward); /* spheroid */
 	xy.x = .5 * lp.lam * (P->cosphi1 + cos(lp.phi));

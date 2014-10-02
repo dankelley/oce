@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double	cosphi1;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(wink2, "Winkel II") "\n\tPCyl., Sph., no inv.\n\tlat_1=";
 #define MAX_ITER    10
 #define LOOP_TOL    1e-7

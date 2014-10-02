@@ -1,5 +1,5 @@
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(wag7, "Wagner VII") "\n\tMisc Sph, no inv.";
 FORWARD(s_forward); /* sphere */
 	double theta, ct, D;

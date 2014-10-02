@@ -1,5 +1,5 @@
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(boggs, "Boggs Eumorphic") "\n\tPCyl., no inv., Sph.";
 # define NITER	20
 # define EPS	1e-7

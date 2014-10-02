@@ -29,7 +29,7 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
-#include <projects.h>
+#include "projects.h"
 #include <string.h>
 #include <math.h>
 #include "geocent.h"

@@ -1,5 +1,5 @@
 /* set ellipsoid parameters a and es */
-#include <projects.h>
+#include "projects.h"
 #include <string.h>
 #define SIXTH .1666666666666666667 /* 1/6 */
 #define RA4 .04722222222222222222 /* 17/360 */

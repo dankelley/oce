@@ -3,7 +3,7 @@
 	double cosphi1; \
 	double tanphi1;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(loxim, "Loximuthal") "\n\tPCyl Sph";
 #define EPS	1e-8
 FORWARD(s_forward); /* spheroid */

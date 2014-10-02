@@ -6,7 +6,7 @@
 	double	c; \
 	int		ellips;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(lcc, "Lambert Conformal Conic")
 	"\n\tConic, Sph&Ell\n\tlat_1= and lat_2= or lat_0";
 # define EPS10	1.e-10

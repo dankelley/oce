@@ -1,5 +1,5 @@
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(mbtfpp, "McBride-Thomas Flat-Polar Parabolic") "\n\tCyl., Sph.";
 #define CS	.95257934441568037152
 #define FXC	.92582009977255146156

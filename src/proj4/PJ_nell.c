@@ -1,5 +1,5 @@
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(nell, "Nell") "\n\tPCyl., Sph.";
 #define MAX_ITER	10
 #define LOOP_TOL	1e-7

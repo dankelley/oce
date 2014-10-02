@@ -3,7 +3,7 @@
 	double	ml0; \
 	double	*en;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(tmerc, "Transverse Mercator") "\n\tCyl, Sph&Ell";
 PROJ_HEAD(utm, "Universal Transverse Mercator (UTM)")
 	"\n\tCyl, Sph\n\tzone= south";

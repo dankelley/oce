@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	int	noskew;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(bipc, "Bipolar conic of western hemisphere")
 	"\n\tConic Sph.";
 # define EPS	1e-10

@@ -1035,7 +1035,7 @@ isea_forward(struct isea_dgg *g, struct isea_geo *in)
 	struct isea_dgg dgg;
 
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 
 PROJ_HEAD(isea, "Icosahedral Snyder Equal Area") "\n\tSph";
 

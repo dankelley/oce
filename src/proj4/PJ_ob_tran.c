@@ -3,7 +3,7 @@
 	double	lamp; \
 	double	cphip, sphip;
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 #include <string.h>
 PROJ_HEAD(ob_tran, "General Oblique Transformation") "\n\tMisc Sph"
 "\n\to_proj= plus parameters for projection"

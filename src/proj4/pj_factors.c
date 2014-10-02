@@ -1,6 +1,6 @@
 /* projection scale factors */
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 #include <errno.h>
 #ifndef DEFAULT_H
 #define DEFAULT_H   1e-5    /* radian default for numeric h */

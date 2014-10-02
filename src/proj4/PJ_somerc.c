@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double	K, c, hlf_e, kR, cosp0, sinp0;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(somerc, "Swiss. Obl. Mercator") "\n\tCyl, Ell\n\tFor CH1903";
 #define EPS	1.e-10
 #define NITER 6

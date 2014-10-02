@@ -8,7 +8,7 @@ static const char RCS_ID[] = "$Id: PJ_lcca.c 1856 2010-06-11 03:26:04Z warmerdam
 	double	r0, l, M0; \
 	double	C;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 
 PROJ_HEAD(lcca, "Lambert Conformal Conic Alternative")
 	"\n\tConic, Sph&Ell\n\tlat_0=";

@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double C_x, C_y, A, B, D;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(putp6, "Putnins P6") "\n\tPCyl., Sph.";
 PROJ_HEAD(putp6p, "Putnins P6'") "\n\tPCyl., Sph.";
 #define EPS	1e-10

@@ -1,6 +1,6 @@
 #define PROJ_PARMS__
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(larr, "Larrivee") "\n\tMisc Sph, no inv.";
 #define SIXTH .16666666666666666
 FORWARD(s_forward); /* sphere */

@@ -14,7 +14,7 @@ Port to PROJ.4 by Bernhard Jenny, 6 June 2011
 */
 
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(natearth, "Natural Earth") "\n\tPCyl., Sph.";
 #define A0 0.8707
 #define A1 -0.131979

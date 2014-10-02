@@ -8,7 +8,7 @@
 	double *en; \
 	int		ellips;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(eqdc, "Equidistant Conic")
 	"\n\tConic, Sph&Ell\n\tlat_1= lat_2=";
 # define EPS10	1.e-10

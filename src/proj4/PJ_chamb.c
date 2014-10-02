@@ -10,7 +10,7 @@ typedef struct { double r, Az; } VECT;
 	XY p; \
 	double beta_0, beta_1, beta_2;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(chamb, "Chamberlin Trimetric") "\n\tMisc Sph, no inv."
 "\n\tlat_1= lon_1= lat_2= lon_2= lat_3= lon_3=";
 #include	<stdio.h>

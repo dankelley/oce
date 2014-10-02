@@ -31,7 +31,7 @@
 /* projects.h and windows.h conflict - avoid this! */
 
 #ifndef _WIN32
-#include <projects.h>
+#include "projects.h"
 PJ_CVSID("$Id: pj_transform.c 1504 2009-01-06 02:11:57Z warmerdam $");
 #else
 #include <proj_api.h>

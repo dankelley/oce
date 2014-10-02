@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double rc;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(eqc, "Equidistant Cylindrical (Plate Caree)")
 	"\n\tCyl, Sph\n\tlat_ts=[, lat_0=0]";
 FORWARD(s_forward); /* spheroid */

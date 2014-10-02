@@ -2,7 +2,7 @@
 	double ml0; \
 	double *en;
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 PROJ_HEAD(poly, "Polyconic (American)")
 	"\n\tConic, Sph&Ell";
 #define TOL	1e-10

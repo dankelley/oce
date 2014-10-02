@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double	C_x;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(wag3, "Wagner III") "\n\tPCyl., Sph.\n\tlat_ts=";
 #define TWOTHIRD 0.6666666666666666666667
 FORWARD(s_forward); /* spheroid */

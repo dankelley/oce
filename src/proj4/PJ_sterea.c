@@ -32,7 +32,7 @@ LIBPROJ_ID[] = "$Id: PJ_sterea.c 2022 2011-05-20 13:04:08Z warmerdam $";
 	void *en;
 
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 
 PROJ_HEAD(sterea, "Oblique Stereographic Alternative")
 	"\n\tAzimuthal, Sph&Ell";

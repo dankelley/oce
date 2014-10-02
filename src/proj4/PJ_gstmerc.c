@@ -8,7 +8,7 @@
     double YS;
 
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(gstmerc, "Gauss-Schreiber Transverse Mercator (aka Gauss-Laborde Reunion)")
 	"\n\tCyl, Sph&Ell\n\tlat_0= lon_0= k_0=";
 FORWARD(s_forward); /* spheroid */

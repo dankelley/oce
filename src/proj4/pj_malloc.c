@@ -2,7 +2,7 @@
 /* These routines are used so that applications can readily replace
 ** projection system memory allocation/deallocation call with custom
 ** application procedures.  */
-#include <projects.h>
+#include "projects.h"
 #include <errno.h>
 
 	void *

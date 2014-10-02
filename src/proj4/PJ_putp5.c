@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double	A, B;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(putp5, "Putnins P5") "\n\tPCyl., Sph.";
 PROJ_HEAD(putp5p, "Putnins P5'") "\n\tPCyl., Sph.";
 #define C	1.01346

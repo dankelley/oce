@@ -3,7 +3,7 @@
 	double	cosph0; \
 	int		mode;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(gnom, "Gnomonic") "\n\tAzi, Sph.";
 #define EPS10 1.e-10
 #define N_POLE	0

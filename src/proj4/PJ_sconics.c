@@ -6,7 +6,7 @@
 	double	c1, c2; \
 	int		type;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 #define EULER 0
 #define MURD1 1
 #define MURD2 2

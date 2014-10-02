@@ -4,7 +4,7 @@
 	double	*en; \
 	int	mode; /* = 0, phi_1 and phi_2 != 0, = 1, phi_1 = 0, = -1 phi_2 = 0 */
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(imw_p, "International Map of the World Polyconic")
 	"\n\tMod. Polyconic, Ell\n\tlat_1= and lat_2= [lon_1=]";
 #define TOL 1e-10

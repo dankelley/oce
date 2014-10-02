@@ -29,7 +29,7 @@
  *****************************************************************************/
 
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 
 PJ_CVSID("$Id: PJ_nzmg.c 1504 2009-01-06 02:11:57Z warmerdam $");
 

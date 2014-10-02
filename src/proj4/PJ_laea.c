@@ -10,7 +10,7 @@
 	double	*apa; \
 	int		mode;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(laea, "Lambert Azimuthal Equal Area") "\n\tAzi, Sph&Ell";
 #define sinph0	P->sinb1
 #define cosph0	P->cosb1

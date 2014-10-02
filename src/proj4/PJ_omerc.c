@@ -26,7 +26,7 @@
 	double  v_pole_n, v_pole_s, u_0; \
 	int no_rot;
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 
 PROJ_HEAD(omerc, "Oblique Mercator")
 	"\n\tCyl, Sph&Ell no_rot\n\t"

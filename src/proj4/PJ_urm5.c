@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double m, rmn, q3, n;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(urm5, "Urmaev V") "\n\tPCyl., Sph.\n\tn= q= alphi=";
 FORWARD(s_forward); /* spheroid */
 	double t;

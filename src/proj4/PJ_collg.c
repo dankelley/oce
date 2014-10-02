@@ -1,5 +1,5 @@
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(collg, "Collignon") "\n\tPCyl, Sph.";
 #define FXC	1.12837916709551257390
 #define FYC	1.77245385090551602729

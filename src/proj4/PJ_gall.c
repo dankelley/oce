@@ -1,5 +1,5 @@
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(gall, "Gall (Gall Stereographic)") "\n\tCyl, Sph";
 #define YF	1.70710678118654752440
 #define XF	0.70710678118654752440

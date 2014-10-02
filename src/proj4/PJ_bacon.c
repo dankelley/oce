@@ -4,7 +4,7 @@
 	int bacn; \
 	int ortl;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(apian, "Apian Globular I") "\n\tMisc Sph, no inv.";
 PROJ_HEAD(ortel, "Ortelius Oval") "\n\tMisc Sph, no inv.";
 PROJ_HEAD(bacon, "Bacon Globular") "\n\tMisc Sph, no inv.";

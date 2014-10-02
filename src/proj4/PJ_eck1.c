@@ -1,5 +1,5 @@
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(eck1, "Eckert I") "\n\tPCyl., Sph.";
 #define FC	.92131773192356127802
 #define RP	.31830988618379067154

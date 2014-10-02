@@ -27,7 +27,7 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
-#include <projects.h>
+#include "projects.h"
 #include <string.h>
 
 /* SEC_TO_RAD = Pi/180/3600 */

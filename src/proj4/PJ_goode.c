@@ -2,7 +2,7 @@
 	struct PJconsts	*sinu; \
 	struct PJconsts	*moll;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(goode, "Goode Homolosine") "\n\tPCyl, Sph.";
 	C_NAMESPACE PJ
 *pj_sinu(PJ *), *pj_moll(PJ *);

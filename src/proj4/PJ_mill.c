@@ -1,5 +1,5 @@
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(mill, "Miller Cylindrical") "\n\tCyl, Sph";
 FORWARD(s_forward); /* spheroid */
 	xy.x = lp.lam;

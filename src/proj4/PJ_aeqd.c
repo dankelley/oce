@@ -38,7 +38,7 @@
 	double	G; \
 	int		mode;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 
 PJ_CVSID("$Id: PJ_aeqd.c 1856 2010-06-11 03:26:04Z warmerdam $");
 

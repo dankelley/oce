@@ -11,7 +11,7 @@
 	double tn; \
 	double *en;
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(cass, "Cassini") "\n\tCyl, Sph&Ell";
 # define EPS10	1e-10
 # define C1	.16666666666666666666

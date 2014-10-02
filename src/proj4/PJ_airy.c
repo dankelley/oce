@@ -35,7 +35,7 @@
 	int		mode; \
 	int		no_cut;	/* do not cut at hemisphere limit */
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 
 PJ_CVSID("$Id: PJ_airy.c 1856 2010-06-11 03:26:04Z warmerdam $");
 

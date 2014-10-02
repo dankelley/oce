@@ -1,5 +1,5 @@
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(vandg4, "van der Grinten IV") "\n\tMisc Sph, no inv.";
 #define TOL	1e-10
 #define TWORPI	0.63661977236758134308

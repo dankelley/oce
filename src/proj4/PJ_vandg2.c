@@ -3,7 +3,7 @@
 #define PROJ_PARMS__ \
 	int	vdg3;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(vandg2, "van der Grinten II") "\n\tMisc Sph, no inv.";
 PROJ_HEAD(vandg3, "van der Grinten III") "\n\tMisc Sph, no inv.";
 FORWARD(s_forward); /* spheroid */

@@ -5,7 +5,7 @@
 	double m1; \
 	double *en;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(bonne, "Bonne (Werner lat_1=90)")
 	"\n\tConic Sph&Ell\n\tlat_1=";
 #define EPS10	1e-10

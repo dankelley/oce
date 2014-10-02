@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double ap;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(cc, "Central Cylindrical") "\n\tCyl, Sph";
 #define EPS10 1.e-10
 FORWARD(s_forward); /* spheroid */

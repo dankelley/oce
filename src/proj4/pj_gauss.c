@@ -26,7 +26,7 @@ LIBPROJ_ID[] = "$Id: pj_gauss.c 1856 2010-06-11 03:26:04Z warmerdam $";
 ** SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #define PJ_LIB__
-#include <projects.h>
+#include "projects.h"
 
 #define MAX_ITER 20
 

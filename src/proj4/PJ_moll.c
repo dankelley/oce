@@ -1,7 +1,7 @@
 #define PROJ_PARMS__ \
 	double	C_x, C_y, C_p;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(moll, "Mollweide") "\n\tPCyl., Sph.";
 PROJ_HEAD(wag4, "Wagner IV") "\n\tPCyl., Sph.";
 PROJ_HEAD(wag5, "Wagner V") "\n\tPCyl., Sph.";

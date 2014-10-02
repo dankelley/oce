@@ -1,5 +1,5 @@
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(wag2, "Wagner II") "\n\tPCyl., Sph.";
 #define C_x 0.92483
 #define C_y 1.38725

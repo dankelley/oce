@@ -1,5 +1,5 @@
 #define PJ_LIB__
-# include	<projects.h>
+# include	"projects.h"
 PROJ_HEAD(vandg, "van der Grinten (I)") "\n\tMisc Sph";
 # define TOL		1.e-10
 # define THIRD		.33333333333333333333

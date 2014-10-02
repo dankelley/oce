@@ -2,7 +2,7 @@
 	double ap;
 #define EPS10 1.e-10
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(tcc, "Transverse Central Cylindrical") "\n\tCyl, Sph, no inv.";
 FORWARD(s_forward); /* spheroid */
 	double b, bt;

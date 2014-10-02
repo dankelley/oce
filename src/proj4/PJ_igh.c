@@ -2,7 +2,7 @@
         struct PJconsts* pj[12]; \
         double dy0;
 #define PJ_LIB__
-#include	<projects.h>
+#include	"projects.h"
 PROJ_HEAD(igh, "Interrupted Goode Homolosine") "\n\tPCyl, Sph.";
 	C_NAMESPACE PJ
 *pj_sinu(PJ *), *pj_moll(PJ *);
