@@ -49,7 +49,7 @@
 #define PROJ_LIB__
 #define PJ_LIB__
 
-#include <projects.h>
+#include "projects.h"
 
 PROJ_HEAD(etmerc, "Extended Transverse Mercator")
     "\n\tCyl, Sph\n\tlat_ts=(0)\nlat_0=(0)";
