@@ -1,0 +1,3 @@
+SOURCES = $(wildcard *.c) $(wildcard proj4/*.c)
+OBJECTS = $(SOURCES:.c=.o)
+
