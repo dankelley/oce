@@ -1,3 +1,4 @@
+#include <R.h>
 /******************************************************************************
  * $Id: nad_init.c 2142 2012-01-25 19:23:31Z warmerdam $
  *
@@ -173,8 +174,7 @@ int nad_ctable2_load( projCtx ctx, struct CTABLE *ct, FILE *fid )
 
         if( getenv("PROJ_DEBUG") != NULL )
         {
-            fprintf( stderr,
-            "ctable2 loading failed on fread() - binary incompatible?\n" );
+            error("ctable2 loading failed on fread() - binary incompatible?\n" );
         }
 
         pj_ctx_set_errno( ctx, -38 );

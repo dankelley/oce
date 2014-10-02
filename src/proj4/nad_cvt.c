@@ -1,3 +1,4 @@
+#include <R.h>
 #define PJ_LIB__
 #include "projects.h"
 #define MAX_TRY 9
@@ -37,8 +38,7 @@ nad_cvt(LP in, int inverse, struct CTABLE *ct) {
 			if (del.lam == HUGE_VAL) 
                         {
                             if( getenv( "PROJ_DEBUG" ) != NULL )
-                                fprintf( stderr, 
-                                         "Inverse grid shift iteration failed, presumably at grid edge.\n"
+                                error("Inverse grid shift iteration failed, presumably at grid edge.\n"
                                          "Using first approximation.\n" );
                             /* return del */;
                             break;
@@ -49,8 +49,7 @@ nad_cvt(LP in, int inverse, struct CTABLE *ct) {
 		} while (i-- && fabs(dif.lam) > TOL && fabs(dif.phi) > TOL);
 		if (i < 0) {
                     if( getenv( "PROJ_DEBUG" ) != NULL )
-                        fprintf( stderr, 
-                                 "Inverse grid shift iterator failed to converge.\n" );
+                        error("Inverse grid shift iterator failed to converge.\n" );
                     t.lam = t.phi = HUGE_VAL;
                     return t;
 		}

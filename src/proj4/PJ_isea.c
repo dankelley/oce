@@ -1,3 +1,4 @@
+#include <R.h>
 /*
  * This code was entirely written by Nathan Wagner
  * and is in the public domain.
@@ -293,7 +294,7 @@ isea_triangle_xy(int triangle)
 		break;
 	default:
 		/* should be impossible */
-		exit(EXIT_FAILURE);
+		error("error number: %d", EXIT_FAILURE);
 	};
 	c.x *= Rprime;
 	c.y *= Rprime;
@@ -488,10 +489,9 @@ isea_snyder_forward(struct isea_geo * ll, struct isea_pt * out)
 	 * any triangle
 	 */
 
-	fprintf(stderr, "impossible transform: %f %f is not on any triangle\n",
+	error("impossible transform: %f %f is not on any triangle\n",
 		ll->lon * RAD2DEG, ll->lat * RAD2DEG);
-
-	exit(EXIT_FAILURE);
+	//exit(EXIT_FAILURE);
 
 	/* not reached */
 	return 0;		/* supresses a warning */

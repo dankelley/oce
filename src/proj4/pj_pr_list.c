@@ -1,3 +1,4 @@
+#include <R.h>
 /* print projection's list of parameters */
 #include "projects.h"
 #include <stdio.h>
@@ -8,38 +9,52 @@ pr_list(PJ *P, int not_used) {
 	paralist *t;
 	int l, n = 1, flag = 0;
 
-	(void)putchar('#');
+	//(void)putchar('#');
+        Rprintf("#");
 	for (t = P->params; t; t = t->next)
 		if ((!not_used && t->used) || (not_used && !t->used)) {
 			l = strlen(t->param) + 1;
 			if (n + l > LINE_LEN) {
-				(void)fputs("\n#", stdout);
+                                //(void)fputs("\n#", stdout);
+                                Rprintf("\n#");
 				n = 2;
 			}
-			(void)putchar(' ');
-			if (*(t->param) != '+')
-				(void)putchar('+');
-			(void)fputs(t->param, stdout);
+			//(void)putchar(' ');
+                        Rprintf(" ");
+			if (*(t->param) != '+') {
+				//(void)putchar('+');
+                                Rprintf("+");
+                        }
+			//(void)fputs(t->param, stdout);
+                        Rprintf(t->param);
 			n += l;
 		} else
 			flag = 1;
-	if (n > 1)
-		(void)putchar('\n');
+	if (n > 1) {
+		//(void)putchar('\n');
+                Rprintf("\n");
+        }
 	return flag;
 }
 	void /* print link list of projection parameters */
 pj_pr_list(PJ *P) {
 	char const *s;
 
-	(void)putchar('#');
+	//(void)putchar('#');
+        Rprintf("#");
 	for (s = P->descr; *s ; ++s) {
-		(void)putchar(*s);
-		if (*s == '\n')
-			(void)putchar('#');
+		//(void)putchar(*s);
+                Rprintf(*s);
+		if (*s == '\n') {
+			//(void)putchar('#');
+                        Rprintf("#");
+                }
 	}
-	(void)putchar('\n');
+	//(void)putchar('\n');
+        Rprintf("\n");
 	if (pr_list(P, 0)) {
-		(void)fputs("#--- following specified but NOT used\n", stdout);
+		//(void)fputs("#--- following specified but NOT used\n", stdout);
+                Rprintf("#--- following specified but NOT used\n");
 		(void)pr_list(P, 1);
 	}
 }

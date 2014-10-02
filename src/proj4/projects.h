@@ -97,7 +97,9 @@ extern double hypot(double, double);
 	/* some useful constants */
 #define HALFPI		1.5707963267948966
 #define FORTPI		0.78539816339744833
+#ifndef PI
 #define PI		3.14159265358979323846
+#endif
 #define TWOPI		6.2831853071795864769
 
 /* environment parameter name */

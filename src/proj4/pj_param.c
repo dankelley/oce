@@ -1,3 +1,4 @@
+#include <R.h>
 /* put parameters in linked list and retrieve */
 #include "projects.h"
 #include <stdio.h>
@@ -85,7 +86,7 @@ pj_param(projCtx ctx, paralist *pl, const char *opt) {
 			break;
 		default:
 bum_type:	/* note: this is an error in parameter, not a user error */
-			fprintf(stderr, "invalid request to pj_param, fatal\n");
+			error("invalid request to pj_param, fatal\n");
 			exit(1);
 		}
 	} else /* not given */
