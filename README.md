@@ -1,5 +1,5 @@
-``Oce`` is an R package for processing oceanographic data.  Its [official
-webpage](http://dankelley.github.com/oce/) provides details, of which this
+``Oce`` is an R package for processing oceanographic data.  Its
+[webpage](http://dankelley.github.com/oce/) provides details, of which this
 README file is just a sketch.
 
 Stable versions of the package are normally installed from within R, in the
