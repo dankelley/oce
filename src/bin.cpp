@@ -1,3 +1,7 @@
+// 2014 oct 2 having troubles with Makevars; maybe consult
+// https://github.com/cran/PopGenome/blob/master/src/whopgenome/whopgen_filtering.cpp
+// to see how they do it.  (Try building that first.)
+
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -167,29 +171,4 @@ extern "C" {
     }
 }
 #undef ij
-
-
-// /* keep below in case .bincode() proves to be slow for binApply1D() and binApply2D() */
-//extern "C" {
-//    void bin_which_1d(int *nx, double *x, int *nxbreaks, double *xbreaks, int *bi)
-//    {
-//        if (*nxbreaks < 2)
-//            error("cannot have fewer than 1 break"); // already checked in R but be safe
-//        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
-//        std::sort(b.begin(), b.end()); // STL wants breaks ordered
-//        for (int i = 0; i < (*nx); i++) {
-//            if (ISNA(x[i])) {
-//                bi[i] = NA_REAL;
-//            } else{
-//                std::vector<double>::iterator lower_bound;
-//                lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
-//                int which = lower_bound - b.begin();
-//                if (which > 0 && which < (*nxbreaks))
-//                    bi[i] = which;
-//                else
-//                    bi[i] = NA_REAL;
-//            }
-//        }
-//    }
-//}
 

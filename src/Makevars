@@ -1,3 +1,7 @@
-SOURCES = $(wildcard *.c) $(wildcard proj4/*.c)
-OBJECTS = $(SOURCES:.c=.o)
+CPPSOURCES = $(wildcard *.cpp)
+CSOURCES = $(wildcard *.c) $(wildcard proj4/*.c)
+OBJECTS = $(CPPSOURCES:.cpp=.o) $(CSOURCES:.c=.o)
+all: $(SHLIB)
+clean:
+	@rm -f $(OBJECTS)
 

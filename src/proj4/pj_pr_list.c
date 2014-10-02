@@ -44,7 +44,7 @@ pj_pr_list(PJ *P) {
         Rprintf("#");
 	for (s = P->descr; *s ; ++s) {
 		//(void)putchar(*s);
-                Rprintf(*s);
+                Rprintf("%c", *s);
 		if (*s == '\n') {
 			//(void)putchar('#');
                         Rprintf("#");
