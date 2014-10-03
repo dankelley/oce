@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <R.h>
-#include "proj4/proj_api.h"
+#include "proj_api.h"
 #define d2r 57.29577951
 // #include "proj_config.h"
 
