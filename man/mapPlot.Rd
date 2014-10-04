@@ -75,7 +75,10 @@
         that in this second case, there is no need to specify the scale
         parameter (\code{+k}), the easting parameter (\code{+easting}) or the
         northing parameter (\code{+northing}), since these are determined from
-        the graph limits.  See \dQuote{Examples}.}
+        the graph limits.  See \dQuote{Examples}.  \emph{A FEATURE IN TESTING:}
+        use \code{options(oceProj4Test=TRUE)} to do \code{proj4}-style
+        projections using code that is internal to Oce, yielding 100X faster
+        processing; see examples.}
 
     \item{parameters, orientation}{parameters and orientation, if
         \code{projection} is in \code{mapproj} form; see
@@ -176,6 +179,15 @@ mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="+proj=stere +lat_0=90 +lon_0=-135") #, fill='gray')
 mtext("Stereographic/proj4", adj=1)
 
+# Example 5.
+# TEMPORARY -- will be deleted if the new proj4 scheme is finalized.
+par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
+options(oceProj4Test=FALSE)
+mapPlot(coastlineWorld, proj="+proj=moll") 
+mtext("using proj4 package")
+options(oceProj4Test=TRUE)
+mapPlot(coastlineWorld, proj="+proj=moll") 
+mtext("using internal proj4-style calculations")
 }
 }
 

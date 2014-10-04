@@ -828,12 +828,20 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if (0 < nchar(.Last.proj4()$projection)) {
-        ##message("proj4-style projection exists")
-        xy <- list(x=NA, y=NA)
-        try({
-            xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
-        }, silent=TRUE)
-        return(list(longitude=xy$x, latitude=xy$y))
+        if (getOption("oceProj4Test", FALSE)) {
+            ## message("internal inverse proj4 function (", .Last.proj4()$projection, ")")
+            XY <- .C("proj4_interface", as.character(.Last.proj4()$projection), as.integer(FALSE),
+                     as.integer(n), as.double(x), as.double(y),
+                     X=double(n), Y=double(n), NAOK=TRUE)
+            return(list(longitude=XY$X, latitude=XY$Y))
+        } else {
+            ##message("proj4-style projection exists")
+            xy <- list(x=NA, y=NA)
+            try({
+                xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
+            }, silent=TRUE)
+            return(list(longitude=xy$x, latitude=xy$y))
+        }
     }
     ## Now we know we are using mapproj-style
     lp <- .Last.projection()
@@ -1312,7 +1320,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
     ## Use proj4 if it has been set up (and still exists).
     if ("" == projection) projection <- .Last.proj4()$projection
-    if (0 == length(grep("^\\+proj", projection))) { 
+    if ('+' != substr(projection, 1, 1)) {
         ## mapproj case
         xy <- mapproject(longitude, latitude,
                          projection=projection, parameters=parameters, orientation=orientation)
@@ -1350,20 +1358,31 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (!(pr %in% knownProj4))
             stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
         ll <- cbind(longitude, latitude)
-        m <- NULL                 # for the try()
-        try({
-            m <- project(ll, proj=projection)
-        }, silent=TRUE)
-        if (is.null(m)) {
-            m <- matrix(unlist(lapply(1:n, function(i)
-                                      {
-                                          t <- try({project(ll[i,], proj=projection)}, silent=TRUE)
-                                          if (inherits(t, "try-error")) c(NA, NA) else t[1,]
-                                      })),
-                        ncol=2, byrow=TRUE)
-            warning("proj4 calculation is slow because errors meant it had to be done pointwise")
+        if (getOption("oceProj4Test", FALSE)) {
+            ## message("Test new proj4 scheme, signalled by use of options(oceProj4Test=TRUE)")
+            if (0 == length(grep("ellps=", projection)))
+                projection<- paste(projection, "+ellps=sphere")
+            n <- length(longitude)
+            XY <- .C("proj4_interface", as.character(projection), as.integer(TRUE),
+                     as.integer(n), as.double(longitude), as.double(latitude),
+                     X=double(n), Y=double(n), NAOK=TRUE)
+            xy <- list(x=XY$X, y=XY$Y)
+        } else {
+            m <- NULL                 # for the try()
+            try({
+                m <- project(ll, proj=projection)
+            }, silent=TRUE)
+            if (is.null(m)) {
+                m <- matrix(unlist(lapply(1:n, function(i)
+                                          {
+                                              t <- try({project(ll[i,], proj=projection)}, silent=TRUE)
+                                              if (inherits(t, "try-error")) c(NA, NA) else t[1,]
+                                          })),
+                            ncol=2, byrow=TRUE)
+                warning("proj4 calculation is slow because errors meant it had to be done pointwise")
+            }
+            xy <- list(x=m[,1], y=m[,2])
         }
-        xy <- list(x=m[,1], y=m[,2])
         .Last.proj4(list(projection=projection)) # turn on proj4
         .Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
