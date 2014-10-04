@@ -1,41 +1,75 @@
-// /Library/Frameworks/R.framework/Versions/Current/Resources/library/proj4/libs/proj4.so
 #include <stdio.h>
 #include <string.h>
 #include <R.h>
 #include "proj_api.h"
-#define d2r 57.29577951
-// #include "proj_config.h"
+
+//#define DEBUG=1
 
 /*
  
    library(oce)
-   lon <- seq(0, 10, 1)
-   lat <- seq(1, 11, 1)
+   lon <- c(0, 1)
+   lat <- c(1, 0)
    proj <- "+proj=merc +ellps=WGS84"
    n <- length(lon)
-   res <- .C("proj4_test1", as.character(proj), as.integer(n), as.double(lon), as.double(lat), x=double(n), y=double(n))
-# see res$x and res$y
+   xy <- .C("proj4", as.character(proj), as.integer(TRUE), as.integer(n), as.double(lon), as.double(lat), X=double(n), Y=double(n))
+   ll <- .C("proj4", as.character(proj), as.integer(FALSE), as.integer(n), as.double(xy$x), as.double(xy$y), X=double(n), Y=double(n))
+
+   ## x and y in metres; mismatches in degrees
+   data.frame(x=xy$X, y=xy$Y, lonMismatch=lon-ll$X, LatMismatch=lat-ll$Y)
+
+                x            y  lonMismatch LatMismatch
+       1      0.0 1.105800e+05 4.58647e-255           1
+       2 111319.5 7.081155e-10  1.00000e+00           0
+
+
+
+   data(coastlineWorldFine, package="ocedata")
+   lon <- coastlineWorldFine[['longitude']]
+   lat <- coastlineWorldFine[['latitude']]
+   n <- length(lon)
+   proj <- "+proj=moll +ellps=sphere" # mercator is ugly on world views
+   system.time(xy<-.C("proj4", as.character(proj), as.integer(TRUE), as.integer(n), as.double(lon), as.double(lat), X=double(n), Y=double(n), NAOK=TRUE))
+
+   par(mar=c(2, 2, 1, 1), mgp=c(2, 0.7, 0))
+   plot(xy$X, xy$Y, type='l', asp=1, xlab="", ylab="")
 
  */
 
-// FIXME: break into three parts: setup, forward and inverse; then hook up to existing code.
 
-void proj4_test1(char **proj_spec, int *n, double *lon, double *lat, double *x, double *y)
+void proj4(char **proj_spec, int *forward, int *n, double *x, double *y, double *X, double *Y)
 {
-    //Rprintf("%s\n", *proj_spec);
+    // take (x,y) -> (X, Y) through the given projection, forward or inverse
     projPJ pj;
-    projUV lonlat, xy, lonlat2;
+    projUV xy, XY;
     if (!(pj = pj_init_plus(*proj_spec))) 
         error("ERROR %s\n", pj_strerrno(*pj_get_errno_ref()));
-    //printf("%s\n", proj_spec);
+    if (*forward != 0 && *forward != 1)
+        error("forward must be 0 or 1");
+    double dpr = 180.0 / M_PI;  // degrees per radian
+#ifdef DEBUG
+    Rprintf("mapping=%s, dpr=%f, proj='%s'\n", *forward?"forward":"inverse", dpr, *proj_spec);
+#endif
     for (int i=0; i< (*n); i++) {
-        //printf("lon=%f lat=%f", lon[i], lat[i]);
-        lonlat.u = lon[i]/d2r;
-        lonlat.v = lat[i]/d2r;
-        xy = pj_fwd(lonlat, pj);
-        x[i] = xy.u;
-        y[i] = xy.v;
-        //printf(" x=%.1f y=%.1f", x[i], y[i]);
+        if (*forward) {
+            xy.u = x[i] / dpr;
+            xy.v = y[i] / dpr;
+            XY = pj_fwd(xy, pj);
+            X[i] = XY.u;
+            Y[i] = XY.v;
+#ifdef DEBUG
+            Rprintf("i=%d, x=%f, y=%f, X=%f, Y=%f\n", i, x[i], y[i], X[i], Y[i]);
+#endif
+        } else {
+            xy.u = x[i];
+            xy.v = y[i];
+            XY = pj_inv(xy, pj);
+            X[i] = XY.u * dpr;
+            Y[i] = XY.v * dpr;
+#ifdef DEBUG
+            Rprintf("x[%d]=%f, y[%d]=%f, X[%d]=%f, Y[%d]=%f\n", i, x[i], i, y[i], i, X[i], i, Y[i]);
+#endif
+       }
     }
     pj_free(pj);
 }
