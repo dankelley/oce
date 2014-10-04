@@ -5,39 +5,45 @@
 
 //#define DEBUG=1
 
-/*
+/* NOTES.
+ * 1. must provide an ellipse model.  The proj4 package defaults this to "sphere".
+ */
+
+/* TEST CODE.
  
    library(oce)
    lon <- c(0, 1)
    lat <- c(1, 0)
    proj <- "+proj=merc +ellps=WGS84"
    n <- length(lon)
-   xy <- .C("proj4", as.character(proj), as.integer(TRUE), as.integer(n), as.double(lon), as.double(lat), X=double(n), Y=double(n))
-   ll <- .C("proj4", as.character(proj), as.integer(FALSE), as.integer(n), as.double(xy$x), as.double(xy$y), X=double(n), Y=double(n))
+   xy <- .C("proj4_interface", as.character(proj), as.integer(TRUE), as.integer(n), as.double(lon), as.double(lat), X=double(n), Y=double(n))
+   ll <- .C("proj4_interface", as.character(proj), as.integer(FALSE), as.integer(n), as.double(xy$x), as.double(xy$y), X=double(n), Y=double(n))
 
-   ## x and y in metres; mismatches in degrees
    data.frame(x=xy$X, y=xy$Y, lonMismatch=lon-ll$X, LatMismatch=lat-ll$Y)
-
-                x            y  lonMismatch LatMismatch
-       1      0.0 1.105800e+05 4.58647e-255           1
-       2 111319.5 7.081155e-10  1.00000e+00           0
-
-
 
    data(coastlineWorldFine, package="ocedata")
    lon <- coastlineWorldFine[['longitude']]
    lat <- coastlineWorldFine[['latitude']]
    n <- length(lon)
    proj <- "+proj=moll +ellps=sphere" # mercator is ugly on world views
-   system.time(xy<-.C("proj4", as.character(proj), as.integer(TRUE), as.integer(n), as.double(lon), as.double(lat), X=double(n), Y=double(n), NAOK=TRUE))
-
+   system.time(xy<-.C("proj4_interface", as.character(proj), as.integer(TRUE), as.integer(n), as.double(lon), as.double(lat), X=double(n), Y=double(n), NAOK=TRUE))
    par(mar=c(2, 2, 1, 1), mgp=c(2, 0.7, 0))
    plot(xy$X, xy$Y, type='l', asp=1, xlab="", ylab="")
 
+*/
+
+/* TEST CODE RESULTS.
+ *
+ *           x            y  lonMismatch LatMismatch
+ *  1      0.0 1.105800e+05 4.58647e-255           1
+ *  2 111319.5 7.081155e-10  1.00000e+00           0
+ *
+ *  user  system elapsed 
+ * 0.113   0.004   0.116 
  */
 
 
-void proj4(char **proj_spec, int *forward, int *n, double *x, double *y, double *X, double *Y)
+void proj4_interface(char **proj_spec, int *forward, int *n, double *x, double *y, double *X, double *Y)
 {
     // project (x,y) -> (X, Y), forward or inverse; *n is length of *x.
     projPJ pj;
