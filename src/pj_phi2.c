@@ -1,7 +1,9 @@
 /* determine latitude angle phi-2 */
 #include "projects.h"
 
+#ifndef HALFPI
 #define HALFPI		1.5707963267948966
+#endif
 #define TOL 1.0e-10
 #define N_ITER 15
 

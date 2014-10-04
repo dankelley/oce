@@ -1,7 +1,9 @@
 /* determine small t */
 #include <math.h>
 #include "projects.h"
+#ifndef HALFPI
 #define HALFPI		1.5707963267948966
+#endif
 	double
 pj_tsfn(double phi, double sinphi, double e) {
 	sinphi *= e;
