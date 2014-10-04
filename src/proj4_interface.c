@@ -39,7 +39,7 @@
 
 void proj4(char **proj_spec, int *forward, int *n, double *x, double *y, double *X, double *Y)
 {
-    // take (x,y) -> (X, Y) through the given projection, forward or inverse
+    // project (x,y) -> (X, Y), forward or inverse; *n is length of *x.
     projPJ pj;
     projUV xy, XY;
     if (!(pj = pj_init_plus(*proj_spec))) 
@@ -50,7 +50,7 @@ void proj4(char **proj_spec, int *forward, int *n, double *x, double *y, double 
 #ifdef DEBUG
     Rprintf("mapping=%s, dpr=%f, proj='%s'\n", *forward?"forward":"inverse", dpr, *proj_spec);
 #endif
-    for (int i=0; i< (*n); i++) {
+    for (int i = 0; i < (*n); i++) {
         if (*forward) {
             xy.u = x[i] / dpr;
             xy.v = y[i] / dpr;
@@ -67,11 +67,10 @@ void proj4(char **proj_spec, int *forward, int *n, double *x, double *y, double 
             X[i] = XY.u * dpr;
             Y[i] = XY.v * dpr;
 #ifdef DEBUG
-            Rprintf("x[%d]=%f, y[%d]=%f, X[%d]=%f, Y[%d]=%f\n", i, x[i], i, y[i], i, X[i], i, Y[i]);
+            Rprintf("i=%d, x=%f, y=%f, X=%f, Y=%f\n", i, x[i], y[i], X[i], Y[i]);
 #endif
        }
     }
     pj_free(pj);
 }
-
 
