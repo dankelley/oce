@@ -3,6 +3,8 @@
 ## 2. proj4 used by:
 ##    1. openstreetmap
 
+require(mapproj) # prevent 'check' warnings on missing .Last.projection()
+
 .Last.proj4  <- local({                # emulate mapproj
     val <- list(projection="")
     function(new) if(!missing(new)) val <<- new else val
