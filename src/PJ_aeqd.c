@@ -40,7 +40,7 @@
 #define PJ_LIB__
 #include	"projects.h"
 
-PJ_CVSID("$Id: PJ_aeqd.c 1856 2010-06-11 03:26:04Z warmerdam $");
+PJ_CVSID("$Id: PJ_aeqd.c 1856 2010-06-11 03:26:04Z warmerdam $")
 
 PROJ_HEAD(aeqd, "Azimuthal Equidistant") "\n\tAzi, Sph&Ell\n\tlat_0 guam";
 

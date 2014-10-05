@@ -34,7 +34,7 @@
 #define PJ_LIB__
 #include "projects.h"
 
-PJ_CVSID("$Id: PJ_aitoff.c 1856 2010-06-11 03:26:04Z warmerdam $");
+PJ_CVSID("$Id: PJ_aitoff.c 1856 2010-06-11 03:26:04Z warmerdam $")
 
 PROJ_HEAD(aitoff, "Aitoff") "\n\tMisc Sph";
 PROJ_HEAD(wintri, "Winkel Tripel") "\n\tMisc Sph\n\tlat_1";

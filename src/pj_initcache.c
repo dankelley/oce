@@ -30,7 +30,7 @@
 #include "projects.h"
 #include <string.h>
 
-PJ_CVSID("$Id: pj_transform.c 1504 2009-01-06 02:11:57Z warmerdam $");
+PJ_CVSID("$Id: pj_transform.c 1504 2009-01-06 02:11:57Z warmerdam $")
 
 static int cache_count = 0;
 static int cache_alloc = 0;

@@ -34,7 +34,7 @@
 #include <math.h>
 #include "geocent.h"
 
-PJ_CVSID("$Id: pj_transform.c 2000 2011-05-10 17:06:33Z warmerdam $");
+PJ_CVSID("$Id: pj_transform.c 2000 2011-05-10 17:06:33Z warmerdam $")
 
 static int pj_adjust_axis( projCtx ctx, const char *axis, int denormalize_flag,
                            long point_count, int point_offset, 

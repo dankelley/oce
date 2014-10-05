@@ -37,7 +37,7 @@
 #define PJ_LIB__
 #include "projects.h"
 
-PJ_CVSID("$Id: PJ_airy.c 1856 2010-06-11 03:26:04Z warmerdam $");
+PJ_CVSID("$Id: PJ_airy.c 1856 2010-06-11 03:26:04Z warmerdam $")
 
 PROJ_HEAD(airy, "Airy") "\n\tMisc Sph, no inv.\n\tno_cut lat_b=";
 

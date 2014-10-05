@@ -36,7 +36,7 @@
 #include <string.h>
 #include <errno.h>
 
-PJ_CVSID("$Id: pj_open_lib.c 2130 2011-12-15 01:20:23Z warmerdam $");
+PJ_CVSID("$Id: pj_open_lib.c 2130 2011-12-15 01:20:23Z warmerdam $")
 
 static const char *(*pj_finder)(const char *) = NULL;
 static int path_count = 0;

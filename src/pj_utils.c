@@ -170,4 +170,5 @@ void pj_get_spheroid_defn(projPJ defn, double *major_axis, double *eccentricity_
 		
 	if ( eccentricity_squared )
 		*eccentricity_squared = defn->es;
-};
+}
+

@@ -30,7 +30,7 @@
 #include "projects.h"
 #include <string.h>
 
-PJ_CVSID("$Id$");
+PJ_CVSID("$Id$")
 
 static projCtx_t default_context;
 static int       default_context_initialized = 0;

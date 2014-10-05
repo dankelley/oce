@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-PJ_CVSID("$Id$");
+PJ_CVSID("$Id$")
 
 /************************************************************************/
 /*                          pj_stderr_logger()                          */

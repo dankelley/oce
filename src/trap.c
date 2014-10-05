@@ -59,6 +59,7 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
             break;
         default:
             PROTECT(res = NEW_NUMERIC(1)); // prevent compiler warning
+            resp = REAL(res);
             resp[0] = 0.0; // prevent compiler warning
             error("unknown type %d; must be 0, 1, or 2\n", *typep);
     }

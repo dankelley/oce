@@ -36,7 +36,7 @@
 #include <errno.h>
 #include <locale.h>
 
-PJ_CVSID("$Id: pj_init.c 2163 2012-02-21 01:53:19Z warmerdam $");
+PJ_CVSID("$Id: pj_init.c 2163 2012-02-21 01:53:19Z warmerdam $")
 
 /************************************************************************/
 /*                              get_opt()                               */
