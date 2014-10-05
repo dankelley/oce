@@ -919,7 +919,7 @@ int isea_hex(struct isea_dgg *g, int tri,
 	struct isea_pt v;
 	int sidelength;
 	int d, i, x, y, quad;
-	double oddsl;
+	//double oddsl; // PROJ.4 did not use
 
 	quad = isea_ptdi(g, tri, pt, &v);
 
@@ -979,7 +979,7 @@ ISEA_STATIC
 struct isea_pt
 isea_forward(struct isea_dgg *g, struct isea_geo *in)
 {
-	int             tri, downtri, quad;
+	int             tri; // PROJ.4 also declared (but did not use): downtri, quad
 	struct isea_pt  out, coord;
 
 	tri = isea_transform(g, in, &out);

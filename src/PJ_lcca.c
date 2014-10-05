@@ -51,7 +51,7 @@ INVERSE(e_inverse); /* ellipsoid & spheroid */
 }
 FREEUP; if (P) { if (P->en) pj_dalloc(P->en); pj_dalloc(P); } }
 ENTRY0(lcca)
-	double s2p0, N0, R0, tan0, tan20;
+	double s2p0, N0, R0, tan0; // PROJ.4 declared but did not use: tan20
 
 	if (!(P->en = pj_enfn(P->es))) E_ERROR_0;
 	if (!pj_param(P->ctx, P->params, "tlat_0").i) E_ERROR(50);

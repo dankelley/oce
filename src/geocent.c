@@ -248,7 +248,7 @@ void pj_Convert_Geocentric_To_Geodetic (GeocentricInfo *gi,
     double Sum;      /* numerator of cos(phi1) */
     int At_Pole;     /* indicates location is in polar region */
 
-    At_Pole = FALSE;
+    At_Pole = FALSE; // PROJ.4 declared and defined but did not use
     if (X != 0.0)
     {
         *Longitude = atan2(Y,X);
