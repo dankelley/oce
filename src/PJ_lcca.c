@@ -1,4 +1,4 @@
-static const char RCS_ID[] = "$Id: PJ_lcca.c 1856 2010-06-11 03:26:04Z warmerdam $";
+//static const char RCS_ID[] = "$Id: PJ_lcca.c 1856 2010-06-11 03:26:04Z warmerdam $";
 /* PROJ.4 Cartographic Projection System 
 */
 #define MAX_ITER 10
