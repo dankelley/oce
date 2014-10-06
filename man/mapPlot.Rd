@@ -105,11 +105,13 @@
     The available projections can be found in the documentation for
     \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
 
-    Further details on map projections are provided by Snyder (1987), an
+    Further details on map projections are provided by [1], an
     exhaustive treatment that includes many illustrations, an overview of the
     history of the topic, and some notes on the strengths and weaknesses of the
     various formulations.  See especially pages 2 through 7, which define terms
-    and provide recommendations.  More accessible (but less detailed) resources
+    and provide recommendations.  References [2] and [3] are also useful, especially
+    regarding datum shifts.  More accessible (but less detailed and less
+    authoratitive) resources
     include a Wikipedia page
     (\url{http://en.wikipedia.org/wiki/List_of_map_projections}), a Radical
     Cartography website
@@ -131,7 +133,7 @@ library(oce)
 data(coastlineWorld)
 
 # Example 1.
-# Mollweide (Snyder 1987 page 54) is an equal-area projection that works well
+# Mollweide ([1] page 54) is an equal-area projection that works well
 # for whole-globe views, below shown in a Pacific-focus view using
 # both the mapproj and proj4 formats.  (This pattern of showing the two
 # formats is repeated in all the examples.)
@@ -145,7 +147,7 @@ mtext("Mollweide/proj4", adj=1)
 # Orthographic projections resemble a globe, making them attractive for
 # non-technical use, but they are neither conformal nor equal-area, so they
 # are somewhat limited for serious use on large scales.  See Section 20 of
-# Snyder (1987).
+# [1].
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
@@ -155,7 +157,7 @@ mtext("Orthographic/proj4", adj=1)
 
 # Example 3.
 # The Lambert conformal conic projection is an equal-area projection
-# recommended by Snyder (1987 page 95) for regions of large east-west extent
+# recommended by [1], page 95, for regions of large east-west extent
 # away from the equator, here illustrated for the USA and Canada.
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
@@ -166,7 +168,7 @@ mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
 mtext("Lambert/proj4", adj=1)
 
 # Example 4.
-# The stereographic projection (Snyder 1987 page 120) is conformal, used
+# The stereographic projection [1], page 120, is conformal, used
 # below for an Arctic view with a Canadian focus.  Note the trick of going
 # past the pole: the second latitudelim value is 180 minus the first, and the
 # second longitudelim is 180 plus the first; this uses image points "over"
@@ -220,9 +222,16 @@ mtext("using internal proj4-style calculations")
 
 \author{Dan Kelley and Clark Richards}
 
-\references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
+\references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
-    \url{pubs.usgs.gov/pp/1395/report.pdf}).}
+    \url{pubs.usgs.gov/pp/1395/report.pdf}).
+
+    2. \url{http://earth-info.nga.mil/GandG/publications/tm8358.1/toc.html}
+
+    3. Natural Resources Canada \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+
+}
+
 
 \keyword{hplot}
 
