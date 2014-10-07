@@ -258,9 +258,30 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ok <- xlim[1] <= x & x <= xlim[2]
-        x <- x[ok]
-        y <- y[ok]
+        ##20141007 I am chopping this code.  I think it was to reduce the memory footprint, but
+        ##20141007 my guess is that the calls to "<=" etc bloat the memory as much as the trimming that
+        ##20141007 will get done by the plot call, so I am removing both the original code and an
+        ##20141007 new replacement that worked but was so ugly it would be hard to debug.
+        ##20141007 ##OLD   ok <- xlim[1] <= x & x <= xlim[2]
+        ##20141007 ##OLD   x <- x[ok]
+        ##20141007 ##OLD   y <- y[ok]
+        ##20141007 ##NEW start <- which(xlim[1] <= x)
+        ##20141007 ##NEW if (!length(start)) {
+        ##20141007 ##NEW     start <- 1
+        ##20141007 ##NEW } else {
+        ##20141007 ##NEW     start <- start[1]
+        ##20141007 ##NEW     if (start > 1)
+        ##20141007 ##NEW         start <- start - 1
+        ##20141007 ##NEW }
+        ##20141007 ##NEW nx <- length(x)
+        ##20141007 ##NEW end <- which(x > xlim[2])
+        ##20141007 ##NEW if (!length(end)) {
+        ##20141007 ##NEW     end <- nx
+        ##20141007 ##NEW } else {
+        ##20141007 ##NEW     end <- end[1]
+        ##20141007 ##NEW }
+        ##20141007 ##NEW x <- x[start:end]
+        ##20141007 ##NEW y <- y[start:end]
     }
     if (length(y) == 1)
         y <- rep(y, length(x))
