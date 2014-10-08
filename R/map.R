@@ -3,6 +3,10 @@
 ## 2. proj4 used by:
 ##    1. openstreetmap
 
+.axis <- local({
+    val <- list(longitude=NULL, latitude=NULL)
+    function(new) if (!missing(new)) val <<- new else val
+})
 
 .Last.proj4  <- local({                # emulate mapproj
     val <- list(projection="")
@@ -28,6 +32,62 @@ fixneg <- function(v)
         }
     }
     rval
+}
+
+mapAxis <- function(side, longitude, latitude, debug=getOption("oceDebug"))
+{
+    axis <- .axis()
+    #if (debug > 0) print(axis)
+    if (is.null(axis$longitude))
+        oceDebug(debug, "should auto generate longitude grid and then axis\n")
+    if (is.null(axis$latitude))
+        oceDebug(debug, "should auto generate latitude grid and then axis\n")
+    if (missing(longitude))
+        longitude <- axis$longitude
+    if (missing(latitude))
+        latitude <- axis$latitude
+    if (missing(side))
+        side <- 1:2
+    usr <- par('usr')
+    axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
+    if (1 %in% side) {
+        oceDebug(debug, "bottom axis\n")
+        for (lon in longitude) {
+            oceDebug(debug, " lon=", lon, "\n")
+            o <- optimize(function(lat) abs(lonlat2map(lon,lat)$y-usr[3]),lower=-89.9999,upper=89.9999)
+            if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+            x <- lonlat2map(lon, o$minimum)$x
+            if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                label <- fixneg(paste(lon, "E", sep=""))
+                mtext(label, side=1, at=x)
+                oceDebug(debug, "lonlabel", lon, "E intersects side 1\n")
+            } else {
+                oceDebug(debug, "lonlabel", lon, "E does not intersect side 1\n")
+            }
+        }
+        ##if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+    }
+    if (2 %in% side) {
+        warning("left-hand axis: not coded yet\n")
+    }
+    if (3 %in% side) {
+        for (lon in longitude) {
+            oceDebug(debug, " lon=", lon, "\n")
+            o <- optimize(function(lat) abs(lonlat2map(lon,lat)$y-usr[4]),lower=-89.9999,upper=89.9999)
+            if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+            x <- lonlat2map(lon, o$minimum)$x
+            if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                label <- fixneg(paste(lon, "E", sep=""))
+                mtext(label, side=3, at=x)
+                oceDebug(debug, "lonlabel", lon, "E intersects side 1\n")
+            } else {
+                oceDebug(debug, "lonlabel", lon, "E does not intersect side 1\n")
+            }
+        }
+    }
+    if (4 %in% side) {
+        warning("right-hand axis: not coded yet\n")
+    }
 }
 
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
@@ -132,6 +192,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
+    if (grid) warning("ignoring 'grid' value -- this will be removed in an upcoming version!\n")
+    grid <- FALSE
     oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
@@ -479,6 +541,7 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
         latitude <- seq(-90+small, 90-small, dlatitude)
     n <- 360                           # number of points on line
     xspan <- diff(par('usr')[1:2])
+    .axis(list(longitude=longitude, latitude=latitude))
     for (l in latitude) {              # FIXME: maybe we should use mapLines here
         oceDebug(debug, "lat=", l, " N\n")
         line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
@@ -493,9 +556,12 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
         ## projections that show the edge of the earth.
         xJump <- abs(diff(x))
         ## FIXME: the number in the next line might need adjustment.
-        horizontalJump <- c(FALSE, xJump > 3 * median(xJump, na.rm=TRUE))
-        if (any(horizontalJump)) {
-            x[horizontalJump] <- NA
+        xJumpMedian <- median(xJump, na.rm=TRUE)
+        if (!is.na(xJumpMedian)) {
+            horizontalJump <- c(FALSE, xJump > 3 * xJumpMedian)
+            if (any(horizontalJump)) {
+                x[horizontalJump] <- NA
+            }
         }
         lines(x, y, lty=lty, lwd=lwd, col=col)
     }
