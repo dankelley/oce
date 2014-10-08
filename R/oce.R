@@ -258,7 +258,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ends <- .Call("trim_ts", x, xlim)
+        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim))
         x <- x[seq.int(ends$from, ends$to)]
         y <- y[seq.int(ends$from, ends$to)]
         ##20141007 I am chopping this code.  I think it was to reduce the memory footprint, but

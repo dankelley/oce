@@ -37,8 +37,8 @@ SEXP trim_ts(SEXP x, SEXP xlim)
 
   SEXP from;
   SEXP to;
-  PROTECT(from = allocVector(REALSXP, 1));
-  PROTECT(to = allocVector(REALSXP, 1));
+  PROTECT(from = NEW_NUMERIC(1));
+  PROTECT(to = NEW_NUMERIC(1));
 
   double *fromp = REAL(from);
   double *top = REAL(to);
@@ -61,7 +61,7 @@ SEXP trim_ts(SEXP x, SEXP xlim)
   if (*top > nx) *top = (double)nx;
 
   SEXP res, res_names;
-  PROTECT(res = NEW_NUMERIC(1));
+  PROTECT(res = allocVector(VECSXP, 2));
   PROTECT(res_names = allocVector(STRSXP, 2));
   SET_VECTOR_ELT(res, 0, from);
   SET_STRING_ELT(res_names, 0, mkChar("from"));
