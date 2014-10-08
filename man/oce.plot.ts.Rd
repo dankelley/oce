@@ -24,7 +24,9 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{x}{the times of observations.}
 \item{y}{the observations.}
 \item{type}{plot type, \code{"l"} for lines, \code{"p"} for points.}
-\item{xlim}{optional limit for x axis.}
+\item{xlim}{optional limit for x axis.  This has an additional effect, beyond
+    that for conventional R functions: it effectively windows the data, so that
+    autoscaling will yield limits for y that make sense within the window.}
 \item{ylim}{optional limit for y axis.}
 \item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of
     times in the top-left margin.}
@@ -81,30 +83,6 @@ t.start <- as.POSIXct("2008-01-01", tz="UTC")
 t <- seq(t.start, length.out=48, by="30 min")
 y <- sin(as.numeric(t - t.start) * 2 * pi / (12 * 3600))
 oce.plot.ts(t, y, type='l', xaxs='i')
-
-\dontrun{
-weatherplot <- function(id=6358, time=as.POSIXlt(Sys.Date()))
-{
-    ## The default stationID is Halifax, NS, Canada
-    site <- "http://www.climate.weatheroffice.gc.ca/climateData/bulkdata_e.html"
-    time <- as.POSIXlt(time)
-    f <- paste(site,
-               "?timeframe=1&StationID=", id,
-               "&&Year=", time$year+1900,
-               "&Month=", time$mon+1,
-               "&Day=", time$mday,
-               "&format=csv", sep="")
-    ## Read lines first, to see where header ends.  Cannot parse header, owing
-    ## to multi-byte strings there.
-    ll <- readLines(f)
-    skip <- which(grepl("Date", ll, perl=TRUE))
-    d <- read.csv(f, skip=skip, header=FALSE)
-    t <- as.POSIXct(d[,1])
-    p <- d[,19]
-    oce.plot.ts(t, p, type='l', ylab="Pressure [dbar]", cex=2/3, main=paste("Station", id))
-}
-weatherplot()
-}
 }
 
 \author{Dan Kelley}
