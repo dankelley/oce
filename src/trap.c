@@ -25,7 +25,7 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
         dx = *xp;
     int *typep = INTEGER(type);
     SEXP res;
-    double *resp;
+    double *resp = NULL;
     switch(*typep) {
         case 0: // area
             PROTECT(res = NEW_NUMERIC(1));
@@ -58,8 +58,8 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
             }
             break;
         default:
-            PROTECT(res = NEW_NUMERIC(1)); // prevent compiler warning
-            resp[0] = 0.0; // prevent compiler warning
+            PROTECT(res = NEW_NUMERIC(1));
+            resp[0] = 0.0;
             error("unknown type %d; must be 0, 1, or 2\n", *typep);
     }
     UNPROTECT(4);

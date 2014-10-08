@@ -61,7 +61,7 @@ SEXP trim_ts(SEXP x, SEXP xlim)
   if (*top > nx) *top = (double)nx;
 
   SEXP res, res_names;
-  PROTECT(res = allocVector(VECSXP, 2));
+  PROTECT(res = NEW_NUMERIC(1));
   PROTECT(res_names = allocVector(STRSXP, 2));
   SET_VECTOR_ELT(res, 0, from);
   SET_STRING_ELT(res_names, 0, mkChar("from"));

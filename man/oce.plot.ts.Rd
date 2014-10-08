@@ -24,7 +24,9 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{x}{the times of observations.}
 \item{y}{the observations.}
 \item{type}{plot type, \code{"l"} for lines, \code{"p"} for points.}
-\item{xlim}{optional limit for x axis.}
+\item{xlim}{optional limit for x axis.  This has an additional effect, beyond
+    that for conventional R functions: it effectively windows the data, so that
+    autoscaling will yield limits for y that make sense within the window.}
 \item{ylim}{optional limit for y axis.}
 \item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of
     times in the top-left margin.}
