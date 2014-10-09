@@ -28,7 +28,11 @@
 
 \details{This function is still in development, and the argument list as well
     as the action taken are both subject to change, hence the brevity of this
-    help page.}
+    help page.
+
+Note that if a grid line crosses the axis twice, only one label will be drawn.
+
+}
 
 \seealso{See \code{\link{mapPlot}} for general information on plotting maps,
     including other functions.}

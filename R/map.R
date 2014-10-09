@@ -34,18 +34,20 @@ fixneg <- function(v)
     rval
 }
 
-mapAxis <- function(side, longitude, latitude, debug=getOption("oceDebug"))
+mapAxis <- function(side, longitude=NULL, latitude=NULL, debug=getOption("oceDebug"))
 {
     axis <- .axis()
     #if (debug > 0) print(axis)
-    if (is.null(axis$longitude))
-        oceDebug(debug, "should auto generate longitude grid and then axis\n")
-    if (is.null(axis$latitude))
-        oceDebug(debug, "should auto generate latitude grid and then axis\n")
-    if (missing(longitude))
+    if (is.null(longitude) && is.null(latitude)) {
         longitude <- axis$longitude
-    if (missing(latitude))
         latitude <- axis$latitude
+    }
+    if (is.null(longitude) && is.null(latitude))
+        return()
+    ## if (is.null(axis$longitude)) oceDebug(debug, "should auto generate longitude grid and then axis\n")
+    ## if (is.null(axis$latitude)) oceDebug(debug, "should auto generate latitude grid and then axis\n")
+    ## if (missing(longitude)) longitude <- axis$longitude
+    ## if (missing(latitude)) latitude <- axis$latitude
     if (missing(side))
         side <- 1:2
     usr <- par('usr')
@@ -53,16 +55,29 @@ mapAxis <- function(side, longitude, latitude, debug=getOption("oceDebug"))
     if (1 %in% side) {
         oceDebug(debug, "bottom axis\n")
         for (lon in longitude) {
-            oceDebug(debug, " lon=", lon, "\n")
+            oceDebug(debug, "check longitude", lon, "for bottom axis...\n")
             o <- optimize(function(lat) abs(lonlat2map(lon,lat)$y-usr[3]),lower=-89.9999,upper=89.9999)
             if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
             x <- lonlat2map(lon, o$minimum)$x
             if (!is.na(x) && usr[1] < x && x < usr[2]) {
                 label <- fixneg(paste(lon, "E", sep=""))
                 mtext(label, side=1, at=x)
-                oceDebug(debug, "lonlabel", lon, "E intersects side 1\n")
+                oceDebug(debug, "  ", label, "intersects side 1\n")
             } else {
-                oceDebug(debug, "lonlabel", lon, "E does not intersect side 1\n")
+                oceDebug(debug, "  ", lon, "E does not intersect side 1\n")
+            }
+        }
+        for (lat in latitude) {
+            oceDebug(debug, "check latitude", lat, "for bottom axis...\n")
+            o <- optimize(function(lon) abs(lonlat2map(lon,lat)$y-usr[3]),lower=-89.9999,upper=89.9999)
+            if (is.na(o$objective) || o$objective > 0.01*axisSpan) next
+            x <- lonlat2map(o$minimum, lat)$x
+            if (!is.na(x) && usr[1] < x && x < usr[2]) {
+                label <- fixneg(paste(lat, "N", sep=""))
+                mtext(label, side=1, at=x)
+                oceDebug(debug, "  ", label, "intersects side 1\n")
+            } else {
+                oceDebug(debug, "  ", lat, "N does not intersect side 1\n")
             }
         }
         ##if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
