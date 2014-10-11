@@ -2711,20 +2711,30 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "teos")
-                mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-            else
-                mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            if (is.null(xlab)) {
+                if (eos == "teos") {
+                    mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                }
+            } else {
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            }
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "teos")
-                    mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                else
-                    mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                if (is.null(xlab)) {
+                    if (eos == "teos") {
+                        mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                    } else {
+                        mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                    }
+                } else {
+                    mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+                }
                 axis(2)
                 axis(3)
                 box()
@@ -2869,12 +2879,17 @@ plotProfile <- function (x,
             if (!add) {
                 plot(theta[look], y[look],
                      xlim=Tlim, ylim=ylim,
-                     type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "teos")
-                    mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                else
-                    mtext(resizableLabel("theta", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                mtext(yname, side = 2, line = axis.name.loc, cex=par("cex"))
+                     type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                if (is.null(xlab)) {
+                    if (eos == "teos") {
+                        mtext(resizableLabel("Conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else {
+                        mtext(resizableLabel("theta", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    }
+                } else {
+                    mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+                }
+                mtext(yname, side=2, line=axis.name.loc, cex=par("cex"))
                 axis(2)
                 axis(3)
                 box()
@@ -2900,10 +2915,14 @@ plotProfile <- function (x,
             } else {
                 plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
-            if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+            if (is.null(xlab)) {
+                if (getOption("oceUnitBracket") == '[') {
+                    mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                }
             } else {
-                mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
             }
             axis(2)
             axis(3)
