@@ -628,17 +628,21 @@ setMethod(f="plot",
                           }
                       }
                       if (is.null(at)) {
+                          if ("xlab" %in% names(list(...))) {
+                              xlab <- list(...)$xlab
+                          } else {
+                              xlab <- switch(which.xtype, 
+                                             resizableLabel("distance km"),
+                                             resizabelLabel("along-track distance km"),
+                                             gettext("Longitude", domain="R-oce"),
+                                             gettext("Latitude", domain="R-oce"))
+                          }
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               ## FIXME: below should use gettext() or resizableLabel.
-                               xlab=switch(which.xtype, 
-                                           resizableLabel("distance km"),
-                                           resizabelLabel("along-track distance km"),
-                                           gettext("Longitude", domain="R-oce"),
-                                           gettext("Latitude", domain="R-oce")),
+                               xlab=xlab,
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)
