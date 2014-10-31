@@ -7,7 +7,8 @@
 \description{Modified version of axis.POSIXct}
 
 \usage{oce.axis.POSIXct(side, x, at, tformat, labels = TRUE,
-  drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
+  drawTimeRange=getOption("oceDrawTimeRange"),
+  abbreviateTimeRange=FALSE, drawFrequency=FALSE,
   cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), 
   mar=par("mar"), mgp=par("mgp"),
   main="", debug=getOption("oceDebug"), ...)}

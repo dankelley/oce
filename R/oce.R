@@ -218,7 +218,8 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
-                        drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
+                        drawTimeRange=getOption("oceDrawTimeRange"),
+                        adorn=NULL, fill=FALSE,
                         #xaxs="i", yaxs="i",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
@@ -907,7 +908,8 @@ oceColorsPalette <- function(n, which=1)
 }
 
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
-                              drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
+                              drawTimeRange=getOption("oceDrawTimeRange"),
+                              abbreviateTimeRange=FALSE, drawFrequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
