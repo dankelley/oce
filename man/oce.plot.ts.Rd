@@ -8,7 +8,7 @@
 
 \usage{
 oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
-            drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
+            drawTimeRange=getOption("oceDrawTimeRange"), adorn=NULL, fill=FALSE,
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
