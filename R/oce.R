@@ -304,6 +304,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
+             xaxs="i",
              xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
@@ -311,6 +312,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
         plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
+             xaxs="i",
              xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
              xlab=xlab, ylab=ylab,
