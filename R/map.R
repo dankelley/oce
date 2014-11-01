@@ -771,7 +771,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     DX <- usr[2] - usr[1]
     if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
         dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
-        bad <- dx / DX > 0.5
+        bad <- dx / DX > 0.1
         if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
             xy$x[bad] <- NA
         }
