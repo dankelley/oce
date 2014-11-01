@@ -207,14 +207,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    if (grid) warning("ignoring 'grid' value -- this will be removed in an upcoming version!\n")
-    grid <- FALSE
+    ##if (grid) warning("ignoring 'grid' value during early development; it will be obeyed again in due course!\n")
+    ##grid <- FALSE
     oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
              ", projection=\"", projection, "\"",
+             ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
         data("coastlineWorld", envir=environment())
@@ -339,26 +340,31 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "span=", span, "\n")
         if (missing(latitudelim)) {
             if (span > 45) {
-                grid[2] <- 15 # this looks nice on global maps
+                if (is.logical(grid[2]))
+                    grid[2] <- 15 # this looks nice on global maps
                 latlabs <- seq(-90, 90, grid[2])
             } else {
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
-                grid[2] <- diff(latlabs[1:2])
+                if (is.logical(grid[2]))
+                    grid[2] <- diff(latlabs[1:2])
             }
             oceDebug(debug,  "latitudelim not provided; grid[2]=", grid[2], "\n")
         } else {
             ##span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
             if (span > 45) {
-                grid[2] <- 15 
+                if (is.logical(grid[2]))
+                    grid[2] <- 15 
                 latlabs <- seq(-90, 90, grid[2])
                 oceDebug(debug, "span=", span, "exceeds 45 so setting grid to ", grid[2], "\n")
             } else if (5 < span && span <= 45) {
-                grid[2] <- 5 
+                if (is.logical(grid[2]))
+                    grid[2] <- 5 
                 latlabs <- seq(-90, 90, grid[2])
                 oceDebug(debug, "span=", span, "between 5 and 45 so setting grid to ", grid[2], "\n")
             } else {
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
-                grid[2] <- diff(latlabs[1:2])
+                if (is.logical(grid[1]))
+                    grid[2] <- diff(latlabs[1:2])
                 oceDebug(debug, "latitudelim provided; setting grid[2]=", grid[2], "\n")
             }
         }
@@ -367,28 +373,32 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             ##message("span: ", span)
             if (span > 60) {
                 oceDebug(debug, "lon grid selected automatically; big-span case\n")
-                grid[1] <- 15 # this looks nice on global maps
                 lonlabs <- seq(-180, 180, length.out=25)
-                grid[1] <- lonlabs[2] - lonlabs[1]
+                if (is.logical(grid[1]))
+                    grid[1] <- lonlabs[2] - lonlabs[1]
             } else {
                 oceDebug(debug, "lon grid selected automatically; small-span case\n")
                 lonlabs <- pretty(c(ll$longitude, ur$longitude))
-                grid[1] <- diff(lonlabs[1:2])
+                if (is.logical(grid[1]))
+                    grid[1] <- diff(lonlabs[1:2])
             }
             oceDebug(debug, "no longitudelim provided; setting grid[1]=", grid[1], "\n")
         } else {
             if (45 < span) {
                 oceDebug(debug, "lon case A", "\n")
-                grid[1] <- 15          # divides 45 evenly
+                if (is.logical(grid[1]))
+                    grid[1] <- 15          # divides 45 evenly
                 lonlabs <- seq(-180, 180, grid[1])
             } else if (5 < span && span <= 45) {
                 oceDebug(debug, "lon case B", "\n")
-                grid[1] <- 5 
+                if (is.logical(grid[1]))
+                    grid[1] <- 5 
                 lonlabs <- seq(-180, 180, grid[1])
             } else {
                 oceDebug(debug, "lon case C", "\n")
                 lonlabs <- pretty(c(ll$longitude, ur$longitude))
-                grid[1] <- diff(lonlabs[1:2])
+                if (is.logical(grid[1]))
+                    grid[1] <- diff(lonlabs[1:2])
             }
             oceDebug(debug, "longitudelim provided; setting grid[1]=", grid[1], "\n")
         }
