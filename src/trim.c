@@ -42,7 +42,6 @@ SEXP trim_ts(SEXP x, SEXP xlim)
 
   double *fromp = REAL(from);
   double *top = REAL(to);
-  int ifrom = nx, ito=-1;
   for (int i = 0; i < nx; i++) {
     //Rprintf("examine x[%d]=%f\n", 1+i, xp[i]);
     if (xp[i] > (xlimp[0] - epsilon)) {

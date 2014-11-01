@@ -43,7 +43,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(.Last.projection()$projection)))
+    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) {
@@ -564,7 +564,7 @@ mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
-    if (0 == nchar(.Last.projection()$projection) && 0 == nchar(.Last.proj4()$projection)) {
+    if (0 == nchar(mapproj::.Last.projection()$projection) && 0 == nchar(.Last.proj4()$projection)) {
         warning("mapScalebar() only works for plots created with projections")
         return()
     }
@@ -836,7 +836,7 @@ map2lonlat <- function(x, y, init=c(0,0))
         return(list(longitude=xy$x, latitude=xy$y))
     }
     ## Now we know we are using mapproj-style
-    lp <- .Last.projection()
+    lp <- mapproj::.Last.projection()
     projection <- lp$projection
     parameters <- lp$parameters
     orientation <- lp$orientation
@@ -911,7 +911,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(.Last.projection()$projection)))
+    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
@@ -1084,7 +1084,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]
-        i <- interp(xx, yy, zz, xg, yg)
+        i <- interpBarnes(xx, yy, zz, xg, yg)
         levels <- breaks # FIXME: probably wrong
         .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
     } else {
@@ -1365,7 +1365,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         }
         xy <- list(x=m[,1], y=m[,2])
         .Last.proj4(list(projection=projection)) # turn on proj4
-        .Last.projection(list(projection="")) # turn off mapproj, in case it was on
+        mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
     xy
 }
