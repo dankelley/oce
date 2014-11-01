@@ -149,7 +149,9 @@ drawPalette <- function(zlim, zlab="",
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
-    if (!zlimGiven)
+    colormapGiven <- !missing(colormap)
+    oceDebug(debug, "colormapGiven =", colormapGiven, "\n")
+    if (!zlimGiven && !colormapGiven)
         plot <- FALSE
     levelsGiven <- !missing(levels)
     if (zlimGiven)
@@ -166,7 +168,6 @@ drawPalette <- function(zlim, zlab="",
                  unindent=1, sep="")
     else
         oceDebug(debug, "drawPalette() with no zlim argument\n", sep="", unindent=1)
-    colormapGiven <- !missing(colormap)
     maiGiven <- !missing(mai)
     oceDebug(debug, "maiGiven =", maiGiven, "\n")
     if (maiGiven)
@@ -226,6 +227,7 @@ drawPalette <- function(zlim, zlab="",
                 col <- col(n=length(breaks)-1)
         }
     }
+    oceDebug(debug, "plot:", plot, "\n")
     if (plot) {
         if (fullpage)
             par(mai=pc$mai1f)
