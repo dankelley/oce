@@ -1442,6 +1442,9 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             }
             if (!is.null(orientation))
                 cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
+            if (projection == "stereographic")
+                cmd <- paste(cmd, " +lat_0=90", sep="")
+
             message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
         }
     } else {                           
