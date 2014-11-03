@@ -207,6 +207,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     debug=getOption("oceDebug"),
                     ...)
 {
+    dots <- list(...)
     ##if (grid) warning("ignoring 'grid' value during early development; it will be obeyed again in due course!\n")
     ##grid <- FALSE
     oceDebug(debug, "mapPlot(longitude, latitude", 
@@ -262,29 +263,35 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         y[bad] <- NA
     }
 
-    if (limitsGiven) {
-        ## transform so can do e.g. latlim=c(70, 110) to centre on pole
-        ##message("latitudelim: ", paste(latitudelim, collapse=" "))
-        ##message("longitudelim: ", paste(longitudelim, collapse=" "))
-        if (latitudelim[2] > 90) {
-            longitudelim[2] <- 360 + longitudelim[2] - 180
-            latitudelim[2] <- 180 - latitudelim[2]
-        }
-        ##message("latitudelim: ", paste(latitudelim, collapse=" "))
-        ##message("longitudelim: ", paste(longitudelim, collapse=" "))
-        n <- 10
-        BOXx <- c(rep(longitudelim[1], n), seq(longitudelim[1], longitudelim[2], length.out=n),
-                  rep(longitudelim[2], n), seq(longitudelim[2], longitudelim[1], length.out=n))
-        BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
-                  seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
-        box <- lonlat2map(BOXx, BOXy)
-        plot(x, y, type=type,
-             xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
-             xlab="", ylab="", asp=1, axes=FALSE, ...)
-        ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
+    dotnames <- names(dots)
+    if ("xlim" %in% dotnames || "ylim" %in% dotnames || "xaxs" %in% dotnames || "yaxs" %in% dotnames) {
+        ## for issue 539, i.e. repeated scales
+        plot(x, y, type=type, xlab="", ylab="", asp=1, axes=FALSE, ...)
     } else {
-        plot(x, y, type=type,
-             xlab="", ylab="", asp=1, axes=FALSE, ...)
+        if (limitsGiven) {
+            ## transform so can do e.g. latlim=c(70, 110) to centre on pole
+            ##message("latitudelim: ", paste(latitudelim, collapse=" "))
+            ##message("longitudelim: ", paste(longitudelim, collapse=" "))
+            if (latitudelim[2] > 90) {
+                longitudelim[2] <- 360 + longitudelim[2] - 180
+                latitudelim[2] <- 180 - latitudelim[2]
+            }
+            ##message("latitudelim: ", paste(latitudelim, collapse=" "))
+            ##message("longitudelim: ", paste(longitudelim, collapse=" "))
+            n <- 10
+            BOXx <- c(rep(longitudelim[1], n), seq(longitudelim[1], longitudelim[2], length.out=n),
+                      rep(longitudelim[2], n), seq(longitudelim[2], longitudelim[1], length.out=n))
+            BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
+                      seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
+            box <- lonlat2map(BOXx, BOXy)
+            plot(x, y, type=type,
+                 xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                 xlab="", ylab="", asp=1, axes=FALSE, ...)
+            ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
+        } else {
+            plot(x, y, type=type,
+                 xlab="", ylab="", asp=1, axes=FALSE, ...)
+        }
     }
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)

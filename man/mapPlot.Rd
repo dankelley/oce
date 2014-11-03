@@ -87,7 +87,9 @@
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
 
-    \item{\dots}{optional arguments passed to plotting functions.}
+    \item{\dots}{optional arguments passed to plotting functions.  This can be
+        useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc
+        to reproduce a scale exactly between two plots.}
 }
 
 \details{Creates a map using the indicated projection.  As noted in the
@@ -182,6 +184,24 @@ mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
 mtext("Stereographic/proj4", adj=1)
 
 # Example 5.
+# Spinning globe: create PNG files that can be assembled into a movie
+png("539B-%03d.png")
+lons <- seq(179, -179, -10)
+ilon <- seq_along(lons)
+par(mar=rep(1, 4))
+for (i in ilon) {
+    p <- paste('+proj=ortho +lat_0=30 +lon_0=', lons[i], sep='')
+    if (i == 1) {
+        mapPlot(coastlineWorld, projection=p)
+        xlim <- par("usr")[1:2]
+        ylim <- par("usr")[3:4]
+    } else {
+        mapPlot(coastlineWorld, projection=p, xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+    }
+}
+dev.off()
+
+# Example 6.
 # TEMPORARY -- will be deleted if the new proj4 scheme is finalized.
 par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
 options(oceProj4Test=FALSE)
@@ -198,7 +218,7 @@ mtext("using internal proj4-style calculations")
     in the examples may cover most practical cases.  Users may be well-advised
     to work with one of these projections, particularly because they are better
     tested than the others; indeed, some world-view projections will simply
-    fail to render.  The choice of \code{mapplot}-format or \code{proj4}-format
+    fail to render.  The choice of \code{mapproj}-format or \code{proj4}-format
     projections is somewhat a matter of user preference.  The author prefers
     \code{proj4} because it offers more possibilities (e.g. choice of reference
     models for earth shape) and since it derives from a library (\code{PROJ.4})
@@ -215,7 +235,7 @@ mtext("using internal proj4-style calculations")
     the ``edge'' of the map at which to put longitude and latitude labels.
     This design choice greatly simplifies the coding effort, freeing up time to
     work on issues regarded as more pressing.  Chief among those issues are (a)
-    the occurance of horizontal lines in maps that have employ prime meridians
+    the occurrence of horizontal lines in maps that have employ prime meridians
     and (b) inaccurate filling of land regions that (again) occur with shifted
     meridians.  Generally, issues are tackled first for commonly used
     projections, such as those used in the examples.}
