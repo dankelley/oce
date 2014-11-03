@@ -781,7 +781,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     }
 }
 
-mapPoints <- function(longitude, latitude, ...)
+mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
@@ -802,6 +802,10 @@ mapPoints <- function(longitude, latitude, ...)
     if (length(longitude) > 0) {
         xy <- lonlat2map(longitude, latitude)
         points(xy$x, xy$y, ...)
+    }
+    if (debug > 90) {
+        cat("par('usr'):", paste(par("usr"), collapse=" "), "\n")
+        cat("first point: lon:", longitude[1], ", lat:", latitude[1], "x:", xy$x[1], "y:", xy$y[1], "\n")
     }
 }
 
