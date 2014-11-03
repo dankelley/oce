@@ -75,10 +75,7 @@
         that in this second case, there is no need to specify the scale
         parameter (\code{+k}), the easting parameter (\code{+easting}) or the
         northing parameter (\code{+northing}), since these are determined from
-        the graph limits.  See \dQuote{Examples}.  \emph{A FEATURE IN TESTING:}
-        use \code{options(oceProj4Test=TRUE)} to do \code{proj4}-style
-        projections using code that is internal to Oce, yielding 100X faster
-        processing; see examples.}
+        the graph limits.  See \dQuote{Examples}.}
 
     \item{parameters, orientation}{parameters and orientation, if
         \code{projection} is in \code{mapproj} form; see
@@ -121,6 +118,12 @@
     (\url{http://xkcd.com/977/}) may also be helpful to some. 
 
 }
+
+\section{TEST FEATURE}{Use \code{options(oceProj4Test=TRUE)} to do
+    \code{proj4}-style projections using code that is internal to Oce, yielding
+    100X faster processing.  This will eventually become the default, if the
+    testing works out well.}
+
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
     with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
