@@ -580,15 +580,17 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
         ## Remove ugly horizontal lines that can occur for 
         ## projections that show the edge of the earth.
         xJump <- abs(diff(x))
-        ## FIXME: the number in the next line might need adjustment.
-        xJumpMedian <- median(xJump, na.rm=TRUE)
-        if (!is.na(xJumpMedian)) {
-            horizontalJump <- c(FALSE, xJump > 3 * xJumpMedian)
-            if (any(horizontalJump)) {
-                x[horizontalJump] <- NA
+        if (any(is.finite(xJump))) {
+            ## FIXME: the number in the next line might need adjustment.
+            xJumpMedian <- median(xJump, na.rm=TRUE)
+            if (!is.na(xJumpMedian)) {
+                horizontalJump <- c(FALSE, xJump > 3 * xJumpMedian)
+                if (any(horizontalJump)) {
+                    x[horizontalJump] <- NA
+                }
             }
+            lines(x, y, lty=lty, lwd=lwd, col=col)
         }
-        lines(x, y, lty=lty, lwd=lwd, col=col)
     }
     if (polarCircle < 0 || polarCircle > 90)
         polarCircle <- 0
