@@ -188,7 +188,7 @@ mtext("Stereographic/proj4", adj=1)
 
 # Example 5.
 # Spinning globe: create PNG files that can be assembled into a movie
-png("539B-%03d.png")
+png("539B-\%03d.png")
 lons <- seq(179, -179, -10)
 ilon <- seq_along(lons)
 par(mar=rep(1, 4))
