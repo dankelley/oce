@@ -121,9 +121,8 @@
 
 \section{TEST FEATURE}{Use \code{options(oceProj4Test=TRUE)} to do
     \code{proj4}-style projections using code that is internal to Oce, yielding
-    100X faster processing.  This will eventually become the default, if the
+    much faster processing.  This will eventually become the default, if the
     testing works out well.}
-
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
     with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
@@ -189,17 +188,19 @@ mtext("Stereographic/proj4", adj=1)
 # Example 5.
 # Spinning globe: create PNG files that can be assembled into a movie
 png("539B-\%03d.png")
-lons <- seq(179, -179, -10)
+options(oceProj4Test=TRUE)
+lons <- seq(360, 0, -15)
 ilon <- seq_along(lons)
-par(mar=rep(1, 4))
+par(mar=rep(0, 4))
 for (i in ilon) {
-    p <- paste('+proj=ortho +lat_0=30 +lon_0=', lons[i], sep='')
+    p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
     if (i == 1) {
-        mapPlot(coastlineWorld, projection=p)
+        mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4)
         xlim <- par("usr")[1:2]
         ylim <- par("usr")[3:4]
     } else {
-        mapPlot(coastlineWorld, projection=p, xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+        mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4,
+                xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
     }
 }
 dev.off()
