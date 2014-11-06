@@ -1197,7 +1197,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]
-        i <- interpBarnes(xx, yy, zz, xg, yg)
+        i <- akima::interp(xx, yy, zz, xg, yg)
         levels <- breaks # FIXME: probably wrong
         .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
     } else {
