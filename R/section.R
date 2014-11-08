@@ -642,7 +642,6 @@ setMethod(f="plot",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               ## FIXME: below should use gettext() or resizableLabel.
                                xlab=xlab,
                                ylab=ylab,
                                axes=FALSE)

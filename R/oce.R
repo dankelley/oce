@@ -220,7 +220,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         drawTimeRange=getOption("oceDrawTimeRange"),
                         adorn=NULL, fill=FALSE,
-                        #xaxs="i", yaxs="i",
+                        xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -259,7 +259,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim))
+        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim), as.numeric(0.04))
         x <- x[seq.int(ends$from, ends$to)]
         y <- y[seq.int(ends$from, ends$to)]
     }
@@ -279,16 +279,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
-             xaxs="i",
+        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
-             xaxs="i",
+        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
              xlab=xlab, ylab=ylab,

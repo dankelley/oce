@@ -22,36 +22,45 @@
 */
 
 /*#define DEBUG*/
-SEXP trim_ts(SEXP x, SEXP xlim)
+SEXP trim_ts(SEXP x, SEXP xlim, SEXP extra)
 {
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(xlim = AS_NUMERIC(xlim));
+  PROTECT(extra = AS_NUMERIC(extra));
   double *xp = REAL(x);
   double *xlimp = REAL(xlim);
+  double *extrap = REAL(extra);
   int nx= LENGTH(x);
   int nxlim = LENGTH(xlim);
-  if (nxlim != 2) error("length of xlim must be 2");
-  if (xlimp[1] < xlimp[0]) error("xlim must be ordered");
-  for (int i = 1; i < nx; i++) if (xp[i] <= xp[i-1]) error("x must be ordered");
-  double epsilon = (xp[1] - xp[0]) / 1e3;
+  if (nxlim != 2)
+    error("length of xlim must be 2");
+  if (xlimp[1] < xlimp[0])
+    error("xlim must be ordered");
+  for (int i = 1; i < nx; i++)
+    if (xp[i] <= xp[i-1])
+      error("x must be ordered");
+  double epsilon = (xp[1] - xp[0]) / 1e9;
 
   SEXP from;
   SEXP to;
   PROTECT(from = NEW_NUMERIC(1));
   PROTECT(to = NEW_NUMERIC(1));
 
+  double start = xlimp[0] - (*extrap)*(xlimp[1]-xlimp[0]) - epsilon;
+  double end = xlimp[1] + (*extrap)*(xlimp[1]-xlimp[0]) + epsilon;
+
   double *fromp = REAL(from);
   double *top = REAL(to);
   for (int i = 0; i < nx; i++) {
     //Rprintf("examine x[%d]=%f\n", 1+i, xp[i]);
-    if (xp[i] > (xlimp[0] - epsilon)) {
+    if (xp[i] >= start) {
       *fromp = (double)i;//-1;
       break;
     }
   }
   for (int i = nx-1; i >= 0; i--) {
     //Rprintf("examine x[%d]=%f\n", 1+i, xp[i]);
-    if (xp[i] < (xlimp[1] + epsilon)) {
+    if (xp[i] < end) {
       *top = (double)i+2;
       break;
     }
@@ -68,7 +77,7 @@ SEXP trim_ts(SEXP x, SEXP xlim)
   SET_STRING_ELT(res_names, 1, mkChar("to"));
   setAttrib(res, R_NamesSymbol, res_names);
 
-  UNPROTECT(6);
+  UNPROTECT(7);
   return(res);
 }
 
