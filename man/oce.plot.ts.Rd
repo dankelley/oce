@@ -9,6 +9,7 @@
 \usage{
 oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
             drawTimeRange=getOption("oceDrawTimeRange"), adorn=NULL, fill=FALSE,
+            xaxs=par("xaxs"), yaxs=par("yaxs"),
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -36,6 +37,8 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
     incorrectly if there are missing values in \code{y}).}
 \item{xlab}{name for x axis; defaults to \code{""}.}
 \item{ylab}{name for y axis; defaults to the plotted item.}
+\item{xaxs}{control x axis ending; see \code{\link{par}("xaxs")}.}
+\item{yaxs}{control y axis ending; see \code{\link{par}("yaxs")}.}
 \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
 \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
 \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
