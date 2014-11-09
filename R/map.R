@@ -208,8 +208,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     ...)
 {
     dots <- list(...)
-    ##if (grid) warning("ignoring 'grid' value during early development; it will be obeyed again in due course!\n")
-    ##grid <- FALSE
     oceDebug(debug, "mapPlot(longitude, latitude", 
             ", longitudelim=",
              if (missing(latitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
@@ -239,7 +237,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
     x <- xy$x
+    xrange <- range(x, na.rm=TRUE)
     y <- xy$y
+    yrange <- range(y, na.rm=TRUE)
     ## FIXME: maybe *always* do this.
     ## FIXME: maybe *skip Antarctica*.
     if (usingProj4() ||
@@ -303,7 +303,22 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (drawBox)
         box()
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
-    if (axes && drawGrid) {
+    ## message("xrange:", paste(round(xrange, 2), collapse=" "))
+    ## message("usr[1:2]:", paste(round(usr[1:2], 2), collapse=" "))
+    ## message("yrange:", paste(round(yrange, 2), collapse=" "))
+    ## message("usr[3:4]:", paste(round(usr[3:4], 2), collapse=" "))
+    fractionOfGlobe <- usr[1] > xrange[1] || xrange[2] > usr[2] || usr[3] > yrange[1] || yrange[2] > usr[4]
+    oceDebug(debug, "initially fractionOfGlobe:", fractionOfGlobe, "\n")
+    ## Also turn off axes if it's nearly the whole globe
+    xfrac <- diff(xrange)/(usr[2]-usr[1]) > 0.7
+    yfrac  <- diff(yrange)/(usr[4]-usr[3]) > 0.7
+    if (!xfrac) fractionOfGlobe <- FALSE
+    if (!yfrac) fractionOfGlobe <- FALSE
+    oceDebug(debug, "xfrac:", xfrac, "\n")
+    oceDebug(debug, "yfrac:", yfrac, "\n")
+    oceDebug(debug, "finally fractionOfGlobe:", fractionOfGlobe, "\n")
+    if (axes || drawGrid) {
+        ## message("axes || drawGrid TRUE")
         ## Grid lines and axes.
         ## 2014-06-29
         ## Find ll and ur corners of plot, if possible, for use in calculating
@@ -348,34 +363,33 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         if (missing(latitudelim)) {
             if (span > 45) {
                 if (is.logical(grid[2]))
-                    grid[2] <- 15 # this looks nice on global maps
+                    grid <- rep(15, 2)
                 latlabs <- seq(-90, 90, grid[2])
             } else {
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
                 if (is.logical(grid[2]))
-                    grid[2] <- diff(latlabs[1:2])
+                    grid <- rep(diff(latlabs[1:2]), 2)
             }
             oceDebug(debug,  "latitudelim not provided; grid[2]=", grid[2], "\n")
         } else {
             ##span <- if (is.na(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
             if (span > 45) {
                 if (is.logical(grid[2]))
-                    grid[2] <- 15 
+                    grid <- rep(15, 2)
                 latlabs <- seq(-90, 90, grid[2])
                 oceDebug(debug, "span=", span, "exceeds 45 so setting grid to ", grid[2], "\n")
             } else if (5 < span && span <= 45) {
                 if (is.logical(grid[2]))
-                    grid[2] <- 5 
+                    grid <- rep(5, 2)
                 latlabs <- seq(-90, 90, grid[2])
                 oceDebug(debug, "span=", span, "between 5 and 45 so setting grid to ", grid[2], "\n")
             } else {
                 latlabs <- pretty(c(ll$latitude, ur$latitude))
                 if (is.logical(grid[1]))
-                    grid[2] <- diff(latlabs[1:2])
+                    grid <- rep(diff(latlabs[1:2]), 2)
                 oceDebug(debug, "latitudelim provided; setting grid[2]=", grid[2], "\n")
             }
         }
-
         if (missing(longitudelim)) {
             ##message("span: ", span)
             if (span > 60) {
@@ -451,7 +465,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "lonlabel", lab, "E does not intersect side 1\n")
                 }
             }
-            if (!is.null(AT)) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+            ## message("is.null(AT):", is.null(AT))
+            ## message("axes:", axes)
+            ## message("fractionOfGlobe:", fractionOfGlobe)
+            if (!is.null(AT) && axes && fractionOfGlobe) axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (2 %in% sides) {    # left side
             oceDebug(debug, "side=2 proj4: ", proj4, "\n")
@@ -498,7 +515,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     }
                 }
             }
-            if (!is.null(AT)) axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+            if (!is.null(AT) && axes && fractionOfGlobe) axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (3 %in% sides) {    # topside
             warning("axis on top side of map is not working yet (contact developer)")
@@ -524,7 +541,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 3\n")
                 }
             }
-            if (!is.null(AT)) axis(side=3, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+            if (!is.null(AT) && axes && fractionOfGlobe) axis(side=3, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (4 %in% sides) {    # right side
             warning("axis on right-hand side of map is not working yet (contact developer)")
@@ -550,7 +567,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     oceDebug(debug, "latlabel", lab, "N intersects side 4\n")
                 }
             }
-            if (!is.null(AT)) axis(side=4, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+            if (!is.null(AT) && axes && fractionOfGlobe) axis(side=4, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         options(warn=options$warn) 
     }
