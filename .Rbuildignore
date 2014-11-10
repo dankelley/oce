@@ -11,3 +11,5 @@ inst/doc/ctd-object.svg
 vignettes/.build.timestamp
 ^.*\.Rproj$
 ^\.Rproj\.user$
+src/*.o$
+

@@ -84,7 +84,9 @@
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
 
-    \item{\dots}{optional arguments passed to plotting functions.}
+    \item{\dots}{optional arguments passed to plotting functions.  This can be
+        useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc
+        to reproduce a scale exactly between two plots.}
 }
 
 \details{Creates a map using the indicated projection.  As noted in the
@@ -102,11 +104,13 @@
     The available projections can be found in the documentation for
     \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
 
-    Further details on map projections are provided by Snyder (1987), an
+    Further details on map projections are provided by [1], an
     exhaustive treatment that includes many illustrations, an overview of the
     history of the topic, and some notes on the strengths and weaknesses of the
     various formulations.  See especially pages 2 through 7, which define terms
-    and provide recommendations.  More accessible (but less detailed) resources
+    and provide recommendations.  References [2] and [3] are also useful, especially
+    regarding datum shifts.  More accessible (but less detailed and less
+    authoratitive) resources
     include a Wikipedia page
     (\url{http://en.wikipedia.org/wiki/List_of_map_projections}), a Radical
     Cartography website
@@ -114,6 +118,11 @@
     (\url{http://xkcd.com/977/}) may also be helpful to some. 
 
 }
+
+\section{TEST FEATURE}{Use \code{options(oceProj4Test=TRUE)} to do
+    \code{proj4}-style projections using code that is internal to Oce, yielding
+    much faster processing.  This will eventually become the default, if the
+    testing works out well.}
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
     with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
@@ -128,7 +137,7 @@ library(oce)
 data(coastlineWorld)
 
 # Example 1.
-# Mollweide (Snyder 1987 page 54) is an equal-area projection that works well
+# Mollweide ([1] page 54) is an equal-area projection that works well
 # for whole-globe views, below shown in a Pacific-focus view using
 # both the mapproj and proj4 formats.  (This pattern of showing the two
 # formats is repeated in all the examples.)
@@ -142,7 +151,7 @@ mtext("Mollweide/proj4", adj=1)
 # Orthographic projections resemble a globe, making them attractive for
 # non-technical use, but they are neither conformal nor equal-area, so they
 # are somewhat limited for serious use on large scales.  See Section 20 of
-# Snyder (1987).
+# [1].
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="orthographic",
         orientation=c(0,-180,0))
@@ -152,7 +161,7 @@ mtext("Orthographic/proj4", adj=1)
 
 # Example 3.
 # The Lambert conformal conic projection is an equal-area projection
-# recommended by Snyder (1987 page 95) for regions of large east-west extent
+# recommended by [1], page 95, for regions of large east-west extent
 # away from the equator, here illustrated for the USA and Canada.
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
@@ -163,7 +172,7 @@ mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
 mtext("Lambert/proj4", adj=1)
 
 # Example 4.
-# The stereographic projection (Snyder 1987 page 120) is conformal, used
+# The stereographic projection [1], page 120, is conformal, used
 # below for an Arctic view with a Canadian focus.  Note the trick of going
 # past the pole: the second latitudelim value is 180 minus the first, and the
 # second longitudelim is 180 plus the first; this uses image points "over"
@@ -176,6 +185,35 @@ mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
         proj="+proj=stere +lat_0=90 +lon_0=-135") #, fill='gray')
 mtext("Stereographic/proj4", adj=1)
 
+# Example 5.
+# Spinning globe: create PNG files that can be assembled into a movie
+png("539B-\%03d.png")
+options(oceProj4Test=TRUE)
+lons <- seq(360, 0, -15)
+ilon <- seq_along(lons)
+par(mar=rep(0, 4))
+for (i in ilon) {
+    p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
+    if (i == 1) {
+        mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4)
+        xlim <- par("usr")[1:2]
+        ylim <- par("usr")[3:4]
+    } else {
+        mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4,
+                xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
+    }
+}
+dev.off()
+
+# Example 6.
+# TEMPORARY -- will be deleted if the new proj4 scheme is finalized.
+par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
+options(oceProj4Test=FALSE)
+mapPlot(coastlineWorld, proj="+proj=moll") 
+mtext("using proj4 package")
+options(oceProj4Test=TRUE)
+mapPlot(coastlineWorld, proj="+proj=moll") 
+mtext("using internal proj4-style calculations")
 }
 }
 
@@ -184,7 +222,7 @@ mtext("Stereographic/proj4", adj=1)
     in the examples may cover most practical cases.  Users may be well-advised
     to work with one of these projections, particularly because they are better
     tested than the others; indeed, some world-view projections will simply
-    fail to render.  The choice of \code{mapplot}-format or \code{proj4}-format
+    fail to render.  The choice of \code{mapproj}-format or \code{proj4}-format
     projections is somewhat a matter of user preference.  The author prefers
     \code{proj4} because it offers more possibilities (e.g. choice of reference
     models for earth shape) and since it derives from a library (\code{PROJ.4})
@@ -201,16 +239,23 @@ mtext("Stereographic/proj4", adj=1)
     the ``edge'' of the map at which to put longitude and latitude labels.
     This design choice greatly simplifies the coding effort, freeing up time to
     work on issues regarded as more pressing.  Chief among those issues are (a)
-    the occurance of horizontal lines in maps that have employ prime meridians
+    the occurrence of horizontal lines in maps that have employ prime meridians
     and (b) inaccurate filling of land regions that (again) occur with shifted
     meridians.  Generally, issues are tackled first for commonly used
     projections, such as those used in the examples.}
 
 \author{Dan Kelley and Clark Richards}
 
-\references{Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
+\references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
-    \url{pubs.usgs.gov/pp/1395/report.pdf}).}
+    \url{pubs.usgs.gov/pp/1395/report.pdf}).
+
+    2. \url{http://earth-info.nga.mil/GandG/publications/tm8358.1/toc.html}
+
+    3. Natural Resources Canada \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+
+}
+
 
 \keyword{hplot}
 

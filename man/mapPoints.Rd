@@ -6,7 +6,7 @@
 
 \description{Plot points on an existing map}
 
-\usage{mapPoints(longitude, latitude, \dots)}
+\usage{mapPoints(longitude, latitude, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
 
@@ -16,6 +16,9 @@
         include those of type \code{coastline}.}
     
     \item{latitude}{latitudes of points to be plotted}
+
+    \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
+        amount of debugging information, or to 2 to get more.} 
 
     \item{\dots}{optional arguments passed to \code{\link{points}}.}
 }
