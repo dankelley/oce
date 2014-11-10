@@ -417,7 +417,9 @@ imagep <- function(x, y, z,
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n")
 
-    if (!missing(zlim) && !missing(breaks) && length(breaks) > 1)
+    zlimGiven <- !missing(zlim)
+    breaksGiven <- !missing(breaks)
+    if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
 
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
@@ -635,17 +637,28 @@ imagep <- function(x, y, z,
     if (!missing(breaks))
         oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
     oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
+
+    ## issue 542: move this out from the drawPalette part of the next block
+    if(missing(zlim)) {
+        ## use range of breaks preferably; otherwise use range z
+        if (missing(breaks)) {
+            zlim <- range(z, na.rm=TRUE)
+        } else {
+            zlim <- range(breaks, na.rm=TRUE)
+        }
+    }
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
-        if(missing(zlim)) {
-            ## use range of breaks preferably; otherwise use range z
-            if (missing(breaks)) {
-                zlim <- range(z, na.rm=TRUE)
-            } else {
-                zlim <- range(breaks, na.rm=TRUE)
-            }
-        }
+        ## issue 542: put this above the block
+        ## if(missing(zlim)) {
+        ##     ## use range of breaks preferably; otherwise use range z
+        ##     if (missing(breaks)) {
+        ##         zlim <- range(z, na.rm=TRUE)
+        ##     } else {
+        ##         zlim <- range(breaks, na.rm=TRUE)
+        ##     }
+        ## }
         drawTriangles <- rep(drawTriangles, length.out=2)
         drawTriangles[1] <- drawTriangles[1] && any(z < zlim[1], na.rm=TRUE)
         drawTriangles[2] <- drawTriangles[2] && any(z > zlim[2], na.rm=TRUE)
@@ -683,10 +696,13 @@ imagep <- function(x, y, z,
 
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
+    oceDebug(debug, "zlimGiven: ", zlimGiven, "\n")
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
 
     ## trim image to limits, so endpoint colours will indicate outliers
     if (!zclip && !zlimHistogram) {
+        oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
         z[z < zlim[1]] <- zlim[1]
         z[z > zlim[2]] <- zlim[2]
     }
