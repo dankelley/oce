@@ -951,14 +951,13 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## following two tests can be true.
     if (0 < nchar(.Last.proj4()$projection)) {
         if (!getOption("externalProj4", FALSE)) {
-            message("doing projection calculations with 'proj4' package")
-            ## message("internal inverse proj4 function (", .Last.proj4()$projection, ")")
+            ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
             XY <- .C("proj4_interface", as.character(.Last.proj4()$projection), as.integer(FALSE),
                      as.integer(n), as.double(x), as.double(y),
                      X=double(n), Y=double(n), NAOK=TRUE)
             return(list(longitude=XY$X, latitude=XY$Y))
         } else {
-            message("doing PROJ.4 calculations within Oce, for speed and accuracy")
+            ##message("doing projection calculations with 'proj4' package")
             xy <- list(x=NA, y=NA)
             ## FIXME: maybe we should do point-by-point if this yields an error
             try({
@@ -1486,7 +1485,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
         ll <- cbind(longitude, latitude)
         if (!getOption("externalProj4", FALSE)) {
-            message("doing projection calculations with 'proj4' package")
+            ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
             if (0 == length(grep("ellps=", projection)))
                 projection<- paste(projection, "+ellps=sphere")
             n <- length(longitude)
@@ -1495,7 +1494,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                      X=double(n), Y=double(n), NAOK=TRUE)
             xy <- list(x=XY$X, y=XY$Y)
         } else {
-            message("doing PROJ.4 calculations within Oce, for speed and accuracy")
+            ## message("doing projection calculations with 'proj4' package")
             m <- NULL                 # for the try()
             try({
                 m <- project(ll, proj=projection)

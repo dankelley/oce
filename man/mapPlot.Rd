@@ -109,7 +109,9 @@
     the \code{proj4} package will be used instead.  Generally, the default
     method is better because the \code{proj4} package handles unprojectable
     points poorly, so that coordinate vectors containing such points must be
-    processed one point at a time, at considerable penalty in speed.
+    processed one point at a time, at considerable penalty in speed.  For
+    example, using the external \code{proj4} package on a worldwide mercator
+    plot yields a slowdown by a factor of 50X.
 
     Further details on map projections are provided by [1], an
     exhaustive treatment that includes many illustrations, an overview of the
