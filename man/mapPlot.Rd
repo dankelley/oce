@@ -104,6 +104,13 @@
     The available projections can be found in the documentation for
     \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
 
+    For \code{proj4}-style projections, the default is to use PROJ.4 code that
+    is built into Oce.  However, if \code{options(externalProj4=TRUE)}, then
+    the \code{proj4} package will be used instead.  Generally, the default
+    method is better because the \code{proj4} package handles unprojectable
+    points poorly, so that coordinate vectors containing such points must be
+    processed one point at a time, at considerable penalty in speed.
+
     Further details on map projections are provided by [1], an
     exhaustive treatment that includes many illustrations, an overview of the
     history of the topic, and some notes on the strengths and weaknesses of the
@@ -118,11 +125,6 @@
     (\url{http://xkcd.com/977/}) may also be helpful to some. 
 
 }
-
-\section{TEST FEATURE}{Use \code{options(oceProj4Test=TRUE)} to do
-    \code{proj4}-style projections using code that is internal to Oce, yielding
-    much faster processing.  This will eventually become the default, if the
-    testing works out well.}
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
     with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
@@ -188,7 +190,6 @@ mtext("Stereographic/proj4", adj=1)
 # Example 5.
 # Spinning globe: create PNG files that can be assembled into a movie
 png("539B-\%03d.png")
-options(oceProj4Test=TRUE)
 lons <- seq(360, 0, -15)
 ilon <- seq_along(lons)
 par(mar=rep(0, 4))
@@ -208,10 +209,8 @@ dev.off()
 # Example 6.
 # TEMPORARY -- will be deleted if the new proj4 scheme is finalized.
 par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
-options(oceProj4Test=FALSE)
 mapPlot(coastlineWorld, proj="+proj=moll") 
 mtext("using proj4 package")
-options(oceProj4Test=TRUE)
 mapPlot(coastlineWorld, proj="+proj=moll") 
 mtext("using internal proj4-style calculations")
 }

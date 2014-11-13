@@ -950,15 +950,17 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if (0 < nchar(.Last.proj4()$projection)) {
-        if (getOption("oceProj4Test", FALSE)) {
+        if (!getOption("externalProj4", FALSE)) {
+            message("doing projection calculations with 'proj4' package")
             ## message("internal inverse proj4 function (", .Last.proj4()$projection, ")")
             XY <- .C("proj4_interface", as.character(.Last.proj4()$projection), as.integer(FALSE),
                      as.integer(n), as.double(x), as.double(y),
                      X=double(n), Y=double(n), NAOK=TRUE)
             return(list(longitude=XY$X, latitude=XY$Y))
         } else {
-            ##message("proj4-style projection exists")
+            message("doing PROJ.4 calculations within Oce, for speed and accuracy")
             xy <- list(x=NA, y=NA)
+            ## FIXME: maybe we should do point-by-point if this yields an error
             try({
                 xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
             }, silent=TRUE)
@@ -1483,8 +1485,8 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (!(pr %in% knownProj4))
             stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
         ll <- cbind(longitude, latitude)
-        if (getOption("oceProj4Test", FALSE)) {
-            ## message("Test new proj4 scheme, signalled by use of options(oceProj4Test=TRUE)")
+        if (!getOption("externalProj4", FALSE)) {
+            message("doing projection calculations with 'proj4' package")
             if (0 == length(grep("ellps=", projection)))
                 projection<- paste(projection, "+ellps=sphere")
             n <- length(longitude)
@@ -1493,6 +1495,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                      X=double(n), Y=double(n), NAOK=TRUE)
             xy <- list(x=XY$X, y=XY$Y)
         } else {
+            message("doing PROJ.4 calculations within Oce, for speed and accuracy")
             m <- NULL                 # for the try()
             try({
                 m <- project(ll, proj=projection)
@@ -1504,7 +1507,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                                               if (inherits(t, "try-error")) c(NA, NA) else t[1,]
                                           })),
                             ncol=2, byrow=TRUE)
-                warning("proj4 calculation is slow because errors meant it had to be done pointwise")
+                warning("proj4 calculation is slow because it was done pointwise")
             }
             xy <- list(x=m[,1], y=m[,2])
         }
