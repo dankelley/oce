@@ -1,6 +1,6 @@
 useDynLib(oce)
 import(methods)
-importFrom("proj4", project)
+#importFrom("proj4", project)
 #importFrom("akima", interp)
 importFrom("mapproj", mapproject)
 importFrom("graphics", plot)

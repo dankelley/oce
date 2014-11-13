@@ -167,12 +167,13 @@ mtext("Orthographic/proj4", adj=1)
 # The Lambert conformal conic projection is an equal-area projection
 # recommended by [1], page 95, for regions of large east-west extent
 # away from the equator, here illustrated for the USA and Canada.
+par(mfrow=c(2,1), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
         proj="lambert", parameters=c(lat0=40,lat1=60),
         orientation=c(90, -100, 0))
 mtext("Lambert/mapproj", adj=1)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-        projection="+proj=lcc +lon_0=-100")
+        projection="+proj=lcc +lat_0=50 +lat_1=60 +lon_0=-100")
 mtext("Lambert/proj4", adj=1)
 
 # Example 4.
@@ -207,14 +208,6 @@ for (i in ilon) {
     }
 }
 dev.off()
-
-# Example 6.
-# TEMPORARY -- will be deleted if the new proj4 scheme is finalized.
-par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
-mapPlot(coastlineWorld, proj="+proj=moll") 
-mtext("using proj4 package")
-mapPlot(coastlineWorld, proj="+proj=moll") 
-mtext("using internal proj4-style calculations")
 }
 }
 

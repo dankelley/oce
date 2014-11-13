@@ -518,7 +518,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             if (!is.null(AT) && axes && fractionOfGlobe) axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         }
         if (3 %in% sides) {    # topside
-            warning("axis on top side of map is not working yet (contact developer)")
+            warning("axis on top side of map is not working yet (contact developer); FIXME: handle the 2 proj methods")
             AT <- NULL
             LAB <- NULL
             for (lab in lonlabel) {
@@ -958,10 +958,12 @@ map2lonlat <- function(x, y, init=c(0,0))
             return(list(longitude=XY$X, latitude=XY$Y))
         } else {
             ##message("doing projection calculations with 'proj4' package")
+            if (!require(proj4))
+                stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
             xy <- list(x=NA, y=NA)
             ## FIXME: maybe we should do point-by-point if this yields an error
             try({
-                xy <- project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
+                xy <- proj4::project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
             }, silent=TRUE)
             return(list(longitude=xy$x, latitude=xy$y))
         }
@@ -1495,14 +1497,16 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             xy <- list(x=XY$X, y=XY$Y)
         } else {
             ## message("doing projection calculations with 'proj4' package")
+            if (!require(proj4))
+                stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
             m <- NULL                 # for the try()
             try({
-                m <- project(ll, proj=projection)
+                m <- proj4::project(ll, proj=projection)
             }, silent=TRUE)
             if (is.null(m)) {
                 m <- matrix(unlist(lapply(1:n, function(i)
                                           {
-                                              t <- try({project(ll[i,], proj=projection)}, silent=TRUE)
+                                              t <- try({proj4::project(ll[i,], proj=projection)}, silent=TRUE)
                                               if (inherits(t, "try-error")) c(NA, NA) else t[1,]
                                           })),
                             ncol=2, byrow=TRUE)
