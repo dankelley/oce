@@ -4,8 +4,8 @@
 
 \title{Read an topography file}
 
-\description{Read a file that contains topographic data in the ETOPO2 dataset, 
-  as provided by the NOAA website.}
+\description{Read a file that contains topographic data in the ETOPO2 dataset,
+    as provided by the NOAA website [1].}
 
 \usage{read.topo(file, \dots)}
 
@@ -30,7 +30,9 @@ plot(topographyMaritimes)
 }
 }
 
-\references{\url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}}
+\references{[1] NOAA website that provides datasets:
+    \url{http://maps.ngdc.noaa.gov/viewers/wcs-client} with the \code{ArcGIS
+        ASCII Grid} menu item selected.}
 
 \author{Dan Kelley}
 

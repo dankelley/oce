@@ -1,4 +1,5 @@
 0.9-15
+- handle new NOAA ascii topography dataset type
 - mapGrid() added
 - data(soi) moved to ocedata package
 - lonlat2map() added

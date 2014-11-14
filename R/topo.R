@@ -373,8 +373,20 @@ read.topo <- function(file, ...)
         rval <- as.topo(longitude, latitude, z, filename=file)
     } else {
         ## ASCII
+        ## NOTE: on 2014-11-13 it came to light that the old dataset website 
+        ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html 
+        ## was no longer working, and that the new one
+        ##          http://maps.ngdc.noaa.gov/viewers/wcs-client/ 
+        ## seemed to have headers 5 lines long.  However,
+        ## the code below has a trick to (perhaps) auto-detect whether the header
+        ## length is 5 or 6.
         nh <- 6
         header <- readLines(file, n=nh)
+        if (nchar(header[length(header)]) > 50) {
+            ## the header is only 5 long, if the last header line is long.
+            nh <- nh - 1
+            header <- header[1:nh]
+        }
         ncol <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
         nrow <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
         longitudeLowerLeft <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
