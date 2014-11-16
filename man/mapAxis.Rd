@@ -6,7 +6,7 @@
 
 \description{Plot axis labels on an existing map}
 
-\usage{mapAxis(side, longitude, latitude, debug=getOption("oceDebug"))}
+\usage{mapAxis(side=1:2, longitude, latitude, debug=getOption("oceDebug"))}
 
 \arguments{
 

@@ -34,11 +34,12 @@
     \item{latitudelim}{optional limit of latitudes to plot}
 
     \item{grid}{either a number (or pair of numbers) indicating the spacing of
-        longitude and latitude lines, in degrees, or a logical value that
-        indicates whether to draw an auto-scaled grid, or whether to skip the
-        drawing of a grid.  For precise control, especially in small domains,
-        it can be best to set \code{grid=FALSE} and to add a grid later, using
-        \code{\link{mapGrid}}.}
+        longitude and latitude lines, in degrees, or a logical value (or pair
+        of values) indicating whether to draw an auto-scaled grid, or whether
+        to skip the grid drawing.  In the case of numerical values, \code{NA}
+        can be used to turn off the grid in longitude or latitude.  For precise
+        control, it can be best to set \code{grid=FALSE} and to add a grid
+        later, using \code{\link{mapGrid}}.}
 
     \item{bg}{background colour for plot (ignored at present).}
 
