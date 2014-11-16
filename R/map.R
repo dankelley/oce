@@ -56,8 +56,13 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
         side <- 1:2
     usr <- par('usr')
     axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
+    TICK <- TRUE # ticks look bad for angled grid lines
+    TCL <- -0.3
+    MGP <- c(2, 0.5, 0)            # first item ignored since not writing "longitude" etc
     if (1 %in% side) {
         oceDebug(debug, "drawing axis on side 1\n")
+        AT <- NULL
+        LAB <- NULL
         for (lon in longitude) {
             if (debug > 3) oceDebug(debug, "check longitude", lon, "for axis on side=1\n")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
@@ -73,7 +78,9 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
             if (is.finite(P$y) && (abs(P$y - usr[3]) < 0.01 * (usr[4] - usr[3]))) {
                 if (!is.na(x) && usr[1] < x && x < usr[2]) {
                     label <- fixneg(paste(lon, "E", sep=""))
-                    mtext(label, side=1, at=x)
+                    ##mtext(label, side=1, at=x)
+                    AT <- c(AT, x)
+                    LAB <- c(LAB, label)
                     if (debug > 3) oceDebug(debug, "  ", label, "intersects side 1\n")
                 } else {
                     if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
@@ -82,36 +89,49 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
                 oceDebug(debug, "skipping off-globe point\n")
             }
         }
+        if (!is.null(AT))
+            axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         if (length(latitude)) {
             warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this\n")
         }
     }
     if (2 %in% side) {
         oceDebug(debug, "drawing axis on side 2\n")
+        AT <- NULL
+        LAB <- NULL
         for (lat in latitude) {
             if (debug > 3) oceDebug(debug, "check latitude", lat, "for axis on side=2\n")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            o <- optimize(function(lon) abs(lonlat2map(lon,lat)$x-usr[1]),lower=-90,upper=90)
-            if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                if (debug > 3) oceDebug(debug, "  latitude", lat, "is unmappable\n")
-                next
-            }
-            ## Check that the point matches lat, as well as lon (this matters for full-globe)
-            P <- lonlat2map(o$minimum, lat)
-            ## oceDebug(debug, "Investigate point at x=", P$x, ", y=", P$y, "; note usr[3]=", usr[3], "\n")
-            y <- P$y
-            if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
-                if (!is.na(y) && usr[3] < y && y < usr[4]) {
-                    label <- fixneg(paste(lat, "N", sep=""))
-                    mtext(label, side=2, at=y)
-                    if (debug > 3) oceDebug(debug, "  ", label, "intersects side 2\n")
-                } else {
-                    if (debug > 3) oceDebug(debug, "    ", lat, "N does not intersect side 2\n")
+            for (hemisphere in 1:2) {
+                LONLOOK <- if (1 == hemisphere) c(-180, 0) else c(0, 180)
+                o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]),
+                              lower=LONLOOK[1], upper=LONLOOK[2])
+                if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
+                    if (debug > 3) oceDebug(debug, "  latitude", lat, "is unmappable\n")
+                    next
                 }
-            } else {
-                oceDebug(debug, "skipping off-globe point\n")
+                ##cat("lat:", lat, ", o$minimum:", o$minimum, "(best)\n")
+                ## Check that the point matches lat, as well as lon (this matters for full-globe)
+                P <- lonlat2map(o$minimum, lat)
+                ## oceDebug(debug, "Investigate point at x=", P$x, ", y=", P$y, "; note usr[3]=", usr[3], "\n")
+                y <- P$y
+                if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
+                    if (!is.na(y) && usr[3] < y && y < usr[4]) {
+                        label <- fixneg(paste(lat, "N", sep=""))
+                        ## mtext(label, side=2, at=y)
+                        AT <- c(AT, y)
+                        LAB <- c(LAB, label)
+                        if (debug > 3) oceDebug(debug, "  ", label, "intersects side 2\n")
+                    } else {
+                        if (debug > 3) oceDebug(debug, "    ", lat, "N does not intersect side 2\n")
+                    }
+                } else {
+                    oceDebug(debug, "skipping off-globe point\n")
+                }
             }
         }
+        if (!is.null(AT))
+            axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
         if (length(longitude)) {
             warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this\n")
         }
