@@ -42,7 +42,8 @@
 
 }
 
-\value{A list containing \code{longitude} and \code{latitude}.}
+\value{A list containing \code{longitude} and \code{latitude}, with \code{NA}
+    values indicating points that are off the globe as displayed.}
 
 \section{Bugs}{The \code{mapproj}-style case can yield \code{NA} for longitude
     and latitude, even for what would seem to be perfectly benign conditions.

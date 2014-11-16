@@ -6,19 +6,18 @@
 
 \description{Plot longitude and latitude grid on an existing map}
 
-\usage{mapGrid(dlongitude, dlatitude, longitude, latitude,
+\usage{mapGrid(dlongitude=15, dlatitude=15, longitude, latitude,
        col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
        debug=getOption("oceDebug"))}
 
 
 \arguments{
 
-    \item{dlongitude}{increment in longitude, used in sequence from -180 to
-        180.  This takes precedence over \code{longitude}, if the latter is
-        supplied.}
+    \item{dlongitude}{increment in longitude, ignored if \code{longitude}
+        is supplied, but otherwise determines the longitude sequence.}
 
-    \item{dlatitude}{increment in latitude, used in sequence from -90 to 90.
-        This takes precedence over \code{latitude}, if the latter is supplied.}
+    \item{dlatitude}{increment in latitude, ignored if \code{latitude}
+        is supplied, but otherwise determines the latitude sequence.}
 
     \item{longitude}{vector of longitudes, or \code{NULL} to prevent drawing
         longitude lines.}

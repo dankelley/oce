@@ -334,32 +334,38 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         options <- options('warn') # turn off warnings temporarily
         options(warn=-1) 
 
-        ## Now next may fail for e.g. molleweide has ll and ur that are
-        ## un-invertable, since the globe may not fill the whole plotting area.
-        mlat <- mean(longitude,na.rm=TRUE)
-        mlon <- mean(latitude, na.rm=TRUE)
-        ll <- map2lonlat(xll, yll)
-        if (is.na(ll$longitude))
-            ll <- map2lonlat(xll, yll, init=c(mlon, mlat))
-        ur <- map2lonlat(xur, yur)
-        if (is.na(ur$longitude))
-            ur <- map2lonlat(xur, yur, init=c(mlon, mlat))
-        ## message("line239: ll: ");str(ll)
-        ## message("line240: ur: ");str(ur)
-        ## message("line 241: xur: ", xur, ", yur: ", yur)
-        if (!is.finite(ll$longitude) || !is.finite(ll$latitude) ||
-            !is.finite(ur$longitude) || !is.finite(ur$latitude)) {
-            ur <- list(longitude=180, latitude=90)
-            ll <- list(longitude=-180, latitude=-90)
+        ## Estimate the span (km) of the displayed portion of the earth.
+        span <- 10e3 # assume hemispheric, if we cannot determine otherwise
+        if (TRUE) {                    # 2014-11-16 for issue 543
+            ## Measure lower-left to upper-right diagonal
+            ll <- map2lonlat(usr[1], usr[3])
+            ur <- map2lonlat(usr[2], usr[4])
+            if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
+                is.finite(ur$longitude) && is.finite(ur$latitude)) {
+                ## estimate span in deg lat by dividing by 111km
+                span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
+            }
+        } else {                       # 2014-11-16 for issue 543 (will delete next in a week or so)
+            ## Now next may fail for e.g. molleweide has ll and ur that are
+            ## un-invertable, since the globe may not fill the whole plotting area.
+            mlat <- mean(longitude,na.rm=TRUE)
+            mlon <- mean(latitude, na.rm=TRUE)
+            ll <- map2lonlat(xll, yll)
+            if (is.na(ll$longitude))
+                ll <- map2lonlat(xll, yll, init=c(mlon, mlat))
+            ur <- map2lonlat(xur, yur)
+            if (is.na(ur$longitude))
+                ur <- map2lonlat(xur, yur, init=c(mlon, mlat))
+            if (!is.finite(ll$longitude) || !is.finite(ll$latitude) ||
+                !is.finite(ur$longitude) || !is.finite(ur$latitude)) {
+                ur <- list(longitude=180, latitude=90)
+                ll <- list(longitude=-180, latitude=-90)
+            }
+            spanLat <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
+            spanLon <- if (!is.finite(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
+            span <- min(abs(spanLat), abs(spanLon))
         }
-        ## message("line247: ll: ");str(ll)
-        ## message("line248: ur: ");str(ur)
-        spanLat <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
-        spanLon <- if (!is.finite(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
-        span <- min(abs(spanLat), abs(spanLon))
-        #oceDebug(debug, "ur:"); str(ur)
-        #oceDebug(debug, "ll:"); str(ll)
-        oceDebug(debug, "span=", span, "\n")
+        oceDebug(debug, "span:", span, "\n")
         if (missing(latitudelim)) {
             if (span > 45) {
                 if (is.logical(grid[2]))
@@ -426,12 +432,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         if ((is.logical(grid[1]) && grid[1]) || grid[1] > 0) {
             oceDebug(debug, "grid lines for lat:", latlabs, "\n")
-            ##mapMeridians(latlabs)
             mapGrid(longitude=NULL, latitude=latlabs)
         }
         if ((is.logical(grid[2]) && grid[2]) || grid[2] > 0) {
             oceDebug(debug, "grid lines for lon:", lonlabs, "\n")
-            ##mapZones(lonlabs)
             mapGrid(longitude=lonlabs, latitude=NULL)
         }
         if (is.null(lonlabel))
@@ -500,18 +504,20 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                         oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
                     }
                 } else {
-                    o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),
-                                 lower=ll$longitude-90,upper=ll$longitude+90) 
-                    #if (abs(lab-60)<2)browser()
-                    if (is.na(o$objective))
-                        next
-                    y <- lonlat2map(o$minimum, lab)$y
-                    if (!is.na(y) && usr[3] <= y && y <= usr[4]) {
-                        AT <- c(AT, y)
-                        LAB <- c(LAB, paste(lab, "N", sep=""))
-                        oceDebug(debug, "latlabel", lab, "N intersects side 2 at y=", y, "\n")
-                    } else {
-                        oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
+                    if (is.finite(ll$longitude) && is.finite(ll$latitude)) {
+                        o <- optimize(function(lon) abs(lonlat2map(lon,lab)$x-usr[1]),
+                                      lower=ll$longitude-90,upper=ll$longitude+90)
+                                        #if (abs(lab-60)<2)browser()
+                        if (is.na(o$objective))
+                            next
+                        y <- lonlat2map(o$minimum, lab)$y
+                        if (!is.na(y) && usr[3] <= y && y <= usr[4]) {
+                            AT <- c(AT, y)
+                            LAB <- c(LAB, paste(lab, "N", sep=""))
+                            oceDebug(debug, "latlabel", lab, "N intersects side 2 at y=", y, "\n")
+                        } else {
+                            oceDebug(debug, "latlabel", lab, "N does not intersect side 2; y=", y, "and usr[3]=", usr[3], "and usr[4]=", usr[4], "\n")
+                        }
                     }
                 }
             }
@@ -574,19 +580,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "} # mapPlot()\n", unindent=1)
 }
 
-mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
+mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
                     debug=getOption("oceDebug"))
 {
-    ## FIXME: permit args 1 to 4 to be missing, and align with axes
-    if (missing(dlongitude) && missing(longitude))
-        stop("must supply dlongitude or longitude")
-    if (missing(dlatitude) && missing(latitude))
-        stop("must supply dlatitude or latitude")
+    warning("FIXME: mapGrid() should check if longitude or latitude is NULL\n")
     small <- 0.001
-    if (!missing(dlongitude))
+    if (missing(longitude))
         longitude <- seq(-180, 180, dlongitude)
-    if (!missing(dlatitude))
+    if (missing(latitude))
         latitude <- seq(-90+small, 90-small, dlatitude)
     n <- 360                           # number of points on line
     xspan <- diff(par('usr')[1:2])
@@ -620,6 +622,7 @@ mapGrid <- function(dlongitude, dlatitude, longitude, latitude,
         polarCircle <- 0
     n <- 360                           # number of points on line
     for (l in longitude) {             # FIXME: should use mapLines here
+        oceDebug(debug, "lon=", l, " N\n")
         line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
         x <- line$x
         y <- line$y
