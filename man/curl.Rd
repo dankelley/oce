@@ -2,9 +2,9 @@
 
 \alias{curl}
 
-\title{Gradient of a matrix}
+\title{Curl of 2D vector field}
 
-\description{Calculate the curl of a vector field}
+\description{Calculate the z component of the curl of an x-y vector field.}
 
 \usage{curl(mx, my, x, y, geographical=TRUE)}
 
@@ -20,15 +20,15 @@
         used.}
 }
 
-\details{A centred difference formula is used, with a 5-point stencil, although
-    the scheme may be changed in the development period, planned to end in
-    January 2015.  If \code{geographical=TRUE}, then \code{x} and \code{y} are
-    taken to be longitude and latitude in degrees, and the earth shape is
-    approximated as a sphere with radius 6371km.}
+\details{In the interior of the domain, a centred difference formula is used,
+    with a 5-point stencil.  Then, the edges are filled in with
+    nearest-neighbour values. Finally, the corners are filled in with the
+    adjacent value along a diagonal.  If \code{geographical=TRUE}, then
+    \code{x} and \code{y} are taken to be longitude and latitude in degrees,
+    and the earth shape is approximated as a sphere with radius 6371km.}
     
-\value{A list containing \code{x} and \code{y}, identical (in this version)
-    with the input values, and \code{curl}, the curl as computed at the
-    intersections.}
+\value{A list containing \code{x} and \code{y}, identical with the input
+    values, and \code{curl}, the computed value of the vector curl.}
 
 \examples{
 library(oce)

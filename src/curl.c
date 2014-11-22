@@ -52,12 +52,14 @@ SEXP curl(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   PROTECT(curl = allocMatrix(REALSXP, nrow, ncol));
   double *curlp = REAL(curl);
 
-  // Fill whole grid with NA.  FIXME: special-case the edges instead.
   // SCHEME: x or longitude is indexed by 0 <= i <= (nrow-1), while
   //         y or latitude  is indexed by 0 <= j <= (ncol-1).
+#ifdef DEBUG
+  // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow; i++) 
     for (int j = 0; j < ncol; j++) 
       curlp[ix(i,j)] = NA_REAL; 
+#endif
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
     yfac = R * M_PI / 180.0;
@@ -76,6 +78,21 @@ SEXP curl(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 #endif
     }
   }
+  // bottom and top: copy neighbours above and below
+  for (int i = 1; i < nrow-1; i++) {
+      curlp[ix(i, 0)] = curlp[ix(i, 1)];
+      curlp[ix(i, ncol-1)] = curlp[ix(i, ncol-2)];
+  }
+  // left and right: copy neighbors to right and left
+  for (int j = 1; j < ncol-1; j++) {
+      curlp[ix(0, j)] = curlp[ix(1, j)];
+      curlp[ix(nrow-1, j)] = curlp[ix(nrow-2, j)];
+  }
+  // corners: use diagonal neighbour
+  curlp[ix(0,0)] = curlp[ix(1,1)];
+  curlp[ix(0,ncol-1)] = curlp[ix(1,ncol-2)];
+  curlp[ix(nrow-1,0)] = curlp[ix(nrow-2,1)];
+  curlp[ix(nrow-1,ncol-1)] = curlp[ix(nrow-2,ncol-2)];
 
   // Construct list for the return value.
   SEXP lres;
