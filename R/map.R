@@ -1457,7 +1457,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             proj <- "?"
             ## See http://www.remotesensing.org/geotiff/proj_list
             ## After the conversion there may be a comment listing corequisites
-            if (projection == "aitoff") proj <- "aitoff (BROKEN!)" # FIXME: segfaults
+            if (projection == "aitoff") proj <- "(no equivalent)"
             if (projection == "albers") proj <- "aea" # needs lat0 lat1
             if (projection == "bonne") proj <- "bonne" # needs lat0
             if (projection == "gall") proj <- "gall"
@@ -1467,8 +1467,10 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             if (projection == "mollweide") proj <- "moll"
             if (projection == "orthographic") proj <- "ortho"
             if (projection == "polyconic") proj <- "pconic"
+            if (projection == "robin") proj <- "(no equivalent)"
             ## FIXME: what about sterea?
             if (projection == "stereographic") proj <- "stere"
+            if (projection == "wintri") proj <- "(no equivalent)"
             cmd <- paste("+proj=", proj, sep="")
             if (!is.null(parameters)) {
                 names <- names(parameters)
@@ -1479,7 +1481,6 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
                 cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
             if (projection == "stereographic")
                 cmd <- paste(cmd, " +lat_0=90", sep="")
-
             message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
         }
     } else {                           
@@ -1487,6 +1488,9 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         pr <- gsub(" .*$", "", gsub("^\\+proj=", "", projection))
         if (!(pr %in% knownProj4))
             stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
+        if (length(grep("aitoff", pr))) stop("+proj=aitoff cannot be used")
+        if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
+        if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
         ll <- cbind(longitude, latitude)
         if (!getOption("externalProj4", FALSE)) {
             ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
