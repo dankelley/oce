@@ -302,6 +302,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## FIXME: the visible earth?
         if (debug > 0 && sum(bad))    # FIXME should be debug>0
             warning("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
+        if (getOption("issue545B", FALSE)) {
+            bad <- latitude < (-60)
+        }
         x[bad] <- NA                       
         y[bad] <- NA
     }
