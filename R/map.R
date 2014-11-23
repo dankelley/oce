@@ -283,6 +283,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     xrange <- range(x, na.rm=TRUE)
     y <- xy$y
     yrange <- range(y, na.rm=TRUE)
+    ## FIXME: should permit the use of PROJ.4 projections that lack inverses.
+    if (usingProj4() && length(grep("wintri", projection)))
+        stop("cannot handle map projection of type 'wintri'")
+    if (usingProj4() && length(grep("aitoff", projection)))
+        stop("cannot handle map projection of type 'aitoff'")
     ## FIXME: maybe *always* do this.
     ## FIXME: maybe *skip Antarctica*.
     if (usingProj4() ||
