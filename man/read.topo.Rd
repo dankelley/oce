@@ -4,7 +4,7 @@
 
 \title{Read an topography file}
 
-\description{Read a file that contains topographic data in the ETOPO2 dataset,
+\description{Read a file that contains topographic data in the ETOPO dataset,
     as provided by the NOAA website [1].}
 
 \usage{read.topo(file, \dots)}

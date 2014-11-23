@@ -1,5 +1,25 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+curl <- function(mx, my, x, y, geographical=FALSE, method=1)
+{
+    ## May add an arg 'scheme' at some point, to permit different
+    ## schemes for estimating the derivatives.
+    if (missing(mx)) stop("must supply mx")
+    if (missing(my)) stop("must supply my")
+    if (missing(x)) stop("must supply x")
+    if (missing(y)) stop("must supply y")
+    if (length(x) <= 1) stop("length(x) must exceed 1 but it is ", length(x))
+    if (length(y) <= 1) stop("length(y) must exceed 1 but it is ", length(y))
+    if (!is.logical(geographical)) stop("geographical must be a logical quantity")
+    method <- as.integer(round(method))
+    if (1 == method)
+        .Call("curl1", mx, my, x, y, geographical)
+    else if (2 == method)
+        .Call("curl2", mx, my, x, y, geographical)
+    else
+        stop("method must be 1 or 2")
+}
+
 rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 {
     if (length(x) == 1) {
