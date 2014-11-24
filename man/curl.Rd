@@ -14,7 +14,7 @@
     \item{x}{the x values for the matrices, a vector of length equal to
         the number of rows in \code{u} and \code{v}.}
     \item{y}{the y values for the matrices, a vector of length equal to
-        the number of rows in \code{u} and \code{v}.}
+        the number of cols in \code{u} and \code{v}.}
     \item{geographical}{logical value indicating whether \code{x} and \code{y}
         are longitude and latitude, in which case spherical trigonometry is
         used.}
@@ -69,15 +69,14 @@ rankine <- function(x, y)
     speed <- ifelse(r < 1, 0.5*r, 0.5/r)
     list(u=-speed*sin(theta), v=speed*cos(theta), speed=speed)
 }
-
 N <- 100
 x <- seq(-2, 2, length.out=N)
-y <- x
+y <- seq(-2, 2, length.out=N)
 u <- outer(x, y, function(x,y) rankine(x,y)$u)
 v <- outer(x, y, function(x,y) rankine(x,y)$v)
 speed <- outer(x, y, function(x,y) rankine(x,y)$speed)
 C <- curl(u, v, x, y, FALSE)
-
+## Plot velocity images, a slice, and curl image.
 par(mfrow=c(2,2))
 imagep(x, y, u, zlab="u", asp=1)
 imagep(x, y, v, zlab="v", asp=1)
