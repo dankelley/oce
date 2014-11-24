@@ -6,15 +6,15 @@
 
 \description{Calculate the z component of the curl of an x-y vector field.}
 
-\usage{curl(mx, my, x, y, geographical=FALSE, method=1)}
+\usage{curl(u, v, x, y, geographical=FALSE, method=1)}
 
 \arguments{
-    \item{mx}{matrix containing the 'x' component of a vector field}
-    \item{my}{matrix containing the 'y' component of a vector field}
-    \item{x}{x values for the matrices, a vector of length equal to
-        \code{\link{nrow}(mx)}}
-    \item{y}{y values for the matrices, a vector of length equal to
-        \code{\link{ncol}(mx)}}
+    \item{u}{matrix containing the 'x' component of a vector field}
+    \item{v}{matrix containing the 'y' component of a vector field}
+    \item{x}{the x values for the matrices, a vector of length equal to
+        the number of rows in \code{u} and \code{v}.}
+    \item{y}{the y values for the matrices, a vector of length equal to
+        the number of rows in \code{u} and \code{v}.}
     \item{geographical}{logical value indicating whether \code{x} and \code{y}
         are longitude and latitude, in which case spherical trigonometry is
         used.}
@@ -24,14 +24,13 @@
 }
 
 \details{The computed component of the curl is defined by \eqn{\partial
-        m_y/\partial x - \partial m_x/\partial y}{d(m_y)/dx - d(m_x)/dy} and
-    the estimate is made using first-difference approximations to the
-    derivatives.  Two methods are provided, selected by the value of
-    \code{method}.
+        v/\partial x - \partial u/\partial y}{dv/dx - du/dy} and the estimate
+    is made using first-difference approximations to the derivatives.  Two
+    methods are provided, selected by the value of \code{method}.
 
 	\itemize{
 
-          \item{1}{For \code{method=1}, a centred-difference, 5-point stencil
+          \item{For \code{method=1}, a centred-difference, 5-point stencil
               is used in the interior of the domain.  Then, the edges are
               filled in with nearest-neighbour values. Finally, the corners are
               filled in with the adjacent value along a diagonal.  If
@@ -40,11 +39,11 @@
               approximated as a sphere with radius 6371km.  The resultant
               \code{x} and \code{y} are identical to the provided values, and
               the resultant \code{curl} is a matrix with dimension identical to
-              that of \code{mx}.}
+              that of \code{u}.}
 
-          \item{2}{FIXME.CL: write description of CL method here.  Try to mimic
-              the typographical and language style used for method=1, e.g. end
-              with a note on the lengths of x and y, and dimension of curl.}
+          \item{For \code{method=2}, FIXME.CL: write description of CL method
+              here, ideally mimicking the typographical and writing style of
+              the previous case.}
 
         }
 }
@@ -55,20 +54,35 @@
 
 \examples{
 library(oce)
-## 1. constant curl
+## 1. Shear flow with uniform curl.
 x <- 1:4
 y <- 1:10
-mx <- outer(x, y, function(x,y) y/2)
-my <- outer(x, y, function(x,y) -x/2)
-C <- curl(mx, my, x, y, FALSE)
+u <- outer(x, y, function(x,y) y/2)
+v <- outer(x, y, function(x,y) -x/2)
+C <- curl(u, v, x, y, FALSE)
 
-## 2. crude model of mid-latitude wind-stress
-lon <- seq(0, 100, 50)
-lat <- seq(20, 40, 1)
-taux <- outer(lon, lat, function(lon,lat) 0.1 * sin((lat-20)/20*pi/2))
-tauy <- outer(lon, lat, function(lon,lat) 0*lon)
-C <- curl(taux, tauy, lon, lat, TRUE)
-contour(C$x, C$y, C$curl)
+## 2. Rankine vortex: constant curl inside circle, zero outside
+rankine <- function(x, y)
+{
+    r <- sqrt(x^2 + y^2)
+    theta <- atan2(y, x)
+    speed <- ifelse(r < 1, 0.5*r, 0.5/r)
+    list(u=-speed*sin(theta), v=speed*cos(theta), speed=speed)
+}
+
+N <- 100
+x <- seq(-2, 2, length.out=N)
+y <- x
+u <- outer(x, y, function(x,y) rankine(x,y)$u)
+v <- outer(x, y, function(x,y) rankine(x,y)$v)
+speed <- outer(x, y, function(x,y) rankine(x,y)$speed)
+C <- curl(u, v, x, y, FALSE)
+
+par(mfrow=c(2,2))
+imagep(x, y, u, zlab="u", asp=1)
+imagep(x, y, v, zlab="v", asp=1)
+plot(x, v[,N/2])
+imagep(x, y, C$curl, zlab="curl", asp=1)
 }
 
 \author{Dan Kelley and Chantelle Layton.}

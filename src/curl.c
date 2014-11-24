@@ -65,12 +65,12 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
     yfac = R * M_PI / 180.0;
   for (int j = 1; j < ncol-1; j++) {
     if (isGeographical)
-      xfac = R * M_PI / 180.0 * cos(0.5*yp[j]*M_PI/180.0);
+      xfac = R * M_PI / 180.0 * cos(yp[j]*M_PI/180.0);
     for (int i = 1; i < nrow-1; i++) {
       // Calculate first difference with a 5-point stencil, e.g. infer d/dy by subtracting 
       // the value at i+1 from the value at i-1 etc.
-      double dmxdy = (mxp[ix(i,j+1)] - mxp[ix(i,j-1)]) / (yp[j+1] - yp[j-1]) / xfac;
-      double dmydx = (myp[ix(i+1,j)] - myp[ix(i-1,j)]) / (xp[i+1] - xp[i-1]) / yfac;
+      double dmxdy = (mxp[ix(i,j+1)] - mxp[ix(i,j-1)]) / (yp[j+1] - yp[j-1]) / yfac;
+      double dmydx = (myp[ix(i+1,j)] - myp[ix(i-1,j)]) / (xp[i+1] - xp[i-1]) / xfac;
       curlp[ix(i, j)] = dmydx - dmxdy;
 #ifdef DEBUG
       Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1, j+1, xp[j-1], xp[j+1], i-1,i+1,yp[i-1], yp[i+1]);
@@ -151,17 +151,19 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
       curlp[ix(i,j)] = NA_REAL; 
 #endif
   double xfac=1.0, yfac = 1.0;
+  double xsign = (xp[1] > xp[0])? 1.0 : -1.0;
+  double ysign = (yp[1] > yp[0])? 1.0 : -1.0;
   if (isGeographical)
-    yfac = R * M_PI / 180.0;
+    yfac = ysign * R * M_PI / 180.0;
   for (int j = 1; j < ncol-1; j++) {
     if (isGeographical)
-      xfac = R * M_PI / 180.0 * cos(0.5*yp[j]*M_PI/180.0);
+      xfac = xsign * R * M_PI / 180.0 * cos(0.5*yp[j]*M_PI/180.0);
     for (int i = 1; i < nrow-1; i++) {
       // Calculate first difference with a 5-point stencil, e.g. infer d/dy by subtracting 
       // the value at i+1 from the value at i-1 etc.
       // FIXME.CL: alter next lines
-      double dmxdy = (mxp[ix(i,j+1)] - mxp[ix(i,j-1)]) / (yp[j+1] - yp[j-1]) / xfac;
-      double dmydx = (myp[ix(i+1,j)] - myp[ix(i-1,j)]) / (xp[i+1] - xp[i-1]) / yfac;
+      double dmxdy = (mxp[ix(i  , j+1)] - mxp[ix(i  , j-1)]) / (yfac * (yp[j+1] - yp[j-1]));
+      double dmydx = (myp[ix(i+1, j  )] - myp[ix(i-1, j  )]) / (xfac * (xp[i+1] - xp[i-1]));
       curlp[ix(i, j)] = dmydx - dmxdy;
 #ifdef DEBUG
       Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1, j+1, xp[j-1], xp[j+1], i-1,i+1,yp[i-1], yp[i+1]);
