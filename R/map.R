@@ -351,17 +351,18 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## trim out any polygons that have all points offscale
         usr <- par("usr")
         w <- which(is.na(xorig))
-        for (iw in seq(1, -1+length(w))) {
-            ##message("check chunk", iw)
-            ## if (iw == 5) browser()
-            look <- seq.int(w[iw]+1, w[iw+1]-1)
-            xl <- xorig[look]
-            yl <- yorig[look]
-            offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
-            if (all(offscale)) { # probably faster to do this than to make new vectors
-                ##message("  TRIM")
-                x[look] <- NA
-                y[look] <- NA
+        if (length(w)) {
+            for (iw in seq(1, -1+length(w))) {
+                ##message("check chunk", iw)
+                look <- seq.int(w[iw]+1, w[iw+1]-1)
+                xl <- xorig[look]
+                yl <- yorig[look]
+                offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
+                if (all(offscale)) { # probably faster to do this than to make new vectors
+                    ##message("  TRIM")
+                    x[look] <- NA
+                    y[look] <- NA
+                }
             }
         }
     }
