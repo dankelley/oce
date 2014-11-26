@@ -307,6 +307,29 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## FIXME: the visible earth?
         if (debug > 0 && sum(bad))    # FIXME should be debug>0
             warning("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
+        if (getOption("issue545B", FALSE)) {
+            ## TEST: try chopping Antarctica, to see if that's the problem.  ANS: yes.
+            bad <- latitude < (-60)
+        }
+        if (getOption("issue545C", FALSE)) {
+            ## TEST: chop out any island (or lake) that's entirely offscale.  ANS: works.
+            ## FIXME: this might be slow; test on fine coastline and if it's more than
+            ## FIXME: say 5 seconds, perhaps do this in C.
+            usr <- par("usr")
+            w <- which(is.na(x))
+            xvec <- NULL
+            yvec <- NULL
+            for (iw in seq(1, -1+length(w))) {
+                look <- seq.int(w[iw]+1, w[iw+1]-1)
+                xl <- x[look]
+                yl <- y[look]
+                offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
+                if (all(offscale)) { # probably faster to do this than to make new vectors
+                    x[look] <- NA
+                    y[look] <- NA
+                }
+            }
+        }
         x[bad] <- NA                       
         y[bad] <- NA
     }
