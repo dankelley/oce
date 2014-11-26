@@ -244,7 +244,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="mollweide", parameters=NULL, orientation=NULL,
-                    debug=getOption("oceDebug"),
+                    trim=TRUE, debug=getOption("oceDebug"),
                     ...)
 {
     dots <- list(...)
@@ -307,18 +307,35 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## FIXME: the visible earth?
         if (debug > 0 && sum(bad))    # FIXME should be debug>0
             warning("mapPlot(): trimming ", sum(bad), " spurious edge-to-edge lines; filling may be inaccurate", call.=FALSE)
-        if (getOption("issue545B", FALSE)) {
-            ## TEST: try chopping Antarctica, to see if that's the problem.  ANS: yes.
-            bad <- latitude < (-60)
-        }
-        if (getOption("issue545C", FALSE)) {
-            ## TEST: chop out any island (or lake) that's entirely offscale.  ANS: works.
-            ## FIXME: this might be slow; test on fine coastline and if it's more than
-            ## FIXME: say 5 seconds, perhaps do this in C.
+        ##20141726 if (getOption("issue545B", FALSE)) {
+        ##20141726     ## TEST: try chopping Antarctica, to see if that's the problem.  ANS: yes.
+        ##20141726     bad <- latitude < (-60)
+        ##20141726 }
+        ##20141726 if (getOption("issue545C", FALSE)) {
+        ##20141726    ## TEST: chop out any island (or lake) that's entirely offscale.  ANS: works.
+        ##20141726    ## FIXME: this might be slow; test on fine coastline and if it's more than
+        ##20141726    ## FIXME: say 5 seconds, perhaps do this in C.
+        ##20141726    usr <- par("usr")
+        ##20141726    w <- which(is.na(x))
+        ##20141726    xvec <- NULL
+        ##20141726    yvec <- NULL
+        ##20141726    for (iw in seq(1, -1+length(w))) {
+        ##20141726        look <- seq.int(w[iw]+1, w[iw+1]-1)
+        ##20141726        xl <- x[look]
+        ##20141726        yl <- y[look]
+        ##20141726        offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
+        ##20141726        if (all(offscale)) { # probably faster to do this than to make new vectors
+        ##20141726            x[look] <- NA
+        ##20141726            y[look] <- NA
+        ##20141726        }
+        ##20141726    }
+        ## Remove any island/lake that is entirely offscale.  This is not a perfect
+        ## solution to the Antarctica/stereographic problem of issue 545, because the
+        ## line segment between two offscale points might intersect the box.  For
+        ## this reason, it is done only when trim=TRUE.
+        if (trim) {
             usr <- par("usr")
             w <- which(is.na(x))
-            xvec <- NULL
-            yvec <- NULL
             for (iw in seq(1, -1+length(w))) {
                 look <- seq.int(w[iw]+1, w[iw+1]-1)
                 xl <- x[look]

@@ -13,7 +13,7 @@
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
-    projection="mollweide", parameters=NULL, orientation=NULL,
+    projection="mollweide", parameters=NULL, orientation=NULL, trim=TRUE,
     debug=getOption("oceDebug"), \dots)
 }
 
@@ -84,6 +84,13 @@
     \item{parameters, orientation}{parameters and orientation, if
         \code{projection} is in \code{mapproj} form; see
         \code{\link[mapproj]{mapproject}}.}
+
+    \item{trim}{a logical value indicating whether to trim islands or lakes containing
+        only points that are offscale of the current plot box.  This solves the problem
+        of Antarctica overfilling the entire domain, for an Arctic-centred
+        stereographic projection.  It is not a perfect solution, though,
+        because the line segment joining two offscale points might intersect
+        the plotting box.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
