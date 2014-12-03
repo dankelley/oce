@@ -20,6 +20,16 @@ y
 curl
 
 
+lat <- c(85,82.5,80,72.5)
+lon <- c(160,162.5,165,167.5)
+u <- matrix(c(1,6,9,3,7,11,14,10,4,13,2,12,16,8,15,5), nrow=4, ncol=4, byrow=T)
+v <- matrix(c(3,20,1,14,1,19,2,6,21,13,28,16,24,4,15,17), nrow=4, ncol=4, byrow=T)
+system("R CMD SHLIB curl.c"); dyn.load('curl.so')
+.Call("curl2", u,v,lon,lat,TRUE)
+
+
+
+
 */
 
 // The first macro uses nrow-1 for a centred matrix.
@@ -111,12 +121,9 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 #undef ix
 }
 
-// FIXME.CL: write code here, for your scheme.  Be sure to allocate 
-// FIXME.CL: vectors and array of right size, and to adjust loop
-// FIXME.CL: limits as required.
 SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 {
-#define ix(i, j) ((i) + (nrow) * (j))
+#define ix(i, j) ((i) + (nrow-1) * (j))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
   PROTECT(mx = AS_NUMERIC(mx));
   PROTECT(my = AS_NUMERIC(my));
@@ -139,15 +146,15 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   // Construct curl matrix.
   SEXP curl;
   // README.CL: nrow and ncol will need adjustment in next line
-  PROTECT(curl = allocMatrix(REALSXP, nrow, ncol));
+  PROTECT(curl = allocMatrix(REALSXP, nrow-1, ncol-1));
   double *curlp = REAL(curl);
 
   // SCHEME: x or longitude is indexed by 0 <= i <= (nrow-1), while
   //         y or latitude  is indexed by 0 <= j <= (ncol-1).
 #ifdef DEBUG
   // set to NA so we can see if we are failing to fill grid correctly
-  for (int i = 0; i < nrow; i++) 
-    for (int j = 0; j < ncol; j++) 
+  for (int i = 0; i < nrow-1; i++) 
+    for (int j = 0; j < ncol-1; j++) 
       curlp[ix(i,j)] = NA_REAL; 
 #endif
   double xfac=1.0, yfac = 1.0;
@@ -155,13 +162,12 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   double ysign = (yp[1] > yp[0])? 1.0 : -1.0;
   if (isGeographical)
     yfac = ysign * R * M_PI / 180.0;
-  for (int j = 1; j < ncol-1; j++) {
+  for (int j = 0; j < ncol-1; j++) {
     if (isGeographical)
-      xfac = xsign * R * M_PI / 180.0 * cos(0.5*yp[j]*M_PI/180.0);
-    for (int i = 1; i < nrow-1; i++) {
+    xfac = xsign * R * M_PI / 180.0 * cos(yp[j]*M_PI/180.0);
+    for (int i = 0; i < nrow-1; i++) {
       // Calculate first difference with a 5-point stencil, e.g. infer d/dy by subtracting 
       // the value at i+1 from the value at i-1 etc.
-      // FIXME.CL: alter next lines
       double dmxdy = (mxp[ix(i  , j+1)] - mxp[ix(i  , j-1)]) / (yfac * (yp[j+1] - yp[j-1]));
       double dmydx = (myp[ix(i+1, j  )] - myp[ix(i-1, j  )]) / (xfac * (xp[i+1] - xp[i-1]));
       curlp[ix(i, j)] = dmydx - dmxdy;
@@ -171,42 +177,30 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 #endif
     }
   }
-  // FIXME.CL: probably the next two loops are not needed.
-  // bottom and top: copy neighbours above and below
-  for (int i = 1; i < nrow-1; i++) {
-      curlp[ix(i, 0)] = curlp[ix(i, 1)];
-      curlp[ix(i, ncol-1)] = curlp[ix(i, ncol-2)];
-  }
-  // left and right: copy neighbors to right and left
-  for (int j = 1; j < ncol-1; j++) {
-      curlp[ix(0, j)] = curlp[ix(1, j)];
-      curlp[ix(nrow-1, j)] = curlp[ix(nrow-2, j)];
-  }
-  // corners: use diagonal neighbour
-  curlp[ix(0,0)] = curlp[ix(1,1)];
-  curlp[ix(0,ncol-1)] = curlp[ix(1,ncol-2)];
-  curlp[ix(nrow-1,0)] = curlp[ix(nrow-2,1)];
-  curlp[ix(nrow-1,ncol-1)] = curlp[ix(nrow-2,ncol-2)];
-
   // Construct xnew and ynew, which we will return.
-  // FIXME.CL: use PROTECT() and also create a pointer with REAL; 
-  // FIXME.CL: be careful on lengths!
-  // FIXME.CL: Then write little loop to create the new vectors.
+  SEXP xnew, ynew;
+  PROTECT(xnew = allocVector(REALSXP, nrow-1));
+  PROTECT(ynew = allocVector(REALSXP, ncol-1));
+  double *xnewp = REAL(xnew);
+  double *ynewp = REAL(ynew);
+  for (int i = 0; i < nrow - 1; i++)
+    xnewp[i] = 0.5 * (xp[i] + xp[i+1]);
+  for (int j = 0; j < ncol - 1; j++)
+    ynewp[j] = 0.5 * (yp[j] + yp[j+1]);
 
   // Construct list for the return value.
   SEXP lres;
   SEXP lres_names;
   PROTECT(lres = allocVector(VECSXP, 3));
   PROTECT(lres_names = allocVector(STRSXP, 3));
-  SET_VECTOR_ELT(lres, 0, x); // FIXME.CL: use xnew here 
-  SET_VECTOR_ELT(lres, 1, y); // FIXME.CL: use ynew here 
+  SET_VECTOR_ELT(lres, 0, xnew);
+  SET_VECTOR_ELT(lres, 1, ynew);
   SET_STRING_ELT(lres_names, 0, mkChar("x"));
   SET_STRING_ELT(lres_names, 1, mkChar("y"));
   SET_VECTOR_ELT(lres, 2, curl);
   SET_STRING_ELT(lres_names, 2, mkChar("curl"));
   setAttrib(lres, R_NamesSymbol, lres_names);
-  //FIXME.CL: if add a new PROTECT, increment number in line below
-  UNPROTECT(8);
+  UNPROTECT(10);
   return(lres);
 #undef ix
 }
