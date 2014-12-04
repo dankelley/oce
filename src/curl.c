@@ -38,7 +38,7 @@ system("R CMD SHLIB curl.c"); dyn.load('curl.so')
 
 SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 {
-#define ix(i, j) ((i) + (nrow) * (j))
+#define ix(i, j) ((j) + (nrow) * (i))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
   PROTECT(mx = AS_NUMERIC(mx));
   PROTECT(my = AS_NUMERIC(my));
@@ -124,7 +124,7 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 
 SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 {
-#define ix(i, j) ((i) + ((nrow)-1) * (j))
+#define ix2(i, j) ((j) + ((nrow)-1) * (i))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
   PROTECT(mx = AS_NUMERIC(mx));
   PROTECT(my = AS_NUMERIC(my));
@@ -156,30 +156,63 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow-1; i++) 
     for (int j = 0; j < ncol-1; j++) 
-      curlp[ix(i,j)] = NA_REAL; 
+      curlp[ix2(i,j)] = NA_REAL; 
 #endif
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
     yfac = R * M_PI / 180.0;
+#ifdef DEBUG
+  Rprintf("nrow= %d\n", nrow);
+  Rprintf("ncol= %d\n", ncol);
+  Rprintf("2.5*yfac=%.5e\n", 2.5*yfac);
+#endif
   for (int j = 0; j < ncol-1; j++) {
     // For xfac, use cosine factor as the average of values at the north
     // and south sides of the grid box.
     if (isGeographical)
-      xfac = yfac * (0.5*(cos(yp[j]*M_PI/180.0)+cos(yp[j+1]*M_PI/180.0)));
+      xfac = yfac * 0.5*(cos(yp[j]*M_PI/180.0)+cos(yp[j+1]*M_PI/180.0));
+
+    Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j, j, yp[j], 2.5*yfac * cos(yp[j]*M_PI/180.0));
+    Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j+1, j+1, yp[j+1], 2.5*yfac * cos(yp[j+1]*M_PI/180.0));
+    Rprintf("  from the above, get 2.5*xfac=%.5e\n", 2.5*xfac);
     for (int i = 0; i < nrow-1; i++) {
       // Calculate derivatives centred within each grid box.
       double dmxdy =
-	((mxp[ix(i  , j+1)] + mxp[ix(i+1  , j+1)]) -
-	 (mxp[ix(i  , j  )] + mxp[ix(i+1  , j  )])) /
+	(0.5*(mxp[ix2(i  , j+1)] + mxp[ix2(i+1, j+1)]) -
+	 0.5*(mxp[ix2(i  , j  )] + mxp[ix2(i+1, j  )])) /
 	(yfac * (yp[j+1] - yp[j]));
       double dmydx =
-	((myp[ix(i+1, j  )] + myp[ix(i+1  , j+1)]) -
-	 (myp[ix(i  , j  )] + myp[ix(i    , j+1)])) /
+	(0.5*(myp[ix2(i+1, j  )] + myp[ix2(i+1, j+1)]) -
+	 0.5*(myp[ix2(i  , j  )] + myp[ix2(i  , j+1)])) /
 	(xfac * (xp[i+1] - xp[i]));
-      curlp[ix(i, j)] = dmydx - dmxdy;
+      curlp[ix2(i, j)] = dmydx - dmxdy;
 #ifdef DEBUG
-      Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
-      Rprintf("  dmydx=%.2e; dmxdy=%.2e; curl=%.1e\n", dmydx, dmxdy, curlp[ix(i,j)]);
+      if (i == 0 && j == 0) {
+	Rprintf("ix2(0,0) %d\n", ix2(0, 0));
+	Rprintf("ix2(1,0) %d\n", ix2(1, 0));
+	Rprintf("ix2(2,0) %d\n", ix2(2, 0));
+	Rprintf("ix2(3,0) %d\n", ix2(3, 0));
+	Rprintf("ix2(0,1) %d\n", ix2(0, 1));
+	Rprintf("ix2(1,1) %d\n", ix2(1, 1));
+	Rprintf("ix2(2,1) %d\n", ix2(2, 1));
+	Rprintf("ix2(3,1) %d\n", ix2(3, 1));
+	Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
+	Rprintf("du/dx=%.2e; dv/dy=%.2e; curl=%.1e\n", dmydx, dmxdy, curlp[ix2(i,j)]);
+	for (int ii = 0; ii < 2; ii++) {
+	  for (int jj = 0; jj < 2; jj++) {
+	    Rprintf("u[i=%d j=%d] = %15.2g\n", ii, jj, mxp[ix2(ii, jj)]);
+	  }
+	}
+	Rprintf("\nAs a vector, u=\n");
+	for (int ii = 0; ii < nrow*ncol; ii++)
+	  Rprintf("  u[%d]: %15.2g\n", i, mxp[ii]);
+	Rprintf("\n");
+	for (int ii = 0; ii < 2; ii++) {
+	  for (int jj = 0; jj < 2; jj++) {
+	    Rprintf("v[i=%d j=%d] = %15.2g\n", ii, jj, myp[ix2(ii, jj)]);
+	  }
+	}
+      }
 #endif
     }
   }
