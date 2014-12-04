@@ -1,12 +1,13 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-// Curl calculated with first difference on 5-point stencil.
+// Curl calculated with either of two methods, the
+// difference being how derivatives are estimated.
 
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 /* 
 
@@ -20,12 +21,12 @@ y
 curl
 
 
-lat <- c(85,82.5,80,72.5)
+lat <- c(85,82.5,80,77.5)
 lon <- c(160,162.5,165,167.5)
-u <- matrix(c(1,6,9,3,7,11,14,10,4,13,2,12,16,8,15,5), nrow=4, ncol=4, byrow=T)
-v <- matrix(c(3,20,1,14,1,19,2,6,21,13,28,16,24,4,15,17), nrow=4, ncol=4, byrow=T)
+taux <- matrix(c(1,6,9,3,7,11,14,10,4,13,2,12,16,8,15,5), nrow=4, ncol=4, byrow=T)
+tauy <- matrix(c(3,20,1,14,1,19,2,6,21,13,28,16,24,4,15,17), nrow=4, ncol=4, byrow=T)
 system("R CMD SHLIB curl.c"); dyn.load('curl.so')
-.Call("curl2", u,v,lon,lat,TRUE)
+.Call("curl2", taux,tauy,lon,lat,TRUE)
 
 
 
@@ -123,7 +124,7 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 
 SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
 {
-#define ix(i, j) ((i) + (nrow-1) * (j))
+#define ix(i, j) ((i) + ((nrow)-1) * (j))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
   PROTECT(mx = AS_NUMERIC(mx));
   PROTECT(my = AS_NUMERIC(my));
@@ -158,21 +159,26 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
       curlp[ix(i,j)] = NA_REAL; 
 #endif
   double xfac=1.0, yfac = 1.0;
-  double xsign = (xp[1] > xp[0])? 1.0 : -1.0;
-  double ysign = (yp[1] > yp[0])? 1.0 : -1.0;
   if (isGeographical)
-    yfac = ysign * R * M_PI / 180.0;
+    yfac = R * M_PI / 180.0;
   for (int j = 0; j < ncol-1; j++) {
+    // For xfac, use cosine factor as the average of values at the north
+    // and south sides of the grid box.
     if (isGeographical)
-    xfac = xsign * R * M_PI / 180.0 * cos(yp[j]*M_PI/180.0);
+      xfac = yfac * (0.5*(cos(yp[j]*M_PI/180.0)+cos(yp[j+1]*M_PI/180.0)));
     for (int i = 0; i < nrow-1; i++) {
-      // Calculate first difference with a 5-point stencil, e.g. infer d/dy by subtracting 
-      // the value at i+1 from the value at i-1 etc.
-      double dmxdy = (mxp[ix(i  , j+1)] - mxp[ix(i  , j-1)]) / (yfac * (yp[j+1] - yp[j-1]));
-      double dmydx = (myp[ix(i+1, j  )] - myp[ix(i-1, j  )]) / (xfac * (xp[i+1] - xp[i-1]));
+      // Calculate derivatives centred within each grid box.
+      double dmxdy =
+	((mxp[ix(i  , j+1)] + mxp[ix(i+1  , j+1)]) -
+	 (mxp[ix(i  , j  )] + mxp[ix(i+1  , j  )])) /
+	(yfac * (yp[j+1] - yp[j]));
+      double dmydx =
+	((myp[ix(i+1, j  )] + myp[ix(i+1  , j+1)]) -
+	 (myp[ix(i  , j  )] + myp[ix(i    , j+1)])) /
+	(xfac * (xp[i+1] - xp[i]));
       curlp[ix(i, j)] = dmydx - dmxdy;
 #ifdef DEBUG
-      Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1, j+1, xp[j-1], xp[j+1], i-1,i+1,yp[i-1], yp[i+1]);
+      Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
       Rprintf("  dmydx=%.2e; dmxdy=%.2e; curl=%.1e\n", dmydx, dmxdy, curlp[ix(i,j)]);
 #endif
     }
