@@ -7,7 +7,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 /* 
 
@@ -123,7 +123,10 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 
 SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 {
-#define ij(i, j) ((j) + ((nrow)-1) * (i))
+  // ij() is in original space, while IJ() is in the smaller space
+  // that comes from first differencing.
+#define ij(i, j) ((i) + ((nrow)  ) * (j))
+#define IJ(i, j) ((i) + ((nrow)-1) * (j))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
   PROTECT(u = AS_NUMERIC(u));
   PROTECT(v = AS_NUMERIC(v));
@@ -170,24 +173,35 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
     if (isGeographical)
       xfac = yfac * 0.5*(cos(yp[j]*M_PI/180.0)+cos(yp[j+1]*M_PI/180.0));
 
+#ifdef DEBUG
     Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j  , j  , yp[j  ], 2.5*yfac * cos(yp[j  ]*M_PI/180.0));
     Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j+1, j+1, yp[j+1], 2.5*yfac * cos(yp[j+1]*M_PI/180.0));
+#endif
     for (int i = 0; i < nrow-1; i++) {
-      // Calculate derivatives centred within each grid box.
+      // Calculate derivatives centred within each grid box. Thus, for
+      // du, we must avg across x (i.e i) at two grid points, and then
+      // difference across y (i.e. j).
       double du = 0.5*(up[ij(i  , j+1)] + up[ij(i+1, j+1)]) - 0.5*(up[ij(i  , j  )] + up[ij(i+1, j  )]);
       double dv = 0.5*(vp[ij(i+1, j  )] + vp[ij(i+1, j+1)]) - 0.5*(vp[ij(i  , j  )] + vp[ij(i  , j+1)]);
       double dx = xfac * (xp[i+1] - xp[i]);
       double dy = yfac * (yp[j+1] - yp[j]);
-      curlp[ij(i, j)] = dv/dx - du/dy;
 #ifdef DEBUG
       if (i == 0 && j == 0) {
-	Rprintf("u[0,0] = u[%d] = %g\n", ij(0, 0), up[ij(0, 0)]);
-	Rprintf("u[0,1] = u[%d] = %g\n", ij(0, 1), up[ij(0, 1)]);
-	Rprintf("u[1,0] = u[%d] = %g\n", ij(1, 0), up[ij(1, 0)]);
-	Rprintf("u[1,1] = u[%d] = %g\n", ij(1, 1), up[ij(1, 1)]);
+	Rprintf("du = 0.5*(%g + %g) - 0.5*(%g + %g)\n", up[ij(i,j+1)],up[ij(i+1,j+1)],up[ij(i,j)],up[ij(i+1,j)]);
+	Rprintf("dv = 0.5*(%g + %g) - 0.5*(%g + %g)\n", vp[ij(i+1,j)],vp[ij(i+1,j+1)],vp[ij(i,j)],vp[ij(i,j+1)]);
+      }
+#endif
+      curlp[IJ(i, j)] = dv/dx - du/dy;
+#ifdef DEBUG
+      if (i == 0 && j == 0) {
+	Rprintf("TEST INDEXING\n");
+	Rprintf(" u[0,0] = u[%d] = %g\n", ij(0, 0), up[ij(0, 0)]);
+	Rprintf(" u[0,1] = u[%d] = %g\n", ij(0, 1), up[ij(0, 1)]);
+	Rprintf(" u[1,0] = u[%d] = %g\n", ij(1, 0), up[ij(1, 0)]);
+	Rprintf(" u[1,1] = u[%d] = %g\n", ij(1, 1), up[ij(1, 1)]);
 	Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
-	Rprintf("du=%.4f dv=%.4f dx=%g dy=%g du/dx=%.3e dv/dy=%.3e curl=%.3e\n",
-	    du,dv,dx,dy,dv/dx, du/dy, curlp[ij(i,j)]);
+	Rprintf("du=%.4f dv=%.4f dx=%g dy=%g dv/dx=%.3e du/dy=%.3e curl=%.3e\n",
+	    du,dv,dx,dy,dv/dx,du/dy,curlp[ij(i,j)]);
 	//for (int ii = 0; ii < 2; ii++) {
 	//  for (int jj = 0; jj < 2; jj++) {
 	//    Rprintf("u[i=%d j=%d] = %15.2g\n", ii, jj, up[ij(ii, jj)]);
@@ -232,5 +246,6 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   UNPROTECT(10);
   return(lres);
 #undef ij
+#undef IJ
 }
 
