@@ -15,20 +15,18 @@ x <- 1:3
 y <- 1:4
 u <- matrix(1:12, nrow=3, byrow=TRUE)
 v <- matrix(1:12, nrow=3, byrow=FALSE)
-system("R CMD SHLIB curl.c"); dyn.load('curl.so'); curl<-.Call("curl1",u,v,x,y,TRUE)
-x
-y
-curl
+system("R CMD SHLIB curl.c")
+dyn.load('curl.so')
+.Call("curl1",u,v,x,y,TRUE)
 
 
 lat <- c(85,82.5,80,77.5)
 lon <- c(160,162.5,165,167.5)
-taux <- matrix(c(1,6,9,3,7,11,14,10,4,13,2,12,16,8,15,5), nrow=4, ncol=4, byrow=T)
-tauy <- matrix(c(3,20,1,14,1,19,2,6,21,13,28,16,24,4,15,17), nrow=4, ncol=4, byrow=T)
-system("R CMD SHLIB curl.c"); dyn.load('curl.so')
-.Call("curl2", taux,tauy,lon,lat,TRUE)
-
-
+taux <- matrix(c(1,6,9,3,7,11,14,10,4,13,2,12,16,8,15,5), nrow=4, ncol=4, byrow=TRUE)
+tauy <- matrix(c(3,20,1,14,1,19,2,6,21,13,28,16,24,4,15,17), nrow=4, ncol=4, byrow=TRUE)
+system("R CMD SHLIB curl.c")
+dyn.load('curl.so')
+.Call("curl2",taux,tauy,lon,lat,TRUE)
 
 
 */
@@ -46,10 +44,6 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   if (nrow != INTEGER(GET_DIM(v))[0]) error("matrices u and v must have nrow");
   int ncol = INTEGER(GET_DIM(u))[1];
   if (ncol != INTEGER(GET_DIM(v))[1]) error("matrices u and v must have ncol");
-  //#ifdef DEBUG
-  //  Rprintf("length(x) %d\n", LENGTH(x));
-  //  Rprintf("length(y) %d\n", LENGTH(y));
-  //#endif
   if (LENGTH(x) != nrow) error("matrix has %d rows, but length(x) is %d", nrow, LENGTH(x));
   if (LENGTH(y) != ncol) error("matrix has %d cols, but length(y) is %d", ncol, LENGTH(y));
   double *up = REAL(u);
@@ -58,20 +52,16 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   double *yp = REAL(y);
   double *geographicalp = REAL(geographical);
   int isGeographical = 0.0 != *geographicalp;
-  
   // Construct curl matrix.
   SEXP curl;
   PROTECT(curl = allocMatrix(REALSXP, nrow, ncol));
   double *curlp = REAL(curl);
-
   // SCHEME: x or longitude is indexed by 0 <= i <= (nrow-1), while
   //         y or latitude  is indexed by 0 <= j <= (ncol-1).
-#ifdef DEBUG
   // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow; i++) 
     for (int j = 0; j < ncol; j++) 
       curlp[ij(i,j)] = NA_REAL; 
-#endif
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
     yfac = R * M_PI / 180.0;
@@ -112,7 +102,6 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   curlp[ij(0,ncol-1)] = curlp[ij(1,ncol-2)];
   curlp[ij(nrow-1,0)] = curlp[ij(nrow-2,1)];
   curlp[ij(nrow-1,ncol-1)] = curlp[ij(nrow-2,ncol-2)];
-
   // Construct list for the return value.
   SEXP lres;
   SEXP lres_names;
@@ -146,10 +135,6 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   if (nrow != INTEGER(GET_DIM(v))[0]) error("matrices u and v must have nrow");
   int ncol = INTEGER(GET_DIM(u))[1];
   if (ncol != INTEGER(GET_DIM(v))[1]) error("matrices u and v must have ncol");
-#ifdef DEBUG
-  Rprintf("length(x) %d\n", LENGTH(x));
-  Rprintf("length(y) %d\n", LENGTH(y));
-#endif
   if (LENGTH(x) != nrow) error("matrix has %d rows, but length(x) is %d", nrow, LENGTH(x));
   if (LENGTH(y) != ncol) error("matrix has %d cols, but length(y) is %d", ncol, LENGTH(y));
   double *up = REAL(u);
@@ -158,20 +143,16 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   double *yp = REAL(y);
   double *geographicalp = REAL(geographical);
   int isGeographical = 0.0 != *geographicalp;
-  
   // Construct curl matrix.
   SEXP curl;
   PROTECT(curl = allocMatrix(REALSXP, nrow-1, ncol-1));
   double *curlp = REAL(curl);
-
   // SCHEME: x or longitude is indexed by 0 <= i <= (nrow-1), while
   //         y or latitude  is indexed by 0 <= j <= (ncol-1).
-#ifdef DEBUG
   // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow-1; i++) 
     for (int j = 0; j < ncol-1; j++) 
       curlp[ij(i,j)] = NA_REAL; 
-#endif
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
     yfac = R * M_PI / 180.0;
@@ -185,7 +166,6 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
     // and south sides of the grid box.
     if (isGeographical)
       xfac = yfac * 0.5*(cos(yp[j]*M_PI/180.0)+cos(yp[j+1]*M_PI/180.0));
-
 #ifdef DEBUG
     Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j  , j  , yp[j  ], 2.5*yfac * cos(yp[j  ]*M_PI/180.0));
     Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j+1, j+1, yp[j+1], 2.5*yfac * cos(yp[j+1]*M_PI/180.0));
@@ -211,20 +191,6 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 	Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
 	Rprintf("du=%.4f dv=%.4f dx=%g dy=%g dv/dx=%.3e du/dy=%.3e curl=%.3e\n",
 	    du,dv,dx,dy,dv/dx,du/dy,curlp[ij(i,j)]);
-	//for (int ii = 0; ii < 2; ii++) {
-	//  for (int jj = 0; jj < 2; jj++) {
-	//    Rprintf("u[i=%d j=%d] = %15.2g\n", ii, jj, up[ij(ii, jj)]);
-	//  }
-	//}
-	//Rprintf("\nAs a vector, u=\n");
-	//for (int ii = 0; ii < nrow*ncol; ii++)
-	//  Rprintf("  u[%d]: %15.2g\n", ii, up[ii]);
-	//Rprintf("\n");
-	//for (int ii = 0; ii < 2; ii++) {
-	//  for (int jj = 0; jj < 2; jj++) {
-	//    Rprintf("v[i=%d j=%d] = %15.2g\n", ii, jj, vp[ij(ii, jj)]);
-	//  }
-	//}
       }
 #endif
     }
@@ -239,7 +205,6 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
     xnewp[i] = 0.5 * (xp[i] + xp[i+1]);
   for (int j = 0; j < ncol - 1; j++)
     ynewp[j] = 0.5 * (yp[j] + yp[j+1]);
-
   // Construct list for the return value.
   SEXP lres;
   SEXP lres_names;
