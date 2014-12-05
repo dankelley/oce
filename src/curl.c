@@ -35,7 +35,7 @@ system("R CMD SHLIB curl.c"); dyn.load('curl.so')
 
 SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 {
-#define ij(i, j) ((j) + (nrow) * (i))
+#define ij(i, j) ((i) + (nrow) * (j))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
   PROTECT(u = AS_NUMERIC(u));
   PROTECT(v = AS_NUMERIC(v));
@@ -46,6 +46,10 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   if (nrow != INTEGER(GET_DIM(v))[0]) error("matrices u and v must have nrow");
   int ncol = INTEGER(GET_DIM(u))[1];
   if (ncol != INTEGER(GET_DIM(v))[1]) error("matrices u and v must have ncol");
+  //#ifdef DEBUG
+  //  Rprintf("length(x) %d\n", LENGTH(x));
+  //  Rprintf("length(y) %d\n", LENGTH(y));
+  //#endif
   if (LENGTH(x) != nrow) error("matrix has %d rows, but length(x) is %d", nrow, LENGTH(x));
   if (LENGTH(y) != ncol) error("matrix has %d cols, but length(y) is %d", ncol, LENGTH(y));
   double *up = REAL(u);
@@ -73,18 +77,23 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
     yfac = R * M_PI / 180.0;
   for (int j = 1; j < ncol-1; j++) {
     if (isGeographical)
-      xfac = R * M_PI / 180.0 * cos(yp[j]*M_PI/180.0);
+      xfac = yfac * cos(yp[j]*M_PI/180.0);
     for (int i = 1; i < nrow-1; i++) {
-      // Calculate first difference with a 5-point stencil, e.g. infer d/dy by subtracting 
-      // the value at i+1 from the value at i-1 etc.
+      // Calculate first difference with a 5-point stencil, e.g. infer d/dx by subtracting 
+      // the value at i-1 from the value at i+1 etc.
       double du = up[ij(i,j+1)] - up[ij(i,j-1)];
-      double dy = yfac * (yp[j+1] - yp[j-1]);
       double dv = vp[ij(i+1,j)] - vp[ij(i-1,j)];
       double dx = xfac * (xp[i+1] - xp[i-1]);
+      double dy = yfac * (yp[j+1] - yp[j-1]);
       curlp[ij(i, j)] = dv/dx - du/dy;
 #ifdef DEBUG
-      Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1, j+1, xp[j-1], xp[j+1], i-1,i+1,yp[i-1], yp[i+1]);
-      Rprintf("  dv/dx=%.2e; du/dy=%.2e; curl=%.1e\n", dv/dx, du/dy, curlp[ij(i,j)]);
+      Rprintf("i %d   j %d\n", i, j);
+      if (i == 0 && j == 0) {
+	Rprintf("du = 0.5*(%g + %g) - 0.5*(%g + %g) = %g\n", up[ij(i,j+1)],up[ij(i+1,j+1)],up[ij(i,j)],up[ij(i+1,j)],du);
+	Rprintf("dv = 0.5*(%g + %g) - 0.5*(%g + %g) = %g\n", vp[ij(i+1,j)],vp[ij(i+1,j+1)],vp[ij(i,j)],vp[ij(i,j+1)],dv);
+	Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1,j+1,xp[j-1],xp[j+1],i-1,i+1,yp[i-1],yp[i+1]);
+	Rprintf("  dv/dx=%.2e; du/dy=%.2e; curl=%.1e\n", dv/dx,du/dy,curlp[ij(i,j)]);
+      }
 #endif
     }
   }
@@ -137,6 +146,10 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   if (nrow != INTEGER(GET_DIM(v))[0]) error("matrices u and v must have nrow");
   int ncol = INTEGER(GET_DIM(u))[1];
   if (ncol != INTEGER(GET_DIM(v))[1]) error("matrices u and v must have ncol");
+#ifdef DEBUG
+  Rprintf("length(x) %d\n", LENGTH(x));
+  Rprintf("length(y) %d\n", LENGTH(y));
+#endif
   if (LENGTH(x) != nrow) error("matrix has %d rows, but length(x) is %d", nrow, LENGTH(x));
   if (LENGTH(y) != ncol) error("matrix has %d cols, but length(y) is %d", ncol, LENGTH(y));
   double *up = REAL(u);
@@ -185,15 +198,11 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
       double dv = 0.5*(vp[ij(i+1, j  )] + vp[ij(i+1, j+1)]) - 0.5*(vp[ij(i  , j  )] + vp[ij(i  , j+1)]);
       double dx = xfac * (xp[i+1] - xp[i]);
       double dy = yfac * (yp[j+1] - yp[j]);
+      curlp[IJ(i, j)] = dv/dx - du/dy;
 #ifdef DEBUG
       if (i == 0 && j == 0) {
 	Rprintf("du = 0.5*(%g + %g) - 0.5*(%g + %g)\n", up[ij(i,j+1)],up[ij(i+1,j+1)],up[ij(i,j)],up[ij(i+1,j)]);
 	Rprintf("dv = 0.5*(%g + %g) - 0.5*(%g + %g)\n", vp[ij(i+1,j)],vp[ij(i+1,j+1)],vp[ij(i,j)],vp[ij(i,j+1)]);
-      }
-#endif
-      curlp[IJ(i, j)] = dv/dx - du/dy;
-#ifdef DEBUG
-      if (i == 0 && j == 0) {
 	Rprintf("TEST INDEXING\n");
 	Rprintf(" u[0,0] = u[%d] = %g\n", ij(0, 0), up[ij(0, 0)]);
 	Rprintf(" u[0,1] = u[%d] = %g\n", ij(0, 1), up[ij(0, 1)]);
@@ -207,10 +216,10 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 	//    Rprintf("u[i=%d j=%d] = %15.2g\n", ii, jj, up[ij(ii, jj)]);
 	//  }
 	//}
-	Rprintf("\nAs a vector, u=\n");
-	for (int ii = 0; ii < nrow*ncol; ii++)
-	  Rprintf("  u[%d]: %15.2g\n", ii, up[ii]);
-	Rprintf("\n");
+	//Rprintf("\nAs a vector, u=\n");
+	//for (int ii = 0; ii < nrow*ncol; ii++)
+	//  Rprintf("  u[%d]: %15.2g\n", ii, up[ii]);
+	//Rprintf("\n");
 	//for (int ii = 0; ii < 2; ii++) {
 	//  for (int jj = 0; jj < 2; jj++) {
 	//    Rprintf("v[i=%d j=%d] = %15.2g\n", ii, jj, vp[ij(ii, jj)]);

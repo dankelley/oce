@@ -74,9 +74,8 @@ rankine <- function(x, y)
     speed <- ifelse(r < 1, 0.5*r, 0.5/r)
     list(u=-speed*sin(theta), v=speed*cos(theta), speed=speed)
 }
-N <- 100
-x <- seq(-2, 2, length.out=N)
-y <- seq(-2, 2, length.out=N)
+x <- seq(-2, 2, length.out=100)
+y <- seq(-2, 2, length.out=50)
 u <- outer(x, y, function(x,y) rankine(x,y)$u)
 v <- outer(x, y, function(x,y) rankine(x,y)$v)
 speed <- outer(x, y, function(x,y) rankine(x,y)$speed)
@@ -85,7 +84,7 @@ C <- curl(u, v, x, y, FALSE)
 par(mfrow=c(2,2))
 imagep(x, y, u, zlab="u", asp=1)
 imagep(x, y, v, zlab="v", asp=1)
-plot(x, v[,N/2])
+plot(x, v[,25])
 imagep(x, y, C$curl, zlab="curl", asp=1)
 }
 
