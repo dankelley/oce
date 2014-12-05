@@ -41,9 +41,11 @@
               the resultant \code{curl} is a matrix with dimension identical to
               that of \code{u}.}
 
-          \item{For \code{method=2}, FIXME.CL: write description of CL method
-              here, ideally mimicking the typographical and writing style of
-              the previous case.}
+          \item{For \code{method=2}, each interior cell in the grid is
+              considered individually, with derivatives calculated at the cell
+              centre. Thus, the returned \code{x} and \code{y} are shorter than
+              the supplied values by 1 item, and the matrix dimension is
+              similarly reduced by \code{c(1,1)}.}
 
         }
 }
@@ -84,7 +86,7 @@ plot(x, v[,N/2])
 imagep(x, y, C$curl, zlab="curl", asp=1)
 }
 
-\author{Dan Kelley and Chantelle Layton.}
+\author{Dan Kelley and Chantelle Layton}
 
 \keyword{misc}
 
