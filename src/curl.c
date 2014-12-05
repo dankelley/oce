@@ -13,9 +13,9 @@
 
 x <- 1:3
 y <- 1:4
-mx <- matrix(1:12, nrow=3, byrow=TRUE)
-my <- matrix(1:12, nrow=3, byrow=FALSE)
-system("R CMD SHLIB curl.c"); dyn.load('curl.so'); curl<-.Call("curl1",mx,my,x,y,TRUE)
+u <- matrix(1:12, nrow=3, byrow=TRUE)
+v <- matrix(1:12, nrow=3, byrow=FALSE)
+system("R CMD SHLIB curl.c"); dyn.load('curl.so'); curl<-.Call("curl1",u,v,x,y,TRUE)
 x
 y
 curl
@@ -33,26 +33,23 @@ system("R CMD SHLIB curl.c"); dyn.load('curl.so')
 
 */
 
-// The first macro uses nrow-1 for a centred matrix.
-// #define ix2(i, j) ((i) + ((nrow)-1) * (j))
-
-SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
+SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 {
-#define ix(i, j) ((j) + (nrow) * (i))
+#define ij(i, j) ((j) + (nrow) * (i))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
-  PROTECT(mx = AS_NUMERIC(mx));
-  PROTECT(my = AS_NUMERIC(my));
+  PROTECT(u = AS_NUMERIC(u));
+  PROTECT(v = AS_NUMERIC(v));
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
   PROTECT(geographical = AS_NUMERIC(geographical));
-  int nrow = INTEGER(GET_DIM(mx))[0];
-  if (nrow != INTEGER(GET_DIM(my))[0]) error("matrices mx and my must have nrow");
-  int ncol = INTEGER(GET_DIM(mx))[1];
-  if (ncol != INTEGER(GET_DIM(my))[1]) error("matrices mx and my must have ncol");
+  int nrow = INTEGER(GET_DIM(u))[0];
+  if (nrow != INTEGER(GET_DIM(v))[0]) error("matrices u and v must have nrow");
+  int ncol = INTEGER(GET_DIM(u))[1];
+  if (ncol != INTEGER(GET_DIM(v))[1]) error("matrices u and v must have ncol");
   if (LENGTH(x) != nrow) error("matrix has %d rows, but length(x) is %d", nrow, LENGTH(x));
   if (LENGTH(y) != ncol) error("matrix has %d cols, but length(y) is %d", ncol, LENGTH(y));
-  double *mxp = REAL(mx);
-  double *myp = REAL(my);
+  double *up = REAL(u);
+  double *vp = REAL(v);
   double *xp = REAL(x);
   double *yp = REAL(y);
   double *geographicalp = REAL(geographical);
@@ -69,7 +66,7 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow; i++) 
     for (int j = 0; j < ncol; j++) 
-      curlp[ix(i,j)] = NA_REAL; 
+      curlp[ij(i,j)] = NA_REAL; 
 #endif
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
@@ -80,30 +77,32 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
     for (int i = 1; i < nrow-1; i++) {
       // Calculate first difference with a 5-point stencil, e.g. infer d/dy by subtracting 
       // the value at i+1 from the value at i-1 etc.
-      double dmxdy = (mxp[ix(i,j+1)] - mxp[ix(i,j-1)]) / (yp[j+1] - yp[j-1]) / yfac;
-      double dmydx = (myp[ix(i+1,j)] - myp[ix(i-1,j)]) / (xp[i+1] - xp[i-1]) / xfac;
-      curlp[ix(i, j)] = dmydx - dmxdy;
+      double du = up[ij(i,j+1)] - up[ij(i,j-1)];
+      double dy = yfac * (yp[j+1] - yp[j-1]);
+      double dv = vp[ij(i+1,j)] - vp[ij(i-1,j)];
+      double dx = xfac * (xp[i+1] - xp[i-1]);
+      curlp[ij(i, j)] = dv/dx - du/dy;
 #ifdef DEBUG
       Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1, j+1, xp[j-1], xp[j+1], i-1,i+1,yp[i-1], yp[i+1]);
-      Rprintf("  dmydx=%.2e; dmxdy=%.2e; curl=%.1e\n", dmydx, dmxdy, curlp[ix(i,j)]);
+      Rprintf("  dv/dx=%.2e; du/dy=%.2e; curl=%.1e\n", dv/dx, du/dy, curlp[ij(i,j)]);
 #endif
     }
   }
   // bottom and top: copy neighbours above and below
   for (int i = 1; i < nrow-1; i++) {
-      curlp[ix(i, 0)] = curlp[ix(i, 1)];
-      curlp[ix(i, ncol-1)] = curlp[ix(i, ncol-2)];
+      curlp[ij(i, 0)] = curlp[ij(i, 1)];
+      curlp[ij(i, ncol-1)] = curlp[ij(i, ncol-2)];
   }
   // left and right: copy neighbors to right and left
   for (int j = 1; j < ncol-1; j++) {
-      curlp[ix(0, j)] = curlp[ix(1, j)];
-      curlp[ix(nrow-1, j)] = curlp[ix(nrow-2, j)];
+      curlp[ij(0, j)] = curlp[ij(1, j)];
+      curlp[ij(nrow-1, j)] = curlp[ij(nrow-2, j)];
   }
   // corners: use diagonal neighbour
-  curlp[ix(0,0)] = curlp[ix(1,1)];
-  curlp[ix(0,ncol-1)] = curlp[ix(1,ncol-2)];
-  curlp[ix(nrow-1,0)] = curlp[ix(nrow-2,1)];
-  curlp[ix(nrow-1,ncol-1)] = curlp[ix(nrow-2,ncol-2)];
+  curlp[ij(0,0)] = curlp[ij(1,1)];
+  curlp[ij(0,ncol-1)] = curlp[ij(1,ncol-2)];
+  curlp[ij(nrow-1,0)] = curlp[ij(nrow-2,1)];
+  curlp[ij(nrow-1,ncol-1)] = curlp[ij(nrow-2,ncol-2)];
 
   // Construct list for the return value.
   SEXP lres;
@@ -119,26 +118,26 @@ SEXP curl1(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   setAttrib(lres, R_NamesSymbol, lres_names);
   UNPROTECT(8);
   return(lres);
-#undef ix
+#undef ij
 }
 
-SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
+SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
 {
-#define ix2(i, j) ((j) + ((nrow)-1) * (i))
+#define ij(i, j) ((j) + ((nrow)-1) * (i))
   double R = 6371.0e3; // FIXME: could be an argument but there seems little need
-  PROTECT(mx = AS_NUMERIC(mx));
-  PROTECT(my = AS_NUMERIC(my));
+  PROTECT(u = AS_NUMERIC(u));
+  PROTECT(v = AS_NUMERIC(v));
   PROTECT(x = AS_NUMERIC(x));
   PROTECT(y = AS_NUMERIC(y));
   PROTECT(geographical = AS_NUMERIC(geographical));
-  int nrow = INTEGER(GET_DIM(mx))[0];
-  if (nrow != INTEGER(GET_DIM(my))[0]) error("matrices mx and my must have nrow");
-  int ncol = INTEGER(GET_DIM(mx))[1];
-  if (ncol != INTEGER(GET_DIM(my))[1]) error("matrices mx and my must have ncol");
+  int nrow = INTEGER(GET_DIM(u))[0];
+  if (nrow != INTEGER(GET_DIM(v))[0]) error("matrices u and v must have nrow");
+  int ncol = INTEGER(GET_DIM(u))[1];
+  if (ncol != INTEGER(GET_DIM(v))[1]) error("matrices u and v must have ncol");
   if (LENGTH(x) != nrow) error("matrix has %d rows, but length(x) is %d", nrow, LENGTH(x));
   if (LENGTH(y) != ncol) error("matrix has %d cols, but length(y) is %d", ncol, LENGTH(y));
-  double *mxp = REAL(mx);
-  double *myp = REAL(my);
+  double *up = REAL(u);
+  double *vp = REAL(v);
   double *xp = REAL(x);
   double *yp = REAL(y);
   double *geographicalp = REAL(geographical);
@@ -146,7 +145,6 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   
   // Construct curl matrix.
   SEXP curl;
-  // README.CL: nrow and ncol will need adjustment in next line
   PROTECT(curl = allocMatrix(REALSXP, nrow-1, ncol-1));
   double *curlp = REAL(curl);
 
@@ -156,7 +154,7 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow-1; i++) 
     for (int j = 0; j < ncol-1; j++) 
-      curlp[ix2(i,j)] = NA_REAL; 
+      curlp[ij(i,j)] = NA_REAL; 
 #endif
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
@@ -172,46 +170,38 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
     if (isGeographical)
       xfac = yfac * 0.5*(cos(yp[j]*M_PI/180.0)+cos(yp[j+1]*M_PI/180.0));
 
-    Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j, j, yp[j], 2.5*yfac * cos(yp[j]*M_PI/180.0));
+    Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j  , j  , yp[j  ], 2.5*yfac * cos(yp[j  ]*M_PI/180.0));
     Rprintf("at j=%d, have yp[%d]=%.5f and 2.5*xfac=%.5e\n", j+1, j+1, yp[j+1], 2.5*yfac * cos(yp[j+1]*M_PI/180.0));
-    Rprintf("  from the above, get 2.5*xfac=%.5e\n", 2.5*xfac);
     for (int i = 0; i < nrow-1; i++) {
       // Calculate derivatives centred within each grid box.
-      double dmxdy =
-	(0.5*(mxp[ix2(i  , j+1)] + mxp[ix2(i+1, j+1)]) -
-	 0.5*(mxp[ix2(i  , j  )] + mxp[ix2(i+1, j  )])) /
-	(yfac * (yp[j+1] - yp[j]));
-      double dmydx =
-	(0.5*(myp[ix2(i+1, j  )] + myp[ix2(i+1, j+1)]) -
-	 0.5*(myp[ix2(i  , j  )] + myp[ix2(i  , j+1)])) /
-	(xfac * (xp[i+1] - xp[i]));
-      curlp[ix2(i, j)] = dmydx - dmxdy;
+      double du = 0.5*(up[ij(i  , j+1)] + up[ij(i+1, j+1)]) - 0.5*(up[ij(i  , j  )] + up[ij(i+1, j  )]);
+      double dv = 0.5*(vp[ij(i+1, j  )] + vp[ij(i+1, j+1)]) - 0.5*(vp[ij(i  , j  )] + vp[ij(i  , j+1)]);
+      double dx = xfac * (xp[i+1] - xp[i]);
+      double dy = yfac * (yp[j+1] - yp[j]);
+      curlp[ij(i, j)] = dv/dx - du/dy;
 #ifdef DEBUG
       if (i == 0 && j == 0) {
-	Rprintf("ix2(0,0) %d\n", ix2(0, 0));
-	Rprintf("ix2(1,0) %d\n", ix2(1, 0));
-	Rprintf("ix2(2,0) %d\n", ix2(2, 0));
-	Rprintf("ix2(3,0) %d\n", ix2(3, 0));
-	Rprintf("ix2(0,1) %d\n", ix2(0, 1));
-	Rprintf("ix2(1,1) %d\n", ix2(1, 1));
-	Rprintf("ix2(2,1) %d\n", ix2(2, 1));
-	Rprintf("ix2(3,1) %d\n", ix2(3, 1));
+	Rprintf("u[0,0] = u[%d] = %g\n", ij(0, 0), up[ij(0, 0)]);
+	Rprintf("u[0,1] = u[%d] = %g\n", ij(0, 1), up[ij(0, 1)]);
+	Rprintf("u[1,0] = u[%d] = %g\n", ij(1, 0), up[ij(1, 0)]);
+	Rprintf("u[1,1] = u[%d] = %g\n", ij(1, 1), up[ij(1, 1)]);
 	Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
-	Rprintf("du/dx=%.2e; dv/dy=%.2e; curl=%.1e\n", dmydx, dmxdy, curlp[ix2(i,j)]);
-	for (int ii = 0; ii < 2; ii++) {
-	  for (int jj = 0; jj < 2; jj++) {
-	    Rprintf("u[i=%d j=%d] = %15.2g\n", ii, jj, mxp[ix2(ii, jj)]);
-	  }
-	}
+	Rprintf("du=%.4f dv=%.4f dx=%g dy=%g du/dx=%.3e dv/dy=%.3e curl=%.3e\n",
+	    du,dv,dx,dy,dv/dx, du/dy, curlp[ij(i,j)]);
+	//for (int ii = 0; ii < 2; ii++) {
+	//  for (int jj = 0; jj < 2; jj++) {
+	//    Rprintf("u[i=%d j=%d] = %15.2g\n", ii, jj, up[ij(ii, jj)]);
+	//  }
+	//}
 	Rprintf("\nAs a vector, u=\n");
 	for (int ii = 0; ii < nrow*ncol; ii++)
-	  Rprintf("  u[%d]: %15.2g\n", i, mxp[ii]);
+	  Rprintf("  u[%d]: %15.2g\n", ii, up[ii]);
 	Rprintf("\n");
-	for (int ii = 0; ii < 2; ii++) {
-	  for (int jj = 0; jj < 2; jj++) {
-	    Rprintf("v[i=%d j=%d] = %15.2g\n", ii, jj, myp[ix2(ii, jj)]);
-	  }
-	}
+	//for (int ii = 0; ii < 2; ii++) {
+	//  for (int jj = 0; jj < 2; jj++) {
+	//    Rprintf("v[i=%d j=%d] = %15.2g\n", ii, jj, vp[ij(ii, jj)]);
+	//  }
+	//}
       }
 #endif
     }
@@ -241,6 +231,6 @@ SEXP curl2(SEXP mx, SEXP my, SEXP x, SEXP y, SEXP geographical)
   setAttrib(lres, R_NamesSymbol, lres_names);
   UNPROTECT(10);
   return(lres);
-#undef ix
+#undef ij
 }
 
