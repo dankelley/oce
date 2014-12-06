@@ -254,7 +254,11 @@ setMethod(f="plot",
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
                               oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              if (bestcoastline == "coastlineWorld") {
+                                  data(list=bestcoastline, package="oce", envir=environment())
+                              } else {
+                                  data(list=bestcoastline, package="ocedata", envir=environment())
+                              }
                               coastline <- get(bestcoastline)
                           } else {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
@@ -266,7 +270,7 @@ setMethod(f="plot",
                       } else {
                           if (coastline != "none") {
                               if (coastline == "coastlineWorld") {
-                                  data("coastlineWorld", envir=environment())
+                                  data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- coastlineWorld
                               } else if (haveOcedata && coastline == "coastlineWorldFine") {
                                   data("coastlineWorldFine", package="ocedata", envir=environment())
