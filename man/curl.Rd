@@ -84,7 +84,7 @@ C <- curl(u, v, x, y, FALSE)
 par(mfrow=c(2,2))
 imagep(x, y, u, zlab="u", asp=1)
 imagep(x, y, v, zlab="v", asp=1)
-plot(x, v[,25])
+plot(x, v[,25], type="l")
 imagep(x, y, C$curl, zlab="curl", asp=1)
 }
 

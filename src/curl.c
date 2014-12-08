@@ -212,9 +212,9 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   PROTECT(lres_names = allocVector(STRSXP, 3));
   SET_VECTOR_ELT(lres, 0, xnew);
   SET_VECTOR_ELT(lres, 1, ynew);
+  SET_VECTOR_ELT(lres, 2, curl);
   SET_STRING_ELT(lres_names, 0, mkChar("x"));
   SET_STRING_ELT(lres_names, 1, mkChar("y"));
-  SET_VECTOR_ELT(lres, 2, curl);
   SET_STRING_ELT(lres_names, 2, mkChar("curl"));
   setAttrib(lres, R_NamesSymbol, lres_names);
   UNPROTECT(10);

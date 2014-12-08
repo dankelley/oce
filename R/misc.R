@@ -15,11 +15,12 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
     if (!is.logical(geographical)) stop("geographical must be a logical quantity")
     method <- as.integer(round(method))
     if (1 == method)
-        .Call("curl1", u, v, x, y, geographical)
+        rval <- .Call("curl1", u, v, x, y, geographical)
     else if (2 == method)
-        .Call("curl2", u, v, x, y, geographical)
+        rval <- .Call("curl2", u, v, x, y, geographical)
     else
         stop("method must be 1 or 2")
+    rval
 }
 
 rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
@@ -244,7 +245,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout) {
     if (!equispaced(x)) stop("x values must be equi-spaced")
     if (!equispaced(y)) stop("y values must be equi-spaced")
     if (!equispaced(z)) stop("z values must be equi-spaced")
-    .Call("approx3d", x, y, z, f, xout, yout, zout);
+    .Call("approx3d", x, y, z, f, xout, yout, zout)
 }
 
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
