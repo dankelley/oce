@@ -76,15 +76,6 @@ SEXP curl1(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
       double dx = xfac * (xp[i+1] - xp[i-1]);
       double dy = yfac * (yp[j+1] - yp[j-1]);
       curlp[ij(i, j)] = dv/dx - du/dy;
-#ifdef DEBUG
-      Rprintf("i %d   j %d\n", i, j);
-      if (i == 0 && j == 0) {
-	Rprintf("du = 0.5*(%g + %g) - 0.5*(%g + %g) = %g\n", up[ij(i,j+1)],up[ij(i+1,j+1)],up[ij(i,j)],up[ij(i+1,j)],du);
-	Rprintf("dv = 0.5*(%g + %g) - 0.5*(%g + %g) = %g\n", vp[ij(i+1,j)],vp[ij(i+1,j+1)],vp[ij(i,j)],vp[ij(i,j+1)],dv);
-	Rprintf("x[%d,%d]=(%.1f,%.1f), y[%d,%d]=(%.1f,%.1f)\n", j-1,j+1,xp[j-1],xp[j+1],i-1,i+1,yp[i-1],yp[i+1]);
-	Rprintf("  dv/dx=%.2e; du/dy=%.2e; curl=%.1e\n", dv/dx,du/dy,curlp[ij(i,j)]);
-      }
-#endif
     }
   }
   // bottom and top: copy neighbours above and below
