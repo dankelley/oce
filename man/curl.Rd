@@ -31,7 +31,12 @@
 	\itemize{
 
           \item{For \code{method=1}, a centred-difference, 5-point stencil
-              is used in the interior of the domain.  Then, the edges are
+              is used in the interior of the domain.
+              For example, \eqn{\partial v/\partial x}{dv/dx} is given by the
+              ratio of \eqn{v_{i+1,j}-v_{i-1,j}}{v[i+1,j]-v[i-1,j]} to the x
+              extent of the grid cell at index \eqn{j}{j}. (The cell
+              extents depend on the value of \code{geographical}.)
+              Then, the edges are
               filled in with nearest-neighbour values. Finally, the corners are
               filled in with the adjacent value along a diagonal.  If
               \code{geographical=TRUE}, then \code{x} and \code{y} are taken to
@@ -43,10 +48,17 @@
 
           \item{For \code{method=2}, each interior cell in the grid is
               considered individually, with derivatives calculated at the cell
-              centre. Thus, the returned \code{x} and \code{y} are shorter than
-              the supplied values by 1 item, and the matrix dimension is
-              similarly reduced by \code{c(1,1)}.}
-
+              center. For example, \eqn{\partial v/\partial x}{dv/dx}
+              is given by the ratio of
+              \eqn{0.5*(v_{i+1,j}+v_{i+1,j+1}) - 0.5*(v_{i,j}+v_{i,j+1})}{0.5*(v[i+1,j]+v[i+1,j+1]) - 0.5*(v[i,j]+v[i,j+1])}
+              to the average of the x extent of the grid cell at indices
+              \eqn{j}{j} and \eqn{j+1}{j+1}. (The cell
+              extents depend on the value of \code{geographical}.)
+              The returned \code{x} and \code{y} values are the mid-points of the 
+              supplied values. Thus, the returned \code{x} and \code{y} are shorter than
+              the supplied values by 1 item, and the returned \code{curl}
+              matrix dimensions are similarly reduced compared with the
+              dimensions of \code{u} and \code{v}.}
         }
 }
 
