@@ -66,8 +66,8 @@
     \code{curl}.  See \dQuote{Details} for the lengths and dimensions, for
     various values of \code{method}.}
 
-\section{Development status.}{This function is under active development, and
-    will not likely be trustworty until early in 2014.}
+\section{Development status.}{This function is under active development as of
+    December 2014 and is unlikely to be stabilized until February 2015.}
 
 \examples{
 library(oce)
