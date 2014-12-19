@@ -506,17 +506,16 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             haveBottomTrack <- TRUE
-                        } else {
-                            if (haveBottomTrack) {
-                                ## the bottom range is in 3 bytes, split into two chunks
-                                rangeLSB <- readBin(buf[o+c(16:23)], "integer",
-                                                    n=4, size=2, signed=FALSE, endian="little")
-                                rangeMSB <- readBin(buf[o+77:80], "integer",
-                                                    n=4, size=1, signed=FALSE, endian="little")
-                                br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                                bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
-                                                          n=4, size=2, signed=TRUE, endian="little")
-                            }
+                        }
+                        if (haveBottomTrack) {
+                            ## the bottom range is in 3 bytes, split into two chunks
+                            rangeLSB <- readBin(buf[o+c(16:23)], "integer",
+                                                n=4, size=2, signed=FALSE, endian="little")
+                            rangeMSB <- readBin(buf[o+77:80], "integer",
+                                                n=4, size=1, signed=FALSE, endian="little")
+                            br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                            bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
+                                                      n=4, size=2, signed=TRUE, endian="little")
                         }
                     }
                     if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) {
