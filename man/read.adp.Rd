@@ -135,8 +135,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 \value{An object of \code{\link[base]{class}} \code{"adp"}, which
   contains measurements made with an ADP device.  The value of
   \code{metadata$coordinate} is set to \code{"beam"}, a fact that is
-  used in other steps in processing.  For information on data stored in
-  the object, see \dQuote{Details}.
+  used in other steps in processing.
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
@@ -163,9 +162,14 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{\code{q}}{A 3-D matrix of a measure of the quality of the data,
       corresponding to \code{v}.}
   \item{\code{br}}{Depth to bottom in each of 4 beams (only for Teledyne-RDI
-      devices that have bottom tracking.}
+      devices that have bottom tracking).}
   \item{\code{bv}}{Bottom velocity in each of 4 beams (only for Teledyne-RDI
-      devices that have bottom tracking.}
+      devices that have bottom tracking).}
+  \item{\code{bc}}{A 2-D matrix of bottom-track correlation for each of 4
+      beams, a number from 0 to 255 (only for Teledyne-RDI devices that have
+      bottom tracking).}
+  \item{\code{ba}}{A \code{bc} but for bottom-track amplitude.}
+  \item{\code{bg}}{A \code{bc} but for bottom-track goodness (in percent).}
   }
 
   In ADP data files, velocities are coded to signed 2-byte integers, with a
