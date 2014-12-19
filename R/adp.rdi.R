@@ -505,6 +505,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             }
                             br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
+                            bc <- array(double(), dim=c(profilesToRead, numberOfBeams)) # correlation
+                            ba <- array(double(), dim=c(profilesToRead, numberOfBeams)) # amplitude
+                            bg <- array(double(), dim=c(profilesToRead, numberOfBeams)) # percent good
                             haveBottomTrack <- TRUE
                         }
                         if (haveBottomTrack) {
@@ -516,6 +519,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
                             bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
                                                       n=4, size=2, signed=TRUE, endian="little")
+                            bc[i,] <- as.integer(buf[o+32:35])
+                            ba[i,] <- as.integer(buf[o+36:39])
+                            bg[i,] <- as.integer(buf[o+40:43])
                         }
                     }
                     if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) {
@@ -697,7 +703,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (haveBottomTrack && !isVmdas) {
                 br[br == 0.0] <- NA    # clean up (not sure if needed)
                 data <- list(v=v, q=q, a=a, g=g,
-                             br=br, bv=bv,
+                             br=br, bv=bv, bc=bc, ba=ba, bg=bg,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,
