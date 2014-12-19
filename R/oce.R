@@ -506,6 +506,7 @@ summary.oce <- function(object, ...)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1)
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
@@ -566,15 +567,16 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
         open(file, "r")
-    ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, skipNul=TRUE)
-    line2 <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, fill=TRUE, skipNul=TRUE) # FIXME: what if just 1 line?
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found second line of file to be as follows:\n", line2, "\n", sep=""))
+    ## Grab text at start of file.
+    lines <- readLines(file, n=2, skipNul=TRUE)
+    line <- lines[1]
+    line2 <- lines[2]
+    oceDebug(debug, "first line of file: ", line, "\n", sep="")
+    oceDebug(debug, "second line of file: ", line2, "\n", sep="")
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     ##read.index()  ## check for an ocean index file e.g.
     ##read.index()  # http://www.esrl.noaa.gov/psd/data/correlation/ao.data
@@ -585,7 +587,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     ##read.index()          return("index")
     ##read.index()  }
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
-        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
+        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n  }\n")
         return("shapefile")
     }
     if (bytes[3] == 0xff && bytes[4] == 0xff) {
@@ -595,13 +597,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
-            oceDebug(debug, "this is adp/sontek (4 byte match)\n")
+            oceDebug(debug, "this is adp/sontek (4 byte match)\n  }\n")
         else
-            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
+            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n  }\n")
         return("adp/sontek")
     }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oceDebug(debug, "this is adp/rdi\n")
+        oceDebug(debug, "this is adp/rdi\n  }\n")
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {

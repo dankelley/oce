@@ -143,7 +143,7 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
   // set to NA so we can see if we are failing to fill grid correctly
   for (int i = 0; i < nrow-1; i++) 
     for (int j = 0; j < ncol-1; j++) 
-      curlp[ij(i,j)] = NA_REAL; 
+      curlp[IJ(i,j)] = NA_REAL; 
   double xfac=1.0, yfac = 1.0;
   if (isGeographical)
     yfac = R * M_PI / 180.0;
