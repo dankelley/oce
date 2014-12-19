@@ -567,8 +567,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if (!isOpen(file))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    line2 <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
+    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, skipNul=TRUE)
+    line2 <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, fill=TRUE, skipNul=TRUE) # FIXME: what if just 1 line?
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found second line of file to be as follows:\n", line2, "\n", sep=""))
     close(file)
