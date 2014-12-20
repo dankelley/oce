@@ -43,7 +43,7 @@
     \code{ctd[["theta"]]} or \code{ctd[["potential temperature"]]}.  Salinity
     is retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
 
-    Conservative temperature defined according to TEOS-2010 (see
+    Conservative Temperature defined according to TEOS-2010 (see
     \code{\link{teos}}) is calculated with \code{ctd[["CT"]]} or
     \code{ctd[["conservative temperature"]]}.  Absolute salinity is calculated
     with \code{ctd[["SA"]]} or \code{ctd[["absolute salinity"]]}.

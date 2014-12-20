@@ -1643,7 +1643,7 @@ msgstr "must provide 2 or 3 bytes"
 msgid "Temperature"
 msgstr "Temperatura"
 
-msgid "Conservative temperature"
+msgid "Conservative Temperature"
 msgstr "temperatura conservador"
 
 msgid "Potential density anomaly"

@@ -1568,7 +1568,7 @@ msgstr ""
 msgid "Temperature"
 msgstr "温度"
 
-msgid "Conservative temperature"
+msgid "Conservative Temperature"
 msgstr ""
 
 msgid "Potential density anomaly"
