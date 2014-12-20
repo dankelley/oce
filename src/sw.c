@@ -3,9 +3,13 @@
 #include <Rdefines.h>
 int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
 double strho_f(double x, int teos);
-void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval); // in teos.c
 int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
+
+// #define OLDTEOS
+#ifdef OLDTEOS
 char *get_libteos(); // in toes.c
+void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval); // in teos.c
+#endif
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
@@ -336,17 +340,19 @@ double strho_f(double x, int teos)
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
+#ifdef OLDTEOS
   //Rprintf("libteos='%s'\n", get_libteos());
+#endif
   int n=1;
   // FIXME-gsw: how to hook up to gsw_rho()? Prefer to do it directly.
   if (teos) {
-#if 1
-    this_rho = gsw_rho(x, T, p_ref);
-#else
+#ifdef OLDTEOS
     //char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
     char *fcn = "gsw_rho"; // stated to be used for TS diagrams on p2 of "Getting_Started.pdf"
     extern char* libteosp;
     gsw3a(&libteosp, &fcn, &n, &x, &T, &p_ref, &this_rho);
+#else
+    this_rho = gsw_rho(x, T, p_ref);
 #endif
   } else {
     sw_rho(&n, &x, &T, &p_ref, &this_rho); // is this right? (is T theta?, and so is p_ref zero?)
