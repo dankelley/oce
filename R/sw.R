@@ -124,8 +124,8 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
 ## FIXME: should be vectorized for speed
 swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default="unesco"))
 {
-    eos <- match.arg(eos, c("unesco","teos"))
-    teos <- eos == "teos"
+    eos <- match.arg(eos, c("unesco", "teos", "gsw"))
+    teos <- eos == "teos" || eos == "gsw"
     dim <- dim(temperature)
     nt <- length(temperature)
     nrho <- length(density)
@@ -136,11 +136,12 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default
         stop("lengths of temperature and p arrays must agree, but they are ", nt, " and ", np, ", respectively")
     for (i in 1:nt) {                   # FIXME: avoid loops
         sigma <- ifelse(density > 500, density - 1000, density)
+        ## FIXME-gsw will this work for gsw?
     	this.S <- .C("sw_strho",
                      as.double(temperature[i]), # FIXME: confusion on "p" here; and is temp theta??
                      as.double(sigma),
                      as.double(pressure[i]),
-                     as.integer(teos),
+                     as.integer(teos), # FIXME-gsw: should handle code for gsw also
                      S = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$S
     	if (i == 1) rval <- this.S else rval <- c(rval, this.S)
@@ -154,8 +155,8 @@ swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="u
 {
     if (missing(salinity))
         stop("must provide salinity")
-    eos <- match.arg(eos, c("unesco", "teos"))
-    teos <- eos == "teos"
+    eos <- match.arg(eos, c("unesco", "teos", "gsw"))
+    teos <- eos == "teos" || eos == "gsw"
     dim <- dim(salinity)
     nS <- length(salinity)
     nrho <- length(density)
@@ -171,6 +172,7 @@ swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="u
     	if (sig > 500) {
             sig <- sig - 1000
     	}
+        ## FIXME: is this right for all equations of state? I doubt it
     	this.T <- .C("sw_tsrho",
                      as.double(salinity[i]),
                      as.double(sig),

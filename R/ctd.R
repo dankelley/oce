@@ -69,10 +69,39 @@ setMethod(f="[[",
                   swRrho(x)
               } else if (i == "spice") {
                   swSpice(x)
-              } else if (i %in% c("absolute salinity", "SAgsw")) {
+              } else if (i %in% c("absolute salinity/gsw", "SA/gsw")) {
                   if (!require('gsw'))
                       stop('should do the following:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
                            call.=FALSE)
+                  SP <- x@data$salinity
+                  t <- x@data$temperature
+                  p <- x@data$pressure
+                  n <- length(SP)
+                  lon <- x@metadata$longitude
+                  ## if (n != length(lon))
+                  ##     lon <- rep(x@metadata$longitude, length.out=n)
+                  ## lon <- ifelse(lon < 0, lon + 360, lon)
+                  ## haveLatLon <- TRUE
+                  ## if (!any(is.finite(lon))) {
+                  ##     lon <- rep(300, n)
+                  ##     haveLatLon <- FALSE
+                  ## }
+                  lat <- x@metadata$latitude
+                  ## if (n != length(lat))
+                  ##     lat <- rep(x@metadata$latitude, length.out=n)
+                  ## if (!any(is.finite(lat))) {
+                  ##     lat <- rep(0, n)
+                  ##     haveLatLon <- FALSE
+                  ## }
+                  ## if (!haveLatLon)
+                  ##     warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
+                  ## ok <- is.finite(SP)
+                  ## SP[is.nan(SP)] <- NA
+                  ## p[is.nan(p)] <- NA
+                  ## lat[is.nan(lat)] <- NA
+                  ## lon[is.nan(lon)] <- NA
+                  gsw_SA_from_SP(SP, p, lon, lat)
+              } else if (i %in% c("absolute salinity", "SA")) {
                   SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
@@ -95,48 +124,27 @@ setMethod(f="[[",
                   }
                   if (!haveLatLon)
                       warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
-                  ok <- is.finite(SP)
                   SP[is.nan(SP)] <- NA
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
-                  gsw_SA_from_SP(SP, p, lon, lat)
-              } else if (i %in% c("absolute salinity", "SA")) {
-                  Sp <- x@data$salinity
-                  t <- x@data$temperature
-                  p <- x@data$pressure
-                  n <- length(Sp)
-                  lon <- x@metadata$longitude
-                  if (n != length(lon))
-                      lon <- rep(x@metadata$longitude, length.out=n)
-                  lon <- ifelse(lon < 0, lon + 360, lon)
-                  haveLatLon <- TRUE
-                  if (!any(is.finite(lon))) {
-                      lon <- rep(300, n)
-                      haveLatLon <- FALSE
-                  }
-                  lat <- x@metadata$latitude
-                  if (n != length(lat))
-                      lat <- rep(x@metadata$latitude, length.out=n)
-                  if (!any(is.finite(lat))) {
-                      lat <- rep(0, n)
-                      haveLatLon <- FALSE
-                  }
-                  if (!haveLatLon)
-                      warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
-                  Sp[is.nan(Sp)] <- NA
-                  p[is.nan(p)] <- NA
-                  lat[is.nan(lat)] <- NA
-                  lon[is.nan(lon)] <- NA
-                  teos("gsw_sa_from_sp", Sp, p, lon, lat)
+                  teos("gsw_sa_from_sp", SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
-                  Sp <- x@data$salinity
+                  ## FIXME why all the fancy footwork for SA but not for this? I'd prefer neither.
+                  SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  teos("gsw_ct_from_t", Sp, t, p)
+                  teos("gsw_ct_from_t", SP, t, p)
+              } else if (i %in% c("conservative temperature/gsw", "CT/gsw")) {
+                  SP <- x@data$salinity
+                  t <- x@data$temperature
+                  p <- x@data$pressure
+                  gsw_CT_from_t(SP, t, p)
               } else if (i == "z") {
+                  ## FIXME: permit gsw version here
                   swZ(x)
               } else if (i == "depth") {
+                  ## FIXME: permit gsw version here
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
@@ -2320,8 +2328,8 @@ plotTS <- function (x,
         salinity <- x[["SA"]]
         y <- x[["CT"]]
     } else if (eos == "gsw") {
-        salinity <- x[["SAgsw"]]
-        y <- x[["CTgsw"]]
+        salinity <- x[["SA/gsw"]]
+        y <- x[["CT/gsw"]]
     } else {
         y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure)
         salinity <- x[["salinity"]]
@@ -2350,13 +2358,13 @@ plotTS <- function (x,
     }
     axis.name.loc <- mgp[1]
     if (missing(xlab)) {
-        if (eos == "teos")
+        if (eos == "teos" || eos == "gsw")
             xlab <- resizableLabel("absolute salinity", "x")
         else
             xlab <- resizableLabel("S","x")
     }
     if (missing(ylab)) {
-        if (eos == "teos")
+        if (eos == "teos" || eos == "gsw")
             ylab <- resizableLabel("conservative temperature", "y")
         else
             ylab <- if (inSitu) resizableLabel("T", "y") else resizableLabel("theta", "y")
@@ -2419,18 +2427,19 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
                            eos=getOption("eos", default='unesco'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
-    eos <- match.arg(eos, c("unesco","teos"))
+    eos <- match.arg(eos, c("unesco","teos", "gsw"))
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
     SAxisMax <- usr[2]
     TAxisMin <- usr[3]
     TAxisMax <- usr[4]
+    Scorners <- c(SAxisMin, SAxisMax, SAxisMin, SAxisMax)
+    Tcorners <- c(TAxisMin, TAxisMin, TAxisMax, TAxisMax)
     if (eos == "teos") {
-        rhoCorners <- teos("gsw_rho",
-                           c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
-                           c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                           rep(0, 4)) - 1000
-    } else {
+        rhoCorners <- teos("gsw_rho", Scorners, Tcorners, rep(0, 4)) - 1000
+    } else if (eos == "gsw") {
+        rhoCorners <- gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
+     } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
                               rep(0, 4))
@@ -2451,6 +2460,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     for (rho in levels) {
         rhoLabel <- if (rho1000) 1000+rho else rho
         rhoLabel <- round(rhoLabel, digits)
+        ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
