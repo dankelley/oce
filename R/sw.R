@@ -136,12 +136,11 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default
         stop("lengths of temperature and p arrays must agree, but they are ", nt, " and ", np, ", respectively")
     for (i in 1:nt) {                   # FIXME: avoid loops
         sigma <- ifelse(density > 500, density - 1000, density)
-        ## FIXME-gsw will this work for gsw?
     	this.S <- .C("sw_strho",
                      as.double(temperature[i]), # FIXME: confusion on "p" here; and is temp theta??
                      as.double(sigma),
                      as.double(pressure[i]),
-                     as.integer(teos), # FIXME-gsw: should handle code for gsw also
+                     as.integer(teos),
                      S = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$S
     	if (i == 1) rval <- this.S else rval <- c(rval, this.S)
