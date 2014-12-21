@@ -6,7 +6,7 @@ Authors@R: c(person("Dan", "Kelley", role=c("aut", "cre"), email="Dan.Kelley@Dal
 Author: Dan Kelley [aut, cre], Clark Richards [aut]
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, mapproj
-Suggests: ocedata, foreign, ncdf4, tiff, akima, proj4
+Suggests: ocedata, foreign, ncdf4, tiff, akima, proj4, gsw
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data, including ADCP
  measurements, CTD measurements, sectional data, sea-level time series,

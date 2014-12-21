@@ -428,23 +428,17 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "te
                    value = double(nS),
                    NAOK=TRUE, PACKAGE = "oce")$value
     } else {
-        if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
-        if (missing(longitude)) longitude <- rep(320, np)
-        if (!require('gsw'))
-            stop('should do the following:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
+        if (!require("gsw")) {
+            stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
                  call.=FALSE)
-        ## FIXME-gsw use gsw code here; save the hassles.
-        ## sa <- teos("gsw_sa_from_sp", salinity, pressure, longitude, latitude)
-        SA <- gsw_SA_from_SP(salinity, pressure, longitude, latitude)
-        ##cat("sa=", sa, "(lat=", latitude, ", lon=", longitude, ")\n")
-        ## ct <- teos("gsw_ct_from_t", salinity, temperature, pressure)
-        CT <- gsw_CT_from_t(SA, temperature, pressure)
-        ##cat("ct=", ct, "\n")
-        ##rval <- teos("gsw_rho_t_exact", sa, temperature, pressure)
-        ##cat('rval=', rval, '\n')
-        ##rval <- teos("gsw_rho", sa, ct, pressure)
-        rval <- gsw_rho(SA, CT, pressure) # FIXME-gsw maybe should use exact form
-        ##cat('rval=', rval, '\n')
+        } else {
+            if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
+            if (missing(longitude)) longitude <- rep(320, np)
+            ## FIXME-gsw check this.
+            SA <- gsw::gsw_SA_from_SP(salinity, pressure, longitude, latitude)
+            CT <- gsw::gsw_CT_from_t(SA, temperature, pressure)
+            rval <- gsw::gsw_rho(SA, CT, pressure) # FIXME-gsw maybe should use exact form
+        }
     }
     dim(rval) <- dim
     rval

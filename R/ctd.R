@@ -70,37 +70,18 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   swSpice(x)
               } else if (i %in% c("absolute salinity/gsw", "SA/gsw")) {
-                  if (!require('gsw'))
-                      stop('should do the following:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
+                  if (!require("gsw")) {
+                      stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
                            call.=FALSE)
-                  SP <- x@data$salinity
-                  t <- x@data$temperature
-                  p <- x@data$pressure
-                  n <- length(SP)
-                  lon <- x@metadata$longitude
-                  ## if (n != length(lon))
-                  ##     lon <- rep(x@metadata$longitude, length.out=n)
-                  ## lon <- ifelse(lon < 0, lon + 360, lon)
-                  ## haveLatLon <- TRUE
-                  ## if (!any(is.finite(lon))) {
-                  ##     lon <- rep(300, n)
-                  ##     haveLatLon <- FALSE
-                  ## }
-                  lat <- x@metadata$latitude
-                  ## if (n != length(lat))
-                  ##     lat <- rep(x@metadata$latitude, length.out=n)
-                  ## if (!any(is.finite(lat))) {
-                  ##     lat <- rep(0, n)
-                  ##     haveLatLon <- FALSE
-                  ## }
-                  ## if (!haveLatLon)
-                  ##     warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
-                  ## ok <- is.finite(SP)
-                  ## SP[is.nan(SP)] <- NA
-                  ## p[is.nan(p)] <- NA
-                  ## lat[is.nan(lat)] <- NA
-                  ## lon[is.nan(lon)] <- NA
-                  gsw_SA_from_SP(SP, p, lon, lat)
+                  } else {
+                      SP <- x@data$salinity
+                      t <- x@data$temperature
+                      p <- x@data$pressure
+                      n <- length(SP)
+                      lon <- x@metadata$longitude
+                      lat <- x@metadata$latitude
+                      gsw::gsw_SA_from_SP(SP, p, lon, lat)
+                  }
               } else if (i %in% c("absolute salinity", "SA")) {
                   SP <- x@data$salinity
                   t <- x@data$temperature
@@ -136,10 +117,15 @@ setMethod(f="[[",
                   p <- x@data$pressure
                   teos("gsw_ct_from_t", SP, t, p)
               } else if (i %in% c("conservative temperature/gsw", "CT/gsw")) {
-                  SP <- x@data$salinity
-                  t <- x@data$temperature
-                  p <- x@data$pressure
-                  gsw_CT_from_t(SP, t, p)
+                  if (!require("gsw")) {
+                      stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
+                           call.=FALSE)
+                  } else {
+                      SP <- x@data$salinity
+                      t <- x@data$temperature
+                      p <- x@data$pressure
+                      gsw::gsw_CT_from_t(SP, t, p)
+                  }
               } else if (i == "z") {
                   ## FIXME: permit gsw version here
                   swZ(x)
@@ -2438,8 +2424,13 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     if (eos == "teos") {
         rhoCorners <- teos("gsw_rho", Scorners, Tcorners, rep(0, 4)) - 1000
     } else if (eos == "gsw") {
-        rhoCorners <- gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
-     } else {
+        if (!require("gsw")) {
+            stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
+                 call.=FALSE)
+        } else {
+            rhoCorners <- gsw::gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
+        }
+    } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
                               rep(0, 4))
