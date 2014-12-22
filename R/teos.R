@@ -6,7 +6,7 @@ teosSetLibrary <- function(path)
 
 teos <- function(name, a1, a2, a3, a4, lib=getOption("libteos")) # FIXME: what's max arg?
 {
-    warning('teos(\"', name, '\", ...) will soon be removed; please use', name, '(...) instead.', sep="")
+    warning('teos(\"', name, '\", ...) will be removed in Jan 2015; please use ', name, '(...) instead.', sep="")
     if (missing(name))
         stop("a function name must be given, and it must be in lower case letters, e.g. \"gsw_sa_from_sp\"")
     if (missing(a1))
