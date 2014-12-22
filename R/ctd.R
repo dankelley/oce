@@ -69,19 +69,6 @@ setMethod(f="[[",
                   swRrho(x)
               } else if (i == "spice") {
                   swSpice(x)
-              } else if (i %in% c("absolute salinity/gsw", "SA/gsw")) {
-                  if (!require("gsw")) {
-                      stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
-                           call.=FALSE)
-                  } else {
-                      SP <- x@data$salinity
-                      t <- x@data$temperature
-                      p <- x@data$pressure
-                      n <- length(SP)
-                      lon <- x@metadata$longitude
-                      lat <- x@metadata$latitude
-                      gsw::gsw_SA_from_SP(SP, p, lon, lat)
-                  }
               } else if (i %in% c("absolute salinity", "SA")) {
                   SP <- x@data$salinity
                   t <- x@data$temperature
@@ -109,28 +96,29 @@ setMethod(f="[[",
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
-                  teos("gsw_sa_from_sp", SP, p, lon, lat)
+                  if (require("gsw")) {
+                      message("Developer note: using gsw_sa_from_sp()")
+                      gsw::gsw_SA_from_SP(SP, p, lon, lat)
+                  } else {
+                      message("Developer note: using teos(\"gsw_sa_from_sp\")")
+                      teos("gsw_sa_from_sp", SP, p, lon, lat)
+                  }
               } else if (i %in% c("conservative temperature", "CT")) {
-                  ## FIXME why all the fancy footwork for SA but not for this? I'd prefer neither.
                   SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  teos("gsw_ct_from_t", SP, t, p)
-              } else if (i %in% c("conservative temperature/gsw", "CT/gsw")) {
-                  if (!require("gsw")) {
-                      stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
-                           call.=FALSE)
-                  } else {
-                      SP <- x@data$salinity
-                      t <- x@data$temperature
-                      p <- x@data$pressure
+                  if (require("gsw")) {
+                      message("Developer note: using gsw_ct_from_t()")
                       gsw::gsw_CT_from_t(SP, t, p)
+                  } else {
+                      message("Developer note: using teos(\"gsw_ct_from_t\")")
+                      teos("gsw_ct_from_t", SP, t, p)
                   }
               } else if (i == "z") {
-                  ## FIXME: permit gsw version here
+                  ## FIXME-gsw: permit gsw version here
                   swZ(x)
               } else if (i == "depth") {
-                  ## FIXME: permit gsw version here
+                  ## FIXME-gsw: permit gsw version here
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
@@ -187,8 +175,15 @@ as.ctd <- function(salinity, temperature, pressure,
             latitude <- rep(0, n)
             warning("longitude and latitude set to default values, since none given")
         }
-        salinity <- teos("gsw_sp_from_sa", SA, pressure, longitude, latitude)
-        temperature <- teos("gsw_t_from_ct", SA, CT, pressure)
+        if (require("gsw")) {
+            message("Developer note: using gsw_sp_from_sa() and gsw_t_from_ct()")
+            salinity <- gsw::gsw_SP_from_SA(SA, pressure, longitude, latitude)
+            temperature <- gsw::gsw_t_from_CT(SA, CT, pressure)
+        } else {
+            message("Developer note: using teos(\"gsw_sp_from_sa\") and teos(\"gsw_t_from_ct\"")
+            salinity <- teos("gsw_sp_from_sa", SA, pressure, longitude, latitude)
+            temperature <- teos("gsw_t_from_ct", SA, CT, pressure)
+        }
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
     if (length(pressure) < depths)

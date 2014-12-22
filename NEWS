@@ -1,4 +1,5 @@
 0.9-15
+- libary(gsw) replaces teos()
 - curl() added
 - handle new NOAA ascii topography dataset type
 - mapGrid() added

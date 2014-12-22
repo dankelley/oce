@@ -711,7 +711,13 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
     if (n != length(temperature)) stop("lengths of salinity and temperature must match") 
     if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
     bad <- is.na(salinity) | is.na(temperature) | is.na(pressure)
-    good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
+    if (require("gsw")) {
+        message("Developer note: using gsw_ct_from_t()")
+        good <- gsw::gsw_CT_from_t(salinity[!bad], temperature[!bad], pressure[!bad])
+    } else {
+        message("Developer note: using teos(\"gsw_ct_from_t\")")
+        good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
+    }
     rval <- rep(NA, n)
     rval[!bad] <- good
     rval
@@ -737,7 +743,13 @@ swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
     if (n != length(latitude))  stop("lengths of salinity and latitude must match") 
     longitude <- ifelse(longitude < 0, longitude + 360, longitude)
     bad <- is.na(salinity) | is.na(pressure) | is.na(longitude) | is.na(latitude)
-    good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
+    if (require("gsw")) {
+        message("Developer note: using gsw_sa_from_sp()")
+        good <- gsw::gsw_SA_from_SP(salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
+    } else {
+        message("Developer note: using teos(\"gsw_sa_from_sp\")")
+        good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
+    }
     rval <- rep(NA, n)
     rval[!bad] <- good
     rval
