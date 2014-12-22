@@ -2,9 +2,9 @@
 
 \alias{teos}
 
-\title{Interface to TEOS-10 library}
+\title{Interface to TEOS-10 library [DEPRECATED]}
 
-\description{Interface to TEOS-10 library}
+\description{Interface to TEOS-10 library [DEPRECATED]}
 
 \usage{teos(name, a1, a2, a3, a4, lib=getOption("libteos"))}
 
@@ -22,6 +22,8 @@
 }
 
 \details{
+    THIS FUNCTION IS DEPRECATED. It will be removed early in January
+    2015, in favour of direct calls to the new \code{gsw} package.
 #ifdef unix    
     For \code{teos} to work, the user must download the C version of TEOS-10
     from the website listed in the references, then type \code{make install} at

@@ -124,7 +124,7 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
 ## FIXME: should be vectorized for speed
 swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default="unesco"))
 {
-    eos <- match.arg(eos, c("unesco", "teos", "gsw"))
+    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     teos <- eos == "teos" || eos == "gsw"
     dim <- dim(temperature)
     nt <- length(temperature)
@@ -154,7 +154,7 @@ swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="u
 {
     if (missing(salinity))
         stop("must provide salinity")
-    eos <- match.arg(eos, c("unesco", "teos", "gsw"))
+    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     teos <- eos == "teos" || eos == "gsw"
     dim <- dim(salinity)
     nS <- length(salinity)
@@ -392,7 +392,8 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), longitude, latitude)
+swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=getOption("eos", default="unesco"),
+                  longitude, latitude)
 {
     if (missing(salinity))
         stop("must provide salinity")

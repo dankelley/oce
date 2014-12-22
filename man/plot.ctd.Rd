@@ -76,14 +76,9 @@
   \item{fill}{either a logical, indicating whether to fill the land with
       light-gray, or a color name.  Owing to problems with some projections,
       the default is not to fill.}
-  \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
-      computer must have the TEOS library installed; see \code{\link{teos}}.
-      The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
-      axis and ``conservative temperature'' on the y axis.  Typically, the
-      temperature values will be very similar to those with \code{unesco}, but
-      the salinities will be increased by 0.1 to 0.2 units.  The isopycnals
-      will still run through the same points as for the \code{unesco} style.
-      See \code{\link{teos}} for more information.}
+  \item{eos}{name of equation of state to be used, either \code{"unesco"},
+      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
+      package must be installed.}
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
@@ -144,11 +139,9 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
-
   \item{df}{optional argument that is ignored except for plotting buoyancy
       frequency; in that case, it is passed to \code{\link{swN2}} as the
       argument named \code{df}.}
-
   \item{keepNA}{flag indicating whether to keep \code{NA} values in linegraphs,
       which will yield breaks in the lines.}
   \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}

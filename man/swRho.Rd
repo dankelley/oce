@@ -6,7 +6,7 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"),
+\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=getOption("eos", default="unesco"),
       longitude, latitude)}
 
 \arguments{
@@ -17,8 +17,9 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{eos}{equation of state to use, either \code{unesco} for the UNESCO
-      formulation [1,2], or \code{teos} for the TEOS-10 formulation [3].}
+  \item{eos}{name of equation of state to be used, either \code{"unesco"},
+      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
+      package must be installed.}
   \item{longitude}{longitude of observation (only used if \code{eos="teos"}).}
   \item{latitude}{latitude of observation (only used if \code{eos="teos"}).}
 }

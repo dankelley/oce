@@ -12,9 +12,9 @@
   \item{salinity}{\emph{in-situ} salinity [PSU]}
   \item{density}{\emph{in-situ} density or sigma value [kg/m\eqn{^3}{^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"} or
-      \code{"teos"}.  If the latter, then the computer must have the TEOS
-      library installed; see \code{\link{teos}}.}
+  \item{eos}{name of equation of state to be used, either \code{"unesco"},
+      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
+      package must be installed.}
 }
 
 \details{Finds the temperature that yields the given density, with the
