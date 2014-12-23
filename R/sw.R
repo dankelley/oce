@@ -429,17 +429,11 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=getOption("eos"
                    value = double(nS),
                    NAOK=TRUE, PACKAGE = "oce")$value
     } else {
-        if (!require("gsw")) {
-            stop('Please do:\n\tlibrary(devtools)\n\tinstall_github("TEOS-10/GSW-R", "master")',
-                 call.=FALSE)
-        } else {
-            if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
-            if (missing(longitude)) longitude <- rep(320, np)
-            ## FIXME-gsw check this.
-            SA <- gsw::gsw_SA_from_SP(salinity, pressure, longitude, latitude)
-            CT <- gsw::gsw_CT_from_t(SA, temperature, pressure)
-            rval <- gsw::gsw_rho(SA, CT, pressure) # FIXME-gsw maybe should use exact form
-        }
+        if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
+        if (missing(longitude)) longitude <- rep(320, np)
+        SA <- gsw_SA_from_SP(salinity, pressure, longitude, latitude)
+        CT <- gsw_CT_from_t(SA, temperature, pressure)
+        rval <- gsw_rho(SA, CT, pressure) # FIXME-gsw maybe should use exact form
     }
     dim(rval) <- dim
     rval
@@ -712,13 +706,7 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
     if (n != length(temperature)) stop("lengths of salinity and temperature must match") 
     if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
     bad <- is.na(salinity) | is.na(temperature) | is.na(pressure)
-    if (require("gsw")) {
-        message("Developer note: using gsw_ct_from_t()")
-        good <- gsw::gsw_CT_from_t(salinity[!bad], temperature[!bad], pressure[!bad])
-    } else {
-        message("Developer note: using teos(\"gsw_ct_from_t\")")
-        good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
-    }
+    good <- gsw_CT_from_t(salinity[!bad], temperature[!bad], pressure[!bad])
     rval <- rep(NA, n)
     rval[!bad] <- good
     rval
@@ -744,13 +732,7 @@ swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
     if (n != length(latitude))  stop("lengths of salinity and latitude must match") 
     longitude <- ifelse(longitude < 0, longitude + 360, longitude)
     bad <- is.na(salinity) | is.na(pressure) | is.na(longitude) | is.na(latitude)
-    if (require("gsw")) {
-        message("Developer note: using gsw_sa_from_sp()")
-        good <- gsw::gsw_SA_from_SP(salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
-    } else {
-        message("Developer note: using teos(\"gsw_sa_from_sp\")")
-        good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
-    }
+    good <- gsw_SA_from_SP(salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
     rval <- rep(NA, n)
     rval[!bad] <- good
     rval

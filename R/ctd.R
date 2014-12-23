@@ -96,24 +96,12 @@ setMethod(f="[[",
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
-                  if (require("gsw")) {
-                      message("Developer note: using gsw_sa_from_sp()")
-                      gsw::gsw_SA_from_SP(SP, p, lon, lat)
-                  } else {
-                      message("Developer note: using teos(\"gsw_sa_from_sp\")")
-                      teos("gsw_sa_from_sp", SP, p, lon, lat)
-                  }
+                  gsw_SA_from_SP(SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
                   SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  if (require("gsw")) {
-                      message("Developer note: using gsw_ct_from_t()")
-                      gsw::gsw_CT_from_t(SP, t, p)
-                  } else {
-                      message("Developer note: using teos(\"gsw_ct_from_t\")")
-                      teos("gsw_ct_from_t", SP, t, p)
-                  }
+                  gsw_CT_from_t(SP, t, p)
               } else if (i == "z") {
                   ## FIXME-gsw: permit gsw version here
                   swZ(x)
@@ -175,15 +163,8 @@ as.ctd <- function(salinity, temperature, pressure,
             latitude <- rep(0, n)
             warning("longitude and latitude set to default values, since none given")
         }
-        if (require("gsw")) {
-            message("Developer note: using gsw_sp_from_sa() and gsw_t_from_ct()")
-            salinity <- gsw::gsw_SP_from_SA(SA, pressure, longitude, latitude)
-            temperature <- gsw::gsw_t_from_CT(SA, CT, pressure)
-        } else {
-            message("Developer note: using teos(\"gsw_sp_from_sa\") and teos(\"gsw_t_from_ct\"")
-            salinity <- teos("gsw_sp_from_sa", SA, pressure, longitude, latitude)
-            temperature <- teos("gsw_t_from_ct", SA, CT, pressure)
-        }
+        salinity <- gsw_SP_from_SA(SA, pressure, longitude, latitude)
+        temperature <- gsw_t_from_CT(SA, CT, pressure)
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
     if (length(pressure) < depths)
@@ -2414,13 +2395,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     Scorners <- c(SAxisMin, SAxisMax, SAxisMin, SAxisMax)
     Tcorners <- c(TAxisMin, TAxisMin, TAxisMax, TAxisMax)
     if (eos == "gsw" || eos == "teos") {
-        if (require("gsw")) {
-            message("Developer note: using gsw_rho()")
-            rhoCorners <- gsw::gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
-        } else {
-            message('Developer note: using teos("gsw_rho", ...)')
-            rhoCorners <- teos("gsw_rho", Scorners, Tcorners, rep(0, 4)) - 1000
-        }
+        rhoCorners <- gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
     } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
