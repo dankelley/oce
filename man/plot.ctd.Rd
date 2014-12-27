@@ -13,7 +13,7 @@
 
 \usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5),
      col=par("fg"), fill=FALSE,
-     eos=getOption("eos", default='gsw'),
+     eos=getOption("oceEOS", default='gsw'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
      coastline="best",

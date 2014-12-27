@@ -8,7 +8,7 @@
   seawater, minus 1000 kg/m\eqn{^3}{^3}.} 
 
 \usage{swSigma(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-        eos=getOption("eos", default="gsw"))}
+        eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case

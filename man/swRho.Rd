@@ -7,7 +7,7 @@
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
 \usage{swRho(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-      eos=getOption("eos", default="gsw"))}
+      eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity (in which case

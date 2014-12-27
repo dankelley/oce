@@ -7,7 +7,7 @@
 \description{Compute \emph{in-situ} salinity, given temperature,
   density, and pressure.}
 
-\usage{swSTrho(temperature, density, pressure, eos=getOption("eos", default="gsw"))}
+\usage{swSTrho(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}

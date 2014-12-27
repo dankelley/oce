@@ -123,7 +123,7 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
 
 ## FIXME: should be vectorized for speed
 ## FIXME-gsw: should use gsw
-swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default="gsw"))
+swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))
 {
     eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     teos <- eos == "teos" || eos == "gsw"
@@ -151,7 +151,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default
 }
 
 ## FIXME: should be vectorized
-swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="gsw"))
+swTSrho <- function(salinity, density, pressure, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -394,7 +394,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
 }
 
 swRho <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-                  eos=getOption("eos", default="gsw"))
+                  eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -441,7 +441,7 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude
 }
 
 swSigma <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-                    eos=getOption("eos", default="gsw"))
+                    eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")

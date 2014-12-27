@@ -15,7 +15,7 @@
     col.grid="lightgray",
     lty.grid="dotted",
     rho1000=FALSE,
-    eos=getOption("eos", default='gsw'),
+    eos=getOption("oceEOS", default='gsw'),
     cex=par("cex"), col=par("col"), pch=par("pch"),
     bg, pt.bg="transparent",
     col.rho="darkgray",
