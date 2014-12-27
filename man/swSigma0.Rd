@@ -1,8 +1,12 @@
-\name{swSigma}
+\name{swSigma0}
 
-\alias{swSigma}
+\alias{swSigma0}
+\alias{swSigma1}
+\alias{swSigma2}
+\alias{swSigma3}
+\alias{swSigma4}
 
-\title{Seawater potential density anomaly}
+\title{Seawater potential density anomaly reference to standardized pressures}
 
 \description{Compute \eqn{\sigma_\theta}{sigma}, the potential density of
     seawater (minus 1000 kg/m\eqn{^3}{^3}), referenced to various pressures,
@@ -11,8 +15,12 @@
     1000dbar, \code{swSigma2} is referenced to 2000dbar, \code{swSigma2} is
     referenced to 3000dbar, and \code{swSigma4} is referenced to 4000dbar. }
 
-\usage{swSigma(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-                    eos=getOption("oceEOS", default="gsw"))}
+\usage{swSigma0(salinity, temperature, pressure)
+swSigma1(salinity, temperature, pressure)
+swSigma2(salinity, temperature, pressure)
+swSigma3(salinity, temperature, pressure)
+swSigma4(salinity, temperature, pressure)
+}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -22,13 +30,6 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{longitude}{longitude of observation (only used if \code{eos="gsw"} or,
-      equivalently, if \code{eos="teos"}).}
-  \item{latitude}{latitude of observation (only used if \code{eos="teos"}) or,
-      equivalently, if \code{eos="teos"}.}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"},
-      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-      package must be installed.}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
@@ -48,6 +49,10 @@
 
 \examples{
 swSigmaTheta(35, 13, 1000)
+swSigma0(35, 13, 1000)
+swSigma1(35, 13, 1000)
+swSigma2(35, 13, 1000)
+swSigma3(35, 13, 1000)
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

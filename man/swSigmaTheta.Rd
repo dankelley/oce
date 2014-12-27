@@ -7,7 +7,7 @@
 \description{Compute \eqn{\sigma_\theta}{sigma-theta}, the potential
   density of seawater, minus 1000 kg/m\eqn{^3}{^3}. }
 
-\usage{swSigmaTheta(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSigmaTheta(salinity, temperature=NULL, pressure=NULL, referencePressure=0)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -17,6 +17,7 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{referencePressure}{reference pressure [dbar]}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
@@ -31,8 +32,13 @@
 \value{Potential density anomaly [kg/m\eqn{^3}{^3}].}
 
 \seealso{Related density routines include: \code{\link{swRho}}, 
-  \code{\link{swSigma}}, and
-  \code{\link{swSigmaT}}.
+  \code{\link{swSigmaT}}, and the family of functions for density
+  referenced to various pressure values, namely
+  \code{\link{swSigma0}},
+  \code{\link{swSigma1}},
+  \code{\link{swSigma2}},
+  \code{\link{swSigma3}}, and
+  \code{\link{swSigma0}}.
 }
 
 \examples{

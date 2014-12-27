@@ -467,18 +467,37 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL)
     swRho(salinity, temperature, ptop) - 1000
 }
 
-swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL)
+## FIXME-gsw: should permit different EOS (so needs also lon and lat)
+swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0)
 {
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
+        names <- names(salinity@data)
+        if (!("temperature" %in% names)) stop("CTD object lacks temperature data")
+        if (!("salinity" %in% names)) stop("CTD object lacks salinity data")
+        if (!("pressure" %in% names)) stop("CTD object lacks pressure data")
+        ## FIXME: should ensure that these 
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
     }
-    ptop <- rep(0, length(salinity))
-    swRho(salinity, swTheta(salinity, temperature, pressure), ptop) - 1000
+    if (is.null(temperature)) stop("must supply temperature")
+    if (is.null(pressure)) stop("must supply pressure")
+    referencePressure <- rep(referencePressure, length.out=length(salinity))
+    swRho(salinity, swTheta(salinity, temperature, pressure), referencePressure) - 1000
 }
+
+swSigma0 <- function(salinity, temperature, pressure)
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=0)
+swSigma1 <- function(salinity, temperature, pressure)
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=1000)
+swSigma2 <- function(salinity, temperature, pressure)
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=2000)
+swSigma3 <- function(salinity, temperature, pressure)
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=3000)
+swSigma4 <- function(salinity, temperature, pressure)
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=4000)
 
 swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
                               formulation=c("fisher-simmons", "francois-garrison"))

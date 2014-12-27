@@ -38,7 +38,7 @@
 \value{\emph{In-situ} density [kg/m\eqn{^3}{^3}].}
 
 \seealso{Related density routines include
-\code{\link{swSigma}}, 
+\code{\link{swSigma0}} (and equivalents at other pressure horizons),
 \code{\link{swSigmaT}}, and
 \code{\link{swSigmaTheta}}. 
 }
