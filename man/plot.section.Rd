@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{section}(x,
      which=c(1, 2, 3, 99),
-     eos=getOption("eos", default='unesco'),
+     eos=getOption("eos", default="gsw"),
      at=NULL,
      labels=TRUE,
      grid=FALSE,

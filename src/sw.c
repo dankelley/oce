@@ -365,8 +365,14 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     return 0;
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
+  int iteration = 0;
+  int maxiteration = 20; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
   while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
-    //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f\n",*x, g, g1);
+    if (++iteration > maxiteration) {
+      *x = NA_REAL;
+      return(1);
+    }
+    //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f   (iteration %d)\n",*x, g, g1, iteration);
     if (g1 * g < 0) { /* root is nearer x1 so move x2 to x */
       x2 = *x;
       g2 = g;

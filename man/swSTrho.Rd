@@ -7,7 +7,7 @@
 \description{Compute \emph{in-situ} salinity, given temperature,
   density, and pressure.}
 
-\usage{swSTrho(temperature, density, pressure, eos=getOption("eos", default="unesco"))}
+\usage{swSTrho(temperature, density, pressure, eos=getOption("eos", default="gsw"))}
 
 \arguments{
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
@@ -29,7 +29,10 @@
 \seealso{\code{\link{swTSrho}}}
 
 \examples{
-S <- swSTrho(10, 22, 0) # 28.651
+swSTrho(10, 22, 0) # 28.76285
+swSTrho(10, 22, 0, eos="gsw") # 28.76285
+swSTrho(10, 22, 0, eos="teos") # 28.76285
+swSTrho(10, 22, 0, eos="unesco") # 28.65115
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

@@ -16,13 +16,27 @@ stopifnot(all.equal.numeric(cond, 0.618569, tolerance=1e-5))
 visc <- swViscosity(30,10)
 stopifnot(all.equal.numeric(visc, 0.001383779, tolerance=1e-7))
 
-ctd <- as.ctd(35, 13, 1000)
-stopifnot(all.equal.numeric(swRho(35, 13, 1000), 1030.818, tolerance=1e-6))
-stopifnot(all.equal.numeric(swRho(ctd),          1030.818, tolerance=1e-6))
+## swRrho
+## UNESCO version
+SP <- 35
+t <- 13
+p <- 1000
+ctd <- as.ctd(SP, t, p)
+stopifnot(all.equal.numeric(swRho(SP, t, p, eos="unesco"), 1030.818, tolerance=1e-6))
+stopifnot(all.equal.numeric(swRho(ctd, eos="unesco"), 1030.818, tolerance=1e-6))
+## GSW version; note that rhog disagrees with the above because of lat/lon
+longitude <- 188
+latitude <- 4
+SA <- gsw_SA_from_SP(SP, p, longitude, latitude)
+CT <- gsw_CT_from_t(SA, t, p)
+rhog <- gsw_rho(SA, CT, p)
+rhou <- swRho(SP, t, p, longitude, latitude, "gsw")
+stopifnot(all.equal.numeric(rhog, rhou))
 
-stopifnot(all.equal.numeric(swSigma(35, 13, 1000), 30.818, tolerance=1e-5))
-stopifnot(all.equal.numeric(swSigma(ctd),          30.818, tolerance=1e-5))
+stopifnot(all.equal.numeric(swSigma(35, 13, 1000, eos="unesco"), 30.818, tolerance=1e-5))
+stopifnot(all.equal.numeric(swSigma(ctd, eos="unesco"),          30.818, tolerance=1e-5))
 
+## FIXME-gsw theta should accept argument "eos"; right now it's called "method"
 stopifnot(all.equal.numeric(swTheta(35, 13, 1000), 12.858, tolerance=1e-3))
 stopifnot(all.equal.numeric(swTheta(ctd),          12.858, tolerance=1e-3))
 
@@ -76,4 +90,6 @@ depth <- swDepth(10000, 30)
 stopifnot(all.equal.numeric(depth, 9712.653, tolerance=0.001))
 pressure <- swPressure(9712.653, 30)
 stopifnot(all.equal.numeric(pressure, 10000., tolerance=0.001))
+
+message("half of tests/sw.R needs tests for gsw")
 

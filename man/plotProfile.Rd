@@ -9,7 +9,7 @@
 \usage{plotProfile(x,
     xtype="salinity+temperature", 
     ytype=c("pressure", "z", "depth", "sigmaTheta"),
-    eos=getOption("eos", default='unesco'),
+    eos=getOption("eos", default="gsw"),
     xlab=NULL, ylab=NULL,
     col="black",
     col.salinity="darkgreen",

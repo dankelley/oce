@@ -6,8 +6,8 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=getOption("eos", default="unesco"),
-      longitude, latitude)}
+\usage{swRho(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
+      eos=getOption("eos", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity (in which case
@@ -17,11 +17,13 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"} or,
+      equivalently, if \code{eos="teos"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="teos"}) or,
+      equivalently, if \code{eos="teos"}.}
   \item{eos}{name of equation of state to be used, either \code{"unesco"},
       \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
       package must be installed.}
-  \item{longitude}{longitude of observation (only used if \code{eos="teos"}).}
-  \item{latitude}{latitude of observation (only used if \code{eos="teos"}).}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

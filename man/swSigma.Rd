@@ -7,7 +7,8 @@
 \description{Compute \eqn{\sigma}{sigma}, the \emph{in-situ} density of
   seawater, minus 1000 kg/m\eqn{^3}{^3}.} 
 
-\usage{swSigma(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSigma(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
+        eos=getOption("eos", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -17,6 +18,12 @@
     must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"} or,
+      equivalently, if \code{eos="teos"}); passed to \code{\link{swRho}}.}
+  \item{latitude}{latitude of observation (only used if \code{eos="teos"}) or,
+      equivalently, if \code{eos="teos"}; passed to \code{\link{swRho}}.}
+  \item{eos}{equation of state, either \code{"unesco"}, \code{"gsw"} (or its
+      synonym \code{"teos"}); passed to \code{\link{swRho}}.}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

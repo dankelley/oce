@@ -8,7 +8,7 @@
 
 \usage{
 drawIsopycnals(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-               eos=getOption("eos", default="unesco"),
+               eos=getOption("eos", default="gsw"),
                cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 }
 

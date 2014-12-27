@@ -122,7 +122,8 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
 }
 
 ## FIXME: should be vectorized for speed
-swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default="unesco"))
+## FIXME-gsw: should use gsw
+swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default="gsw"))
 {
     eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     teos <- eos == "teos" || eos == "gsw"
@@ -150,7 +151,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default
 }
 
 ## FIXME: should be vectorized
-swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="unesco"))
+swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -392,12 +393,12 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=getOption("eos", default="unesco"),
-                  longitude, latitude)
+swRho <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
+                  eos=getOption("eos", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
-    eos <- match.arg(eos)
+    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     if (inherits(salinity, "ctd")) {
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
@@ -439,16 +440,18 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=getOption("eos"
     rval
 }
 
-swSigma <- function(salinity, temperature=NULL, pressure=NULL)
+swSigma <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
+                    eos=getOption("eos", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
+    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     if (inherits(salinity, "ctd")) {
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
     }
-    swRho(salinity, temperature, pressure) - 1000
+    swRho(salinity, temperature, pressure, eos=eos, longitude=longitude, latitude=latitude) - 1000
 }
 
 swSigmaT <- function(salinity, temperature=NULL, pressure=NULL)
@@ -630,7 +633,8 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0, method=c("unesco", "bryden"))
+swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
+                    method=c("unesco", "bryden", "gsw", "teos"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -661,8 +665,10 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                    value = double(nS),
                    NAOK=TRUE,
                    PACKAGE = "oce")$value
-    } else {
-        if (method == "unesco") {
+    } else if (method == "gsw" || method == "teos") {
+        SA <- gsw_SA_from_SP(salinity, pressure, 188, 4)
+        rval <- gsw_pt0_from_t(SA, temperature, pressure) # FIXME-gsw: should have args for lon and lat
+    } else if (method == "unesco") {
             ## sometimes have just a single value
             npref <- length(referencePressure)
             if (npref == 1)
@@ -671,9 +677,8 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                        as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(referencePressure),
                        value = double(nS),
                        NAOK=TRUE, PACKAGE = "oce")$value
-        } else {
-            stop("unrecognized method=\"", method, "\"")
-        }
+    } else {
+        stop("unrecognized method=\"", method, "\"")
     }
     dim(rval) <- dim
     rval

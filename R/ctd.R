@@ -693,7 +693,7 @@ setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which = c(1, 2, 3, 5),
                               col=par("fg"), fill=FALSE,
-                              eos=getOption("eos", default='unesco'),
+                              eos=getOption("eos", default='gsw'),
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE,
                               coastline="best",
@@ -2246,7 +2246,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    eos=getOption("eos", default='unesco'),
+                    eos=getOption("eos", default='gsw'),
                     cex=par("cex"), col = par("col"), pch=par("pch"),
                     bg, pt.bg="transparent",
                     col.rho="darkgray",
@@ -2383,7 +2383,7 @@ plotTS <- function (x,
 }
 
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-                           eos=getOption("eos", default='unesco'),
+                           eos=getOption("eos", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco", "gsw", "teos"))
@@ -2443,7 +2443,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "depth", "sigmaTheta"),
-                         eos=getOption("eos", default='unesco'),
+                         eos=getOption("eos", default="gsw"),
                          xlab=NULL, ylab=NULL,
                          col='black',
                          col.salinity = "darkgreen",
@@ -2863,7 +2863,10 @@ plotProfile <- function (x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
+        message("A")
         theta <- swTheta(x, method=eos)
+        print(data.frame(t=x[["temperature"]], theta=theta))
+        message("B")
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
         }
@@ -2873,7 +2876,7 @@ plotProfile <- function (x,
             axis(3)
             box()
             if (eos == "gsw" || eos == "teos")
-                mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             else
                 mtext(resizableLabel(theta, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
@@ -2884,7 +2887,7 @@ plotProfile <- function (x,
                      type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     if (eos == "gsw" || eos == "teos") {
-                        mtext(resizableLabel("Conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        mtext(resizableLabel("conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     } else {
                         mtext(resizableLabel("theta", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     }

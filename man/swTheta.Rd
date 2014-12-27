@@ -8,7 +8,7 @@
   seawater.}
 
 \usage{swTheta(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-         method=c("unesco","bryden"))}
+         method=c("unesco","bryden","gsw","teos"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -50,8 +50,8 @@
 
 \examples{
 library(oce)
-cat("unesco example:",swTheta(35, 13, 1000),"\n")
-cat("bryden example:",swTheta(35, 13, 1000, "bryden"),"\n")
+cat("unesco example:",swTheta(35, 13, 1000, 0),"\n")
+cat("bryden example:",swTheta(35, 13, 1000, 0, "bryden"),"\n")
 
 print(swTheta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
 	
