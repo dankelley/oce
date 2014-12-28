@@ -11,8 +11,8 @@
     1000dbar, \code{swSigma2} is referenced to 2000dbar, \code{swSigma2} is
     referenced to 3000dbar, and \code{swSigma4} is referenced to 4000dbar. }
 
-\usage{swSigma(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-                    eos=getOption("oceEOS", default="gsw"))}
+\usage{swSigma(salinity, temperature=NULL, pressure=NULL,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -22,13 +22,10 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{longitude}{longitude of observation (only used if \code{eos="gsw"} or,
-      equivalently, if \code{eos="teos"}).}
-  \item{latitude}{latitude of observation (only used if \code{eos="teos"}) or,
-      equivalently, if \code{eos="teos"}.}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"},
-      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-      package must be installed.}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
+  \item{eos}{name of equation of state to be used, either \code{"unesco"} or
+      \code{"gsw"}.}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

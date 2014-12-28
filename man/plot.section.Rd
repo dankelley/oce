@@ -50,9 +50,8 @@
         desired plots are placed in these panels, in reading order.  If only
         one panel is plotted, \code{par} is not adjusted, which makes it easy
         to add to the plot with subsequent plotting commands.}
-    \item{eos}{name of equation of state to be used, either \code{"unesco"},
-        \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-        package must be installed.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{at}{if \code{NULL} (the default), the x axis will indicate the
         distance of the stations from the first in the section.  (This may
         give errors in the contouring routine, if the stations are not present

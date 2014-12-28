@@ -12,9 +12,8 @@
   \item{salinity}{\emph{in-situ} salinity [PSU]}
   \item{density}{\emph{in-situ} density or sigma value [kg/m\eqn{^3}{^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"},
-      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-      package must be installed.}
+  \item{eos}{equation of state to be used, either \code{"unesco"} or
+      \code{"gsw"}.}
 }
 
 \details{Finds the temperature that yields the given density, with the
@@ -28,7 +27,6 @@
 \examples{
 swTSrho(35, 23, 0) # 26.11301
 swTSrho(35, 23, 0, eos="gsw") # 26.11301
-swTSrho(35, 23, 0, eos="teos") # 26.11301
 swTSrho(35, 23, 0, eos="unesco") # 26.11301
 }
 

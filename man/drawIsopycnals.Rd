@@ -21,9 +21,8 @@ drawIsopycnals(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
       1024 instead of 24.}
   \item{digits}{number of decimal digits to use in label (supplied to
       \code{\link{round}}).}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"},
-      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-      package must be installed.}
+  \item{eos}{equation of state to be used, either \code{"unesco"} or
+      \code{"gsw"}.}
   \item{cex}{size for labels.}
   \item{col}{colour for lines and labels.}
   \item{lwd}{line width for isopcynal curves}

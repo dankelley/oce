@@ -59,8 +59,8 @@ TT <- swTFreeze(40, 500)
 stopifnot(all.equal.numeric(TT, -2.588567, tolerance=1e-6))
 
 ctd <- as.ctd(40, 10, 4000)
-stopifnot(all.equal.numeric(swTheta(40,10,4000,0,"unesco"), 9.42648, tolerance=1e-5))
-stopifnot(all.equal.numeric(swTheta(ctd,0,"unesco"), 9.42648, tolerance=1e-5))
+stopifnot(all.equal.numeric(swTheta(40,10,4000,0,eos="unesco"), 9.42648, tolerance=1e-5))
+stopifnot(all.equal.numeric(swTheta(ctd,referencePressure=0,eos="unesco"), 9.42648, tolerance=1e-5))
 
 ab <- swAlphaOverBeta(40, 10, 4000, isTheta=TRUE)
 stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))

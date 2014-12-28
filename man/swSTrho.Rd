@@ -13,9 +13,8 @@
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"},
-      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-      package must be installed.}
+  \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+      [3,4].}
 }
 
 \details{Finds the salinity that yields the given density, with the
@@ -31,17 +30,29 @@
 \examples{
 swSTrho(10, 22, 0) # 28.76285
 swSTrho(10, 22, 0, eos="gsw") # 28.76285
-swSTrho(10, 22, 0, eos="teos") # 28.76285
 swSTrho(10, 22, 0, eos="unesco") # 28.65115
 }
 
-\references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
- computation of fundamental properties of seawater. \emph{Unesco
- Technical Papers in Marine Science}, \bold{44}, 53 pp
+\references{
 
- Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
- York, 662 pp. 
+    [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+    fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
+        Science}, \bold{44}, 53 pp
+
+    [2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+    York, 662 pp.
+
+    [3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation
+    of seawater-2010: Calculation and use of thermodynamic properties.
+    Technical Report 56, Intergovernmental Oceanographic Commission, Manuals
+    and Guide.
+
+    [4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+    the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+    ISBN 978-0-646-55621-5.
+
 }
+
 
 \author{Dan Kelley}
 

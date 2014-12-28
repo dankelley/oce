@@ -121,12 +121,11 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
     rval
 }
 
-## FIXME: should be vectorized for speed
-## FIXME-gsw: should use gsw
+## FIXME-speed: should be vectorized
 swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))
 {
-    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
-    teos <- eos == "teos" || eos == "gsw"
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    teos <- eos == "gsw" # FIXME still the best way?
     dim <- dim(temperature)
     nt <- length(temperature)
     nrho <- length(density)
@@ -155,8 +154,8 @@ swTSrho <- function(salinity, density, pressure, eos=getOption("oceEOS", default
 {
     if (missing(salinity))
         stop("must provide salinity")
-    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
-    teos <- eos == "teos" || eos == "gsw"
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    teos <- eos == "gsw"
     dim <- dim(salinity)
     nS <- length(salinity)
     nrho <- length(density)
@@ -239,7 +238,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta =
         pressure <- rep(pressure[1], np)
     }
     if (!isTheta)
-        t = swTheta(salinity, temperature, pressure)
+        t <- swTheta(salinity, temperature, pressure)
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_alpha_over_beta",
@@ -393,73 +392,71 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-swRho <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-                  eos=getOption("oceEOS", default="gsw"))
+swRho <- function(salinity, temperature=NULL, pressure=NULL,
+                  longitude, latitude, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
-    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
-    if (inherits(salinity, "ctd")) {
-        ctd <- salinity
-        salinity <- ctd[["salinity"]]
+    if (!missing(longitude) && is.character(longitude)) # error from the pre-gsw days
+        stop("4th argument should be a longitude, not the string \"", longitude, "\"")
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    Smatrix <- is.matrix(salinity)
+    dim <- dim(salinity)
+    if (inherits(salinity, "ctd") || inherits(salinity, "section")) {
+        ## FIXME: probably other special cases should go here; be sure to document!
+        tmp <- salinity
+        salinity <- tmp[["salinity"]]
         n <- length(salinity)
-        temperature <- ctd[["temperature"]]
-        pressure <- ctd[["pressure"]]
-        if (missing(longitude))
-            longitude <- rep(ctd[["longitude"]], length.out=n)
-        if (missing(latitude))
-            latitude <- rep(ctd[["latitude"]], length.out=n)
-    } else if (inherits(salinity, "section")) {
-        section <- salinity
-        salinity <- section[["salinity"]]
-        n <- length(salinity)
-        temperature <- section[["temperature"]]
-        pressure <- section[["pressure"]]
-        if (missing(longitude))
-            longitude <- rep(section[["longitude"]], length.out=n)
-        if (missing(latitude))
-            latitude <- rep(section[["latitude"]], length.out=n)
+        temperature <- tmp[["temperature"]]
+        pressure <- tmp[["pressure"]]
+        if (eos == "gsw") {
+            if ("longitude" %in% names(tmp@metadata))
+                longitude <- rep(tmp[["longitude"]], length.out=n)
+            if ("latitude" %in% names(tmp@metadata))
+                latitude <- rep(tmp[["latitude"]], length.out=n)
+        }
     }
     n <- length(salinity)
-    ## FIXME handle the 'section' case similarly to the 'ctd' case.
+    if (eos == "gsw") {
+        if (missing(longitude)) {
+            longitude <- rep(300, length.out=n)
+            warning("no longitude given, so using 300E (mid-north-Atlantic)")
+        }
+        if (missing(latitude)) {
+            latitude <- rep(30, length.out=n)
+            warning("no latitude in object, so using 30N (mid-north-Atlantic)")
+        }
+    }
     if (is.null(temperature))
         stop("must provide temperature")
     if (is.null(pressure))
         stop("must provide pressure")
-    dim <- dim(salinity) # can be used later to reshape
+    nS <- length(salinity)
     nt <- length(temperature)
-    if (nt != n)
-        stop("mismatched lengths of salinity and temperature: ", n, " and ", nt)
+    if (nS != nt)
+        stop("mismatched lengths of salinity and temperature: ", nt, " and ", nS)
     if (is.null(pressure))
-        pressure <- rep(0, n)
+        pressure <- rep(0, nS)
     np <- length(pressure)
-    ## sometimes give just a single p value (e.g. for a TS diagram)
-    if (np == 1 && n > np) {
-        np <- n
-        pressure <- rep(pressure[1], np)
-    }
-    if (n != np)
-        stop("lengths of salinity and pressure must agree, but they are ", n, " and ", np, ", respectively")
+    pressure <- rep(pressure, length.out=nS)
     if (eos == "unesco") {
         rval <- .C("sw_rho",
-                   as.integer(n),
+                   as.integer(nS),
                    as.double(salinity),
                    as.double(temperature),
                    as.double(pressure),
-                   value = double(n),
+                   value = double(nS),
                    NAOK=TRUE, PACKAGE = "oce")$value
-    } else if (eos == "gsw" || eos == "teos") {
+    } else if (eos == "gsw") {
         if (missing(latitude))
-            latitude <- rep(30, np) # arbitrary spot in mid atlantic
+            latitude <- rep(30, nS) # arbitrary spot in mid atlantic
         if (missing(longitude))
-            longitude <- rep(320, np)
+            longitude <- rep(320, nS)
         SA <- gsw_SA_from_SP(salinity, pressure, longitude, latitude)
         CT <- gsw_CT_from_t(SA, temperature, pressure)
         rval <- gsw_rho(SA, CT, pressure) # FIXME-gsw maybe should use exact form
-    } else {
-        stop("unknown eos: ", eos) # cannot reach here, given match.arg() above
     }
-    if (is.matrix(salinity))
+    if (Smatrix)
         dim(rval) <- dim
     rval
 }
@@ -469,7 +466,7 @@ swSigma <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitu
 {
     if (missing(salinity))
         stop("must provide salinity")
-    eos <- match.arg(eos, c("unesco", "gsw", "teos"))
+    eos <- match.arg(eos, c("unesco", "gsw"))
     if (inherits(salinity, "ctd")) {
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
@@ -491,37 +488,77 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL)
     swRho(salinity, temperature, ptop) - 1000
 }
 
-## FIXME-gsw: should permit different EOS (so needs also lon and lat)
-swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0)
+swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
+                         longitude, latitude, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
-    if (inherits(salinity, "ctd")) {
-        names <- names(salinity@data)
-        if (!("temperature" %in% names)) stop("CTD object lacks temperature data")
-        if (!("salinity" %in% names)) stop("CTD object lacks salinity data")
-        if (!("pressure" %in% names)) stop("CTD object lacks pressure data")
-        ## FIXME: should ensure that these 
-        temperature <- salinity@data$temperature
-        pressure <- salinity@data$pressure
-        salinity <- salinity@data$salinity # note: this destroys the ctd object
+    if (!missing(longitude) && is.character(longitude)) # error from the pre-gsw days
+        stop("5th argument should be a longitude, not the string \"", longitude, "\"")
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    if (inherits(salinity, "ctd") || inherits(salinity, "section")) {
+        tmp <- salinity
+        salinity <- tmp[["salinity"]]
+        n <- length(salinity)
+        temperature <- tmp[["temperature"]]
+        pressure <- tmp[["pressure"]]
+        if ("longitude" %in% names(tmp@metadata)) {
+            longitude <- rep(tmp[["longitude"]], length.out=n)
+        } else {
+            longitude <- rep(300, length.out=n)
+            warning("no longitude in object, so using 300E (mid-north-Atlantic)")
+        }
+        if ("latitude" %in% names(tmp@metadata)) {
+            latitude <- rep(tmp[["latitude"]], length.out=n)
+        } else {
+            latitude <- rep(30, length.out=n)
+            warning("no latitude in object, so using 30N (mid-north-Atlantic)")
+        }
     }
     if (is.null(temperature)) stop("must supply temperature")
     if (is.null(pressure)) stop("must supply pressure")
-    referencePressure <- rep(referencePressure, length.out=length(salinity))
-    swRho(salinity, swTheta(salinity, temperature, pressure), referencePressure) - 1000
+    nS <- length(salinity)
+    referencePressure <- rep(referencePressure, length.out=nS)
+    pressure <- rep(pressure, length.out=nS)
+    swRho(salinity,
+          temperature=swTheta(salinity, temperature, pressure, referencePressure=referencePressure, eos=eos),
+          pressure=0, longitude=longitude, latitude=latitude, eos=eos) - 1000
 }
 
-swSigma0 <- function(salinity, temperature, pressure)
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=0)
-swSigma1 <- function(salinity, temperature, pressure)
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=1000)
-swSigma2 <- function(salinity, temperature, pressure)
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=2000)
-swSigma3 <- function(salinity, temperature, pressure)
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=3000)
-swSigma4 <- function(salinity, temperature, pressure)
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=4000)
+swSigma0 <- function(salinity, temperature, pressure,
+                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+{
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=0,
+                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+}
+
+swSigma1 <- function(salinity, temperature, pressure,
+                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+{
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=1000,
+                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+}
+
+swSigma2 <- function(salinity, temperature, pressure,
+                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+{
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=2000,
+                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+}
+
+swSigma3 <- function(salinity, temperature, pressure,
+                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+{
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=3000,
+                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+}
+
+swSigma4 <- function(salinity, temperature, pressure,
+                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+{
+    swSigmaTheta(salinity, temperature, pressure, referencePressure=4000,
+                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+}
 
 swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
                               formulation=c("fisher-simmons", "francois-garrison"))
@@ -577,6 +614,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
     }
     if (is.null(temperature))
         stop("must provide temperature")
+    Smatrix <- is.matrix(salinity)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
@@ -585,13 +623,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
     np <- length(pressure)
     if (nS != nt)
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-                                        # sometimes give just a single p value (e.g. for a TS diagram)
-    if (np == 1) {
-        np <- nS
-        pressure <- rep(pressure[1], np)
-    }
-    if (nS != np)
-        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    pressure <- rep(pressure, length.out=nS)
     rval <- .C("sw_svel",
                as.integer(nS),
                as.double(salinity),
@@ -599,7 +631,8 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
                as.double(pressure),
                value = double(nS),
                NAOK=TRUE, PACKAGE = "oce")$value
-    dim(rval) <- dim
+    if (Smatrix)
+        dim(rval) <- dim
     rval
 }
 
@@ -677,53 +710,63 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 }
 
 swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-                    method=c("unesco", "bryden", "gsw", "teos"))
+                    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity))
         stop("must provide salinity")
-    if (inherits(salinity, "ctd")) {
+    if (!missing(longitude) && is.character(longitude)) # error from the pre-gsw days
+        stop("5th argument should be a longitude, not the string \"", longitude, "\"")
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    Smatrix <- is.matrix(salinity)
+    dim <- dim(salinity)
+    if (inherits(salinity, "ctd") || inherits(salinity, "section")) {
+        ## FIXME: probably other special cases should go here; be sure to document!
         tmp <- salinity
-        salinity <- tmp@data$salinity
-        temperature <- tmp@data$temperature
-        pressure <- tmp@data$pressure
+        salinity <- tmp[["salinity"]]
+        n <- length(salinity)
+        temperature <- tmp[["temperature"]]
+        pressure <- tmp[["pressure"]]
+        if (eos == "gsw") {
+            if ("longitude" %in% names(tmp@metadata))
+                longitude <- rep(tmp[["longitude"]], length.out=n)
+            if ("latitude" %in% names(tmp@metadata))
+                latitude <- rep(tmp[["latitude"]], length.out=n)
+        }
+    }
+    n <- length(salinity)
+    if (eos == "gsw") {
+        if (missing(longitude)) {
+            longitude <- rep(300, length.out=n)
+            warning("no longitude given, so using 300E (mid-north-Atlantic)")
+        }
+        if (missing(latitude)) {
+            latitude <- rep(30, length.out=n)
+            warning("no latitude in object, so using 30N (mid-north-Atlantic)")
+        }
     }
     if (is.null(temperature))
         stop("must provide temperature")
-    dim <- dim(salinity)
+    if (is.null(pressure))
+        stop("must provide pressure")
     nS <- length(salinity)
     nt <- length(temperature)
     if (nS != nt)
-        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+        stop("mismatched lengths of salinity and temperature: ", nt, " and ", nS)
     if (is.null(pressure))
         pressure <- rep(0, nS)
-    np <- length(pressure)
-    if (np == 1) {
-        np <- nS
-        pressure <- rep(pressure[1], np)
-    }
-    method <- match.arg(method)
-    if (method == "bryden") {
-        rval <- .C("theta_Bryden_1973",
-                   as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure),
+    pressure <- rep(pressure[1], length.out=nS)
+    referencePressure <- rep(referencePressure[1], length.out=nS)
+    if (eos == "unesco") {
+        rval <- .C("theta_UNESCO_1983",
+                   as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(referencePressure),
                    value = double(nS),
-                   NAOK=TRUE,
-                   PACKAGE = "oce")$value
-    } else if (method == "gsw" || method == "teos") {
-        SA <- gsw_SA_from_SP(salinity, pressure, 188, 4)
-        rval <- gsw_pt0_from_t(SA, temperature, pressure) # FIXME-gsw: should have args for lon and lat
-    } else if (method == "unesco") {
-            ## sometimes have just a single value
-            npref <- length(referencePressure)
-            if (npref == 1)
-                referencePressure <- rep(referencePressure[1], nS)
-            rval <- .C("theta_UNESCO_1983",
-                       as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(referencePressure),
-                       value = double(nS),
-                       NAOK=TRUE, PACKAGE = "oce")$value
-    } else {
-        stop("unrecognized method=\"", method, "\"")
+                   NAOK=TRUE, PACKAGE = "oce")$value
+    } else if (eos == "gsw") {
+        SA <- gsw_SA_from_SP(salinity, pressure, longitude, latitude)
+        rval <- gsw_pt_from_t(SA, temperature, pressure, referencePressure)
     }
-    dim(rval) <- dim
+    if (Smatrix)
+        dim(rval) <- dim
     rval
 }
 

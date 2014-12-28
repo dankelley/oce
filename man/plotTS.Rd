@@ -40,8 +40,8 @@
         \code{cdt} object or \code{section} object.}
     \item{inSitu}{A boolean indicating whether to use in-situ temperature or
         (the default) potential temperature, calculated with reference pressure
-        given by \code{referencePressure}.  This is ignored if \code{eos="gsw"}
-        or \code{eos="teos"}, because those cases the y axis is necessarily the
+        given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
+        because those cases the y axis is necessarily the
         conservative formulation of temperature.}
     \item{type}{representation of data, \code{"p"} for points, \code{"l"} for
         connecting lines, or \code{"n"} for no indication.}
@@ -54,9 +54,8 @@
     \item{col.grid}{colour for grid.}
     \item{lty.grid}{line type for grid.}
     \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
-    \item{eos}{name of equation of state to be used, either \code{"unesco"},
-        \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-        package must be installed.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.

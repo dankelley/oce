@@ -15,26 +15,35 @@
     1000dbar, \code{swSigma2} is referenced to 2000dbar, \code{swSigma2} is
     referenced to 3000dbar, and \code{swSigma4} is referenced to 4000dbar. }
 
-\usage{swSigma0(salinity, temperature, pressure)
-swSigma1(salinity, temperature, pressure)
-swSigma2(salinity, temperature, pressure)
-swSigma3(salinity, temperature, pressure)
-swSigma4(salinity, temperature, pressure)
+\usage{
+swSigma0(salinity, temperature, pressure,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+swSigma1(salinity, temperature, pressure,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+swSigma2(salinity, temperature, pressure,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+swSigma3(salinity, temperature, pressure,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+swSigma4(salinity, temperature, pressure,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
 }
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case
-    \code{temperature} and \code{pressure} must be provided) \strong{or}
-    a \code{ctd} object (in which case \code{salinity},
-    \code{temperature} and \code{pressure} are determined from the
-    object, and must not be provided in the argument list).}
+  \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
+      \code{pressure} must be provided) \strong{or} a \code{ctd} object or
+      \code{section} object (in which case all the other arguments are ignored,
+      with data stored within the object being used instead).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
+  \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+      [3,4].}
 }
 
-\details{If the first argument is a \code{ctd} object, then salinity,
-  temperature and pressure values are extracted from it, and used for
-  the calculation.
+\details{If the first argument is a \code{ctd} object or \code{section} object,
+    then salinity, etc., values are extracted from it, and used for the
+    calculation.
 
   Definition:
   \eqn{\sigma_0=\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_0=sigma_theta=rho(S,theta(S,t,p),0)}
@@ -55,14 +64,23 @@ swSigma2(35, 13, 1000)
 swSigma3(35, 13, 1000)
 }
 
-\references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
- computation of fundamental properties of seawater. \emph{Unesco
- Technical Papers in Marine Science}, \bold{44}, 53 pp
+\references{
 
- Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, 
- Academic Press, New York, 662 pp.
+    [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+    fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
+        Science}, \bold{44}, 53 pp
 
- FIXME-gsw: this needs to have an option to use gsw (which is going to require lat and lon args)
+    [2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+    York, 662 pp.
+
+    [3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation
+    of seawater-2010: Calculation and use of thermodynamic properties.
+    Technical Report 56, Intergovernmental Oceanographic Commission, Manuals
+    and Guide.
+
+    [4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+    the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+    ISBN 978-0-646-55621-5.
 
 }
 

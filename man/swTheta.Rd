@@ -8,7 +8,7 @@
   seawater.}
 
 \usage{swTheta(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-         method=c("unesco","bryden","gsw","teos"))}
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -19,7 +19,10 @@
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
   \item{referencePressure}{reference pressure [dbar]}
-  \item{method}{algorithm to be used (see details)}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
+  \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+      [3,4].}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
@@ -32,14 +35,9 @@
   a location with pressure \code{referencePressure}. This quantity is
   commonly denoted \eqn{\theta}{theta} in the oceanographic literature.
 
-  The \code{"bryden"} method, based on Bryden (1973), calculates
-  potential temperature referenced to the surface, ignoring the
-  reference pressure.  The \code{"unesco"} method, based on Fofonoff
-  \emph{et al.} (1983), generalizes Bryden's method, permitting
-  calculation for arbitrary reference pressure.  For normal use, the
-  \code{"unesco"} method is preferred.  (The example given below
-  illustrates that the two methods yield similar results for
-  surface-referenced calculations.)}
+  For \code{eos="unesco"} the method of Fofonoff \emph{et al.} (1983), is used.
+  For \code{eos="gsw"}, \code{\link[gsw]{gsw_pt_from_t}} is used.}
+  
 
 \value{Potential temperature [\eqn{^\circ}{deg}C] of seawater.}
 
@@ -50,17 +48,15 @@
 
 \examples{
 library(oce)
-cat("unesco example:",swTheta(35, 13, 1000, 0),"\n")
-cat("bryden example:",swTheta(35, 13, 1000, 0, "bryden"),"\n")
 
-print(swTheta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
+print(swTheta(40, 40, 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
 	
 # Demonstrate that the methods agree to a couple of
 # millidegrees over a typical span of values
 S <- c(30,30,38,38)
 T <- c(-2,-2,30,30)
 p <- 1000 * runif(n=4)
-print(max(abs(swTheta(S,T,p) - swTheta(S,T,p,0,"bryden"))))
+print(max(abs(swTheta(S,T,p) - swTheta(S,T,p,0,eos="gsw"))))
 
 
 # Example from a cross-Atlantic section
@@ -73,13 +69,26 @@ legend("topleft", lty=1:2,
        bg='white', title="Station 70")
 }
 
-\references{Bryden, H. L., 1973. New polynomials for thermal expansion,
-  adiabatic temperature gradient and potential temperature of seawater,
-  \emph{Deep-Sea Res.}, \bold{20}, 401-408.
+\references{
 
-  Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
-  fundamental properties of seawater. \emph{Unesco Technical Papers in
-  Marine Science}, \bold{44}, 53 pp.}
+    [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+    fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
+        Science}, \bold{44}, 53 pp
+
+    [2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+    York, 662 pp.
+
+    [3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation
+    of seawater-2010: Calculation and use of thermodynamic properties.
+    Technical Report 56, Intergovernmental Oceanographic Commission, Manuals
+    and Guide.
+
+    [4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+    the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+    ISBN 978-0-646-55621-5.
+
+}
+
 
 \author{Dan Kelley}
 

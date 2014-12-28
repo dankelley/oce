@@ -6,23 +6,20 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{swRho(salinity, temperature=NULL, pressure=NULL, longitude, latitude,
-      eos=getOption("oceEOS", default="gsw"))}
+\usage{swRho(salinity, temperature=NULL, pressure=NULL,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{salinity}{either salinity (in which case \code{temperature} and
-      \code{pressure} must be provided) \strong{or} a \code{ctd} or
-      \code{section} object (in which case \code{salinity}, \code{temperature},
-      etc. are determined from the object.}
+  \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
+      \code{pressure} must be provided) \strong{or} a \code{ctd} object or
+      \code{section} object (in which case all the other arguments are ignored,
+      with data stored within the object being used instead).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{longitude}{longitude of observation (only used if \code{eos="gsw"} or,
-      equivalently, if \code{eos="teos"}).}
-  \item{latitude}{latitude of observation (only used if \code{eos="teos"}) or,
-      equivalently, if \code{eos="teos"}.}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"},
-      \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-      package must be installed.}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
+  \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+      [3,4].}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
@@ -47,16 +44,23 @@ library(oce)
 rho <- swRho(35, 13, 1000)
 }
 
-\references{[1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
-    computation of fundamental properties of seawater. \emph{Unesco Technical
-        Papers in Marine Science}, \bold{44}, 53 pp
+\references{
+
+    [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+    fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
+        Science}, \bold{44}, 53 pp
 
     [2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
     York, 662 pp.
 
-[3] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and the
-Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127, ISBN
-978-0-646-55621-5.
+    [3] IOC, SCOR, and IAPSO (2010). The international thermodynamic equation
+    of seawater-2010: Calculation and use of thermodynamic properties.
+    Technical Report 56, Intergovernmental Oceanographic Commission, Manuals
+    and Guide.
+
+    [4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
+    the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+    ISBN 978-0-646-55621-5.
 
 }
 

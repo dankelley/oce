@@ -76,9 +76,8 @@
     }
     \item{ytype}{variable to use on y axis; note that \code{z} is the negative
         of \code{depth}.}
-    \item{eos}{name of equation of state to be used, either \code{"unesco"},
-        \code{"gsw"} or \code{"teos"}.  In the second two cases, the \code{gsw}
-        package must be installed.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{xlab}{optional label for x axis (at top of plot).}
     \item{ylab}{optional label for y axis.  Set to \code{""} to prevent labelling
     the axis.}
