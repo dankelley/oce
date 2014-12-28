@@ -420,6 +420,7 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude
         if (missing(latitude))
             latitude <- rep(section[["latitude"]], length.out=n)
     }
+    n <- length(salinity)
     ## FIXME handle the 'section' case similarly to the 'ctd' case.
     if (is.null(temperature))
         stop("must provide temperature")
