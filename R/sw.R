@@ -400,43 +400,66 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, longitude, latitude
         stop("must provide salinity")
     eos <- match.arg(eos, c("unesco", "gsw", "teos"))
     if (inherits(salinity, "ctd")) {
-        temperature <- salinity@data$temperature
-        pressure <- salinity@data$pressure
-        salinity <- salinity@data$salinity # note: this destroys the ctd object
+        ctd <- salinity
+        salinity <- ctd[["salinity"]]
+        n <- length(salinity)
+        temperature <- ctd[["temperature"]]
+        pressure <- ctd[["pressure"]]
+        if (missing(longitude))
+            longitude <- rep(ctd[["longitude"]], length.out=n)
+        if (missing(latitude))
+            latitude <- rep(ctd[["latitude"]], length.out=n)
+    } else if (inherits(salinity, "section")) {
+        section <- salinity
+        salinity <- section[["salinity"]]
+        n <- length(salinity)
+        temperature <- section[["temperature"]]
+        pressure <- section[["pressure"]]
+        if (missing(longitude))
+            longitude <- rep(section[["longitude"]], length.out=n)
+        if (missing(latitude))
+            latitude <- rep(section[["latitude"]], length.out=n)
     }
+    ## FIXME handle the 'section' case similarly to the 'ctd' case.
     if (is.null(temperature))
         stop("must provide temperature")
-    dim <- dim(salinity)
-    nS <- length(salinity)
-    nt <- length(temperature)
     if (is.null(pressure))
-        pressure <- rep(0, nS)
+        stop("must provide pressure")
+    dim <- dim(salinity) # can be used later to reshape
+    nt <- length(temperature)
+    if (nt != n)
+        stop("mismatched lengths of salinity and temperature: ", n, " and ", nt)
+    if (is.null(pressure))
+        pressure <- rep(0, n)
     np <- length(pressure)
-    if (nS != nt)
-        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
-    if (np == 1 && nS > np) {
-        np <- nS
+    if (np == 1 && n > np) {
+        np <- n
         pressure <- rep(pressure[1], np)
     }
-    if (nS != np)
-        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (n != np)
+        stop("lengths of salinity and pressure must agree, but they are ", n, " and ", np, ", respectively")
     if (eos == "unesco") {
         rval <- .C("sw_rho",
-                   as.integer(nS),
+                   as.integer(n),
                    as.double(salinity),
                    as.double(temperature),
                    as.double(pressure),
-                   value = double(nS),
+                   value = double(n),
                    NAOK=TRUE, PACKAGE = "oce")$value
-    } else {
-        if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
-        if (missing(longitude)) longitude <- rep(320, np)
+    } else if (eos == "gsw" || eos == "teos") {
+        if (missing(latitude))
+            latitude <- rep(30, np) # arbitrary spot in mid atlantic
+        if (missing(longitude))
+            longitude <- rep(320, np)
         SA <- gsw_SA_from_SP(salinity, pressure, longitude, latitude)
         CT <- gsw_CT_from_t(SA, temperature, pressure)
         rval <- gsw_rho(SA, CT, pressure) # FIXME-gsw maybe should use exact form
+    } else {
+        stop("unknown eos: ", eos) # cannot reach here, given match.arg() above
     }
-    dim(rval) <- dim
+    if (is.matrix(salinity))
+        dim(rval) <- dim
     rval
 }
 
