@@ -11,34 +11,41 @@
     longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case
-    \code{temperature} and \code{pressure} must be provided) \strong{or}
-    a \code{ctd} object (in which case \code{salinity},
-    \code{temperature} and \code{pressure} are determined from the
-    object, and must not be provided in the argument list).}
+  \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
+      \code{pressure} must be provided) \strong{or} an \code{oce} object (in
+      which case \code{salinity}, etc. are inferred from the object).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
   \item{referencePressure}{reference pressure [dbar]}
-  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
-  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
       [3,4].}
 }
 
-\details{If the first argument is a \code{ctd} object, then salinity,
-  temperature and pressure values are extracted from it, and used for
-  the calculation.
+\details{The potential temperature is defined to be the temperature that a
+    water parcel of salinity \code{S}, \emph{in-situ} temperature \code{t} and
+    pressure \code{p} would have if were to be moved adiabatically to a
+    location with pressure \code{referencePressure}. This quantity is commonly
+    denoted \eqn{\theta}{theta} in the oceanographic literature.
 
-  The potential temperature is defined to be the temperature that a
-  water parcel of salinity \code{S}, \emph{in-situ} temperature \code{t}
-  and pressure \code{p} would have if were to be moved adiabatically to
-  a location with pressure \code{referencePressure}. This quantity is
-  commonly denoted \eqn{\theta}{theta} in the oceanographic literature.
+    If the first argument is a \code{ctd} or \code{section} object, then
+    values for salinity, etc., are extracted from it, and used for the
+    calculation, and the corresponding arguments to the present function are
+    ignored.
 
-  For \code{eos="unesco"} the method of Fofonoff \emph{et al.} (1983), is used.
-  For \code{eos="gsw"}, \code{\link[gsw]{gsw_pt_from_t}} is used.}
+    For \code{eos="unesco"} the method of Fofonoff \emph{et al.} (1983), is
+    used [1,2].  For \code{eos="gsw"}, \code{\link[gsw]{gsw_pt_from_t}} is used
+    [3,4].
+
+    In the \code{gsw} case, if \code{longitude} and \code{latitude} are
+    missing, default values of 300E and 30N will be used, and a warning will be
+    generated if \code{getOption("oceEOSwarning")} is \code{TRUE}.
+
+}
   
-
 \value{Potential temperature [\eqn{^\circ}{deg}C] of seawater.}
 
 \seealso{The corresponding potential density anomaly

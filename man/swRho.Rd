@@ -11,26 +11,35 @@
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
-      \code{pressure} must be provided) \strong{or} a \code{ctd} object or
-      \code{section} object (in which case all the other arguments are ignored,
-      with data stored within the object being used instead).}
+      \code{pressure} must be provided) \strong{or} an \code{oce} object (in
+      which case \code{salinity}, etc. are inferred from the object).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
-  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
       [3,4].}
 }
 
-\details{If the first argument is a \code{ctd} object, then salinity,
-  temperature and pressure values are extracted from it, and used for
-  the calculation.
 
-  The density is calculated using the UNESCO equation of state for
-  seawater, assuming that input variables are defined according to
-  modern calibrations.  In conventional Oceanographic notation, the
-  calculated quantity is \eqn{\rho(S,t,p)}{rho(S,t,p)} }
 
+\details{If the first argument is a \code{ctd} or \code{section} object, then
+    values for salinity, etc., are extracted from it, and used for the
+    calculation, and the corresponding arguments to the present function are
+    ignored.
+
+    If \code{eos="unesco"}, the density is calculated using the UNESCO equation
+    of state for seawater [1,2], and if \code{eos="gsw"}, the GSW formulation
+    [3,4] is used.
+
+    In the \code{gsw} case, if \code{longitude} and \code{latitude} are
+    missing, default values of 300E and 30N will be used, and a warning will be
+    generated if \code{getOption("oceEOSwarning")} is \code{TRUE}.
+
+}
+    
 \value{\emph{In-situ} density [kg/m\eqn{^3}{^3}].}
 
 \seealso{Related density routines include

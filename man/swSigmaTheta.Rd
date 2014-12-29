@@ -27,15 +27,18 @@
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
-  temperature and pressure values are extracted from it, and used for
-  the calculation.
+    temperature and pressure values are extracted from it, and used for the
+    calculation.
 
-  Definition:
-  \eqn{\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_theta=rho(S,theta(S,t,p),0)}
-  - 1000 kg/m\eqn{^3}{^3}.
+    In the \code{gsw} case, if \code{longitude} and \code{latitude} are
+    missing, default values of 300E and 30N will be used, and a warning will be
+    generated if \code{getOption("oceEOSwarning")} is \code{TRUE}.
+
 }
 
-\value{Potential density anomaly [kg/m\eqn{^3}{^3}].}
+\value{Potential density anomaly [kg/m\eqn{^3}{^3}], defined as
+    \eqn{\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_theta=rho(S,theta(S,t,p),0)}
+  - 1000 kg/m\eqn{^3}{^3}.}
 
 \seealso{Related density routines include: \code{\link{swRho}},
     \code{\link{swSigmaT}}, and the family of functions for density referenced

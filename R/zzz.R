@@ -11,6 +11,7 @@
                   oceUnitBracket="[",
                   ##oceFlag1 = 1,
                   oceEOS="gsw", # (equivalently "teos"); may also be "unesco"
+                  oceEOSwarning=FALSE,
                   webtide="/usr/local/WebTide",
                   oceDebug=0)
     toset <- !(names(opOce) %in% names(op))

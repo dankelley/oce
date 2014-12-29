@@ -19,10 +19,11 @@ stopifnot(all.equal.numeric(visc, 0.001383779, tolerance=1e-7))
 ## swRrho
 ## UNESCO version
 SP <- 35
-t <- 13
+T <- 13
+t <- T # for GSW notation in functions gsw_...()
 p <- 1000
-ctd <- as.ctd(SP, t, p)
-stopifnot(all.equal.numeric(swRho(SP, t, p, eos="unesco"), 1030.818, tolerance=1e-6))
+ctd <- as.ctd(SP, T, p)
+stopifnot(all.equal.numeric(swRho(SP, T, p, eos="unesco"), 1030.818, tolerance=1e-6))
 stopifnot(all.equal.numeric(swRho(ctd, eos="unesco"), 1030.818, tolerance=1e-6))
 ## GSW version; note that rhog disagrees with the above because of lat/lon
 longitude <- 188
@@ -36,9 +37,11 @@ stopifnot(all.equal.numeric(rhog, rhou))
 stopifnot(all.equal.numeric(swSigma(35, 13, 1000, eos="unesco"), 30.818, tolerance=1e-5))
 stopifnot(all.equal.numeric(swSigma(ctd, eos="unesco"),          30.818, tolerance=1e-5))
 
-## FIXME-gsw theta should accept argument "eos"; right now it's called "method"
-stopifnot(all.equal.numeric(swTheta(35, 13, 1000), 12.858, tolerance=1e-3))
-stopifnot(all.equal.numeric(swTheta(ctd),          12.858, tolerance=1e-3))
+stopifnot(all.equal.numeric(swTheta(35, 13, 1000, eos="unesco"), 12.85840037206))
+stopifnot(all.equal.numeric(swTheta(ctd, eos="unesco"),          12.85840037206))
+stopifnot(all.equal.numeric(swTheta(35, 13, 1000, eos="gsw"),    12.85839868051))
+stopifnot(all.equal.numeric(swTheta(ctd, eos="gsw"),             12.85840271482)) # consistency test
+stopifnot(all.equal.numeric(gsw_pt_from_t(34.7118, 28.7856, 10, 0), 28.783196819670632)) # TEOS test
 
 # Test values from page 9 of
 # Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
@@ -91,5 +94,4 @@ stopifnot(all.equal.numeric(depth, 9712.653, tolerance=0.001))
 pressure <- swPressure(9712.653, 30)
 stopifnot(all.equal.numeric(pressure, 10000., tolerance=0.001))
 
-message("half of tests/sw.R needs tests for gsw")
 

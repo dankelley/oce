@@ -420,11 +420,13 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
     if (eos == "gsw") {
         if (missing(longitude)) {
             longitude <- rep(300, length.out=n)
-            warning("no longitude given, so using 300E (mid-north-Atlantic)")
+            if (getOption("oceEOSwarning", default=FALSE))
+                warning("no longitude given, so using 300E (mid-north-Atlantic)")
         }
         if (missing(latitude)) {
             latitude <- rep(30, length.out=n)
-            warning("no latitude in object, so using 30N (mid-north-Atlantic)")
+            if (getOption("oceEOSwarning", default=FALSE))
+                warning("no latitude in object, so using 30N (mid-north-Atlantic)")
         }
     }
     if (is.null(temperature))
@@ -506,13 +508,15 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
             longitude <- rep(tmp[["longitude"]], length.out=n)
         } else {
             longitude <- rep(300, length.out=n)
-            warning("no longitude in object, so using 300E (mid-north-Atlantic)")
+            if (getOption("oceEOSwarning", default=FALSE))
+                warning("no longitude in object, so using 300E (mid-north-Atlantic)")
         }
         if ("latitude" %in% names(tmp@metadata)) {
             latitude <- rep(tmp[["latitude"]], length.out=n)
         } else {
             latitude <- rep(30, length.out=n)
-            warning("no latitude in object, so using 30N (mid-north-Atlantic)")
+            if (getOption("oceEOSwarning", default=FALSE))
+                warning("no latitude in object, so using 30N (mid-north-Atlantic)")
         }
     }
     if (is.null(temperature)) stop("must supply temperature")
@@ -737,11 +741,13 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     if (eos == "gsw") {
         if (missing(longitude)) {
             longitude <- rep(300, length.out=n)
-            warning("no longitude given, so using 300E (mid-north-Atlantic)")
+            if (getOption("oceEOSwarning", default=FALSE))
+                warning("no longitude given, so using 300E (mid-north-Atlantic)")
         }
         if (missing(latitude)) {
             latitude <- rep(30, length.out=n)
-            warning("no latitude in object, so using 30N (mid-north-Atlantic)")
+            if (getOption("oceEOSwarning", default=FALSE))
+                warning("no latitude in object, so using 30N (mid-north-Atlantic)")
         }
     }
     if (is.null(temperature))
