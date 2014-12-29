@@ -10,9 +10,9 @@
     longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
-      \code{pressure} must be provided) \strong{or} an \code{oce} object (in
-      which case \code{salinity}, etc. are inferred from the object).}
+  \item{salinity}{either practial salinity (in which case \code{temperature}
+      and \code{pressure} must be provided) \strong{or} an \code{oce} object
+      (in which case \code{salinity}, etc. are inferred from the object).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
   \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
@@ -22,7 +22,6 @@
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
       [3,4].}
 }
-
 
 
 \details{If the first argument is a \code{ctd} or \code{section} object, then

@@ -6,30 +6,31 @@
 
 \description{Compute specific heat of seawater.}
 
-\usage{swSpecificHeat(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSpecificHeat(salinity, temperature=NULL, pressure=0,
+    longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case
-    \code{temperature} and \code{pressure} must be provided) \strong{or}
-    a \code{ctd} object (in which case \code{salinity},
-    \code{temperature} and \code{pressure} are determined from the
-    object, and must not be provided in the argument list).}
+  \item{salinity}{either practial salinity (in which case \code{temperature}
+      and \code{pressure} must be provided) \strong{or} an \code{oce} object
+      (in which case \code{salinity}, etc. are inferred from the object).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{seawater pressure [dbar]}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
+  \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 
-\details{If the first argument is a \code{ctd} object, then salinity,
-  temperature and pressure values are extracted from it, and used for
-  the calculation.
+\details{If the first argument is a \code{ctd} object, then salinity, etc, are
+    extracted from it, and used for the calculation.
 
-  Based on matlab code on
-  \url{ftp://acoustics.whoi.edu/pub/Matlab/oceans}, which was in turn
-  based on Millero et al (1973, 1981).  }
+}
 
 \value{Specific heat \eqn{J kg^{-1}\,^\circ C^{-1}}{J/(kg degC)}}
 
 \examples{
-CP <- swSpecificHeat(40, 40, 10000)	# 3949.500
+swSpecificHeat(40, 40, 10000, eos="unesco") # 3949.500
 }
 
 \references{

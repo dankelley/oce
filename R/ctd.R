@@ -2942,7 +2942,7 @@ plotProfile <- function (x,
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
+        st <- swSigmaTheta(x, eos=eos)
         if (!any(is.finite(st))) {
             warning("no valid sigma-theta data")
             return(invisible())
