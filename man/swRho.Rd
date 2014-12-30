@@ -4,7 +4,7 @@
 
 \title{Seawater density}
 
-\description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
+\description{Compute \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
 \usage{swRho(salinity, temperature=NULL, pressure=NULL,
     longitude, latitude, eos=getOption("oceEOS", default="gsw"))}

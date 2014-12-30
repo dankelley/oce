@@ -8,7 +8,7 @@
   seawater.}
 
 \usage{swTheta(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case \code{temperature} and

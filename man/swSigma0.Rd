@@ -17,15 +17,15 @@
 
 \usage{
 swSigma0(salinity, temperature, pressure,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 swSigma1(salinity, temperature, pressure,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 swSigma2(salinity, temperature, pressure,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 swSigma3(salinity, temperature, pressure,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 swSigma4(salinity, temperature, pressure,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 }
 
 \arguments{

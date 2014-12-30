@@ -7,7 +7,7 @@
 \description{Compute freezing temperature of seawater.}
 
 \usage{swTFreeze(salinity, pressure=0,
-    longitude, latitude, saturation_fraction=1,
+    longitude=300, latitude=30, saturation_fraction=1,
     eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{

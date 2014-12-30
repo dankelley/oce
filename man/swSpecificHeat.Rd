@@ -7,7 +7,7 @@
 \description{Compute specific heat of seawater.}
 
 \usage{swSpecificHeat(salinity, temperature=NULL, pressure=0,
-    longitude, latitude, eos=getOption("oceEOS", default="gsw"))}
+    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{either practial salinity (in which case \code{temperature}
