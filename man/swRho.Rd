@@ -24,10 +24,9 @@
 }
 
 
-\details{If the first argument is a \code{ctd} or \code{section} object, then
-    values for salinity, etc., are extracted from it, and used for the
-    calculation, and the corresponding arguments to the present function are
-    ignored.
+\details{If the first argument is an \code{oce} object, then values for
+    salinity, etc., are extracted from it, and used for the calculation, and
+    the corresponding arguments to the present function are ignored.
 
     If \code{eos="unesco"}, the density is calculated using the UNESCO equation
     of state for seawater [1,2], and if \code{eos="gsw"}, the GSW formulation

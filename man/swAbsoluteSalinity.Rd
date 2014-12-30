@@ -6,27 +6,27 @@
 
 \description{Compute seawater absolute salinity, according to TEOS-10.}
 
-\usage{swAbsoluteSalinity(salinity, pressure, longitude, latitude)}
+\usage{swAbsoluteSalinity(salinity, pressure=NULL, longitude=300, latitude=30)}
 
 \arguments{
-  \item{salinity}{either salinity (in which case \code{pressure}, etc.  must
-      be provided) \strong{or} a \code{ctd} object (in which case
-      \code{salinity}, etc.  are determined from the object, and must not be
-      provided in the argument list).}
+  \item{salinity}{either practial salinity (in which case \code{temperature}
+      and \code{pressure} must be provided) \strong{or} an \code{oce} object
+      (in which case \code{salinity}, etc. are inferred from the object).}
   \item{pressure}{pressure in dbar.}
   \item{longitude}{longitude of observation.}
   \item{latitude}{latitude of observation.}
 }
 
-\details{If the first argument is a \code{ctd} object, then values of salinity,
-    etc, are extracted from it, and used for the calculation.
+\details{If the first argument is an \code{oce} object, then values for
+    salinity, etc., are extracted from it, and used for the calculation, and
+    the corresponding arguments to the present function are ignored.
 
-    The absolute salinity is calculated using the TEOS-10 function
-    \code{gsw_sa_from_sp}.  Typically, this is a fraction of a unit higher than
-    practical salinity as defined in the UNESCO formulae from the 1980s.}
+    The absolute salinity is calculated using the GSW function
+    \code{\link[gsw]{gsw_SA_from_SP}}.  Typically, this is a fraction of a unit
+    higher than practical salinity as defined in the UNESCO formulae.}
 
 
-\value{Absolute salinity in \eqn{g/kg}{g/kg}.}
+\value{Absolute Salinity in \eqn{g/kg}{g/kg}.}
 
 \seealso{The related TEOS-10 quantity ``conservative temperature'' may be
     computed with \code{\link{swConservativeTemperature}}.  For a ctd object,

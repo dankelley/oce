@@ -1,10 +1,11 @@
 # Table of contents.
 # 1. rho and sigma
 # 2. potential temperature
-# 3. sound speed
-# 4. freezing temperature
-# 5. specific heat
-# 6. adiabatic lapse rate
+# 3. Absolute Salinity and Conservative Temperature
+# 4. sound speed
+# 5. freezing temperature
+# 6. specific heat
+# 7. adiabatic lapse rate
 
 ## spec vol anom and dens anom
 ## pressure to depth
@@ -26,19 +27,15 @@
 library(oce)
 
 # 1. rho and sigma
-# 1.1 UNESCO
-#
-# Following are official test values from [1 p19]. Once we know rho is OK
-# we can check sigma based on it.
+# 1.1 UNESCO rho [1 p19]
 S <- c( 0,   0,   0,   0,  35,  35,  35,  35)
 T <- c( 5,   5,  25,  25,   5,   5,  25,  25)
 p <- c( 0, 1e4,   0, 1e4,   0, 1e4,   0, 1e4)
 rho <- c(999.96675, 1044.12802, 997.04796, 1037.90204, 1027.67547, 1069.48914, 1023.34306, 1062.53817)
 stopifnot(all.equal.numeric(swRho(S, T, p, eos="unesco"), rho))
+# check sigma from this
 stopifnot(all.equal.numeric(swRho(S, T, p, eos="unesco")-1000, swSigma(S,T,p,eos="unesco")))
-
 # 1.2 GSW
-#
 # Since gsw_ functions are tested in the gsw package, we just need a consistency check.
 longitude <- 188
 latitude <- 4
@@ -75,36 +72,41 @@ lat <- 30
 ctd <- as.ctd(SP, t, p, longitude=lon, latitude=lat)
 SA <- gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
 thetaGSW <- gsw_pt_from_t(SA, t, p, p_ref=0)
-theta <- swTheta(SP,t,p,eos="gsw")
+theta <- swTheta(SP, t, p, eos="gsw")
+stopifnot(all.equal.numeric(thetaGSW, theta))
+theta <- swTheta(ctd)
 stopifnot(all.equal.numeric(thetaGSW, theta))
 
-# 3. sound speed 
-#
-# 3.1 UNESCO
+# 3.  Absolute Salinity and Conservative Temperature
+CT <- gsw_CT_from_t(SA=SA, t=t, p=p)
+stopifnot(all.equal.numeric(SA, swAbsoluteSalinity(salinity=SP, pressure=p, longitude=lon, latitude=lat)))
+stopifnot(all.equal.numeric(SA, swAbsoluteSalinity(ctd)))
+stopifnot(all.equal.numeric(CT, swConservativeTemperature(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat)))
+stopifnot(all.equal.numeric(CT, swConservativeTemperature(ctd)))
+
+# 4. sound speed 
+# 4.1 UNESCO
 stopifnot(all.equal.numeric(1731.995, swSoundSpeed(40, 40, 1e4, eos="unesco"), tolerance=0.001))
 stopifnot(all.equal.numeric(1731.995, swSoundSpeed(as.ctd(40, 40, 1e4), eos="unesco"), tolerance=0.001))
 SA <- gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
 CT <- gsw_CT_from_t(SA, 40, 1e4)
-#
-# 3.2 GSW sound speed
+# 4.2 GSW sound speed
 speedGSW <- gsw_sound_speed(SA, CT, 1e4)
 speed <- swSoundSpeed(salinity=40, temperature=40, pressure=1e4, longitude=300, latitude=30, eos="gsw")
 stopifnot(all.equal.numeric(speedGSW, speed))
 
-# 4. Freezing temperature
-#
-# 4.1 UNESCO freezing temperature [1 p29]
+# 5. Freezing temperature
+# 5.1 UNESCO freezing temperature [1 p29]
 Tf <- swTFreeze(40, 500, eos="unesco")
 stopifnot(all.equal.numeric(Tf, -2.588567, tolerance=1e-6))
-
-# 4.2 GSW freezing temperature 
+# 5.2 GSW freezing temperature 
 SA <- gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
 TfGSW <- gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
 Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
 stopifnot(all.equal.numeric(TfGSW,Tf))
 
-# 5. specific heat
-# 5.1 UNESCO specific heat [1 p31]
+# 6. specific heat
+# 6.1 UNESCO specific heat [1 p31]
 p <- 1e4
 t <- 40
 SP <- 40
@@ -112,20 +114,20 @@ lon <- 300
 lat <- 30
 C <- swSpecificHeat(salinity=SP, temperature=t, pressure=p, eos="unesco")
 stopifnot(all.equal.numeric(C, 3849.500, tolerance=1e-3))
-# 5.2 GSW specific heat
+# 6.2 GSW specific heat
 SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
 CGSW <- gsw_cp_t_exact(SA=SA, t=t, p=p)
 C <- swSpecificHeat(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat, eos="gsw")
 stopifnot(all.equal.numeric(CGSW, C))
 
-# 6. lapse rate
-# 6.1 UNESCO lapse rate [1 p38]
+# 7. Adiabatic lapse rate
+# 7.1 UNESCO lapse rate [1 p38]
 SP <- 40
 t <- 40
 p <- 1e4
 l <- swLapseRate(salinity=SP, temperature=t, pressure=p, eos="unesco")
 stopifnot(all.equal.numeric(l, 3.255976e-4, tolerance=1e-7))
-# 6.2 GSW lapse rate
+# 7.2 GSW lapse rate
 SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
 CT <- gsw_CT_from_t(SA=SA, t=t, p=p)
 lGSW <- 1e4*gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=p) # convert to deg/m

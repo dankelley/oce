@@ -6,22 +6,25 @@
 
 \description{Compute seawater conservative temperature, according to TEOS-10.}
 
-\usage{swConservativeTemperature(salinity, temperature, pressure)}
+\usage{swConservativeTemperature(salinity, temperature=NULL, pressure=NULL,
+    longitude=300, latitude=30)}
 
 \arguments{
-  \item{salinity}{either salinity (in which case \code{temperature} and
-      \code{pressure} must be provided) \strong{or} a \code{ctd} object (in
-      which case \code{salinity}, etc.  are determined from the object, and
-      must not be provided in the argument list).}
+  \item{salinity}{either practial salinity (in which case \code{temperature}
+      and \code{pressure} must be provided) \strong{or} an \code{oce} object
+      (in which case \code{salinity}, etc. are inferred from the object).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{longitude}{longitude of observation.}
+  \item{latitude}{latitude of observation.}
 }
 
-\details{If the first argument is a \code{ctd} object, then values of salinity,
-    etc, are extracted from it, and used for the calculation.
+\details{If the first argument is an \code{oce} object, then values for
+    salinity, etc., are extracted from it, and used for the calculation, and
+    the corresponding arguments to the present function are ignored.
 
     The conservative temperature is calculated using the TEOS-10 function
-    \code{gsw_ct_from_t}.}
+    \code{\link[gsw]{gsw_CT_from_t}} from the \code{gsw} package.}
 
 \value{Conservative temperature in degrees Celcius.}
 
@@ -31,10 +34,7 @@
     \code{ctd[["conservativeTemperature"]]} or \code{ctd[["CT"]]}.}
 
 \examples{
-\dontrun{
-ct <- swConservativeTemperature(35.7, 15, 300)
-stopifnot(abs(14.930280459895560 - ct) < 00.000000000000010)
-}
+swConservativeTemperature(35,10,1000,188,4) # 9.86883
 }
 
 \references{McDougall, T.J. and P.M. Barker, 2011: Getting started with
