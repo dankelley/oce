@@ -339,6 +339,7 @@ swBeta <- function(salinity, temperature=NULL, pressure=NULL,
     rval
 }
 
+## thermal (not electrical) conductivity
 swConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 {
     ## FIXME-gsw need a gsw version

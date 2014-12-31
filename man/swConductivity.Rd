@@ -37,7 +37,7 @@
 
 \examples{
 library(oce)
-cond <- swConductivity(10,35,100); # 0.618569
+swConductivity(10,35,100) # test value?
 diffusivity <- cond / (swRho(10,35,100) * swSpecificHeat(10,35,100))
 }
 

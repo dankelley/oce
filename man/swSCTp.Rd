@@ -29,9 +29,9 @@
 \seealso{For thermal (as opposed to electrical) conductivity, see \code{\link{swConductivity}}.}
 
 \examples{
-print(swSCTp(1,15,2000))   # 34.25045
-print(swSCTp(1.2,20,2000)) # 37.24563
-print(swSCTp(0.65,5,1500)) # 27.99535
+swSCTp(1,15,2000)                      # 34.25045
+swSCTp(1.2,20,2000)                    # 37.24563
+swSCTp(0.65,5,1500)                    # 27.99535
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
