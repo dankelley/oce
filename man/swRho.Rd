@@ -19,7 +19,8 @@
       \sQuote{Details}).}
   \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
       \sQuote{Details}).}
-  \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}.}
+  \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
+      [3,4].}
 }
 
 

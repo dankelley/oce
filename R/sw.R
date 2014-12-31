@@ -496,35 +496,35 @@ swSigma0 <- function(salinity, temperature, pressure,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=0,
-                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                 longitude=longitude, latitude=latitude, eos=eos)
 }
 
 swSigma1 <- function(salinity, temperature, pressure,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=1000,
-                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                 longitude=longitude, latitude=latitude, eos=eos)
 }
 
 swSigma2 <- function(salinity, temperature, pressure,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=2000,
-                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                 longitude=longitude, latitude=latitude, eos=eos)
 }
 
 swSigma3 <- function(salinity, temperature, pressure,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=3000,
-                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                 longitude=longitude, latitude=latitude, eos=eos)
 }
 
 swSigma4 <- function(salinity, temperature, pressure,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=4000,
-                 longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                 longitude=longitude, latitude=latitude, eos=eos)
 }
 
 swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,

@@ -34,7 +34,7 @@
 swBeta(40, 10, 4000, eos="unesco")
 }
 
-\references{See references at \code{\link{swRho}}.}
+\references{See citations provided in the \code{\link{swRho}} documentation.}
 
 \author{Dan Kelley}
 

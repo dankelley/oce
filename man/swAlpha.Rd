@@ -35,7 +35,7 @@
  a <- swAlpha(40, 10, 4000) 
 }
 
-\references{See references at \code{\link{swRho}}.}
+\references{See citations provided in the \code{\link{swRho}} documentation.}
 
 \author{Dan Kelley}
 
