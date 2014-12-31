@@ -8,17 +8,20 @@
   algorithm. NOTE: this conflicts with base::beta, so be sure to prefix
   as swBeta().}
 
-\usage{swBeta(salinity, temperature, pressure, isTheta=FALSE)}
+\usage{swBeta(salinity, temperature, pressure,
+       longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case
-    \code{temperature} and \code{pressure} must be provided) \strong{or}
-    a \code{ctd} object (in which case \code{salinity},
-    \code{temperature} and \code{pressure} are determined from the
-    object, and must not be provided in the argument list).}
+  \item{salinity}{either practial salinity (in which case \code{temperature}
+      and \code{pressure} must be provided) \strong{or} an \code{oce} object
+      (in which case \code{salinity}, etc. are inferred from the object).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{seawater pressure [dbar]}
-  \item{isTheta}{Set TRUE if temperature is theta or FALSE if temperature is in-situ}
+  \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
+      \sQuote{Details}).}
+  \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
@@ -28,12 +31,10 @@
 \value{Value in 1/psu.}
 
 \examples{
-# 0.72088e-3 (from p1964 of McDougall 1987)
-swBeta(40, 10, 4000, isTheta=TRUE)  
+swBeta(40, 10, 4000, eos="unesco")
 }
 
-\references{McDougall, T.J. 1987. "Neutral Surfaces" Journal of Physical
-  Oceanography vol 17 pages 1950-1964}
+\references{See references at \code{\link{swRho}}.}
 
 \author{Dan Kelley}
 

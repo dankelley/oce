@@ -6,6 +6,7 @@
 # 5. freezing temperature
 # 6. specific heat
 # 7. adiabatic lapse rate
+# 8. alpha and beta
 
 ## spec vol anom and dens anom
 ## pressure to depth
@@ -134,6 +135,32 @@ lGSW <- 1e4*gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=p) # convert to deg
 l <- swLapseRate(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat, eos="gsw")
 stopifnot(all.equal.numeric(lGSW, l))
 
+# 8 alpha and beta
+# 8.1 UNESCO alpha and beta (tested internally only) FIXME: add more authorative tests
+SP <- 40
+t <- 10
+p <- 4000
+lon <- 300
+lat <- 30
+a <- swAlpha(salinity=SP, temperature=t, pressure=p, eos="unesco")
+stopifnot(all.equal.numeric(a, 0.0002470394481351, 1e-7, scale=1e-4))
+b <- swBeta(salinity=SP, temperature=t, pressure=p, eos="unesco")
+stopifnot(all.equal.numeric(b, 0.0007217063743196, 1e-7, scale=1e-4))
+ctd <- as.ctd(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat)
+a <- swAlpha(ctd, eos="unesco")
+stopifnot(all.equal.numeric(a, 0.0002470394481351, 1e-7, scale=1e-4))
+b <- swBeta(ctd, eos="unesco")
+stopifnot(all.equal.numeric(b, 0.0007217064, 0.0005, scale=1e-4))
+# 8.2 GSW alpha and beta
+## FIXME: alpha here
+b <- swBeta(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
+SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
+CT <- gsw_CT_from_t(SA=SA, t=t, p=p)
+aGSW <- gsw_alpha(SA=SA, CT=CT, p=p)
+stopifnot(all.equal.numeric(a, aGSW))
+bGSW <- gsw_beta(SA=SA, CT=CT, p=p)
+stopifnot(all.equal.numeric(b, bGSW))
+
 
 # MISC FUNCTIONS
 
@@ -160,21 +187,18 @@ stopifnot(all.equal.numeric(swSCTp(1,   15,   0), 35.000000, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(1.2, 20,2000), 37.245628, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500), 27.995347, tolerance=1e-6))
 
+
+
 if (FALSE) {
     ctd2 <- ctd(40, 10, 4000, longitude=300, latitude=30)
-    ab <- swAlphaOverBeta(40, 10, 4000, isTheta=TRUE)
+    ab <- swAlphaOverBeta(40, 10, 4000)
     stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))
-    ab <- swAlphaOverBeta(ctd2, isTheta=TRUE)
+    ab <- swAlphaOverBeta(ctd2)
     stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))
 
-    b <- swBeta(40, 10, 4000, isTheta=TRUE)
-    stopifnot(all.equal.numeric(b, 7.2088e-4, 0.0005, scale=1e-4))
-    b <- swBeta(ctd2, isTheta=TRUE)
-    stopifnot(all.equal.numeric(b, 7.2088e-4, 0.0005, scale=1e-4))
-
-    a <- swAlpha(40, 10, 4000, isTheta=TRUE)
+    a <- swAlpha(40, 10, 4000)
     stopifnot(all.equal.numeric(a, 2.5060e-4, 0.0005, scale=1e-4))
-    a <- swAlpha(ctd2, isTheta=TRUE)
+    a <- swAlpha(ctd2)
     stopifnot(all.equal.numeric(a, 2.5060e-4, 0.0005, scale=1e-4))
 
     ## spice (not from any trusted source, merely from the code [2008-10-02])

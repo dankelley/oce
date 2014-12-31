@@ -252,26 +252,37 @@ swTFreeze <- function(salinity, pressure=0,
     rval
 }
 
-swAlpha <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
+swAlpha <- function(salinity, temperature=NULL, pressure=NULL,
+                    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw need a gsw version
+    eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(salinity)) stop("must provide salinity")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, 
+                         longitude=longitude, latitude=latitude, eos=eos))
     nS <- length(l$salinity)
     nt <- length(l$temperature)
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (is.null(l$pressure)) pressure <- 0
+    if (is.null(l$pressure)) l$pressure <- 0
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    swAlphaOverBeta(l$salinity, l$temperature, l$pressure, isTheta) * swBeta(l$salinity, l$temperature, l$pressure, isTheta)
+    if (l$eos == "unesco") {
+        swAlphaOverBeta(l$salinity, l$temperature, l$pressure) * swBeta(l$salinity, l$temperature, l$pressure)
+    } else {
+        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        rval <- gsw_alpha(SA=SA, CT=CT, p=l$pressure)
+    }
 }
 
-swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
+swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
+                   longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw need a gsw version
     if (missing(salinity)) stop("must provide salinity")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                         longitude=longitude, latitude=latitude, eos=eos))
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (is.null(l$temperature)) stop("must provide temperature")
@@ -282,19 +293,29 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta =
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    if (!isTheta)
+    if (eos == "unesco") {
         t <- swTheta(l$salinity, l$temperature, l$pressure)
-    rval <- .C("sw_alpha_over_beta", as.integer(nS), as.double(l$salinity), as.double(l$temperature),
-               as.double(l$pressure), value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+        rval <- .C("sw_alpha_over_beta", as.integer(nS),
+                   as.double(l$salinity), as.double(t), as.double(l$pressure),
+                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+    } else if (eos == "gsw") {
+        ## not likely to be called since gsw has a direct function for alpha, but put this here anyway
+        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        alpha <- gsw_alpha(SA=SA, CT=CT, p=l$pressure)
+        beta <- gsw_beta(SA=SA, CT=CT, p=l$pressure)
+        rval <- alpha / beta
+    }
     if (Smatrix) dim(rval) <- dim
     rval
 }
 
-swBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
+swBeta <- function(salinity, temperature=NULL, pressure=NULL,
+                   longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
-    ## FIXME-gsw need a gsw version
     if (missing(salinity)) stop("must provide salinity")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
+    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+                         longitude=longitude, latitude=latitude, eos=eos))
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
@@ -304,15 +325,16 @@ swBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    if (!isTheta)
-        temperature <- swTheta(l$salinity, l$temperature, l$pressure)
-    rval <- .C("sw_beta",
-               as.integer(nS),
-               as.double(l$salinity),
-               as.double(l$temperature),
-               as.double(l$pressure),
-               value = double(nS),
-               NAOK=TRUE, PACKAGE = "oce")$value
+    if (eos == "unesco") {
+        theta <- swTheta(l$salinity, l$temperature, l$pressure) # the formula is i.t.o. theta
+        rval <- .C("sw_beta", as.integer(nS),
+                   as.double(l$salinity), as.double(theta), as.double(l$pressure),
+                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+    } else if (eos == "gsw") {
+        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        rval <- gsw_beta(SA=SA, CT=CT, p=l$pressure)
+    }
     if (Smatrix) dim(rval) <- dim
     rval
 }
