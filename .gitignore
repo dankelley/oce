@@ -10,3 +10,7 @@ src
 .RData
 .Rapp.history
 
+oce.Rproj
+oce.aux
+oce.out
+Rplots.pdf
