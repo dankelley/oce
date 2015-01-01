@@ -4,26 +4,32 @@
 
 \title{Seawater salinity from temperature and density}
 
-\description{Compute \emph{in-situ} salinity, given temperature,
-  density, and pressure.}
+\description{Compute Practical or Absolute Salinity, given in-situ or
+    Conservative Temperature, density, and pressure. This is mainly used to
+    draw isopycnal lines on TS diagrams, hence the dual meanings for salinity
+    and temperature, depending on the value of \code{eos}.}
 
 \usage{swSTrho(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], if
+      \code{eos="unesco"}, or Conservative Temperature, if \code{eos="gsw"}.}
   \item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
       [3,4].}
 }
 
-\details{Finds the salinity that yields the given density, with the
-  given temperature and pressure.  The method is a bisection search with
-  a salinity tolerance of 0.001.  The isopycnal lines on
-  temperature-salinity diagrams (\code{\link{plotTS}}) are computed
-  with this function.}
+\details{For \code{eos="unesco"}, finds the practical salinity that yields the
+    given density, with the given in-situ temperature and pressure.  The method
+    is a bisection search with a salinity tolerance of 0.001.  For
+    \code{eos="gsw"}, the \code{gsw} function
+    \code{\link[gsw]{gsw_SA_from_rho}} is used to infer Absoute Salinity from
+    Conservative Temperature.}
 
-\value{\emph{In-situ} salinity [PSU].}
+\value{Practical Salinity, if \code{eos="unesco"}, or Absolute Salinity, if
+    \code{eos="gsw"}.}
 
 \seealso{\code{\link{swTSrho}}}
 
@@ -52,7 +58,6 @@ swSTrho(10, 22, 0, eos="unesco") # 28.65115
     ISBN 978-0-646-55621-5.
 
 }
-
 
 \author{Dan Kelley}
 

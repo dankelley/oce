@@ -7,6 +7,7 @@
 # 6. specific heat
 # 7. adiabatic lapse rate
 # 8. alpha and beta
+# 9. swSTrho
 
 ## spec vol anom and dens anom
 ## pressure to depth
@@ -160,6 +161,20 @@ aGSW <- gsw_alpha(SA=SA, CT=CT, p=p)
 stopifnot(all.equal.numeric(a, aGSW))
 bGSW <- gsw_beta(SA=SA, CT=CT, p=p)
 stopifnot(all.equal.numeric(b, bGSW))
+
+# 9. swSTrho
+# This is used to draw isopycnals on TS diagrams.
+t <- 10
+rho <- 1022
+# 9.1 UNESCO swSTrho
+Su <- swSTrho(t, rho, 0, eos="unesco")
+stopifnot(all.equal(Su, 28.65114808083))
+stopifnot(all.equal(rho, swRho(Su, t, 0, eos="unesco")))
+
+# 9.2 GSW swSTrho
+Sg <- swSTrho(t, rho, 0, eos="gsw")
+stopifnot(all.equal(Sg, 28.76287326771))
+stopifnot(all.equal.numeric(rho, gsw_rho(Sg, t, 0)))
 
 
 # MISC FUNCTIONS

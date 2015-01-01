@@ -254,23 +254,28 @@ void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
    Pierre Flament.
 */
 static double sig_0, p_ref, S, T;
-void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
+void sw_strho(int *n, double *pT, double *prho, double *pp, int *teos, double *res)
 {
-  T = *pT;
-  sig_0 = *prho;			/* target density */
-  p_ref = *pp;				/* target pressure */
-  *res = NA_REAL;
-  if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
-    return;
-  //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
-  // Note regarding next two lines: every bisection reduces the x
-  // range by a factor of two, so it's not too expensive to ask for
-  // tight resolution.
-  double xresolution = 1e-4; // 4 fractional digits in salinity, for < 1% of typical axis axis interval
-  double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
-  strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
-  //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
-  *res = S;
+  // FIXME: should check teos here, because gsw offers its own
+  // calculation, with gsw_SA_from_rho().
+  for (int i = 0; i < *n; i++) {
+    //Rprintf("i: %d\n", i);
+    T = pT[i];
+    sig_0 = prho[i];			/* target density */
+    p_ref = pp[i];				/* target pressure */
+    res[i] = NA_REAL;
+    if (!ISNA(pT[i]) && !ISNA(prho[i]) && !ISNA(pp[i])) {
+      //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
+      // Note regarding next two lines: every bisection reduces the x
+      // range by a factor of two, so it's not too expensive to ask for
+      // tight resolution.
+      double xresolution = 1e-4; // 4 fractional digits in salinity, for < 1% of typical axis axis interval
+      double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
+      strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
+      //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
+      res[i] = S;
+    }
+  }
 }
 
 #if 1
@@ -366,7 +371,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
   int iteration = 0;
-  int maxiteration = 20; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
+  int maxiteration = 50; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
   while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
     if (++iteration > maxiteration) {
       *x = NA_REAL;

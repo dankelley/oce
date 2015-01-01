@@ -164,7 +164,6 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
     rval
 }
 
-## FIXME-speed: should be vectorized
 swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version
@@ -174,20 +173,23 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
     nt <- length(temperature)
     nrho <- length(density)
     np <- length(pressure)
-    if (nt != nrho)
-        stop("lengths of temperature and density must agree, but they are ", nt, " and ", nrho, ", respectively")
-    if (nt != np)
-        stop("lengths of temperature and p arrays must agree, but they are ", nt, " and ", np, ", respectively")
-    for (i in 1:nt) {                   # FIXME: avoid loops
-        sigma <- ifelse(density > 500, density - 1000, density)
-    	this.S <- .C("sw_strho",
-                     as.double(temperature[i]), # FIXME: confusion on "p" here; and is temp theta??
-                     as.double(sigma),
-                     as.double(pressure[i]),
-                     as.integer(teos),
-                     S = double(1),
-                     NAOK=TRUE, PACKAGE = "oce")$S
-    	if (i == 1) rval <- this.S else rval <- c(rval, this.S)
+    if (nrho == 1) density <- rep(density, nt)
+    if (np == 1) pressure <- rep(pressure, nt)
+    if (nt == 1) temperature <- rep(temperature, nt)
+    sigma <- ifelse(density > 500, density - 1000, density)
+    if (eos == "unesco") {
+        rval <- .C("sw_strho",
+                   as.integer(nt),
+                   as.double(temperature),
+                   as.double(sigma),
+                   as.double(pressure),
+                   as.integer(teos),
+                   S=double(nt),
+                   NAOK=TRUE, PACKAGE="oce")$S
+                   ##NAOK=TRUE)$S # permits dyn.load() on changing .so
+    } else if (eos == "gsw") {
+        density <- ifelse(density < 900, density + 1000, density)
+        rval <- gsw_SA_from_rho(density, temperature, pressure) ## assumes temperature=CT
     }
     dim(rval) <- dim
     rval
