@@ -749,16 +749,14 @@ setMethod(f="plot",
                       if (x < 0) {
                           x <- -x
                           sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
-                      }
-                      else {
+                      } else {
                           sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
                       }
                   } else {
                       if (x < 0) {
                           x <- -x
                           sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
-                      }
-                      else {
+                      } else {
                           sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
                       }
                   }
@@ -774,10 +772,8 @@ setMethod(f="plot",
 
               if (lw > 1) {
                   oldpar <- par(no.readonly = TRUE)
-                  if (lw > 2)
-                      lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
-                  else
-                      lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
+                  lay <- if (lw > 2) layout(matrix(1:4, nrow=2, byrow=TRUE)) else
+                      layout(matrix(1:2, nrow=2, byrow=TRUE))
                   ##layout.show(lay)
                   ##stop()
               }
@@ -2614,7 +2610,9 @@ plotProfile <- function (x,
     } else if (xtype == "density+time") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+time\"")
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # why recalculate?
+        sw <- if (eos == "unesco") swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) else
+            swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure,
+                         longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
             densitylim <- range(x@data$sigmaTheta, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
@@ -2623,11 +2621,15 @@ plotProfile <- function (x,
         lines(st[look], y[look])
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         ## FIXME: do next with resizable label; also for the N2
+        br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
+                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
+                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
         }
+        mtext(label, side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
         par(new = TRUE)                ## FIXME: this probably won't work if add=TRUE
@@ -2955,10 +2957,13 @@ plotProfile <- function (x,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
+                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
+                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
         }
+        mtext(label, side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         axis(2)
         box()
         if (type == 'l') {
