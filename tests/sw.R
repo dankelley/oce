@@ -25,6 +25,8 @@
 #     Algorithms for computation of fundamental properties of seawater.
 #     UNESCO technical papers in marine science, vol 44.
 #     http://www.jodc.go.jp/info/ioc_doc/UNESCO_tech/059832eb.pdf
+# [2] Trevor J. McDougall, 1987. Neutral Surfaces, Journal of Physical
+#     Oceanography, volume 17, pages 1950-1964.
 
 library(oce)
 
@@ -76,7 +78,7 @@ SA <- gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
 thetaGSW <- gsw_pt_from_t(SA, t, p, p_ref=0)
 theta <- swTheta(SP, t, p, eos="gsw")
 stopifnot(all.equal.numeric(thetaGSW, theta))
-theta <- swTheta(ctd)
+theta <- swTheta(ctd, eos="gsw")
 stopifnot(all.equal.numeric(thetaGSW, theta))
 
 # 3.  Absolute Salinity and Conservative Temperature
@@ -137,23 +139,27 @@ l <- swLapseRate(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude
 stopifnot(all.equal.numeric(lGSW, l))
 
 # 8 alpha and beta
-# 8.1 UNESCO alpha and beta (tested internally only) FIXME: add more authorative tests
+# 8.1 UNESCO alpha and beta
+# The formulae used are not actually from UNESCO, but are rather given in [2],
+# and the test values come from [2] also.
+#
+# Since [2] gives formula is in terms of theta=10C, we must compute the
+# corresponding in-situ temperature first. Use S=40 and 4000dbar to match
+# his check value.
+T <- uniroot(function(x) 10-swTheta(40, x, 4000, eos="unesco"), c(9, 12))$root
+# The beta=7.2088e-4 value is from the last sentence of McDougall's Appendix.
+stopifnot(all.equal.numeric(7.2088e-4, swBeta(40, T, 4000, eos="unesco"), scale=1, tolerance=1e-8))
+# The alpha/beta=0.34763 is from the left-hand column of McDougall's p1964.
+stopifnot(all.equal.numeric(0.34763, swAlphaOverBeta(40, T, 4000, eos="unesco"), scale=1, tolerance=1e-5))
+stopifnot(all.equal.numeric(0.34763*7.20883e-4, swAlpha(40, T, 4000, eos="unesco"), scale=1, tolerance=1e-5))
+# 8.1 GSW alpha and beta
+# Check against gsw_ values, which we know to be correct from the gsw test suite.
 SP <- 40
 t <- 10
 p <- 4000
 lon <- 300
 lat <- 30
-a <- swAlpha(salinity=SP, temperature=t, pressure=p, eos="unesco")
-stopifnot(all.equal.numeric(a, 0.0002470394481351, 1e-7, scale=1e-4))
-b <- swBeta(salinity=SP, temperature=t, pressure=p, eos="unesco")
-stopifnot(all.equal.numeric(b, 0.0007217063743196, 1e-7, scale=1e-4))
-ctd <- as.ctd(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat)
-a <- swAlpha(ctd, eos="unesco")
-stopifnot(all.equal.numeric(a, 0.0002470394481351, 1e-7, scale=1e-4))
-b <- swBeta(ctd, eos="unesco")
-stopifnot(all.equal.numeric(b, 0.0007217064, 0.0005, scale=1e-4))
-# 8.2 GSW alpha and beta
-## FIXME: alpha here
+a <- swAlpha(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
 b <- swBeta(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
 SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
 CT <- gsw_CT_from_t(SA=SA, t=t, p=p)

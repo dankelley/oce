@@ -34,7 +34,11 @@
 swBeta(40, 10, 4000, eos="unesco")
 }
 
-\references{See citations provided in the \code{\link{swRho}} documentation.}
+\references{The \code{eos="unesco"} formulae are based on the UNESCO equation
+    of state, but are formulaed empirically by Trevor J. McDougall, 1987,
+    Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
+    1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
+    the \code{\link{swRho}} documentation.}
 
 \author{Dan Kelley}
 

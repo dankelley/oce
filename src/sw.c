@@ -7,6 +7,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
+  //Rprintf("sw_alpha_over_beta(*n, %f, %f, %f, ...)\n", *pS, *ptheta, *pp);
   for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
@@ -27,6 +28,7 @@ void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *
 
 void sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
+  //Rprintf("sw_beta(*n, %f, %f, %f, ...)\n", *pS, *ptheta, *pp);
   for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
