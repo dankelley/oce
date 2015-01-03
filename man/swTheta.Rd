@@ -40,10 +40,6 @@
     used [1,2].  For \code{eos="gsw"}, \code{\link[gsw]{gsw_pt_from_t}} is used
     [3,4].
 
-    In the \code{gsw} case, if \code{longitude} and \code{latitude} are
-    missing, default values of 300E and 30N will be used, and a warning will be
-    generated if \code{getOption("oceEOSwarning")} is \code{TRUE}.
-
 }
   
 \value{Potential temperature [\eqn{^\circ}{deg}C] of seawater.}

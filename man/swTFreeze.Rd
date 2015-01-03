@@ -27,11 +27,6 @@
 
 \details{In the first form, the argument is a \code{ctd} object, from which the
     salinity and pressure values are extracted and used to for the calculation.
-
-    In the \code{gsw} case, if \code{longitude} and \code{latitude} are
-    missing, default values of 300E and 30N will be used, and a warning will be
-    generated if \code{getOption("oceEOSwarning")} is \code{TRUE}.
-
 }
 
 \value{Temperature [\eqn{^\circ}{deg}C]}

@@ -32,10 +32,6 @@
     of state for seawater [1,2], and if \code{eos="gsw"}, the GSW formulation
     [3,4] is used.
 
-    In the \code{gsw} case, if \code{longitude} and \code{latitude} are
-    missing, default values of 300E and 30N will be used, and a warning will be
-    generated if \code{getOption("oceEOSwarning")} is \code{TRUE}.
-
 }
     
 \value{\emph{In-situ} density [kg/m\eqn{^3}{^3}].}
