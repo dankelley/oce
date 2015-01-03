@@ -46,7 +46,9 @@
     Conservative Temperature defined according to TEOS-2010 is calculated with
     \code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
     salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
-        salinity"]]}.
+        salinity"]]}. Note that the salinity calculation requires a latitude
+    and longitude, and if the \code{ctd} object lacks those data, the values
+    300E and 30N will be used as a default.
     
     The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
     \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness

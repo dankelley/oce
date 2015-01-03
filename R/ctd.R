@@ -87,11 +87,9 @@ setMethod(f="[[",
                   if (n != length(lat))
                       lat <- rep(x@metadata$latitude, length.out=n)
                   if (!any(is.finite(lat))) {
-                      lat <- rep(0, n)
+                      lat <- rep(30, n)
                       haveLatLon <- FALSE
                   }
-                  if (!haveLatLon)
-                      warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
                   SP[is.nan(SP)] <- NA
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
