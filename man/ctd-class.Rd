@@ -25,8 +25,12 @@
     \emph{Accessing measured data.}
 
     Column data may be accessed by name, e.g. \code{ctd[["salinity"]]},
-    \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  Other columns
-    may also exist, depending on the CTD configuration; use
+    \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  The TEOS-10
+    notation for these quantities also works, with \code{ctd[["SP"]]},
+    \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values
+    to those returned for the longer names.
+
+    Other columns may also exist, depending on the CTD configuration; use
     \code{\link{names}(ctd@data)} to discover them.  For convenience, partial
     matches to these names are permitted, so that e.g. \code{ctd[["sal"]]}
     retrieves salinity, but note that this only applies to columnar data, not

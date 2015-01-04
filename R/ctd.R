@@ -61,7 +61,22 @@ setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, drop) {
-              if (i == "N2") {
+              if (i == "salinity" || i == "SP") {
+                  x@data$salinity
+              } else if (i == "SR") {
+                  gsw_SR_from_SP(SP=x@data$salinity)
+               } else if (i == "Sstar") {
+                  SA <- gsw_SA_from_SP(SP=ctd@data$salinity, p=ctd@data$pressure,
+                                       longitude=ctd@metadata$longitude,
+                                       latitude=ctd@metadata$latitude)
+                  gsw_Sstar_from_SA(SA=SA, p=ctd@data$pressure,
+                                    longitude=ctd@metadata$longitude,
+                                    latitude=ctd@metadata$latitude)
+              } else if (i == "temperature" || i == "t") {
+                  x@data$temperature
+              } else if (i == "pressure" || i == "p") {
+                  x@data$pressure
+              } else if (i == "N2") {
                   swN2(x)
               } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
