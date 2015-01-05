@@ -100,11 +100,11 @@ setMethod(f="plot",
           {
               oceDebug(debug, "plot.tdr(..., which=", which, ", ...) {\n", unindent=1)
               if (!inherits(x, "tdr"))
-                  stop("method is only for objects of class '", "tdr", "'")
-              if (0 == sum(!is.na(x@data$temperature)))
-                  stop("no good temperatures to plot")
-              if (0 == sum(!is.na(x@data$pressure)))
-                  stop("no good pressures to plot")
+                  stop("plot.tdr() is only for objects of class '", "tdr", "'", call.=FALSE)
+              if (1 %in% which && 0 == sum(!is.na(x@data$temperature)))
+                  stop("tdr object has no good temperatures to plot", call.=FALSE)
+              if ((3 %in% which || 4 %in% which) && 0 == sum(!is.na(x@data$pressure)))
+                  stop("tdr object has no good pressures to plot", call.=FALSE)
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim
@@ -302,18 +302,19 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         ##print(ruskinVersion)
         ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$","",gsub("^.*- *", "",ruskinVersion)),"\\.")[[1]])
         ##print(ruskinVersion)
-        if (length(ruskinVersion == 3)) {
-            if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
-                warning("making some (untested) assumptions, since the ruskin Version (",
-                        paste(ruskinVersion, collapse="."),
-                        ") is outside the range for which tests have been done")
-        }
+        ## if (length(ruskinVersion == 3)) {
+        ##     if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
+        ##         warning("making some (untested) assumptions, since the ruskin Version (",
+        ##                 paste(ruskinVersion, collapse="."),
+        ##                 ") is outside the range for which tests have been done")
+        ## }
         ## atmospheric pressure
         cmd <- paste("sqlite3", filename,  "'select * from deriveDepth'")
         pressureAtmospheric <- read.table(pipe(cmd), sep="|")[1,3]
         ## get the actual data
         cmd <- paste("sqlite3", filename,  "'select * from data order by tstamp'")
         d <- read.table(pipe(cmd), sep="|")
+        n <- dim(d)[1]
         ## assign column names (probably not needed now, but this may be helpful later)
         cmd <- paste("sqlite3", filename,  "'PRAGMA table_info(data)'")
         names <- read.table(pipe(cmd), sep='|')[,2]
@@ -323,23 +324,11 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         channelNames <- read.table(pipe(cmd), sep='|')[,2]
         temperatureColumn <- grep(pattern='temp', x=channelNames, ignore.case=TRUE)
         pressureColumn <- grep(pattern='pres', x=channelNames, ignore.case=TRUE)
-        if (length(temperatureColumn)) {
-            temperatureColumn <- temperatureColumn + 1
-        } else {
-            temperatureColumn <- 2
-            warning("cannot locate temperature column in 'channels' table of database; assuming column 2")
-        }
-        if (length(pressureColumn)) {
-            pressureColumn <- pressureColumn + 1
-        } else {
-            pressureColumn <- 3
-            warning("cannot locate pressure column in 'channels' table of database; assuming column 3")
-        }
-        temperature <- d[,temperatureColumn]
-        pressure <- d[,pressureColumn]
+        pressure <- if (length(pressureColumn)) pressure <- d[,pressureColumn+1] else rep(NA, n)
+        temperature <- if (length(temperatureColumn)) temperature <- d[,temperatureColumn+1] else rep(NA, n)
         cmd <- paste("sqlite3", filename,  "'select * from instruments'")
-        serialNumber <- read.table(pipe(cmd), sep='|')[1,1]
-        model <- read.table(pipe(cmd), sep='|')[1,2]
+        serialNumber <- as.character(read.table(pipe(cmd), sep='|')[1,1])
+        model <- as.character(read.table(pipe(cmd), sep='|')[1,2])
     } else {
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
