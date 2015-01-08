@@ -133,7 +133,8 @@ swPressure <- function(depth, latitude=45)
     rval
 }
 
-swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))
+swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"),
+                   eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version
      if (missing(conductivity) || missing(temperature))
@@ -143,6 +144,7 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
         conductivity <- conductivity / 42.914
     else if (conductivityUnit == "S/m")
         conductivity <- conductivity / 4.2914
+    ## Now, "conductivity" is in ratio form
     dim <- dim(conductivity)
     nC <- length(conductivity)
     nT <- length(temperature)
@@ -153,13 +155,18 @@ swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("rati
     np <- length(pressure)
     if (nC != np)
         stop("lengths of C and p must agree, but they are ", nC, " and ", np, ", respectively")
-    rval <- .C("sw_salinity",
-               as.integer(nC),
-               as.double(conductivity),
-               as.double(temperature),
-               as.double(pressure),
-               value = double(nC),
-               NAOK=TRUE, PACKAGE = "oce")$value
+    if (eos == "unesco") {
+        rval <- .C("sw_salinity",
+                   as.integer(nC),
+                   as.double(conductivity),
+                   as.double(temperature),
+                   as.double(pressure),
+                   value = double(nC),
+                   NAOK=TRUE, PACKAGE = "oce")$value
+    } else if (eos == "gsw") {
+        C0 <- gsw_C_from_SP(35, 15, 0)
+        rval <- gsw_SP_from_C(C0 * conductivity, temperature, pressure)
+    }
     dim(rval) <- dim
     rval
 }

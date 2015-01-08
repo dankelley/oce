@@ -1,13 +1,16 @@
 # Table of contents.
-# 1. rho and sigma
-# 2. potential temperature
-# 3. Absolute Salinity and Conservative Temperature
-# 4. sound speed
-# 5. freezing temperature
-# 6. specific heat
-# 7. adiabatic lapse rate
-# 8. alpha and beta
-# 9. swSTrho
+#  1. rho and sigma
+#  2. potential temperature
+#  3. Absolute Salinity and Conservative Temperature
+#  4. sound speed
+#  5. freezing temperature
+#  6. specific heat
+#  7. adiabatic lapse rate
+#  8. alpha and beta
+#  9. swSTrho
+# 10. sound absorption (unesco only)
+# 11. thermal conductivity (unesco only)
+# 12. viscosity (unesco only)
 
 ## spec vol anom and dens anom
 ## pressure to depth
@@ -182,52 +185,42 @@ Sg <- swSTrho(t, rho, 0, eos="gsw")
 stopifnot(all.equal(Sg, 28.76287326771))
 stopifnot(all.equal.numeric(rho, gsw_rho(Sg, t, 0)))
 
-
-# MISC FUNCTIONS
-
-# sound absorption, compared with Table IV of Fisher & Simmons 1977.
+# 10. sound absorption
+# Compared with Table IV of Fisher & Simmons 1977.
 alpha <- swSoundAbsorption(100e3, 35, 4, 4990) # at 500 atm (4990 dbar of water)
 stopifnot(all.equal.numeric(alpha, 0.0175, tolerance=0.01)) # 1% test
 alpha <- swSoundAbsorption(10e3, 35, 4, 0) # expect 0.00083 at 1 atm (0dbar of water)
 stopifnot(all.equal.numeric(alpha, 0.000829, tolerance=0.01)) # 1% test
 
-
-cond <- swConductivity(35,10,100)
+# 11. thermal conductivity
+# I think this is just a consistency check
+cond <- swConductivity(35, 10, 100)
 stopifnot(all.equal.numeric(cond, 0.618569, tolerance=1e-5))
 
-visc <- swViscosity(30,10)
+# 12. viscosity
+visc <- swViscosity(30, 10)
 stopifnot(all.equal.numeric(visc, 0.001383779, tolerance=1e-7))
 
+## FIXME: fix up the tests below, and use GSW also
 
 # Test values from page 9 of
 # Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 # fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
 # Science}, \bold{44}, 53 pp
 
-stopifnot(all.equal.numeric(swSCTp(1,   15,   0), 35.000000, tolerance=1e-6))
-stopifnot(all.equal.numeric(swSCTp(1.2, 20,2000), 37.245628, tolerance=1e-6))
-stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500), 27.995347, tolerance=1e-6))
+stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="unesco"), 35.000000, tolerance=1e-6))
+stopifnot(all.equal.numeric(swSCTp(1.2, 20,2000, eos="unesco"), 37.245628, tolerance=1e-6))
+stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, tolerance=1e-6))
+## the C=1 value can be tested directly in gsw, but others are tested against gsw.
+stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6))
+SP <- swSCTp(1.2, 20, 2000, eos="gsw")
+stopifnot(all.equal.numeric(1.2, gsw_C_from_SP(SP, 20, 2000) / gsw_C_from_SP(35, 15, 0)))
+SP <- swSCTp(0.65, 5, 1500, eos="gsw")
+stopifnot(all.equal.numeric(0.65, gsw_C_from_SP(SP, 5, 1500) / gsw_C_from_SP(35, 15, 0)))
 
-
-
-if (FALSE) {
-    ctd2 <- ctd(40, 10, 4000, longitude=300, latitude=30)
-    ab <- swAlphaOverBeta(40, 10, 4000)
-    stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))
-    ab <- swAlphaOverBeta(ctd2)
-    stopifnot(all.equal.numeric(ab, 0.34763, tolerance=0.00005))
-
-    a <- swAlpha(40, 10, 4000)
-    stopifnot(all.equal.numeric(a, 2.5060e-4, 0.0005, scale=1e-4))
-    a <- swAlpha(ctd2)
-    stopifnot(all.equal.numeric(a, 2.5060e-4, 0.0005, scale=1e-4))
-
-    ## spice (not from any trusted source, merely from the code [2008-10-02])
-    sp <- swSpice(35,10,100)
-    stopifnot(all.equal.numeric(sp, 1.131195, tolerance=0.0000015))
-} else {
-    message("FIXME: need tests on alpha, beta, spice but first must code!!")
-}
+## spice (not from any trusted source, merely from the code [2008-10-02])
+sp <- swSpice(35,10,100)
+stopifnot(all.equal.numeric(sp, 1.131195, tolerance=0.0000015))
 
 depth <- swDepth(10000, 30)
 stopifnot(all.equal.numeric(depth, 9712.653, tolerance=0.001))
