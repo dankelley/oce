@@ -39,34 +39,51 @@ lookWithin <- function(list)
 }
 
 
-swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df)
+swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df, 
+                   eos=getOption("oceEOS", default="gsw"))
 {
     if (!inherits(ctd, "ctd"))
         stop("first argument must be of class \"ctd\"")
     sense <- match.arg(sense)
-    pressure <- ctd[['pressure']]
-    salinity <- ctd[['salinity']]
-    theta <- ctd[['theta']]
-    if (length(pressure) < 4)
-        return(NA)
-    alpha <- swAlpha(ctd)
-    beta <- swBeta(ctd)
-    A <- smoothingLength / mean(diff(pressure), na.rm=TRUE) 
-    n <- length(pressure)
-    ## infer d(theta)/dp and d(salinity)/dp from smoothing splines
-    if (missing(df)) {
-        thetaSpline <- smooth.spline(pressure, theta, df=n/A)
-        salinitySpline <- smooth.spline(pressure, salinity, df=n/A)
-    } else {
-        thetaSpline <- smooth.spline(pressure, theta, df=df)
-        salinitySpline <- smooth.spline(pressure, salinity, df=df)
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    p <- ctd[['pressure']]
+    n <- length(p)
+    if (n < 4)
+        return(rep(NA, length.out=n))
+    A <- smoothingLength / mean(diff(p), na.rm=TRUE) 
+    if (missing(df))
+        df <- n / A
+    if (eos == "unesco") {
+        salinity <- ctd[['salinity']]
+        temperature <- ctd[['temperature']]
+        theta <- ctd[['theta']]
+        ## infer d(theta)/dp and d(salinity)/dp from smoothing splines
+        temperatureSpline <- smooth.spline(p, temperature, df=df)
+        salinitySpline <- smooth.spline(p, salinity, df=df)
+        ## Smooth temperature and salinity to get smoothed alpha and beta
+        CTD <- as.ctd(predict(salinitySpline, p)$y, predict(temperatureSpline, p)$y, p)
+        alpha <- swAlpha(CTD)
+        beta <- swBeta(CTD)
+        ## Using alpha ... is that right, since we have theta?
+        thetaSpline <- smooth.spline(p, theta, df=df)
+        dthetadp <- predict(thetaSpline, p, deriv=1)$y
+        dsalinitydp <- predict(salinitySpline, p, deriv=1)$y
+        if (sense == "diffusive")
+            Rrho <- (beta * dsalinitydp)/ (alpha * dthetadp)
+        else
+            Rrho <- (alpha * dthetadp) / (beta * dsalinitydp)
+    } else if (eos == "gsw") {
+        SA <- ctd[["SA"]]
+        CT <- ctd[["CT"]]
+        SA <- predict(smooth.spline(p, SA, df=df), p)$y
+        CT <- predict(smooth.spline(p, CT, df=df), p)$y
+        a <- gsw_Turner_Rsubrho(SA, CT, p)
+        Rrho <- a$Rsubrho
+        Rrho[Rrho==9e15] <- NA
+        Rrho <- approx(a$p_mid, Rrho, p)$y
+        if (sense == "diffusive")
+            Rrho <- 1 / Rrho
     }
-    dthetadp <- predict(thetaSpline, pressure, deriv=1)$y
-    dsalinitydp <- predict(salinitySpline, pressure, deriv=1)$y
-    if (sense == "diffusive")
-        Rrho <- (beta * dsalinitydp)/ (alpha * dthetadp)
-    else
-        Rrho <- (alpha * dthetadp) / (beta * dsalinitydp)
     Rrho
 }
 
