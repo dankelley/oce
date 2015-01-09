@@ -31,7 +31,9 @@
 
 \value{Practical salinity.}
 
-\seealso{For thermal (as opposed to electrical) conductivity, see \code{\link{swConductivity}}.}
+\seealso{For thermal (as opposed to electrical) conductivity, see
+    \code{\link{swThermalConductivity}}.  For computation of electrical
+    conductivity from salinity, see \code{\link{swCSTp}}.}
 
 \examples{
 swSCTp(1,15,2000, eos="unesco")                      # 34.25045

@@ -133,6 +133,22 @@ swPressure <- function(depth, latitude=45)
     rval
 }
 
+swCSTp <- function(salinity=35, temperature=15, pressure=0,
+                   eos=getOption("oceEOS", default="gsw"))
+
+{
+    dim <- dim(salinity)
+    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+    if (l$eos == "unesco") {
+        n <- length(salinity)
+        rval <- .C("sw_CSTp", as.integer(n), as.double(salinity), as.double(temperature), as.double(pressure), C=double(n))$C
+    } else if (l$eos == "gsw") {
+        rval <- gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / gsw_C_from_SP(35, 15, 0)
+    }
+    dim(rval) <- dim
+    rval
+}
+
 swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"),
                    eos=getOption("oceEOS", default="gsw"))
 {
@@ -347,8 +363,9 @@ swBeta <- function(salinity, temperature=NULL, pressure=NULL,
     rval
 }
 
-## thermal (not electrical) conductivity
-swConductivity <- function (salinity, temperature=NULL, pressure=NULL)
+## thermal (not electrical) conductivity, using Caldwell (1974) as of 2015-jan-09
+## NOTE: no gsw equivalent
+swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 {
     ## FIXME-gsw need a gsw version
     if (missing(salinity)) stop("must provide salinity")

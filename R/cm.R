@@ -168,7 +168,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     u <- d[, col.east] / 100
     v <- d[, col.north] / 100
     heading <- d[, col.heading]
-    conductivity <- d[, col.conductivity] / 100 / (swConductivity(35, 15, 0)) # cond. ratio
+    ## the 42.91754 value is electrical conductivity at SP=35, t=15, p=0
+    conductivity <- d[, col.conductivity] / 100 / 42.91754
     temperature <- d[, col.temperature]
     depth <- d[, col.depth]
     calculate.salinity.from.conductivity <- TRUE # FIXME: why is "Sal" so wrong in the sample file?

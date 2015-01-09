@@ -5,6 +5,38 @@ int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, 
 double strho_f(double x, int teos);
 int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
 
+void bisect2(double ax, double bx, double (*f)(double x), double tol, double res, int maxiter, double *zero)
+{
+  double af, bf, ff;
+  af = f(ax);
+  bf = f(bx);
+  //Rprintf("ax=%g bx=%g af=%g bf=%g\n", ax, bx, af, bf);
+  if (af * bf > 0.0) { // no root in interval
+    *zero = NA_REAL;
+    return;
+  }
+  int iter = 0;
+  while (fabs(ff = f(*zero = (ax + bx) / 2.0)) > tol || fabs (ax - bx) > res) {
+    //Rprintf("bisect2 iter=%d af=%g bf=%g ff=%g\n", iter, af, bf, ff);
+    if (++iter > maxiter) {
+      *zero = NA_REAL; // too many iterations
+      return;
+    }
+    if (!ff) // exact solution
+      return;
+    if (af * ff < 0) { // root is nearer ax than bx
+      bx = *zero;
+      bf = ff;
+    } else if (bf * ff < 0) { // root is nearer bx than ax
+      ax = *zero;
+      af = ff;
+    } else {	// problem
+      *zero = NA_REAL;
+      return;
+    }
+  }
+}
+
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
   //Rprintf("sw_alpha_over_beta(*n, %f, %f, %f, ...)\n", *pS, *ptheta, *pp);
@@ -140,6 +172,41 @@ void sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
 		  T * (9.1697e-10)))));
       *value++ = (ro / (1.0 - p1 / xkst));
     }
+  }
+}
+
+double Sglobal, Tglobal, pglobal;
+double sw_salinity_C(double C)
+{
+  void sw_salinity(int *n, double *pC, double *pT, double *pp, double *value);
+  extern double Tglobal, pglobal;
+  int n=1;
+  double S;
+  sw_salinity(&n, &C, &Tglobal, &pglobal, &S);
+  //Rprintf("sw_salinity_C(%f) with Sglobal=%f, Tglobal=%f and pglobal=%f got S=%f so returning %f\n",
+  //    C, Sglobal, Tglobal, pglobal, S, S-Sglobal);
+  return(S - Sglobal);
+}
+
+/*
+
+system("R CMD shlib sw.c")
+dyn.load("sw.so")
+.C("sw_CSTp", as.integer(1), as.double(35), as.double(15), as.double(0), C=double(1))$C
+
+ */
+void sw_CSTp(int *n, double *pS, double *pT, double *pp, double *value)
+{
+  extern double Tglobal, pglobal;
+  for (int i = 0; i < *n; i++) {
+    //Rprintf("sw_CSTp() i=%d\n", i);
+    Sglobal = pS[i];
+    Tglobal = pT[i];
+    pglobal = pp[i];
+    // Use 100 iterations as the limit, although 30 iterations should be sufficient
+    // since 5/2^30 is 5e-9, and we are setting the res and tol to 1e-8.
+    bisect2(0.0, 5.0, sw_salinity_C, 1e-8, 1e-8, 100, value+i);
+    //Rprintf("sw_CSTp() set value[%d] = %f\n", i, value+i);
   }
 }
 
