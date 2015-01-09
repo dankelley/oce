@@ -68,8 +68,8 @@ stopifnot(all.equal.numeric(rhoGSW-1000, sigma))
 #
 # The following is an official test value from [1 p44], first with all args,
 # second with a ctd object as an arg.
-stopifnot(all.equal(swTheta(40, 40, 10000, eos="unesco"), 36.89073, tolerance=0.00001))
-stopifnot(all.equal(swTheta(as.ctd(40, 40, 10000), eos="unesco"), 36.89073, tolerance=0.00001))
+stopifnot(all.equal(swTheta(40, 40, 10000, eos="unesco"), 36.89073, scale=1, tolerance=0.00002))
+stopifnot(all.equal(swTheta(as.ctd(40, 40, 10000), eos="unesco"), 36.89073, scale=1, tolerance=0.00002))
 
 # 2.2 GSW potential temperature
 # 
@@ -206,7 +206,8 @@ stopifnot(all.equal.numeric(cond, 0.618569, tolerance=1e-5))
 # 13. electrical conductivity
 stopifnot(all.equal.numeric(swCSTp(35,   15,   0, eos="unesco"), 1.000000))
 stopifnot(all.equal.numeric(swCSTp(35,   15,   0, eos="gsw"),    1.000000))
-
+stopifnot(all.equal.numeric(swSCTp(1.2, 20,2000, eos="unesco"), 37.245628, tolerance=1e-6))
+stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="unesco"), 35.000000, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(1.2, 20,2000, eos="unesco"), 37.245628, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, tolerance=1e-6))
@@ -214,14 +215,23 @@ stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, toler
 stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6))
 SP <- swSCTp(1.2, 20, 2000, eos="gsw")
 stopifnot(all.equal.numeric(1.2, gsw_C_from_SP(SP, 20, 2000) / gsw_C_from_SP(35, 15, 0)))
+stopifnot(all.equal.numeric(1.2, swCSTp(SP, 20, 2000)))
 SP <- swSCTp(0.65, 5, 1500, eos="gsw")
 stopifnot(all.equal.numeric(0.65, gsw_C_from_SP(SP, 5, 1500) / gsw_C_from_SP(35, 15, 0)))
+stopifnot(all.equal.numeric(0.65, swCSTp(SP, 5, 1500)))
 
-# 14. depth and pressure [FIXME: INCOMPLETE]
-depth <- swDepth(10000, 30)
-stopifnot(all.equal.numeric(depth, 9712.653, tolerance=0.001))
-pressure <- swPressure(9712.653, 30)
-stopifnot(all.equal.numeric(pressure, 10000., tolerance=0.001))
+# 14. depth and pressure
+# The UNESCO test is basically for consistency with old versions, I think, 
+# but the GSW test is against gsw_z_from_p(), which is well-tested in
+# the building of the gsw package.
+depth <- swDepth(10000, 30, eos="unesco")
+stopifnot(all.equal.numeric(depth, 9712.653, scale=1, tolerance=0.001))
+depth <- swDepth(10000, 30, eos="gsw")
+stopifnot(all.equal.numeric(depth, 9713.735, scale=1, tolerance=0.001))
+pressure <- swPressure(9712.653, 30, eos="unesco")
+stopifnot(all.equal.numeric(pressure, 10000., scale=1, tolerance=0.001))
+pressure <- swPressure(9712.653, 30, eos="gsw")
+stopifnot(all.equal.numeric(pressure, gsw_p_from_z(-9712.653, 30), scale=1, tolerance=0.001))
 
 # 15. spiciness
 sp <- swSpice(35,10,100)

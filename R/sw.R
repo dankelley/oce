@@ -120,15 +120,20 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
 }
 
-swPressure <- function(depth, latitude=45)
+swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version
     ndepth <- length(depth)
     if (length(latitude) < ndepth)
         latitude <- rep(latitude, ndepth)
     rval <- vector("numeric", ndepth)
-    for (i in 1:ndepth) {
-        rval[i] <- uniroot(function(p) depth[i] - swDepth(p, latitude[i]), interval=depth[i]*c(0.8, 1.2))$root
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    if (eos == "unesco") {
+        for (i in 1:ndepth) {          # FIXME: this loop is slow and should be done in C, like swCStp()
+            rval[i] <- uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval=depth[i]*c(0.8, 1.2))$root
+        }
+    } else if (eos == "gsw") {
+        rval <- gsw_p_from_z(-depth, latitude)
     }
     rval
 }
@@ -373,22 +378,27 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
     return(0.57057 * (1 + l$temperature * (0.003 - 1.025e-05 * l$temperature) + 0.000653 * l$pressure - 0.00029 * l$salinity))
 }
 
-swDepth <- function(pressure, latitude=45, degrees=TRUE)
+swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
     if (missing(pressure)) stop("must provide pressure")
-    l <- lookWithin(list(pressure=pressure, latitude=latitude))
-    if (degrees) l$latitude <- l$latitude * 0.0174532925199433
-    x <- sin(l$latitude)^2
-    gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
-    (((-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
+    l <- lookWithin(list(pressure=pressure, latitude=latitude, eos=eos))
+    if (l$eos == "unesco") {
+        l$latitude <- l$latitude * atan2(1, 1) / 45
+        x <- sin(l$latitude)^2
+        gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
+        rval <- (((-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
+    } else if (l$eos == "gsw") {
+        rval <- -gsw_z_from_p(p=l$pressure, latitude=l$latitude)
+    }
+    rval
 }
 
-swZ <- function(pressure, latitude=45, degrees=TRUE)
+swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
     if (missing(pressure)) stop("must provide pressure")
-    -swDepth(pressure=pressure, latitude=latitude, degrees=degrees)
+    -swDepth(pressure=pressure, latitude=latitude, eos=eos)
 }
 
 swDynamicHeight <- function(x, referencePressure=2000,
