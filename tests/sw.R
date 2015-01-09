@@ -188,6 +188,7 @@ Sg <- swSTrho(t, rho, 0, eos="gsw")
 stopifnot(all.equal(Sg, 28.76287326771))
 stopifnot(all.equal.numeric(rho, gsw_rho(Sg, t, 0)))
 
+
 # 10. sound absorption
 # Compared with Table IV of Fisher & Simmons 1977.
 alpha <- swSoundAbsorption(100e3, 35, 4, 4990) # at 500 atm (4990 dbar of water)
@@ -195,13 +196,19 @@ stopifnot(all.equal.numeric(alpha, 0.0175, tolerance=0.01)) # 1% test
 alpha <- swSoundAbsorption(10e3, 35, 4, 0) # expect 0.00083 at 1 atm (0dbar of water)
 stopifnot(all.equal.numeric(alpha, 0.000829, tolerance=0.01)) # 1% test
 
+
 # 11. viscosity
 visc <- swViscosity(30, 10)
 stopifnot(all.equal.numeric(visc, 0.001383779, tolerance=1e-7))
 
+
 # 12. thermal conductivity
+# No check values available, but investigation shows agreement
+# with Caldwell's Table 1 to within the 0.5 percent tolerance
+# he mentions.
 cond <- swThermalConductivity(35, 10, 100)
-stopifnot(all.equal.numeric(cond, 0.618569, tolerance=1e-5))
+stopifnot(all.equal.numeric(cond, 0.5822402))
+
 
 # 13. electrical conductivity
 stopifnot(all.equal.numeric(swCSTp(35,   15,   0, eos="unesco"), 1.000000))
