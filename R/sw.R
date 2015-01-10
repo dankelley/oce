@@ -452,23 +452,36 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 }
 
 swDynamicHeight <- function(x, referencePressure=2000,
-                            subdivisions=500, rel.tol=.Machine$double.eps^0.25)
+                            subdivisions=500, rel.tol=.Machine$double.eps^0.25,
+                            eos=getOption("oceEOS", default="gsw"))
 {
-    height <- function(ctd, referencePressure, subdivisions, rel.tol)
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    if (eos == "gsw")
+        warning("using unesco because gsw toolbox v3.03 lacks dynamic height calculation")
+    height <- function(ctd, referencePressure, subdivisions, rel.tol, eos=getOption("oceEOS", default="gsw"))
     {
         if (sum(!is.na(ctd@data$pressure)) < 2) return(NA) # cannot integrate then
-        g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
-        np <- length(ctd@data$pressure)
-        rho <- swRho(ctd)
-        if (sum(!is.na(rho)) < 2) return(NA)
-        ## 1e4 converts decibar to Pa
-        dzdp <- ((1/rho - 1/swRho(rep(35,np),rep(0,np),ctd@data$pressure))/g)*1e4
-        ## Scale both pressure and dz/dp to make integration work better (issue 499)
-        max <- max(dzdp, na.rm=TRUE)
-        integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
-        ##plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
-        integrate(integrand, 0, 1,
-                  subdivisions=subdivisions, rel.tol=rel.tol)$value * referencePressure * max
+        ## 2015-Jan-10: the C library does not have gsw_geo_strf_dyn_height() as of vsn 3.0.3
+        #if (eos == "unesco") {
+            g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
+            np <- length(ctd@data$pressure)
+            rho <- swRho(ctd)
+            if (sum(!is.na(rho)) < 2) return(NA)
+            ## 1e4 converts decibar to Pa
+            dzdp <- ((1/rho - 1/swRho(rep(35,np),rep(0,np),ctd@data$pressure))/g)*1e4
+            ## Scale both pressure and dz/dp to make integration work better (issue 499)
+            max <- max(dzdp, na.rm=TRUE)
+            integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
+            ##plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
+            rval <- integrate(integrand, 0, 1,
+                              subdivisions=subdivisions, rel.tol=rel.tol)$value * referencePressure * max
+        #} else if (eos == "gsw") {
+        #     SA <- ctd[["SA"]]
+        #     CT <- ctd[["CT"]]
+        #     p <- ctd[["p"]]
+        #     rval <- gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=referencePressure)
+        #}
+        rval
     }
     if (inherits(x, "section")) {
         lon0 <- x@data$station[[1]]@metadata$longitude
@@ -478,7 +491,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
         h <- vector("numeric", ns)
         for (i in 1:ns) {
             d[i] <- geodDist(x@data$station[[i]]@metadata$longitude, x@data$station[[i]]@metadata$latitude, lon0, lat0)
-            h[i] <- height(x@data$station[[i]], referencePressure, subdivisions=subdivisions, rel.tol=rel.tol)
+            h[i] <- height(x@data$station[[i]], referencePressure, subdivisions=subdivisions, rel.tol=rel.tol, eos=eos)
         }
         return(list(distance=d, height=h))
     } else if (inherits(x, "ctd")) {
