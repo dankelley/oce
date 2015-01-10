@@ -2988,7 +2988,7 @@ plotProfile <- function (x,
             lines(st, y, col = col.rho, lwd=lwd) 
         }
         par(new = TRUE)
-        N2 <- swN2(x@data$pressure, st, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
@@ -3021,7 +3021,7 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x@data$pressure, x@data$sigmaTheta, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)

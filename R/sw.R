@@ -57,15 +57,16 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
         salinity <- ctd[['salinity']]
         temperature <- ctd[['temperature']]
         theta <- ctd[['theta']]
+        ok <- !is.na(p) & !is.na(salinity) & !is.na(temperature)
         ## infer d(theta)/dp and d(salinity)/dp from smoothing splines
-        temperatureSpline <- smooth.spline(p, temperature, df=df)
-        salinitySpline <- smooth.spline(p, salinity, df=df)
+        temperatureSpline <- smooth.spline(p[ok], temperature[ok], df=df)
+        salinitySpline <- smooth.spline(p[ok], salinity[ok], df=df)
         ## Smooth temperature and salinity to get smoothed alpha and beta
         CTD <- as.ctd(predict(salinitySpline, p)$y, predict(temperatureSpline, p)$y, p)
         alpha <- swAlpha(CTD)
         beta <- swBeta(CTD)
         ## Using alpha ... is that right, since we have theta?
-        thetaSpline <- smooth.spline(p, theta, df=df)
+        thetaSpline <- smooth.spline(p[ok], theta[ok], df=df)
         dthetadp <- predict(thetaSpline, p, deriv=1)$y
         dsalinitydp <- predict(salinitySpline, p, deriv=1)$y
         if (sense == "diffusive")
@@ -75,66 +76,89 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
     } else if (eos == "gsw") {
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
-        SA <- predict(smooth.spline(p, SA, df=df), p)$y
-        CT <- predict(smooth.spline(p, CT, df=df), p)$y
+        ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
+        SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
+        CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
         a <- gsw_Turner_Rsubrho(SA, CT, p)
         Rrho <- a$Rsubrho
         Rrho[Rrho==9e15] <- NA
-        Rrho <- approx(a$p_mid, Rrho, p)$y
+        Rrho <- approx(a$p_mid, Rrho, p, rule=2)$y
         if (sense == "diffusive")
             Rrho <- 1 / Rrho
     }
     Rrho
 }
 
-swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, ...)
+swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, 
+                   eos=getOption("oceEOS", default="gsw"), ...)
 {
     ##cat("swN2(..., df=", df, ")\n",sep="")
-    if (inherits(pressure, "ctd")) {
-        sigmaTheta <- swSigmaTheta(pressure)
-        pressure <- pressure[['pressure']] # over-writes pressure
-    }
-    if (missing(derivs))
-        derivs <- "smoothing"
-    ok <- !is.na(pressure) & !is.na(sigmaTheta)
-    if (!missing(df)) {
-        df <- max(2, min(df, length(unique(pressure))))
-    }
-    if (is.character(derivs)) {
-        if (derivs == "simple") {
-            sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
-        } else if (derivs == "smoothing") {
-            args <- list(...)
-            depths <- length(pressure)
-            ##df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
-            if (missing(df)) {
-                if (depths > 20)
-                    df <- floor(depths / 10)
-                else if (depths > 10)
-                    df <- floor(depths / 3)
-                else
-                    df <- floor(depths / 2)
-                oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
-            }
-            df <- min(df, length(unique(pressure))/2)
-            if (depths > 4 && df > 1) {
-                sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
-                sigmaThetaDeriv <- rep(NA, length(pressure))
-                sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    useSmoothing <- !missing(df) && is.finite(df)
+    if (eos == "unesco") {
+        if (inherits(pressure, "ctd")) {
+            sigmaTheta <- swSigmaTheta(pressure)
+            pressure <- pressure[['pressure']] # over-writes pressure
+        }
+        if (missing(derivs))
+            derivs <- "smoothing"
+        ok <- !is.na(pressure) & !is.na(sigmaTheta)
+        if (is.character(derivs)) {
+            if (derivs == "simple") {
+                sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
+            } else if (derivs == "smoothing") {
+                depths <- length(pressure)
+                if (missing(df)) {
+                    if (depths > 20)
+                        df <- floor(depths / 10)
+                    else if (depths > 10)
+                        df <- floor(depths / 3)
+                    else
+                        df <- floor(depths / 2)
+                    oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
+                }
+                df <- round(min(df, length(unique(pressure))/2))
+                if (depths > 4 && df > 1) {
+                    sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
+                    sigmaThetaDeriv <- rep(NA, length(pressure))
+                    sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
+                } else {
+                    sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
+                    sigmaThetaDeriv <- rep(NA, length(pressure))
+                    sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
+                }
             } else {
-                sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
-                sigmaThetaDeriv <- rep(NA, length(pressure))
-                sigmaThetaDeriv[ok] <- c(0, diff(sigmaThetaSmooth) / diff(pressure[ok]))
+                stop("derivs must be 'simple', 'smoothing', or a function")
             }
         } else {
-            stop("derivs must be 'simple', 'smoothing', or a function")
+            if (!is.function(derivs))
+                stop("derivs must be 'smoothing', 'simple', or a function")
+            sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
         }
-    } else {
-        if (!is.function(derivs))
-            stop("derivs must be 'smoothing', 'simple', or a function")
-        sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
+        rval <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
+    } else if (eos == "gsw") {
+        if (!inherits(pressure, "ctd")) 
+            stop("first argument must be a CTD object if eos=\"gsw\"")
+        ctd <- pressure
+        SA <- ctd[["SA"]]
+        CT <- ctd[["CT"]]
+        p <- ctd[["p"]]
+        np <- length(p)
+        ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
+        if (missing(df))
+            df <- round(length(p[ok]) / 10)
+        if (length(p[ok]) > 4 && is.finite(df)) {
+            SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
+            CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
+        }
+        latitude <- ctd[["latitude"]]
+        if (is.na(latitude))
+            latitude <- 0
+        l <- gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude)
+        ## approx back to the given pressures
+        rval <- approx(l$p_mid, l$N2, p, rule=2)$y
     }
-    ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
+    rval
 }
 
 swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"))
