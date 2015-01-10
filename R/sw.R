@@ -97,7 +97,8 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
     useSmoothing <- !missing(df) && is.finite(df)
     if (eos == "unesco") {
         if (inherits(pressure, "ctd")) {
-            sigmaTheta <- swSigmaTheta(pressure)
+            pref <- median(ctd[["pressure"]], na.rm=TRUE)
+            sigmaTheta <- swSigmaTheta(pressure, referencePressure=pref)
             pressure <- pressure[['pressure']] # over-writes pressure
         }
         if (missing(derivs))

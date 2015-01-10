@@ -49,8 +49,9 @@
     (possibly smoothed, depending on \code{df}).
 
     If \code{eos="unesco"}, then the processing is as follows.  The core of the
-    method involves differentiating density with respect to pressure, and the
-    \code{derivs} argument is used to control how this is done, as follows.
+    method involves differentiating potential density (referenced to median
+    pressure) with respect to pressure, and the \code{derivs} argument is used
+    to control how this is done, as follows.
 
     \itemize{
 
