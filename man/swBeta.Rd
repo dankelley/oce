@@ -4,11 +4,10 @@
 
 \title{Seawater haline contraction coefficient}
 
-\description{Compute \eqn{\beta}{beta} using McDougall's (1987)
-  algorithm. NOTE: this conflicts with base::beta, so be sure to prefix
-  as swBeta().}
+\description{Compute \eqn{\beta}{beta}, the haline contraction coefficient for
+    seawater.}
 
-\usage{swBeta(salinity, temperature, pressure,
+\usage{swBeta(salinity, temperature=NULL, pressure=0,
        longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{

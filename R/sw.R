@@ -324,7 +324,7 @@ swTFreeze <- function(salinity, pressure=0,
     rval
 }
 
-swAlpha <- function(salinity, temperature=NULL, pressure=NULL,
+swAlpha <- function(salinity, temperature=NULL, pressure=0,
                     longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw need a gsw version
@@ -334,7 +334,6 @@ swAlpha <- function(salinity, temperature=NULL, pressure=NULL,
     nS <- length(l$salinity)
     nt <- length(l$temperature)
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (is.null(l$pressure)) l$pressure <- 0
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
@@ -381,7 +380,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     rval
 }
 
-swBeta <- function(salinity, temperature=NULL, pressure=NULL,
+swBeta <- function(salinity, temperature=NULL, pressure=0,
                    longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
@@ -392,7 +391,6 @@ swBeta <- function(salinity, temperature=NULL, pressure=NULL,
     nS <- length(l$salinity)
     nt <- length(l$temperature)
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (is.null(l$pressure)) pressure <- 0
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")

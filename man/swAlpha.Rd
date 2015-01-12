@@ -4,11 +4,10 @@
 
 \title{Seawater thermal expansion coefficient}
 
-\description{Compute \eqn{\alpha}{alpha}, the seawater thermal expansion
-  coefficient, as the product of \eqn{\alpha/\beta}{alpha/beta} and
-  \eqn{\beta}{beta}, each calculated from McDougall's (1987) algorithm.}
+\description{Compute \eqn{\alpha}{alpha}, the thermal expansion coefficient for
+    seawater.}
 
-\usage{swAlpha(salinity, temperature=NULL, pressure=NULL,
+\usage{swAlpha(salinity, temperature=NULL, pressure=0,
        longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
