@@ -54,7 +54,16 @@ setMethod(f="subset",
                   print(x@data$time[2])
                   print(is.language(substitute(subset)))
                   str(substitute(subset))
-                  r <- eval(substitute(subset), x@data)#, parent.frame())
+                  ## Prior to 2015-01-15 the next line was
+                  ##    r <- eval(substitute(subset), x@data)#, parent.frame())
+                  ## But that failed when calling subset from within other functions; see
+                  ## github (FIXME: fill in issue link, when issue is submitted).
+                  ##     http://r.789695.n4.nabble.com/getting-environment-from-quot-top-quot-promise-td4685138.html
+                  ## for a question regarding environments. I used to have parent.frame() here, and
+                  ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
+                  ## will work more generally: (a) within flat code and (b) within a function
+                  ## that is passed items to go in the subset.
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
                   str(r)
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
