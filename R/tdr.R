@@ -54,9 +54,7 @@ setMethod(f="subset",
                   print(x@data$time[2])
                   print(is.language(substitute(subset)))
                   str(substitute(subset))
-                  #r <- eval(substitute(subset), x@data, parent.frame())
-                  r <- eval(subset, x@data, parent.frame())
-                  #r <- eval(substitute(subset), x@data)
+                  r <- eval(substitute(subset), x@data, parent.frame())
                   str(r)
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
