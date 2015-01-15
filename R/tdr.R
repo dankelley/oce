@@ -1,10 +1,10 @@
 setMethod(f="initialize",
           signature="tdr",
-          definition=function(.Object,time,pressure,temperature,filename) {
+          definition=function(.Object,time,pressure,temperature,filename="") {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
-              .Object@metadata$filename <- if (missing(filename)) "" else filename
+              .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'tdr' object"
               return(.Object)
@@ -42,9 +42,22 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="tdr",
           definition=function(x, subset, ...) {
-              rval <- x
+              rval <- new("tdr") # start afresh in case x@data is a data.frame
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
+              message("NOTE: debugging output coming up!")
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame())
+                  message("i: ", i)
+                  str(x@data)
+                  str(x@data$time[1])
+                  print(x@data$time[1])
+                  print(x@data$time[2])
+                  print(is.language(substitute(subset)))
+                  str(substitute(subset))
+                  #r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- eval(subset, x@data, parent.frame())
+                  #r <- eval(substitute(subset), x@data)
+                  str(r)
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
@@ -71,14 +84,19 @@ as.tdr <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
+    ##res <- new("tdr")# , time, pressure, temperature, filename)
     res <- new("tdr", time, pressure, temperature, filename)
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
+    res@metadata$filename <- filename
     res@metadata$pressureAtmospheric <- pressureAtmospheric
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
+    ## data <- list(time=time, pressure=pressure, temperature=temperature)
+    ## res@data <- data
+    ## message("NEW as.tdr() ... no help")
     oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
     res
 }
