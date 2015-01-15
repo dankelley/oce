@@ -54,11 +54,12 @@ setMethod(f="subset",
                   print(x@data$time[2])
                   print(is.language(substitute(subset)))
                   str(substitute(subset))
-                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- eval(substitute(subset), x@data)#, parent.frame())
                   str(r)
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
+              names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               rval@processingLog <- processingLog(rval@processingLog, paste("subset.tdr(x, subset=", subsetString, ")", sep=""))
               rval
@@ -83,7 +84,7 @@ as.tdr <- function(time, temperature, pressure,
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
     ##res <- new("tdr")# , time, pressure, temperature, filename)
-    res <- new("tdr", time, pressure, temperature, filename)
+    res <- new("tdr")
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -92,9 +93,9 @@ as.tdr <- function(time, temperature, pressure,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
-    ## data <- list(time=time, pressure=pressure, temperature=temperature)
-    ## res@data <- data
-    ## message("NEW as.tdr() ... no help")
+    res@data <- list(time=time, pressure=pressure, temperature=temperature)
+    str(res)
+    message("ABOVE IS res within as.tdr()")
     oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
     res
 }
