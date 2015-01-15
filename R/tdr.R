@@ -45,16 +45,16 @@ setMethod(f="subset",
               rval <- new("tdr") # start afresh in case x@data is a data.frame
               rval@metadata <- x@metadata
               rval@processingLog <- x@processingLog
-              message("NOTE: debugging output coming up!")
+              ## message("NOTE: debugging output coming up!")
               for (i in seq_along(x@data)) {
-                  message("i: ", i)
-                  str(x@data)
-                  str(x@data$time[1])
-                  print(x@data$time[1])
-                  print(x@data$time[2])
-                  print(is.language(substitute(subset)))
-                  str(substitute(subset))
-                  ## Prior to 2015-01-15 the next line was
+                  ####  message("i: ", i)
+                  ####  str(x@data)
+                  ####  str(x@data$time[1])
+                  ####  print(x@data$time[1])
+                  ####  print(x@data$time[2])
+                  ####  print(is.language(substitute(subset)))
+                  ####  str(substitute(subset))
+                  ####  Prior to 2015-01-15 the next line was
                   ##    r <- eval(substitute(subset), x@data)#, parent.frame())
                   ## But that failed when calling subset from within other functions; see
                   ## github (FIXME: fill in issue link, when issue is submitted).
@@ -64,7 +64,7 @@ setMethod(f="subset",
                   ## will work more generally: (a) within flat code and (b) within a function
                   ## that is passed items to go in the subset.
                   r <- eval(substitute(subset), x@data, parent.frame(2))
-                  str(r)
+                  ####  str(r)
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
