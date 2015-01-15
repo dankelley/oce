@@ -103,8 +103,8 @@ as.tdr <- function(time, temperature, pressure,
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
     res@data <- list(time=time, pressure=pressure, temperature=temperature)
-    str(res)
-    message("ABOVE IS res within as.tdr()")
+    ####  str(res)
+    ####  message("ABOVE IS res within as.tdr()")
     oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
     res
 }
