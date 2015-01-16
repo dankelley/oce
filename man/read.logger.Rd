@@ -1,13 +1,13 @@
-\name{read.tdr}
+\name{read.logger}
 
-\alias{read.tdr}
+\alias{read.logger}
 
 \title{Read temperature-depth recorder file}
 
-\description{Read an tdr temperature-depth recorder file, producing an object of type \code{tdr}.}
+\description{Read an logger temperature-depth recorder file, producing an object of type \code{logger}.}
 
 \usage{
-read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
          processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -43,7 +43,7 @@ read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     columns, in which depth in the water column is given after the pressure;
     (4) a new (and possibly still changeable) SQLite-based database format.}
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"logger"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -71,7 +71,7 @@ read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     cases, the assumption may or may not be correct.  Still, the end time for
     subsampling (\code{metdata$subsample.end}) should be correct.}
 
-\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
+\seealso{The documentation for \code{\link{logger-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}

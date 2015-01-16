@@ -1,14 +1,14 @@
-\name{plot.tdr}
+\name{plot.logger}
 
-\alias{plot.tdr}
-\alias{plot,tdr,missing-method}
-\alias{plot,tdr-method}
+\alias{plot.logger}
+\alias{plot,logger,missing-method}
+\alias{plot,logger-method}
 
-\title{Plot tdr (temperature-depth recorder) data}
+\title{Plot logger (temperature-depth recorder) data}
 
-\description{Plot tdr (temperature-depth recorder) data}
+\description{Plot logger (temperature-depth recorder) data}
 
-\usage{\S4method{plot}{tdr}(x,
+\usage{\S4method{plot}{logger}(x,
      which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
@@ -23,7 +23,7 @@
      \dots)}
 
 \arguments{
-  \item{x}{\code{tdr} object, typically result of \code{\link{read.tdr}}.}
+  \item{x}{\code{logger} object, typically result of \code{\link{read.logger}}.}
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
@@ -84,12 +84,12 @@
 
 \examples{
 library(oce)
-data(tdr)
+data(logger)
 t <- as.POSIXct('2008-07-04 20:00:00',tz='UTC')
-plot(tdr, which=c(1,3), adorn=expression({abline(v=t)}))
+plot(logger, which=c(1,3), adorn=expression({abline(v=t)}))
 }
 
-\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
+\seealso{The documentation for \code{\link{logger-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}

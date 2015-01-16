@@ -1,10 +1,10 @@
-\name{tdrTrim}
-\alias{tdrTrim}
-\title{Trim start/end portions of a tdr cast}
-\description{Trim start/end portions of a tdr cast.}
-\usage{tdrTrim(x, method="water", parameters=NULL, debug=getOption("oceDebug"))}
+\name{loggerTrim}
+\alias{loggerTrim}
+\title{Trim start/end portions of a logger cast}
+\description{Trim start/end portions of a logger cast.}
+\usage{loggerTrim(x, method="water", parameters=NULL, debug=getOption("oceDebug"))}
 \arguments{
-  \item{x}{A \code{tdr} object, e.g. as read by \code{\link{read.tdr}}.}
+  \item{x}{A \code{logger} object, e.g. as read by \code{\link{read.logger}}.}
   \item{method}{Various methods exist, some of which use parameters:
     \describe{
       \item{\code{"water"}}{Trim data at start and end that seem to be in air
@@ -31,7 +31,7 @@
   guessing need be done about the time the instruments went in the
   water.  In some cases, though, the time will have to be inferred from
   the data, and so it might make sense to start by trimming with the
-  \code{"water"} method, after which \code{\link{summary.tdr}} is used
+  \code{"water"} method, after which \code{\link{summary.logger}} is used
   to find the probably time when the instrument was put into the water.
 
   After the data are trimmed in time, the pressure record is modified by
@@ -39,18 +39,18 @@
 
 }
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, with data
+\value{An object of \code{\link[base]{class}} \code{"logger"}, with data
   having been trimmed in some way, and with the pressure being reduced
   by mean sea-level pressure.} 
 
-\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
+\seealso{The documentation for \code{\link{logger-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
-data(tdr)
-tdrTrimmed <- tdrTrim(tdr)
-plot(tdrTrimmed)
+data(logger)
+loggerTrimmed <- loggerTrim(logger)
+plot(loggerTrimmed)
 }
 
 \author{Dan Kelley}

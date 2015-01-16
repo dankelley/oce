@@ -1,12 +1,12 @@
-\name{as.tdr}
+\name{as.logger}
 
-\alias{as.tdr}
+\alias{as.logger}
 
-\title{Create a TDR object}
+\title{Create a logger object}
 
-\description{Create a TDR (temperature-depth recorder) object.}
+\description{Create a logger object.}
 
-\usage{as.tdr(time, temperature, pressure,
+\usage{as.logger(time, temperature, pressure,
       filename="", instrumentType="rbr", serialNumber="", model="",
       pressureAtmospheric=NA, processingLog, debug=getOption("oceDebug"))}
 
@@ -25,9 +25,9 @@
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{This is used by \code{\link{read.tdr}} to create \code{tdr} objects.}  
+\details{This is used by \code{\link{read.logger}} to create \code{logger} objects.}  
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"logger"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -47,8 +47,8 @@
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
-    \code{tdr} objects, and also outlines the other functions dealing with
+\seealso{The documentation for \code{\link{logger-class}} explains the structure of
+    \code{logger} objects, and also outlines the other functions dealing with
     them.}
 
 \author{Dan Kelley}

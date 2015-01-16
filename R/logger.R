@@ -1,18 +1,18 @@
 setMethod(f="initialize",
-          signature="tdr",
+          signature="logger",
           definition=function(.Object,time,pressure,temperature,filename="") {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
-              .Object@processingLog$value <- "create 'tdr' object"
+              .Object@processingLog$value <- "create 'logger' object"
               return(.Object)
           })
 
 
 setMethod(f="summary",
-          signature="tdr",
+          signature="logger",
           definition=function(object, ...) {
               cat("TDR Summary\n----------\n", ...)
               cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
@@ -40,9 +40,9 @@ setMethod(f="summary",
 
 
 setMethod(f="subset",
-          signature="tdr",
+          signature="logger",
           definition=function(x, subset, ...) {
-              rval <- new("tdr") # start afresh in case x@data is a data.frame
+              rval <- new("logger") # start afresh in case x@data is a data.frame
               rval@metadata <- x@metadata
               rval@processingLog <- x@processingLog
               ## message("NOTE: debugging output coming up!")
@@ -70,19 +70,19 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.tdr(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
-as.tdr <- function(time, temperature, pressure,
-                   filename="",
-                   instrumentType="rbr",
-                   serialNumber="", model="",
-                   pressureAtmospheric=NA,
-                   processingLog, debug=getOption("oceDebug"))
+as.logger <- function(time, temperature, pressure,
+                      filename="",
+                      instrumentType="rbr",
+                      serialNumber="", model="",
+                      pressureAtmospheric=NA,
+                      processingLog, debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
-    oceDebug(debug, "as.tdr(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
+    oceDebug(debug, "as.logger(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
     if (missing(time) || missing(temperature) || missing(pressure))
         stop("must give (at least) time, temperature, and pressure")
     if (!inherits(time, "POSIXt"))
@@ -92,8 +92,7 @@ as.tdr <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
-    ##res <- new("tdr")# , time, pressure, temperature, filename)
-    res <- new("tdr")
+    res <- new("logger")
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -103,14 +102,12 @@ as.tdr <- function(time, temperature, pressure,
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
     res@data <- list(time=time, pressure=pressure, temperature=temperature)
-    ####  str(res)
-    ####  message("ABOVE IS res within as.tdr()")
-    oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
+    oceDebug(debug, "} # as.logger()\n", sep="", unindent=1)
     res
 }
 
 setMethod(f="plot",
-          signature=signature("tdr"),
+          signature=signature("logger"),
           definition=function(x, which=1:4, title="", adorn=NULL,
                               tlim, plim, Tlim,
                               xlab, ylab,
@@ -124,9 +121,9 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "plot.tdr(..., which=", which, ", ...) {\n", unindent=1)
-              if (!inherits(x, "tdr"))
-                  stop("method is only for objects of class '", "tdr", "'")
+              oceDebug(debug, "plot.logger(..., which=", which, ", ...) {\n", unindent=1)
+              if (!inherits(x, "logger"))
+                  stop("method is only for objects of class '", "logger", "'")
               if (0 == sum(!is.na(x@data$temperature)))
                   stop("no good temperatures to plot")
               if (0 == sum(!is.na(x@data$pressure)))
@@ -136,9 +133,9 @@ setMethod(f="plot",
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
+                  stop("in plot.logger() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
               if ("ylim" %in% dotsNames)
-                  stop("in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
+                  stop("in plot.logger() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
               nw <- length(which)
               opar <- par(no.readonly = TRUE)
               if (nw > 1)
@@ -258,15 +255,15 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "} # plot.tdr()\n", unindent=1)
+              oceDebug(debug, "} # plot.logger()\n", unindent=1)
               invisible()
           })
 
-read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
-                     processingLog, debug=getOption("oceDebug"))
+read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+                        processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "read.tdr(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
@@ -319,7 +316,7 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         d <- read.table(pipe(cmd), sep="|")
         ndatasets <- dim(d)[1]
         if (1 != ndatasets) {
-            stop("read.tdr(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file has ", ndatasets)
+            stop("read.logger(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file has ", ndatasets)
         }
         ## ruskin database-schema serial number: hard to decode, so I'll just give up on it
         cmd <- paste("sqlite3", filename,  "'select * from appSettings'")
@@ -470,20 +467,20 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         pressure <- as.numeric(d[pcol, look])
         model <- ""
     }
-    rval <- as.tdr(time, temperature, pressure, instrumentType="rbr",
-                  serialNumber=serialNumber, model=model,
-                  pressureAtmospheric=pressureAtmospheric,
-                  filename=filename,
-                  processingLog=paste(deparse(match.call()), sep="", collapse=""),
-                  debug=debug-1)
-    oceDebug(debug, "} # read.tdr()\n", sep="", unindent=1)
+    rval <- as.logger(time, temperature, pressure, instrumentType="rbr",
+                      serialNumber=serialNumber, model=model,
+                      pressureAtmospheric=pressureAtmospheric,
+                      filename=filename,
+                      processingLog=paste(deparse(match.call()), sep="", collapse=""),
+                      debug=debug-1)
+    oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
     rval
 }
 
 
-tdrPatm <- function(x, dp=0.5)
+loggerPatm <- function(x, dp=0.5)
 {
-    p <- if (inherits(x, "tdr")) x@data$pressure else x
+    p <- if (inherits(x, "logger")) x@data$pressure else x
     sap <- 10.1325                      # standard atm pressure
     if (length(p) < 1)
         return(rep(sap, 4))
@@ -495,16 +492,16 @@ tdrPatm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
+loggerTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "tdrTrim() {\n", unindent=1)
-    if (!inherits(x, "tdr"))
-        stop("method is only for objects of class '", "tdr", "'")
+    oceDebug(debug, "loggerTrim() {\n", unindent=1)
+    if (!inherits(x, "logger"))
+        stop("method is only for objects of class '", "logger", "'")
     res <- x
     n <- length(x@data$temperature)
     oceDebug(debug, "dataset has", n, "points\n")
     if (n < 2) {
-        warning("too few data to trim tdr record")
+        warning("too few data to trim logger record")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         oceDebug(debug, "using method", which.method, "\n")
@@ -537,6 +534,6 @@ tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebu
         res@data[[name]] <- subset(x@data[[name]], keep)
     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # tdrTrim()\n", unindent=1)
+    oceDebug(debug, "} # loggerTrim()\n", unindent=1)
     res
 }
