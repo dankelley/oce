@@ -123,7 +123,7 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("time", subsetString))) {
                   oceDebug(debug, "subsetting an echosounder object by time\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
                   rval <- x
                   ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
@@ -156,7 +156,7 @@ setMethod(f="subset",
                   ## trim slow variables
                   subsetStringSlow <- gsub("time", "timeSlow", subsetString)
                   oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
-                  keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+                  keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
                   for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
                       oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
@@ -165,7 +165,7 @@ setMethod(f="subset",
                   }
               } else if (length(grep("depth", subsetString))) {
                   oceDebug(debug, "subsetting an echosounder object by depth\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   rval <- x
                   rval[["depth"]] <- rval[["depth"]][keep]
                   dataNames <- names(rval@data)

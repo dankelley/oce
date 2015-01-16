@@ -186,7 +186,7 @@ setMethod(f="subset",
                   rval <- x
                   if (length(grep("distance", subsetString))) {
                       l <- list(distance=geodDist(rval))
-                      keep <- eval(substitute(subset), l, parent.frame())
+                      keep <- eval(substitute(subset), l, parent.frame(2))
                       rval@metadata$longitude <- rval@metadata$longitude[keep]
                       rval@metadata$latitude <- rval@metadata$latitude[keep]
                       rval@metadata$stationId <- rval@metadata$stationId[keep]
@@ -195,7 +195,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       keep <- vector(length=n)
                       for (i in 1:n)
-                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame())
+                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame(2))
                       nn <- sum(keep)
                       station <- vector("list", nn)
                       stn <- vector("character", nn)
@@ -222,7 +222,7 @@ setMethod(f="subset",
                       rval@processingLog <- x@processingLog
                   } else {
                       n <- length(x@data$station)
-                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
+                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame(2))
                       for (i in 1:n) {
                           rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
                       }

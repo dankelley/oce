@@ -161,7 +161,7 @@ setMethod(f="subset",
                   stop("must specify a 'subset'")
               if (length(grep("time", subsetString))) {
                   oceDebug(debug, "subsetting an adv object by time\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
                   sum.keep <- sum(keep)
                   if (sum.keep < 2)
                       stop("must keep at least 2 profiles")
@@ -170,14 +170,14 @@ setMethod(f="subset",
                   rval <- x
                   names <- names(x@data)
                   haveSlow <- "timeSlow" %in% names
-                  keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+                  keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
                   if (haveSlow) {
                       subsetStringSlow <- gsub("time", "timeSlow", subsetString)
-                      keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+                      keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame(2))
                   }
                   if ("timeBurst" %in% names) {
                       subsetStringBurst <- gsub("time", "timeBurst", subsetString)
-                      keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame())
+                      keepBurst <-eval(parse(text=subsetStringBurst), x@data, parent.frame(2))
                   }
                   for (name in names(x@data)) {
                       if ("distance" == name)

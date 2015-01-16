@@ -58,13 +58,13 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("longitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by longitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
                   rval[["longitude"]] <- x[["longitude"]][keep]
                   rval[["z"]] <- x[["z"]][keep,]
               } else if (length(grep("latitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by latitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
                   rval[["latitude"]] <- x[["latitude"]][keep]
                   rval[["z"]] <- x[["z"]][,keep]
