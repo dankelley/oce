@@ -20,7 +20,7 @@ msgid "\" in this"
 msgstr ""
 
 msgid "object"
-msgstr ""
+msgstr "objet"
 
 msgid "method is only for oce objects"
 msgstr "méthode est uniquement pour les objets de oce"
@@ -91,7 +91,7 @@ msgid "\""
 msgstr ""
 
 msgid "cannot find item named '"
-msgstr ""
+msgstr "ne peut pas trouver un élément nommé '"
 
 msgid "' in object's data"
 msgstr ""
@@ -103,7 +103,7 @@ msgid "'time' is neither a POSIXt time, nor an oce object containing data$time"
 msgstr ""
 
 msgid "method is only for objects of class '"
-msgstr ""
+msgstr "méthode est uniquement pour les objets de la classe '"
 
 msgid "adp"
 msgstr ""
@@ -1263,7 +1263,7 @@ msgstr ""
 
 #, fuzzy
 msgid "no valid temperature data"
-msgstr "Température conservateur"
+msgstr "Température Conservateur"
 
 msgid "no good data to plot"
 msgstr ""
@@ -2070,7 +2070,7 @@ msgid "Practical Salinity"
 msgstr "Salinité pratique"
 
 msgid "Absolute Salinity"
-msgstr "Salinité absolue"
+msgstr "Salinité Absolue"
 
 msgid "g/kg"
 msgstr ""
