@@ -22,11 +22,11 @@ setMethod(f="subset",
               rval <- x
               if (length(grep("time", subsetString)) ||
                   length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
               } else if (length(grep("profile", subsetString))) {
                   ## add profile into the data, then do as usual
                   x@data$profile <- 1:length(x@data$time)
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
               } else {
                   stop("may only subset by time, longitude, or latitude, and not by combinations")
               }

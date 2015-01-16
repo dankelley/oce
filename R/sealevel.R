@@ -45,7 +45,7 @@ setMethod(f="subset",
               rval@metadata <- x@metadata
               rval@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
