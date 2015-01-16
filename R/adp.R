@@ -242,7 +242,7 @@ setMethod(f="subset",
                   oceDebug(debug, "subsetting an adp by time\n")
                   if (length(grep("distance", subsetString)))
                       stop("cannot subset by both time and distance; split into multiple calls")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   names <- names(x@data)
                   haveDia <- "timeDia" %in% names
                   if (haveDia) {
@@ -289,7 +289,7 @@ setMethod(f="subset",
                   oceDebug(debug, "subsetting an adp by distance\n")
                   if (length(grep("time", subsetString)))
                       stop("cannot subset by both time and distance; split into multiple calls")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
                   if (sum(keep) < 2)
                       stop("must keep at least 2 bins")
@@ -306,7 +306,7 @@ setMethod(f="subset",
                       }
                   }
               } else if (length(grep("pressure", subsetString))) {
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   rval <- x
                   rval@data$v <- rval@data$v[keep,,]
                   rval@data$a <- rval@data$a[keep,,]

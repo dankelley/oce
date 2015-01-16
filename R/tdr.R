@@ -1,10 +1,10 @@
 setMethod(f="initialize",
           signature="tdr",
-          definition=function(.Object,time,pressure,temperature,filename) {
+          definition=function(.Object,time,pressure,temperature,filename="") {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
-              .Object@metadata$filename <- if (missing(filename)) "" else filename
+              .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'tdr' object"
               return(.Object)
@@ -42,12 +42,33 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="tdr",
           definition=function(x, subset, ...) {
-              rval <- x
+              rval <- new("tdr") # start afresh in case x@data is a data.frame
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
+              ## message("NOTE: debugging output coming up!")
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame())
+                  ####  message("i: ", i)
+                  ####  str(x@data)
+                  ####  str(x@data$time[1])
+                  ####  print(x@data$time[1])
+                  ####  print(x@data$time[2])
+                  ####  print(is.language(substitute(subset)))
+                  ####  str(substitute(subset))
+                  ####  Prior to 2015-01-15 the next line was
+                  ##    r <- eval(substitute(subset), x@data)#, parent.frame())
+                  ## But that failed when calling subset from within other functions; see
+                  ## github (FIXME: fill in issue link, when issue is submitted).
+                  ##     http://r.789695.n4.nabble.com/getting-environment-from-quot-top-quot-promise-td4685138.html
+                  ## for a question regarding environments. I used to have parent.frame() here, and
+                  ## in other "subset" definitions, but my tests are suggesting parent.frame(2)
+                  ## will work more generally: (a) within flat code and (b) within a function
+                  ## that is passed items to go in the subset.
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  ####  str(r)
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
+              names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               rval@processingLog <- processingLog(rval@processingLog, paste("subset.tdr(x, subset=", subsetString, ")", sep=""))
               rval
@@ -71,14 +92,19 @@ as.tdr <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
-    res <- new("tdr", time, pressure, temperature, filename)
+    ##res <- new("tdr")# , time, pressure, temperature, filename)
+    res <- new("tdr")
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
+    res@metadata$filename <- filename
     res@metadata$pressureAtmospheric <- pressureAtmospheric
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@data <- list(time=time, pressure=pressure, temperature=temperature)
+    ####  str(res)
+    ####  message("ABOVE IS res within as.tdr()")
     oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
     res
 }

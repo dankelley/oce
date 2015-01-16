@@ -20,7 +20,7 @@ setMethod(f="subset",
               ###   subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
               ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
-              keep <- eval(substitute(subset), x@data, parent.frame())
+              keep <- eval(substitute(subset), x@data, parent.frame(2))
               rval <- x
               rval@data$latitude[!keep] <- NA
               rval@data$longitude[!keep] <- NA
