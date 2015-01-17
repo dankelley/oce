@@ -1,18 +1,18 @@
 setMethod(f="initialize",
-          signature="tdr",
+          signature="logger",
           definition=function(.Object,time,pressure,temperature,filename="") {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
-              .Object@processingLog$value <- "create 'tdr' object"
+              .Object@processingLog$value <- "create 'logger' object"
               return(.Object)
           })
 
 
 setMethod(f="summary",
-          signature="tdr",
+          signature="logger",
           definition=function(object, ...) {
               cat("TDR Summary\n----------\n", ...)
               cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
@@ -40,9 +40,9 @@ setMethod(f="summary",
 
 
 setMethod(f="subset",
-          signature="tdr",
+          signature="logger",
           definition=function(x, subset, ...) {
-              rval <- new("tdr") # start afresh in case x@data is a data.frame
+              rval <- new("logger") # start afresh in case x@data is a data.frame
               rval@metadata <- x@metadata
               rval@processingLog <- x@processingLog
               ## message("NOTE: debugging output coming up!")
@@ -70,19 +70,19 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.tdr(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLog(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
-as.tdr <- function(time, temperature, pressure,
-                   filename="",
-                   instrumentType="rbr",
-                   serialNumber="", model="",
-                   pressureAtmospheric=NA,
-                   processingLog, debug=getOption("oceDebug"))
+as.logger <- function(time, temperature, pressure,
+                      filename="",
+                      instrumentType="rbr",
+                      serialNumber="", model="",
+                      pressureAtmospheric=NA,
+                      processingLog, debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
-    oceDebug(debug, "as.tdr(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
+    oceDebug(debug, "as.logger(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
     if (missing(time) || missing(temperature) || missing(pressure))
         stop("must give (at least) time, temperature, and pressure")
     if (!inherits(time, "POSIXt"))
@@ -92,8 +92,7 @@ as.tdr <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
-    ##res <- new("tdr")# , time, pressure, temperature, filename)
-    res <- new("tdr")
+    res <- new("logger")
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -103,14 +102,12 @@ as.tdr <- function(time, temperature, pressure,
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
     res@data <- list(time=time, pressure=pressure, temperature=temperature)
-    ####  str(res)
-    ####  message("ABOVE IS res within as.tdr()")
-    oceDebug(debug, "} # as.tdr()\n", sep="", unindent=1)
+    oceDebug(debug, "} # as.logger()\n", sep="", unindent=1)
     res
 }
 
 setMethod(f="plot",
-          signature=signature("tdr"),
+          signature=signature("logger"),
           definition=function(x, which=1:4, title="", adorn=NULL,
                               tlim, plim, Tlim,
                               xlab, ylab,
@@ -124,21 +121,32 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "plot.tdr(..., which=", which, ", ...) {\n", unindent=1)
-              if (!inherits(x, "tdr"))
-                  stop("method is only for objects of class '", "tdr", "'")
-              if (0 == sum(!is.na(x@data$temperature)))
-                  stop("no good temperatures to plot")
-              if (0 == sum(!is.na(x@data$pressure)))
-                  stop("no good pressures to plot")
+              oceDebug(debug, "plot.logger(..., which=", which, ", ...) {\n", unindent=1)
+              if (!inherits(x, "logger"))
+                  stop("method is only for objects of class '", "logger", "'")
+              ## if (0 == sum(!is.na(x@data$temperature)))
+              ##     stop("no good temperatures to plot")
+              ## if (0 == sum(!is.na(x@data$pressure)))
+              ##     stop("no good pressures to plot")
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
+                  stop("in plot.logger() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
               if ("ylim" %in% dotsNames)
-                  stop("in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
+                  stop("in plot.logger() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
+
+              ## Trim out plots that we cannot do.
+              names <- names(x@data)
+              haveTemperature <- ("temperature" %in% names) && any(is.finite(x@data$temperature))
+              havePressure <- ("pressure" %in% names) && any(is.finite(x@data$pressure))
+              which <- ocePmatch(which,
+                                 list(temperature=1, text=2, pressure=3, profile=4))
+              if (!haveTemperature) 
+                  which <- which[which != 1 & which != 4]
+              if (!havePressure) 
+                  which <- which[which != 3 & which != 4]
               nw <- length(which)
               opar <- par(no.readonly = TRUE)
               if (nw > 1)
@@ -154,8 +162,6 @@ setMethod(f="plot",
                   layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
               }
               par(mgp=mgp, mar=mar)
-              which <- ocePmatch(which,
-                                 list(temperature=1, text=2, pressure=3, profile=4))
               if (missing(main))
                   main <- rep('', length.out=nw)
               else
@@ -164,33 +170,32 @@ setMethod(f="plot",
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "]=", which[w], "\n")
                   if (which[w] == 1) {           # temperature timeseries
-                      oce.plot.ts(x@data$time, x@data$temperature,
-                                  xlab=if (!missing(xlab))xlab else "",
-                                  ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
-                                  type='l',
-                                  xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                  ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                                  tformat=tformat,
-                                  drawTimeRange=drawTimeRange,
-                                  mgp=mgp, mar=mar, main=main[w], ...)
-                      ##box()
-                      ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange, abbreviateTimeRange=abbreviateTimeRange)
-                      drawTimeRange <- FALSE    # only the first time panel gets the time indication
-                      axis(2)
+                      if (haveTemperature) {
+                          oce.plot.ts(x@data$time, x@data$temperature,
+                                      xlab=if (!missing(xlab))xlab else "",
+                                      ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
+                                      type='l',
+                                      xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                      ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                      tformat=tformat,
+                                      drawTimeRange=drawTimeRange,
+                                      mgp=mgp, mar=mar, main=main[w], ...)
+                          drawTimeRange <- FALSE    # only the first time panel gets the time indication
+                          axis(2)
+                      }
                   } else if (which[w] == 3) {    # pressure timeseries
-                      oce.plot.ts(x@data$time, x@data$pressure,
-                                  xlab=if (!missing(xlab))xlab else "",
-                                  ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
-                                  type='l',
-                                  xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                  ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
-                                  tformat=tformat,
-                                  drawTimeRange=drawTimeRange,
-                                  mgp=mgp, mar=mar, main=main[w], ...)
-                      ##box()
-                      ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange)
-                      drawTimeRange <- FALSE
-                      ##axis(2)
+                      if (havePressure) {
+                          oce.plot.ts(x@data$time, x@data$pressure,
+                                      xlab=if (!missing(xlab))xlab else "",
+                                      ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
+                                      type='l',
+                                      xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                      ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
+                                      tformat=tformat,
+                                      drawTimeRange=drawTimeRange,
+                                      mgp=mgp, mar=mar, main=main[w], ...)
+                          drawTimeRange <- FALSE
+                      }
                   } else if (which[w] == 2) {
                       text.item <- function(item, cex=4/5*par("cex")) {
                           if (!is.null(item) && !is.na(item)) {
@@ -225,32 +230,34 @@ setMethod(f="plot",
                       }
                       par(mar=mar)
                   } else if (which[w] == 4) {     # "profile"
-                      args <- list(x=x@data$temperature, y=x@data$pressure,
-                                   xlab="",
-                                   ylab=resizableLabel("p"),
-                                   xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                                   ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
-                                   ...)
-                      a <- names(list(...))
-                      if (!("type" %in% a))
-                          args <- c(args, type="p")
-                      if (!("cex"  %in% a))
-                          args <- c(args, cex=1/2)
-                      if (!("axes" %in% a))
-                          args <- c(args, axes=FALSE)
-                      np <- length(x@data$pressure)
-                      if (nw == 1)
-                          par(mar=c(1, 3.5, 4, 1))
-                      if (useSmoothScatter) {
-                          args <- args[names(args) != "type"]
-                          do.call(smoothScatter, args)
-                      } else {
-                          do.call(plot, args)
+                      if (haveTemperature && havePressure) {
+                          args <- list(x=x@data$temperature, y=x@data$pressure,
+                                       xlab="",
+                                       ylab=resizableLabel("p"),
+                                       xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                       ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
+                                       ...)
+                          a <- names(list(...))
+                          if (!("type" %in% a))
+                              args <- c(args, type="p")
+                          if (!("cex"  %in% a))
+                              args <- c(args, cex=1/2)
+                          if (!("axes" %in% a))
+                              args <- c(args, axes=FALSE)
+                          np <- length(x@data$pressure)
+                          if (nw == 1)
+                              par(mar=c(1, 3.5, 4, 1))
+                          if (useSmoothScatter) {
+                              args <- args[names(args) != "type"]
+                              do.call(smoothScatter, args)
+                          } else {
+                              do.call(plot, args)
+                          }
+                          box()
+                          axis(2)
+                          axis(3)
+                          mtext(resizableLabel("T", "x"), side = 3, line = 2)
                       }
-                      box()
-                      axis(2)
-                      axis(3)
-                      mtext(resizableLabel("T", "x"), side = 3, line = 2)
                   }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
@@ -258,18 +265,20 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "} # plot.tdr()\n", unindent=1)
+              oceDebug(debug, "} # plot.logger()\n", unindent=1)
               invisible()
           })
 
-read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
-                     processingLog, debug=getOption("oceDebug"))
+read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+                        processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "read.tdr(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
+        if (length(grep(".rsk$", file, ignore.case=TRUE)) && missing(type)) 
+            type <- "rsk"
         file <- file(file, "r")
         on.exit(close(file))
     }
@@ -306,6 +315,9 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
     if (!missing(type) && type == 'rsk') {
+        con <- dbConnect(RSQLite::SQLite(), dbname=filename)
+        deployments <- dbReadTable(con, "deployments") # UNUSED
+        
         ## code based on test files and personal communication with RBR:
         ##   2011-10-11 RBR-DEK send test file and schema documentation [preliminary]
         ##   2011-10-12 DEK-RBR query on ordering of time in 'datasets'
@@ -315,19 +327,18 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             warning("cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead")
         if (!missing(to))
             warning("cannot (yet) handle argument 'to' for a ruskin file; using the whole file")
-        cmd <- paste("sqlite3", filename,  "'select * from datasets'")
-        d <- read.table(pipe(cmd), sep="|")
-        ndatasets <- dim(d)[1]
+
+        datasets <- dbReadTable(con, "datasets")
+        ndatasets <- dim(datasets)[1]
         if (1 != ndatasets) {
-            stop("read.tdr(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file has ", ndatasets)
+            stop("read.logger(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file has ", ndatasets)
         }
         ## ruskin database-schema serial number: hard to decode, so I'll just give up on it
-        cmd <- paste("sqlite3", filename,  "'select * from appSettings'")
-        ##browser()
-        ruskinVersion <- read.table(pipe(cmd), sep="|")[1,2]
-        ##print(ruskinVersion)
-        ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$","",gsub("^.*- *", "",ruskinVersion)),"\\.")[[1]])
-        ##print(ruskinVersion)
+        appSettings <- dbReadTable(con, "appSettings")
+        rv <- appSettings[1,2]
+        ##OLD rv <- read.table(pipe(cmd), sep="|")[1,2]
+        ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$","",gsub("^.*- *", "", rv)),"\\.")[[1]])
+        ##message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
         if (length(ruskinVersion == 3)) {
             if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
                 warning("making some (untested) assumptions, since the ruskin Version (",
@@ -335,37 +346,45 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                         ") is outside the range for which tests have been done")
         }
         ## atmospheric pressure
-        cmd <- paste("sqlite3", filename,  "'select * from deriveDepth'")
-        pressureAtmospheric <- read.table(pipe(cmd), sep="|")[1,3]
-        ## get the actual data
-        cmd <- paste("sqlite3", filename,  "'select * from data order by tstamp'")
-        d <- read.table(pipe(cmd), sep="|")
-        ## assign column names (probably not needed now, but this may be helpful later)
-        cmd <- paste("sqlite3", filename,  "'PRAGMA table_info(data)'")
-        names <- read.table(pipe(cmd), sep='|')[,2]
-        names(d) <- names
-        time <- numberAsPOSIXct(floor(d[,1]/1000), type='unix')
-        cmd <- paste("sqlite3", filename,  "'select * from channels order by channelID'")
-        channelNames <- read.table(pipe(cmd), sep='|')[,2]
-        temperatureColumn <- grep(pattern='temp', x=channelNames, ignore.case=TRUE)
-        pressureColumn <- grep(pattern='pres', x=channelNames, ignore.case=TRUE)
-        if (length(temperatureColumn)) {
-            temperatureColumn <- temperatureColumn + 1
-        } else {
-            temperatureColumn <- 2
-            warning("cannot locate temperature column in 'channels' table of database; assuming column 2")
-        }
-        if (length(pressureColumn)) {
-            pressureColumn <- pressureColumn + 1
-        } else {
-            pressureColumn <- 3
-            warning("cannot locate pressure column in 'channels' table of database; assuming column 3")
-        }
-        temperature <- d[,temperatureColumn]
-        pressure <- d[,pressureColumn]
-        cmd <- paste("sqlite3", filename,  "'select * from instruments'")
-        serialNumber <- read.table(pipe(cmd), sep='|')[1,1]
-        model <- read.table(pipe(cmd), sep='|')[1,2]
+        pressureAtmospheric <- 10.1325
+        try({ # need to wrap in try() because this can fail
+            deriveDepth <- dbReadTable(con, "deriveDepth")
+            pressureAtmospheric <- deriveDepth$atmosphericPressure 
+        }, silent=TRUE)
+        ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
+
+        ## From notes in comments above, it seems necessary to order by
+        ## timestamp (tstamp). Ordering does not seem to be an option for
+        ## dbReadTable(), so we use dbFetch(); and that means we first have to
+        ## get the length 'n' of the columns.
+        res <- dbSendQuery(con, "select count(tstamp) from data order by tstamp;")
+        n <-  as.numeric(dbFetch(res))
+        dbClearResult(res)
+
+        ## Now get time stamp. Note the trick of making it floating-point
+        ## to avoid the problem that R lacks 64 bit integers.
+        res <- dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+        t1000 <- dbFetch(res, n=n)[[1]]
+        dbClearResult(res)
+        time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+
+        ## Get the data; we drop the first column beause we have time
+        ## already.
+        res <- dbSendQuery(con, "select * from data;")
+        data <- dbFetch(res, n=n)[,-1, drop=FALSE]
+        dbClearResult(res)
+        ## Get column names from the 'channels' table.
+        names <- tolower(dbReadTable(con, "channels")$longName)
+        names(data) <- names
+
+        ## Extract into vectors for Oce storage.
+        temperature <- if ("temperature" %in% names) data$temperature else rep(NA, n)
+        pressure <- if ("pressure" %in% names) data$pressure else rep(NA, n)
+        ## message("dim of data: ", paste(dim(data), collapse="x"))
+        instruments <- dbReadTable(con, "instruments")
+        serialNumber <- instruments$serialID
+        model <- instruments$model
+        dbDisconnect(con)
     } else {
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
@@ -470,20 +489,20 @@ read.tdr <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         pressure <- as.numeric(d[pcol, look])
         model <- ""
     }
-    rval <- as.tdr(time, temperature, pressure, instrumentType="rbr",
-                  serialNumber=serialNumber, model=model,
-                  pressureAtmospheric=pressureAtmospheric,
-                  filename=filename,
-                  processingLog=paste(deparse(match.call()), sep="", collapse=""),
-                  debug=debug-1)
-    oceDebug(debug, "} # read.tdr()\n", sep="", unindent=1)
+    rval <- as.logger(time, temperature, pressure, instrumentType="rbr",
+                      serialNumber=serialNumber, model=model,
+                      pressureAtmospheric=pressureAtmospheric,
+                      filename=filename,
+                      processingLog=paste(deparse(match.call()), sep="", collapse=""),
+                      debug=debug-1)
+    oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
     rval
 }
 
 
-tdrPatm <- function(x, dp=0.5)
+loggerPatm <- function(x, dp=0.5)
 {
-    p <- if (inherits(x, "tdr")) x@data$pressure else x
+    p <- if (inherits(x, "logger")) x@data$pressure else x
     sap <- 10.1325                      # standard atm pressure
     if (length(p) < 1)
         return(rep(sap, 4))
@@ -495,16 +514,16 @@ tdrPatm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
+loggerTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "tdrTrim() {\n", unindent=1)
-    if (!inherits(x, "tdr"))
-        stop("method is only for objects of class '", "tdr", "'")
+    oceDebug(debug, "loggerTrim() {\n", unindent=1)
+    if (!inherits(x, "logger"))
+        stop("method is only for objects of class '", "logger", "'")
     res <- x
     n <- length(x@data$temperature)
     oceDebug(debug, "dataset has", n, "points\n")
     if (n < 2) {
-        warning("too few data to trim tdr record")
+        warning("too few data to trim logger record")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         oceDebug(debug, "using method", which.method, "\n")
@@ -537,6 +556,6 @@ tdrTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebu
         res@data[[name]] <- subset(x@data[[name]], keep)
     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # tdrTrim()\n", unindent=1)
+    oceDebug(debug, "} # loggerTrim()\n", unindent=1)
     res
 }

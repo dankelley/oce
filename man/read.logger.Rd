@@ -1,18 +1,20 @@
-\name{read.tdr}
+\name{read.logger}
 
-\alias{read.tdr}
+\alias{read.logger}
 
 \title{Read temperature-depth recorder file}
 
-\description{Read an tdr temperature-depth recorder file, producing an object of type \code{tdr}.}
+\description{Read a logger file, e.g. a temperature-depth recorder, producing
+    an object of type \code{logger}.}
 
-\usage{
-read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
-         processingLog, debug=getOption("oceDebug"))}
+\usage{read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+            processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
-  \item{file}{a connection or a character string giving the name of the
-    file to load.}
+  \item{file}{a connection or a character string giving the name of the file to
+      load. (If it is an RSK logger, \code{file} must be a character string,
+      because connections are not used in that case, which is instead handled
+      with database calls.}
   \item{from}{indication of the first datum to read.  This can a
     positive integer to indicate sequence number, the POSIX time of the
     first datum, or a character string that can be converted to a POSIX
@@ -26,7 +28,9 @@ read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
-  \item{type}{optional file type, presently only permitted to be \code{rsk}.}
+  \item{type}{optional file type, presently only permitted to be \code{rsk}. If
+      this argument is not provided, an attempt will be made to infer the type
+      from the file name and contents.}
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
   \item{processingLog}{if provided, the action item to be stored in the
@@ -43,7 +47,7 @@ read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     columns, in which depth in the water column is given after the pressure;
     (4) a new (and possibly still changeable) SQLite-based database format.}
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"logger"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -63,16 +67,14 @@ read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\section{Implementation notes}{The end time for measurement
-    (\code{metadata$measurement.start}) is inferred from the \code{Logger time}
-    field in the header, not from \code{Logging end}.  The datasets available
-    to the author suggest this is the proper scheme when the recorders are
-    turned off manually before the end time that was programmed in.  In other
-    cases, the assumption may or may not be correct.  Still, the end time for
-    subsampling (\code{metdata$subsample.end}) should be correct.}
+\section{Implementation notes}{This function only works for
+    temperature-depth-recorder devices as of 2015-01-17, but support for other
+    devices may be provided in Feburary or March of 2015, when the author hopes
+    to acquire more test files.}
 
-\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
-    PT objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{logger-class}} explains the
+    structure of \code{logger} objects, and also outlines the other functions
+    dealing with them.}
 
 \author{Dan Kelley}
 

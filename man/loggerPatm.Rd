@@ -1,10 +1,10 @@
-\name{tdrPatm}
-\alias{tdrPatm}
-\title{Estimate atmospheric pressure in tdr record}
-\description{Estimate atmospheric pressure in tdr record}
-\usage{tdrPatm(x, dp=0.5)}
+\name{loggerPatm}
+\alias{loggerPatm}
+\title{Estimate atmospheric pressure in logger record}
+\description{Estimate atmospheric pressure in logger record}
+\usage{loggerPatm(x, dp=0.5)}
 \arguments{
-  \item{x}{A \code{tdr} object, or a list of pressures (in decibars).}
+  \item{x}{A \code{logger} object, or a list of pressures (in decibars).}
   \item{dp}{Half-width of pressure window to be examined (in decibars).}
 }
 
@@ -19,13 +19,14 @@
 \value{A list of four estimates: \code{sap}, the median, the mean, and
   the weighted mean.}
 
-\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
-    PT objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{logger-class}} explains the
+    structure of \code{logger} objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)
-data(tdr)
-print(tdrPatm(tdr))
+data(logger)
+print(loggerPatm(logger))
 }
 
 \author{Dan Kelley}

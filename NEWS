@@ -1,4 +1,5 @@
 0.9-15
+- "tdr" class renamed "logger"
 - curl() added
 - handle new NOAA ascii topography dataset type
 - mapGrid() added

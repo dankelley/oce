@@ -1,7 +1,6 @@
 useDynLib(oce)
 import(methods)
-#importFrom("proj4", project)
-#importFrom("akima", interp)
+import(RSQLite)
 importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
@@ -24,7 +23,7 @@ export("+.section",
        as.lisst,
        as.lobo,
        as.met,
-       as.tdr,
+       as.logger,
        as.sealevel,
        as.section,
        as.topo,
@@ -217,7 +216,7 @@ export("+.section",
        read.observatory,
        read.observatory.ctd,
        read.oce,
-       read.tdr,
+       read.logger,
        read.sealevel,
        read.section,
        rescale,
@@ -280,8 +279,8 @@ export("+.section",
        toEnuAdp,
        toEnuAdv,
        topoInterpolate,
-       tdrPatm,
-       tdrTrim,
+       loggerPatm,
+       loggerTrim,
        tritium,
        unabbreviateYear,
        undriftTime,
@@ -302,5 +301,5 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
-exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, met, sealevel, section, tdr, tidem, topo, windrose)
+exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, logger, met, sealevel, section, tidem, topo, windrose)
 

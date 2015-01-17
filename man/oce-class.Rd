@@ -68,10 +68,10 @@ Information on the classes that derive from this base class are found at the fol
 \code{\link{echosounder-class}},
 \code{\link{lisst-class}},
 \code{\link{lobo-class}},
+\code{\link{logger-class}},
 \code{\link{met-class}},
 \code{\link{sealevel-class}},
 \code{\link{section-class}},
-\code{\link{tdr-class}},
 \code{\link{tidem-class}},
 \code{\link{topo-class}}, and
 \code{\link{windrose-class}}.
