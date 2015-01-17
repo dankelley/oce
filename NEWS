@@ -1,4 +1,5 @@
 0.9-15
+- "tdr" class renamed "logger"
 - swCSTp() added
 - swConductivity() now swThermalConductivity(); using Caldwell (1974).
 - many sw*() functions handle eos="gsw"

@@ -31,9 +31,9 @@
     \code{show(met)}) displays information about the object.
 }
 
-\seealso{A file containing CTD profile data may be read with
-    \code{\link{read.met}}, and a CTD object can also be created with
-    \code{\link{as.met}}.  A sample object is available with
+\seealso{A file containing meteorological data may be read with
+    \code{\link{read.met}}, and a meteorological object can also be created
+    with \code{\link{as.met}}.  A sample object is available with
     \code{data(\link{met})}.  Statistical summaries are provided by
     \code{\link{summary.met}}, while \code{\link{show}} displays an overview.
     Plotting may be handled with \code{\link{plot.met}}.  }
