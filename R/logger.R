@@ -267,6 +267,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
+        if (grep(".rsk$", file, ignore.case=TRUE) && missing(type)) 
+            type <- "rsk"
         file <- file(file, "r")
         on.exit(close(file))
     }

@@ -26,7 +26,9 @@ read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
-  \item{type}{optional file type, presently only permitted to be \code{rsk}.}
+  \item{type}{optional file type, presently only permitted to be \code{rsk}. If
+      this argument is not provided, an attempt will be made to infer the type
+      from the file name and contents.}
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
   \item{processingLog}{if provided, the action item to be stored in the
