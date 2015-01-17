@@ -21,8 +21,9 @@
 
 \value{\code{NULL}}
 
-\seealso{The documentation for \code{\link{logger-class}} explains the structure of
-    PT objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{logger-class}} explains the
+    structure of \code{logger} objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)

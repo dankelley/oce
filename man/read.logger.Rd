@@ -4,15 +4,17 @@
 
 \title{Read temperature-depth recorder file}
 
-\description{Read an logger temperature-depth recorder file, producing an object of type \code{logger}.}
+\description{Read a logger file, e.g. a temperature-depth recorder, producing
+    an object of type \code{logger}.}
 
-\usage{
-read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
-         processingLog, debug=getOption("oceDebug"))}
+\usage{read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+            processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
-  \item{file}{a connection or a character string giving the name of the
-    file to load.}
+  \item{file}{a connection or a character string giving the name of the file to
+      load. (If it is an RSK logger, \code{file} must be a character string,
+      because connections are not used in that case, which is instead handled
+      with database calls.}
   \item{from}{indication of the first datum to read.  This can a
     positive integer to indicate sequence number, the POSIX time of the
     first datum, or a character string that can be converted to a POSIX
@@ -65,16 +67,14 @@ read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\section{Implementation notes}{The end time for measurement
-    (\code{metadata$measurement.start}) is inferred from the \code{Logger time}
-    field in the header, not from \code{Logging end}.  The datasets available
-    to the author suggest this is the proper scheme when the recorders are
-    turned off manually before the end time that was programmed in.  In other
-    cases, the assumption may or may not be correct.  Still, the end time for
-    subsampling (\code{metdata$subsample.end}) should be correct.}
+\section{Implementation notes}{This function only works for
+    temperature-depth-recorder devices as of 2015-01-17, but support for other
+    devices may be provided in Feburary or March of 2015, when the author hopes
+    to acquire more test files.}
 
-\seealso{The documentation for \code{\link{logger-class}} explains the structure of
-    PT objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{logger-class}} explains the
+    structure of \code{logger} objects, and also outlines the other functions
+    dealing with them.}
 
 \author{Dan Kelley}
 

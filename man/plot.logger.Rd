@@ -89,8 +89,9 @@ t <- as.POSIXct('2008-07-04 20:00:00',tz='UTC')
 plot(logger, which=c(1,3), adorn=expression({abline(v=t)}))
 }
 
-\seealso{The documentation for \code{\link{logger-class}} explains the structure of
-    PT objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{logger-class}} explains the
+    structure of \code{logger} objects, and also outlines the other functions
+    dealing with them.}
 
 \author{Dan Kelley}
 
