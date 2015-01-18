@@ -315,8 +315,12 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
     if (!missing(type) && type == 'rsk') {
-        con <- dbConnect(RSQLite::SQLite(), dbname=filename)
-        deployments <- dbReadTable(con, "deployments") # UNUSED
+        if (!require("RSQLite"))
+            stop('must install.packages("RSQLite") to read landsat data')
+        con <- RSQLite::dbConnect(RSQLite::SQLite(), dbname=filename)
+
+        ## Some, but not all, RSK files have "deployments", but we don't use it anyway.
+        ##  deployments <- RSQLite::dbReadTable(con, "deployments")
         
         ## code based on test files and personal communication with RBR:
         ##   2011-10-11 RBR-DEK send test file and schema documentation [preliminary]
@@ -328,27 +332,32 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         if (!missing(to))
             warning("cannot (yet) handle argument 'to' for a ruskin file; using the whole file")
 
-        datasets <- dbReadTable(con, "datasets")
-        ndatasets <- dim(datasets)[1]
-        if (1 != ndatasets) {
-            stop("read.logger(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file has ", ndatasets)
-        }
+        ## Some, but not all, RSK files have "datasets"
+        #try({
+            datasets <- RSQLite::dbReadTable(con, "datasets")
+            ndatasets <- dim(datasets)[1]
+            if (1 != ndatasets)
+                stop("read.logger() cannot handle multi-dataset files; this file has ", ndatasets)
+        #}, silent=TRUE)
+
         ## ruskin database-schema serial number: hard to decode, so I'll just give up on it
-        appSettings <- dbReadTable(con, "appSettings")
+        appSettings <- RSQLite::dbReadTable(con, "appSettings")
         rv <- appSettings[1,2]
         ##OLD rv <- read.table(pipe(cmd), sep="|")[1,2]
         ruskinVersion <- as.numeric(strsplit(gsub(".[a-z].*$","",gsub("^.*- *", "", rv)),"\\.")[[1]])
         ##message("NEW: ruskinVersion: ", paste(ruskinVersion, collapse="."))
-        if (length(ruskinVersion == 3)) {
-            if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
-                warning("making some (untested) assumptions, since the ruskin Version (",
-                        paste(ruskinVersion, collapse="."),
-                        ") is outside the range for which tests have been done")
-        }
+        ## Next block got triggered with too many files, and it seems more sensible
+        ## to just go ahead and try to get something from the file as best we can.
+        ## if (length(ruskinVersion == 3)) {
+        ##     if (!(ruskinVersion[1] == 1 && ruskinVersion[2] == 5 && ruskinVersion[3] == 24))
+        ##         warning("making some (untested) assumptions, since the ruskin Version (",
+        ##                 paste(ruskinVersion, collapse="."),
+        ##                 ") is outside the range for which tests have been done")
+        ## }
         ## atmospheric pressure
-        pressureAtmospheric <- 10.1325
+        pressureAtmospheric <- 10.1325 # FIXME: what is best default?
         try({ # need to wrap in try() because this can fail
-            deriveDepth <- dbReadTable(con, "deriveDepth")
+            deriveDepth <- RSQLite::dbReadTable(con, "deriveDepth")
             pressureAtmospheric <- deriveDepth$atmosphericPressure 
         }, silent=TRUE)
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
@@ -357,34 +366,34 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         ## timestamp (tstamp). Ordering does not seem to be an option for
         ## dbReadTable(), so we use dbFetch(); and that means we first have to
         ## get the length 'n' of the columns.
-        res <- dbSendQuery(con, "select count(tstamp) from data order by tstamp;")
-        n <-  as.numeric(dbFetch(res))
-        dbClearResult(res)
+        res <- RSQLite::dbSendQuery(con, "select count(tstamp) from data;")
+        n <-  as.numeric(RSQLite::dbFetch(res))
+        RSQLite::dbClearResult(res)
 
         ## Now get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
-        res <- dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
-        t1000 <- dbFetch(res, n=n)[[1]]
-        dbClearResult(res)
+        res <- RSQLite::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+        t1000 <- RSQLite::dbFetch(res, n=n)[[1]]
+        RSQLite::dbClearResult(res)
         time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
 
         ## Get the data; we drop the first column beause we have time
         ## already.
-        res <- dbSendQuery(con, "select * from data;")
-        data <- dbFetch(res, n=n)[,-1, drop=FALSE]
-        dbClearResult(res)
+        res <- RSQLite::dbSendQuery(con, "select * from data order by tstamp;")
+        data <- RSQLite::dbFetch(res, n=n)[,-1, drop=FALSE]
+        RSQLite::dbClearResult(res)
         ## Get column names from the 'channels' table.
-        names <- tolower(dbReadTable(con, "channels")$longName)
+        names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
         names(data) <- names
 
         ## Extract into vectors for Oce storage.
         temperature <- if ("temperature" %in% names) data$temperature else rep(NA, n)
         pressure <- if ("pressure" %in% names) data$pressure else rep(NA, n)
         ## message("dim of data: ", paste(dim(data), collapse="x"))
-        instruments <- dbReadTable(con, "instruments")
+        instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
         model <- instruments$model
-        dbDisconnect(con)
+        RSQLite::dbDisconnect(con)
     } else {
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
