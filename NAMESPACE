@@ -1,6 +1,5 @@
 useDynLib(oce)
 import(methods)
-import(RSQLite)
 importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
