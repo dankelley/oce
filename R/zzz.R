@@ -10,7 +10,8 @@
                   oceTimeFormat="%Y-%m-%d %H:%M:%S",
                   oceUnitBracket="[",
                   ##oceFlag1 = 1,
-                  oceEOS="gsw", # (equivalently "teos"); may also be "unesco"
+                  #oceEOS="gsw",
+                  oceEOS="unesco",
                   webtide="/usr/local/WebTide",
                   oceDebug=0)
     toset <- !(names(opOce) %in% names(op))
