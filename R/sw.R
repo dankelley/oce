@@ -63,16 +63,14 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
         salinitySpline <- smooth.spline(p[ok], salinity[ok], df=df)
         ## Smooth temperature and salinity to get smoothed alpha and beta
         CTD <- as.ctd(predict(salinitySpline, p)$y, predict(temperatureSpline, p)$y, p)
-        alpha <- swAlpha(CTD)
-        beta <- swBeta(CTD)
+        alpha <- swAlpha(CTD, eos="unesco")
+        beta <- swBeta(CTD, eos="unesco")
         ## Using alpha ... is that right, since we have theta?
         thetaSpline <- smooth.spline(p[ok], theta[ok], df=df)
         dthetadp <- predict(thetaSpline, p, deriv=1)$y
         dsalinitydp <- predict(salinitySpline, p, deriv=1)$y
-        if (sense == "diffusive")
-            Rrho <- (beta * dsalinitydp)/ (alpha * dthetadp)
-        else
-            Rrho <- (alpha * dthetadp) / (beta * dsalinitydp)
+        Rrho <- if (sense == "diffusive") (beta * dsalinitydp)/ (alpha * dthetadp) else
+            (alpha * dthetadp) / (beta * dsalinitydp)
     } else if (eos == "gsw") {
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
@@ -757,17 +755,14 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     nS <- length(l$salinity)
     nt <- length(l$temperature)
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (is.null(l$pressure))
-        pressure <- 0
-    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     referencePressure <- rep(referencePressure[1], length.out=nS)
     if (eos == "unesco") {
         rval <- .C("theta_UNESCO_1983",
                    as.integer(nS), as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
-                   as.double(l$referencePressure),
-                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+                   as.double(referencePressure),
+                   value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
         SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         rval <- gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)

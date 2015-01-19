@@ -594,6 +594,11 @@ double atg_UNESCO_1983(double S, double T, double p)
 	 + (-4.6206e-13 + (1.8676e-14 - 2.1687e-16*T)*T)*p*p);
 }
 
+/*
+   library(oce)
+   data(ctd)
+   source('~/src/oce/R/sw.R');swTheta(ctd)
+   */
 void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref, double *value)
 {
   /* Source: UNESCO 1983
@@ -606,7 +611,7 @@ void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref
     double p = *pp++;
     double pref = *ppref++;
     if (ISNA(S) || ISNA(T) || ISNA(p) || ISNA(pref)) {
-      *value++ = NA_REAL;
+      value[i] = NA_REAL;
     } else {
       double H, XK, Q;
       H = pref - p;
@@ -622,8 +627,9 @@ void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref
       Q = 3.414213562 * XK - 4.121320344 * Q;
       p = p + 0.5 * H;
       XK = H * atg_UNESCO_1983(S,T,p);
-      *value++ = T + (XK - 2.0 * Q) / 6.0;
+      value[i] = T + (XK - 2.0 * Q) / 6.0;
     }
+    //Rprintf("src/sw.c i=%d S=%.4f T=%.4f p=%.4f pref=%.4f -> theta=%.5f\n", i, S, T, p, pref, value[i]);
   }
 }
 
