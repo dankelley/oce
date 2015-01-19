@@ -312,8 +312,10 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     pressureAtmospheric <- NA
     if (!missing(type) && type == 'rsk') {
         if (!require("RSQLite"))
-            stop('must install.packages("RSQLite") to read landsat data')
-        con <- RSQLite::dbConnect(RSQLite::SQLite(), dbname=filename)
+            stop('must install.packages("RSQLite") to read logger data')
+        if (!require("DBI"))
+            stop('must install.packages("DBI") to read logger data')
+        con <- DBI::dbConnect(RSQLite::SQLite(), dbname=filename)
 
         ## Some, but not all, RSK files have "deployments", but we don't use it anyway.
         ##  deployments <- RSQLite::dbReadTable(con, "deployments")
@@ -362,22 +364,22 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         ## timestamp (tstamp). Ordering does not seem to be an option for
         ## dbReadTable(), so we use dbFetch(); and that means we first have to
         ## get the length 'n' of the columns.
-        res <- RSQLite::dbSendQuery(con, "select count(tstamp) from data;")
-        n <-  as.numeric(RSQLite::dbFetch(res))
-        RSQLite::dbClearResult(res)
+        res <- DBI::dbSendQuery(con, "select count(tstamp) from data;")
+        n <-  as.numeric(DBI::dbFetch(res))
+        DBI::dbClearResult(res)
 
         ## Now get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
-        res <- RSQLite::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
-        t1000 <- RSQLite::dbFetch(res, n=n)[[1]]
+        res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+        t1000 <- DBI::dbFetch(res, n=n)[[1]]
         RSQLite::dbClearResult(res)
         time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
 
         ## Get the data; we drop the first column beause we have time
         ## already.
-        res <- RSQLite::dbSendQuery(con, "select * from data order by tstamp;")
-        data <- RSQLite::dbFetch(res, n=n)[,-1, drop=FALSE]
-        RSQLite::dbClearResult(res)
+        res <- DBI::dbSendQuery(con, "select * from data order by tstamp;")
+        data <- DBI::dbFetch(res, n=n)[,-1, drop=FALSE]
+        DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
         names(data) <- names
