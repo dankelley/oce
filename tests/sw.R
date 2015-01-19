@@ -222,10 +222,10 @@ stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, toler
 stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6))
 SP <- swSCTp(1.2, 20, 2000, eos="gsw")
 stopifnot(all.equal.numeric(1.2, gsw_C_from_SP(SP, 20, 2000) / gsw_C_from_SP(35, 15, 0)))
-stopifnot(all.equal.numeric(1.2, swCSTp(SP, 20, 2000)))
+stopifnot(all.equal.numeric(1.2, swCSTp(SP, 20, 2000, eos="gsw")))
 SP <- swSCTp(0.65, 5, 1500, eos="gsw")
 stopifnot(all.equal.numeric(0.65, gsw_C_from_SP(SP, 5, 1500) / gsw_C_from_SP(35, 15, 0)))
-stopifnot(all.equal.numeric(0.65, swCSTp(SP, 5, 1500)))
+stopifnot(all.equal.numeric(0.65, swCSTp(SP, 5, 1500, eos="gsw")))
 
 # 14. depth and pressure
 # The UNESCO test is basically for consistency with old versions, I think, 
