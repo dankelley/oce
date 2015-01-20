@@ -457,8 +457,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (profilesToRead < 1)
                 stop("no profilesToRead")
             velocityScale <- 1e-3
+
+            ## Next line sets up empty vectors for VMDAS
+            navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL                      
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
-                message("i: ", i)
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
@@ -526,37 +528,26 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         }
                     }
                     if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) { # ISSUE567 but i is not 1 ...
-                      isVmdas <- TRUE
-                      message("vmdas instrument detected; i=", i)
-                      if (i == 1) {
-                        navTime <- NULL
-                        slongitude <- NULL
-                        slatitude <- NULL
-                        elatitude <- NULL
-                        elongitude <- NULL                      
-                      }
-                      o <- o + 85
-                      tmpTime <- ISOdatetime(as.integer(buf[o+4]) + 256*as.integer(buf[o+5]), #year
-                                             as.integer(buf[o+3]), #month
-                                             as.integer(buf[o+2]), #day
-                                             0, 0, 0,
-                                             tz=tz)
-                      sNavTime <- tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000
-                      cfac <- 180/2^31 # from rdradcp.m line 825
-                      slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=4, size=4, endian='little')*cfac)
-                      slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=4, size=4, endian='little')*cfac)
-                      eNavTime <- tmpTime + readBin(buf[o+22:25], 'integer', n=4, size=4, endian='little')/10000
-                      elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
-                      elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
-                      tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
-                                             as.integer(buf[o+57]), #month
-                                             as.integer(buf[o+56]), #day
-                                             0, 0, 0,
-                                             tz=tz)
-                      navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=4, size=4, endian='little')/100)
-                      navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
-                    } else {
-                      isVmdas <- FALSE
+                        o <- o + 85
+                        tmpTime <- ISOdatetime(as.integer(buf[o+4]) + 256*as.integer(buf[o+5]), #year
+                                               as.integer(buf[o+3]), #month
+                                               as.integer(buf[o+2]), #day
+                                               0, 0, 0,
+                                               tz=tz)
+                        sNavTime <- tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000
+                        cfac <- 180/2^31 # from rdradcp.m line 825
+                        slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=4, size=4, endian='little')*cfac)
+                        slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=4, size=4, endian='little')*cfac)
+                        eNavTime <- tmpTime + readBin(buf[o+22:25], 'integer', n=4, size=4, endian='little')/10000
+                        elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
+                        elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
+                        tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
+                                               as.integer(buf[o+57]), #month
+                                               as.integer(buf[o+56]), #day
+                                               0, 0, 0,
+                                               tz=tz)
+                        navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=4, size=4, endian='little')/100)
+                        navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
                     }
                     if (monitor) {
                         cat(".", ...)
@@ -702,6 +693,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oceTz")
+            isVmdas <- length(slatitude) > 0
             if (haveBottomTrack && !isVmdas) {
                 br[br == 0.0] <- NA    # clean up (not sure if needed)
                 data <- list(v=v, q=q, a=a, g=g,
