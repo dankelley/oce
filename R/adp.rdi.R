@@ -458,6 +458,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 stop("no profilesToRead")
             velocityScale <- 1e-3
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
+                message("i: ", i)
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
@@ -524,8 +525,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             bg[i,] <- as.integer(buf[o+40:43])
                         }
                     }
-                    if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) {
+                    if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) { # ISSUE567 but i is not 1 ...
                       isVmdas <- TRUE
+                      message("vmdas instrument detected; i=", i)
                       if (i == 1) {
                         navTime <- NULL
                         slongitude <- NULL
