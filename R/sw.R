@@ -756,6 +756,9 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     nt <- length(l$temperature)
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     np <- length(l$pressure)
+    if (np == 1)
+        l$pressure <- rep(l$pressure, length.out=nS)
+    np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     referencePressure <- rep(referencePressure[1], length.out=nS)
     if (eos == "unesco") {
