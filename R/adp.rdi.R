@@ -460,6 +460,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
             ## Next line sets up empty vectors for VMDAS
             isVMDAS <- FALSE # see below where we check bytes in first profile
+            badVMDAS <- NULL           # erroneous VMDAS profiles
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
@@ -533,6 +534,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL                      
+                        } else {
+                            if (!isVMDAS)
+                                badVMDAS <- c(badVMDAS, i)
                         }
                         if (isVMDAS) {
                             o <- o + 85
@@ -699,93 +703,108 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                     nrow=4, byrow=TRUE)
            if (monitor)
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
-            class(time) <- c("POSIXt", "POSIXct")
-            attr(time, "tzone") <- getOption("oceTz")
-            if (haveBottomTrack && !isVMDAS) {
-                br[br == 0.0] <- NA    # clean up (not sure if needed)
-                data <- list(v=v, q=q, a=a, g=g,
-                             br=br, bv=bv, bc=bc, ba=ba, bg=bg,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                             time=time,
-                             pressure=pressure,
-                             temperature=temperature,
-                             salinity=salinity,
-                             depth=depth,
-                             soundSpeed=soundSpeed,
-                             heading=heading,
-                             pitch=pitch,
-                             roll=roll,
-                             headingStd=headingStd,
-                             pitchStd=pitchStd,
-                             rollStd=rollStd,
-                             pressureStd=pressureStd,
-                             xmitCurrent=xmitCurrent,
-                             xmitVoltage=xmitVoltage,
-                             ambientTemp=ambientTemp,
-                             pressurePlus=pressurePlus,
-                             pressureMinus=pressureMinus,
-                             attitudeTemp=attitudeTemp,
-                             attitude=attitude,
-                             contaminationSensor=contaminationSensor)
-            } else if (haveBottomTrack && isVMDAS) {
-                br[br == 0.0] <- NA    # clean up (not sure if needed)
-                data <- list(v=v, q=q, a=a, g=g,
-                             br=br, bv=bv,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                             time=time,
-                             pressure=pressure,
-                             temperature=temperature,
-                             salinity=salinity,
-                             depth=depth,
-                             soundSpeed=soundSpeed,
-                             heading=heading,
-                             pitch=pitch,
-                             roll=roll,
-                             headingStd=headingStd,
-                             pitchStd=pitchStd,
-                             rollStd=rollStd,
-                             pressureStd=pressureStd,
-                             xmitCurrent=xmitCurrent,
-                             xmitVoltage=xmitVoltage,
-                             ambientTemp=ambientTemp,
-                             pressurePlus=pressurePlus,
-                             pressureMinus=pressureMinus,
-                             attitudeTemp=attitudeTemp,
-                             attitude=attitude,
-                             contaminationSensor=contaminationSensor,
-                             navTime=navTime,
-                             slongitude=slongitude,
-                             slatitude=slatitude,
-                             elongitude=elongitude,
-                             elatitude=elatitude)
-            } else {
-                data <- list(v=v, q=q, a=a, g=g,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                             time=time,
-                             pressure=pressure,
-                             temperature=temperature,
-                             salinity=salinity,
-                             depth=depth,
-                             soundSpeed=soundSpeed,
-                             heading=heading,
-                             pitch=pitch,
-                             roll=roll,
-                             headingStd=headingStd,
-                             pitchStd=pitchStd,
-                             rollStd=rollStd,
-                             pressureStd=pressureStd,
-                             xmitCurrent=xmitCurrent,
-                             xmitVoltage=xmitVoltage,
-                             ambientTemp=ambientTemp,
-                             pressurePlus=pressurePlus,
-                             pressureMinus=pressureMinus,
-                             attitudeTemp=attitudeTemp,
-                             attitude=attitude,
-                             contaminationSensor=contaminationSensor)
-            }
-            if (testing) {
-                data$upward=upward
-            }
+
+           ## Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
+           ## It is not clear why this happens, but in any case, provide a warning.
+           nbadVMDAS <- length(badVMDAS)
+           if (nbadVMDAS > 0) {
+               if (1==nbadVMDAS) {
+                   warning("erroneous VMDAS flag in profile ", badVMDAS, "\n")
+               } else if (nbadVMDAS < 4) {
+                   warning("erroneous VMDAS flag in profiles: ", paste(badVMDAS, collapse=" "), "\n")
+               } else {
+                   warning("erroneous VMDAS flag in ", nbadVMDAS, " profiles, including: ", badVMDAS[1], " ",
+                           badVMDAS[2], " ... ", badVMDAS[nbadVMDAS-1], " ",
+                           badVMDAS[nbadVMDAS], "\n")
+               }
+           }
+           class(time) <- c("POSIXt", "POSIXct")
+           attr(time, "tzone") <- getOption("oceTz")
+           if (haveBottomTrack && !isVMDAS) {
+               br[br == 0.0] <- NA    # clean up (not sure if needed)
+               data <- list(v=v, q=q, a=a, g=g,
+                            br=br, bv=bv, bc=bc, ba=ba, bg=bg,
+                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                            time=time,
+                            pressure=pressure,
+                            temperature=temperature,
+                            salinity=salinity,
+                            depth=depth,
+                            soundSpeed=soundSpeed,
+                            heading=heading,
+                            pitch=pitch,
+                            roll=roll,
+                            headingStd=headingStd,
+                            pitchStd=pitchStd,
+                            rollStd=rollStd,
+                            pressureStd=pressureStd,
+                            xmitCurrent=xmitCurrent,
+                            xmitVoltage=xmitVoltage,
+                            ambientTemp=ambientTemp,
+                            pressurePlus=pressurePlus,
+                            pressureMinus=pressureMinus,
+                            attitudeTemp=attitudeTemp,
+                            attitude=attitude,
+                            contaminationSensor=contaminationSensor)
+           } else if (haveBottomTrack && isVMDAS) {
+               br[br == 0.0] <- NA    # clean up (not sure if needed)
+               data <- list(v=v, q=q, a=a, g=g,
+                            br=br, bv=bv,
+                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                            time=time,
+                            pressure=pressure,
+                            temperature=temperature,
+                            salinity=salinity,
+                            depth=depth,
+                            soundSpeed=soundSpeed,
+                            heading=heading,
+                            pitch=pitch,
+                            roll=roll,
+                            headingStd=headingStd,
+                            pitchStd=pitchStd,
+                            rollStd=rollStd,
+                            pressureStd=pressureStd,
+                            xmitCurrent=xmitCurrent,
+                            xmitVoltage=xmitVoltage,
+                            ambientTemp=ambientTemp,
+                            pressurePlus=pressurePlus,
+                            pressureMinus=pressureMinus,
+                            attitudeTemp=attitudeTemp,
+                            attitude=attitude,
+                            contaminationSensor=contaminationSensor,
+                            navTime=navTime,
+                            slongitude=slongitude,
+                            slatitude=slatitude,
+                            elongitude=elongitude,
+                            elatitude=elatitude)
+           } else {
+               data <- list(v=v, q=q, a=a, g=g,
+                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                            time=time,
+                            pressure=pressure,
+                            temperature=temperature,
+                            salinity=salinity,
+                            depth=depth,
+                            soundSpeed=soundSpeed,
+                            heading=heading,
+                            pitch=pitch,
+                            roll=roll,
+                            headingStd=headingStd,
+                            pitchStd=pitchStd,
+                            rollStd=rollStd,
+                            pressureStd=pressureStd,
+                            xmitCurrent=xmitCurrent,
+                            xmitVoltage=xmitVoltage,
+                            ambientTemp=ambientTemp,
+                            pressurePlus=pressurePlus,
+                            pressureMinus=pressureMinus,
+                            attitudeTemp=attitudeTemp,
+                            attitude=attitude,
+                            contaminationSensor=contaminationSensor)
+           }
+           if (testing) {
+               data$upward=upward
+           }
         } else {
             warning("There are no profiles in this file.")
             metadata <- header
