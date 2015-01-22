@@ -387,6 +387,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
         names(data) <- names
+        data <- as.list(data)
 
         ## Extract into vectors for Oce storage.
         temperature <- if ("temperature" %in% names) data$temperature else rep(NA, n)
@@ -396,6 +397,25 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         serialNumber <- instruments$serialID
         model <- instruments$model
         RSQLite::dbDisconnect(con)
+
+        ## FIXME: decide whether to do ctd class here
+        if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
+            conductivity.standard <- 42.914 ## mS/cm conversion factor
+            ## warning("assuming conductivity is in mS/cm")
+            salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature,data$pressure)
+            ctd <- as.ctd(salinity, data$temperature, data$pressure) # FIXME what about other fields?
+            ctd@metadata$serialNumber <- serialNumber
+            ctd@metadata$type <- "RBR"
+            ctd@metadata$model <- model
+            ctd@metadata$filename <- filename
+            ## The device may have other channels; add them.
+            for (name in names) {
+                if (!(name %in% c("conductivity", "temperature", "pressure"))) {
+                    ctd@data[[name]] <- data[[name]]
+                }
+            }
+            return(ctd)
+        }
     } else {
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
