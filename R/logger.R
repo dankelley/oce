@@ -404,16 +404,17 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             ## warning("assuming conductivity is in mS/cm")
             salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature,data$pressure)
             ctd <- as.ctd(salinity, data$temperature, data$pressure) # FIXME what about other fields?
+            ## The device may have other channels; add them.  (This includes conductivity.)
+            for (name in names) {
+                if (!(name %in% c("temperature", "pressure"))) {
+                    ctd@data[[name]] <- data[[name]]
+                }
+            }
+            ## Add some metadata directly (FIXME: this is brittle to changes in names of the metadata)
             ctd@metadata$serialNumber <- serialNumber
             ctd@metadata$type <- "RBR"
             ctd@metadata$model <- model
             ctd@metadata$filename <- filename
-            ## The device may have other channels; add them.
-            for (name in names) {
-                if (!(name %in% c("conductivity", "temperature", "pressure"))) {
-                    ctd@data[[name]] <- data[[name]]
-                }
-            }
             return(ctd)
         }
     } else {
