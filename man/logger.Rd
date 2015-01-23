@@ -3,7 +3,7 @@
 
 \docType{data}
 
-\title{logger data, of temperature-data recorder variety}
+\title{A logger dataset, of the temperature-data recorder variety}
 
 \description{A sample object of Oce class \code{logger-class}.}
 

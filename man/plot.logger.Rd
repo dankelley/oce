@@ -4,9 +4,9 @@
 \alias{plot,logger,missing-method}
 \alias{plot,logger-method}
 
-\title{Plot logger (temperature-depth recorder) data}
+\title{Plot logger data}
 
-\description{Plot logger (temperature-depth recorder) data}
+\description{Plot logger data}
 
 \usage{\S4method{plot}{logger}(x,
      which=1:4, title="", adorn=NULL,

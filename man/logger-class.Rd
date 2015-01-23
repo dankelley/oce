@@ -7,10 +7,10 @@
 \alias{[[<-,logger-method}
 \alias{show,logger-method}
 
-\title{Class to store temperature-depth recorder data}
+\title{Class to store logger data}
 
-\description{Class to store temperature-depth recorder data, with standard
-    slots \code{metadata}, \code{data} and \code{processingLog}.}
+\description{Class to store logger data, with standard slots \code{metadata},
+    \code{data} and \code{processingLog}.}
 
 \section{Methods}{Data may be accessed as e.g. \code{logger[["time"]]}, where the
     string could also be \code{"pressure"} or \code{"temperature"}.  Assignment

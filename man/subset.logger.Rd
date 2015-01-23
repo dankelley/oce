@@ -6,7 +6,7 @@
 
 \title{Subset a logger object}
 
-\description{Subset a logger (temperature-depth recorder) object}
+\description{Subset a logger object}
 
 \usage{\S4method{subset}{logger}(x, subset, \dots)}
 

@@ -2,7 +2,7 @@
 
 \alias{read.logger}
 
-\title{Read temperature-depth recorder file}
+\title{Read a logger file}
 
 \description{Read a logger file, e.g. a temperature-depth recorder, producing
     an object of type \code{logger}.}
@@ -39,13 +39,13 @@
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{Read a TDR (temperature-depth recorder) file.  At the moment, four
-    styles are understood: (1) text file with columns for temperature and
-    pressure (with sampling times indicated in the header); (2) text file with
-    four columns, in which the date the time of day are given in the first two
-    columns, followed by the temperature, and pressure; (3) text file with five
-    columns, in which depth in the water column is given after the pressure;
-    (4) a new (and possibly still changeable) SQLite-based database format.}
+\details{Read a logger file produced by one of several instruments produced by
+    RBR.  At the moment, four styles are understood: (1) text file with columns
+    for temperature and pressure (with sampling times indicated in the header);
+    (2) text file with four columns, in which the date the time of day are
+    given in the first two columns, followed by the temperature, and pressure;
+    (3) text file with five columns, in which depth in the water column is
+    given after the pressure; (4) an SQLite-based database format.}
 
 \value{An object of \code{\link[base]{class}} \code{"logger"}, which is a
   list with elements detailed below.
@@ -66,11 +66,6 @@
   }
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
-
-\section{Implementation notes}{This function only works for
-    temperature-depth-recorder devices as of 2015-01-17, but support for other
-    devices may be provided in Feburary or March of 2015, when the author hopes
-    to acquire more test files.}
 
 \seealso{The documentation for \code{\link{logger-class}} explains the
     structure of \code{logger} objects, and also outlines the other functions
