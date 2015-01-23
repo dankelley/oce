@@ -10,7 +10,8 @@
 \title{Class to store logger data}
 
 \description{Class to store logger data, with standard slots \code{metadata},
-    \code{data} and \code{processingLog}.}
+    \code{data} and \code{processingLog}.  Only RBR devices
+    (\url{http://www.rbr-global.com/products}) are supported at this time.}
 
 \section{Methods}{Data may be accessed as e.g. \code{logger[["time"]]}, where the
     string could also be \code{"pressure"} or \code{"temperature"}.  Assignment
