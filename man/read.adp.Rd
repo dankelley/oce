@@ -139,7 +139,8 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
-  within a list named \code{data}, as follows:
+  within a list named \code{data}, the contents of which vary somewhat depending on the
+  instrument type, as noted.
   \describe{
     \item{\code{distance}}{A space-series that 
       stores the distance of cells from the transducer head, in the
@@ -170,6 +171,14 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
       bottom tracking).}
   \item{\code{ba}}{A \code{bc} but for bottom-track amplitude.}
   \item{\code{bg}}{A \code{bc} but for bottom-track goodness (in percent).}
+  \item{\code{slatitude}}{latitude at start of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
+  \item{\code{slongitude}}{longitude at start of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
+  \item{\code{elatitude}}{latitude at end of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
+  \item{\code{elongitude}}{longitude at end of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
   }
 
   In ADP data files, velocities are coded to signed 2-byte integers, with a
