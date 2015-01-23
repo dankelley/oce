@@ -790,7 +790,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
     } else if (item == "conservative temperature") {
-        var <- gettext("Conservative temperature", domain="R-oce")
+        var <- gettext("Conservative Temperature", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
             full <- bquote(.(var)*" ["*degree*"C]")
             abbreviated <- expression(paste(Theta, "[", degree, "C]"))

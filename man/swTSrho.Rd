@@ -6,15 +6,14 @@
 
 \description{Compute \emph{in-situ} temperature, given salinity, density, and pressure.}
 
-\usage{swTSrho(salinity, density, pressure, eos=getOption("eos", default='unesco'))}
+\usage{swTSrho(salinity, density, pressure=NULL, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{salinity}{\emph{in-situ} salinity [PSU]}
   \item{density}{\emph{in-situ} density or sigma value [kg/m\eqn{^3}{^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"} or
-      \code{"teos"}.  If the latter, then the computer must have the TEOS
-      library installed; see \code{\link{teos}}.}
+  \item{eos}{equation of state to be used, either \code{"unesco"} or
+      \code{"gsw"}.}
 }
 
 \details{Finds the temperature that yields the given density, with the
@@ -26,7 +25,9 @@
 \seealso{\code{\link{swSTrho}}}
 
 \examples{
-temperature <- swTSrho(35, 23, 0)
+swTSrho(35, 23, 0) # 26.11301
+swTSrho(35, 23, 0, eos="gsw") # 26.11301
+swTSrho(35, 23, 0, eos="unesco") # 26.11301
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

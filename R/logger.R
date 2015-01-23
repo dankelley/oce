@@ -124,10 +124,6 @@ setMethod(f="plot",
               oceDebug(debug, "plot.logger(..., which=", which, ", ...) {\n", unindent=1)
               if (!inherits(x, "logger"))
                   stop("method is only for objects of class '", "logger", "'")
-              ## if (0 == sum(!is.na(x@data$temperature)))
-              ##     stop("no good temperatures to plot")
-              ## if (0 == sum(!is.na(x@data$pressure)))
-              ##     stop("no good pressures to plot")
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim

@@ -61,7 +61,22 @@ setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, drop) {
-              if (i == "N2") {
+              if (i == "salinity" || i == "SP") {
+                  x@data$salinity
+              } else if (i == "SR") {
+                  gsw_SR_from_SP(SP=x@data$salinity)
+               } else if (i == "Sstar") {
+                  SA <- gsw_SA_from_SP(SP=ctd@data$salinity, p=ctd@data$pressure,
+                                       longitude=ctd@metadata$longitude,
+                                       latitude=ctd@metadata$latitude)
+                  gsw_Sstar_from_SA(SA=SA, p=ctd@data$pressure,
+                                    longitude=ctd@metadata$longitude,
+                                    latitude=ctd@metadata$latitude)
+              } else if (i == "temperature" || i == "t") {
+                  x@data$temperature
+              } else if (i == "pressure" || i == "p") {
+                  x@data$pressure
+              } else if (i == "N2") {
                   swN2(x)
               } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
@@ -70,10 +85,10 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   swSpice(x)
               } else if (i %in% c("absolute salinity", "SA")) {
-                  Sp <- x@data$salinity
+                  SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  n <- length(Sp)
+                  n <- length(SP)
                   lon <- x@metadata$longitude
                   if (n != length(lon))
                       lon <- rep(x@metadata$longitude, length.out=n)
@@ -87,24 +102,24 @@ setMethod(f="[[",
                   if (n != length(lat))
                       lat <- rep(x@metadata$latitude, length.out=n)
                   if (!any(is.finite(lat))) {
-                      lat <- rep(0, n)
+                      lat <- rep(30, n)
                       haveLatLon <- FALSE
                   }
-                  if (!haveLatLon)
-                      warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
-                  Sp[is.nan(Sp)] <- NA
+                  SP[is.nan(SP)] <- NA
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
-                  teos("gsw_sa_from_sp", Sp, p, lon, lat)
+                  gsw_SA_from_SP(SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
-                  Sp <- x@data$salinity
+                  SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  teos("gsw_ct_from_t", Sp, t, p)
+                  gsw_CT_from_t(SP, t, p)
               } else if (i == "z") {
+                  ## FIXME-gsw: permit gsw version here
                   swZ(x)
               } else if (i == "depth") {
+                  ## FIXME-gsw: permit gsw version here
                   swDepth(x)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
@@ -161,8 +176,8 @@ as.ctd <- function(salinity, temperature, pressure,
             latitude <- rep(0, n)
             warning("longitude and latitude set to default values, since none given")
         }
-        salinity <- teos("gsw_sp_from_sa", SA, pressure, longitude, latitude)
-        temperature <- teos("gsw_t_from_ct", SA, CT, pressure)
+        salinity <- gsw_SP_from_SA(SA, pressure, longitude, latitude)
+        temperature <- gsw_t_from_CT(SA, CT, pressure)
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
     if (length(pressure) < depths)
@@ -691,7 +706,7 @@ setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which = c(1, 2, 3, 5),
                               col=par("fg"), fill=FALSE,
-                              eos=getOption("eos", default='unesco'),
+                              eos=getOption("oceEOS", default='gsw'),
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE,
                               coastline="best",
@@ -716,7 +731,7 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              eos <- match.arg(eos, c("unesco", "teos"))
+              eos <- match.arg(eos, c("unesco", "gsw"))
               oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
                        "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
               lw <- length(which)
@@ -747,16 +762,14 @@ setMethod(f="plot",
                       if (x < 0) {
                           x <- -x
                           sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
-                      }
-                      else {
+                      } else {
                           sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
                       }
                   } else {
                       if (x < 0) {
                           x <- -x
                           sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
-                      }
-                      else {
+                      } else {
                           sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
                       }
                   }
@@ -772,10 +785,8 @@ setMethod(f="plot",
 
               if (lw > 1) {
                   oldpar <- par(no.readonly = TRUE)
-                  if (lw > 2)
-                      lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
-                  else
-                      lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
+                  lay <- if (lw > 2) layout(matrix(1:4, nrow=2, byrow=TRUE)) else
+                      layout(matrix(1:2, nrow=2, byrow=TRUE))
                   ##layout.show(lay)
                   ##stop()
               }
@@ -2244,7 +2255,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    eos=getOption("eos", default='unesco'),
+                    eos=getOption("oceEOS", default='gsw'),
                     cex=par("cex"), col = par("col"), pch=par("pch"),
                     bg, pt.bg="transparent",
                     col.rho="darkgray",
@@ -2266,7 +2277,7 @@ plotTS <- function (x,
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
              "...) {\n", sep="", unindent=1)
-    eos <- match.arg(eos, c("unesco", "teos"))
+    eos <- match.arg(eos, c("unesco", "gsw"))
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
@@ -2284,11 +2295,11 @@ plotTS <- function (x,
             }
         }
     }
-    if (eos == "teos") {
+    if (eos == "gsw") {
         salinity <- x[["SA"]]
         y <- x[["CT"]]
     } else {
-        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure)
+        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure, eos=eos)
         salinity <- x[["salinity"]]
     }
     if (!any(is.finite(salinity))) {
@@ -2315,13 +2326,13 @@ plotTS <- function (x,
     }
     axis.name.loc <- mgp[1]
     if (missing(xlab)) {
-        if (eos == "teos")
+        if (eos == "gsw")
             xlab <- resizableLabel("absolute salinity", "x")
         else
             xlab <- resizableLabel("S","x")
     }
     if (missing(ylab)) {
-        if (eos == "teos")
+        if (eos == "gsw")
             ylab <- resizableLabel("conservative temperature", "y")
         else
             ylab <- if (inSitu) resizableLabel("T", "y") else resizableLabel("theta", "y")
@@ -2381,20 +2392,19 @@ plotTS <- function (x,
 }
 
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-                           eos=getOption("eos", default='unesco'),
+                           eos=getOption("oceEOS", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
-    eos <- match.arg(eos, c("unesco","teos"))
+    eos <- match.arg(eos, c("unesco", "gsw"))
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
     SAxisMax <- usr[2]
     TAxisMin <- usr[3]
     TAxisMax <- usr[4]
-    if (eos == "teos") {
-        rhoCorners <- teos("gsw_rho",
-                           c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
-                           c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                           rep(0, 4)) - 1000
+    Scorners <- c(SAxisMin, SAxisMax, SAxisMin, SAxisMax)
+    Tcorners <- c(TAxisMin, TAxisMin, TAxisMax, TAxisMax)
+    if (eos == "gsw") {
+        rhoCorners <- gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
     } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
@@ -2416,6 +2426,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     for (rho in levels) {
         rhoLabel <- if (rho1000) 1000+rho else rho
         rhoLabel <- round(rhoLabel, digits)
+        ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
@@ -2441,7 +2452,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "depth", "sigmaTheta"),
-                         eos=getOption("eos", default='unesco'),
+                         eos=getOption("oceEOS", default="gsw"),
                          xlab=NULL, ylab=NULL,
                          col='black',
                          col.salinity = "darkgreen",
@@ -2472,7 +2483,7 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
-    eos <- match.arg(eos, c("unesco", "teos"))
+    eos <- match.arg(eos, c("unesco", "gsw"))
     plotJustProfile <- function(x, y, col="black", type="l",
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
@@ -2612,7 +2623,9 @@ plotProfile <- function (x,
     } else if (xtype == "density+time") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+time\"")
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # why recalculate?
+        sw <- if (eos == "unesco") swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) else
+            swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure,
+                         longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
             densitylim <- range(x@data$sigmaTheta, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
@@ -2621,11 +2634,15 @@ plotProfile <- function (x,
         lines(st[look], y[look])
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         ## FIXME: do next with resizable label; also for the N2
+        br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
+                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
+                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
         }
+        mtext(label, side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
         par(new = TRUE)                ## FIXME: this probably won't work if add=TRUE
@@ -2698,7 +2715,7 @@ plotProfile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "S" || xtype == "salinity") {
-        salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
+        salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x@data$salinity
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
             return(invisible())
@@ -2712,7 +2729,7 @@ plotProfile <- function (x,
             axis(3)
             box()
             if (is.null(xlab)) {
-                if (eos == "teos") {
+                if (eos == "gsw") {
                     mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
                 } else {
                     mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2727,7 +2744,7 @@ plotProfile <- function (x,
                      xlim=Slim, ylim=ylim,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
-                    if (eos == "teos") {
+                    if (eos == "gsw") {
                         mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
                     } else {
                         mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2818,7 +2835,7 @@ plotProfile <- function (x,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
-        temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
+        temperature <- if (eos == "gsw") swConservativeTemperature(x) else x@data$temperature
         if (!any(is.finite(temperature))) {
             warning("no valid temperature data")
             return(invisible())
@@ -2831,7 +2848,7 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "teos")
+            if (eos == "gsw")
                 mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             else
                 mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2841,7 +2858,7 @@ plotProfile <- function (x,
                 plot(temperature[look], y[look],
                      xlim=Tlim, ylim=ylim,
                      type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "teos")
+                if (eos == "gsw")
                     mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
                 else
                     mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2861,7 +2878,7 @@ plotProfile <- function (x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
-        theta <- swTheta(x, method=eos)
+        theta <- swTheta(x, eos=eos)
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
         }
@@ -2870,8 +2887,8 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "teos")
-                mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            if (eos == "gsw")
+                mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             else
                 mtext(resizableLabel(theta, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
@@ -2881,8 +2898,8 @@ plotProfile <- function (x,
                      xlim=Tlim, ylim=ylim,
                      type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
-                    if (eos == "teos") {
-                        mtext(resizableLabel("Conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    if (eos == "gsw") {
+                        mtext(resizableLabel("conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     } else {
                         mtext(resizableLabel("theta", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     }
@@ -2940,7 +2957,7 @@ plotProfile <- function (x,
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
+        st <- swSigmaTheta(x, eos=eos)
         if (!any(is.finite(st))) {
             warning("no valid sigma-theta data")
             return(invisible())
@@ -2953,10 +2970,13 @@ plotProfile <- function (x,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
+                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
+                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
         }
+        mtext(label, side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         axis(2)
         box()
         if (type == 'l') {
@@ -2968,7 +2988,7 @@ plotProfile <- function (x,
             lines(st, y, col = col.rho, lwd=lwd) 
         }
         par(new = TRUE)
-        N2 <- swN2(x@data$pressure, st, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
@@ -3001,7 +3021,7 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x@data$pressure, x@data$sigmaTheta, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
@@ -3052,8 +3072,8 @@ plotProfile <- function (x,
     } else if (xtype == "salinity+temperature") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"salinity+temperature\"")
-        salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
-        temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
+        salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x@data$salinity
+        temperature <- if (eos == "gsw") swConservativeTemperature(x) else x@data$temperature
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
             return(invisible())
@@ -3070,7 +3090,7 @@ plotProfile <- function (x,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         if (is.null(getOption('plotProfileNoXLab'))) {
-            if (eos == "teos")
+            if (eos == "gsw")
                 mtext(resizableLabel("conservative temperature", "x"), side = 3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
             else
                 mtext(resizableLabel("T", "x"), side=3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
@@ -3085,7 +3105,7 @@ plotProfile <- function (x,
              type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
         if (is.null(getOption('plotProfileNoXLab'))) {
-            if (eos == "teos")
+            if (eos == "gsw")
                 mtext(resizableLabel("absolute salinity", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
             else
                 mtext(resizableLabel("S", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))

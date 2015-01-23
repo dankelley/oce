@@ -2012,7 +2012,7 @@ msgstr ""
 msgid "Temperature"
 msgstr "Température"
 
-msgid "Conservative temperature"
+msgid "Conservative Temperature"
 msgstr "Température conservateur"
 
 msgid "Potential density anomaly"

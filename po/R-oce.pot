@@ -1918,7 +1918,7 @@ msgstr ""
 msgid "Temperature"
 msgstr ""
 
-msgid "Conservative temperature"
+msgid "Conservative Temperature"
 msgstr ""
 
 msgid "Potential density anomaly"

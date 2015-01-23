@@ -1,5 +1,6 @@
 useDynLib(oce)
 import(methods)
+import(gsw)
 importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
@@ -237,12 +238,12 @@ export("+.section",
        "silicate<-",
        standardDepths,
        sunAngle,
-       swAbsoluteSalinity, # TEOS-10
+       swAbsoluteSalinity,
        swAlpha,
        swAlphaOverBeta,
        swBeta,
-       swConductivity,
-       swConservativeTemperature, # TEOS-10
+       swConservativeTemperature,
+       swCSTp,
        swDepth,
        swZ,
        swDynamicHeight,
@@ -255,20 +256,20 @@ export("+.section",
        swSigma,
        swSigmaT,
        swSigmaTheta,
+       swSigma0, swSigma1, swSigma2, swSigma3, swSigma4,
        swSoundAbsorption,
        swSoundSpeed,
        swSpecificHeat,
        swSpice,
        swSTrho,
        swTFreeze,
+       swThermalConductivity,
        swTheta,
        swTSrho,
        swViscosity,
        subtractBottomVelocity,
        temperature,
        "temperature<-",
-       teos,
-       teosSetLibrary,
        threenum,
        tidem,
        tidemAstron,
