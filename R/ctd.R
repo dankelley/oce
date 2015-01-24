@@ -191,6 +191,7 @@ as.ctd <- function(salinity, temperature, pressure,
         stop("lengths of salinity and temperature must match, but they are ", nS, " and ", nT)
     if (np == 1)
         pressure <- rep(pressure, nS)
+    np <- length(pressure)
     if (nS != np)
         stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
     data <- list(salinity=salinity,
