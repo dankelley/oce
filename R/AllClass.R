@@ -45,7 +45,7 @@ setMethod(f="subset",
 
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i="ANY", j="ANY", drop) {
               if (i == "metadata") {
                   return(x@metadata)
               } else if (i == "data") {
@@ -60,7 +60,7 @@ setMethod(f="[[",
                   if (!is.na(index[1]))
                       return(x@data[[index]])
                   if (j != "nowarn")
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
                   return(NULL)
               }
           })

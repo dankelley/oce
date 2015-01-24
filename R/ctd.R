@@ -126,7 +126,7 @@ setMethod(f="[[",
                   ## rval <- as(x, "oce")[[i, j, drop]]
                   rval <- as(x, "oce")[[i]]
                   if (is.null(rval))
-                      stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
+                      stop("in ctd[[\"", i, "\"]]: there is no item named \"", i, "\"", call.=FALSE)
                   rval
               }
           })

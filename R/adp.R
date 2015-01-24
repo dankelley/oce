@@ -492,7 +492,7 @@ setMethod(f="plot",
                               xlim, ylim,
                               control,
                               useLayout=FALSE,
-                              coastline="coastlineWorld",
+                              coastline="coastlineWorld", span=300,
                               main="",
                               grid=FALSE, grid.col='darkgray', grid.lty='dotted', grid.lwd=1,
                               debug=getOption("oceDebug"),
@@ -1405,7 +1405,7 @@ setMethod(f="plot",
                           }
                       }
                   } else if (which[w] == 60) {
-                      oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                      oceDebug(debug, "draw(adp, ...) of type MAP\n")
                       ## get coastline file
                       if (is.character(coastline)) {
                           if (coastline == "none") {
@@ -1437,8 +1437,26 @@ setMethod(f="plot",
                               }
                           }
                           ## FIXME: span should be an arg
-                          plot(coastline, clatitude=x[["latitude"]], clongitude=x[["longitude"]], span=50)
-                          points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
+                          if ("slatitude" %in% names(x@data)) {
+                              lat <- x[["slatitude"]]
+                              lon <- x[["slongitude"]]
+                              asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
+                              plot(coastline, clatitude=mean(lat, na.rm=TRUE), clongitude=mean(lon, na.rm=TRUE), span=span)
+                              points(lon, lat)
+                              #plot(lon, lat, asp=asp, xlab="Latitude", ylab="Longitude")
+                              #lines(coastline[["longitude"]], coastline[["latitude"]], col='gray')
+                          } else if ("latitude" %in% names(x@metadata)) {
+                              lat <- x[["latitude"]]
+                              lon <- x[["longitude"]]
+                              if (is.finite(lat) && is.finite(lon)) {
+                                  plot(coastline, clatitude=lat, clongitude=lon, span=50)
+                                  points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
+                              } else {
+                                  warning("nothing to map\n")
+                              }
+                          } else {
+                              warning("nothing to map\n")
+                          }
                       }
                   } else {
                       stop("unknown value of which (", which[w], ")")
