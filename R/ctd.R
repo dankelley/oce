@@ -125,9 +125,10 @@ setMethod(f="[[",
                   ## I use 'as' because I could not figure out callNextMethod() etc
                   ## rval <- as(x, "oce")[[i, j, drop]]
                   rval <- as(x, "oce")[[i]]
-                  if (is.null(rval))
-                      stop("in ctd[[\"", i, "\"]]: there is no item named \"", i, "\"", call.=FALSE)
+                  ## if (missing(j) || j != "nowarn")
+                  ##     warning("adv[[\"", i, "\"]]: there is no item of that name\n", call.=FALSE)
                   rval
+
               }
           })
 

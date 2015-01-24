@@ -45,7 +45,7 @@ setMethod(f="subset",
 
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
-          definition=function(x, i="ANY", j="ANY", drop) {
+          definition=function(x, i, j, drop) {
               if (i == "metadata") {
                   return(x@metadata)
               } else if (i == "data") {
@@ -59,8 +59,8 @@ setMethod(f="[[",
                   index <- pmatch(i, names(x@data))
                   if (!is.na(index[1]))
                       return(x@data[[index]])
-                  if (j != "nowarn")
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                  ## if (missing(j) || j != "nowarn")
+                  ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
                   return(NULL)
               }
           })
@@ -83,7 +83,7 @@ setMethod(f="[[<-",
                           x@processingLog$value <- c(x@processingLog$value, value)
                       }
                   } else {
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
                   }
               }
               validObject(x)

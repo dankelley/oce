@@ -171,7 +171,10 @@ setMethod(f="[[",
                   rval
               } else {
                   ##as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  rval <- as(x, "oce")[[i]]
+                  ## if (is.null(rval))
+                  ##     stop("in adp[[\"", i, "\"]]: there is no item named \"", i, "\"", call.=FALSE)
+                  rval
               }
           })
 

@@ -120,8 +120,10 @@ setMethod(f="[[",
                   }
                   return(rval)
               } else {
-                  ##return(as(x, "oce")[[i, j, drop]])
-                  return(as(x, "oce")[[i]])
+                  rval <- as(x, "oce")[[i]]
+                  ## if (missing(j) || j != "nowarn")
+                  ##     warning("adv[[\"", i, "\"]]: there is no item of that name\n", call.=FALSE)
+                  rval
               }
           })
 
