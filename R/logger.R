@@ -108,7 +108,7 @@ as.logger <- function(time, temperature, pressure,
 
 setMethod(f="plot",
           signature=signature("logger"),
-          definition=function(x, which=1:4, title="", adorn=NULL,
+          definition=function(x, which=c(1, 3, 4), title="", adorn=NULL,
                               tlim, plim, Tlim,
                               xlab, ylab,
                               tformat,
@@ -385,9 +385,6 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         names(data) <- names
         data <- as.list(data)
 
-        ## Extract into vectors for Oce storage.
-        temperature <- if ("temperature" %in% names) data$temperature else rep(NA, n)
-        pressure <- if ("pressure" %in% names) data$pressure else rep(NA, n)
         ## message("dim of data: ", paste(dim(data), collapse="x"))
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
@@ -411,7 +408,14 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             ctd@metadata$type <- "RBR"
             ctd@metadata$model <- model
             ctd@metadata$filename <- filename
+            oceDebug(debug, "} # read.logger() -- returning a CTD object\n", sep="", unindent=1)
             return(ctd)
+        } else {
+            rval <- new("logger", time=time, filename=filename)
+            for (name in names)
+                rval@data[[name]] <- data[[name]]
+            oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
+            return(rval)
         }
     } else {
         while (TRUE) {

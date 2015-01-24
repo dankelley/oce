@@ -9,7 +9,7 @@
 \description{Plot logger data}
 
 \usage{\S4method{plot}{logger}(x,
-     which=1:4, title="", adorn=NULL,
+     which=c(1,3,4), title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
      tformat,
