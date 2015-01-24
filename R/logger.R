@@ -396,7 +396,11 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             conductivity.standard <- 42.914 ## mS/cm conversion factor
             ## warning("assuming conductivity is in mS/cm")
             salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature,data$pressure)
-            ctd <- as.ctd(salinity, data$temperature, data$pressure) # FIXME what about other fields?
+            ctd <- new("ctd", pressure=data$pressure, salinity=salinity, temperature=data$temperature, filename=filename)
+            ctd@metadata$sampleInterval <- NaN
+            ctd@metadata$latitude <- NaN
+            ctd@metadata$longitude <- NaN
+            ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
             ## The device may have other channels; add them.  (This includes conductivity.)
             for (name in names) {
                 if (!(name %in% c("temperature", "pressure"))) {

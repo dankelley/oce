@@ -180,37 +180,33 @@ as.ctd <- function(salinity, temperature, pressure,
         temperature <- gsw_t_from_CT(SA, CT, pressure)
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
-    if (length(pressure) < depths)
-        pressure <- rep(pressure[1], depths)
-    if (length(salinity) < depths)
-        salinity <- rep(salinity[1], depths)
-    if (length(temperature) < depths)
-        temperature <- rep(temperature[1], depths)
-    if (missing(quality))
-        quality <- rep(2, depths)
-    if (missing(scan))
-        scan <- 1:depths
-    else if (length(scan) < depths)
-        scan <- rep(scan[1], depths)
+    ## 2015-01-24: now insist that lengths make sense; only pressure can be mismatched
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
-    scan <- as.vector(scan)
-    n <- length(salinity)
+    pressure <- as.vector(pressure)
+    nS <- length(salinity)
+    nT <- length(temperature)
+    np <- length(pressure)
+    if (nS != nT)
+        stop("lengths of salinity and temperature must match, but they are ", nS, " and ", nT)
+    if (np == 1)
+        pressure <- rep(pressure, nS)
+    if (nS != np)
+        stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
     data <- list(salinity=salinity,
                  temperature=temperature,
                  pressure=pressure,
-                 scan=scan,
-                 oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, n),
-                 nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, n),
-                 nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, n),
-                 phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, n),
-                 silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, n),
-                 quality=quality,
-                 sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
+                 sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
+    if (!missing(scan)) data$scan <- as.vector(scan)
+    if (!missing(quality)) data$quality <- quality
+    if (!missing(oxygen)) data$oxygen <- oxygen
+    if (!missing(nitrate)) data$nitrate <- nitrate
+    if (!missing(nitrite)) data$nitrite <- nitrite
+    if (!missing(phosphate)) data$phosphate <- phosphate
+    if (!missing(silicate)) data$silicate <- silicate
     if (!missing(other)) {
         names <- names(other)
-        n <- length(names)
-        for (i in 1:n) {
+        for (i in seq_along(names)) {
             if (names[i] != "") {
                 data[[names[i]]] <- other[[names[i]]]
             } else {
@@ -1207,12 +1203,7 @@ setMethod(f="subset",
           })
  
 
-plotScan <- function(x,
-                     name = "scan",
-                     adorn=NULL,
-                     mgp=getOption("oceMgp"),
-                     type='l',
-                     ...)
+plotScan <- function(x, name="scan", adorn=NULL, mgp=getOption("oceMgp"), type='l', ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
@@ -1226,7 +1217,12 @@ plotScan <- function(x,
     }
 ##    layout(matrix(1:2, nrow=2))
     par(mfrow=c(3,1))
-    xx <- x@data[[name]];
+    if (name %in% names(x@data)) {
+        xx <- x@data[[name]];
+    } else {
+        if (name == "scan") xx <- 1:length(x@data[[1]]) else
+            stop("quantity \"", name, "\" is not present in this CTD object")
+    }
     xxlen <- length(xx)
     ##if (xxlen < 1)
     ##   stop(paste("this ctd has no data column named '", name, "'",sep=""))
@@ -1333,9 +1329,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
                    ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
     ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
-    if (!"waterDepth" %in% names(ctd@metadata)) # may be entirely missing
+    if (!"waterDepth" %in% names(rval@metadata)) # may be entirely missing
         rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
-    if (ctd@metadata$waterDepth < 1)   # may be silly
+    if (rval@metadata$waterDepth < 1)   # may be silly
         rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
     rval
 }
