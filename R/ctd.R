@@ -1279,11 +1279,19 @@ plotScan <- function(x,
 
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    ## Special case: ruskin files are handled by read.logger()
+    if (is.character(file) && length(grep(".rsk$",file))) {
+        return(read.logger(file=file, debug=debug))
+    }
+
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ofile <- file
     filename <- NULL
     if (is.null(type)) {
         if (is.character(file)) {
+            if (length(grep(".rsk$",file))) {
+                return(read.logger(file=file, debug=debug))
+            }
             filename <- fullFilename(file)
             file <- file(file, "r")
             on.exit(close(file))
@@ -3212,44 +3220,5 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
     rval
 }
- 
 
-
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ofile <- file
-    filename <- NULL
-    if (is.null(type)) {
-        if (is.character(file)) {
-            filename <- fullFilename(file)
-            file <- file(file, "r")
-            on.exit(close(file))
-        }
-        if (!inherits(file, "connection"))
-            stop("argument `file' must be a character string or connection")
-        if (!isOpen(file)) {
-            open(file, "r")
-            on.exit(close(file))
-        }
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
-        pushBack(line, file)
-        if ("CTD" == substr(line, 1, 3))              type <- "WOCE"
-        else if ("* Sea-Bird" == substr(line, 1, 10)) type <- "SBE19"
-        else stop("Cannot discover type in line '", line, "'\n")
-    } else {
-        if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
-        else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
-        else stop("type must be SBE19 or WOCE, not ", type)
-    }                                   # FIXME: should just use oceMagic() here
-    switch(type,
-           SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
-                                debug=debug, processingLog=processingLog, ...),
-           WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
-                                 debug=debug, processingLog=processingLog, ...),
-           ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
-                              debug=debug, processingLog=processingLog, ...),
-           ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
-                              debug=debug, processingLog=processingLog, ...))
-}
 
