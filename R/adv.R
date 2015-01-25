@@ -63,7 +63,7 @@ setMethod(f="summary",
           })
 
 setMethod(f="[[",
-          signature="adv",
+          signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i == "filename") {
                   return(x@metadata$filename)

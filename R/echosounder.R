@@ -55,7 +55,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="echosounder",
+          signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i %in% c("Sv", "TS")) {
                   range <- rev(x@data$depth)

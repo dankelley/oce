@@ -53,7 +53,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="tidem",
+          signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")

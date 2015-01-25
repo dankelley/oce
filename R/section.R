@@ -45,7 +45,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="section",
+          signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {

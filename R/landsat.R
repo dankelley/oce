@@ -58,8 +58,8 @@ setMethod(f="summary",
           })
 
 
-setMethod(f="[[", # FIXME: ensure working on all the many possibilities, including user-created (not broken by byte??)
-          signature="landsat",
+setMethod(f="[[",
+          signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               debug <- getOption("oceDebug")
               oceDebug(debug, "landsat [[ {\n", unindent=1)

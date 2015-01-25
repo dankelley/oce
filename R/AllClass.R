@@ -59,9 +59,10 @@ setMethod(f="[[",
                   index <- pmatch(i, names(x@data))
                   if (!is.na(index[1]))
                       return(x@data[[index]])
+                  else
+                      return(NULL)
                   ## if (missing(j) || j != "nowarn")
                   ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
-                  return(NULL)
               }
           })
 

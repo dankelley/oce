@@ -124,11 +124,7 @@ setMethod(f="[[",
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
                   ## rval <- as(x, "oce")[[i, j, drop]]
-                  rval <- as(x, "oce")[[i]]
-                  ## if (missing(j) || j != "nowarn")
-                  ##     warning("adv[[\"", i, "\"]]: there is no item of that name\n", call.=FALSE)
-                  rval
-
+                  as(x, "oce")[[i]]
               }
           })
 

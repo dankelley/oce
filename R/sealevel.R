@@ -57,11 +57,11 @@ setMethod(f="subset",
  
 
 setMethod(f="[[",
-          signature="sealevel",
+          signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) return(x@metadata[[i]])
               else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("there is no item named \"", i, "\" in this sealevel object")
+              else return(as(x, "oce")[[i]])
           })
 
 setMethod(f="[[<-",

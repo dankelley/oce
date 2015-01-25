@@ -32,7 +32,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="topo",
+          signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
@@ -41,7 +41,7 @@ setMethod(f="[[",
               else if (i == "latitude") return(x@data$latitude)
               else if (i == "z") return(x@data$z)
               else if (i == "filename") return(x@metadata$filename)
-              else stop("cannot access \"", i, "\"") # cannot get here
+              else return(as(x, "oce")[[i]])
           })
 
 
