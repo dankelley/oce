@@ -71,7 +71,7 @@ SEXP geoddist(SEXP lat1, SEXP lon1, SEXP lat2, SEXP lon2, SEXP a, SEXP f)
     if (n != GET_LENGTH(lon1))
         error("lengths of lat1 and lon1 must match, but they are %d and %d respectively.", n, GET_LENGTH(lon1));
     if (n != GET_LENGTH(lat2))
-        error("lengths of lat2 and lat2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lat2));
+        error("lengths of lat1 and lat2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lat2));
     if (n != GET_LENGTH(lon2))
         error("lengths of lon1 and lon2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lon2));
     double *lat1p = REAL(lat1);
