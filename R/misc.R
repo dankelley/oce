@@ -1702,6 +1702,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         res[["latitude"]] <- x[["latitude"]][latlook]
         res[["z"]] <- x[["z"]][lonlook, latlook]
     } else if (inherits(x, "landsat")) {
+        oceDebug(debug, "Decimating a landsat object with by=", by, "\n")
         for (i in seq_along(x@data)) {
             b <- x@data[[i]]
             if (is.list(b)) {
