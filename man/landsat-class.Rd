@@ -7,25 +7,16 @@
 \alias{[[<-,landsat-method}
 \alias{show,landsat-method}
 
-\title{Class to store landsat data}
+\title{Class to store Landsat data}
 
-\description{Class to store landsat data, with standard slots
-    \code{metadata}, \code{data} and \code{processingLog}.
+\description{Class to store Landsat data, with standard slots \code{metadata},
+    \code{data} and \code{processingLog}.  Landsat data are available at
+    several websites (see e.g. [1]). Although the various functions may work
+    for other satellites, the discussion here focusses on Landsat 8 and Landsat
+    7.}
 
-    Landsat data are available at several websites; see e.g. Reference [1].
-
-    The satellite has 11 frequency bands (see below), and the resultant data
-    are made available in 16-bit resolution.  Oce breaks these 16 bits up into
-    most-sigifnicand and least-significant bytes.  For example, the aerosol
-    band of a landsat object named \code{x} are contained within
-    \code{x@data$aerosol$msb} and \code{x@data$aerosol$lsb}, each of which is a
-    matrix of raw values.  The results may be combined as e.g.
-    \code{256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb)}, and
-    this is what is returned by executing \code{x[["aerosol"]]}.
-
-    \emph{lANDSAT 8}
-    
-    Band information is as follows (see Reference 2 for more information).
+\section{Landsat 8}{The Landsat 8 satellite has 11 frequency bands, listed
+    below (see [2]).
 \preformatted{
 .------------------------------------------------------------------------------.
 | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -51,13 +42,9 @@
     resolution is as stated above.  See Reference [3] for information about the
     evolution of Landsat 8 calibration coefficients, which as of summer 2014
     are still subject to change.
+}
 
-    See Reference [4] for a blog posting about inferring temperature from the
-    \code{tirs1} band, and Reference [5] for another posting about ocean
-    surface emissivity (not taken into account in reference [4]).
-
-
-    \emph{LANDSAT 7}
+\section{Landsat 7}{
 
     Band information is as follows (from [8]).  The names are not official, but
     are just set up to roughly Landsat-8 names, according to wavelength.  An
@@ -107,10 +94,21 @@
     \code{\link{plot.landsat}}.
   
     \emph{Accessing derived data.}  One may retrieve several derived quantities
-    that are calculated from data stored in the object: \code{"longitude"} and
-    \code{"latitude"} give pixel locations, and \code{"temperature"} yields a
-    matrix of at-satellite brightness temperature as computed from the
-    \code{tirs1} band using the method given in Reference 6.
+    that are calculated from data stored in the object:
+    \code{landsat[["longitude"]]} and \code{landsat[["latitude"]]} give pixel
+    locations.  Accessing \code{landsat[["temperature"]]} creates an estimate
+    of ground temperature as follows (see [4]).  First, the ``count value'' in
+    band 10, denoted \eqn{d}{d}, is scaled with coefficients stored in the
+    image metadata using \eqn{\lambda_L=dM_L+A_L}{lambda_L=d*M_L+A_L} where
+    \eqn{M_L}{M_L} and \eqn{A_L}{A_L} are values stored in the metadata (e.g.
+    the first in \code{landsat@metadata$header$radiance_mult_band_10}) Then the
+    result is used, again with coefficients in the metadata, to compute
+    temperature \eqn{T=K_2/ln(K_1/\lambda_L+1)}{T=K_2/ln(K_1/\lambda_L+1)} in
+    Kelvin, which is then converted to Celcius in the usual way.  Note that
+    this calculation assumes 100 percent emissivity, mainly because it is
+    unclear just what emissivities make sense over the ocean [see [4]), the
+    various types of land surface. As more information on emissivity at Landsat
+    wavelengths becomes available, it will be built into the calculation.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
@@ -123,7 +121,16 @@
 
 }
 
-\section{Data storage}{Landsat data files typically occupy approximately a
+\section{Data storage}{Oce stores the satellite data in 16-bit resolution.  Oce
+    breaks these 16 bits up into most-significant and least-significant bytes.
+    For example, the aerosol band of a Landsat object named \code{x} are
+    contained within \code{x@data$aerosol$msb} and \code{x@data$aerosol$lsb},
+    each of which is a matrix of raw values.  The results may be combined as
+    e.g.  \code{256L*as.integer(x@data[[i]]$msb) +
+        as.integer(x@data[[i]]$lsb)}, and this is what is returned by executing
+    \code{x[["aerosol"]]}.
+
+    Landsat data files typically occupy approximately a
     gigabyte of storage.  That means that corresponding Oce objects are about
     the same size, and this can pose significant problems on computers with
     less than 8GB of memory.  It is sensible to specify bands of interest when

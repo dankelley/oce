@@ -104,6 +104,11 @@
     the water or the land.  If \code{breaks} is present in \code{\dots} then
     its value is used in the call to \code{\link{hist}}; if not, 100 is used.
 
+
+    Setting \code{band="temperature"} plots an estimate of temperature,
+    calculated as explained in the documentation for
+    \code{\link{landsat-class}}.
+
     Setting \code{band="terralook"} creates a colour scale that tends to make
     the ocean blue and forests green.  This uses the USGS ``terralook'' method
     (reference 1) of combining the \code{red}, \code{green} and \code{nir}
