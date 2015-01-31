@@ -18,8 +18,9 @@
 
 \author{Dan Kelley}
 
-\seealso{The documentation for \code{ctd-class} in the Oce package explains the
-    structure of CTD objects, and also outlines the other functions dealing
-    with them.}
+\seealso{A similar dataset, but trimmed to the downcast, is provided as
+    \code{\link{ctd}}.  The documentation for \code{\link{ctd-class}} explains
+    the structure of \code{ctd} objects, and also outlines the other functions
+    dealing with them.}
 
 \keyword{datasets}

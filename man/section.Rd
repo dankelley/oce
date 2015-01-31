@@ -29,9 +29,9 @@ plot(GSg, map.xlim=c(-80,-60))
 \source{This is based on a WOCE file downloaded from
     \url{http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv}.}
 
-\seealso{The documentation for \code{section-class} in the Oce package explains
-    the structure of section objects, and also outlines the functions dealing
-    with them.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of \code{section} objects, and also outlines the functions
+    dealing with them.}
 
 \author{Dan Kelley}
 

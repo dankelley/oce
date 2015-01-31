@@ -13,11 +13,12 @@
     \code{data} and \code{processingLog}.  Only RBR devices
     (\url{http://www.rbr-global.com/products}) are supported at this time.}
 
-\section{Methods}{Data may be accessed as e.g. \code{logger[["time"]]}, where the
-    string could also be \code{"pressure"} or \code{"temperature"}.  Assignment
-    to these can be made with e.g. \code{logger[["pressure"]] <- value}, etc.
-    Indeed, any quantity in the \code{metadata} slot or the \code{data} slot
-    can be retrieved or updated in this way.}
+\section{Methods}{Data may be accessed as e.g. \code{logger[["time"]]}, where
+    the string could also be \code{"pressure"} or \code{"temperature"}.  Items
+    in \code{metadata} must be specifield by full name, but those in
+    \code{data} may be abbreviated, so long as the abbreviation is unique.
+    Assignment can be made with e.g. \code{logger[["pressure"]] <- value},
+    etc.}
 
 \seealso{A \code{logger} object may be read with \code{\link{read.logger}} or
     created with \code{\link{as.logger}}.  Plots can be made with

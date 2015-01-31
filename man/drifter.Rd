@@ -27,8 +27,8 @@ plot(drifter, which="trajectory", coastline=coastlineWorld)
 
 \source{\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}}
 
-\seealso{See \code{drifter-class} in the Oce package for notes on the contents
-    of \code{drifter} objects, and for functions to work with them.}
+\seealso{See \code{\link{drifter-class}} for notes on the contents of
+    \code{drifter} objects, and for functions to work with them.}
 
 \author{Dan Kelley}
 

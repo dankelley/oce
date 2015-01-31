@@ -12,7 +12,7 @@
             debug=getOption("oceDebug"))}
 
 \arguments{
-  \item{x}{an object of class \code{"adv"}.}
+  \item{x}{an object of class \code{adv}.}
   \item{declination}{magnetic declination to be added to the heading, to
     get ENU with N as "true" north.}
 
@@ -94,7 +94,7 @@
 }
 
 \seealso{See \code{\link{read.adv}} for notes on functions relating to
-  \code{"adv"} objects.}
+  \code{adv} objects.}
 
 \author{Dan Kelley, in collaboration with Clark Richards}
 

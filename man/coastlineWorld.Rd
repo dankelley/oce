@@ -36,8 +36,8 @@
 \seealso{The \code{ocedata} package provides two more coastlines with better
     resolution: \code{coastlineWorldMedium} and \code{coastlineWorldFine}.
     
-    The documentation for \code{coastline-class} explains the structure of
-    coastline objects and discusses functions that deal with them.
+    The documentation for \code{\link{coastline-class}} explains the structure
+    of \code{coastline} objects and discusses functions that deal with them.
 
     The \code{maps} package provides a database named \code{world} that has
     27221 points.}

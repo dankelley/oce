@@ -21,7 +21,9 @@
     as \code{m[["u"]]} and the northward component is \code{m[["v"]]}.
     \code{m[["u"]]}, and wind direction is \code{m[["direction"]]}.  The
     filename from which the data came (if any) may be found with
-    \code{m[["filename"]]}.
+    \code{m[["filename"]]}.  Items in \code{metadata} must be specifield by
+    full name, but those in \code{data} may be abbreviated, so long as the
+    abbreviation is unique.
     
     \emph{Assigning values.} Everything that may be accessed may also be
     assigned, e.g.  \code{m[["temperature"]] <- 1 + m[["temperature"]]}

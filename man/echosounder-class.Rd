@@ -54,14 +54,14 @@
 \section{Methods}{
 
     \emph{Accessing values.} Data may be accessed as e.g.
-    \code{echosounder[["time"]]}, where the string could also be e.g.  FIXME
-    (add more).  The names of the columns are displayed with \code{show().} The
-    name of the source file is found with \code{"filename"}.
-
-    Derived data are also available: \code{"distance"} calls
-    \code{\link{geodDist}} to compute locations, and calculates distance along
-    the ship track, \code{"Sv"} returns a matrix of backscatter strength in DB,
-    and \code{"TS"} returns a matrix of target strength in dB.
+    \code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
+    \code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be
+    specifield by full name, but those in \code{data} may be abbreviated, so
+    long as the abbreviation is unique. In addition to the actual data, some
+    derived fields are also available: \code{echosounder[["distance"]]} calls
+    \code{\link{geodDist}} to compute calculate distance along the ship track,
+    \code{echosounder[["Sv"]]} returns a matrix of backscatter strength in DB,
+    and \code{echosounder[["TS"]]} returns a matrix of target strength in dB.
 
     \emph{Assigning values.} Everything that may be accessed may also be
     assigned, e.g.  \code{echosounder[["time"]] <- 3600 +

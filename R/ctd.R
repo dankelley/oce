@@ -72,7 +72,7 @@ setMethod(f="[[",
                   gsw_Sstar_from_SA(SA=SA, p=ctd@data$pressure,
                                     longitude=ctd@metadata$longitude,
                                     latitude=ctd@metadata$latitude)
-              } else if (i == "temperature" || i == "t") {
+              } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
                   x@data$temperature
               } else if (i == "pressure" || i == "p") {
                   x@data$pressure

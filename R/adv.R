@@ -79,26 +79,26 @@ setMethod(f="[[",
                   return(x@data$v[,2])
               } else if (i == "u3") {
                   return(x@data$v[,3])
-              } else if (i == "heading") {
-                  if ("heading" %in% names(x@data)) return(x@data$heading)
-                  else if ("headingSlow" %in% names(x@data)) return(x@data$headingSlow)
-                  else return(NULL)
-              } else if (i == "headingSlow") {
-                  return(x@data$headingSlow)
-              } else if (i == "pitch") {
-                   if ("pitch" %in% names(x@data)) return(x@data$pitch)
-                  else if ("pitchSlow" %in% names(x@data)) return(x@data$pitchSlow)
-                  else return(NULL)
-              } else if (i == "pitchSlow") {
-                  return(x@data$pitchSlow)
-              } else if (i == "roll") {
-                  if ("roll" %in% names(x@data)) return(x@data$roll)
-                  else if ("rollSlow" %in% names(x@data)) return(x@data$rollSlow)
-                  else return(NULL)
-              } else if (i == "rollSlow") {
-                  return(x@data$rollSlow)
-              } else if (i == "temperature") {
-                  return(x@data$temperature)
+              #} else if (i == "heading") {
+              #    if ("heading" %in% names(x@data)) return(x@data$heading)
+              #    else if ("headingSlow" %in% names(x@data)) return(x@data$headingSlow)
+              #    else return(NULL)
+              #} else if (i == "headingSlow") {
+              #    return(x@data$headingSlow)
+              #} else if (i == "pitch") {
+              #     if ("pitch" %in% names(x@data)) return(x@data$pitch)
+              #    else if ("pitchSlow" %in% names(x@data)) return(x@data$pitchSlow)
+              #    else return(NULL)
+              #} else if (i == "pitchSlow") {
+              #    return(x@data$pitchSlow)
+              #} else if (i == "roll") {
+              #    if ("roll" %in% names(x@data)) return(x@data$roll)
+              #    else if ("rollSlow" %in% names(x@data)) return(x@data$rollSlow)
+              #    else return(NULL)
+              #} else if (i == "rollSlow") {
+              #    return(x@data$rollSlow)
+              #} else if (i == "temperature") {
+              #    return(x@data$temperature)
               } else if (i == "a") {
                   if (!missing(j) && j == "numeric") {
                       rval <- x@data$a

@@ -28,14 +28,13 @@
 
 \section{Methods}{
 
-    \subsection{Extracting values}{Data may be accessed as e.g.
-        for an object named \code{d}, the velocity matrix is retrieved by
-        \code{d[["v"]]}, the amplitude matrix by \code{d[["a"]]}, the
-        data-quality matrix by \code{d[["q"]]}, etc.  (The last two can be
-        retrieved in numerical form, as opposed to raw form, by e.g.
-        \code{d[["a", "numeric"]]}.)  Similarly, the vector quantities can be
-        retrieved by name, e.g. \code{d[["heading"]]} (or \code{"headingSlow"},
-        if appropriate), etc.}
+    \subsection{Extracting values}{Data may be accessed as e.g.  for an object
+        named \code{d}, the velocity matrix is retrieved by \code{d[["v"]]},
+        the amplitude matrix by \code{d[["a"]]}, the data-quality matrix by
+        \code{d[["q"]]}, etc.  (The last two can be retrieved in numerical
+        form, as opposed to raw form, by e.g.  \code{d[["a", "numeric"]]}.)
+        Items in \code{metadata} must be specifield by full name, but those in
+        \code{data} may be abbreviated, so long as the abbreviation is unique.}
 
     \subsection{Assigning values}{This follows the standard form, e.g. to
         increase all velocity data by 1 cm/s, use \code{d[["v"]] <- 0.01 +

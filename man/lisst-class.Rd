@@ -22,7 +22,9 @@
         \code{d[["c1"]]} for size-class numbrer 1.  There are 32 size classes.
         Also available are \code{d[["temperature"]]} and \code{d[["pressure"]]}
         and \code{d[["time"]]}.  See \code{\link{read.lisst}} for further
-        details.}
+        details.  Items in \code{metadata} must be specifield by full name, but
+        those in \code{data} may be abbreviated, so long as the abbreviation is
+        unique.  }
 
     \subsection{Assigning values}{This follows the standard form, e.g. to
         smooth data in size class 1 over time, do

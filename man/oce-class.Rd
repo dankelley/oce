@@ -40,16 +40,16 @@
     \describe{
 
         \item{[[}{Provides read-only access to an item in the object's
-            \code{metadata} or \code{data}.  The item is sought first in the
-            meta-data, then in the data.  For example, \code{ctd[["filename"]]}
-            yields the name of the file from which a CTD object named
-            \code{ctd} had been read.}
+            \code{metadata} or \code{data}.  The named item is sought first in
+            \code{metadata}, where an exact match to the name is required. If
+            it is not present in \code{metadata}, then a partial-name match is
+            sought in \code{data}.}
 
         \item{[[<-}{Alters the named item in the object's \code{metadata} or
             \code{data}, the former being examined before the latter.   For
-            example, to add 0.005 to the salinity of a CTD object named
-            \code{ctd}, one might write \code{ctd[["salinity"]] <- 0.005 +
-                ctd[["salinity"]]}.}
+            example, to add 0.005 to the practical salinity of a CTD object
+            named \code{ctd}, one might write \code{ctd[["salinity"]] <- 0.005
+                + ctd[["salinity"]]}.}
 
         \item{show}{Displays brief information about the object named as an
             argument.  For example, \code{show(ctd)} would provide such an

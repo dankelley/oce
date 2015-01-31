@@ -5,7 +5,7 @@
 
 \title{A logger dataset, of the temperature-data recorder variety}
 
-\description{A sample object of Oce class \code{logger-class}.}
+\description{A sample object of Oce class \code{logger}.}
 
 \usage{data(logger)}
 
@@ -13,7 +13,7 @@
 
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}
 
-\seealso{The documentation for \code{logger-class} in the Oce package explains the
+\seealso{The documentation for \code{\link{logger-class}} explains the
     structure of \code{logger} objects, and also outlines the other functions
     dealing with them.}
 
