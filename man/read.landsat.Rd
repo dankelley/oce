@@ -7,7 +7,7 @@
 \description{Read a landsat data file, producing an object of type \code{landsat}.}
 
 \usage{
-read.landsat(file, band="all", debug=getOption("oceDebug"))
+read.landsat(file, band="all", emissivity=1, debug=getOption("oceDebug"))
 }
 
 \arguments{
@@ -18,6 +18,10 @@ read.landsat(file, band="all", debug=getOption("oceDebug"))
   \item{band}{the bands to read, by default all of the bands.  See
       \sQuote{Details} for the names of the bands.}
   
+  \item{emissivity}{emissivity of the surface, used in the calculation of
+      surface temperature, as explained in the discussion of accessor functions
+      for \code{\link{landsat-class}}.}
+
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
       amount of debugging information, or to 2 to get more.}
 }

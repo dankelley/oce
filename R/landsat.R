@@ -91,6 +91,7 @@ setMethod(f="[[",
                   if (!is.list(x@data$tirs1)) stop("the \"tirs1\" band is not stored in two-byte format")
                   ## First, determine whether decimation is needed.
                   decimate <- 1        # decimation step
+                  epsilon <- if ("epsilon" %in% names(x@metadata)) x@metadata$epsilon else 1
                   dim <- dim(x@data$tirs1$lsb)
                   maxdim <- max(dim)
                   ilook <- seq.int(1L, dim[1], by=1L)
@@ -119,8 +120,10 @@ setMethod(f="[[",
                       oceDebug(debug, "AL=", AL, "# @metadata$header$radiance_add_band_10\n")
                       oceDebug(debug, "K1=", K1, "# @metadata$header$k1_constant_band_10\n")
                       oceDebug(debug, "K2=", K2, "# @metadata$header$k2_constant_band_10\n")
-                      msb <- x@data$tirs1$msb[ilook,jlook]
-                      lsb <- x@data$tirs1$lsb[ilook,jlook]
+                      if (is.matrix(epsilon))
+                          epsilon <- epsilon[ilook, jlook]
+                      msb <- x@data$tirs1$msb[ilook, jlook]
+                      lsb <- x@data$tirs1$lsb[ilook, jlook]
                       dim <- dim(msb)
                       d <- 256L*as.integer(msb) + as.integer(lsb)
                       na <- d == 0
@@ -129,7 +132,7 @@ setMethod(f="[[",
                       ## avoid warnings on the 0 Llambda values (from band gaps)
                       options <- options('warn')
                       options(warn=-1) 
-                      d <- K2 / log(K1 / Llambda + 1)
+                      d <- K2 / log(epsilon * K1 / Llambda + 1)
                       options(warn=options$warn) 
                       d <- d - 273.15
                       d[na] <- NA
@@ -148,7 +151,9 @@ setMethod(f="[[",
                       oceDebug(debug, "K1=", K1, "# Landsat7_Handbook.pdf Table 11.5\n")
                       oceDebug(debug, "K2=", K2, "# Landsat7_Handbook.pdf Table 11.5\n")
                       ## d <- 256L*as.integer(x@data$tirs1$msb) + as.integer(x@data$tirs1$lsb)
-                      d <- x@data$tirs1$lsb[ilook,jlook]
+                      if (is.matrix(epsilon))
+                          epsilon <- epsilon[ilook, jlook]
+                      d <- x@data$tirs1$lsb[ilook, jlook]
                       dim <- dim(d)
                       d <- as.integer(d)
                       na <- d == 0
@@ -157,7 +162,7 @@ setMethod(f="[[",
                       ## avoid warnings on the 0 Llambda values (from band gaps)
                       options <- options('warn')
                       options(warn=-1) 
-                      d <- K2 / log(K1 / Llambda + 1)
+                      d <- K2 / log(epsilon * K1 / Llambda + 1)
                       options(warn=options$warn) 
                       d <- d - 273.15
                       d[na] <- NA
@@ -501,7 +506,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
          ##dimThermal=dimThermal)
 }
 
-read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
+read.landsat <- function(file, band="all", emissivity=1, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
@@ -538,6 +543,7 @@ read.landsat <- function(file, band="all", debug=getOption("oceDebug"))
     rval@metadata <- header
     rval@metadata[["spacecraft"]] <- header$spacecraft
     rval@metadata[["id"]] <- header$id
+    rval@metadata[["emissivity"]] <- emissivity
     rval@metadata[["filename"]] <- file
     rval@metadata[["headerfilename"]] <- headerfilename
     ## Bandnames differ by satellite.

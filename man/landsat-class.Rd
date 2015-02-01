@@ -98,17 +98,32 @@
     \code{landsat[["longitude"]]} and \code{landsat[["latitude"]]} give pixel
     locations.  Accessing \code{landsat[["temperature"]]} creates an estimate
     of ground temperature as follows (see [4]).  First, the ``count value'' in
-    band 10, denoted \eqn{d}{d}, is scaled with coefficients stored in the
-    image metadata using \eqn{\lambda_L=dM_L+A_L}{lambda_L=d*M_L+A_L} where
-    \eqn{M_L}{M_L} and \eqn{A_L}{A_L} are values stored in the metadata (e.g.
-    the first in \code{landsat@metadata$header$radiance_mult_band_10}) Then the
-    result is used, again with coefficients in the metadata, to compute
-    temperature \eqn{T=K_2/ln(K_1/\lambda_L+1)}{T=K_2/ln(K_1/\lambda_L+1)} in
-    Kelvin, which is then converted to Celcius in the usual way.  Note that
-    this calculation assumes 100 percent emissivity, mainly because it is
-    unclear just what emissivities make sense over the ocean [see [4]), the
-    various types of land surface. As more information on emissivity at Landsat
-    wavelengths becomes available, it will be built into the calculation.
+    band 10, denoted \eqn{b_{10}}{b_10} say, is scaled with coefficients stored
+    in the image metadata using
+    \eqn{\lambda_L=b_{10}M_L+A_L}{lambda_L=b_10*M_L+A_L} where \eqn{M_L}{M_L}
+    and \eqn{A_L}{A_L} are values stored in the metadata (e.g.  the first in
+    \code{landsat@metadata$header$radiance_mult_band_10}) Then the result is
+    used, again with coefficients in the metadata, to compute Celcius
+    temperature \eqn{T=K_2/ln(\epsilon
+        K_1/\lambda_L+1)-273.15}{T=K_2/ln(epsilon*K_1/\lambda_L+1)-273.15}.
+    The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
+    \code{\link{read.landsat}}, although it can be changed easily later, by
+    assigning a new value to \code{landsat@metadata$epsilon}. Although the
+    default emissivity value of 1 may be a useful first approximation for the
+    ocean (e.g. [5] suggests values between 0.98 and 0.99 in the 8 to 14
+    micrometer range, i.e. in band 10 of Landsat 8, while [11] suggests value
+    0.984 +- 0.004 generally), readers should note that emissivity varies with
+    surface characteristics, so analyses on land often start by classifying
+    individual image pixels based on several bands at once, after which a
+    lookup table provides emissivity at each pixel. A range of values have been
+    suggested for such lookup tables. For example, Table 4 of [9] lists 0.9668
+    for soil and 0.9863 for vegetation, while Table 5 of [10] lists 0.971 and
+    0.987 for the same quantities. This is just as sampling of a contradictory
+    literature. Rather than promote any particular value, the choice here is
+    simply to permit the user to alter it, by setting
+    \code{landsat@metadata$emissivity} to a new value, either a single number
+    or a matrix with dimensions matching the band10 image. More sophisticated
+    methods, e.g. using radiative transfer models, are left up to users.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
@@ -180,7 +195,22 @@
 7. \url{http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf}
 
 8. \url{http://landsat.usgs.gov/band_designations_landsat_satellites.php}
+
+9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
+Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
+Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
+9829-9652.  \url{http://www.mdpi.com/2072-4292/6/10/9829}
+
+10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
+temperature of Dindigul district using Landsat 8 data.  \emph{International
+    Journal of Research in Engineering and Technology}, 3(5), 122-126.
+\url{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
+
+11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
+Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
+\url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 }
+
 
 \author{Dan Kelley}
 
