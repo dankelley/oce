@@ -8,7 +8,7 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
+\usage{\S4method{plot}{landsat}(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
     col=oceColorsPalette, showBandName=TRUE,
     alpha.f=1, red.f=2, green.f=2, blue.f=4,
     offset=c(0, 0, 0, 0),
@@ -19,8 +19,6 @@
 
   \item{x}{A \code{landsat} object, e.g. as read by
       \code{\link{read.landsat}}.}
-
-  \item{which}{desired plot type; 1=image, 2=histogram.}
 
   \item{band}{if given, the name of the band.  For Landsat-8 data, this may be
       one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
@@ -38,6 +36,8 @@
       brightness temperature, computed from the \code{tirs1} band, and
       \code{band="terralook"} will plot a sort of natural colour; see
       \dQuote{Details}.}
+
+  \item{which}{desired plot type; 1=image, 2=histogram.}
 
   \item{decimate}{decimation passed to \code{\link{imagep}} for image plots.
       The default yields faster plotting.  Some decimation is sensible for

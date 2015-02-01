@@ -36,13 +36,11 @@
 .------------------------------------------------------------------------------.
 }
 
-    Band 8 is panchromatic, and has the highest resolution, so this is the
-    default used in \code{\link{plot.landsat}}. Note that \code{tirs1} and
-    \code{tirs2} are subsampled to 30m in the data stream, but the true
-    resolution is as stated above.  See Reference [3] for information about the
-    evolution of Landsat 8 calibration coefficients, which as of summer 2014
-    are still subject to change.
-}
+    Band 8 is panchromatic, and has the highest resolution.  For convenience of
+    programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
+    \code{tirs2} bands to the 30m resultion of the other bands.  See Reference
+    [3] for information about the evolution of Landsat 8 calibration
+    coefficients, which as of summer 2014 are still subject to change.  }
 
 \section{Landsat 7}{
 
@@ -108,22 +106,16 @@
         K_1/\lambda_L+1)-273.15}{T=K_2/ln(epsilon*K_1/\lambda_L+1)-273.15}.
     The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
     \code{\link{read.landsat}}, although it can be changed easily later, by
-    assigning a new value to \code{landsat@metadata$epsilon}. Although the
-    default emissivity value of 1 may be a useful first approximation for the
-    ocean (e.g. [5] suggests values between 0.98 and 0.99 in the 8 to 14
-    micrometer range, i.e. in band 10 of Landsat 8, while [11] suggests value
-    0.984 +- 0.004 generally), readers should note that emissivity varies with
-    surface characteristics, so analyses on land often start by classifying
-    individual image pixels based on several bands at once, after which a
-    lookup table provides emissivity at each pixel. A range of values have been
-    suggested for such lookup tables. For example, Table 4 of [9] lists 0.9668
-    for soil and 0.9863 for vegetation, while Table 5 of [10] lists 0.971 and
-    0.987 for the same quantities. This is just as sampling of a contradictory
-    literature. Rather than promote any particular value, the choice here is
-    simply to permit the user to alter it, by setting
-    \code{landsat@metadata$emissivity} to a new value, either a single number
-    or a matrix with dimensions matching the band10 image. More sophisticated
-    methods, e.g. using radiative transfer models, are left up to users.
+    assigning a new value to \code{landsat@metadata$emissivity}. The default
+    emissivity value set by \code{\link{read.landsat}} is from [11], and is
+    within the oceanic range suggested by [5]. Adjustment is as simple as
+    altering \code{landsat@metadata$emissivity}. This value can be a single
+    number meant to apply for the whole image, or a matrix with dimensions
+    matching those of band 10.  The matrix case is probably more useful for
+    images of land, where one might wish to account for the different
+    emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
+    lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
+    lists 0.971 and 0.987 for the same quantities.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply

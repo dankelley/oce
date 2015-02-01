@@ -7,7 +7,7 @@
 \description{Read a landsat data file, producing an object of type \code{landsat}.}
 
 \usage{
-read.landsat(file, band="all", emissivity=1, debug=getOption("oceDebug"))
+read.landsat(file, band="all", emissivity=0.984, debug=getOption("oceDebug"))
 }
 
 \arguments{
@@ -18,9 +18,14 @@ read.landsat(file, band="all", emissivity=1, debug=getOption("oceDebug"))
   \item{band}{the bands to read, by default all of the bands.  See
       \sQuote{Details} for the names of the bands.}
   
-  \item{emissivity}{emissivity of the surface, used in the calculation of
-      surface temperature, as explained in the discussion of accessor functions
-      for \code{\link{landsat-class}}.}
+  \item{emissivity}{emissivity of the surface, stored as
+      \code{metadata@emissivity} in the resultant object. This is used in the
+      calculation of surface temperature, as explained in the discussion of
+      accessor functions for \code{\link{landsat-class}}. The default value is
+      from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
+      but a wider range of values can be found in the literature.  The value of
+      \code{metadata$emissivity} is easy to alter, either as a single value or
+      as a matrix, yielding flexibility of calcuation.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
       amount of debugging information, or to 2 to get more.}
@@ -76,6 +81,13 @@ read.landsat(file, band="all", emissivity=1, debug=getOption("oceDebug"))
     information, full or decimated, and to access certain derived quantities.
     A sample dataset named \code{landsat} is available in the \code{ocedata}
     package.}
+
+\references{Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of
+    the Sea Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
+    Available at
+    \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf} as of
+    February 2015.}
+
 
 \author{Dan Kelley}
 
