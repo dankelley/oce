@@ -34,7 +34,7 @@
 #include "projects.h"
 PJ_CVSID("$Id: pj_transform.c 1504 2009-01-06 02:11:57Z warmerdam $")
 #else
-#include <proj_api.h>
+#include "proj_api.h"
 #endif
 
 /* on win32 we always use win32 mutexes, even if pthreads are available */
