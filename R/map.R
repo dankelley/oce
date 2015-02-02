@@ -100,14 +100,16 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
         AT <- NULL
         LAB <- NULL
         for (lat in latitude) {
-            if (debug > 3) oceDebug(debug, "check latitude", lat, "for axis on side=2\n")
+            if (debug > 3)
+                oceDebug(debug, "check ", lat, "N for axis on side=2\n", sep="")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
             for (hemisphere in 1:2) {
-                LONLOOK <- if (1 == hemisphere) c(-180, 0) else c(0, 180)
+                LONLOOK <- if (1 == hemisphere) c(-360, 0) else c(0, 360)
                 o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]),
                               lower=LONLOOK[1], upper=LONLOOK[2])
                 if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                    if (debug > 3) oceDebug(debug, "  latitude", lat, "is unmappable\n")
+                    if (debug > 3)
+                        oceDebug(debug, "  ", lat, "N is unmappable [hemisphere ", hemisphere, "]; o$objective=", o$objective, "\n", sep="")
                     next
                 }
                 ##cat("lat:", lat, ", o$minimum:", o$minimum, "(best)\n")
@@ -121,9 +123,11 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
                         ## mtext(label, side=2, at=y)
                         AT <- c(AT, y)
                         LAB <- c(LAB, label)
-                        if (debug > 3) oceDebug(debug, "  ", label, "intersects side 2\n")
+                        if (debug > 3)
+                            oceDebug(debug, "  ", label, " intersects side 2 [hemisphere ", hemisphere, "]\n", sep="")
                     } else {
-                        if (debug > 3) oceDebug(debug, "    ", lat, "N does not intersect side 2\n")
+                        if (debug > 3)
+                            oceDebug(debug, "  ", lat, "N does not intersect side 2 [hemisphere ", hemisphere, "]\n", sep="")
                     }
                 } else {
                     oceDebug(debug, "skipping off-globe point\n")
