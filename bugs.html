@@ -11,26 +11,61 @@ are comfortable with web interfaces are highly encouraged to instead use the
 Oce <a href="http://github.com/dankelley/oce/issues">development site</a> to
 report bugs, because that makes it much easier to track the bug fix.  The
 development site also lists previous bug reports, so it can be a good place to
-look to see if your bug has already been reported.  </p>
+look to see if your bug has already been reported.  The list provided below might help users who
+are considering reporting bugs, or asking for new features.</p>
 
-<p>The best issues are granular (one issue report per problem), and are stated
-with a subject line that is short and clear.  This granularity and clarity
-yields two benefits.  First, it means that other users can easily scan issue
-titles to see if an issue has already been reported.  Second, it means that the
-developer can address issues in isolation, which generally leads to more
-reliable results.  Sometimes the developer will edit issue reports (especially
-titles) to improve clarity, or suggest that a new comment should be the basis
-for a new issue.</p>
+<enumerate>
 
-<p>The interchange of comments on issues can be carried out with the web
-interface or with an email interface.  In the latter case, reporters are
-cautioned to avoid letting their email program auto-include signature lines
-with phone numbers, etc.  This is a privacy concern.  Generally, the developer
-will notice that, and edit the comment.</p>
+<item><emph>What is an issue?</emph><p>An issue can be a bug report or a
+suggestion for an enhancement. Since the latter is quite straightforward, the
+following items apply mainly to bug reports.</p>
+  
+<item> <emph>When to report a bug.</emph> <p>Since your report can help other
+users, it makes sense to submit it as soon as you have isolated and can
+describe the problem. Don't be shy. Once you've read the rest of this list, you
+should know how to frame your report.</p>
 
-<p>In any case, it is helpful if issues contain (a) test code that demonstrates
-the problem but does very little else, (b) a statement of the expected result,
-(c) a statement of the actual result, (d) the output from the R command
-<code>sessionInfo()</code>.  Data files can be sent directly to Dan, who 
-can keep them secret if desired by the reporter.</p>
+<item><emph>How to title a bug report.</emph> <p>A good title is specific,
+informative and brief. Users should be able to scan titles to see if something
+they are experiencing has already been reported. Imagine yourself scanning the
+titles of dozens of issues.  Specific titles will be more useful to you than
+vague ones; "plotting problem" tells you almost nothing, while
+"<code>plotTS()</code> isopcynals are misplaced" is probably enough to tell you
+if you should investigate that report in more detail. Resist the urge to put
+multiple issues in one report.</p>
+
+<item> <emph>What to include within an issue report.</emph> <p>It is helpful if
+bug reports contain (a) test code that demonstrates the problem but does very
+little else, (b) a statement of the expected result, (c) a statement of the
+actual result, (d) the output from the R command <code>sessionInfo()</code>.</p>
+
+<item><emph>How can data files be connected to issues?</emph> <p>First,
+consider whether you can demonstrate your bug without using a data file. Please
+see whether one of the built-in datasets (in <code>oce</code> or
+<code>ocedata</code>) can be used; that way, other users can reproduce your
+problem, and may be able to help. If that fails, you may put your data onto
+Dropbox or some similar site. Quite often, though, the datasets are private,
+and in that case, please send a private email to Dan, who can assure that your
+data remain private.</p>
+
+<item> <emph>When to close an issue.</emph> <p>Issues should be closed when the
+matter, as described in the title, has been addressed. To return to the
+<code>plotTS()</code> example, the issue would be closed when the isopycnal
+line placement is rectified. (See the next item, regarding tangential issues.)
+By convention, the reporter should close the issue, not the developers.
+However, sometimes the developers will close an issue if they feel that a
+solution has been provided, and if the reporter has ignored requests to comment
+upon or close the issue over a significant time interval.</p>
+
+<item> <emph>When to open a new (related) issue.</emph><p>From the above, an
+astute reader will realize that a new issue should be reported whenever it
+occurs, and that can mean during the discussion of an existing issue. It is
+important to avoid issue bloat. If problem Y becomes apparent during the
+discussion of problem X, then it should be reported in a new issue. In deciding
+whether to create a new issue, just ask whether another user would come upon Y
+if they were searching through five hundred titles, including one mentioning
+X.</p>
+
+
+</enumerate>
 
