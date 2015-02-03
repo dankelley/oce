@@ -6,7 +6,12 @@
 
 \description{Plot axis labels on an existing map}
 
-\usage{mapAxis(side=1:2, longitude, latitude, debug=getOption("oceDebug"))}
+\usage{
+
+mapAxis(side=1:2, longitude, latitude,
+        tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
+        lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
+        hadj=NA, padj=NA, tcl=-0.3, debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -20,6 +25,20 @@
     \item{latitude}{vector of latitudes to indicate.  If not provided, and if a
         grid has already been drawn, then the labels will be at the
         interesections of the grid lines with the plotting box.}
+
+    \item{tick}{an argument that is transmitted to code{ink{axis}}.}
+    \item{line}{an argument that is transmitted to code{ink{axis}}.}
+    \item{pos}{an argument that is transmitted to code{ink{axis}}.}
+    \item{outer}{an argument that is transmitted to code{ink{axis}}.}
+    \item{font}{an argument that is transmitted to code{ink{axis}}.}
+    \item{lty}{an argument that is transmitted to code{ink{axis}}.}
+    \item{lwd}{an argument that is transmitted to code{ink{axis}}.}
+    \item{lwd.ticks}{an argument that is transmitted to code{ink{axis}}.}
+    \item{col}{an argument that is transmitted to code{ink{axis}}.}
+    \item{col.ticks}{an argument that is transmitted to code{ink{axis}}.}
+    \item{hadj}{an argument that is transmitted to code{ink{axis}}.}
+    \item{padj}{an argument that is transmitted to code{ink{axis}}.}
+    \item{tcl}{an argument that is transmitted to code{ink{axis}}.}
    
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 

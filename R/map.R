@@ -34,7 +34,10 @@ fixneg <- function(v)
     rval
 }
 
-mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oceDebug"))
+mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
+                    tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
+                    lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
+                    hadj=NA, padj=NA, tcl=-0.3, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapAxis(side=c(", paste(side, collapse=","), ")",
              ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
@@ -56,8 +59,6 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
         side <- 1:2
     usr <- par('usr')
     axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
-    TICK <- TRUE # ticks look bad for angled grid lines
-    TCL <- -0.3
     MGP <- c(2, 0.5, 0)            # first item ignored since not writing "longitude" etc
     if (1 %in% side) {
         oceDebug(debug, "drawing axis on side 1\n")
@@ -89,8 +90,12 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
                 oceDebug(debug, "skipping off-globe point\n")
             }
         }
-        if (!is.null(AT))
-            axis(side=1, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+        if (!is.null(AT)) {
+            axis(side=1, at=AT, labels=fixneg(LAB), mgp=MGP,
+                 tick=tick, line=line, pos=pos, outer=outer, font=font,
+                 lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
+                 hadj=hadj, padj=padj, tcl=tcl) 
+        }
         if (length(latitude)) {
             warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this\n")
         }
@@ -134,8 +139,12 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL, debug=getOption("oc
                 }
             }
         }
-        if (!is.null(AT))
-            axis(side=2, at=AT, labels=fixneg(LAB), tick=TICK, tcl=TCL, mgp=MGP)
+        if (!is.null(AT)) {
+            axis(side=2, at=AT, labels=fixneg(LAB), mgp=MGP,
+                 tick=tick, line=line, pos=pos, outer=outer, font=font,
+                 lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
+                 hadj=hadj, padj=padj, tcl=tcl) 
+        }
         if (length(longitude)) {
             warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this\n")
         }
