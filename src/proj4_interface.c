@@ -3,7 +3,7 @@
 #include <R.h>
 #include "proj_api.h"
 
-//#define DEBUG=1
+#define DEBUG 1
 
 /* NOTES.
  * 1. must provide an ellipse model.  The proj4 package defaults this to "sphere".
