@@ -9,6 +9,7 @@ PROJ_HEAD(hammer, "Hammer & Eckert-Greifendorff") "\n\tMisc Sph, \n\tW= M=";
 FORWARD(s_forward); /* spheroid */
 	double cosphi, d;
 
+        printf("start of hammer forward...\n");
 	d = sqrt(2./(1. + (cosphi = cos(lp.phi)) * cos(lp.lam *= P->w)));
 	xy.x = P->m * d * cosphi * sin(lp.lam);
 	xy.y = P->rm * d * sin(lp.phi);
@@ -22,8 +23,9 @@ FORWARD(s_forward); /* spheroid */
 //   https://github.com/jswhit/pyproj/blob/master/src/PJ_hammer.c.diff
 //   https://github.com/matplotlib/basemap/blob/master/src/PJ_hammer.c
 INVERSE(s_inverse); /* spheroid */
+        printf("start of hammer inverse...a\n");
         double z;
-        printf("start of hammer inverse...\n");
+        printf("start of hammer inverse...b\n");
 	z = sqrt(1. - 0.25*P->w*P->w*xy.x*xy.x - 0.25*xy.y*xy.y);
         printf("z=%e\n", z);
 	//if (fabs(2.*z*z-1.) < EPS) {
