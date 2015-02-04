@@ -3,7 +3,7 @@
 #include <R.h>
 #include "proj_api.h"
 
-#define DEBUG 1
+//#define DEBUG 1
 
 /* NOTES.
  * 1. must provide an ellipse model.  The proj4 package defaults this to "sphere".
@@ -72,7 +72,9 @@ void proj4_interface(char **proj_spec, int *forward, int *n, double *x, double *
         } else {
             xy.u = x[i];
             xy.v = y[i];
+#ifdef DEBUG
             Rprintf("x[%d]=%g y[%d]=%g ... about to do inverse\n", i, xy.u, i, xy.v);
+#endif
             XY = pj_inv(xy, pj);
             X[i] = XY.u * dpr;
             Y[i] = XY.v * dpr;

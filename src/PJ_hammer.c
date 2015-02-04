@@ -1,8 +1,9 @@
-//#include <stdio.h>
 #define PROJ_PARMS__ \
 	double w; \
 	double m, rm;
 #define PJ_LIB__
+#define EPS 1.0e-10
+
 # include	"projects.h"
 PROJ_HEAD(hammer, "Hammer & Eckert-Greifendorff")
     "\n\tMisc Sph, \n\tW= M=";
@@ -10,7 +11,6 @@ PROJ_HEAD(hammer, "Hammer & Eckert-Greifendorff")
 FORWARD(s_forward); /* spheroid */
 	double cosphi, d;
 
-        printf("start of hammer forward...\n");
 	d = sqrt(2./(1. + (cosphi = cos(lp.phi)) * cos(lp.lam *= P->w)));
 	xy.x = P->m * d * cosphi * sin(lp.lam);
 	xy.y = P->rm * d * sin(lp.phi);
@@ -24,22 +24,18 @@ FORWARD(s_forward); /* spheroid */
 //   https://github.com/jswhit/pyproj/blob/master/src/PJ_hammer.c.diff
 //   https://github.com/matplotlib/basemap/blob/master/src/PJ_hammer.c
 INVERSE(s_inverse); /* spheroid */
-//        printf("start of hammer inverse...a\n");
-        lp.lam=0.0;
-        lp.phi=0.0;
-        //double z;
-        //printf("start of hammer inverse...b\n");
-	//z = sqrt(1. - 0.25*P->w*P->w*xy.x*xy.x - 0.25*xy.y*xy.y);
-        //printf("z=%e\n", z);
-	////if (fabs(2.*z*z-1.) < EPS) {
-	//if (fabs(2.*z*z-1.) < 1e-8) { // DK: guess on the right EPS
-        //   lp.lam = HUGE_VAL;
-        //   lp.phi = HUGE_VAL;
-        //   pj_errno = -14;
-	//} else {
-	//   lp.lam = aatan2(P->w * xy.x * z,2. * z * z - 1)/P->w;
-	//   lp.phi = aasin(P->ctx,z * xy.y);
-        //}
+        //lp.lam=0.0;
+        //lp.phi=0.0;
+        double z;
+	z = sqrt(1. - 0.25*P->w*P->w*xy.x*xy.x - 0.25*xy.y*xy.y);
+	if (fabs(2.*z*z-1.) < EPS) {
+           lp.lam = HUGE_VAL;
+           lp.phi = HUGE_VAL;
+           pj_errno = -14;
+	} else {
+	   lp.lam = aatan2(P->w * xy.x * z,2. * z * z - 1)/P->w;
+	   lp.phi = aasin(P->ctx,z * xy.y);
+        }
 	return (lp);
 }
 FREEUP; if (P) pj_dalloc(P); }
@@ -54,5 +50,5 @@ ENTRY0(hammer)
 		P->m = 1.;
 	P->rm = 1. / P->m;
 	P->m /= P->w;
-	P->es = 0.; P->fwd = s_forward;
+	P->es = 0.; P->fwd = s_forward; P->inv = s_inverse;
 ENDENTRY(P)
