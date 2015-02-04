@@ -3,7 +3,7 @@
 #include <R.h>
 #include "proj_api.h"
 
-//#define DEBUG=1
+//#define DEBUG 1
 
 /* NOTES.
  * 1. must provide an ellipse model.  The proj4 package defaults this to "sphere".
@@ -55,6 +55,9 @@ void proj4_interface(char **proj_spec, int *forward, int *n, double *x, double *
     double dpr = 180.0 / M_PI;  // degrees per radian
 #ifdef DEBUG
     Rprintf("mapping=%s, dpr=%f, proj='%s'\n", *forward?"forward":"inverse", dpr, *proj_spec);
+    Rprintf(" *n = %d\n", *n);
+    Rprintf(" x[0] = %g\n", x[0]);
+    Rprintf(" y[0] = %g\n", y[0]);
 #endif
     for (int i = 0; i < (*n); i++) {
         if (*forward) {
@@ -64,16 +67,19 @@ void proj4_interface(char **proj_spec, int *forward, int *n, double *x, double *
             X[i] = XY.u;
             Y[i] = XY.v;
 #ifdef DEBUG
-            Rprintf("i=%d, x=%f, y=%f, X=%f, Y=%f\n", i, x[i], y[i], X[i], Y[i]);
+            Rprintf("i = %d, x = %f, y = %f, X = %f, Y = %f\n", i, x[i], y[i], X[i], Y[i]);
 #endif
         } else {
             xy.u = x[i];
             xy.v = y[i];
+#ifdef DEBUG
+            Rprintf("x[%d]=%g y[%d]=%g ... about to do inverse\n", i, xy.u, i, xy.v);
+#endif
             XY = pj_inv(xy, pj);
             X[i] = XY.u * dpr;
             Y[i] = XY.v * dpr;
 #ifdef DEBUG
-            Rprintf("i=%d, x=%f, y=%f, X=%f, Y=%f\n", i, x[i], y[i], X[i], Y[i]);
+            Rprintf("i = %d, x = %f, y = %f, X = %f, Y = %f\n", i, x[i], y[i], X[i], Y[i]);
 #endif
        }
     }
