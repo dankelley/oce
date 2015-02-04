@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 #define PROJ_PARMS__ \
 	double w; \
 	double m, rm;
@@ -24,7 +24,7 @@ FORWARD(s_forward); /* spheroid */
 //   https://github.com/jswhit/pyproj/blob/master/src/PJ_hammer.c.diff
 //   https://github.com/matplotlib/basemap/blob/master/src/PJ_hammer.c
 INVERSE(s_inverse); /* spheroid */
-        printf("start of hammer inverse...a\n");
+//        printf("start of hammer inverse...a\n");
         lp.lam=0.0;
         lp.phi=0.0;
         //double z;
