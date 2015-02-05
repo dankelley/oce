@@ -216,6 +216,32 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     options(warn=warn)
 }
 
+#' Add a grid to an existing plot, with special abilities for those created by oce
+#'
+#' @details
+#' Add a grid to an existing plot, with special abilities for those created by oce.
+#'
+#' @examples
+#' library(oce)
+#' i <- imagep(volcano)
+#' oce.grid(i)
+#'
+#' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
+#' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)
+#' @param col colour of grid lines (see \code{\link{par}})
+#' @param lty type for grid lines (see \code{\link{par}})
+#' @param lwd width for grid lines (see \code{\link{par}})
+#' @return nothing
+oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd")) 
+{
+    if (is.list(xat)) {
+        ## following over-rides the args
+        yat <- xat$yat
+        xat <- xat$xat
+    }
+    if (!missing(xat)) abline(v=xat, col=col, lty=lty, lwd=lwd)
+    if (!missing(yat)) abline(h=yat, col=col, lty=lty, lwd=lwd)
+}
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         drawTimeRange=getOption("oceDrawTimeRange"),

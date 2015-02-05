@@ -422,6 +422,9 @@ imagep <- function(x, y, z,
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
 
+    xat <- NULL
+    yat <- NULL
+
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
@@ -753,10 +756,10 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
-            oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
-                             drawTimeRange=drawTimeRange,
-                             mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
-            axis(2)#, cex.axis=cex, cex.lab=cex)
+            xat <- oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
+                                    drawTimeRange=drawTimeRange,
+                                    mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
+            yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     } else {                           # x is not a POSIXt
         oceDebug(debug, "the x axis does not represent time\n")
@@ -786,8 +789,8 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
-            axis(1)#, cex.axis=cex, cex.lab=cex)
-            axis(2)#, cex.axis=cex, cex.lab=cex)
+            xat <- axis(1)#, cex.axis=cex, cex.lab=cex)
+            yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     }
     if (!is.null(missingColor)) {
@@ -814,5 +817,5 @@ imagep <- function(x, y, z,
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
-    invisible()
+    invisible(list(xat=xat, yat=yat))
 }
