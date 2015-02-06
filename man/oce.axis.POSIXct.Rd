@@ -43,7 +43,7 @@
   timezone of \code{x}.  This will not be needed for \R 2.9 and later,
   but is included so that \code{oce} will work even with earlier versions.}
 
-\value{The locations on the axis scale at which tick marks were drawn.}
+\value{A vector of times corresponding to axis ticks is returned silently.}
 
 \seealso{This is used mainly by \code{\link{oce.plot.ts}}.}
 

@@ -1,4 +1,5 @@
 0.9-15
+- oce.grid() added
 - "tdr" class renamed "logger"
 - swCSTp() added
 - swConductivity() now swThermalConductivity(); using Caldwell (1974).

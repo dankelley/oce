@@ -80,11 +80,15 @@ the timezone, to remove any possible confusion.
 The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
 }
 
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
+
 \examples{
 library(oce)
-t.start <- as.POSIXct("2008-01-01", tz="UTC")
-t <- seq(t.start, length.out=48, by="30 min")
-y <- sin(as.numeric(t - t.start) * 2 * pi / (12 * 3600))
+t0 <- as.POSIXct("2008-01-01", tz="UTC")
+t <- seq(t0, length.out=48, by="30 min")
+y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 oce.plot.ts(t, y, type='l', xaxs='i')
 }
 

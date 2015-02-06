@@ -24,11 +24,24 @@ nothing
 Add a grid to an existing plot, with special abilities for those created by oce
 }
 \details{
-Add a grid to an existing plot, with special abilities for those created by oce.
+For plots not created by oce functions, or for missing \code{xat} and \code{yat},
+this is the same as a call to \code{\link{grid}} with missing \code{nx} and
+\code{ny}. However, if \code{xat} is the return value from certain oce functions,
+a more sophisticated grid is constructed. The problem with \code{\link{grid}} is
+that it cannot handle axes with non-uniform grids, e.g. those with time axes
+that span months of differing lengths.
+
+As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
+return value from the following functions: \code{\link{imagep}} and
+\code{\link{oce.plot.ts}}.
 }
 \examples{
 library(oce)
 i <- imagep(volcano)
 oce.grid(i)
+
+data(sealevel)
+i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
+oce.grid(i, col='red')
 }
 

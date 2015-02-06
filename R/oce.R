@@ -219,12 +219,25 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' Add a grid to an existing plot, with special abilities for those created by oce
 #'
 #' @details
-#' Add a grid to an existing plot, with special abilities for those created by oce.
+#' For plots not created by oce functions, or for missing \code{xat} and \code{yat},
+#' this is the same as a call to \code{\link{grid}} with missing \code{nx} and
+#' \code{ny}. However, if \code{xat} is the return value from certain oce functions,
+#' a more sophisticated grid is constructed. The problem with \code{\link{grid}} is
+#' that it cannot handle axes with non-uniform grids, e.g. those with time axes
+#' that span months of differing lengths.
+#'
+#' As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
+#' return value from the following functions: \code{\link{imagep}} and
+#' \code{\link{oce.plot.ts}}.
 #'
 #' @examples
 #' library(oce)
 #' i <- imagep(volcano)
-#' oce.grid(i)
+#' oce.grid(i, lwd=2)
+#' 
+#' data(sealevel)
+#' i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
+#' oce.grid(i, col='red')
 #'
 #' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
 #' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)
@@ -234,13 +247,17 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' @return nothing
 oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd")) 
 {
-    if (is.list(xat)) {
-        ## following over-rides the args
-        yat <- xat$yat
-        xat <- xat$xat
+    if (missing(xat) && missing(yat)) {
+        grid(col=col, lty=lty, lwd=lwd)
+    } else {
+        if (is.list(xat)) {
+            ## following over-rides the args
+            yat <- xat$yat
+            xat <- xat$xat
+        }
+        if (!missing(xat)) abline(v=xat, col=col, lty=lty, lwd=lwd)
+        if (!missing(yat)) abline(h=yat, col=col, lty=lty, lwd=lwd)
     }
-    if (!missing(xat)) abline(v=xat, col=col, lty=lty, lwd=lwd)
-    if (!missing(yat)) abline(h=yat, col=col, lty=lty, lwd=lwd)
 }
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
@@ -318,6 +335,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
     }
+    xat <- NULL
+    yat <- NULL
     if (axes) {
         xaxt <- list(...)["xaxt"]
         drawxaxis <- !is.null(xaxt) && xaxt != 'n'
@@ -330,6 +349,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       tformat=tformat,
                                       debug=debug-1)
+            xat <- xlabs
+            ##message("drawing x axis; set xat=c(", paste(xat, collapse=","),")")
         }
         if (grid) {
             lwd <- par("lwd")
@@ -343,7 +364,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
         if (drawyaxis)
             axis(2, cex.axis=cex.axis, cex=cex.axis)
-        axis(4, labels=FALSE)
+        yat <- axis(4, labels=FALSE)
     }
     if (grid)
         grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
@@ -354,7 +375,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     }
     ##par(cex=ocex)
     oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
-    invisible()
+    invisible(list(xat=xat, yat=yat))
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -1175,6 +1196,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
+    ## FIXME: why an axis() here and also in a dozen lines?
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
         axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
@@ -1192,7 +1214,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
-    invisible()
+    invisible(z)                       # FIXME: or z.sub?
 }
 
 numberAsHMS <- function(t, default=0)
