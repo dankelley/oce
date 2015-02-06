@@ -33,7 +33,7 @@ that span months of differing lengths.
 
 As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
 return value from the following functions: \code{\link{imagep}} and
-\code{\link{oce.plot.ts}}.
+\code{\link{oce.plot.ts}}, and \code{\link{plotTS}}.
 }
 \examples{
 library(oce)
@@ -42,6 +42,10 @@ oce.grid(i, lwd=2)
 
 data(sealevel)
 i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
+oce.grid(i, col='red')
+
+data(ctd)
+i <- plotTS(ctd)
 oce.grid(i, col='red')
 }
 

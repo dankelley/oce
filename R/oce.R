@@ -228,7 +228,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #'
 #' As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
 #' return value from the following functions: \code{\link{imagep}} and
-#' \code{\link{oce.plot.ts}}.
+#' \code{\link{oce.plot.ts}}, and \code{\link{plotTS}}.
 #'
 #' @examples
 #' library(oce)
@@ -237,6 +237,10 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' 
 #' data(sealevel)
 #' i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
+#' oce.grid(i, col='red')
+#' 
+#' data(ctd)
+#' i <- plotTS(ctd)
 #' oce.grid(i, col='red')
 #'
 #' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function

@@ -2280,6 +2280,8 @@ plotTS <- function (x,
              "mar=c(", paste(mar, collapse=","), "), ", 
              "...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
+    xat <- NULL
+    yat <- NULL
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
@@ -2306,11 +2308,11 @@ plotTS <- function (x,
     }
     if (!any(is.finite(salinity))) {
         warning("no valid salinity data")
-        return(invisible())
+        return(invisible(list(xat=NULL, yat=NULL)))
     }
     if (!any(is.finite(y))) {
         warning("no valid temperature data")
-        return(invisible())
+        return(invisible(list(xat=NULL, yat=NULL)))
     }
     if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
@@ -2391,6 +2393,13 @@ plotTS <- function (x,
     lines(Sr, swTFreeze(salinity=Sr, pressure=0)) # old: darkblue that looked black
     box()                              # redraw box (otherwise overdrawn with isopycnals)
     oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
+    ## infer from par()
+    xaxp <- par("xaxp")
+    print(xaxp)
+    xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
+    yaxp <- par("yaxp")
+    yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
+    invisible(list(xat=xat, yat=yat))
 }
 
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,

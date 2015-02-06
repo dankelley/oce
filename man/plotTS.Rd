@@ -96,7 +96,9 @@
 
 \details{Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.}
 
-\value{None.}
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
 
 \seealso{
     \code{\link{summary.ctd}} summarizes the information, while
