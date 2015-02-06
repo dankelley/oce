@@ -228,7 +228,8 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #'
 #' As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
 #' return value from the following functions: \code{\link{imagep}} and
-#' \code{\link{oce.plot.ts}}, \code{\link{plot.adp}} and \code{\link{plotTS}}.
+#' \code{\link{oce.plot.ts}}, \code{\link{plot.adp}}, \code{\link{plot.echosounder}},
+#' and \code{\link{plotTS}}.
 #' It makes no sense to try to use \code{oce.grid} for multiplanel oce plots,
 #' e.g. the default plot from \code{\link{plot.adp}}.
 #'
@@ -248,6 +249,10 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' data(adp)
 #' i <- plot(adp, which=1)
 #' oce.grid(i, col='gray', lty=1)
+#'
+#' data(echosounder)
+#' i <- plot(echosounder)
+#' oce.grid(i, col='pink', lty=1)
 #'
 #' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
 #' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)

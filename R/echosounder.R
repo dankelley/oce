@@ -247,6 +247,7 @@ setMethod(f="plot",
                               ...)
           {
               dots <- list(...)
+              rval <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
               oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
               opar <- par(no.readonly = TRUE)
@@ -300,16 +301,16 @@ setMethod(f="plot",
                           waterDepth <- findBottom(x, ignore=ignore)$depth
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
-                          imagep(xInImage, y=-x[["depth"]], z=z,
-                                 xlab=if (missing(xlab)) "" else xlab, # time
-                                 ylab=if (missing(ylab)) "z [m]" else ylab, # depth
-                                 xlim=xlim,
-                                 ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
-                                 col=col,
-                                 mgp=mgp, mar=mar,
-                                 tformat=tformat,
-                                 debug=debug-1, ...)
+                          ats <- imagep(xInImage, y=-x[["depth"]], z=z,
+                                        xlab=if (missing(xlab)) "" else xlab, # time
+                                        ylab=if (missing(ylab)) "z [m]" else ylab, # depth
+                                        xlim=xlim,
+                                        ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
+                                        zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
+                                        col=col,
+                                        mgp=mgp, mar=mar,
+                                        tformat=tformat,
+                                        debug=debug-1, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -322,19 +323,21 @@ setMethod(f="plot",
                               polygon(time2, waterDepth, col=drawBottom)
                           }
                       } else {
-                          imagep(xInImage, y=-x[["depth"]], z=z,
-                                 xlab=if (missing(xlab)) "" else xlab, # time
-                                 ylab=if (missing(ylab)) "z [m]" else ylab, # depth
-                                 xlim=xlim,
-                                 ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
-                                 zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
-                                 col=col,
-                                 mgp=mgp, mar=mar,
-                                 tformat=tformat,
-                                 debug=debug-1,
-                                 zlab=beam[w],
-                                 ...)
+                          ats <- imagep(xInImage, y=-x[["depth"]], z=z,
+                                        xlab=if (missing(xlab)) "" else xlab, # time
+                                        ylab=if (missing(ylab)) "z [m]" else ylab, # depth
+                                        xlim=xlim,
+                                        ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
+                                        zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
+                                        col=col,
+                                        mgp=mgp, mar=mar,
+                                        tformat=tformat,
+                                        debug=debug-1,
+                                        zlab=beam[w],
+                                        ...)
                       }
+                      rval$xat <- ats$xat
+                      rval$yat <- ats$yat
                       if (newxGiven) {
                           if (!missing(atTop)) {
                               at <- approx(as.numeric(x[["time"]]), newx, as.numeric(atTop))$y
@@ -366,15 +369,15 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth$depth))
                       }
-                      imagep(distance, -depth, z,
-                             xlab=if (missing(xlab)) "Distance [km]" else xlab,
-                             ylab=if (missing(ylab)) "z [m]" else ylab,
-                             ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
-                             zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
-                             mgp=mgp, mar=mar,
-                             tformat=tformat,
-                             col=col,
-                             debug=debug-1)
+                      ats <- imagep(distance, -depth, z,
+                                    xlab=if (missing(xlab)) "Distance [km]" else xlab,
+                                    ylab=if (missing(ylab)) "z [m]" else ylab,
+                                    ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
+                                    zlim=if (missing(zlim)) c(if (beam[w] %in% c("Sv", "TS")) min(z, na.rm=TRUE) else 0, max(z, na.rm=TRUE)) else zlim,
+                                    mgp=mgp, mar=mar,
+                                    tformat=tformat,
+                                    col=col,
+                                    debug=debug-1)
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
@@ -395,6 +398,8 @@ setMethod(f="plot",
                           label <- paste(timeRange[1], timeRange[2], sep=" to ")
                           mtext(label, side=3, cex=0.9*par('cex'), adj=0)
                       }
+                      rval$xat <- ats$xat
+                      rval$yat <- ats$yat
                   } else if (which[w] == 3) {
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -412,6 +417,12 @@ setMethod(f="plot",
                       plot(lonr, latr, asp=asp, type='n',
                            xlab=if (missing(xlab)) "Longitude" else xlab,
                            ylab=if (missing(ylab)) "Latitude" else ylab)
+                      xaxp <- par("xaxp")
+                      xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
+                      yaxp <- par("yaxp")
+                      yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
+                      ats <- list(xat=xat, yat=yat)
+
                       if (!missing(coastline)) {
                           coastline <- coastline
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
@@ -432,7 +443,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
-              invisible()
+              invisible(rval)
           })
 
 read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),

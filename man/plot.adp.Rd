@@ -304,6 +304,9 @@
     on the dock or on the ship as it travelled to the mooring site.
 }
 
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
 
 \examples{
 library(oce)

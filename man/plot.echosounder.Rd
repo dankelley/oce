@@ -131,6 +131,10 @@
     structure of echosounder objects, and also outlines the other functions
     dealing with them.}
 
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
+
 \examples{
 library(oce)
 data(echosounder)

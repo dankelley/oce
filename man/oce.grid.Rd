@@ -53,5 +53,9 @@ oce.grid(i, col='red')
 data(adp)
 i <- plot(adp, which=1)
 oce.grid(i, col='gray', lty=1)
+
+data(echosounder)
+i <- plot(echosounder)
+oce.grid(i, col='pink', lty=1)
 }
 
