@@ -2395,7 +2395,6 @@ plotTS <- function (x,
     oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
     ## infer from par()
     xaxp <- par("xaxp")
-    print(xaxp)
     xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
     yaxp <- par("yaxp")
     yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
