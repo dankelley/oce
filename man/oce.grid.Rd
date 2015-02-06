@@ -38,7 +38,7 @@ return value from the following functions: \code{\link{imagep}} and
 \examples{
 library(oce)
 i <- imagep(volcano)
-oce.grid(i)
+oce.grid(i, lwd=2)
 
 data(sealevel)
 i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
