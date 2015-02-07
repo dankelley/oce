@@ -326,6 +326,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         y[bad] <- NA
     }
 
+    bad2 <- !is.finite(x) | !is.finite(y)
+    x[bad2] <- NA
+    y[bad2] <- NA
+
     dotnames <- names(dots)
     if ("xlim" %in% dotnames || "ylim" %in% dotnames || "xaxs" %in% dotnames || "yaxs" %in% dotnames) {
         ## for issue 539, i.e. repeated scales
@@ -347,6 +351,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             BOXy <- c(seq(latitudelim[1], latitudelim[2], length.out=n), rep(latitudelim[2], n),
                       seq(latitudelim[2], latitudelim[1], length.out=n), rep(latitudelim[1], n))
             box <- lonlat2map(BOXx, BOXy)
+            bad3 <- !is.finite(box$x) | !is.finite(box$y)
+            box$x <- box$x[!bad3]
+            box$y <- box$y[!bad3]
             plot(x, y, type=type,
                  xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
                  xlab="", ylab="", asp=1, axes=FALSE, ...)
@@ -371,6 +378,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 xl <- xorig[look]
                 yl <- yorig[look]
                 offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
+                offscale <- offscale[is.finite(offscale)]
                 if (all(offscale)) { # probably faster to do this than to make new vectors
                     ##message("  TRIM")
                     x[look] <- NA
@@ -1506,7 +1514,6 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             if (projection == "mollweide") proj <- "moll"
             if (projection == "orthographic") proj <- "ortho"
             if (projection == "polyconic") proj <- "pconic"
-            ##if (projection == "robin") proj <- "(no equivalent)"
             if (projection == "robin") proj <- "robin"
             ## FIXME: what about sterea?
             if (projection == "stereographic") proj <- "stere"
