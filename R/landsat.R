@@ -347,6 +347,8 @@ setMethod(f="plot",
                               stop("this landsat object has no band named \"", band, "\"", call.=FALSE)
                           band <- knownBands[i]
                           d <- x[[band, decimate]]
+                          if (!any(!is.na(d)))
+                              stop("this landsat object has only missing values in the \"", band, "\" band", call.=FALSE)
                           if (is.na(pmatch(band, "temperature")))
                               d[d == 0] <- NA  # only makes sense for count data
                       }
