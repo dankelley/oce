@@ -298,9 +298,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     yrange <- range(y, na.rm=TRUE)
     ## FIXME: should permit the use of PROJ.4 projections that lack inverses.
     if (usingProj4() && length(grep("wintri", projection)))
-        stop("cannot handle map projection of type 'wintri'")
+        stop("cannot handle +proj=wintri because it has no inverse")
     if (usingProj4() && length(grep("aitoff", projection)))
-        stop("cannot handle map projection of type 'aitoff'")
+        stop("cannot handle +proj=aitoffbecause it has no inverse")
     xorig <- x
     yorig <- y
     ## FIXME: maybe *always* do this.
@@ -1506,7 +1506,8 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             if (projection == "mollweide") proj <- "moll"
             if (projection == "orthographic") proj <- "ortho"
             if (projection == "polyconic") proj <- "pconic"
-            if (projection == "robin") proj <- "(no equivalent)"
+            ##if (projection == "robin") proj <- "(no equivalent)"
+            if (projection == "robin") proj <- "robin"
             ## FIXME: what about sterea?
             if (projection == "stereographic") proj <- "stere"
             if (projection == "wintri") proj <- "(no equivalent)"
@@ -1528,8 +1529,8 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (!(pr %in% knownProj4))
             stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
         if (length(grep("aitoff", pr))) stop("+proj=aitoff cannot be used")
-        if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
-        if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
+        #if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
+        #if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
         ll <- cbind(longitude, latitude)
         if (!getOption("externalProj4", FALSE)) {
             ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")

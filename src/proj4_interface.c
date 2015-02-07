@@ -60,28 +60,33 @@ void proj4_interface(char **proj_spec, int *forward, int *n, double *x, double *
     Rprintf(" y[0] = %g\n", y[0]);
 #endif
     for (int i = 0; i < (*n); i++) {
-        if (*forward) {
-            xy.u = x[i] / dpr;
-            xy.v = y[i] / dpr;
-            XY = pj_fwd(xy, pj);
-            X[i] = XY.u;
-            Y[i] = XY.v;
-#ifdef DEBUG
-            Rprintf("i = %d, x = %f, y = %f, X = %f, Y = %f\n", i, x[i], y[i], X[i], Y[i]);
-#endif
+        if (ISNA(x[i]) || ISNA(y[i])) {
+            X[i] = NA_REAL;
+            Y[i] = NA_REAL;
         } else {
-            xy.u = x[i];
-            xy.v = y[i];
+            if (*forward) {
+                xy.u = x[i] / dpr;
+                xy.v = y[i] / dpr;
+                XY = pj_fwd(xy, pj);
+                X[i] = XY.u;
+                Y[i] = XY.v;
 #ifdef DEBUG
-            Rprintf("x[%d]=%g y[%d]=%g ... about to do inverse\n", i, xy.u, i, xy.v);
+                Rprintf("i = %d, x = %f, y = %f, X = %f, Y = %f\n", i, x[i], y[i], X[i], Y[i]);
 #endif
-            XY = pj_inv(xy, pj);
-            X[i] = XY.u * dpr;
-            Y[i] = XY.v * dpr;
+            } else {
+                xy.u = x[i];
+                xy.v = y[i];
 #ifdef DEBUG
-            Rprintf("i = %d, x = %f, y = %f, X = %f, Y = %f\n", i, x[i], y[i], X[i], Y[i]);
+                Rprintf("x[%d]=%g y[%d]=%g ... about to do inverse\n", i, xy.u, i, xy.v);
 #endif
-       }
+                XY = pj_inv(xy, pj);
+                X[i] = XY.u * dpr;
+                Y[i] = XY.v * dpr;
+#ifdef DEBUG
+                Rprintf("i = %d, x = %f, y = %f, X = %f, Y = %f\n", i, x[i], y[i], X[i], Y[i]);
+#endif
+            }
+        }
     }
     pj_free(pj);
 }
