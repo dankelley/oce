@@ -158,7 +158,7 @@ where \verb@filename@ is the name of a file containing the data.
         \verb@approx@ in the \verb@stats@ package.  The reason for not naming
         the function as \verb@oceApprox@ is a desire to provide a clear hint
         about the similarity of the functions. The reason for avoiding a naming
-        conflict (by calling it \verb@approx@) is to avoid the necessity that of
+        conflict (by calling it \verb@approx@) is to avoid the necessity of
         writing \verb@oce::approx@, a notation that can be confusing to users.
 
 \end{enumerate}
