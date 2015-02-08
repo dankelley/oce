@@ -128,9 +128,41 @@ programming, e.g. for over a dozen types of oceanographic data files, the
 following general code produces a summary plot:
 <<eval=false>>=
 library(oce)
-plot(read.oce(filename))
+d <- read.oce(filename)
+plot(d)
 @
 where \verb@filename@ is the name of a file containing the data.
+
+\textbf{Some notes on oce function names.}
+\begin{enumerate}
+
+    \item The function used above to read a dataset ends in \verb@.oce@, which
+        is a signal that the returned object is of class \verb@oce@.  Depending
+        on the file contents, \verb@d@ will also have an additional class, e.g.
+        if \verb@filename@ contains CTD data, then the object would have two
+        classes: \verb@oce@ and \verb@ctd@, and the second of these is used in
+        plotting, meaning that R will call a function named \verb@read.ctd@ for
+        the plot.
+
+    \item \index{function naming convention in oce}\index{convention on oce
+        function names} Generally, \verb@oce@ functions employ a ``camel case''
+        naming convention, in which a function that is described by several
+        words is named by stringing the words together, capitalizing the second
+        and subsequent words. For example, \verb@ctdAddColumn@ takes a
+        \verb@ctd@ object, and adds a column.
+
+    \item Function names begin with ``\verb@oce.@'' in cases where the most
+        natural function name would otherwise be in conflict with a function in
+        the base R system or a package commonly used by Oceanographers.  For
+        example, \verb@oce.approx@ is used for a function that is analogous to
+        \verb@approx@ in the \verb@stats@ package.  The reason for not naming
+        the function as \verb@oceApprox@ is a desire to provide a clear hint
+        about the similarity of the functions. The reason for avoiding a naming
+        conflict (by calling it \verb@approx@) is to avoid the necessity that
+        users write \verb@oce::approx@, a notation that can be confusing to
+        users.
+
+\end{enumerate}
 
 
 \section{Calculations of seawater properties}
