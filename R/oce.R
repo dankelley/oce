@@ -174,6 +174,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     .Call("oce_approx", x=x, y=y, xout=xout,
           method=pmatch(method, c("unesco", "rr")))
 }
+oce.approx <- oceApprox
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),

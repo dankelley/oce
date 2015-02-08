@@ -21,9 +21,9 @@
       average), \code{"approx"} (based on linear interpolation between
       neighboring points), \code{"lm"} (based on local regression, with
       \code{e} setting the size of the local region), \code{"rr"} (for the
-      Reineger and Ross method, carried out with \code{\link{oceApprox}}) and
+      Reineger and Ross method, carried out with \code{\link{oce.approx}}) and
       \code{"unesco"} (for the UNESCO method, carried out with.
-      \code{\link{oceApprox}}.  If \code{method} is a function, then it must
+      \code{\link{oce.approx}}.  If \code{method} is a function, then it must
       take three arguments, the first being pressure, the second being an
       arbitrary variable in another column of the data, and the third being a
       vector of target pressures at which the calculation is carried out, and

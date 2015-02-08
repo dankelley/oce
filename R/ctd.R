@@ -328,7 +328,7 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
             for (datumName in dataNames) {
                 if (datumName != "pressure") {
                     yvar <- x@data[[datumName]]
-                    pred <- oceApprox(xvar, yvar, pt, method=method)
+                    pred <- oce.approx(xvar, yvar, pt, method=method)
                     dataNew[[datumName]] <- pred
                 }
             }

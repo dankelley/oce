@@ -1,5 +1,6 @@
-\name{oceApprox}
+\name{oce.approx}
 
+\alias{oce.approx}
 \alias{oceApprox}
 
 \title{Interpolate 1D data with Unesco or Reiniger-Ross algorithm}
@@ -8,7 +9,7 @@
     curvature but tends minimize extrema that are not well-indicated by the
     data.}
 
-\usage{oceApprox(x, y, xout, method=c("rr", "unesco"))}
+\usage{oce.approx(x, y, xout, method=c("rr", "unesco"))}
 
 \arguments{
   \item{x}{the independent variable (z or p, usually).}
@@ -71,8 +72,8 @@ if (require(ocedata)) {
     zz <- seq(0,2000,5)
     plot(RRprofile$temperature, RRprofile$depth, ylim=c(500,0), xlim=c(2,11))
     ## Contrast two methods
-    a1 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz)
-    a2 <- oceApprox(RRprofile$depth, RRprofile$temperature, zz, 'rr')
+    a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz)
+    a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, 'rr')
     lines(a1, zz)
     lines(a2, zz, col='red')
     legend("bottomright", lwd=1, col=1:2,
