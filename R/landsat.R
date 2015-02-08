@@ -355,7 +355,7 @@ setMethod(f="plot",
                                   stop("landsat object has only missing values in the \"", band, "\" band", call.=FALSE)
                               }
                           }
-                          if (0 == sum(d))
+                          if (0 == sum(d, na.rm=TRUE))
                               stop("landsat object has only zero values in \"", band, "\" band", call.=FALSE)
                           if (is.na(pmatch(band, "temperature")))
                               d[d == 0] <- NA  # only makes sense for count data
