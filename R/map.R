@@ -1458,27 +1458,35 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
     list(longitude=longitude, latitude=latitude)
 }
 
-
-knownProj4 <- c("aea", "aeqd", "airy", "aitoff", "alsk", "apian", "august",
-                "bacon", "bipc", "boggs", "bonne", "cass", "cc", "cea",
-                "chamb", "collg", "crast", "denoy", "eck1", "eck2", "eck3",
-                "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
-                "fahey", "fouc", "fouc_s", "gall", "geos", "gins8", "gn_sinu",
-                "gnom", "goode", "gs48", "gs50", "hammer", "hatano", "healpix",
-                "rhealpix", "igh", "imw_p", "isea", "kav5", "kav7", "krovak",
-                "labrd", "laea", "lagrng", "larr", "lask", "lonlat", "latlon",
-                "lcc", "lcca", "leac", "lee_os", "loxim", "lsat", "mbt_s",
-                "mbt_fps", "mbtfpp", "mbtfpq", "mbtfps", "merc", "mil_os",
-                "mill", "moll", "murd1", "murd2", "murd3", "natearth", "nell",
-                "nell_h", "nicol", "nsper", "nzmg", "ob_tran", "ocea", "oea",
-                "omerc", "ortel", "ortho", "pconic", "poly", "putp1", "putp2",
-                "putp3", "putp3p", "putp4p", "putp5", "putp5p", "putp6",
-                "putp6p", "qua_aut", "robin", "rouss", "rpoly", "sinu",
-                "somerc", "stere", "sterea", "gstmerc", "tcc", "tcea",
-                "tissot", "tmerc", "tpeqd", "tpers", "ups", "urm5", "urmfps",
-                "utm", "vandg", "vandg2", "vandg3", "vandg4", "vitk1", "wag1",
-                "wag2", "wag3", "wag4", "wag5", "wag6", "wag7", "weren",
-                "wink1", "wink2", "wintri")
+## This list of known projections includes only those with inverses. To create the list
+## first I did
+##      proj -lP > A
+## in the commandline, and then I hand-edited out the entries that said that no
+## inverse was available.  (I did not do this for "hammer", because oce has an
+## inverse for that.) Then I used grep and sed and an editor action to create the
+## list.  The reason for demanding an inverse is to avoid errors that arise
+## otherwise.  Eventually, a scheme could be set up for doing an approximate
+## inverse within oce, but the arguments against that include (a) the difficulty
+## in implementing it and (b) the possibility that non-invertable projections
+## simply haven't been generated enough interest in the broader cartographic
+## community to merit inclusion in oce.
+knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", "cass", "cc",
+                "cea", "collg", "crast", "eck1", "eck2", "eck3", "eck4",
+                "eck5", "eck6", "eqc", "eqdc", "etmerc", "euler", "fahey",
+                "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom", "goode",
+                "gs48", "gs50", "gstmerc", "hammer", "hatano", "healpix",
+                "igh", "imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
+                "laea", "latlon", "lcc", "lcca", "leac", "lee_os", "lonlat",
+                "loxim", "lsat", "mbt_fps", "mbt_s", "mbtfpp", "mbtfpq",
+                "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
+                "murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
+                "ob_tran", "ocea", "oea", "omerc", "ortho", "pconic", "poly",
+                "putp1", "putp2", "putp3", "putp4p", "putp5", "putp5p",
+                "putp6", "putp6p", "qua_aut", "rhealpix", "robin", "rouss",
+                "sinu", "somerc", "stere", "sterea", "tcea", "tissot", "tmerc",
+                "tpeqd", "tpers", "ups", "urm5", "urmfps", "utm", "vandg",
+                "vitk1", "wag1", "wag2", "wag3", "wag4", "wag5", "wag6",
+                "weren", "wink1", "wintri")
 
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
