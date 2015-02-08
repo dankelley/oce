@@ -5,10 +5,10 @@
 \title{Plot a map}
 
 \description{Plot coordinates as a map, using one of many possible projections
-    calculated with the \code{mapproj} or \code{proj4} package.  The projection
-    parameters are stored in a local variable that can be retrieved by related
-    functions, making it easy to add more items so the map, including points,
-    lines, text, images and contours.}
+    calculated with the \code{mapproj} package or with \code{PROJ.4} [6] code
+    included within oce. The projection parameters are stored in a local
+    variable that can be retrieved by related functions, making it easy to add
+    more items so the map, including points, lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
@@ -100,6 +100,8 @@
         to reproduce a scale exactly between two plots.}
 }
 
+
+
 \details{Creates a map using the indicated projection.  As noted in the
     information on the \code{projection} argument, projections may be
     specified in the format used by \code{\link[mapproj]{mapproject}} from
@@ -115,28 +117,24 @@
     The available projections can be found in the documentation for
     \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
 
-    For \code{proj4}-style projections, the default is to use PROJ.4 code that
-    is built into Oce.  However, if \code{options(externalProj4=TRUE)}, then
-    the \code{proj4} package will be used instead.  Generally, the default
-    method is better because the \code{proj4} package handles unprojectable
-    points poorly, so that coordinate vectors containing such points must be
-    processed one point at a time, at considerable penalty in speed.  For
-    example, using the external \code{proj4} package on a worldwide mercator
-    plot yields a slowdown by a factor of 50X.
+    For \code{PROJ.4}-style projections, the default is to use \code{PROJ.4}
+    code that is built into Oce.  However, if
+    \code{options(externalProj4=TRUE)}, then the \code{proj4} package will be
+    used instead.  Generally, the default method is better because the
+    \code{proj4} package handles unprojectable points poorly, so that
+    coordinate vectors containing such points must be processed one point at a
+    time, at considerable penalty in speed.  For example, using the external
+    \code{proj4} package on a worldwide mercator plot yields a slowdown by a
+    factor of 50X.
 
-    Further details on map projections are provided by [1], an
-    exhaustive treatment that includes many illustrations, an overview of the
-    history of the topic, and some notes on the strengths and weaknesses of the
-    various formulations.  See especially pages 2 through 7, which define terms
-    and provide recommendations.  References [2] and [3] are also useful, especially
-    regarding datum shifts.  More accessible (but less detailed and less
-    authoratitive) resources
-    include a Wikipedia page
-    (\url{http://en.wikipedia.org/wiki/List_of_map_projections}), a Radical
-    Cartography website
-    (\url{http://www.radicalcartography.net/?projectionref}). The XKCD guide
-    (\url{http://xkcd.com/977/}) may also be helpful to some. 
-
+    Further details on map projections are provided by [1], an exhaustive
+    treatment that includes many illustrations, an overview of the history of
+    the topic, and some notes on the strengths and weaknesses of the various
+    formulations.  See especially pages 2 through 7, which define terms and
+    provide recommendations.  References [2] and [3] are also useful,
+    especially regarding datum shifts; [4] and [5] are less detailed and
+    perhaps better for novices.
+    
 }
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
@@ -154,7 +152,7 @@ data(coastlineWorld)
 # Example 1.
 # Mollweide ([1] page 54) is an equal-area projection that works well
 # for whole-globe views, below shown in a Pacific-focus view using
-# both the mapproj and proj4 formats.  (This pattern of showing the two
+# both the mapproj and PROJ.4 formats.  (This pattern of showing the two
 # formats is repeated in all the examples.)
 par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, proj="mollweide", orientation=c(90,-180,0))
@@ -222,21 +220,40 @@ dev.off()
 }
 }
 
-\section{Projection recommendations}{There are over 100 projections to choose
-    from, but serious work will probably centre on just a few.  The ones used
-    in the examples may cover most practical cases.  Users may be well-advised
-    to work with one of these projections, particularly because they are better
-    tested than the others; indeed, some world-view projections will simply
-    fail to render.  The choice of \code{mapproj}-format or \code{proj4}-format
-    projections is somewhat a matter of user preference.  The author prefers
-    \code{proj4} because it offers more possibilities (e.g. choice of reference
-    models for earth shape) and since it derives from a library (\code{PROJ.4})
-    that is under active development and that has been ported to many languages
-    and software products, so it should be reliable.  By contrast, the
-    \code{mapproj}-format projections rely on code that is decades old.
-    Another factor is that \code{proj4} provides projection inverse functions,
-    whereas Oce infers inverses from an error-prone optimization technique in
-    the \code{mapproj} case.}
+\section{Available projections}{All of the projections provided in the
+    \code{mapproj} package are available, but the lack of inverses in that
+    package mean that sometimes the plot has flaws (especially on axis
+    labelling). The preferred scheme is the \code{PROJ.4} [6] one, and this permits
+    the following projections: \code{"aea"}, \code{"aeqd"}, \code{"aitoff"},
+    \code{"alsk"}, \code{"bipc"}, \code{"bonne"}, \code{"cass"}, \code{"cc"},
+    \code{"cea"}, \code{"collg"}, \code{"crast"}, \code{"eck1"}, \code{"eck2"},
+    \code{"eck3"}, \code{"eck4"}, \code{"eck5"}, \code{"eck6"}, \code{"eqc"},
+    \code{"eqdc"}, \code{"etmerc"}, \code{"euler"}, \code{"fahey"},
+    \code{"fouc"}, \code{"fouc_s"}, \code{"gall"}, \code{"geos"},
+    \code{"gn_sinu"}, \code{"gnom"}, \code{"goode"}, \code{"gs48"},
+    \code{"gs50"}, \code{"gstmerc"}, \code{"hammer"}, \code{"hatano"},
+    \code{"healpix"}, \code{"igh"}, \code{"imw_p"}, \code{"isea"},
+    \code{"kav5"}, \code{"kav7"}, \code{"krovak"}, \code{"labrd"},
+    \code{"laea"}, \code{"latlon"}, \code{"lcc"}, \code{"lcca"}, \code{"leac"},
+    \code{"lee_os"}, \code{"lonlat"}, \code{"loxim"}, \code{"lsat"},
+    \code{"mbt_fps"}, \code{"mbt_s"}, \code{"mbtfpp"}, \code{"mbtfpq"},
+    \code{"mbtfps"}, \code{"merc"}, \code{"mil_os"}, \code{"mill"},
+    \code{"moll"}, \code{"murd1"}, \code{"murd2"}, \code{"murd3"},
+    \code{"natearth"}, \code{"nell"}, \code{"nell_h"}, \code{"nsper"},
+    \code{"nzmg"}, \code{"ob_tran"}, \code{"ocea"}, \code{"oea"},
+    \code{"omerc"}, \code{"ortho"}, \code{"pconic"}, \code{"poly"},
+    \code{"putp1"}, \code{"putp2"}, \code{"putp3"}, \code{"putp4p"},
+    \code{"putp5"}, \code{"putp5p"}, \code{"putp6"}, \code{"putp6p"},
+    \code{"qua_aut"}, \code{"rhealpix"}, \code{"robin"}, \code{"rouss"},
+    \code{"sinu"}, \code{"somerc"}, \code{"stere"}, \code{"sterea"},
+    \code{"tcea"}, \code{"tissot"}, \code{"tmerc"}, \code{"tpeqd"},
+    \code{"tpers"}, \code{"ups"}, \code{"urm5"}, \code{"urmfps"}, \code{"utm"},
+    \code{"vandg"}, \code{"vitk1"}, \code{"wag1"}, \code{"wag2"},
+    \code{"wag3"}, \code{"wag4"}, \code{"wag5"}, \code{"wag6"}, \code{"weren"},
+    \code{"wink1"} and \code{"wintri"}. It is up to the user to determine the
+    additional parameters that may be used with each of these; see \dQuote{Examples}
+    and \dQuote{References}.
+}
 
 \section{Issues}{Map projection is a complicated matter that is addressed here
     in a limited and pragmatic way.  For example, \code{mapPlot} tries to draw
@@ -258,6 +275,12 @@ dev.off()
     2. \url{http://earth-info.nga.mil/GandG/publications/tm8358.1/toc.html}
 
     3. Natural Resources Canada \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+
+    4. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
+
+    5. Radical Cartography website \url{http://www.radicalcartography.net/?projectionref}
+
+    6. \code{PROJ.4} website \url{http://trac.osgeo.org/proj}
 
 }
 
