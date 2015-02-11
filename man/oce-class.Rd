@@ -24,7 +24,7 @@
         \item{\code{processingLog}}{List containing a time-stamped record of
             changes that have been made to the object, either automatically
             recorded by functions in the package, or added by the user with
-            \code{\link{oceEdit}}.}
+            \code{\link{oce.edit}}.}
     }
 }
 

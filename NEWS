@@ -450,7 +450,7 @@
 - plot.TS(): fix isopycnal labels for fresh water; add args Slim, Tlim
 - read.ctd(): make it understand another SBE format
 - add parseLatlon()
-- oceEdit(): add argument 'action' 
+- oce.edit(): add argument 'action' 
 - add oce.write.table()
 - add fillGap()
 

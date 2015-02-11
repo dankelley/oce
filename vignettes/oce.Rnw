@@ -377,16 +377,16 @@ and a better idea to write
 \index{oce object changelog}
 \index{logged changes to oce objects}
 \index{editing oce objects}
-\index{oceEdit}
+\index{oce.edit}
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oceEdit(x, "institute", "SIO") # better way
+x <- oce.edit(x, "institute", "SIO") # better way
 @
 Even better, provide a reason for the change, and sign the change with your
 name:
 <<ctdfix3,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oceEdit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
+x <- oce.edit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
 @
 
 For a real-world example (with warts!), visit

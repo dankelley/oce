@@ -451,10 +451,10 @@ oce.as.POSIXlt <- function (x, tz = "")
     as.POSIXlt(x, tz)
 }
 
-oceEdit <- function(x, item, value, action, reason="", person="",
+oce.edit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "oceEdit() {\n", unindent=1)
+    oceDebug(debug, "oce.edit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (!missing(item)) {
@@ -532,9 +532,10 @@ oceEdit <- function(x, item, value, action, reason="", person="",
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # oceEdit()\n", unindent=1)
+    oceDebug(debug, "} # oce.edit()\n", unindent=1)
     x
 }
+oceEdit <- oce.edit
 
 oce.write.table <- function (x, file="", ...)
 {
