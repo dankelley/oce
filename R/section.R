@@ -403,10 +403,10 @@ setMethod(f="plot",
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
-              which <- ocePmatch(which,
-                                 list(temperature=1, salinity=2, 
-                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                      phosphate=7, silicate=8, data=20, map=99))
+              which <- oce.pmatch(which,
+                                  list(temperature=1, salinity=2, 
+                                       sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                       phosphate=7, silicate=8, data=20, map=99))
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
 
 

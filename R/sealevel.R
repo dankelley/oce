@@ -227,7 +227,7 @@ setMethod(f="plot",
               n <- length(x@data$elevation) # do not trust value in metadata
 
               oceDebug(debug, "which:", which, "\n")
-              which2 <- ocePmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
+              which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
               oceDebug(debug, "which2:", which2, "\n")
 
               for (w in 1:length(which2)) {

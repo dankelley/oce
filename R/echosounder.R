@@ -270,7 +270,7 @@ setMethod(f="plot",
               }
 
               oceDebug(debug, "which:", which, "\n")
-              which <- ocePmatch(which, list("zt image"=1, "zx image"=2, map=3))
+              which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
               oceDebug(debug, "which:", which, "\n")
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")

@@ -652,7 +652,7 @@ unwrapAngle <- function(angle)
     list(mean=resMean, median=resMedian)
 }
 
-ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
+oce.pmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
     ## FIXME: do element by element, and extend as follows, to allow string numbers
     ## if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
@@ -677,6 +677,7 @@ ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
         stop("'x' must be numeric or character")
     }
 }
+ocePmatch <- oce.pmatch
 
 oce.spectrum <- function(x, ...)
 {

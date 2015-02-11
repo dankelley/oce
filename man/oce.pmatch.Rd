@@ -1,5 +1,6 @@
-\name{ocePmatch}
+\name{oce.pmatch}
 
+\alias{oce.pmatch}
 \alias{ocePmatch}
 
 \title{Partial matching of strings or numbers}
@@ -9,7 +10,7 @@
     string matches are handled.
 }
 
-\usage{ocePmatch(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)}
+\usage{oce.pmatch(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)}
 
 \arguments{
 
@@ -43,7 +44,7 @@
 
 \examples{
 library(oce)
-ocePmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
+oce.pmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
 }
 
 \author{Dan Kelley}

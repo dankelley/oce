@@ -137,8 +137,8 @@ setMethod(f="plot",
               names <- names(x@data)
               haveTemperature <- ("temperature" %in% names) && any(is.finite(x@data$temperature))
               havePressure <- ("pressure" %in% names) && any(is.finite(x@data$pressure))
-              which <- ocePmatch(which,
-                                 list(temperature=1, text=2, pressure=3, profile=4))
+              which <- oce.pmatch(which,
+                                  list(temperature=1, text=2, pressure=3, profile=4))
               if (!haveTemperature) 
                   which <- which[which != 1 & which != 4]
               if (!havePressure) 

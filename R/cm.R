@@ -257,10 +257,10 @@ setMethod(f="plot",
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "which:", which, "\n")
-              which <- ocePmatch(which,
-                                 list(u=1, v=2, "progressive vector"=3,
-                                      "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
-                                      depth=7, salinity=8, temperature=9, heading=10, TS=11))
+              which <- oce.pmatch(which,
+                                  list(u=1, v=2, "progressive vector"=3,
+                                       "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
+                                       depth=7, salinity=8, temperature=9, heading=10, TS=11))
               oceDebug(debug, "which:", which, "\n")
               adorn.length <- length(adorn)
               if (adorn.length == 1) {

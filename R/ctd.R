@@ -804,23 +804,23 @@ setMethod(f="plot",
               if (!missing(lonlim))
                   warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
 
-              which <- ocePmatch(which,
-                                 list("salinity+temperature"=1,
-                                      "density+N2"=2,
-                                      TS=3,
-                                      text=4,
-                                      map=5,
-                                      "density+dpdt"=6,
-                                      "density+time"=7,
-                                      index=8,
-                                      salinity=9,
-                                      temperature=10,
-                                      density=11,
-                                      N2=12,
-                                      spice=13,
-                                      tritium=14,
-                                      Rrho=15,
-                                      RrhoSF=16))
+              which <- oce.pmatch(which,
+                                  list("salinity+temperature"=1,
+                                       "density+N2"=2,
+                                       TS=3,
+                                       text=4,
+                                       map=5,
+                                       "density+dpdt"=6,
+                                       "density+time"=7,
+                                       index=8,
+                                       salinity=9,
+                                       temperature=10,
+                                       density=11,
+                                       N2=12,
+                                       spice=13,
+                                       tritium=14,
+                                       Rrho=15,
+                                       RrhoSF=16))
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {

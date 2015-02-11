@@ -234,13 +234,13 @@ setMethod(f="plot",
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
-              which <- ocePmatch(which,
-                                 list(trajectory=1,
-                                      "salinity ts"=2,
-                                      "temperature ts"=3,
-                                      "TS"=4,
-                                      "salinity profile"=5,
-                                      "temperature profile"=6))
+              which <- oce.pmatch(which,
+                                  list(trajectory=1,
+                                       "salinity ts"=2,
+                                       "temperature ts"=3,
+                                       "TS"=4,
+                                       "salinity profile"=5,
+                                       "temperature profile"=6))
               for (w in 1:nw) {
                   if (which[w] == 1) {
                       oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
