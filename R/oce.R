@@ -1469,7 +1469,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
-oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)
 {
@@ -1557,4 +1557,5 @@ oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
         box()
     }
 }
+oceContour <- oce.contour
 

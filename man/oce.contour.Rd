@@ -1,5 +1,6 @@
-\name{oceContour}
+\name{oce.contour}
 
+\alias{oce.contour}
 \alias{oceContour}
 
 \title{Contour with ability to flip x and y}
@@ -7,9 +8,9 @@
 \description{This provides something analagous to \code{\link{contour}}, but
     with the ability to flip x and y.}
 
-\usage{oceContour(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
-           tformat, drawTimeRange=getOption("oceDrawTimeRange"),
-           debug=getOption("oceDebug"), \dots)}
+\usage{oce.contour(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+            tformat, drawTimeRange=getOption("oceDrawTimeRange"),
+            debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{values for x grid.}
@@ -44,8 +45,8 @@ data(topoWorld)
 lon <- topoWorld[["longitude"]]
 lat <- topoWorld[["latitude"]]
 z <- topoWorld[["z"]]
-oceContour(lon, lat, z, levels=0, drawlabels=FALSE)
-oceContour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
+oce.contour(lon, lat, z, levels=0, drawlabels=FALSE)
+oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
 }
 
 \author{Dan Kelley}
