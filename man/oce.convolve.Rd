@@ -1,12 +1,13 @@
-\name{oceConvolve}
+\name{oce.convolve}
 
+\alias{oce.convolve}
 \alias{oceConvolve}
 
 \title{Convolve two time series}
 
 \description{Convolve two time series, using a backward-looking method}
 
-\usage{oceConvolve(x, f, end=2)}
+\usage{oce.convolve(x, f, end=2)}
 
 \arguments{
   \item{x}{a numerical vector of observations.}
@@ -32,7 +33,7 @@ signal <- ifelse(sin(t * 2 * pi / 128) > 0, 1, 0)
 tau <- 10
 filter <- exp(-seq(5*tau, 0) / tau)
 filter <- filter / sum(filter)
-observation <- oceConvolve(signal, filter)
+observation <- oce.convolve(signal, filter)
 plot(t, signal, type='l')
 lines(t, observation, lty='dotted')
 }

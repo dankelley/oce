@@ -2091,8 +2091,9 @@ oce.as.raw <- function(x)
     x
 }
 
-oceConvolve <- function(x, f, end=2)
+oce.convolve <- function(x, f, end=2)
 {
     .Call("oce_convolve", x, f, end)
 }
+oceConvolve <- oce.convolve
 
