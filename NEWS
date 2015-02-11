@@ -346,7 +346,7 @@
 - logger.toc(): fix bug in discovering files ranging over days
 - as.ctd(): make temperature and salinity into vectors, if not already
 - plot.TS(): add argument 'use.smoothScatter'
-- oceDebug(): flush the console after printing a message
+- oce.debug(): flush the console after printing a message
 - sw.theta(): rename the method possibilities, to lower case
 - in some sw functions, rename 'pref' as 'reference.pressure'
 - read.ctd(): fix bug in getting start.time for some time formats

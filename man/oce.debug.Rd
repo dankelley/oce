@@ -1,12 +1,13 @@
-\name{oceDebug}
+\name{oce.debug}
 
+\alias{oce.debug}
 \alias{oceDebug}
 
 \title{Print a debugging message}
 
 \description{Print a debugging message}
 
-\usage{oceDebug(debug=0, \dots, unindent=0)}
+\usage{oce.debug(debug=0, \dots, unindent=0)}
 
 \arguments{
   \item{debug}{an integer, less than or equal to zero for no message,
@@ -21,10 +22,10 @@
 \examples{
 foo <- function(debug)
 {
-   oceDebug(debug, "in function foo\n")
+   oce.debug(debug, "in function foo\n")
 }
 debug <- 1
-oceDebug(debug, "in main")
+oce.debug(debug, "in main")
 foo(debug=debug-1)
 }
 
