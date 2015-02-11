@@ -1292,7 +1292,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     return(kernel(coef=coef, name=paste(type, "(", m, ")", sep="")))
 }
 
-oceFilter <- function(x, a=1, b, zero.phase=FALSE)
+oce.filter <- function(x, a=1, b, zero.phase=FALSE)
 {
     if (missing(x))
         stop("must supply x")
@@ -1307,6 +1307,7 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
         return(rev(rval))
     }
 }
+oceFilter <- oce.filter
 
 ## Calculation of geodetic distance on surface of earth,
 ## based upon datum defined by
