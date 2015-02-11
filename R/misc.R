@@ -678,7 +678,7 @@ ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
     }
 }
 
-oceSpectrum <- function(x, ...)
+oce.spectrum <- function(x, ...)
 {
     args <- list(...)
     want.plot <- FALSE
@@ -695,6 +695,7 @@ oceSpectrum <- function(x, ...)
         plot(rval)
     invisible(rval)
 }
+oceSpectrum <- oce.spectrum
 
 vectorShow <- function(v, msg, digits=5)
 {
