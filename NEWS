@@ -168,7 +168,7 @@
 - data(giss) added
 - data(topo2) added
 - plotPolar() added
-- oceMagic() new name for magic()
+- oce.magic() new name for magic()
 - errorBars() added
 - numberAsPOSIXct() add a leap second for July 2012
 

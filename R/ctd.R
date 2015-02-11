@@ -1298,7 +1298,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
-        ## FIXME: detect ODV type in first or second line; see oceMagic().
+        ## FIXME: detect ODV type in first or second line; see oce.magic().
         if ("CTD" == substr(line, 1, 3)) {
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
@@ -1314,7 +1314,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         } else {
             stop("type must be SBE19, WOCE, ODF, ODV, or ITP, not ", type)
         }
-    }                                   # FIXME: should just use oceMagic() here
+    }                                   # FIXME: should just use oce.magic() here
     rval <- switch(type,
                    SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
                                         debug=debug, processingLog=processingLog, ...),
