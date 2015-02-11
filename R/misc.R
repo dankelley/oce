@@ -2039,7 +2039,7 @@ ctimeToSeconds <- function(ctime)
 ##    res
 ##}
 
-oceDebug <- function(debug=0, ..., unindent=0)
+oce.debug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
@@ -2051,6 +2051,7 @@ oceDebug <- function(debug=0, ..., unindent=0)
     flush.console()
     invisible()
 }
+oceDebug <- oce.debug
 
 showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
 {
