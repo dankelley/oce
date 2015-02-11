@@ -2251,7 +2251,7 @@ msgid "cannot smooth ADP objects (feel free to request this from the author)"
 msgstr ""
 
 msgid ""
-"oceSmooth() has recently been recoded for 'adv' objects -- do not trust it "
+"oce.smooth() has recently been recoded for 'adv' objects -- do not trust it "
 "yet!"
 msgstr ""
 

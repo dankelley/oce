@@ -415,7 +415,7 @@
 - set default for 'debug' argument to getOption("oceDebug") in all functions
 - plot.profile(): add argument ytype; change 'type' to 'xtype'
 - add swZ()
-- add oceSmooth()
+- add oce.smooth()
 - add read.adv(), etc., supporting Nortek and Sontek devices
 - add read.adp(), etc., supporting Nortek, RDI and Sontek devices
 - add oce.plot.ts()

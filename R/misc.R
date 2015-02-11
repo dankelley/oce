@@ -1726,7 +1726,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     res
 }
 
-oceSmooth <- function(x, ...)
+oce.smooth <- function(x, ...)
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -1755,7 +1755,7 @@ oceSmooth <- function(x, ...)
                 }
             }
         }
-        warning("oceSmooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
+        warning("oce.smooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
     } else if (inherits(x, "ctd")) {
         res <- x
         for (name in names(x@data))
@@ -1766,6 +1766,7 @@ oceSmooth <- function(x, ...)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+oceSmooth <- oce.smooth
 
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
