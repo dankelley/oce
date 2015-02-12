@@ -498,6 +498,10 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
+              breaksGiven <- !missing(breaks)
+              zlimGiven <- !missing(zlim)
+              if (breaksGiven && zlimGiven)
+                  stop("cannot supply both zlim and breaks")
               rval <- list(xat=NULL, yat=NULL)
               mode <- match.arg(mode)
               if (mode == "diagnostic") {
@@ -515,7 +519,9 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "plot.adp(x, which=\"", paste(which, collapse=","),
-                       "\", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
+                       "\", breaks=", if (missing(breaks)) "(missing)" else 
+                           paste("c(", paste(breaks, collapse=", "), ")", sep=""),
+                       ", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
               oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
@@ -719,7 +725,9 @@ setMethod(f="plot",
                               y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylim.given[w,], collapse=","), ")")
-                              zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                              zlim <- if (gave.zlim) zlim.given[w,] else {
+                                  if (breaksGiven) NULL else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                              }
                           }
                           oceDebug(debug, 'flipy=', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) { # amplitude
@@ -787,11 +795,14 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
+                                  message("HEREHEREHERE")
+                                  message("why is zlim known?")
                                   ats <- imagep(x=tt, y=x@data$distance, z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
                                                 ylim=if (gave.ylim) ylim[w,] else
                                                     range(x@data$distance, na.rm=TRUE),
+                                                    breaks=breaks,
                                                     col=if (gave.col) col else
                                                         oce.colorsPalette(128, 1),
                                                         ylab=resizableLabel("distance"),

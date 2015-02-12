@@ -407,6 +407,10 @@ imagep <- function(x, y, z,
 {
     zlabPosition <- match.arg(zlabPosition)
     oceDebug(debug, "imagep(..., cex=", cex, ", flipy=", flipy, ",", 
+             "\", breaks=", if (missing(breaks)) "(missing)" else 
+                 paste("c(", paste(breaks, collapse=", "), ")", sep=""),
+             "\", zlim=", if (missing(zlim)) "(missing)" else 
+                 paste("c(", paste(zlim, collapse=", "), ")", sep=""),
              " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
              " zlabPosition=\"", zlabPosition, "\", ",
              " filledContour=", filledContour, ", ",
