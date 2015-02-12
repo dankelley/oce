@@ -1169,7 +1169,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         }
     }
     if (missing(col)) {
-        col <- oceColorsPalette(n=length(breaks)-1)
+        col <- oce.colorsPalette(n=length(breaks)-1)
         oceDebug(debug, "using default col\n")
     }
     if (is.function(col)) {

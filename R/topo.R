@@ -296,7 +296,7 @@ setMethod(f="plot",
                   }
                   nz <- length(water.z)
                   if (missing(col.water))
-                      col.water <- oceColorsGebco(nz, "water", "line")
+                      col.water <- oce.colorsGebco(nz, "water", "line")
                   if (missing(lty.water))
                       lty.water <- rep(par("lty"), nz)
                   else if (length(lty.water) == 1)
@@ -325,7 +325,7 @@ setMethod(f="plot",
                   nz <- length(land.z)
                   if (nz > 0) {
                       if (missing(col.land))
-                          col.land <- oceColorsGebco(nz, "land", "line")
+                          col.land <- oce.colorsGebco(nz, "land", "line")
                       if (missing(lty.land))
                           lty.land <- rep(par("lty"), nz)
                       else if (length(lty.land) == 1)

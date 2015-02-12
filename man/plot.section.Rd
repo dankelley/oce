@@ -188,7 +188,7 @@ plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]
-col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 }

@@ -603,7 +603,7 @@ setMethod(f="plot",
                           }
                           nbreaks <- length(zbreaks)
                           if (is.null(zcol)) 
-                              zcol <- oceColorsJet(nbreaks - 1)
+                              zcol <- oce.colorsJet(nbreaks - 1)
                           if (is.function(zcol))
                               zcol <- zcol(nbreaks - 1)
                           zlim <- range(zbreaks)

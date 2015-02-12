@@ -842,7 +842,7 @@ read.oce <- function(file, ...)
 }
 
 
-oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)
@@ -880,9 +880,10 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
     }
     rgb(r, g, b)
 }
+oceColorsGebco <- oce.colorsGebco
 
 
-oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ((n <- as.integer(n[1])) > 0) {
@@ -899,8 +900,9 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
     }
     else character(0)
 }
+oceColorsTwo <- oce.colorsTwo
 
-oceColorsJet <- function(n)
+oce.colorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
@@ -910,13 +912,15 @@ oceColorsJet <- function(n)
                            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
+oceColorsJet <- oce.colorsJet
 
-oceColors9A <- function(n)
+oce.colors9A <- function(n)
 {
-    oceColorsJet(n)
+    oce.colorsJet(n)
 }
+oceColors9A <- oce.colors9A
 
-oceColors9B <- function(n)
+oce.colors9B <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
@@ -926,9 +930,10 @@ oceColors9B <- function(n)
                            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
+oceColors9B <- oce.colors9B
 
 
-oceColorsPalette <- function(n, which=1)
+oce.colorsPalette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
@@ -966,13 +971,14 @@ oceColorsPalette <- function(n, which=1)
                     approx(i, g, xout, rule=1)$y,
                     approx(i, b, xout, rule=1)$y))
         } else if (which == 9.01 || which == "9A" || which == "jet") { # jet, also known as 9A or 9.01
-            oceColorsJet(n)
+            oce.colorsJet(n)
         } else if (which == 9.02 || which == "9B") {
-            oceColors9B(n)
+            oce.colors9B(n)
         } else stop("unknown which")
     }
     else character(0)
 }
+oceColorsPalette <- oce.colorsPalette
 
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange=getOption("oceDrawTimeRange"),

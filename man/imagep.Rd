@@ -85,7 +85,7 @@
         supplied to \code{\link{pretty}}, in determining clean break points.}
     \item{col}{either a vector of colors corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colors,
-        e.g. \code{\link{oceColorsJet}} for a rainbow.}
+        e.g. \code{\link{oce.colorsJet}} for a rainbow.}
     \item{colormap}{a color map as created by \code{\link{colormap}}.  If
         provided, this takes precedence over \code{breaks} and \code{col}.}
     \item{labels}{optional vector of labels for ticks on palette axis (must

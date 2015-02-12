@@ -41,7 +41,7 @@
 - subset.topo() added
 - read.topo() now handles GEBCO netcdf files
 - decimate() now handles topo objects
-- reverse oceColorsGebco colours for water
+- reverse oce.colorsGebco colours for water
 - drawIsopycnals() and plotTS(): improve isopycnal labels
 - ctdDecimate() handles new method 'unesco'
 - coastline improvements (now 3 resolutions)
@@ -246,7 +246,7 @@
 - plot.section() now uses 'col' if supplied
 
 0.7-1
-- improve oceColorsJet()
+- improve oce.colorsJet()
 - improve plotProfile() vertical range with missing data
 - add data(drag)
 - plotProfile() and plot.ctd(): add xtype="spice"
@@ -431,7 +431,7 @@
 - add argument 'mgp' to all plotting functions
 - use abbreviations for axis names if space is tight
 - add argument 'adorn' to all plot() functions
-- add oceColorsTwo(), oceColorsJet(), and oceColorsPalette()
+- add oce.colorsTwo(), oce.colorsJet(), and oce.colorsPalette()
 - add byte2binary()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
@@ -521,7 +521,7 @@
 - add oce.edit(), later renamed oceEdit()
 - add topoMaritimes dataset
 - add read.topo(), plot.topo(), and summary.topo()
-- add gebcoColors() ... renamed oceColorsGebco() in version 0.1.77
+- add gebcoColors() ... renamed oce.colorsGebco() in version 0.1.77
 - make plot.section() check that pressures coincide
 
 0.1.70

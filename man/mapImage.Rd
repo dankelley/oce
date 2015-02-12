@@ -34,7 +34,7 @@
 
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
-        e.g. \code{\link{oceColorsJet}} for a rainbow.}
+        e.g. \code{\link{oce.colorsJet}} for a rainbow.}
 
     \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
         If a \code{colormap} is provided, then its properties takes precedence
@@ -119,22 +119,22 @@ mapPlot(coastlineWorld, type='l',
         longitudelim=lonlim, latitudelim=latlim,
         proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
 breaks <- seq(-5000, 1000, 500)
-mapImage(topo, col=oceColorsGebco, breaks=breaks)
+mapImage(topo, col=oce.colorsGebco, breaks=breaks)
 mapLines(coastlineWorld)
 box()
 mapPlot(coastlineWorld, type='l',
         longitudelim=lonlim, latitudelim=latlim,
         proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
-mapImage(topo, filledContour=TRUE, col=oceColorsGebco, breaks=breaks)
+mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
 box()
 mapLines(coastlineWorld)
 
 ## Northern polar region, with colour-coded bathymetry
-drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
+drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oce.colorsJet)
 mapPlot(coastlineWorld, type='l',
         longitudelim=c(-180,180), latitudelim=c(60,120),
         proj="stereographic", grid=TRUE)
-mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)
+mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
@@ -145,9 +145,9 @@ lat <- ncvar_get(con, "lat")
 SST <- ncvar_get(con, "t_mn")[,,1]
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oceColorsJet)
+drawPalette(Tlim, col=oce.colorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim)
+mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
 mapPolygon(coastlineWorld, col='gray')
 }
 }

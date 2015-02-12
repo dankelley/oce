@@ -222,7 +222,7 @@ drawPalette <- function(zlim, zlab="",
                 breaks[length(breaks)] <- zrange[2]
             }
             if (missing(col))
-                col <- oceColorsPalette(n=length(breaks)-1)
+                col <- oce.colorsPalette(n=length(breaks)-1)
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
         }
@@ -561,7 +561,7 @@ imagep <- function(x, y, z,
         oceDebug(debug, "colormap not provided\n")
         if (zlimHistogram) {
             if (missing(col))
-                col <- oceColorsPalette(200) # FIXME: how many colours to use?
+                col <- oce.colorsPalette(200) # FIXME: how many colours to use?
         } else {
             if (!breaksGiven) {
                 oceDebug(debug, "breaks not provided\n")
@@ -604,7 +604,7 @@ imagep <- function(x, y, z,
                 }
             }
             if (missing(col))
-                col <- oceColorsPalette(n=length(breaks)-1)
+                col <- oce.colorsPalette(n=length(breaks)-1)
         }
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col

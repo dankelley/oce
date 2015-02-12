@@ -9,7 +9,7 @@
 \description{Plot landsat data.}
 
 \usage{\S4method{plot}{landsat}(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
-    col=oceColorsPalette, showBandName=TRUE,
+    col=oce.colorsPalette, showBandName=TRUE,
     alpha.f=1, red.f=2, green.f=2, blue.f=4,
     offset=c(0, 0, 0, 0),
     transform=diag(c(red.f, green.f, blue.f, alpha.f)),

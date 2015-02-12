@@ -48,7 +48,7 @@
       option will become available in the future, for the \code{burst} mode
       that some instruments provide.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
-    the default for images is \code{oceColorsPalette(128,1)}, and for
+    the default for images is \code{oce.colorsPalette(128,1)}, and for
     lines and points is black.}
   \item{breaks}{optional breaks for color scheme}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the

@@ -59,7 +59,7 @@
     provided, these are inferred from the data.}
   \item{col.water}{colors corresponding to \code{water.z} values.  If
     not provided, these will be \code{"fill"} colors from
-    \code{\link{oceColorsGebco}}.}
+    \code{\link{oce.colorsGebco}}.}
   \item{lty.water}{line type(s) for water contours}
   \item{lwd.water}{line width(s) for water contours}
   \item{land.z}{depths at which to plot land contours.  If not provided,
@@ -67,7 +67,7 @@
     contours will be plotted.}
   \item{col.land}{colors corresponding to \code{land.z} values.  If
     not provided, these will be \code{"fill"} colors from
-    \code{\link{oceColorsGebco}}.}
+    \code{\link{oce.colorsGebco}}.}
   \item{lty.land}{line type(s) for land contours}
   \item{lwd.land}{line width(s) for land contours}
   \item{geographical}{set to \code{TRUE} to get latitudes and longitudes
