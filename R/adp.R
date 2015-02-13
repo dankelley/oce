@@ -1953,10 +1953,20 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         ## instead of v, which would lower the memory requirements.
 
         ## v=velocity
-        vbm[profile,,1] <- approx(z1, v[profile,,1], distance)$y
-        vbm[profile,,2] <- approx(z2, v[profile,,2], distance)$y
-        vbm[profile,,3] <- approx(z3, v[profile,,3], distance)$y
-        vbm[profile,,4] <- approx(z4, v[profile,,4], distance)$y
+        ## Need to check all four beams that there are more than 2
+        ## non-NA values in the profiles, otherwise set to 0
+        checkNA <- sum(!is.na(v[profile,,1])) > 1 & sum(!is.na(v[profile,,2])) > 1 & sum(!is.na(v[profile,,3])) > 1 & sum(!is.na(v[profile,,4])) > 1
+        if (checkNA) {
+            vbm[profile,,1] <- approx(z1, v[profile,,1], distance)$y
+            vbm[profile,,2] <- approx(z2, v[profile,,2], distance)$y
+            vbm[profile,,3] <- approx(z3, v[profile,,3], distance)$y
+            vbm[profile,,4] <- approx(z4, v[profile,,4], distance)$y
+        } else {
+            vbm[profile,,1] <- NA
+            vbm[profile,,2] <- NA
+            vbm[profile,,3] <- NA
+            vbm[profile,,4] <- NA
+        }
         ## a
         rule <- 2                      # FIXME: is is OK to extend data to edges?
         abm[profile,,1] <- oce.as.raw(approx(z1, as.numeric(a[profile,,1], rule=rule), distance)$y)
