@@ -734,14 +734,18 @@ setMethod(f="plot",
                               z <- as.numeric(x@data$aDia[,,which[w]-4])
                               dim(z) <- dim(x@data$aDia)[1:2]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
-                              zlim <- if (zlimGiven) zlimAsGiven[w,] else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGIven) NULL else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
+                              }
                               zlab <- c(expression(aDia[1]),expression(a[2]),expression(aDia[3]),expression(aDia[4]))[which[w]-4]
                           } else {
                               oceDebug(debug, "an amplitude component image/timeseries\n")
                               z <- as.numeric(x@data$a[,,which[w]-4])
                               dim(z) <- dim(x@data$a)[1:2]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
-                              zlim <- if (zlimGiven) zlimAsGiven[w,] else range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
+                              }
                               zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
                           }
                       } else if (which[w] %in% 9:(8+x@metadata$numberOfBeams)) { # correlation
@@ -793,31 +797,34 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  message("HEREHEREHERE")
-                                  message("why is zlim known?")
+                                  oceDebug(debug, "issue 585: about to call imagep()\n")
                                   ats <- imagep(x=tt, y=x@data$distance, z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
                                                 ylim=if (ylimGiven) ylim[w,] else
                                                     range(x@data$distance, na.rm=TRUE),
                                                     breaks=breaks,
-                                                    col=if (colGiven) col else
-                                                        oce.colorsPalette(128, 1),
-                                                        ylab=resizableLabel("distance"),
-                                                        xlab="Time",
-                                                        zlab=zlab,
-                                                        tformat=tformat,
-                                                        drawTimeRange=drawTimeRange,
-                                                        drawContours=FALSE,
-                                                        missingColor=missingColor,
-                                                        adorn=adorn[w],
-                                                        mgp=mgp,
-                                                        mar=mar,
-                                                        mai.palette=mai.palette,
-                                                        cex=cex*(1 - min(nw / 8, 1/4)),
-                                                        main=main[w],
-                                                        debug=debug-1,
-                                                        ...)
+                                                    col=if (colGiven) col else {
+                                                        if (missing(breaks))
+                                                            oce.colorsPalette(128, 1)
+                                                        else
+                                                            oce.colorsPalette(length(breaks)-1, 1)
+                                                    },
+                                                    ylab=resizableLabel("distance"),
+                                                    xlab="Time",
+                                                    zlab=zlab,
+                                                    tformat=tformat,
+                                                    drawTimeRange=drawTimeRange,
+                                                    drawContours=FALSE,
+                                                    missingColor=missingColor,
+                                                    adorn=adorn[w],
+                                                    mgp=mgp,
+                                                    mar=mar,
+                                                    mai.palette=mai.palette,
+                                                    cex=cex*(1 - min(nw / 8, 1/4)),
+                                                    main=main[w],
+                                                    debug=debug-1,
+                                                    ...)
                               }
                               if (showBottom)
                                   lines(x@data$time, bottom)
