@@ -397,6 +397,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             ## warning("assuming conductivity is in mS/cm")
             salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature,data$pressure)
             ctd <- new("ctd", pressure=data$pressure, salinity=salinity, temperature=data$temperature, filename=filename)
+            ctd@data[["scan"]] <- seq_along(data$pressure)
             ctd@metadata$sampleInterval <- NaN
             ctd@metadata$latitude <- NaN
             ctd@metadata$longitude <- NaN

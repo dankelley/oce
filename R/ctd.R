@@ -489,6 +489,8 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    if (!("scan" %in% names(x)))
+        x@data[["scan"]] <- seq_along(x@data[["pressure"]])
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
@@ -616,6 +618,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
         }
     }
+    #browser()
     if (is.data.frame(res@data)) {
         res@data <- res@data[keep,]
     } else {
@@ -641,7 +644,8 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             warning("should add note about trimming depth inversions to processingLog")
         }
     }
-    res@metadata$waterDepth <- max(abs(res@data$pressure)) # the bad data sometimes have high p
+    #browser()
+    res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE) # the bad data sometimes have high p
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
         res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
