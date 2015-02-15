@@ -472,8 +472,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
-                              col, breaks,
-                              zlim,
+                              col, breaks, zlim,
                               titles,
                               lwd=par('lwd'),
                               type='l',
@@ -498,6 +497,11 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
+              colGiven <- !missing(col)
+              breaksGiven <- !missing(breaks)
+              zlimGiven <- !missing(zlim)
+              if (breaksGiven && zlimGiven)
+                  stop("cannot supply both zlim and breaks")
               rval <- list(xat=NULL, yat=NULL)
               mode <- match.arg(mode)
               if (mode == "diagnostic") {
@@ -515,12 +519,13 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "plot.adp(x, which=\"", paste(which, collapse=","),
-                       "\", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
+                       "\", breaks=", if (missing(breaks)) "(missing)" else 
+                           paste("c(", paste(breaks, collapse=", "), ")", sep=""),
+                       ", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
               oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
-              gave.col <- !missing(col)
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
               if (!inherits(x, "adp"))
@@ -562,9 +567,9 @@ setMethod(f="plot",
               dots <- list(...)
               ytype <- match.arg(ytype)
               ## user may specify a matrix for xlim and ylim
-              gave.ylim <- !missing(ylim)
-              oceDebug(debug, 'gave.ylim=', gave.ylim, '\n')
-              if (gave.ylim) {
+              ylimGiven <- !missing(ylim)
+              oceDebug(debug, 'ylimGiven=', ylimGiven, '\n')
+              if (ylimGiven) {
                   if (is.matrix(ylim)) {
                       if (dim(ylim)[2] != nw) {
                           ylim2 <- matrix(ylim, ncol=2, nrow=nw, byrow=TRUE) # FIXME: is this what I want?
@@ -575,8 +580,8 @@ setMethod(f="plot",
                   class(ylim2) <- class(ylim)
                   ylim <- ylim2
               }
-              gave.xlim <- !missing(xlim)
-              if (gave.xlim) {
+              xlimGiven <- !missing(xlim)
+              if (xlimGiven) {
                   if (is.matrix(xlim)) {
                       if (dim(xlim)[2] != nw) {
                           xlim2 <- matrix(xlim, ncol=2, nrow=nw) # FIXME: is this what I want?
@@ -591,24 +596,23 @@ setMethod(f="plot",
                   xlim <- xlim2
               }
               if (missing(zlim)) {
-                  gave.zlim <- FALSE
-                  zlim.given <- NULL
+                  zlimGiven <- FALSE
+                  zlimAsGiven <- NULL
               } else {
-                  gave.zlim <- TRUE
+                  zlimGiven <- TRUE
                   if (is.vector(zlim)) {
                       if (length(zlim) == 2) {
-                          zlim.given <- matrix(rep(zlim, length(which)),ncol=2,byrow=TRUE)
+                          zlimAsGiven <- matrix(rep(zlim, length(which)),ncol=2,byrow=TRUE)
                       } else {
                           stop("zlim must be a vector of length 2, or a matrix with 2 columns")
                       }
                   } else {
                       ## FIXME: should this be made into a matrix?
-                      zlim.given <- zlim
+                      zlimAsGiven <- zlim
                   }
               }
 
-              ylim.given <- if (gave.ylim) ylim else NULL
-                                        #ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+              ylimAsGiven <- if (ylimGiven) ylim else NULL
               if (missing(lwd))
                   lwd <- rep(par('lwd'), length.out=nw)
               else
@@ -665,7 +669,7 @@ setMethod(f="plot",
               tt <- x@data$time
               ttDia <- x@data$timeDia  # may be null
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
-              if (!gave.zlim && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
+              if (!zlimGiven && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][,,which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
                   if (length(which) > 1) {
                       for (w in 2:length(which)) {
@@ -710,16 +714,18 @@ setMethod(f="plot",
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[,,which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
-                              y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
-                              zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$vDia[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else max(abs(x@data$vDia[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
                               z <- x@data$v[,,which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                              y.look <- if (gave.ylim) ylim.given[w, 1] <= x@data$distance & x@data$distance <= ylim.given[w, 2] else rep(TRUE, length(x@data$distance))
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
                               if (0 == sum(y.look))
-                                  stop("no data in the provided ylim=c(", paste(ylim.given[w,], collapse=","), ")")
-                              zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                                  stop("no data in the provided ylim=c(", paste(ylimAsGiven[w,], collapse=","), ")")
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                              }
                           }
                           oceDebug(debug, 'flipy=', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) { # amplitude
@@ -727,15 +733,19 @@ setMethod(f="plot",
                               oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
                               z <- as.numeric(x@data$aDia[,,which[w]-4])
                               dim(z) <- dim(x@data$aDia)[1:2]
-                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
-                              zlim <- if (gave.zlim) zlim.given[w,] else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGIven) NULL else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
+                              }
                               zlab <- c(expression(aDia[1]),expression(a[2]),expression(aDia[3]),expression(aDia[4]))[which[w]-4]
                           } else {
                               oceDebug(debug, "an amplitude component image/timeseries\n")
                               z <- as.numeric(x@data$a[,,which[w]-4])
                               dim(z) <- dim(x@data$a)[1:2]
-                              y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
-                              zlim <- if (gave.zlim) zlim.given[w,] else range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
+                              }
                               zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
                           }
                       } else if (which[w] %in% 9:(8+x@metadata$numberOfBeams)) { # correlation
@@ -764,12 +774,15 @@ setMethod(f="plot",
                       }
                       if (!skip) {
                           if (numberOfCells > 1) {
-                              if (gave.xlim) {
+                              if (xlimGiven) {
                                   ats <- imagep(x=tt, y=x@data$distance, z=z,
                                                 xlim=xlim[w,],
                                                 zlim=zlim,
                                                 flipy=flipy,
-                                                col=if (gave.col) col else oce.colorsPalette(128, 1),
+                                                col=if (colGiven) col else {
+                                                    if (missing(breaks)) oce.colorsPalette(128, 1)
+                                                    else oce.colorsPalette(length(breaks)-1, 1)
+                                                },
                                                 breaks=breaks,
                                                 ylab=resizableLabel("distance"),
                                                 xlab="Time",
@@ -787,38 +800,42 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
+                                  oceDebug(debug, "issue 585: about to call imagep()\n")
                                   ats <- imagep(x=tt, y=x@data$distance, z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
-                                                ylim=if (gave.ylim) ylim[w,] else
+                                                ylim=if (ylimGiven) ylim[w,] else
                                                     range(x@data$distance, na.rm=TRUE),
-                                                    col=if (gave.col) col else
-                                                        oce.colorsPalette(128, 1),
-                                                        ylab=resizableLabel("distance"),
-                                                        xlab="Time",
-                                                        zlab=zlab,
-                                                        tformat=tformat,
-                                                        drawTimeRange=drawTimeRange,
-                                                        drawContours=FALSE,
-                                                        missingColor=missingColor,
-                                                        adorn=adorn[w],
-                                                        mgp=mgp,
-                                                        mar=mar,
-                                                        mai.palette=mai.palette,
-                                                        cex=cex*(1 - min(nw / 8, 1/4)),
-                                                        main=main[w],
-                                                        debug=debug-1,
-                                                        ...)
+                                                    col=if (colGiven) col else {
+                                                        if (missing(breaks)) oce.colorsPalette(128, 1)
+                                                        else oce.colorsPalette(length(breaks)-1, 1)
+                                                    },
+                                                    breaks=breaks,
+                                                    ylab=resizableLabel("distance"),
+                                                    xlab="Time",
+                                                    zlab=zlab,
+                                                    tformat=tformat,
+                                                    drawTimeRange=drawTimeRange,
+                                                    drawContours=FALSE,
+                                                    missingColor=missingColor,
+                                                    adorn=adorn[w],
+                                                    mgp=mgp,
+                                                    mar=mar,
+                                                    mai.palette=mai.palette,
+                                                    cex=cex*(1 - min(nw / 8, 1/4)),
+                                                    main=main[w],
+                                                    debug=debug-1,
+                                                    ...)
                               }
                               if (showBottom)
                                   lines(x@data$time, bottom)
                           } else {
-                              col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
+                              col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
                               time  <- if (mode== "diagnostic") x@data$timeDia else x@data$time
                               tlim <- range(time)
                               ats <- oce.plot.ts(time, z, ylab=zlab,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -837,15 +854,15 @@ setMethod(f="plot",
                       }
                       drawTimeRange <- FALSE
                   } else if (which[w] %in% timeseries) { # time-series types
-                      col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
+                      col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
                       oceDebug(debug, "graph", w, "is a timeseries\n")
                       ##par(mgp=mgp, mar=mar, cex=cex)
                       tlim <- range(x@data$time)
                       if (which[w] == 13) {
                           if (haveTimeImages) drawPalette(debug=debug-1)
                           ats <- oce.plot.ts(x@data$time, x@data$salinity,
-                                             xlim=if(gave.xlim) xlim[w,] else tlim,
-                                             ylim=if(gave.ylim) ylim[w,],
+                                             xlim=if(xlimGiven) xlim[w,] else tlim,
+                                             ylim=if(ylimGiven) ylim[w,],
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
@@ -864,8 +881,8 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (mode == "diagnostic" && "temperatureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$temperatureDia,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -881,8 +898,8 @@ setMethod(f="plot",
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$temperature,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -901,8 +918,8 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (mode == "diagnostic" && "pressureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$pressureDia,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -919,8 +936,8 @@ setMethod(f="plot",
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$pressure,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -940,8 +957,8 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (mode == "diagnostic" && "headingDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$headingDia,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -958,8 +975,8 @@ setMethod(f="plot",
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$heading,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -979,8 +996,8 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (mode == "diagnostic" && "pitchDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$pitchDia,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -997,8 +1014,8 @@ setMethod(f="plot",
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$pitch,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1018,8 +1035,8 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (mode == "diagnostic" && "rollDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$rollDia,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1036,8 +1053,8 @@ setMethod(f="plot",
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$roll,
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1057,8 +1074,8 @@ setMethod(f="plot",
                           if (x@metadata$numberOfBeams > 0) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               ats <- oce.plot.ts(x@data$time, apply(x@data$v[,,1], 1, mean, na.rm=TRUE),
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1081,8 +1098,8 @@ setMethod(f="plot",
                           if (x@metadata$numberOfBeams > 1) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               ats <- oce.plot.ts(x@data$time, apply(x@data$v[,,2], 1, mean, na.rm=TRUE),
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1105,8 +1122,8 @@ setMethod(f="plot",
                           if (x@metadata$numberOfBeams > 2) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               ats <- oce.plot.ts(x@data$time, apply(x@data$v[,,3], 1, mean, na.rm=TRUE),
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1129,8 +1146,8 @@ setMethod(f="plot",
                           if (x@metadata$numberOfBeams > 3) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               ats <- oce.plot.ts(x@data$time, apply(x@data$v[,,4], 1, mean, na.rm=TRUE),
-                                                 xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                 ylim=if(gave.ylim) ylim[w,],
+                                                 xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                 ylim=if(ylimGiven) ylim[w,],
                                                  xaxs="i",
                                                  col=col[w],
                                                  lwd=lwd[w],
@@ -1153,8 +1170,8 @@ setMethod(f="plot",
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           dt <- as.numeric(x@data$time[2]) - as.numeric(x@data$time[1])
                           ats <- oce.plot.ts(x@data$time, dt * cumsum(apply(x@data$v[,,3], 1, mean)),
-                                             xlim=if(gave.xlim) xlim[w,] else tlim,
-                                             ylim=if(gave.ylim) ylim[w,],
+                                             xlim=if(xlimGiven) xlim[w,] else tlim,
+                                             ylim=if(ylimGiven) ylim[w,],
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
@@ -1175,8 +1192,8 @@ setMethod(f="plot",
                           oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           ats <- oce.plot.ts(x[["time"]], x[["soundSpeed"]],
-                                             xlim=if(gave.xlim) xlim[w,] else tlim,
-                                             ylim=if(gave.ylim) ylim[w,],
+                                             xlim=if(xlimGiven) xlim[w,] else tlim,
+                                             ylim=if(ylimGiven) ylim[w,],
                                              xaxs="i",
                                              col=col[w],
                                              lwd=lwd[w],
@@ -1197,15 +1214,15 @@ setMethod(f="plot",
                               if (which[w] == 40) {
                                   ats <- oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]",
                                                      type=type,
-                                                     xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                     ylim=if(gave.ylim) ylim[w,] else range(x@data$br, na.rm=TRUE),
+                                                     xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$br, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               } else {
                                   ats <- oce.plot.ts(x@data$time, x@data$br[,which[w]-40], ylab=c("Beam", which[w]-40, "range [m]"),
                                                      type=type,
-                                                     xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                     ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,1], na.rm=TRUE),
+                                                     xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$br[,1], na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               }
@@ -1219,15 +1236,15 @@ setMethod(f="plot",
                               if (which[w] == 50) {
                                   ats <- oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]",
                                                      type=type,
-                                                     xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                     ylim=if(gave.ylim) ylim[w,] else range(x@data$bv, na.rm=TRUE),
+                                                     xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$bv, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               } else {
                                   ats <- oce.plot.ts(x@data$time, x@data$bv[,which[w] - 50], ylab=c("Beam",which[w]-50,"velocity [m/s]"),
                                                      type=type,
-                                                     xlim=if(gave.xlim) xlim[w,] else tlim,
-                                                     ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE),
+                                                     xlim=if(xlimGiven) xlim[w,] else tlim,
+                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               }
@@ -1284,7 +1301,7 @@ setMethod(f="plot",
                           ##yDist <- cumsum(v) * dt / m.per.km
                           xDist <- integrateTrapezoid(ttt, u, 'cA') / m.per.km
                           yDist<- integrateTrapezoid(ttt, v, 'cA') / m.per.km
-                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1, col=if (gave.col) col else "black", ...)
+                          plot(xDist, yDist, xlab="km", ylab="km", type='l', asp=1, col=if (colGiven) col else "black", ...)
                           xaxp <- par("xaxp")
                           xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                           yaxp <- par("yaxp")
@@ -1365,27 +1382,27 @@ setMethod(f="plot",
                               plot(u, v,
                                    xlab=resizableLabel("u"),
                                    ylab=resizableLabel("v"),
-                                   asp=1, col=if (gave.col) col else "black",
-                                   xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
-                                   ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
+                                   asp=1, col=if (colGiven) col else "black",
+                                   xlim=if(xlimGiven) xlim[w,] else range(u, na.rm=TRUE),
+                                   ylim=if(ylimGiven) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
                           } else {
                               plot(u, v,
                                    xlab=resizableLabel("u"),
                                    ylab=resizableLabel("v"),
                                    type='n', asp=1,
-                                   xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
-                                   ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
+                                   xlim=if(xlimGiven) xlim[w,] else range(u, na.rm=TRUE),
+                                   ylim=if(ylimGiven) ylim[w,] else range(v, na.rm=TRUE),
                                    ...)
-                              points(u, v, cex=cex/2, col=if (gave.col) col else "black")
+                              points(u, v, cex=cex/2, col=if (colGiven) col else "black")
                           }
                       } else {
                           smoothScatter(u, v,
                                         xlab=resizableLabel("u"),
                                         ylab=resizableLabel("v"),
                                         asp=1,
-                                        xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
-                                        ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
+                                        xlim=if(xlimGiven) xlim[w,] else range(u, na.rm=TRUE),
+                                        ylim=if(ylimGiven) ylim[w,] else range(v, na.rm=TRUE),
                                         ...)
                       }
                       xaxp <- par("xaxp")
@@ -1409,7 +1426,7 @@ setMethod(f="plot",
                           rotate <- rbind(c(cos(theta0), -sin(theta0)),
                                           c(sin(theta0), cos(theta0)))
                           xxyy <- rotate %*% rbind(xx, yy)
-                          col <- if (gave.col) col else "darkblue"
+                          col <- if (colGiven) col else "darkblue"
                           lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                           lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                           rval$ellipseMajor <- major

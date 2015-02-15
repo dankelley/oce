@@ -1,5 +1,44 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' Show an argument to a function, e.g. for debugging
+#'
+#' @param x the argument
+#' @param nshow number of values to show at first (if length(x)> 1)
+#' @param last indicates whether this is the final argument to the function
+#' @param sep the separator between name and value
+argShow <- function(x, nshow=2, last=FALSE, sep="=")
+{
+    if (missing(x))
+        return("")
+    name <- paste(substitute(x))
+    rval <- ""
+    if (missing(x)) {
+        rval <- "(missing)"
+    } else {
+        if (is.null(x)) {
+            rval <- NULL
+        } else {
+            nx <- length(x)
+            if (nx > 1)
+                name <- paste(name, "[", nx, "]", sep="")
+            if (is.function(x)) {
+                rval <- "(provided)"
+            } else if (is.character(x) && nx==1) {
+                rval <- paste('"', x[1], '"', sep="")
+            } else {
+                look <- 1:min(nshow, nx)
+                rval <- paste(format(x[look], digits=4), collapse=" ")
+                if (nx > nshow)
+                    rval <- paste(rval, "...", x[nx])
+            }
+        }
+    }
+    if (!last)
+        rval <- paste(rval, ", ", sep="")
+    paste(name, rval, sep="=")
+}
+
+
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")

@@ -10,6 +10,7 @@ exportMethods(summary)
 export("+.section",
        abbreviateTimeLabels,
        approx3d,
+       argShow,
        beamName,
        addColumn,
        airRho,
