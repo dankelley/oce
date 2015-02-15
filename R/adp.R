@@ -779,7 +779,10 @@ setMethod(f="plot",
                                                 xlim=xlim[w,],
                                                 zlim=zlim,
                                                 flipy=flipy,
-                                                col=if (colGiven) col else oce.colorsPalette(128, 1),
+                                                col=if (colGiven) col else {
+                                                    if (missing(breaks)) oce.colorsPalette(128, 1)
+                                                    else oce.colorsPalette(length(breaks)-1, 1)
+                                                },
                                                 breaks=breaks,
                                                 ylab=resizableLabel("distance"),
                                                 xlab="Time",
@@ -803,13 +806,11 @@ setMethod(f="plot",
                                                 flipy=flipy,
                                                 ylim=if (ylimGiven) ylim[w,] else
                                                     range(x@data$distance, na.rm=TRUE),
-                                                    breaks=breaks,
                                                     col=if (colGiven) col else {
-                                                        if (missing(breaks))
-                                                            oce.colorsPalette(128, 1)
-                                                        else
-                                                            oce.colorsPalette(length(breaks)-1, 1)
+                                                        if (missing(breaks)) oce.colorsPalette(128, 1)
+                                                        else oce.colorsPalette(length(breaks)-1, 1)
                                                     },
+                                                    breaks=breaks,
                                                     ylab=resizableLabel("distance"),
                                                     xlab="Time",
                                                     zlab=zlab,
