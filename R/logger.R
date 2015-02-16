@@ -403,7 +403,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             ## CR suggests to read "samplingInterval" but I cannot find it from the following
             ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sampling
             ## so I just infer it from the data
-            ctd@metadata$sampleInterval <- median(diff(as.numeric(d@data$time))) 
+            ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
             ctd@metadata$latitude <- NaN
             ctd@metadata$longitude <- NaN
             ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
