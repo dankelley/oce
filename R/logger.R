@@ -391,14 +391,19 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         model <- instruments$model
         RSQLite::dbDisconnect(con)
 
-        ## FIXME: decide whether to do ctd class here
+
         if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
             conductivity.standard <- 42.914 ## mS/cm conversion factor
             ## warning("assuming conductivity is in mS/cm")
             salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature,data$pressure)
             ctd <- new("ctd", pressure=data$pressure, salinity=salinity, temperature=data$temperature, filename=filename)
+            ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
-            ctd@metadata$sampleInterval <- NaN
+
+            ## CR suggests to read "samplingInterval" but I cannot find it from the following
+            ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sampling
+            ## so I just infer it from the data
+            ctd@metadata$sampleInterval <- median(diff(as.numeric(d@data$time))) 
             ctd@metadata$latitude <- NaN
             ctd@metadata$longitude <- NaN
             ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
