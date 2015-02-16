@@ -362,23 +362,19 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
 
         ## From notes in comments above, it seems necessary to order by
         ## timestamp (tstamp). Ordering does not seem to be an option for
-        ## dbReadTable(), so we use dbFetch(); and that means we first have to
-        ## get the length 'n' of the columns.
-        res <- DBI::dbSendQuery(con, "select count(tstamp) from data;")
-        n <-  as.numeric(DBI::dbFetch(res))
-        DBI::dbClearResult(res)
+        ## dbReadTable(), so we use dbFetch().
 
-        ## Now get time stamp. Note the trick of making it floating-point
+        ## First, get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
         res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
-        t1000 <- DBI::dbFetch(res, n=n)[[1]]
+        t1000 <- DBI::dbFetch(res, n=-1)[[1]]
         RSQLite::dbClearResult(res)
         time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
 
-        ## Get the data; we drop the first column beause we have time
-        ## already.
+        ## Second, get the data; we drop the first column beause we have
+        ## time already.
         res <- DBI::dbSendQuery(con, "select * from data order by tstamp;")
-        data <- DBI::dbFetch(res, n=n)[,-1, drop=FALSE]
+        data <- DBI::dbFetch(res, n=-1)[,-1, drop=FALSE]
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
