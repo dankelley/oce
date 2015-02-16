@@ -2,9 +2,10 @@
 
 \alias{swAbsoluteSalinity}
 
-\title{Seawater absolute salinity, in TEOS-10}
+\title{Seawater absolute salinity, in GSW formulation}
 
-\description{Compute seawater absolute salinity, according to TEOS-10.}
+\description{Compute seawater absolute salinity, according to the GSW/TEOS-10
+    formulation.}
 
 \usage{swAbsoluteSalinity(salinity, pressure=NULL, longitude=300, latitude=30)}
 

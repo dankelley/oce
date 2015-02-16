@@ -2,9 +2,10 @@
 
 \alias{swConservativeTemperature}
 
-\title{Seawater conservative temperature, in TEOS-10.}
+\title{Seawater conservative temperature, in GSW formulation}
 
-\description{Compute seawater conservative temperature, according to TEOS-10.}
+\description{Compute seawater conservative temperature, according to the
+    GSW/TEOS-10 formulation.}
 
 \usage{swConservativeTemperature(salinity, temperature=NULL, pressure=NULL,
     longitude=300, latitude=30)}
