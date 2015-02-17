@@ -387,12 +387,13 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         model <- instruments$model
         RSQLite::dbDisconnect(con)
 
-
         if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
             conductivity.standard <- 42.914 ## mS/cm conversion factor
             ## warning("assuming conductivity is in mS/cm")
-            salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature,data$pressure)
-            ctd <- new("ctd", pressure=data$pressure, salinity=salinity, temperature=data$temperature, filename=filename)
+            warning("subtracting ", pressureAtmospheric, " dbar from pressure before creating CTD object")
+            p <- data$pressure - pressureAtmospheric
+            salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
+            ctd <- new("ctd", pressure=p, salinity=salinity, temperature=data$temperature, filename=filename)
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
 
@@ -409,6 +410,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                     ctd@data[[name]] <- data[[name]]
                 }
             }
+            ## save the original pressure
+            ctd <- ctdAddColumn(ctd, data$pressure, name="pressureOriginal", label="pressureOriginal", unit="dbar")
             ## Add some metadata directly (FIXME: this is brittle to changes in names of the metadata)
             ctd@metadata$serialNumber <- serialNumber
             ctd@metadata$type <- "RBR"
