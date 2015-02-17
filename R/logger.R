@@ -14,7 +14,7 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="logger",
           definition=function(object, ...) {
-              cat("TDR Summary\n----------\n", ...)
+              cat("Logger Summary\n----------\n", ...)
               cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
                         "``, model ``", object@metadata$model, "``\n", sep=""))
               if ("pressureAtmospheric" %in% names(object@metadata)) {
@@ -401,8 +401,9 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             ctd@processingLog <- processingLog(ctd@processingLog,
                                                paste("subtract pressureAtmospheric (", pressureAtmospheric, " dbar) from logger pressure", sep=""))
 
-            ## CR suggests to read "samplingInterval" but I cannot find it from the following
-            ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sampling
+            ctd@metadata$pressureAtmospheric <- pressureAtmospheric
+            ## CR suggests to read "sampleInterval" but I cannot find it from the following
+            ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sample
             ## so I just infer it from the data
             ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
             ctd@metadata$latitude <- NaN
