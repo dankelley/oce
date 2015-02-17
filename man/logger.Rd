@@ -5,7 +5,9 @@
 
 \title{A logger dataset, of the temperature-data recorder variety}
 
-\description{A sample object of Oce class \code{logger}.}
+\description{A sample object of Oce class \code{\link{logger-class}},
+    containing vectors for time, temperature and pressure, the last of which
+    has not had atmospheric pressure subtracted (see \sQuote{Examples}).}
 
 \usage{data(logger)}
 
@@ -18,11 +20,11 @@
     dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
 data(logger)
+## subtract standard atmospheric pressure
+logger[["pressure"]] <- logger[["pressure"]] - 10.3
 plot(logger)
-}
 }
 
 \author{Dan Kelley}
