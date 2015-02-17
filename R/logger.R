@@ -391,11 +391,15 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
             conductivity.standard <- 42.914 ## mS/cm conversion factor
             ## warning("assuming conductivity is in mS/cm")
             warning("subtracting ", pressureAtmospheric, " dbar from pressure before creating CTD object")
+            message("subtracting ", pressureAtmospheric, " dbar from pressure before creating CTD object")
+
             p <- data$pressure - pressureAtmospheric
             salinity <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
             ctd <- new("ctd", pressure=p, salinity=salinity, temperature=data$temperature, filename=filename)
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
+            ctd@processingLog <- processingLog(ctd@processingLog,
+                                               paste("subtract pressureAtmospheric (", pressureAtmospheric, " dbar) from logger pressure", sep=""))
 
             ## CR suggests to read "samplingInterval" but I cannot find it from the following
             ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sampling

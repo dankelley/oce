@@ -47,25 +47,12 @@
     (3) text file with five columns, in which depth in the water column is
     given after the pressure; (4) an SQLite-based database format.}
 
-\value{An object of \code{\link[base]{class}} \code{"logger"}, which is a
-  list with elements detailed below.
-  \item{data}{a data table containing the \code{time},
-    \code{temperature}, and \code{pressure} data.}
-  \item{metadata}{a list containing the following items
-    \describe{
-      \item{\code{header}}{the header itself, as read from the input file.}
-      \item{\code{serial.number}}{serial number of instrument, inferred
-	from first line of the header.}
-      \item{\code{loggingStart}}{start time for logging, inferred from
-	the header.  Caution: this is often not the first time in the
-	data, because the data may have been subsetted.}
-      \item{\code{sample.period}}{seconds between samples, inferred from
-	the header.  Caution: this is often not the sampling period in the
-	data, because the data may have been decimated.}
-    }
-  }
-  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
-}
+\value{If the data contain conductivity, temperature and pressure, then
+    \code{read.logger} coerces its results into an object of
+    \code{\link[base]{class}} \code{"ctd"} (see \code{\link{ctd-class}}), after
+    subtracting atmospheric pressure (which is stored in RBR files).
+    Otherwise, return an object of \code{\link[base]{class}} \code{"logger"}
+    (see \code{\link{logger-class}}).  }
 
 \seealso{The documentation for \code{\link{logger-class}} explains the
     structure of \code{logger} objects, and also outlines the other functions
