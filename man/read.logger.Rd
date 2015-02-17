@@ -47,15 +47,35 @@
     (3) text file with five columns, in which depth in the water column is
     given after the pressure; (4) an SQLite-based database format.}
 
-\value{If the data contain conductivity, temperature and pressure, then
-    \code{read.logger} coerces its results into an object of
-    \code{\link[base]{class}} \code{"ctd"} (see \code{\link{ctd-class}}), after
-    subtracting atmospheric pressure (which is stored in RBR files).
-    Otherwise, return an object of \code{\link[base]{class}} \code{"logger"}
-    (see \code{\link{logger-class}}).  }
+\value{Two cases are handled at present.  If the data do not conductivity,
+    temperature and pressure, then an object of \code{\link[base]{class}}
+    \code{"logger"} is returned (see \code{\link{logger-class}}).  However, if
+    those three quantities are stored in the file, then an object of
+    \code{\link[base]{class}} \code{"ctd"} (see \code{\link{ctd-class}}) is
+    returned.  Since logger files tend to record total pressure, it will be
+    necessary for the user to alter the pressure stored in the \code{ctd}
+    object, probably by subtracting a standard value (10.1325 being the usual
+    estimate for a standard atmosphere at sea level) or a hand-tailored value
+    or set of values; see \dQuote{Examples.}}
+
+\examples{
+\dontrun{
+library(oce)
+## A CTD-style logger
+ctd <- read.logger("050107_20130620_2245cast4.rsk")
+## In this particular file, the device was raised for the surface for a
+## while, so that a reference (atmospheric) pressure can be estimated
+## averaging pressures for the interval of out-of-water salinity.
+p <- ctd[["pressure"]]
+S <- ctd[["salinity"]]
+p0 <- mean(p[S<1], na.rm=TRUE)
+ctd[["pressure"]] <- ctd[["pressure"]] - p0
+plot(ctdTrim(ctd))
+}
+}
 
 \seealso{The documentation for \code{\link{logger-class}} explains the
-    structure of \code{logger} objects, and also outlines the other functions
+    structure of \code{logger} objects, and also outlines other functions
     dealing with them.}
 
 \author{Dan Kelley}
