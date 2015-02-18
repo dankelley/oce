@@ -49,7 +49,7 @@
     (3) text file with five columns, in which depth in the water column is
     given after the pressure; (4) an SQLite-based database format.}
 
-\value{Two cases are handled at present.  If the data do not conductivity,
+\value{Two cases are handled at present.  If the data do not have conductivity,
     temperature and pressure, then an object of \code{\link[base]{class}}
     \code{"logger"} is returned (see \code{\link{logger-class}}).  However, if
     those three quantities are stored in the file, then an object of
@@ -65,7 +65,7 @@
 \dontrun{
 library(oce)
 ## A CTD-style logger
-ctd <- read.logger("050107_20130620_2245cast4.rsk")
+ctd <- read.logger("cast4.rsk")
 ## In this particular file, the device was raised for the surface for a
 ## while, so that a reference (atmospheric) pressure can be estimated
 ## averaging pressures for the interval of out-of-water salinity.
