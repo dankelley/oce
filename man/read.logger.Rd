@@ -5,9 +5,12 @@
 \title{Read a logger file}
 
 \description{Read a logger file, e.g. a temperature-depth recorder, producing
-    an object of type \code{logger}.}
+    an object of class \code{logger}. As a special case, if the device recorded
+    temperature, conductivity and pressure, return an object of class
+    \code{ctd}.}
 
-\usage{read.logger(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+\usage{read.logger(file, from=1, to, by=1, type,
+            tz=getOption("oceTz", default="UTC"),
             processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -31,8 +34,7 @@
   \item{type}{optional file type, presently only permitted to be \code{rsk}. If
       this argument is not provided, an attempt will be made to infer the type
       from the file name and contents.}
-  \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
-    at setup.}
+  \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
   \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
@@ -52,7 +54,8 @@
     \code{"logger"} is returned (see \code{\link{logger-class}}).  However, if
     those three quantities are stored in the file, then an object of
     \code{\link[base]{class}} \code{"ctd"} (see \code{\link{ctd-class}}) is
-    returned.  Since logger files tend to record total pressure, it will be
+    returned. The class can be switched to \code{logger} using
+    \code{\link{as.logger}}. Since logger files tend to record total pressure, it will be
     necessary for the user to alter the pressure stored in the \code{ctd}
     object, probably by subtracting a standard value (10.1325 being the usual
     estimate for a standard atmosphere at sea level) or a hand-tailored value
@@ -68,7 +71,7 @@ ctd <- read.logger("050107_20130620_2245cast4.rsk")
 ## averaging pressures for the interval of out-of-water salinity.
 p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]
-p0 <- mean(p[S<1], na.rm=TRUE)
+p0 <- max(p[S<1], na.rm=TRUE)
 ctd[["pressure"]] <- ctd[["pressure"]] - p0
 plot(ctdTrim(ctd))
 }

@@ -83,6 +83,10 @@ as.logger <- function(time, temperature, pressure,
 {
     debug <- min(debug, 1)
     oceDebug(debug, "as.logger(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
+    if (inherits(time, "ctd")) {
+        class(time) <- "logger"
+        return(time)
+    }
     if (missing(time) || missing(temperature) || missing(pressure))
         stop("must give (at least) time, temperature, and pressure")
     if (!inherits(time, "POSIXt"))
@@ -265,7 +269,7 @@ setMethod(f="plot",
               invisible()
           })
 
-read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
                         processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))

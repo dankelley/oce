@@ -11,7 +11,10 @@
       pressureAtmospheric=NA, processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
-  \item{time}{a vector of times for the data.}
+  \item{time}{a vector of times for the data, or an object of class \code{ctd}; in
+      the second case, the class is simply changed to \code{logger} and \code{time}
+      is returned. This is a way to undo the assignment of \code{ctd} class by
+      \code{\link{read.logger}}.}
   \item{temperature}{temperatures at the give times.}
   \item{pressure}{pressures at the give times.}
   \item{filename}{optional name of file containing the data}
