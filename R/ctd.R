@@ -78,6 +78,8 @@ setMethod(f="[[",
                   x@data$pressure
               } else if (i == "N2") {
                   swN2(x)
+              } else if (i == "sigmaTheta") {
+                  swSigmaTheta(x)
               } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
               } else if (i == "Rrho") {
