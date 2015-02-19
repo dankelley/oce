@@ -532,7 +532,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     }
                 }
             }
-            pmin <- 0
+            pmin <- -5
             if (!missing(parameters)) {
                 if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
             }

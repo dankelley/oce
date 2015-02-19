@@ -358,11 +358,13 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         ## }
         ## atmospheric pressure
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
+        warn <- FALSE
         try({ # need to wrap in try() because this can fail
             deriveDepth <- RSQLite::dbReadTable(con, "deriveDepth")
             pressureAtmospheric <- deriveDepth$atmosphericPressure 
-            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
+            warn <- TRUE
         }, silent=TRUE)
+        warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
 
         ## From notes in comments above, it seems necessary to order by
