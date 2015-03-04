@@ -534,7 +534,12 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             }
             pmin <- -5
             if (!missing(parameters)) {
-                if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
+                if ("pmin" %in% names(parameters)) {
+                    pmin <- parameters$pmin
+                    pminGiven <- TRUE
+                } else {
+                    stop("parameter not understood for this method")
+                }
             }
             oceDebug(debug, 'pmin=', pmin, '\n')
             keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
@@ -571,7 +576,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             ## 2011-02-04     equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x@data$scan)) < 0)
             ## 2011-02-04     keep[equilibration] <- FALSE
             ## 2011-02-04 }
-            if (TRUE) {                 # new method, after Feb 2008
+            if (!pminGiven) {                 # new method, after Feb 2008
                 bilinear1 <- function(s, s0, dpds) {
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
