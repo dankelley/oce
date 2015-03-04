@@ -582,12 +582,15 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     if (debug>9) cat("s0:", s0, ", dpds:", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
-                 bilinear2 <- function(s, s0, p0, dpds) {
+                bilinear2 <- function(s, s0, p0, dpds) {
                     if (debug>9) cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
                     ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
                 pp <- x@data$pressure[keep]
                 ss <- x@data$scan[keep]
+                look <- pp < 30
+                pp <- pp[look]
+                ss <- ss[look]
                 p0 <- 0
                 s0 <- ss[0.25*length(ss)]
                 p0 <- pp[1]
@@ -607,11 +610,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     if (m$convInfo$isConv) {
                         if (debug>9) {
                             C <- coef(m)
-                            scanStart <- floor(C["s0"] - C["p0"] / C["dpds"])
+                            scanStart <- max(1, floor(C["s0"] - C["p0"] / C["dpds"]))
                             oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
                             keep <- keep & (x@data$scan > scanStart)
                         } else {
-                            s0 <- floor(coef(m)[[1]])
+                            s0 <- max(1, floor(coef(m)[[1]]))
                             oceDebug(debug, "trimming scan numbers below", s0, "\n")
                             keep <- keep & (x@data$scan > (coef(m)[[1]]))
                         }
