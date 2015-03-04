@@ -579,11 +579,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             ## 2011-02-04 }
             if (!pminGiven) {                 # new method, after Feb 2008
                 bilinear1 <- function(s, s0, dpds) {
-                    if (debug>9) cat("s0:", s0, ", dpds:", dpds, "\n")
+                    if (debug==9) cat("s0:", s0, ", dpds:", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
                 bilinear2 <- function(s, s0, p0, dpds) {
-                    if (debug>9) cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
+                    if (debug==10) cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
                     ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
                 pp <- x@data$pressure[keep]
@@ -599,16 +599,18 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 else
                     dpds0 <- 0 
-                if (debug>9) {
+                if (debug==10) {
+                    cat("using new bilinear method (fit for p0)\n")
                     t <- try(m <- nls(pp ~ bilinear2(ss, s0, p0, dpds),
                                       start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
                 } else {
+                    cat("using old bilinear method (use p0=0)\n")
                     t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds),
                                       start=list(s0=s0, dpds=dpds0)), silent=TRUE)
                 }
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
-                        if (debug>9) {
+                        if (debug==10) {
                             C <- coef(m)
                             scanStart <- max(1, floor(C["s0"] - C["p0"] / C["dpds"]))
                             oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
