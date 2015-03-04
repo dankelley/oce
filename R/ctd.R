@@ -533,6 +533,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 }
             }
             pmin <- -5
+            pminGiven <- FALSE
             if (!missing(parameters)) {
                 if ("pmin" %in% names(parameters)) {
                     pmin <- parameters$pmin
@@ -583,7 +584,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 }
                  bilinear2 <- function(s, s0, p0, dpds) {
                     cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
-                    ifelse(s < s0, p0, dpds*(s-s0))
+                    ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
                 pp <- x@data$pressure[keep]
                 ss <- x@data$scan[keep]
