@@ -87,9 +87,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
 
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
-    lag.length <- readBin(FLD[8], "integer", n=1, size=1)
-    numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1)
-    numberOfCells <- readBin(FLD[10], "integer", n=1, size=1) # WN
+    lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
+    numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1, signed=FALSE)
+    oceDebug(debug, "numberOfBeams", numberOfBeams, "\n")
+    numberOfCells <- abs(readBin(FLD[10], "integer", n=1, size=1, signed=FALSE)) # WN
+    oceDebug(debug, "numberOfCells", numberOfCells, "\n")
     pingsPerEnsemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (cellSize < 0 || cellSize > 64)
