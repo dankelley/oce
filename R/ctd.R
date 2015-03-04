@@ -579,11 +579,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             ## 2011-02-04 }
             if (!pminGiven) {                 # new method, after Feb 2008
                 bilinear1 <- function(s, s0, dpds) {
-                    cat("s0:", s0, ", dpds:", dpds, "\n")
+                    if (debug>9) cat("s0:", s0, ", dpds:", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
                  bilinear2 <- function(s, s0, p0, dpds) {
-                    cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
+                    if (debug>9) cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
                     ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
                 pp <- x@data$pressure[keep]
@@ -596,22 +596,24 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 else
                     dpds0 <- 0 
-                if (FALSE) {
-                    t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds), start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                if (debug>9) {
+                    t <- try(m <- nls(pp ~ bilinear2(ss, s0, p0, dpds),
+                                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
                 } else {
-                    t <- try(m <- nls(pp ~ bilinear2(ss, s0, p0, dpds), start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                    t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds),
+                                      start=list(s0=s0, dpds=dpds0)), silent=TRUE)
                 }
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
-                        if (FALSE) {
-                            s0 <- floor(coef(m)[[1]])
-                            oceDebug(debug, "trimming scan numbers below", s0, "\n")
-                            keep <- keep & (x@data$scan > (coef(m)[[1]]))
-                        } else {
+                        if (debug>9) {
                             C <- coef(m)
                             scanStart <- floor(C["s0"] - C["p0"] / C["dpds"])
                             oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
                             keep <- keep & (x@data$scan > scanStart)
+                        } else {
+                            s0 <- floor(coef(m)[[1]])
+                            oceDebug(debug, "trimming scan numbers below", s0, "\n")
+                            keep <- keep & (x@data$scan > (coef(m)[[1]]))
                         }
                     }
                     ##} else {
