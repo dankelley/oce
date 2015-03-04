@@ -28,11 +28,15 @@ parameters, debug=getOption("oceDebug"))}
 	    decibars) is used instead as the lower limit.  This is a
 	    commonly-used setup, e.g. \code{ctdTrim(ctd,
 	    parameters=list(pmin=1))} removes the top decibar
-	    (roughly 1m) from the data.}
+	    (roughly 1m) from the data. Specifying \code{pmin} is a
+            simple way to remove near-surface data, such as a shallow
+	    equilibration phase, and if specified will cause
+            \code{ctdTrim} to skip step 4 below.}
 	  \item{Step 3.}{The maximum pressure is determined, and data
 	    acquired subsequent to that point are deleted.  This removes
 	    the upcast and any subsequent data.}
-	  \item{Step 4.}{An initial equilibrium phase is removed by a
+	  \item{Step 4.}{If the \code{pmin} parameter is not specified,
+            an attempt is made to remove an initial equilibrium phase by a
 	    regression of pressure on scan number.  The model has zero
 	    pressure for some initial portion, and then a constant
 	    increase with scan number.  Then this initial zero-pressure
