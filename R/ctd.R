@@ -579,16 +579,33 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             ## 2011-02-04 }
             if (!pminGiven) {                 # new method, after Feb 2008
                 bilinear1 <- function(s, s0, dpds) {
-                    if (debug==9) cat("s0:", s0, ", dpds:", dpds, "\n")
+                    if (debug==9) cat("bilinear1 s0=", s0, " dpds=", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
                 bilinear2 <- function(s, s0, p0, dpds) {
-                    if (debug==10) cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
+                    if (debug==10) cat("bilinear2 s0=", s0, " p0=", p0, " dpds=", dpds, "\n")
                     ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
+                bilinear3 <- function(param) { # param=c(s0,p0,dpds); this uses ss and pp
+                    s0 <-  param[1]
+                    p0 <- param[2]
+                    dpds <- param[3]
+                    if (debug==11) cat("bilinear3 s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
+                    look <- ss >= s0
+                    ssl <- ss[look]
+                    ppl <- pp[look]
+                    sqrt(sum((ppl - (p0 + dpds * (ssl - s0)))^2))
+                }
                 pp <- x@data$pressure[keep]
+                pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
                 ss <- x@data$scan[keep]
-                look <- pp < 30
+                look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
+                end <- which(smooth(pp) > 20)[1]
+                look <- 1:end
+                END<<-end
+                PP<<-pp
+                SS<<-ss
+                LOOK<<-look
                 pp <- pp[look]
                 ss <- ss[look]
                 p0 <- 0
@@ -600,27 +617,46 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 else
                     dpds0 <- 0 
                 if (debug==10) {
-                    cat("using new bilinear method (fit for p0)\n")
+                    cat("using bilinear2 method (fit for s0, p0 and dpds0)\n")
                     t <- try(m <- nls(pp ~ bilinear2(ss, s0, p0, dpds),
                                       start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                } else if (debug == 11) {
+                    cat("using bilinear3 method (fit for s0, p0 and dpds0, using NA for scans before s0)\n")
+                    #t <- try(m <- nls(pp ~ bilinear3(ss, s0, dpds),
+                    #                  na.action=na.exclude,
+                    #                  start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                    t <- try(o <- optim(c(mean(ss), mean(pp, na.rm=TRUE), mean(diff(pp)/diff(ss))), bilinear3), silent=TRUE)
+                    scanStart <- o$par[1]
+                    cat("scanStart:", scanStart, "\n")
+                    keep <- keep & (x@data$scan > scanStart)
                 } else {
-                    cat("using old bilinear method (use p0=0)\n")
+                    cat("using old bilinear method (fit for s0 and dpds0, using p0=0)\n")
                     t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds),
                                       start=list(s0=s0, dpds=dpds0)), silent=TRUE)
                 }
                 if (class(t) != "try-error") {
-                    if (m$convInfo$isConv) {
-                        if (debug==10) {
-                            C <- coef(m)
-                            scanStart <- max(1, floor(C["s0"] - C["p0"] / C["dpds"]))
-                            oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
+                    if (debug==11) {
+                        scanStart <- o$par[1]
+                    } else {
+                        if (m$convInfo$isConv) {
+                            if (debug==10) {
+                                C <- coef(m)
+                                scanStart <- max(1, floor(0.5 + C["s0"] - C["p0"] / C["dpds"]))
+                                oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
+                                P0<<-C["p0"]
+                            } else {
+                                C <- coef(m)
+                                scanStart <- max(1, floor(0.5+C["s0"]))
+                                oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
+                                P0<<-0
+                            }
                             keep <- keep & (x@data$scan > scanStart)
-                        } else {
-                            s0 <- max(1, floor(coef(m)[[1]]))
-                            oceDebug(debug, "trimming scan numbers below", s0, "\n")
-                            keep <- keep & (x@data$scan > (coef(m)[[1]]))
+                            SCANSTART<<-scanStart
+                            DPDS<<-C["dpds"]
+                            S0<<-C["s0"]
                         }
                     }
+                    cat("scanStart:", scanStart, "\n")
                     ##} else {
                     ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
                 } else {
