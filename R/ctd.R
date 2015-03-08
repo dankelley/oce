@@ -152,6 +152,8 @@ as.ctd <- function(salinity, temperature, pressure,
             pressure <- d$pressure
             ## FIXME: extract nitrate etc
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
+        if (missing(scan) && "scan" %in% names)
+            scan <- d$scan
     } else {
         if (missing(temperature) && missing(CT))
             stop("must give temperature or CT")
@@ -193,6 +195,8 @@ as.ctd <- function(salinity, temperature, pressure,
     np <- length(pressure)
     if (nS != np)
         stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
+    if (missing(scan))
+        scan <- as.numeric(seq_along(salinity))
     data <- list(salinity=salinity,
                  temperature=temperature,
                  pressure=pressure,
@@ -1265,72 +1269,62 @@ setMethod(f="subset",
           })
  
 
-plotScan <- function(x, name="scan", adorn=NULL, mgp=getOption("oceMgp"), type='l', ...)
+plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
+                     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    if (3 == length(mgp)) par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
+    nw <- length(which)
+    if (nw > 1)
+        par(mfrow=c(nw,1))
+    par(mar=mar)
+    par(mgp=mgp)
+    scan <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
+    for (w in which) {
+        if (w == 1) {
+            plot(scan, x@data$pressure, ylab=resizableLabel("p", "y"), xlab="Scan", yaxs='r', type=type)
+        } else if (w == 2) {
+            dp <- diff(x@data$pressure)
+            dp <- c(dp, dp[length(dp)])
+            plot(scan, dp, ylab="diff(pressure)", xlab="Scan", yaxs='r', type=type)
+        } else if (w == 3) {
+            dp <- diff(x@data$pressure)
+            dp <- c(dp, dp[length(dp)])
+            plot(scan, x[["temperature"]], ylab=resizableLabel("T", "y"),
+                 xlab="Scan", yaxs='r', type=type)
+        } else if (w == 4) {
+            dp <- diff(x@data$pressure)
+            dp <- c(dp, dp[length(dp)])
+            plot(scan, x[["salinity"]], ylab=resizableLabel("S", "y"),
+                 xlab="Scan", yaxs='r', type=type)
+        } else {
+            stop("unknown 'which'; must be in 1:4")
+        }
+    }
+    ## mtext(x@metadata$station, side=3, adj=1, cex=par('cex'))
+    ## mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
+    ## if (1 <= adorn.length) {
+    ##     t <- try(eval(adorn[1]), silent=TRUE)
+    ##     if (class(t) == "try-error")
+    ##         warning("cannot evaluate adorn[", 1, "]\n")
+    ## }
 
-    adorn.length <- length(adorn)
-    if (adorn.length == 1) {
-        adorn <- rep(adorn, 2)
-        adorn.length <- 2
-    }
-##    layout(matrix(1:2, nrow=2))
-    par(mfrow=c(3,1))
-    if (name %in% names(x@data)) {
-        xx <- x@data[[name]];
-    } else {
-        if (name == "scan") xx <- 1:length(x@data[[1]]) else
-            stop("quantity \"", name, "\" is not present in this CTD object")
-    }
-    xxlen <- length(xx)
-    ##if (xxlen < 1)
-    ##   stop(paste("this ctd has no data column named '", name, "'",sep=""))
-    if (xxlen < 1) {
-        xxlen <- length(x@data$pressure)
-        xx <- seq(1, xxlen)             # fake a scan number
-    }
-    if (xxlen != length(x@data$pressure))
-        stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x@data$pressure),sep=""))
-    if (!("scan" %in% names(x@data))) {
-        x@data[["scan"]] <- 1:length(x@data$pressure)
-    }
-    plot(x[[name]], x@data$pressure,
-         xlab=name, ylab=resizableLabel("p", "y"),
-         yaxs='r',
-         type=type)
-    mtext(x@metadata$station, side=3, adj=1, cex=par('cex'))
-    mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
-    if (1 <= adorn.length) {
-        t <- try(eval(adorn[1]), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn[", 1, "]\n")
-    }
-
-    ##    par(mar=c(4,4,1,4)) # bot left top right
-    Slen <- length(x@data$salinity)
-    Tlen <- length(x@data$temperature)
-    if (Slen != Tlen)
-        stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
-         yaxs='r', type=type)
-    grid()
-    if (2 <= adorn.length) {
-        t <- try(eval(adorn[2]), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn[", 2, "]\n")
-    }
-    plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
-         yaxs='r', type=type)
-    grid()
-    if (2 <= adorn.length) {
-        t <- try(eval(adorn[2]), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn[", 2, "]\n")
-    }
-    invisible(x)
+    ## ##    par(mar=c(4,4,1,4)) # bot left top right
+    ## Slen <- length(x@data$salinity)
+    ## Tlen <- length(x@data$temperature)
+    ## if (Slen != Tlen)
+    ##     stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
+    ## plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
+    ##      yaxs='r', type=type)
+    ## grid()
+    ## if (2 <= adorn.length) {
+    ##     t <- try(eval(adorn[2]), silent=TRUE)
+    ##     if (class(t) == "try-error")
+    ##         warning("cannot evaluate adorn[", 2, "]\n")
+    ## }
+    ## plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
+    ##      yaxs='r', type=type)
+    ## grid()
 }
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
