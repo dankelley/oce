@@ -484,9 +484,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
 }
 
 
-ctdTrim <- function(x, method=c("downcast", "index", "range"),
-                    inferWaterDepth=TRUE, removeDepthInversions=FALSE, 
-                    parameters, debug=getOption("oceDebug"))
+ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
     if (!inherits(x, "ctd"))
@@ -498,157 +496,190 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     if (n < 2) {
         warning("too few data to ctdTrim()")
         return(res)
+    }
+    if (missing(method)) {
+        method <- "downcast"
+        submethod <- "A"
     } else {
-        which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
-        method <- match.arg(method)
-        oceDebug(debug, paste("ctdTrim() using method \"", method,"\"\n", sep=""))
-        keep <- rep(TRUE, n)
-        if (method == "index") {
-            if (is.logical(parameters)) {
-                if (length(parameters) != n)
-                    stop("for method=\"index\", need length(parameters) to match number of pressure values")
-                keep <- parameters
-            } else {
-                if (min(parameters) < 1)
-                    stop("Cannot select indices < 1")
-                if (max(parameters) > n)
-                    stop(paste("Cannot select past end of array, i.e. past ", n))
-                keep <- rep(FALSE, n)
-                keep[parameters] <- TRUE
-            }
-        } else if (method == "downcast") {
-            ## 1. despike to remove (rare) instrumental problems
-            pSmooth <- smooth(x@data$pressure, kind="3R")
-            ## 2014-01-08: remove the following block that reverses a profile.  This
-            ## was happening for some 24-Hz data (see also below), and it seems unlikely
-            ## this block of code will ever be useful, anyway.
-            ascending <- FALSE
-            if (FALSE) {
-                ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
-                oceDebug(debug, "ascending=", ascending, "\n")
-                if (ascending) {
-                    for (name in names(x@data)) {
-                        x@data[[name]] <- rev(x@data[[name]])
-                    }
-                }
-            }
-            pmin <- -5
-            pminGiven <- FALSE
-            if (!missing(parameters)) {
-                if ("pmin" %in% names(parameters)) {
-                    pmin <- parameters$pmin
-                    pminGiven <- TRUE
-                } else {
-                    stop("parameter not understood for this method")
-                }
-            }
-            oceDebug(debug, 'pmin=', pmin, '\n')
-            keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
-            ## 2014-01-08 delta.p <- diff(x@data$pressure)  # descending
-            ## 2014-01-08 delta.p <- c(delta.p[1], delta.p) # to get right length
-            ## 2014-01-08 ## previous to this time, we had
-            ## 2014-01-08          keep <- keep & (delta.p > 0)
-            ## 2014-01-08 ## here.  However, this failed for some data with 24 Hz sampling, because in 
-            ## 2014-01-08 ## that case, what was clearly a descent phase had sign flips in delta.p;
-            ## 2014-01-08 ## for this reason, the line of code was dropped today.
-
-            ## 3. trim the upcast and anything thereafter (ignore beginning and end)
-            trim.top <- as.integer(0.1*n)
-            trim.bottom <- as.integer(0.9*n)
-            max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
-            max.location <- trim.top + max.spot
-            keep[max.location:n] <- FALSE
-            oceDebug(debug, "pressure maximum of", x@data$pressure[max.spot], "dbar, at index=", max.spot, "\n")
-            ## 2011-02-04 if (FALSE) {
-            ## 2011-02-04     ## deleted method: slowly-falling data
-            ## 2011-02-04     delta.p.sorted <- sort(delta.p)
-            ## 2011-02-04     if (!is.null(parameters)) {
-            ## 2011-02-04         dp.cutoff <- t.test(delta.p[keep], conf.level=0.5)$conf.int[1]
-            ## 2011-02-04         print(t.test(delta.p[keep], conf.level=0.05))#$conf.int[1]
-            ## 2011-02-04     } else {
-            ## 2011-02-04         dp.cutoff <- delta.p.sorted[0.1*n]
-            ## 2011-02-04     }
-            ## 2011-02-04     keep[delta.p < dp.cutoff] <- FALSE
-            ## 2011-02-04 }
-            ## 4. remove equilibration phase
-            ## 2011-02-04 if (FALSE) {                # old method, prior to Feb 2008
-            ## 2011-02-04     pp <- x@data$pressure[keep]
-            ## 2011-02-04     ss <- x@data$scan[keep]
-            ## 2011-02-04     equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x@data$scan)) < 0)
-            ## 2011-02-04     keep[equilibration] <- FALSE
-            ## 2011-02-04 }
-            if (!pminGiven) {                 # new method, after Feb 2008
-                bilinear1 <- function(s, s0, dpds) {
-                    if (debug==9) cat("s0:", s0, ", dpds:", dpds, "\n")
-                    ifelse(s < s0, 0, dpds*(s-s0))
-                }
-                bilinear2 <- function(s, s0, p0, dpds) {
-                    if (debug==10) cat("s0:", s0, ", p0:", p0, ":, dpds:", dpds, "\n")
-                    ifelse(s < s0, p0, p0+dpds*(s-s0))
-                }
-                pp <- x@data$pressure[keep]
-                ss <- x@data$scan[keep]
-                look <- pp < 30
-                pp <- pp[look]
-                ss <- ss[look]
-                p0 <- 0
-                s0 <- ss[0.25*length(ss)]
-                p0 <- pp[1]
-                p1 <- max(pp) #pp[0.9*length(pp)]
-                if (length(ss) > 2)
-                    dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
-                else
-                    dpds0 <- 0 
-                if (debug==10) {
-                    cat("using new bilinear method (fit for p0)\n")
-                    t <- try(m <- nls(pp ~ bilinear2(ss, s0, p0, dpds),
-                                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                } else {
-                    cat("using old bilinear method (use p0=0)\n")
-                    t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds),
-                                      start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                }
-                if (class(t) != "try-error") {
-                    if (m$convInfo$isConv) {
-                        if (debug==10) {
-                            C <- coef(m)
-                            scanStart <- max(1, floor(C["s0"] - C["p0"] / C["dpds"]))
-                            oceDebug(debug, "trimming scan numbers below", scanStart, "\n")
-                            keep <- keep & (x@data$scan > scanStart)
-                        } else {
-                            s0 <- max(1, floor(coef(m)[[1]]))
-                            oceDebug(debug, "trimming scan numbers below", s0, "\n")
-                            keep <- keep & (x@data$scan > (coef(m)[[1]]))
-                        }
-                    }
-                    ##} else {
-                    ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
-                } else {
-                    warning("bilinear method could not converge on a solution")
-                }
-            }
-            if (ascending) {
-                for (name in names(x@data)) {
-                    x@data[[name]] <- rev(x@data[[name]])
-                }
-            }
-        } else if (method == "range") {
-            if (!("item" %in% names(parameters)))
-                stop("'parameters' must be a list containing 'item'")
-            oceDebug(debug, "method='range'; parameters= ", parameters, "\n")
-            item <- parameters$item
-            if (!(item %in% names(x@data)))
-                stop("x@data has no item named '", item, "'")
-            keep <- rep(TRUE, n)
-            if ("from" %in% names(parameters))
-                keep <- keep & (x@data[[item]] >= parameters$from)
-            if ("to" %in% names(parameters))
-                keep <- keep & (x@data[[item]] <= parameters$to)
+        if (length(method) == 1) {
+            submethod <- method[1]
+            submethod <- "A"
+        } else if (length(method) == 2) {
+            submethod <- method[2]
+            method <- method[1]
         } else {
-            stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
+            stop("if provided, 'method' must be of length 1 or 2")
         }
     }
-    #browser()
+    method <- match.arg(method, c("downcast", "index", "range"))
+    oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
+    keep <- rep(TRUE, n)
+    if (method == "index") {
+        if (is.logical(parameters)) {
+            if (length(parameters) != n)
+                stop("for method=\"index\", need length(parameters) to match number of pressure values")
+            keep <- parameters
+        } else {
+            if (length(parameters) == 2) {
+                parameters[1] <- max(1, as.integer(parameters[1]))
+                parameters[2] <- min(n, as.integer(parameters[2]))
+                keep <- rep(FALSE, n)
+                keep[seq.int(parameters[1], parameters[2])] <- TRUE
+            } else {
+                stop("length of parameters must be 2, or must match the ctd column length")
+            }
+        }
+    } else if (method == "downcast") {
+        ## 1. despike to remove (rare) instrumental problems
+        pSmooth <- smooth(x@data$pressure, kind="3R")
+        ## 2014-01-08: remove the following block that reverses a profile.  This
+        ## was happening for some 24-Hz data (see also below), and it seems unlikely
+        ## this block of code will ever be useful, anyway.
+        ascending <- FALSE
+        #if (FALSE) {
+        #    ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
+        #    oceDebug(debug, "ascending=", ascending, "\n")
+        #    if (ascending) {
+        #        for (name in names(x@data)) {
+        #            x@data[[name]] <- rev(x@data[[name]])
+        #        }
+        #    }
+        #}
+        pmin <- -5
+        pminGiven <- FALSE
+        if (!missing(parameters)) {
+            if ("pmin" %in% names(parameters)) {
+                pmin <- parameters$pmin
+                pminGiven <- TRUE
+            } else {
+                stop("parameter not understood for this method")
+            }
+        }
+        oceDebug(debug, 'pmin=', pmin, '\n')
+        keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
+        ## 2014-01-08 delta.p <- diff(x@data$pressure)  # descending
+        ## 2014-01-08 delta.p <- c(delta.p[1], delta.p) # to get right length
+        ## 2014-01-08 ## previous to this time, we had
+        ## 2014-01-08          keep <- keep & (delta.p > 0)
+        ## 2014-01-08 ## here.  However, this failed for some data with 24 Hz sampling, because in 
+        ## 2014-01-08 ## that case, what was clearly a descent phase had sign flips in delta.p;
+        ## 2014-01-08 ## for this reason, the line of code was dropped today.
+
+        ## 3. trim the upcast and anything thereafter (ignore beginning and end)
+        trim.top <- as.integer(0.1*n)
+        trim.bottom <- as.integer(0.9*n)
+        max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
+        max.location <- trim.top + max.spot
+        keep[max.location:n] <- FALSE
+        oceDebug(debug, "removed data at indices from ", max.spot,
+                 " (where pressure is ", x@data$pressure[max.spot], ") to the end of the data\n", sep="")
+        ## 2011-02-04 if (FALSE) {
+        ## 2011-02-04     ## deleted method: slowly-falling data
+        ## 2011-02-04     delta.p.sorted <- sort(delta.p)
+        ## 2011-02-04     if (!is.null(parameters)) {
+        ## 2011-02-04         dp.cutoff <- t.test(delta.p[keep], conf.level=0.5)$conf.int[1]
+        ## 2011-02-04         print(t.test(delta.p[keep], conf.level=0.05))#$conf.int[1]
+        ## 2011-02-04     } else {
+        ## 2011-02-04         dp.cutoff <- delta.p.sorted[0.1*n]
+        ## 2011-02-04     }
+        ## 2011-02-04     keep[delta.p < dp.cutoff] <- FALSE
+        ## 2011-02-04 }
+        ## 4. remove equilibration phase
+        ## 2011-02-04 if (FALSE) {                # old method, prior to Feb 2008
+        ## 2011-02-04     pp <- x@data$pressure[keep]
+        ## 2011-02-04     ss <- x@data$scan[keep]
+        ## 2011-02-04     equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x@data$scan)) < 0)
+        ## 2011-02-04     keep[equilibration] <- FALSE
+        ## 2011-02-04 }
+        if (!pminGiven) {                 # new method, after Feb 2008
+            submethodChoices <- c("A", "B", "C")
+            sm <- pmatch(submethod, submethodChoices)
+            if (is.na(submethod))
+                stop("unknown submethod '", submethod, "'") 
+            submethod <- submethodChoices[sm]
+            bilinearA <- function(param) { # param=c(s0,p0,dpds); this uses ss and pp
+                s0 <-  param[1]
+                p0 <- abs(param[2])
+                dpds <- param[3]
+                oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
+                look <- ss >= s0
+                ssl <- ss[look]
+                ppl <- pp[look]
+                sqrt(sum((ppl - (p0 + dpds * (ssl - s0)))^2))
+                sqrt(sum((abs(ppl - (p0 + dpds * (ssl - s0))))))
+            }
+            bilinearB <- function(s, s0, p0, dpds) {
+                oceDebug(debug-1, "bilinearB s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
+                ifelse(s < s0, p0, p0+dpds*(s-s0))
+            }
+            bilinearC <- function(s, s0, dpds) {
+                oceDebug(debug-1, "bilinearC s0=", s0, "dpds=", dpds, "\n")
+                ifelse(s < s0, 0, dpds*(s-s0))
+            }
+            pp <- x@data$pressure[keep]
+            pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
+            ss <- x@data$scan[keep]
+            look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
+            end <- which(smooth(pp) > 20)[1]
+            look <- 1:end
+            pp <- pp[look]
+            ss <- ss[look]
+            p0 <- 0
+            s0 <- ss[0.25*length(ss)]
+            p0 <- pp[1]
+            p1 <- max(pp) #pp[0.9*length(pp)]
+            if (length(ss) > 2)
+                dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
+            else
+                dpds0 <- 0 
+            ## Handle submethods
+            if (submethod == "A") {
+                oceDebug(debug, "method[2]=\"A\", so using single-segment model\n")
+                sGuess <- mean(ss, na.rm=TRUE)
+                pGuess <- 0
+                dpdsGuess <- mean(diff(pp)/diff(ss), na.rm=TRUE) 
+                t <- try(o <- optim(c(sGuess, pGuess, dpdsGuess), bilinearA), silent=TRUE)
+                if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
+                scanStart <- o$par[1]
+            } else if (submethod == "B") {
+                oceDebug(debug, "method[2]=\"B\" so using two-segment model with constant near-surface pressure\n")
+                t <- try(m <- nls(pp ~ bilinearB(ss, s0, p0, dpds),
+                                  start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                if (class(t) == "try-error") stop("trimming failed to converge with submethod B")
+                C <- coef(m)
+                scanStart <- max(1, floor(0.5 + C["s0"] - C["p0"] / C["dpds"]))
+            } else {
+                oceDebug(debug, "method[3]=\"C\" so using two-segment model with zero near-surface pressure\n")
+                t <- try(m <- nls(pp ~ bilinearC(ss, s0, dpds),
+                                  start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                if (class(t) == "try-error") stop("trimming failed to converge with submethod C")
+                C <- coef(m)
+                scanStart <- max(1, floor(0.5 + C["s0"]))
+            }
+            oceDebug(debug-1, "scanStart:", scanStart, "\n")
+            keep <- keep & (x@data$scan > scanStart)
+        }
+        if (ascending) {
+            for (name in names(x@data)) {
+                x@data[[name]] <- rev(x@data[[name]])
+            }
+        }
+    } else if (method == "range") {
+        if (!("item" %in% names(parameters)))
+            stop("'parameters' must be a list containing 'item'")
+        oceDebug(debug, "method='range'; parameters= ", parameters, "\n")
+        item <- parameters$item
+        if (!(item %in% names(x@data)))
+            stop("x@data has no item named '", item, "'")
+        keep <- rep(TRUE, n)
+        if ("from" %in% names(parameters))
+            keep <- keep & (x@data[[item]] >= parameters$from)
+        if ("to" %in% names(parameters))
+            keep <- keep & (x@data[[item]] <= parameters$to)
+    } else {
+        stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
+    }
+
     if (is.data.frame(res@data)) {
         res@data <- res@data[keep,]
     } else {
@@ -674,7 +705,6 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             warning("should add note about trimming depth inversions to processingLog")
         }
     }
-    #browser()
     res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE) # the bad data sometimes have high p
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
