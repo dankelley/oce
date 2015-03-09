@@ -625,9 +625,10 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             ss <- x@data$scan[keep]
             look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
             end <- which(smooth(pp) > 20)[1]
-            look <- 1:end
-            pp <- pp[look]
-            ss <- ss[look]
+            if (!is.na(end)) {
+                pp <- pp[1:end]
+                ss <- ss[1:end]
+            }
             p0 <- 0
             s0 <- ss[0.25*length(ss)]
             p0 <- pp[1]
