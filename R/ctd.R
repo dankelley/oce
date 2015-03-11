@@ -1145,7 +1145,7 @@ setMethod(f="plot",
                           oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
-                              if (require(ocedata, quietly=TRUE)) {
+                              if (requireNamespace("ocedata", quietly=TRUE)) {
                                   library(ocedata)
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)

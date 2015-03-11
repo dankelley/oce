@@ -1007,7 +1007,7 @@ map2lonlat <- function(x, y, init=c(0,0))
             return(list(longitude=XY$X, latitude=XY$Y))
         } else {
             ##message("doing projection calculations with 'proj4' package")
-            if (!require(proj4))
+            if (!requireNamespace("proj4", quietly=TRUE))
                 stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
             xy <- list(x=NA, y=NA)
             ## FIXME: maybe we should do point-by-point if this yields an error
@@ -1560,7 +1560,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             xy <- list(x=XY$X, y=XY$Y)
         } else {
             ## message("doing projection calculations with 'proj4' package")
-            if (!require(proj4))
+            if (!requireNamespace("proj4", quietly=TRUE))
                 stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
             m <- NULL                 # for the try()
             try({

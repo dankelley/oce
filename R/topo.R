@@ -355,22 +355,24 @@ read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
     if (is.character(file) && length(grep(".nc$", file))) {
-        if (!require("ncdf4"))
+        if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a netCDF file')
-        ## GEBCO netcdf
-        ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
-        ncdf <- ncdf4::nc_open(file)
-        xrange <- ncdf4::ncvar_get(ncdf, "x_range")
-        yrange <- ncdf4::ncvar_get(ncdf, "y_range")
-        zrange <- ncdf4::ncvar_get(ncdf, "z_range")
-        spacing <- ncdf4::ncvar_get(ncdf, "spacing")
-        longitude <- seq(xrange[1], xrange[2], by=spacing[1])
-        latitude <- seq(yrange[1], yrange[2], by=spacing[2])
-        z <- ncdf4::ncvar_get(ncdf, "z")
-        dim <- ncdf4::ncvar_get(ncdf, "dimension")
-        z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
-        z <- z[,dim[2]:1]
-        rval <- as.topo(longitude, latitude, z, filename=file)
+        } else {
+            ## GEBCO netcdf
+            ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+            ncdf <- ncdf4::nc_open(file)
+            xrange <- ncdf4::ncvar_get(ncdf, "x_range")
+            yrange <- ncdf4::ncvar_get(ncdf, "y_range")
+            zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+            spacing <- ncdf4::ncvar_get(ncdf, "spacing")
+            longitude <- seq(xrange[1], xrange[2], by=spacing[1])
+            latitude <- seq(yrange[1], yrange[2], by=spacing[2])
+            z <- ncdf4::ncvar_get(ncdf, "z")
+            dim <- ncdf4::ncvar_get(ncdf, "dimension")
+            z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
+            z <- z[,dim[2]:1]
+            rval <- as.topo(longitude, latitude, z, filename=file)
+        }
     } else {
         ## ASCII
         ## NOTE: on 2014-11-13 it came to light that the old dataset website 

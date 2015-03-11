@@ -606,7 +606,7 @@ oce.magic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
-            if (require("ncdf4")) {
+            if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                          filename, "\", \"", gsub(".*/", "", filename), "\")")

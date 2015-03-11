@@ -523,7 +523,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  paste("band=\"", band, "\"", sep=""),
                  ", debug=", debug, ") {\n", sep="", unindent=1)
-    if (!require("tiff"))
+    if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"

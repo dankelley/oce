@@ -1463,7 +1463,7 @@ setMethod(f="plot",
                               }
                           } else { # named coastline
                               if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  if (require(ocedata)) {
+                                  if (requireNamespace("ocedata", quietly=TRUE)) {
                                       if (coastline == "best") {
                                           best <- coastlineBest(span=span, debug=debug-1)
                                           data(list=best, envir=environment())

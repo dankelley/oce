@@ -480,7 +480,7 @@ setMethod(f="plot",
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
-                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
                       if (coastline == "best") {
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)

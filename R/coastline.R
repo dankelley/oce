@@ -469,7 +469,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         oceDebug(debug, "shapeTypeFile == 3, so assuming a depth-contour file\n")
         dbfName <- paste(gsub(".shp$", "", filename), ".dbf", sep="")
         oceDebug(debug, " reading DBF file '", dbfName, "'\n", sep="")
-        if (require("foreign")) {
+        if (requireNamespace("foreign", quietly=TRUE)) {
             depths <- foreign::read.dbf(dbfName)[[1]]
         } else {
             stop("cannot read shapeFile element of type 3 without the 'foreign' package being installed")

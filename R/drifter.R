@@ -107,7 +107,7 @@ drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
 
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (!require("ncdf4"))
+    if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read drifter data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ofile <- file
@@ -247,7 +247,7 @@ setMethod(f="plot",
                       ## map
                       ## FIXME: coastline selection should be DRY
                       haveCoastline <- FALSE
-                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
                       lonr <- range(x[["longitude"]], na.rm=TRUE)
                       latr <- range(x[["latitude"]], na.rm=TRUE)
                       if (coastline == "best") {

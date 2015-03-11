@@ -315,9 +315,9 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
     if (!missing(type) && type == 'rsk') {
-        if (!require("RSQLite"))
+        if (!requireNamespace("RSQLite", quietly=TRUE))
             stop('must install.packages("RSQLite") to read logger data')
-        if (!require("DBI"))
+        if (!requireNamespace("DBI", quietly=TRUE))
             stop('must install.packages("DBI") to read logger data')
         con <- DBI::dbConnect(RSQLite::SQLite(), dbname=filename)
 
