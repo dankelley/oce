@@ -1245,8 +1245,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     breaksMax <- max(breaks, na.rm=TRUE)
     if (filledContour) {
         oceDebug(debug, "using filled contours\n")
-        if (!require(akima))
-            stop("must install.packages(\"akima\") to plot filled contours on maps")
         zz <- as.vector(z)
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[,1]
@@ -1266,9 +1264,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]
-        i <- akima::interp(xx, yy, zz, xg, yg)
-        levels <- breaks # FIXME: probably wrong
-        .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
+        if (requireNamespace("akima", quietly=TRUE)) {
+            i <- akima::interp(xx, yy, zz, xg, yg)
+            #levels <- breaks # FIXME: probably wrong
+            .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
+        } else {
+            warning("must install.packages(\"akima\") to plot filled contours on maps")
+        }
     } else {
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
