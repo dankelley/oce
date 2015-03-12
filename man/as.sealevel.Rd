@@ -40,10 +40,9 @@
     cannot be understood as a time, then 1 hour is assumed.}
 }
 
-\details{ The arguments are based on the standard data format, as were
-    described in a file formerly available at
-    \url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}, downloaded March 12,
-    2015.}
+\details{The arguments are based on the standard data format, as were
+    described in a file formerly available at [1].}
+
         
 \value{An object of \code{\link[base]{class}} \code{"sealevel"} (for
   details, see \code{\link{read.sealevel}}).}
@@ -67,6 +66,10 @@ time <- as.POSIXct("2000-01-01") + h * 3600
 sl <- as.sealevel(elevation, time)
 summary(sl)
 }
-\references{\url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.}
+
+\references{\url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}, downloaded
+    March 12, 2015.}
+
 \author{Dan Kelley}
+
 \keyword{misc}

@@ -41,8 +41,6 @@ setMethod(f="subset",
               rval
           })
 
-
-
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {

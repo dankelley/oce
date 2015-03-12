@@ -335,7 +335,9 @@ setMethod(f="plot",
 
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
-    ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    fileOrig <- file
     filename <- fullFilename(file)
     if (is.character(file)) {
         file <- file(file, "r")
@@ -477,11 +479,12 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                      n=length(time),
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
     if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
     rval@data$elevation <- elevation
     rval@data$time <- time
     rval@metadata <- metadata
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
+    rval@processingLog <- processingLog(rval@processingLog,
+                                        paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     rval
 }
 

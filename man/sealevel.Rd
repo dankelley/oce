@@ -15,13 +15,22 @@
 
 \usage{data(sealevel)}
 
-\source{The data were downloaded from MEDS, and read with \code{read.oce} in
-    the Oce package.  The sign of the longitude was flipped before storing.}
+\source{The data were created as
+    \preformatted{
+sealevel <- read.oce("490-1-JAN-2003_slev.csv")
+sealevel[["longitude"]]<- -sealevel[["longitude"]]
+}
+where the csv file was         
+        downloaded from [1].
 
-\references{The MEDS archive is at
-  \url{http://www.meds-sdmm.dfo-mpo.gc.ca/meds/Databases/TWL/TWL_inventory_e.htm}.
-  An entry to the literature about Hurricane Juan is at
-  \url{http://www.atl.ec.gc.ca/weather/hurricane/juan/}.}
+    MEDS, and read with \code{\link{read.oce}}.  The sign of the longitude was
+    flipped before storing.}
+
+\references{1. The MEDS archive is at
+    \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/twl-mne/inventory-inventaire/sd-ds-eng.asp?user=isdm-gdsi&region=ATL&tst=1&no=490} (link checked March 12, 2015) 
+    
+    2. An entry to the literature about Hurricane Juan is at
+    \url{http://www.atl.ec.gc.ca/weather/hurricane/juan/} (link checked March 12, 2015).}
 
 \examples{
 \dontrun{
