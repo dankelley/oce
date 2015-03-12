@@ -42,7 +42,7 @@
 
 \details{ The arguments are based on the standard data format, as were
     described in a file formerly available at
-    \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}, downloaded March 12,
+    \url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}, downloaded March 12,
     2015.}
         
 \value{An object of \code{\link[base]{class}} \code{"sealevel"} (for

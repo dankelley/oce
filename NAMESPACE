@@ -4,6 +4,7 @@ import(gsw)
 importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
+importFrom("stats", predict, time, window)
 exportMethods(plot)
 exportMethods(subset)
 exportMethods(summary)
@@ -301,7 +302,10 @@ export("+.section",
        xyzToEnuAdv)
 
 S3method(head, adp)
+S3method(predict, tidem)
 S3method(tail, adp)
+S3method(time, oce)
+S3method(window, oce)
 
 exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, logger, met, sealevel, section, tidem, topo, windrose)
 

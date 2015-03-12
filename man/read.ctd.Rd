@@ -130,10 +130,6 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     and publishing erroneous results is highly embarrassing.  The rewards of
     having confidence in the data surely outweigh the cost of a half hour spent
     looking at the data.
-   
-    Users should report problems with \code{read.ctd} on the Github site
-    (\url{https://github.com/dankelley/oce/issues}), ideally sending the author
-    a sample file.
 }
 
 \section{Sample files}{Three sample files are provided with the package, in
@@ -231,7 +227,7 @@ points(longitude, latitude, col='red')
 
     The \code{ODV} format, used by the ODV software and some European/British
     data providers, is described at
-    \url{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
+    \code{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
 
     Information about ice-tethered profile data is provided at
     \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for

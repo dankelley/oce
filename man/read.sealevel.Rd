@@ -90,11 +90,12 @@ plot(m)
 }
 }
 
-\references{The Hawaii archive site at \url{http://ilikai.soest.hawaii.edu/uhslc/datai.html}
-provides a graphical interface for downloading sealevel data in Type 1
-(the format is described at
-\url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}). The MEDS repository
-provides Type 2 data, at \url{http://www.meds-sdmm.dfo-mpo.gc.ca/meds/Databases/TWL/TWL_inventory_e.htm}.}
+\references{The Hawaii archive site at
+    \url{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
+    interface for downloading sealevel data in Type 1, with format as described
+    at \url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (last checked March
+    12, 2015).  The MEDS repository provides Type 2 data, at
+    \url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/twl-mne/inventory-inventaire/index-eng.htm}.}
 
 \author{Dan Kelley}
 
