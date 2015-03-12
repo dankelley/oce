@@ -1243,16 +1243,16 @@ GMTOffsetFromTz <- function(tz)
     if (tz == "G"   )   return( -7  ) # Golf Time Zone  Military        UTC + 7 hours
     if (tz == "GMT" )   return(  0  ) # Greenwich Mean Time     Europe  UTC
     if (tz == "H"   )   return( -8  ) # Hotel Time Zone Military        UTC + 8 hours
-    if (tz == "HAA" )   return(  3  ) # Heure Avancée de l'Atlantique   North America   UTC - 3 hours
-    if (tz == "HAC" )   return(  5  ) # Heure Avancée du Centre North America   UTC - 5 hours
+    if (tz == "HAA" )   return(  3  ) # Heure Avancee de l'Atlantique   North America   UTC - 3 hours
+    if (tz == "HAC" )   return(  5  ) # Heure Avancee du Centre North America   UTC - 5 hours
     if (tz == "HADT")   return(  9  ) # Hawaii-Aleutian Daylight Time   North America   UTC - 9 hours
-    if (tz == "HAE" )   return(  4  ) # Heure Avancée de l'Est  North America   UTC - 4 hours
-    if (tz == "HAP" )   return(  7  ) # Heure Avancée du Pacifique      North America   UTC - 7 hours
-    if (tz == "HAR" )   return(  6  ) # Heure Avancée des Rocheuses     North America   UTC - 6 hours
+    if (tz == "HAE" )   return(  4  ) # Heure Avancee de l'Est  North America   UTC - 4 hours
+    if (tz == "HAP" )   return(  7  ) # Heure Avancee du Pacifique      North America   UTC - 7 hours
+    if (tz == "HAR" )   return(  6  ) # Heure Avancee des Rocheuses     North America   UTC - 6 hours
     if (tz == "HAST")   return( 10  ) # Hawaii-Aleutian Standard Time   North America   UTC - 10 hours
-    if (tz == "HAT" )   return(  2.5) # Heure Avancée de Terre-Neuve    North America   UTC - 2:30 hours
-    if (tz == "HAY" )   return(  8  ) # Heure Avancée du Yukon  North America   UTC - 8 hours
-    if (tz == "HNA" )   return(  4  ) # Heure Normale de l'Atlantique   North America   UTC - 4 hours
+    if (tz == "HAT" )   return(  2.5) # Heure Avancee de Terre-Neuve    North America   UTC - 2:30 hours
+    if (tz == "HAY" )   return(  8  ) # Heure Avancee du Yukon  North America   UTC - 8 hours
+    if (tz == "HNA" )   return(  4  ) # Heure Normaee de l'Atlantique   North America   UTC - 4 hours
     if (tz == "HNC" )   return(  6  ) # Heure Normale du Centre North America   UTC - 6 hours
     if (tz == "HNE" )   return(  5  ) # Heure Normale de l'Est  North America   UTC - 5 hours
     if (tz == "HNP" )   return(  8  ) # Heure Normale du Pacifique      North America   UTC - 8 hours
@@ -1265,8 +1265,8 @@ GMTOffsetFromTz <- function(tz)
     if (tz == "L"   )   return(-11  ) # Lima Time Zone  Military        UTC + 11 hours
     if (tz == "M"   )   return(-12  ) # Mike Time Zone  Military        UTC + 12 hours
     if (tz == "MDT" )   return(  6  ) # Mountain Daylight Time  North America   UTC - 6 hours
-    if (tz == "MESZ")   return( -2  ) # Mitteleuroäische Sommerzeit     Europe  UTC + 2 hours
-    if (tz == "MEZ" )   return( -1  ) # Mitteleuropäische Zeit  Europe  UTC + 1 hour
+    if (tz == "MESZ")   return( -2  ) # Mitteleuroaische Sommerzeit     Europe  UTC + 2 hours
+    if (tz == "MEZ" )   return( -1  ) # Mitteleuropaische Zeit  Europe  UTC + 1 hour
     if (tz == "MST" )   return(  7  ) # Mountain Standard Time  North America   UTC - 7 hours
     if (tz == "N"   )   return(  1  ) # November Time Zone      Military        UTC - 1 hour
     if (tz == "NDT" )   return(  2.5) # Newfoundland Daylight Time      North America   UTC - 2:30 hours

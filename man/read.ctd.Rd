@@ -213,7 +213,7 @@ points(longitude, latitude, col='red')
 \references{The Sea-Bird SBE 19plus profiler is described at
     \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some
     more information is given in the Sea-Bird data-processing manaual
-    \url{http://www.seabird.com/pdf_documents/manuals/SBEDataProcessing_7.23.2.pdf}.
+    \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
     
     The WOCE-exchange format is described at
     \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},

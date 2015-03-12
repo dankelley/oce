@@ -58,10 +58,6 @@
     them.  In particular, \code{read.lisst} uses \code{\link{as.lisst}} to
     create the LISST object that is returned.}
 
-\references{The LIST-100 users guide (version 4.65), which provided the
-    information for this function, was downloaded in late May 2012, from
-    \url{http://www.sequoiasci.com/products/fam_LISST_100.aspx}.}
-
 \author{Dan Kelley}
 
 \keyword{misc}

@@ -27,7 +27,7 @@ plot(GSg, map.xlim=c(-80,-60))
 \usage{data(section)}
 
 \source{This is based on a WOCE file downloaded from
-    \url{http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv}.}
+    \url{http://cchdo.ucsd.edu/cruise/90CT40_1}.}
 
 \seealso{The documentation for \code{\link{section-class}} explains the
     structure of \code{section} objects, and also outlines the functions
