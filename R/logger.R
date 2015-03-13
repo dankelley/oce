@@ -385,7 +385,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        names(data) <- names
+        names(data) <- names[1:dim(data)[2]] # sometimes there are more names than data channels
         data <- as.list(data)
 
         ## message("dim of data: ", paste(dim(data), collapse="x"))
