@@ -159,7 +159,8 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{\code{roll}}{The roll of the instrument, in degrees.}
   \item{\code{v}}{A 3-D matrix of velocity.  The first index corresponds to
       profile number, the second to cell number, and the third to beam number.}
-  \item{\code{a}}{A 3-D matrix of backscatter amplitude, corresponding to \code{v}.}
+  \item{\code{a}}{A 3-D matrix of backscatter amplitude, also known as
+      echo intensity, corresponding to \code{v}.}
   \item{\code{q}}{A 3-D matrix of a measure of the quality of the data,
       corresponding to \code{v}.}
   \item{\code{br}}{Depth to bottom in each of 4 beams (only for Teledyne-RDI

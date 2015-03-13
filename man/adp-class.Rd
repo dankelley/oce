@@ -80,11 +80,11 @@
     heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
     (\code{adp[["roll"]]}), depending on the setup of the instrument.
 
-    The precise meanings of the data items depend on the instrument type.  All
-    instruments have \code{v} (for velocity), \code{q} (for a measure of data
-    quality) and \code{a} (for a measure of backscatter amplitude).  Devices
-    from Teledyne-RDI profilers have an additional item \code{g} (for
-    percent-good).
+    The precise meanings of the data items depend on the instrument
+    type.  All instruments have \code{v} (for velocity), \code{q} (for a
+    measure of data quality) and \code{a} (for a measure of backscatter
+    amplitude, also called echo intensity).  Devices from Teledyne-RDI
+    profilers have an additional item \code{g} (for percent-good).
     
     For RDI profilers, there are four three-dimensional arrays holding beamwise
     data.  In these, the first index indicates time, the second bin number, and
@@ -99,8 +99,9 @@
         \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
         as type \code{raw} in the object. The values may range from 0 to 255.
 
-        \item \code{a} is ``echo intensity'' a one-byte quantity stored as type
-        \code{raw} in the object.  The values may range from 0 to 255.
+        \item \code{a} is ``backscatter amplitude``, also known as
+        ``echo intensity'' a one-byte quantity stored as type \code{raw}
+        in the object.  The values may range from 0 to 255.
 
         \item \code{g} is ``percent good'' a one-byte quantity stored as
         \code{raw} in the object.  The values may range from 0 to 100.
