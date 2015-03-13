@@ -1,5 +1,6 @@
 \name{sectionAddStation}
 
+\alias{sectionAddCtd}
 \alias{sectionAddStation}
 
 \title{Add CTD profile to section}

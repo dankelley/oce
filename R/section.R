@@ -339,7 +339,7 @@ makeSection <- function(item, ...)
     res
 }
 
-#"+.section" <- function(section, station)
+#"+.section" <- function(section, station) # up until 2015-03-13
 sectionAddStation <- function(section, station)
 {
     if (missing(station)) return(section) # not sure this can happen
@@ -358,6 +358,7 @@ sectionAddStation <- function(section, station)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+sectionAddCtd <- sectionAddStation
 
 setMethod(f="plot",
           signature=signature("section"),
