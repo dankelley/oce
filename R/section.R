@@ -339,13 +339,12 @@ makeSection <- function(item, ...)
     res
 }
 
-"+.section" <- function(section, station)
+#"+.section" <- function(section, station)
+sectionAddStation <- function(section, station)
 {
     if (missing(station)) return(section) # not sure this can happen
-    if (!inherits(section, "section"))
-        stop("'section' is not a section")
-    if (!inherits(station, "ctd"))
-        stop("'station' is not a station")
+    if (!inherits(section, "section")) stop("'section' is not a 'section' object")
+    if (!inherits(station, "ctd")) stop("'station' is not a 'ctd' object")
     res <- section
     n.orig <- length(section@data$station)
     s <- vector("list", n.orig + 1)

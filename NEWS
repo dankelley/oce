@@ -1,4 +1,5 @@
 0.9-15
+- "+.section" renamed sectionAddStation()
 - oceApprox() renamed oce.approx(), with an alias for compatibility 
 - oce.grid() added
 - "tdr" class renamed "logger"

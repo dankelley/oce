@@ -8,8 +8,7 @@ importFrom("stats", predict, time, window)
 exportMethods(plot)
 exportMethods(subset)
 exportMethods(summary)
-export("+.section",
-       abbreviateTimeLabels,
+export(abbreviateTimeLabels,
        approx3d,
        argShow,
        beamName,
@@ -231,6 +230,7 @@ export("+.section",
        salinity,
        "salinity<-",
        secondsToCtime,
+       sectionAddStation,
        sectionGrid,
        sectionSmooth,
        sectionSort,
