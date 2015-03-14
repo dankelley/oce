@@ -1,3 +1,5 @@
+README_developers.md
+R/.*.swo
 css
 _layouts
 _site
@@ -11,3 +13,5 @@ inst/doc/ctd-object.svg
 vignettes/.build.timestamp
 ^.*\.Rproj$
 ^\.Rproj\.user$
+src/*.o$
+

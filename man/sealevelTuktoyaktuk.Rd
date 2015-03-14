@@ -39,7 +39,7 @@ lines(time, detided, col="red")
 \source{The data were based on the \code{T_TIDE} dataset,  which in turn seems
     to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on file
     format, and then the \code{sealevelTuktoyaktuk} object was created using
-    \code{as.sealevel} in the Oce package.}
+    \code{\link{as.sealevel}}.}
 
 \references{
   Foreman, M. G. G., 1977.
@@ -52,9 +52,9 @@ lines(time, detided, col="red")
   Computers and Geosciences, 28, 929-937.
 }
 
-\seealso{The documentation for \code{sealevel-class} in the Oce package
-    explains the structure of sea-level objects, and also outlines the other
-    functions dealing with them.  Data for Halifax harbour are stored in
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of \code{sealevel} objects, and also outlines the other functions
+    dealing with them.  Data for Halifax harbour are stored in
     \code{\link{sealevel}}.}
 
 \keyword{datasets}

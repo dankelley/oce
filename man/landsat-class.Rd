@@ -7,25 +7,16 @@
 \alias{[[<-,landsat-method}
 \alias{show,landsat-method}
 
-\title{Class to store landsat data}
+\title{Class to store Landsat data}
 
-\description{Class to store landsat data, with standard slots
-    \code{metadata}, \code{data} and \code{processingLog}.
+\description{Class to store Landsat data, with standard slots \code{metadata},
+    \code{data} and \code{processingLog}.  Landsat data are available at
+    several websites (see e.g. [1]). Although the various functions may work
+    for other satellites, the discussion here focusses on Landsat 8 and Landsat
+    7.}
 
-    Landsat data are available at several websites; see e.g. Reference [1].
-
-    The satellite has 11 frequency bands (see below), and the resultant data
-    are made available in 16-bit resolution.  Oce breaks these 16 bits up into
-    most-sigifnicand and least-significant bytes.  For example, the aerosol
-    band of a landsat object named \code{x} are contained within
-    \code{x@data$aerosol$msb} and \code{x@data$aerosol$lsb}, each of which is a
-    matrix of raw values.  The results may be combined as e.g.
-    \code{256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb)}, and
-    this is what is returned by executing \code{x[["aerosol"]]}.
-
-    \emph{lANDSAT 8}
-    
-    Band information is as follows (see Reference 2 for more information).
+\section{Landsat 8}{The Landsat 8 satellite has 11 frequency bands, listed
+    below (see [2]).
 \preformatted{
 .------------------------------------------------------------------------------.
 | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -45,19 +36,13 @@
 .------------------------------------------------------------------------------.
 }
 
-    Band 8 is panchromatic, and has the highest resolution, so this is the
-    default used in \code{\link{plot.landsat}}. Note that \code{tirs1} and
-    \code{tirs2} are subsampled to 30m in the data stream, but the true
-    resolution is as stated above.  See Reference [3] for information about the
-    evolution of Landsat 8 calibration coefficients, which as of summer 2014
-    are still subject to change.
+    Band 8 is panchromatic, and has the highest resolution.  For convenience of
+    programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
+    \code{tirs2} bands to the 30m resultion of the other bands.  See Reference
+    [3] for information about the evolution of Landsat 8 calibration
+    coefficients, which as of summer 2014 are still subject to change.  }
 
-    See Reference [4] for a blog posting about inferring temperature from the
-    \code{tirs1} band, and Reference [5] for another posting about ocean
-    surface emissivity (not taken into account in reference [4]).
-
-
-    \emph{LANDSAT 7}
+\section{Landsat 7}{
 
     Band information is as follows (from [8]).  The names are not official, but
     are just set up to roughly Landsat-8 names, according to wavelength.  An
@@ -107,10 +92,30 @@
     \code{\link{plot.landsat}}.
   
     \emph{Accessing derived data.}  One may retrieve several derived quantities
-    that are calculated from data stored in the object: \code{"longitude"} and
-    \code{"latitude"} give pixel locations, and \code{"temperature"} yields a
-    matrix of at-satellite brightness temperature as computed from the
-    \code{tirs1} band using the method given in Reference 6.
+    that are calculated from data stored in the object:
+    \code{landsat[["longitude"]]} and \code{landsat[["latitude"]]} give pixel
+    locations.  Accessing \code{landsat[["temperature"]]} creates an estimate
+    of ground temperature as follows (see [4]).  First, the ``count value'' in
+    band 10, denoted \eqn{b_{10}}{b_10} say, is scaled with coefficients stored
+    in the image metadata using
+    \eqn{\lambda_L=b_{10}M_L+A_L}{lambda_L=b_10*M_L+A_L} where \eqn{M_L}{M_L}
+    and \eqn{A_L}{A_L} are values stored in the metadata (e.g.  the first in
+    \code{landsat@metadata$header$radiance_mult_band_10}) Then the result is
+    used, again with coefficients in the metadata, to compute Celcius
+    temperature \eqn{T=K_2/ln(\epsilon
+        K_1/\lambda_L+1)-273.15}{T=K_2/ln(epsilon*K_1/\lambda_L+1)-273.15}.
+    The value of the emissivity \eqn{\epsilon}{epsilon} is set to unity by
+    \code{\link{read.landsat}}, although it can be changed easily later, by
+    assigning a new value to \code{landsat@metadata$emissivity}. The default
+    emissivity value set by \code{\link{read.landsat}} is from [11], and is
+    within the oceanic range suggested by [5]. Adjustment is as simple as
+    altering \code{landsat@metadata$emissivity}. This value can be a single
+    number meant to apply for the whole image, or a matrix with dimensions
+    matching those of band 10.  The matrix case is probably more useful for
+    images of land, where one might wish to account for the different
+    emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
+    lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
+    lists 0.971 and 0.987 for the same quantities.
     
     \emph{Accessing metadata.} Anything in the metadata can be accessed by
     name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
@@ -123,7 +128,16 @@
 
 }
 
-\section{Data storage}{Landsat data files typically occupy approximately a
+\section{Data storage}{Oce stores the satellite data in 16-bit resolution.  Oce
+    breaks these 16 bits up into most-significant and least-significant bytes.
+    For example, the aerosol band of a Landsat object named \code{x} are
+    contained within \code{x@data$aerosol$msb} and \code{x@data$aerosol$lsb},
+    each of which is a matrix of raw values.  The results may be combined as
+    e.g.  \code{256L*as.integer(x@data[[i]]$msb) +
+        as.integer(x@data[[i]]$lsb)}, and this is what is returned by executing
+    \code{x[["aerosol"]]}.
+
+    Landsat data files typically occupy approximately a
     gigabyte of storage.  That means that corresponding Oce objects are about
     the same size, and this can pose significant problems on computers with
     less than 8GB of memory.  It is sensible to specify bands of interest when
@@ -173,7 +187,22 @@
 7. \url{http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf}
 
 8. \url{http://landsat.usgs.gov/band_designations_landsat_satellites.php}
+
+9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
+Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
+Split Window Algorithm and Single Channel Method, \emph{Remote Sensing}, 6,
+9829-9652.  \url{http://www.mdpi.com/2072-4292/6/10/9829}
+
+10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
+temperature of Dindigul district using Landsat 8 data.  \emph{International
+    Journal of Research in Engineering and Technology}, 3(5), 122-126.
+\url{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
+
+11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
+Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
+\url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 }
+
 
 \author{Dan Kelley}
 

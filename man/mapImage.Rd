@@ -34,11 +34,12 @@
 
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
-        e.g. \code{\link{oceColorsJet}} for a rainbow.}
+        e.g. \code{\link{oce.colorsJet}} for a rainbow.}
 
     \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
-        If provided, this takes precedence over \code{breaks}, code{col} and
-        \code{missingColor}.}
+        If a \code{colormap} is provided, then its properties takes precedence
+        over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
+        specified to \code{mapImage}.}
   
     \item{border}{colour used for borders of patches (passed to
         \code{\link{polygon}}); the default \code{NA} means no border.}
@@ -47,8 +48,10 @@
     
     \item{lty}{line type, used if borders are drawn}
 
-    \item{filledContour}{boolean value indicating whether to use filled
-        contours to plot the image.  This is ignored at present.}
+    \item{filledContour}{either a boolean value indicating whether to use
+        filled contours to plot the image, or a numerical value indicating the
+        resampling rate to be used in interpolating from lon-lat coordinates to
+        x-y coordinates.  See \dQuote{Details}.}
 
     \item{missingColor}{a color to be used to indicate missing data, or
         \code{NA} to skip the drawing of such regions (which will retain
@@ -65,10 +68,33 @@
     
 \details{Adds an image to an existing map, by analogy to \code{\link{image}}.
 
-    The results can seem ``washed out'' on some plotting devices, owing to an
-    issue with anti-aliasing.  If a \code{\link{png}} device is to be used, it
-    is advised to supply arguments \code{type="cairo"} and
-    \code{antialias="none"}; see [1].
+    The data are on a regular grid in lon-lat space, but not in the projected
+    x-y space.  This means that \code{\link{image}} cannot be used.  Instead,
+    there are two approaches, depending on the value of \code{filledContour}.
+
+    If \code{filledContour} is \code{FALSE}, the image ``pixels'' are with
+    \code{\link{polygon}}.  This can be slow for fine grids.  Also, the results
+    can seem ``washed out'' on some plotting devices, owing to an issue with
+    anti-aliasing in the drawing of the pixel polygons.  If a \code{\link{png}}
+    device is to be used, it is advised to supply arguments \code{type="cairo"}
+    and \code{antialias="none"}; see [1].
+
+    If \code{filledContour} is \code{TRUE} or a numerical value, then the the
+    ``pixels'' are remapped into a regular grid and then displayed with
+    \code{\link{.filled.contour}}.  The remapping starts by converting the
+    regular lon-lat grid to an irregular x-y grid using
+    \code{\link{lonlat2map}}.  This irregular grid is then interpolated onto a
+    regular x-y grid  with \code{\link[akima]{interp}} from the \code{akima}
+    package.   If \code{filledContour} is \code{TRUE}, the dimensions of the
+    regular x-y grid is the same as that of the original lon-lat grid;
+    otherwise, the number of rows and columns are multiplied by the numerical
+    value of \code{filledContour}, e.g. the value 2 means to make the grid
+    twice as fine.
+    
+    Filling contours can produce aesthetically-pleasing results, but the method
+    involves interpolation, so the data are not represented exactly and
+    analysts are advised to compare the results from the two methods (and
+    perhaps various grid refinement values) to guard against misinterpretation.
 
 }
 
@@ -81,24 +107,34 @@
 \dontrun{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-70,-50), latitudelim=c(40,50),
-        proj="polyconic", orientation=c(90, -60,0), grid=TRUE)
 data(topoWorld)
-mapImage(topoWorld, col=oceColorsGebco)
-mapMeridians(10, lty='dotted', col='darkgray')
-mapZones(10, lty='dotted', col='darkgray')
+
+par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
+lonlim <- c(-70,-50)
+latlim <- c(40,50)
+topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
+topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
+topo <- subset(topo, (360+lonlim[1]) < longitude & longitude < (360+lonlim[2]))
+mapPlot(coastlineWorld, type='l',
+        longitudelim=lonlim, latitudelim=latlim,
+        proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
+breaks <- seq(-5000, 1000, 500)
+mapImage(topo, col=oce.colorsGebco, breaks=breaks)
+mapLines(coastlineWorld)
+box()
+mapPlot(coastlineWorld, type='l',
+        longitudelim=lonlim, latitudelim=latlim,
+        proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
+mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
+box()
 mapLines(coastlineWorld)
 
 ## Northern polar region, with colour-coded bathymetry
-drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oceColorsJet)
+drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oce.colorsJet)
 mapPlot(coastlineWorld, type='l',
         longitudelim=c(-180,180), latitudelim=c(60,120),
         proj="stereographic", grid=TRUE)
-data(topoWorld)
-mapImage(topoWorld, zlim=c(-5000, 0), col=oceColorsJet)
-mapMeridians()
-mapZones()
+mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
@@ -109,9 +145,9 @@ lat <- ncvar_get(con, "lat")
 SST <- ncvar_get(con, "t_mn")[,,1]
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oceColorsJet)
+drawPalette(Tlim, col=oce.colorsJet)
 mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-mapImage(lon, lat, SST, col=oceColorsJet, zlim=Tlim)
+mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
 mapPolygon(coastlineWorld, col='gray')
 }
 }

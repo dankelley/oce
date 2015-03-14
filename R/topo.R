@@ -32,7 +32,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="topo",
+          signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
@@ -41,7 +41,7 @@ setMethod(f="[[",
               else if (i == "latitude") return(x@data$latitude)
               else if (i == "z") return(x@data$z)
               else if (i == "filename") return(x@metadata$filename)
-              else stop("cannot access \"", i, "\"") # cannot get here
+              else return(as(x, "oce")[[i]])
           })
 
 
@@ -58,13 +58,13 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("longitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by longitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
                   rval[["longitude"]] <- x[["longitude"]][keep]
                   rval[["z"]] <- x[["z"]][keep,]
               } else if (length(grep("latitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by latitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
                   rval[["latitude"]] <- x[["latitude"]][keep]
                   rval[["z"]] <- x[["z"]][,keep]
@@ -296,7 +296,7 @@ setMethod(f="plot",
                   }
                   nz <- length(water.z)
                   if (missing(col.water))
-                      col.water <- oceColorsGebco(nz, "water", "line")
+                      col.water <- oce.colorsGebco(nz, "water", "line")
                   if (missing(lty.water))
                       lty.water <- rep(par("lty"), nz)
                   else if (length(lty.water) == 1)
@@ -325,7 +325,7 @@ setMethod(f="plot",
                   nz <- length(land.z)
                   if (nz > 0) {
                       if (missing(col.land))
-                          col.land <- oceColorsGebco(nz, "land", "line")
+                          col.land <- oce.colorsGebco(nz, "land", "line")
                       if (missing(lty.land))
                           lty.land <- rep(par("lty"), nz)
                       else if (length(lty.land) == 1)
@@ -355,26 +355,40 @@ read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
     if (is.character(file) && length(grep(".nc$", file))) {
-        if (!require("ncdf4"))
+        if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a netCDF file')
-        ## GEBCO netcdf
-        ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
-        ncdf <- ncdf4::nc_open(file)
-        xrange <- ncdf4::ncvar_get(ncdf, "x_range")
-        yrange <- ncdf4::ncvar_get(ncdf, "y_range")
-        zrange <- ncdf4::ncvar_get(ncdf, "z_range")
-        spacing <- ncdf4::ncvar_get(ncdf, "spacing")
-        longitude <- seq(xrange[1], xrange[2], by=spacing[1])
-        latitude <- seq(yrange[1], yrange[2], by=spacing[2])
-        z <- ncdf4::ncvar_get(ncdf, "z")
-        dim <- ncdf4::ncvar_get(ncdf, "dimension")
-        z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
-        z <- z[,dim[2]:1]
-        rval <- as.topo(longitude, latitude, z, filename=file)
+        } else {
+            ## GEBCO netcdf
+            ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+            ncdf <- ncdf4::nc_open(file)
+            xrange <- ncdf4::ncvar_get(ncdf, "x_range")
+            yrange <- ncdf4::ncvar_get(ncdf, "y_range")
+            zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+            spacing <- ncdf4::ncvar_get(ncdf, "spacing")
+            longitude <- seq(xrange[1], xrange[2], by=spacing[1])
+            latitude <- seq(yrange[1], yrange[2], by=spacing[2])
+            z <- ncdf4::ncvar_get(ncdf, "z")
+            dim <- ncdf4::ncvar_get(ncdf, "dimension")
+            z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
+            z <- z[,dim[2]:1]
+            rval <- as.topo(longitude, latitude, z, filename=file)
+        }
     } else {
         ## ASCII
+        ## NOTE: on 2014-11-13 it came to light that the old dataset website 
+        ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html 
+        ## was no longer working, and that the new one
+        ##          http://maps.ngdc.noaa.gov/viewers/wcs-client/ 
+        ## seemed to have headers 5 lines long.  However,
+        ## the code below has a trick to (perhaps) auto-detect whether the header
+        ## length is 5 or 6.
         nh <- 6
         header <- readLines(file, n=nh)
+        if (nchar(header[length(header)]) > 50) {
+            ## the header is only 5 long, if the last header line is long.
+            nh <- nh - 1
+            header <- header[1:nh]
+        }
         ncol <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
         nrow <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
         longitudeLowerLeft <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])

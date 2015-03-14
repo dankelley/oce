@@ -44,11 +44,18 @@ SEXP geoddist_alongpath(SEXP lat, SEXP lon, SEXP a, SEXP f)
     double *fp = REAL(f);
     PROTECT(res = allocVector(REALSXP, n));
     double *resp = REAL(res);
-    resp[0] = 0.0;
-    for (int i = 1; i < n; i++) {
+    double last = 0.0;
+    resp[0] = ISNA(lonp[0]) ? NA_REAL : 0.0;
+    for (int i = 0; i < n-1; i++) {
         double faz, baz, s;
-        geoddist_core(latp+(i-1), lonp+(i-1), latp+i, lonp+i, ap, fp, &faz, &baz, &s);
-        resp[i] = resp[i-1] + s;
+        if (ISNA(latp[i]) || ISNA(lonp[i]) || ISNA(latp[i+1]) || ISNA(lonp[i+1])) {
+            resp[i+1] = NA_REAL;
+            last = 0.0; // reset
+        } else {
+            geoddist_core(latp+i, lonp+i, latp+i+1, lonp+i+1, ap, fp, &faz, &baz, &s);
+            resp[i+1] = last + s;
+            last = resp[i+1];
+        }
     }
     UNPROTECT(1);
     return(res);
@@ -64,7 +71,7 @@ SEXP geoddist(SEXP lat1, SEXP lon1, SEXP lat2, SEXP lon2, SEXP a, SEXP f)
     if (n != GET_LENGTH(lon1))
         error("lengths of lat1 and lon1 must match, but they are %d and %d respectively.", n, GET_LENGTH(lon1));
     if (n != GET_LENGTH(lat2))
-        error("lengths of lat2 and lat2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lat2));
+        error("lengths of lat1 and lat2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lat2));
     if (n != GET_LENGTH(lon2))
         error("lengths of lon1 and lon2 must match, but they are %d and %d respectively.", n, GET_LENGTH(lon2));
     double *lat1p = REAL(lat1);

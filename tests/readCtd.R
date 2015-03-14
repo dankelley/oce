@@ -27,7 +27,7 @@ stopifnot(all.equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206)))
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
 ## I am not sure if this was a standardized format, but I had to work
 ## with these data so I added support for it.  The files end in .ctd, 
-## but oceMagic() recognizes them from the first line.  Note the trailing
+## but oce.magic() recognizes them from the first line.  Note the trailing
 ## space in the sample data:
 ##
 ##'SHIP = CCGS Louis S St.Laurent '

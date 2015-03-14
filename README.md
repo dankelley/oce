@@ -1,5 +1,5 @@
-``Oce`` is an R package for processing oceanographic data.  Its [official
-webpage](http://dankelley.github.com/oce/) provides details, of which this
+``Oce`` is an R package for processing oceanographic data.  Its
+[webpage](http://dankelley.github.com/oce/) provides details, of which this
 README file is just a sketch.
 
 Stable versions of the package are normally installed from within R, in the
@@ -14,11 +14,11 @@ The easy way to install the ``develop`` branch is to execute the
 following commands in R.
 ```splus
 library(devtools)
-install_github('oce', 'dankelley', 'develop')
+install_github('oce/dankelley', ref='develop')
 ```
 and most readers should also install Ocedata, with
 ```splus
-install_github('ocedata', 'dankelley', 'master')
+install_github('ocedata/dankelley', ref='master')
 ```
 
 Oce is emphatically an open-source system, and so the participation of users is

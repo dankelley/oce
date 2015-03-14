@@ -9,7 +9,7 @@
 \usage{plotProfile(x,
     xtype="salinity+temperature", 
     ytype=c("pressure", "z", "depth", "sigmaTheta"),
-    eos=getOption("eos", default='unesco'),
+    eos=getOption("oceEOS", default="gsw"),
     xlab=NULL, ylab=NULL,
     col="black",
     col.salinity="darkgreen",
@@ -76,9 +76,8 @@
     }
     \item{ytype}{variable to use on y axis; note that \code{z} is the negative
         of \code{depth}.}
-    \item{eos}{name of equation of state to be used, either \code{"unesco"} or
-        \code{"teos"}.  If the latter, then the computer must have the TEOS
-        library installed; see \code{\link{teos}}.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{xlab}{optional label for x axis (at top of plot).}
     \item{ylab}{optional label for y axis.  Set to \code{""} to prevent labelling
     the axis.}

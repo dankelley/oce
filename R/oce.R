@@ -174,6 +174,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     .Call("oce_approx", x=x, y=y, xout=xout,
           method=pmatch(method, c("unesco", "rr")))
 }
+oce.approx <- oceApprox
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
@@ -216,10 +217,69 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     options(warn=warn)
 }
 
+#' Add a grid to an existing plot, with special abilities for those created by oce
+#'
+#' @details
+#' For plots not created by oce functions, or for missing \code{xat} and \code{yat},
+#' this is the same as a call to \code{\link{grid}} with missing \code{nx} and
+#' \code{ny}. However, if \code{xat} is the return value from certain oce functions,
+#' a more sophisticated grid is constructed. The problem with \code{\link{grid}} is
+#' that it cannot handle axes with non-uniform grids, e.g. those with time axes
+#' that span months of differing lengths.
+#'
+#' As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
+#' return value from the following functions: \code{\link{imagep}} and
+#' \code{\link{oce.plot.ts}}, \code{\link{plot.adp}}, \code{\link{plot.echosounder}},
+#' and \code{\link{plotTS}}.
+#' It makes no sense to try to use \code{oce.grid} for multiplanel oce plots,
+#' e.g. the default plot from \code{\link{plot.adp}}.
+#'
+#' @examples
+#' library(oce)
+#' i <- imagep(volcano)
+#' oce.grid(i, lwd=2)
+#' 
+#' data(sealevel)
+#' i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
+#' oce.grid(i, col='red')
+#' 
+#' data(ctd)
+#' i <- plotTS(ctd)
+#' oce.grid(i, col='red')
+#'
+#' data(adp)
+#' i <- plot(adp, which=1)
+#' oce.grid(i, col='gray', lty=1)
+#'
+#' data(echosounder)
+#' i <- plot(echosounder)
+#' oce.grid(i, col='pink', lty=1)
+#'
+#' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
+#' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)
+#' @param col colour of grid lines (see \code{\link{par}})
+#' @param lty type for grid lines (see \code{\link{par}})
+#' @param lwd width for grid lines (see \code{\link{par}})
+#' @return nothing
+oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd")) 
+{
+    if (missing(xat) && missing(yat)) {
+        grid(col=col, lty=lty, lwd=lwd)
+    } else {
+        if (is.list(xat)) {
+            ## following over-rides the args
+            yat <- xat$yat
+            xat <- xat$xat
+        }
+        if (!missing(xat)) abline(v=xat, col=col, lty=lty, lwd=lwd)
+        if (!missing(yat)) abline(h=yat, col=col, lty=lty, lwd=lwd)
+    }
+}
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
-                        drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
-                        #xaxs="i", yaxs="i",
+                        drawTimeRange=getOption("oceDrawTimeRange"),
+                        adorn=NULL, fill=FALSE,
+                        xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -258,9 +318,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ok <- xlim[1] <= x & x <= xlim[2]
-        x <- x[ok]
-        y <- y[ok]
+        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim), as.numeric(0.04))
+        x <- x[seq.int(ends$from, ends$to)]
+        y <- y[seq.int(ends$from, ends$to)]
     }
     if (length(y) == 1)
         y <- rep(y, length(x))
@@ -278,19 +338,21 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
+        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
+        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
     }
+    xat <- NULL
+    yat <- NULL
     if (axes) {
         xaxt <- list(...)["xaxt"]
         drawxaxis <- !is.null(xaxt) && xaxt != 'n'
@@ -303,6 +365,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       tformat=tformat,
                                       debug=debug-1)
+            xat <- xlabs
+            ##message("drawing x axis; set xat=c(", paste(xat, collapse=","),")")
         }
         if (grid) {
             lwd <- par("lwd")
@@ -316,7 +380,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
         if (drawyaxis)
             axis(2, cex.axis=cex.axis, cex=cex.axis)
-        axis(4, labels=FALSE)
+        yat <- axis(4, labels=FALSE)
     }
     if (grid)
         grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
@@ -327,7 +391,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     }
     ##par(cex=ocex)
     oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
-    invisible()
+    invisible(list(xat=xat, yat=yat))
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -387,10 +451,10 @@ oce.as.POSIXlt <- function (x, tz = "")
     as.POSIXlt(x, tz)
 }
 
-oceEdit <- function(x, item, value, action, reason="", person="",
+oce.edit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "oceEdit() {\n", unindent=1)
+    oceDebug(debug, "oce.edit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (!missing(item)) {
@@ -468,9 +532,10 @@ oceEdit <- function(x, item, value, action, reason="", person="",
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # oceEdit()\n", unindent=1)
+    oceDebug(debug, "} # oce.edit()\n", unindent=1)
     x
 }
+oceEdit <- oce.edit
 
 oce.write.table <- function (x, file="", ...)
 {
@@ -502,9 +567,10 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-oceMagic <- function(file, debug=getOption("oceDebug"))
+oce.magic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
+    oceDebug(debug, paste("oce.magic(file=\"", filename, "\") {\n", sep=""), unindent=1)
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
@@ -540,7 +606,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
-            if (require("ncdf4")) {
+            if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                          filename, "\", \"", gsub(".*/", "", filename), "\")")
@@ -565,15 +631,16 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
         open(file, "r")
-    ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    line2 <- scan(file, what='char', sep="\n", n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found second line of file to be as follows:\n", line2, "\n", sep=""))
+    ## Grab text at start of file.
+    lines <- readLines(file, n=2, skipNul=TRUE)
+    line <- lines[1]
+    line2 <- lines[2]
+    oceDebug(debug, "first line of file: ", line, "\n", sep="")
+    oceDebug(debug, "second line of file: ", line2, "\n", sep="")
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     ##read.index()  ## check for an ocean index file e.g.
     ##read.index()  # http://www.esrl.noaa.gov/psd/data/correlation/ao.data
@@ -584,7 +651,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     ##read.index()          return("index")
     ##read.index()  }
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
-        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
+        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n  }\n")
         return("shapefile")
     }
     if (bytes[3] == 0xff && bytes[4] == 0xff) {
@@ -594,13 +661,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
-            oceDebug(debug, "this is adp/sontek (4 byte match)\n")
+            oceDebug(debug, "this is adp/sontek (4 byte match)\n  }\n")
         else
-            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
+            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n  }\n")
         return("adp/sontek")
     }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oceDebug(debug, "this is adp/rdi\n")
+        oceDebug(debug, "this is adp/rdi\n  }\n")
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
@@ -684,8 +751,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         return("topo")
     }
     if ("RBR TDR" == substr(line, 1, 7))  {
-        oceDebug(debug, "this is tdr\n")
-        return("tdr")
+        oceDebug(debug, "this is logger\n")
+        return("logger")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
         oceDebug(debug, "this is section\n")
@@ -699,10 +766,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
+oceMagic <- oce.magic
 
 read.oce <- function(file, ...)
 {
-    type <- oceMagic(file)
+    type <- oce.magic(file)
     debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
@@ -757,10 +825,10 @@ read.oce <- function(file, ...)
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
         return(read.topo(file, processingLog=processingLog, ...))
-    if (type == "tdr")
-        return(read.tdr(file, processingLog=processingLog, ...))
+    if (type == "logger")
+        return(read.logger(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
-        return(read.tdr(file, processingLog=processingLog, type='rsk'))
+        return(read.logger(file, processingLog=processingLog, type='rsk'))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
@@ -774,7 +842,7 @@ read.oce <- function(file, ...)
 }
 
 
-oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)
@@ -812,9 +880,10 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
     }
     rgb(r, g, b)
 }
+oceColorsGebco <- oce.colorsGebco
 
 
-oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ((n <- as.integer(n[1])) > 0) {
@@ -831,8 +900,9 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
     }
     else character(0)
 }
+oceColorsTwo <- oce.colorsTwo
 
-oceColorsJet <- function(n)
+oce.colorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
@@ -842,13 +912,15 @@ oceColorsJet <- function(n)
                            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
+oceColorsJet <- oce.colorsJet
 
-oceColors9A <- function(n)
+oce.colors9A <- function(n)
 {
-    oceColorsJet(n)
+    oce.colorsJet(n)
 }
+oceColors9A <- oce.colors9A
 
-oceColors9B <- function(n)
+oce.colors9B <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
@@ -858,9 +930,10 @@ oceColors9B <- function(n)
                            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
+oceColors9B <- oce.colors9B
 
 
-oceColorsPalette <- function(n, which=1)
+oce.colorsPalette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
@@ -898,16 +971,18 @@ oceColorsPalette <- function(n, which=1)
                     approx(i, g, xout, rule=1)$y,
                     approx(i, b, xout, rule=1)$y))
         } else if (which == 9.01 || which == "9A" || which == "jet") { # jet, also known as 9A or 9.01
-            oceColorsJet(n)
+            oce.colorsJet(n)
         } else if (which == 9.02 || which == "9B") {
-            oceColors9B(n)
+            oce.colors9B(n)
         } else stop("unknown which")
     }
     else character(0)
 }
+oceColorsPalette <- oce.colorsPalette
 
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
-                              drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
+                              drawTimeRange=getOption("oceDrawTimeRange"),
+                              abbreviateTimeRange=FALSE, drawFrequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
@@ -1145,6 +1220,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
+    ## FIXME: why an axis() here and also in a dozen lines?
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
         axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
@@ -1162,7 +1238,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
-    invisible()
+    invisible(z)                       # FIXME: or z.sub?
 }
 
 numberAsHMS <- function(t, default=0)
@@ -1213,8 +1289,11 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "s
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
+
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
-        ## http://en.wikipedia.org/wiki/Leap_second
+        ## See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
+        ## on June 30 and December 31 of any given year.  The information below is correct as of 2014-07-01,
+        ## which is the day after the June 2014 update possibility.
         leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
                                        "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
                                        "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01",
@@ -1396,7 +1475,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
-oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)
 {
@@ -1484,4 +1563,5 @@ oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
         box()
     }
 }
+oceContour <- oce.contour
 

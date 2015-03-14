@@ -7,7 +7,8 @@
 \description{Compute the dynamic height of a column of seawater.}
 
 \usage{swDynamicHeight(x, referencePressure=2000,
-                subdivisions=500, rel.tol=.Machine$double.eps^0.25)}
+                subdivisions=500, rel.tol=.Machine$double.eps^0.25,
+                            eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{x}{a \code{section} object, \strong{or} a \code{ctd} object.}
@@ -19,6 +20,7 @@
   \item{rel.tol}{absolute tolerance for call to \code{\link{integrate}}.  Note
       that this call is made in scaled coordinates, i.e. pressure is divided by
       its maximum value, and dz/dp is also divided by its maximum.}
+  \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 
 \details{If the first argument is a \code{section}, then dynamic height is
@@ -28,8 +30,8 @@
   If the first argument is a \code{ctd}, then this returns just a single
   value, the dynamic height.
 
-  Stations are analysed in steps. First, a piecewise-linear model of the
-  density variation with pressure is developed using
+  If \code{eos="unesco"}, processing is as follows.  First, a piecewise-linear
+  model of the density variation with pressure is developed using
   \code{\link[stats]{approxfun}}. (The option \code{rule=2} is used to
   extrapolate the uppermost density up to the surface, preventing a possible a
   bias for bottle data, in which the first depth may be a few metres below the
@@ -41,8 +43,11 @@
   are scaled before the integration, making both independent and dependent
   variables be of order one.)
 
-  If the water column is too short to have bottom pressure exceeding
-  \code{referencePressure}, a missing value is reported.}
+  NOTE: As of early 2015, the \code{eos="gsw"} case is handled exactly the same
+  as the \code{"unesco"} case, because the GSW C code (version 3.0.3) lacks the
+  requisite functions.
+
+}
 
 \value{In the first form, a list containing \code{distance}, the
   distance [km] from the first station in the section and \code{height},
@@ -54,6 +59,7 @@
 \examples{
     \dontrun{
 library(oce)
+data(section)
 
 # Dynamic height and geostrophy
 par(mfcol=c(2,2))

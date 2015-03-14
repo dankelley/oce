@@ -1,5 +1,67 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' Show an argument to a function, e.g. for debugging
+#'
+#' @param x the argument
+#' @param nshow number of values to show at first (if length(x)> 1)
+#' @param last indicates whether this is the final argument to the function
+#' @param sep the separator between name and value
+argShow <- function(x, nshow=2, last=FALSE, sep="=")
+{
+    if (missing(x))
+        return("")
+    name <- paste(substitute(x))
+    rval <- ""
+    if (missing(x)) {
+        rval <- "(missing)"
+    } else {
+        if (is.null(x)) {
+            rval <- NULL
+        } else {
+            nx <- length(x)
+            if (nx > 1)
+                name <- paste(name, "[", nx, "]", sep="")
+            if (is.function(x)) {
+                rval <- "(provided)"
+            } else if (is.character(x) && nx==1) {
+                rval <- paste('"', x[1], '"', sep="")
+            } else {
+                look <- 1:min(nshow, nx)
+                rval <- paste(format(x[look], digits=4), collapse=" ")
+                if (nx > nshow)
+                    rval <- paste(rval, "...", x[nx])
+            }
+        }
+    }
+    if (!last)
+        rval <- paste(rval, ", ", sep="")
+    paste(name, rval, sep="=")
+}
+
+
+curl <- function(u, v, x, y, geographical=FALSE, method=1)
+{
+    if (missing(u)) stop("must supply u")
+    if (missing(v)) stop("must supply v")
+    if (missing(x)) stop("must supply x")
+    if (missing(y)) stop("must supply y")
+    if (length(x) <= 1) stop("length(x) must exceed 1 but it is ", length(x))
+    if (length(y) <= 1) stop("length(y) must exceed 1 but it is ", length(y))
+    if (length(x) != nrow(u)) stop("length(x) must equal nrow(u)")
+    if (length(y) != ncol(u)) stop("length(x) must equal ncol(u)")
+    if (nrow(u) != nrow(v)) stop("nrow(u) and nrow(v) must match")
+    if (ncol(u) != ncol(v)) stop("ncol(u) and ncol(v) must match")
+    if (!is.logical(geographical)) stop("geographical must be a logical quantity")
+    method <- as.integer(round(method))
+    if (1 == method)
+        rval <- .Call("curl1", u, v, x, y, geographical)
+    else if (2 == method)
+        rval <- .Call("curl2", u, v, x, y, geographical)
+    else
+        stop("method must be 1 or 2")
+    rval
+}
+
 rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 {
     if (length(x) == 1) {
@@ -222,7 +284,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout) {
     if (!equispaced(x)) stop("x values must be equi-spaced")
     if (!equispaced(y)) stop("y values must be equi-spaced")
     if (!equispaced(z)) stop("z values must be equi-spaced")
-    .Call("approx3d", x, y, z, f, xout, yout, zout);
+    .Call("approx3d", x, y, z, f, xout, yout, zout)
 }
 
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
@@ -629,7 +691,7 @@ unwrapAngle <- function(angle)
     list(mean=resMean, median=resMedian)
 }
 
-ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
+oce.pmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
     ## FIXME: do element by element, and extend as follows, to allow string numbers
     ## if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
@@ -654,8 +716,9 @@ ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
         stop("'x' must be numeric or character")
     }
 }
+ocePmatch <- oce.pmatch
 
-oceSpectrum <- function(x, ...)
+oce.spectrum <- function(x, ...)
 {
     args <- list(...)
     want.plot <- FALSE
@@ -672,6 +735,7 @@ oceSpectrum <- function(x, ...)
         plot(rval)
     invisible(rval)
 }
+oceSpectrum <- oce.spectrum
 
 vectorShow <- function(v, msg, digits=5)
 {
@@ -767,7 +831,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
     } else if (item == "conservative temperature") {
-        var <- gettext("Conservative temperature", domain="R-oce")
+        var <- gettext("Conservative Temperature", domain="R-oce")
         if (getOption("oceUnitBracket") == '[') {
             full <- bquote(.(var)*" ["*degree*"C]")
             abbreviated <- expression(paste(Theta, "[", degree, "C]"))
@@ -1179,16 +1243,16 @@ GMTOffsetFromTz <- function(tz)
     if (tz == "G"   )   return( -7  ) # Golf Time Zone  Military        UTC + 7 hours
     if (tz == "GMT" )   return(  0  ) # Greenwich Mean Time     Europe  UTC
     if (tz == "H"   )   return( -8  ) # Hotel Time Zone Military        UTC + 8 hours
-    if (tz == "HAA" )   return(  3  ) # Heure Avancée de l'Atlantique   North America   UTC - 3 hours
-    if (tz == "HAC" )   return(  5  ) # Heure Avancée du Centre North America   UTC - 5 hours
+    if (tz == "HAA" )   return(  3  ) # Heure Avancee de l'Atlantique   North America   UTC - 3 hours
+    if (tz == "HAC" )   return(  5  ) # Heure Avancee du Centre North America   UTC - 5 hours
     if (tz == "HADT")   return(  9  ) # Hawaii-Aleutian Daylight Time   North America   UTC - 9 hours
-    if (tz == "HAE" )   return(  4  ) # Heure Avancée de l'Est  North America   UTC - 4 hours
-    if (tz == "HAP" )   return(  7  ) # Heure Avancée du Pacifique      North America   UTC - 7 hours
-    if (tz == "HAR" )   return(  6  ) # Heure Avancée des Rocheuses     North America   UTC - 6 hours
+    if (tz == "HAE" )   return(  4  ) # Heure Avancee de l'Est  North America   UTC - 4 hours
+    if (tz == "HAP" )   return(  7  ) # Heure Avancee du Pacifique      North America   UTC - 7 hours
+    if (tz == "HAR" )   return(  6  ) # Heure Avancee des Rocheuses     North America   UTC - 6 hours
     if (tz == "HAST")   return( 10  ) # Hawaii-Aleutian Standard Time   North America   UTC - 10 hours
-    if (tz == "HAT" )   return(  2.5) # Heure Avancée de Terre-Neuve    North America   UTC - 2:30 hours
-    if (tz == "HAY" )   return(  8  ) # Heure Avancée du Yukon  North America   UTC - 8 hours
-    if (tz == "HNA" )   return(  4  ) # Heure Normale de l'Atlantique   North America   UTC - 4 hours
+    if (tz == "HAT" )   return(  2.5) # Heure Avancee de Terre-Neuve    North America   UTC - 2:30 hours
+    if (tz == "HAY" )   return(  8  ) # Heure Avancee du Yukon  North America   UTC - 8 hours
+    if (tz == "HNA" )   return(  4  ) # Heure Normaee de l'Atlantique   North America   UTC - 4 hours
     if (tz == "HNC" )   return(  6  ) # Heure Normale du Centre North America   UTC - 6 hours
     if (tz == "HNE" )   return(  5  ) # Heure Normale de l'Est  North America   UTC - 5 hours
     if (tz == "HNP" )   return(  8  ) # Heure Normale du Pacifique      North America   UTC - 8 hours
@@ -1201,8 +1265,8 @@ GMTOffsetFromTz <- function(tz)
     if (tz == "L"   )   return(-11  ) # Lima Time Zone  Military        UTC + 11 hours
     if (tz == "M"   )   return(-12  ) # Mike Time Zone  Military        UTC + 12 hours
     if (tz == "MDT" )   return(  6  ) # Mountain Daylight Time  North America   UTC - 6 hours
-    if (tz == "MESZ")   return( -2  ) # Mitteleuroäische Sommerzeit     Europe  UTC + 2 hours
-    if (tz == "MEZ" )   return( -1  ) # Mitteleuropäische Zeit  Europe  UTC + 1 hour
+    if (tz == "MESZ")   return( -2  ) # Mitteleuroaische Sommerzeit     Europe  UTC + 2 hours
+    if (tz == "MEZ" )   return( -1  ) # Mitteleuropaische Zeit  Europe  UTC + 1 hour
     if (tz == "MST" )   return(  7  ) # Mountain Standard Time  North America   UTC - 7 hours
     if (tz == "N"   )   return(  1  ) # November Time Zone      Military        UTC - 1 hour
     if (tz == "NDT" )   return(  2.5) # Newfoundland Daylight Time      North America   UTC - 2:30 hours
@@ -1268,7 +1332,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     return(kernel(coef=coef, name=paste(type, "(", m, ")", sep="")))
 }
 
-oceFilter <- function(x, a=1, b, zero.phase=FALSE)
+oce.filter <- function(x, a=1, b, zero.phase=FALSE)
 {
     if (missing(x))
         stop("must supply x")
@@ -1283,6 +1347,7 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
         return(rev(rval))
     }
 }
+oceFilter <- oce.filter
 
 ## Calculation of geodetic distance on surface of earth,
 ## based upon datum defined by
@@ -1679,6 +1744,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         res[["latitude"]] <- x[["latitude"]][latlook]
         res[["z"]] <- x[["z"]][lonlook, latlook]
     } else if (inherits(x, "landsat")) {
+        oceDebug(debug, "Decimating a landsat object with by=", by, "\n")
         for (i in seq_along(x@data)) {
             b <- x@data[[i]]
             if (is.list(b)) {
@@ -1701,7 +1767,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     res
 }
 
-oceSmooth <- function(x, ...)
+oce.smooth <- function(x, ...)
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -1730,7 +1796,7 @@ oceSmooth <- function(x, ...)
                 }
             }
         }
-        warning("oceSmooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
+        warning("oce.smooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
     } else if (inherits(x, "ctd")) {
         res <- x
         for (name in names(x@data))
@@ -1741,6 +1807,7 @@ oceSmooth <- function(x, ...)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+oceSmooth <- oce.smooth
 
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
@@ -2011,7 +2078,7 @@ ctimeToSeconds <- function(ctime)
 ##    res
 ##}
 
-oceDebug <- function(debug=0, ..., unindent=0)
+oce.debug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
@@ -2023,6 +2090,7 @@ oceDebug <- function(debug=0, ..., unindent=0)
     flush.console()
     invisible()
 }
+oceDebug <- oce.debug
 
 showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
 {
@@ -2063,8 +2131,9 @@ oce.as.raw <- function(x)
     x
 }
 
-oceConvolve <- function(x, f, end=2)
+oce.convolve <- function(x, f, end=2)
 {
     .Call("oce_convolve", x, f, end)
 }
+oceConvolve <- oce.convolve
 

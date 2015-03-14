@@ -87,9 +87,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
 
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
-    lag.length <- readBin(FLD[8], "integer", n=1, size=1)
-    numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1)
-    numberOfCells <- readBin(FLD[10], "integer", n=1, size=1) # WN
+    lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
+    numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1, signed=FALSE)
+    oceDebug(debug, "numberOfBeams", numberOfBeams, "\n")
+    numberOfCells <- abs(readBin(FLD[10], "integer", n=1, size=1, signed=FALSE)) # WN
+    oceDebug(debug, "numberOfCells", numberOfCells, "\n")
     pingsPerEnsemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (cellSize < 0 || cellSize > 64)
@@ -457,6 +459,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (profilesToRead < 1)
                 stop("no profilesToRead")
             velocityScale <- 1e-3
+
+            ## Next line sets up empty vectors for VMDAS
+            isVMDAS <- FALSE # see below where we check bytes in first profile
+            badVMDAS <- NULL           # erroneous VMDAS profiles
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
@@ -505,51 +511,57 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             }
                             br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
+                            bc <- array(double(), dim=c(profilesToRead, numberOfBeams)) # correlation
+                            ba <- array(double(), dim=c(profilesToRead, numberOfBeams)) # amplitude
+                            bg <- array(double(), dim=c(profilesToRead, numberOfBeams)) # percent good
                             haveBottomTrack <- TRUE
-                        } else {
-                            if (haveBottomTrack) {
-                                ## the bottom range is in 3 bytes, split into two chunks
-                                rangeLSB <- readBin(buf[o+c(16:23)], "integer",
-                                                    n=4, size=2, signed=FALSE, endian="little")
-                                rangeMSB <- readBin(buf[o+77:80], "integer",
-                                                    n=4, size=1, signed=FALSE, endian="little")
-                                br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                                bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
-                                                          n=4, size=2, signed=TRUE, endian="little")
-                            }
+                        }
+                        if (haveBottomTrack) {
+                            ## the bottom range is in 3 bytes, split into two chunks
+                            rangeLSB <- readBin(buf[o+c(16:23)], "integer",
+                                                n=4, size=2, signed=FALSE, endian="little")
+                            rangeMSB <- readBin(buf[o+77:80], "integer",
+                                                n=4, size=1, signed=FALSE, endian="little")
+                            br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                            bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
+                                                      n=4, size=2, signed=TRUE, endian="little")
+                            bc[i,] <- as.integer(buf[o+32:35])
+                            ba[i,] <- as.integer(buf[o+36:39])
+                            bg[i,] <- as.integer(buf[o+40:43])
                         }
                     }
-                    if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) {
-                      isVmdas <- TRUE
-                      if (i == 1) {
-                        navTime <- NULL
-                        slongitude <- NULL
-                        slatitude <- NULL
-                        elatitude <- NULL
-                        elongitude <- NULL                      
-                      }
-                      o <- o + 85
-                      tmpTime <- ISOdatetime(as.integer(buf[o+4]) + 256*as.integer(buf[o+5]), #year
-                                             as.integer(buf[o+3]), #month
-                                             as.integer(buf[o+2]), #day
-                                             0, 0, 0,
-                                             tz=tz)
-                      sNavTime <- tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000
-                      cfac <- 180/2^31 # from rdradcp.m line 825
-                      slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=4, size=4, endian='little')*cfac)
-                      slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=4, size=4, endian='little')*cfac)
-                      eNavTime <- tmpTime + readBin(buf[o+22:25], 'integer', n=4, size=4, endian='little')/10000
-                      elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
-                      elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
-                      tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
-                                             as.integer(buf[o+57]), #month
-                                             as.integer(buf[o+56]), #day
-                                             0, 0, 0,
-                                             tz=tz)
-                      navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=4, size=4, endian='little')/100)
-                      navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
-                    } else {
-                      isVmdas <- FALSE
+                    if (buf[o + 85] == 0x00 && buf[o+85+1] == 0x20) { # VMDAS
+                        ## This must be in the first profile, or we won't call this a VMDAS file.
+                        if (i == 1) {
+                            oceDebug(debug, "This is a VMDAS file\n")
+                            isVMDAS <- TRUE
+                            navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL                      
+                        } else {
+                            if (!isVMDAS)
+                                badVMDAS <- c(badVMDAS, i)
+                        }
+                        if (isVMDAS) {
+                            o <- o + 85
+                            tmpTime <- ISOdatetime(as.integer(buf[o+4]) + 256*as.integer(buf[o+5]), #year
+                                                   as.integer(buf[o+3]), #month
+                                                   as.integer(buf[o+2]), #day
+                                                   0, 0, 0,
+                                                   tz=tz)
+                            sNavTime <- tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000
+                            cfac <- 180/2^31 # from rdradcp.m line 825
+                            slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=4, size=4, endian='little')*cfac)
+                            slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=4, size=4, endian='little')*cfac)
+                            eNavTime <- tmpTime + readBin(buf[o+22:25], 'integer', n=4, size=4, endian='little')/10000
+                            elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
+                            elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
+                            tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
+                                                   as.integer(buf[o+57]), #month
+                                                   as.integer(buf[o+56]), #day
+                                                   0, 0, 0,
+                                                   tz=tz)
+                            navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=4, size=4, endian='little')/100)
+                            navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
+                        }
                     }
                     if (monitor) {
                         cat(".", ...)
@@ -693,93 +705,108 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                     nrow=4, byrow=TRUE)
            if (monitor)
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
-            class(time) <- c("POSIXt", "POSIXct")
-            attr(time, "tzone") <- getOption("oceTz")
-            if (haveBottomTrack && !isVmdas) {
-                br[br == 0.0] <- NA    # clean up (not sure if needed)
-                data <- list(v=v, q=q, a=a, g=g,
-                             br=br, bv=bv,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                             time=time,
-                             pressure=pressure,
-                             temperature=temperature,
-                             salinity=salinity,
-                             depth=depth,
-                             soundSpeed=soundSpeed,
-                             heading=heading,
-                             pitch=pitch,
-                             roll=roll,
-                             headingStd=headingStd,
-                             pitchStd=pitchStd,
-                             rollStd=rollStd,
-                             pressureStd=pressureStd,
-                             xmitCurrent=xmitCurrent,
-                             xmitVoltage=xmitVoltage,
-                             ambientTemp=ambientTemp,
-                             pressurePlus=pressurePlus,
-                             pressureMinus=pressureMinus,
-                             attitudeTemp=attitudeTemp,
-                             attitude=attitude,
-                             contaminationSensor=contaminationSensor)
-            } else if (haveBottomTrack && isVmdas) {
-                br[br == 0.0] <- NA    # clean up (not sure if needed)
-                data <- list(v=v, q=q, a=a, g=g,
-                             br=br, bv=bv,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                             time=time,
-                             pressure=pressure,
-                             temperature=temperature,
-                             salinity=salinity,
-                             depth=depth,
-                             soundSpeed=soundSpeed,
-                             heading=heading,
-                             pitch=pitch,
-                             roll=roll,
-                             headingStd=headingStd,
-                             pitchStd=pitchStd,
-                             rollStd=rollStd,
-                             pressureStd=pressureStd,
-                             xmitCurrent=xmitCurrent,
-                             xmitVoltage=xmitVoltage,
-                             ambientTemp=ambientTemp,
-                             pressurePlus=pressurePlus,
-                             pressureMinus=pressureMinus,
-                             attitudeTemp=attitudeTemp,
-                             attitude=attitude,
-                             contaminationSensor=contaminationSensor,
-                             navTime=navTime,
-                             slongitude=slongitude,
-                             slatitude=slatitude,
-                             elongitude=elongitude,
-                             elatitude=elatitude)
-            } else {
-                data <- list(v=v, q=q, a=a, g=g,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                             time=time,
-                             pressure=pressure,
-                             temperature=temperature,
-                             salinity=salinity,
-                             depth=depth,
-                             soundSpeed=soundSpeed,
-                             heading=heading,
-                             pitch=pitch,
-                             roll=roll,
-                             headingStd=headingStd,
-                             pitchStd=pitchStd,
-                             rollStd=rollStd,
-                             pressureStd=pressureStd,
-                             xmitCurrent=xmitCurrent,
-                             xmitVoltage=xmitVoltage,
-                             ambientTemp=ambientTemp,
-                             pressurePlus=pressurePlus,
-                             pressureMinus=pressureMinus,
-                             attitudeTemp=attitudeTemp,
-                             attitude=attitude,
-                             contaminationSensor=contaminationSensor)
-            }
-            if (testing) {
-                data$upward=upward
-            }
+
+           ## Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
+           ## It is not clear why this happens, but in any case, provide a warning.
+           nbadVMDAS <- length(badVMDAS)
+           if (nbadVMDAS > 0) {
+               if (1==nbadVMDAS) {
+                   warning("erroneous VMDAS flag in profile ", badVMDAS, "\n")
+               } else if (nbadVMDAS < 4) {
+                   warning("erroneous VMDAS flag in profiles: ", paste(badVMDAS, collapse=" "), "\n")
+               } else {
+                   warning("erroneous VMDAS flag in ", nbadVMDAS, " profiles, including: ", badVMDAS[1], " ",
+                           badVMDAS[2], " ... ", badVMDAS[nbadVMDAS-1], " ",
+                           badVMDAS[nbadVMDAS], "\n")
+               }
+           }
+           class(time) <- c("POSIXt", "POSIXct")
+           attr(time, "tzone") <- getOption("oceTz")
+           if (haveBottomTrack && !isVMDAS) {
+               br[br == 0.0] <- NA    # clean up (not sure if needed)
+               data <- list(v=v, q=q, a=a, g=g,
+                            br=br, bv=bv, bc=bc, ba=ba, bg=bg,
+                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                            time=time,
+                            pressure=pressure,
+                            temperature=temperature,
+                            salinity=salinity,
+                            depth=depth,
+                            soundSpeed=soundSpeed,
+                            heading=heading,
+                            pitch=pitch,
+                            roll=roll,
+                            headingStd=headingStd,
+                            pitchStd=pitchStd,
+                            rollStd=rollStd,
+                            pressureStd=pressureStd,
+                            xmitCurrent=xmitCurrent,
+                            xmitVoltage=xmitVoltage,
+                            ambientTemp=ambientTemp,
+                            pressurePlus=pressurePlus,
+                            pressureMinus=pressureMinus,
+                            attitudeTemp=attitudeTemp,
+                            attitude=attitude,
+                            contaminationSensor=contaminationSensor)
+           } else if (haveBottomTrack && isVMDAS) {
+               br[br == 0.0] <- NA    # clean up (not sure if needed)
+               data <- list(v=v, q=q, a=a, g=g,
+                            br=br, bv=bv,
+                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                            time=time,
+                            pressure=pressure,
+                            temperature=temperature,
+                            salinity=salinity,
+                            depth=depth,
+                            soundSpeed=soundSpeed,
+                            heading=heading,
+                            pitch=pitch,
+                            roll=roll,
+                            headingStd=headingStd,
+                            pitchStd=pitchStd,
+                            rollStd=rollStd,
+                            pressureStd=pressureStd,
+                            xmitCurrent=xmitCurrent,
+                            xmitVoltage=xmitVoltage,
+                            ambientTemp=ambientTemp,
+                            pressurePlus=pressurePlus,
+                            pressureMinus=pressureMinus,
+                            attitudeTemp=attitudeTemp,
+                            attitude=attitude,
+                            contaminationSensor=contaminationSensor,
+                            navTime=navTime,
+                            slongitude=slongitude,
+                            slatitude=slatitude,
+                            elongitude=elongitude,
+                            elatitude=elatitude)
+           } else {
+               data <- list(v=v, q=q, a=a, g=g,
+                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                            time=time,
+                            pressure=pressure,
+                            temperature=temperature,
+                            salinity=salinity,
+                            depth=depth,
+                            soundSpeed=soundSpeed,
+                            heading=heading,
+                            pitch=pitch,
+                            roll=roll,
+                            headingStd=headingStd,
+                            pitchStd=pitchStd,
+                            rollStd=rollStd,
+                            pressureStd=pressureStd,
+                            xmitCurrent=xmitCurrent,
+                            xmitVoltage=xmitVoltage,
+                            ambientTemp=ambientTemp,
+                            pressurePlus=pressurePlus,
+                            pressureMinus=pressureMinus,
+                            attitudeTemp=attitudeTemp,
+                            attitude=attitude,
+                            contaminationSensor=contaminationSensor)
+           }
+           if (testing) {
+               data$upward=upward
+           }
         } else {
             warning("There are no profiles in this file.")
             metadata <- header

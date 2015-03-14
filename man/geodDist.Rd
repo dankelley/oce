@@ -18,10 +18,10 @@
         \code{section} object)}
 
     \item{lon2}{optional longitude or vector of longitudes (ignored if
-        \code{alongPath=TRUE}}
+        \code{alongPath=TRUE})}
 
     \item{lat2}{optional latitude or vector of latitudes (ignored if
-        \code{alongPath=TRUE}}
+        \code{alongPath=TRUE})}
 
     \item{alongPath}{boolean indicating whether to compute distance along the
         path, as opposed to distance from the reference point.  If

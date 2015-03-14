@@ -33,7 +33,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="gps",
+          signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               ## I use 'as' because I could not figure out callNextMethod() etc
               #as(x, "oce")[[i, j, drop]]

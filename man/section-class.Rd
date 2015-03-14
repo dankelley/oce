@@ -46,8 +46,8 @@
 
 \seealso{Sections can be read with \code{\link{read.section}} or created with
     \code{\link{read.section}} or created from CTD objects by using
-    \code{\link{makeSection}} or by combining an existing section with a CTD
-    object with the \code{+} operator.  
+    \code{\link{makeSection}} or by adding a ctd station to an existing section
+    with \code{\link{sectionAddStation}}.
     
     Sections may be sorted with \code{\link{sectionSort}}, subsetted with
     \code{\link{subset.section}}, smoothed with \code{\link{sectionSmooth}},

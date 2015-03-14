@@ -45,7 +45,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="section",
+          signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
@@ -186,7 +186,7 @@ setMethod(f="subset",
                   rval <- x
                   if (length(grep("distance", subsetString))) {
                       l <- list(distance=geodDist(rval))
-                      keep <- eval(substitute(subset), l, parent.frame())
+                      keep <- eval(substitute(subset), l, parent.frame(2))
                       rval@metadata$longitude <- rval@metadata$longitude[keep]
                       rval@metadata$latitude <- rval@metadata$latitude[keep]
                       rval@metadata$stationId <- rval@metadata$stationId[keep]
@@ -195,7 +195,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       keep <- vector(length=n)
                       for (i in 1:n)
-                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame())
+                          keep[i] <- eval(substitute(subset), x@data$station[[i]]@metadata, parent.frame(2))
                       nn <- sum(keep)
                       station <- vector("list", nn)
                       stn <- vector("character", nn)
@@ -222,7 +222,7 @@ setMethod(f="subset",
                       rval@processingLog <- x@processingLog
                   } else {
                       n <- length(x@data$station)
-                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
+                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame(2))
                       for (i in 1:n) {
                           rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
                       }
@@ -339,13 +339,12 @@ makeSection <- function(item, ...)
     res
 }
 
-"+.section" <- function(section, station)
+#"+.section" <- function(section, station) # up until 2015-03-13
+sectionAddStation <- function(section, station)
 {
     if (missing(station)) return(section) # not sure this can happen
-    if (!inherits(section, "section"))
-        stop("'section' is not a section")
-    if (!inherits(station, "ctd"))
-        stop("'station' is not a station")
+    if (!inherits(section, "section")) stop("'section' is not a 'section' object")
+    if (!inherits(station, "ctd")) stop("'station' is not a 'ctd' object")
     res <- section
     n.orig <- length(section@data$station)
     s <- vector("list", n.orig + 1)
@@ -359,12 +358,13 @@ makeSection <- function(item, ...)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
+sectionAddCtd <- sectionAddStation
 
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
                               which=c(1, 2, 3, 99),
-                              eos=getOption("eos", default='unesco'),
+                              eos=getOption("oceEOS", default="gsw"),
                               at=NULL,
                               labels=TRUE,
                               grid=FALSE,
@@ -375,6 +375,8 @@ setMethod(f="plot",
                                           "coastlineWorldFine", "none"),
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
+                              clongitude, clatitude, span,
+                              projection=NULL, parameters=NULL, orientation=NULL,
                               xtype=c("distance", "track", "longitude", "latitude"),
                               ytype=c("depth", "pressure"),
                               ztype=c("contour", "image", "points"),
@@ -385,7 +387,7 @@ setMethod(f="plot",
                               showStart=TRUE,
                               showBottom=TRUE,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
+                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5),
                               col=par("col"), cex=par("cex"), pch=par("pch"),
                               debug=getOption("oceDebug"),
                               ...)
@@ -401,10 +403,10 @@ setMethod(f="plot",
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
-              which <- ocePmatch(which,
-                                 list(temperature=1, salinity=2, 
-                                      sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                      phosphate=7, silicate=8, data=20, map=99))
+              which <- oce.pmatch(which,
+                                  list(temperature=1, salinity=2, 
+                                       sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+                                       phosphate=7, silicate=8, data=20, map=99))
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
 
 
@@ -424,7 +426,7 @@ setMethod(f="plot",
                           np1 != length(thisPressure) ||
                           any(p1 != x[["station", ix]][["pressure"]])) {
                           x <- sectionGrid(x)
-                          warning("plot.section() gridded the data for plotting", call.=FALSE)
+                          ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
                   }
@@ -441,10 +443,12 @@ setMethod(f="plot",
 
 
               plotSubsection <- function(variable="temperature", vtitle="T",
-                                         eos=getOption("eos", default='unesco'),
+                                         eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         clongitude, clatitude, span,
+                                         projection=NULL, parameters=NULL, orientation=NULL,
                                          zbreaks=NULL, zcol=NULL,
                                          ztype=c("contour", "image", "points"),
                                          legend=TRUE,
@@ -471,27 +475,12 @@ setMethod(f="plot",
                       lonm <- mean(lon, na.rm=TRUE)
                       lonr <- lonm + sqrt(2) * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
                       latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
-                      if (!is.null(map.xlim)) {
-                          map.xlim <- sort(map.xlim)
-                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
-                               xlab=gettext("Longitude", domain="R-oce"),
-                               ylab=gettext("Latitude", domain="R-oce"))
-                      } else if (!is.null(map.ylim)) {
-                          map.ylim <- sort(map.ylim)
-                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
-                               xlab=gettext("Longitude", domain="R-oce"),
-                               ylab=gettext("Latitude", domain="R-oce"))
-                      } else {
-                          plot(lonr, latr, asp=asp, type='n',
-                               xlab=gettext("Longitude", domain="R-oce"),
-                               ylab=gettext("Latitude", domain="R-oce"))
-                      }
+
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
-                      ## figure out coastline
                       haveCoastline <- FALSE
                       if (!is.character(coastline)) 
                           stop("coastline must be a character string")
-                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
                       if (coastline == "best") {
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
@@ -521,6 +510,48 @@ setMethod(f="plot",
                               haveCoastline <- TRUE
                           }
                       }
+
+                      ## FIXME: I think both should have missing() means auto-pick and NULL means none
+                      if (!is.null(projection)) {
+                          stnlats <- x[["latitude", "byStation"]]
+                          stnlons <- x[["longitude", "byStation"]]
+                          if (is.null(map.xlim)) map.xlim <- range(stnlons)
+                          if (is.null(map.ylim)) map.ylim <- range(stnlats)
+                          id <- pmatch(projection, "automatic")
+                          if (!is.na(id)) {
+                              meanlat <- mean(stnlats, na.rm=TRUE)
+                              meanlon <- mean(stnlons, na.rm=TRUE)
+                              ## NOTE: mercator messes up filling for data(section) but mollweide is okay 
+                              projection <- if (meanlat > 70) "stereographic" else "mollweide"
+                              orientation <- c(90, meanlon, 0)
+                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
+                          } else {
+                              oceDebug(debug, "using", projection, "projection (specified)\n")
+                          }
+                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, orientation=orientation, fill='gray')
+                          mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
+                                    col=col, pch=3, lwd=1/2)
+                          if (xtype == "distance" && showStart) {
+                              mapPoints(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
+                          }
+                          return()
+                      } else {
+                         if (!is.null(map.xlim)) {
+                              map.xlim <- sort(map.xlim)
+                              plot(lonr, latr, xlim=map.xlim, asp=asp, type='n',
+                                   xlab=gettext("Longitude", domain="R-oce"),
+                                   ylab=gettext("Latitude", domain="R-oce"))
+                          } else if (!is.null(map.ylim)) {
+                              map.ylim <- sort(map.ylim)
+                              plot(lonr, latr, ylim=map.ylim, asp=asp, type='n',
+                                   xlab=gettext("Longitude", domain="R-oce"),
+                                   ylab=gettext("Latitude", domain="R-oce"))
+                          } else {
+                              plot(lonr, latr, asp=asp, type='n',
+                                   xlab=gettext("Longitude", domain="R-oce"),
+                                   ylab=gettext("Latitude", domain="R-oce"))
+                          }
+                      }
                       if (haveCoastline) {
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
@@ -530,10 +561,9 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
-
                       ## add station data
                       lines(lon, lat, col="lightgray")
-                      ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
+                      ## replot with shifted longitude
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
@@ -573,7 +603,7 @@ setMethod(f="plot",
                           }
                           nbreaks <- length(zbreaks)
                           if (is.null(zcol)) 
-                              zcol <- oceColorsJet(nbreaks - 1)
+                              zcol <- oce.colorsJet(nbreaks - 1)
                           if (is.function(zcol))
                               zcol <- zcol(nbreaks - 1)
                           zlim <- range(zbreaks)
@@ -598,17 +628,21 @@ setMethod(f="plot",
                           }
                       }
                       if (is.null(at)) {
+                          if ("xlab" %in% names(list(...))) {
+                              xlab <- list(...)$xlab
+                          } else {
+                              xlab <- switch(which.xtype, 
+                                             resizableLabel("distance km"),
+                                             resizabelLabel("along-track distance km"),
+                                             gettext("Longitude", domain="R-oce"),
+                                             gettext("Latitude", domain="R-oce"))
+                          }
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               ## FIXME: below should use gettext() or resizableLabel.
-                               xlab=switch(which.xtype, 
-                                           resizableLabel("distance km"),
-                                           resizabelLabel("along-track distance km"),
-                                           gettext("Longitude", domain="R-oce"),
-                                           gettext("Latitude", domain="R-oce")),
+                               xlab=xlab,
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)
@@ -1014,8 +1048,12 @@ setMethod(f="plot",
                   }
                   if (which[w] == 20)
                       plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
-                  if (which[w] == 99)
-                      plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
+                  if (which[w] == 99) {
+                      plotSubsection("map", indicate.stations=FALSE,
+                                         clongitude=clongitude, clatitude=clatitude, span=span,
+                                         projection=projection, parameters=parameters, orientation=orientation,
+                                         debug=debug-1, ...)
+                  }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")

@@ -14,7 +14,9 @@
     string could also be \code{"longitude"} or \code{"latitude"}.  The data
     data are available in \code{"salinity"}, \code{"temperature"} and
     \code{"pressure"}, each of which is a matrix with first index corresponding
-    to scan number and the second to profile number.}
+    to scan number and the second to profile number.  Items in \code{metadata}
+    must be specifield by full name, but those in \code{data} may be
+    abbreviated, so long as the abbreviation is unique.  }
 
 \seealso{A \code{drifter} object may be read with \code{\link{read.drifter}} or
     created with \code{\link{as.drifter}}.  Drifter data can be gridded to

@@ -1,4 +1,19 @@
 0.9-15
+- "+.section" renamed sectionAddStation()
+- oceApprox() renamed oce.approx(), with an alias for compatibility 
+- oce.grid() added
+- "tdr" class renamed "logger"
+- swCSTp() added
+- swConductivity() now swThermalConductivity(); using Caldwell (1974).
+- many sw*() functions handle eos="gsw"
+- libary(gsw) replaces teos()
+- curl() added
+- handle new NOAA ascii topography dataset type
+- mapGrid() added
+- data(soi) moved to ocedata package
+- lonlat2map() added
+- map2lonlat() made more accurate
+- permit proj4 style map projections
 - landsat-7 (and possibly 4 and 5) support
 - landsat decimation/plotting improvements
 - drifterGrid() added
@@ -27,7 +42,7 @@
 - subset.topo() added
 - read.topo() now handles GEBCO netcdf files
 - decimate() now handles topo objects
-- reverse oceColorsGebco colours for water
+- reverse oce.colorsGebco colours for water
 - drawIsopycnals() and plotTS(): improve isopycnal labels
 - ctdDecimate() handles new method 'unesco'
 - coastline improvements (now 3 resolutions)
@@ -154,14 +169,14 @@
 - data(giss) added
 - data(topo2) added
 - plotPolar() added
-- oceMagic() new name for magic()
+- oce.magic() new name for magic()
 - errorBars() added
 - numberAsPOSIXct() add a leap second for July 2012
 
 0.8-10
 - plot.topo(): automatic cut-point shift
 - add support for Nortek aquadopp-profiler instruments
-- oceContour() added
+- oce.contour() added
 - lisst class added
 - plotTaylor() added
 - oce.as.raw() added
@@ -232,7 +247,7 @@
 - plot.section() now uses 'col' if supplied
 
 0.7-1
-- improve oceColorsJet()
+- improve oce.colorsJet()
 - improve plotProfile() vertical range with missing data
 - add data(drag)
 - plotProfile() and plot.ctd(): add xtype="spice"
@@ -332,7 +347,7 @@
 - logger.toc(): fix bug in discovering files ranging over days
 - as.ctd(): make temperature and salinity into vectors, if not already
 - plot.TS(): add argument 'use.smoothScatter'
-- oceDebug(): flush the console after printing a message
+- oce.debug(): flush the console after printing a message
 - sw.theta(): rename the method possibilities, to lower case
 - in some sw functions, rename 'pref' as 'reference.pressure'
 - read.ctd(): fix bug in getting start.time for some time formats
@@ -401,7 +416,7 @@
 - set default for 'debug' argument to getOption("oceDebug") in all functions
 - plot.profile(): add argument ytype; change 'type' to 'xtype'
 - add swZ()
-- add oceSmooth()
+- add oce.smooth()
 - add read.adv(), etc., supporting Nortek and Sontek devices
 - add read.adp(), etc., supporting Nortek, RDI and Sontek devices
 - add oce.plot.ts()
@@ -417,7 +432,7 @@
 - add argument 'mgp' to all plotting functions
 - use abbreviations for axis names if space is tight
 - add argument 'adorn' to all plot() functions
-- add oceColorsTwo(), oceColorsJet(), and oceColorsPalette()
+- add oce.colorsTwo(), oce.colorsJet(), and oce.colorsPalette()
 - add byte2binary()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
@@ -436,7 +451,7 @@
 - plot.TS(): fix isopycnal labels for fresh water; add args Slim, Tlim
 - read.ctd(): make it understand another SBE format
 - add parseLatlon()
-- oceEdit(): add argument 'action' 
+- oce.edit(): add argument 'action' 
 - add oce.write.table()
 - add fillGap()
 
@@ -507,7 +522,7 @@
 - add oce.edit(), later renamed oceEdit()
 - add topoMaritimes dataset
 - add read.topo(), plot.topo(), and summary.topo()
-- add gebcoColors() ... renamed oceColorsGebco() in version 0.1.77
+- add gebcoColors() ... renamed oce.colorsGebco() in version 0.1.77
 - make plot.section() check that pressures coincide
 
 0.1.70

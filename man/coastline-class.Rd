@@ -15,8 +15,10 @@
 
 \section{Methods}{
 
-    \subsection{Extracting values}{Data may be accessed as e.g.
-        \code{coastline[["longitude"]]} or \code{coastline[["latitude"]]}.}
+    \subsection{Extracting values}{Positional data may be accessed as e.g.
+        \code{coastline[["longitude"]]} or \code{coastline[["latitude"]]}, with
+        abbreviations (e.g. \code{coastline[["lo"]]}) being permitted so long
+        as they are distinct. However, metadata must be named in full.}
 
     \subsection{Assigning values}{Latitude may be changed with e.g.
         \code{coastline[["longitude"]] <- value}, and of course the same can be

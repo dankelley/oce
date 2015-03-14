@@ -25,12 +25,14 @@
     \emph{Accessing measured data.}
 
     Column data may be accessed by name, e.g. \code{ctd[["salinity"]]},
-    \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  Other columns
-    may also exist, depending on the CTD configuration; use
-    \code{\link{names}(ctd@data)} to discover them.  For convenience, partial
-    matches to these names are permitted, so that e.g. \code{ctd[["sal"]]}
-    retrieves salinity, but note that this only applies to columnar data, not
-    to metadata and not to derived data.
+    \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  The TEOS-10
+    notation for these quantities also works, with \code{ctd[["SP"]]},
+    \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
+    returned for the longer names.  After these names have been checked, the
+    remaining names in the \code{data} slot are checked using
+    \code{\link{pmatch}}, so that e.g. \code{ctd[["sal"]]} will recover
+    practical \code{salinity}, \code{ctd[["sc"]]} will recover \code{scan} (if
+    it exists), etc.
 
     \emph{Accessing derived data.}
 
@@ -43,10 +45,12 @@
     \code{ctd[["theta"]]} or \code{ctd[["potential temperature"]]}.  Salinity
     is retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
 
-    Conservative temperature defined according to TEOS-2010 (see
-    \code{\link{teos}}) is calculated with \code{ctd[["CT"]]} or
-    \code{ctd[["conservative temperature"]]}.  Absolute salinity is calculated
-    with \code{ctd[["SA"]]} or \code{ctd[["absolute salinity"]]}.
+    Conservative Temperature defined according to TEOS-2010 is calculated with
+    \code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
+    salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
+        salinity"]]}. Note that the salinity calculation requires a latitude
+    and longitude, and if the \code{ctd} object lacks those data, the values
+    300E and 30N will be used as a default.
     
     The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
     \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness

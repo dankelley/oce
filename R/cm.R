@@ -168,7 +168,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     u <- d[, col.east] / 100
     v <- d[, col.north] / 100
     heading <- d[, col.heading]
-    conductivity <- d[, col.conductivity] / 100 / (swConductivity(35, 15, 0)) # cond. ratio
+    ## the 42.91754 value is electrical conductivity at SP=35, t=15, p=0
+    conductivity <- d[, col.conductivity] / 100 / 42.91754
     temperature <- d[, col.temperature]
     depth <- d[, col.depth]
     calculate.salinity.from.conductivity <- TRUE # FIXME: why is "Sal" so wrong in the sample file?
@@ -256,10 +257,10 @@ setMethod(f="plot",
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "which:", which, "\n")
-              which <- ocePmatch(which,
-                                 list(u=1, v=2, "progressive vector"=3,
-                                      "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
-                                      depth=7, salinity=8, temperature=9, heading=10, TS=11))
+              which <- oce.pmatch(which,
+                                  list(u=1, v=2, "progressive vector"=3,
+                                       "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
+                                       depth=7, salinity=8, temperature=9, heading=10, TS=11))
               oceDebug(debug, "which:", which, "\n")
               adorn.length <- length(adorn)
               if (adorn.length == 1) {

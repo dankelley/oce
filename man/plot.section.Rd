@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{section}(x,
      which=c(1, 2, 3, 99),
-     eos=getOption("eos", default='unesco'),
+     eos=getOption("oceEOS", default="gsw"),
      at=NULL,
      labels=TRUE,
      grid=FALSE,
@@ -23,6 +23,8 @@
      ylim=NULL,
      map.xlim=NULL,
      map.ylim=NULL,
+     clongitude, clatitude, span,
+     projection=NULL, parameters=NULL, orientation=NULL,
      xtype=c("distance", "track", "longitude", "latitude"),
      ytype=c("depth", "pressure"),
      ztype=c("contour", "image", "points"),
@@ -33,7 +35,7 @@
      showStart=TRUE,
      showBottom=TRUE,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
      debug=getOption("oceDebug"),
      \dots)
@@ -48,14 +50,8 @@
         desired plots are placed in these panels, in reading order.  If only
         one panel is plotted, \code{par} is not adjusted, which makes it easy
         to add to the plot with subsequent plotting commands.}
-
-    \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
-        computer must have the TEOS library installed; see \code{\link{teos}}.
-        The effect of using \code{"teos"} is to plot ``absolute salinity''
-        instead of practical salinity, and conservative temperature instead of
-        in-situ temperature.  Typically, the temperature values will be very
-        similar to those with \code{unesco}, but the salinities will be increased
-        by 0.1 to 0.2 units.  See \code{\link{teos}} for more information.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{at}{if \code{NULL} (the default), the x axis will indicate the
         distance of the stations from the first in the section.  (This may
         give errors in the contouring routine, if the stations are not present
@@ -75,12 +71,14 @@
         resolution, or \code{"none"} to avoid drawing the coastline.}
     \item{xlim}{optional limit for x axis (only in sections, not map)}
     \item{ylim}{optional limit for y axis (only in sections, not map)}
-    \item{map.xlim}{optional xlim for station location, which can be
-        helpful in ensuring that a recognizable coastline can be seen.
-        (This value is used instead of \code{map.ylim}, if both are
-        supplied.)}
-    \item{map.ylim}{optional ylim for station location, which can be
-        helpful in ensuring that a recognizable coastline can be seen}
+    \item{map.xlim, map.ylim}{optional limits for station map;
+        \code{map.ylim} is ignored if \code{map.xlim} is provided.}
+    \item{clongitude, clatitude, span}{optional map centre position and span (km)}
+    \item{projection, parameters, orientation}{parameters specifying map
+        projection; see \code{\link{mapPlot}}.  If
+        \code{projection="automatic"}, however, a projection is devised from
+        the data, with \code{stereographic} if the mean latitude exceeds 70N
+        and \code{mollweide} otherwise.}
     \item{xtype}{type of x axis, for contour plots, either
         \code{"distance"} for distance (in km) to the first point in the
         section, \code{"track"} for distance along the cruise track,
@@ -190,7 +188,7 @@ plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]
-col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 }

@@ -29,7 +29,7 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="windrose",
+          signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
@@ -37,7 +37,7 @@ setMethod(f="[[",
               if (i == "theta") return(x@data$theta)
               else if (i == "count") return(x@data$count)
               else if (i == "fives") return(x@data$fives)
-              else stop("cannot access \"", i, "\"") # cannot get here
+              else as(x, "oce")[[i]]
           })
 
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))

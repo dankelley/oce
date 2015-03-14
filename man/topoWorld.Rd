@@ -24,7 +24,7 @@ plot(topoWorld, location=NULL)
 }
 }
 
-\seealso{Created with \code{as.topo} in the Oce package.}
+\seealso{Created with \code{\link{as.topo}}.}
 
 \author{Dan Kelley}
 

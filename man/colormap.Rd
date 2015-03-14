@@ -8,7 +8,7 @@
 
 \usage{colormap(z,
          zlim, zclip=FALSE,
-         breaks, col=oceColorsJet,
+         breaks, col=oce.colorsJet,
          name, x0, x1, col0, col1, blend=0,
          missingColor,
          debug=getOption("oceDebug"))}

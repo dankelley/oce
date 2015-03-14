@@ -128,9 +128,40 @@ programming, e.g. for over a dozen types of oceanographic data files, the
 following general code produces a summary plot:
 <<eval=false>>=
 library(oce)
-plot(read.oce(filename))
+d <- read.oce(filename)
+plot(d)
 @
 where \verb@filename@ is the name of a file containing the data.
+
+\textbf{Some notes on oce function names.}
+\begin{enumerate}
+
+    \item The function used above to read a dataset ends in \verb@.oce@, which
+        is a signal that the returned object is of class \verb@oce@.  Depending
+        on the file contents, \verb@d@ will also have an additional class, e.g.
+        if \verb@filename@ contains CTD data, then the object would have two
+        classes: \verb@oce@ and \verb@ctd@, and the second of these is used in
+        plotting, meaning that R will call a function named \verb@read.ctd@ for
+        the plot.
+
+    \item \index{function naming convention in oce}\index{convention on oce
+        function names} Generally, \verb@oce@ functions employ a ``camel case''
+        naming convention, in which a function that is described by several
+        words is named by stringing the words together, capitalizing the second
+        and subsequent words. For example, \verb@ctdAddColumn@ takes a
+        \verb@ctd@ object, and adds a column.
+
+    \item Function names begin with ``\verb@oce.@'' in cases where the most
+        natural function name would otherwise be in conflict with a function in
+        the base R system or a package commonly used by Oceanographers.  For
+        example, \verb@oce.approx@ is used for a function that is analogous to
+        \verb@approx@ in the \verb@stats@ package.  The reason for not naming
+        the function as \verb@oceApprox@ is a desire to provide a clear hint
+        about the similarity of the functions. The reason for avoiding a naming
+        conflict (by calling it \verb@approx@) is to avoid the necessity of
+        writing \verb@oce::approx@, a notation that can be confusing to users.
+
+\end{enumerate}
 
 
 \section{Calculations of seawater properties}
@@ -346,16 +377,16 @@ and a better idea to write
 \index{oce object changelog}
 \index{logged changes to oce objects}
 \index{editing oce objects}
-\index{oceEdit}
+\index{oce.edit}
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oceEdit(x, "institute", "SIO") # better way
+x <- oce.edit(x, "institute", "SIO") # better way
 @
 Even better, provide a reason for the change, and sign the change with your
 name:
 <<ctdfix3,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oceEdit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
+x <- oce.edit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
 @
 
 For a real-world example (with warts!), visit
@@ -585,17 +616,17 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 \section{Temperature-Depth Recorder data}
 The commands
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-png("tdr.png", width=600, height=300, pointsize=13)
+png("logger.png", width=600, height=300, pointsize=13)
 @
 <<>>=
 library(oce)
-data(tdr)
-plot(tdr, useSmoothScatter=TRUE)
+data(logger)
+plot(logger, useSmoothScatter=TRUE)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
 @
-produce a plot (Figure~\ref{fig:pt}) of temperature-depth recorder (tdr)
+produce a plot (Figure~\ref{fig:pt}) of temperature-depth logger
 measurements made during St Lawrence Estuary Internal Wave Experiment, an
 CFCAS/NSERC-funded research program in which the \texttt{oce} author was a principal
 investigator.  The device was mounted on a mooring that tilted significantly
@@ -604,7 +635,7 @@ thus providing a rough indication of the temperature profile.  Note that this
 graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
-\includegraphics[width=\hsize]{tdr}
+\includegraphics[width=\hsize]{logger}
 \end{center}
 \caption{Measurements made with a pressure-temperature recorder in the
   St Lawrence Estuary.  Note that the record contains in-air
@@ -616,7 +647,7 @@ graph contains in-air as well as in-water data.
 \label{fig:pt}
 \end{figure}
 
-\workedexercise{7}{Trim the in-air measurements from this \texttt{tdr} record, and
+\workedexercise{7}{Trim the in-air measurements from this \texttt{logger} record, and
 then remove the atmospheric pressure from the signal.}
 
 
@@ -829,11 +860,11 @@ mtext("M2",at=1/12.42,side=3)
 @
 
 \workedanswer{7}{Pressure-temperature Recorder plot}
-\index{subset!using with tdr data}
-\index{data!tdr}
+\index{subset!using with logger data}
+\index{data!logger}
 
 The accuracy of automatic removal of the atmospheric component done
-with \verb@tdr.trim()@ can be quite good if the instrument has recorded
+with \verb@logger.trim()@ can be quite good if the instrument has recorded
 in the air at the start and end of the record.  Even so, it always
 makes sense to investigate the data by eye, in order to select a time
 window.  Manual selection of a time window is also important when a

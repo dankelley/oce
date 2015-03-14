@@ -8,8 +8,8 @@
 
 \description{Plot landsat data.}
 
-\usage{\S4method{plot}{landsat}(x, which=1, band, decimate=TRUE, zlim, utm=FALSE,
-    col=oceColorsPalette, showBandName=TRUE,
+\usage{\S4method{plot}{landsat}(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
+    col=oce.colorsPalette, showBandName=TRUE,
     alpha.f=1, red.f=2, green.f=2, blue.f=4,
     offset=c(0, 0, 0, 0),
     transform=diag(c(red.f, green.f, blue.f, alpha.f)),
@@ -19,8 +19,6 @@
 
   \item{x}{A \code{landsat} object, e.g. as read by
       \code{\link{read.landsat}}.}
-
-  \item{which}{desired plot type; 1=image, 2=histogram.}
 
   \item{band}{if given, the name of the band.  For Landsat-8 data, this may be
       one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
@@ -38,6 +36,8 @@
       brightness temperature, computed from the \code{tirs1} band, and
       \code{band="terralook"} will plot a sort of natural colour; see
       \dQuote{Details}.}
+
+  \item{which}{desired plot type; 1=image, 2=histogram.}
 
   \item{decimate}{decimation passed to \code{\link{imagep}} for image plots.
       The default yields faster plotting.  Some decimation is sensible for
@@ -82,7 +82,7 @@
 
   \item{transform}{argument used if \code{col="natural"}, to adjust colours
       with \code{\link{adjustcolor}}}
-  
+
   \item{debug}{set to a positive value to get debugging information during
       processing.}
 
@@ -101,7 +101,13 @@
     The histogram plot can be handy in setting scales, e.g. when an image has a
     fair bit of land, the histogram will be double-lobed, and so quick
     examination can help in setting a good value for \code{zlim} to emphasize
-    the water or the land.
+    the water or the land.  If \code{breaks} is present in \code{\dots} then
+    its value is used in the call to \code{\link{hist}}; if not, 100 is used.
+
+
+    Setting \code{band="temperature"} plots an estimate of temperature,
+    calculated as explained in the documentation for
+    \code{\link{landsat-class}}.
 
     Setting \code{band="terralook"} creates a colour scale that tends to make
     the ocean blue and forests green.  This uses the USGS ``terralook'' method

@@ -45,7 +45,7 @@ setMethod(f="subset",
               rval@metadata <- x@metadata
               rval@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
                   rval@data[[i]] <- x@data[[i]][r]
               }
@@ -57,11 +57,11 @@ setMethod(f="subset",
  
 
 setMethod(f="[[",
-          signature="sealevel",
+          signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) return(x@metadata[[i]])
               else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("there is no item named \"", i, "\" in this sealevel object")
+              else return(as(x, "oce")[[i]])
           })
 
 setMethod(f="[[<-",
@@ -227,7 +227,7 @@ setMethod(f="plot",
               n <- length(x@data$elevation) # do not trust value in metadata
 
               oceDebug(debug, "which:", which, "\n")
-              which2 <- ocePmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
+              which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
               oceDebug(debug, "which2:", which2, "\n")
 
               for (w in 1:length(which2)) {
@@ -335,7 +335,9 @@ setMethod(f="plot",
 
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
-    ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    fileOrig <- file
     filename <- fullFilename(file)
     if (is.character(file)) {
         file <- file(file, "r")
@@ -477,11 +479,12 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                      n=length(time),
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
     if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
     rval@data$elevation <- elevation
     rval@data$time <- time
     rval@metadata <- metadata
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
+    rval@processingLog <- processingLog(rval@processingLog,
+                                        paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     rval
 }
 

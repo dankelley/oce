@@ -149,7 +149,10 @@ drawPalette <- function(zlim, zlab="",
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
-    if (!zlimGiven)
+    colormapGiven <- !missing(colormap)
+    oceDebug(debug, "colormapGiven =", colormapGiven, "\n")
+    ##message("missing(col) ", missing(col))
+    if (!zlimGiven && !colormapGiven)
         plot <- FALSE
     levelsGiven <- !missing(levels)
     if (zlimGiven)
@@ -166,7 +169,6 @@ drawPalette <- function(zlim, zlab="",
                  unindent=1, sep="")
     else
         oceDebug(debug, "drawPalette() with no zlim argument\n", sep="", unindent=1)
-    colormapGiven <- !missing(colormap)
     maiGiven <- !missing(mai)
     oceDebug(debug, "maiGiven =", maiGiven, "\n")
     if (maiGiven)
@@ -198,7 +200,7 @@ drawPalette <- function(zlim, zlab="",
         breaksOrig <- breaks
         contours <- breaks
     } else {
-        if (zlimGiven) {
+        if (zlimGiven && !is.null(zlim)) {
             if (breaksGiven) {
                 breaksOrig <- breaks
                 contours <- breaks
@@ -221,11 +223,12 @@ drawPalette <- function(zlim, zlab="",
                 breaks[length(breaks)] <- zrange[2]
             }
             if (missing(col))
-                col <- oceColorsPalette(n=length(breaks)-1)
+                col <- oce.colorsPalette(n=length(breaks)-1)
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
         }
     }
+    oceDebug(debug, "plot:", plot, "\n")
     if (plot) {
         if (fullpage)
             par(mai=pc$mai1f)
@@ -244,7 +247,6 @@ drawPalette <- function(zlim, zlab="",
                 oceDebug(debug, "mai[2] and mail[4] add to", MAI[2] + MAI[4], "fin[1]=", FIN[1], "so image will occupy ", FIN[1] - MAI[2] - MAI[4], "inches\n")
                 oceDebug(debug, "mai[2] and mail[4] add to", MAI[2] + MAI[4], "pin[1]=", PIN[1], "so image will occupy ", FIN[1] - MAI[2] - MAI[4], "inches\n")
 
-                #browser()
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       col=col, zlim=zlim)
             } else {
@@ -264,6 +266,9 @@ drawPalette <- function(zlim, zlab="",
                 image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
             } else if (pos == 2 || pos == 4) {
+                ##message("in drawPalette(), breaks and col follow:");
+                ##str(breaksOrig)
+                ##str(col)
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
             } else {
@@ -404,19 +409,30 @@ imagep <- function(x, y, z,
                    ...)
 {
     zlabPosition <- match.arg(zlabPosition)
-    oceDebug(debug, "imagep(..., cex=", cex, ", flipy=", flipy, ",", 
-             " xlab='", xlab, "'; ylab='", ylab, "'; zlab=\"", as.character(zlab), "\", ", 
-             " zlabPosition=\"", zlabPosition, "\", ",
-             " filledContour=", filledContour, ", ",
-             " drawTriangles=", drawTriangles, ", ",
-             " missingColor=", if (is.null(missingColor)) "NULL" else missingColor,
-             ", ...) {\n", sep="", unindent=1)
-    oceDebug(debug, "par('mai')=c(",
-             paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
-             paste(format(par('mar'), digits=2), collapse=","), ")\n")
-
-    if (!missing(zlim) && !missing(breaks) && length(breaks) > 1)
+    oceDebug(debug, "imagep(x, y, z, ",
+             argShow(cex),
+             argShow(flipy),
+             argShow(breaks),
+             argShow(zlim),
+             argShow(col),
+             "colormap=", if (missing(colormap)) "(missing), " else "(provided), ",
+             argShow(xlab),
+             argShow(ylab),
+             argShow(zlab),
+             argShow(zlabPosition),
+             argShow(filledContour),
+             argShow(drawTriangles),
+             argShow(missingColor),
+             "...) {\n", sep="", unindent=1)
+    oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
+    oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+    zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot.adp
+    breaksGiven <- !missing(breaks)
+    if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
+
+    xat <- NULL
+    yat <- NULL
 
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
@@ -536,7 +552,7 @@ imagep <- function(x, y, z,
 
     par(mgp=mgp, mar=mar, cex=cex)
 
-    zlimHistogram <- !missing(zlim) && zlim == "histogram"
+    zlimHistogram <- zlimGiven && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)
     if (colormapGiven && missing(missingColor))
@@ -551,13 +567,11 @@ imagep <- function(x, y, z,
         col2 <- col
     } else {
         ## Determine breaks unless zlim=="histogram".
-        oceDebug(debug, "colormap not provided\n")
         if (zlimHistogram) {
             if (missing(col))
-                col <- oceColorsPalette(200) # FIXME: how many colours to use?
+                col <- oce.colorsPalette(200) # FIXME: how many colours to use?
         } else {
             if (!breaksGiven) {
-                oceDebug(debug, "breaks not provided\n")
                 nbreaks <- 128                 # smooth image colorscale
                 if (missing(zlim)) {
                     if (missing(col)) {
@@ -590,14 +604,13 @@ imagep <- function(x, y, z,
                     oceDebug(debug, 'later range(breaks):', range(breaks), '\n')
                 }
             } else {
-                oceDebug(debug, "breaks provided\n")
                 breaksOrig <- breaks
                 if (1 == length(breaks)) {
                     breaks <- if (missing(zlim)) pretty(z, n=breaks) else pretty(zlim, n=breaks)
                 }
             }
             if (missing(col))
-                col <- oceColorsPalette(n=length(breaks)-1)
+                col <- oce.colorsPalette(n=length(breaks)-1)
         }
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
@@ -630,19 +643,41 @@ imagep <- function(x, y, z,
                 col <- col(n=length(breaks)-1)
         }
     }
-    oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
+    if (!missing(breaks))
+        oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
     oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
+
+    ## issue 542: move this out from the drawPalette part of the next block
+    if (missing(zlim) || is.null(zlim)) {
+        oceDebug(debug, "zlim is missing or NULL\n")
+        ## use range of breaks preferably; otherwise use range z
+        if (missing(breaks)) {
+            zlim <- range(z, na.rm=TRUE)
+            oceDebug(debug, "infer zlim=c(", zlim[1], ",", zlim[2], ") from range(z)\n", sep="")
+        } else {
+            zlim <- range(breaks, na.rm=TRUE)
+            oceDebug(debug, "infer zlim=c(", zlim[1], ",", zlim[2], ") from range(breaks)\n", sep="")
+        }
+    }
+    xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
+    ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
+    ## oceDebug(debug, "zlimGiven: ", zlimGiven, "\n")
+    ## zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
+
+
     if (drawPalette == "space") {
         drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
-        if(missing(zlim)) {
-            ## use range of breaks preferably; otherwise use range z
-            if (missing(breaks)) {
-                zlim <- range(z, na.rm=TRUE)
-            } else {
-                zlim <- range(breaks, na.rm=TRUE)
-            }
-        }
+        ## issue 542: put this above the block
+        ## if(missing(zlim)) {
+        ##     ## use range of breaks preferably; otherwise use range z
+        ##     if (missing(breaks)) {
+        ##         zlim <- range(z, na.rm=TRUE)
+        ##     } else {
+        ##         zlim <- range(breaks, na.rm=TRUE)
+        ##     }
+        ## }
         drawTriangles <- rep(drawTriangles, length.out=2)
         drawTriangles[1] <- drawTriangles[1] && any(z < zlim[1], na.rm=TRUE)
         drawTriangles[2] <- drawTriangles[2] && any(z > zlim[2], na.rm=TRUE)
@@ -678,12 +713,15 @@ imagep <- function(x, y, z,
         }
     }
 
-    xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
-    ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
-    zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    ## xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
+    ## ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
+    ## oceDebug(debug, "zlimGiven: ", zlimGiven, "\n")
+    ## zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
 
     ## trim image to limits, so endpoint colours will indicate outliers
     if (!zclip && !zlimHistogram) {
+        oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
         z[z < zlim[1]] <- zlim[1]
         z[z > zlim[2]] <- zlim[2]
     }
@@ -734,10 +772,10 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
-            oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
-                             drawTimeRange=drawTimeRange,
-                             mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
-            axis(2)#, cex.axis=cex, cex.lab=cex)
+            xat <- oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
+                                    drawTimeRange=drawTimeRange,
+                                    mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
+            yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     } else {                           # x is not a POSIXt
         oceDebug(debug, "the x axis does not represent time\n")
@@ -767,8 +805,8 @@ imagep <- function(x, y, z,
         }
         if (axes) {
             box()
-            axis(1)#, cex.axis=cex, cex.lab=cex)
-            axis(2)#, cex.axis=cex, cex.lab=cex)
+            xat <- axis(1)#, cex.axis=cex, cex.lab=cex)
+            yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     }
     if (!is.null(missingColor)) {
@@ -795,5 +833,5 @@ imagep <- function(x, y, z,
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
-    invisible()
+    invisible(list(xat=xat, yat=yat))
 }

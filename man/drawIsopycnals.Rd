@@ -8,7 +8,7 @@
 
 \usage{
 drawIsopycnals(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-               eos=getOption("eos", default="unesco"),
+               eos=getOption("oceEOS", default="gsw"),
                cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 }
 
@@ -21,9 +21,8 @@ drawIsopycnals(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
       1024 instead of 24.}
   \item{digits}{number of decimal digits to use in label (supplied to
       \code{\link{round}}).}
-  \item{eos}{name of equation of state to be used, either \code{"unesco"} or
-      \code{"teos"}.  If the latter, then the computer must have the TEOS
-      library installed; see \code{\link{teos}}.}
+  \item{eos}{equation of state to be used, either \code{"unesco"} or
+      \code{"gsw"}.}
   \item{cex}{size for labels.}
   \item{col}{colour for lines and labels.}
   \item{lwd}{line width for isopcynal curves}

@@ -13,7 +13,7 @@
      newx,
      xlab, ylab,
      xlim, ylim, zlim,
-     type="l", col=oceColorsJet, lwd=2,
+     type="l", col=oce.colorsJet, lwd=2,
      despike=FALSE,
      drawBottom, ignore=5,
      drawTimeRange=FALSE,
@@ -130,6 +130,10 @@
 \seealso{The documentation for \code{\link{echosounder-class}} explains the
     structure of echosounder objects, and also outlines the other functions
     dealing with them.}
+
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
 
 \examples{
 library(oce)

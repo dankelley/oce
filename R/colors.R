@@ -5,7 +5,7 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(z,
                               zlim, zclip=FALSE,
-                              breaks, col=oceColorsJet, colormap, segments=1,
+                              breaks, col=oce.colorsJet, colormap, segments=1,
                               missingColor="gray",
                               debug=getOption("oceDebug"))
 {
@@ -359,7 +359,7 @@ colormapFromName <- function(name)
 ## colormap uses helpers colormap_colorize and colormap_colormap
 colormap <- function(z,
                      zlim, zclip=FALSE,
-                     breaks, col=oceColorsJet,
+                     breaks, col=oce.colorsJet,
                      name, x0, x1, col0, col1, blend=0,
                      missingColor,
                      debug=getOption("oceDebug"))
@@ -415,9 +415,9 @@ colormap <- function(z,
     }
     if (breaksKnown) {
         oceDebug(debug, "processing case B (breaks given, or inferred from case A)\n")
-        if (n > 1L) {
-            warning('n is being ignored for the breaks+col method')
-        }
+        ## if (n > 1L) {
+        ##     warning('n is being ignored for the breaks+col method')
+        ## }
         if (zKnown) {
             oceDebug(debug, "processing case B.1 (i.e. z is known)\n")
             if (missing(missingColor)) {

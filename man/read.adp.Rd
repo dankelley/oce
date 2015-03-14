@@ -135,12 +135,12 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 \value{An object of \code{\link[base]{class}} \code{"adp"}, which
   contains measurements made with an ADP device.  The value of
   \code{metadata$coordinate} is set to \code{"beam"}, a fact that is
-  used in other steps in processing.  For information on data stored in
-  the object, see \dQuote{Details}.
+  used in other steps in processing.
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
-  within a list named \code{data}, as follows:
+  within a list named \code{data}, the contents of which vary somewhat depending on the
+  instrument type, as noted.
   \describe{
     \item{\code{distance}}{A space-series that 
       stores the distance of cells from the transducer head, in the
@@ -159,13 +159,27 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{\code{roll}}{The roll of the instrument, in degrees.}
   \item{\code{v}}{A 3-D matrix of velocity.  The first index corresponds to
       profile number, the second to cell number, and the third to beam number.}
-  \item{\code{a}}{A 3-D matrix of backscatter amplitude, corresponding to \code{v}.}
+  \item{\code{a}}{A 3-D matrix of backscatter amplitude, also known as
+      echo intensity, corresponding to \code{v}.}
   \item{\code{q}}{A 3-D matrix of a measure of the quality of the data,
       corresponding to \code{v}.}
   \item{\code{br}}{Depth to bottom in each of 4 beams (only for Teledyne-RDI
-      devices that have bottom tracking.}
+      devices that have bottom tracking).}
   \item{\code{bv}}{Bottom velocity in each of 4 beams (only for Teledyne-RDI
-      devices that have bottom tracking.}
+      devices that have bottom tracking).}
+  \item{\code{bc}}{A 2-D matrix of bottom-track correlation for each of 4
+      beams, a number from 0 to 255 (only for Teledyne-RDI devices that have
+      bottom tracking).}
+  \item{\code{ba}}{A \code{bc} but for bottom-track amplitude.}
+  \item{\code{bg}}{A \code{bc} but for bottom-track goodness (in percent).}
+  \item{\code{slatitude}}{latitude at start of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
+  \item{\code{slongitude}}{longitude at start of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
+  \item{\code{elatitude}}{latitude at end of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
+  \item{\code{elongitude}}{longitude at end of an ensemble (only exists for RDI
+          files that have had navigation data merged in).}
   }
 
   In ADP data files, velocities are coded to signed 2-byte integers, with a

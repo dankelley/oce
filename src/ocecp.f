@@ -1,3 +1,12 @@
+      subroutine cp_driver(S, T, p, n, cp)
+      double precision S(n), T(n), p(n), cp(n)
+      do i = 1, n
+         call ocecp(S(i), T(i), p(i), cp(i))
+      end do
+      return
+      end
+
+
 c n fofonoff & r millard
       subroutine ocecp(s,t,p0,CP)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)

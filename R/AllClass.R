@@ -17,8 +17,8 @@ setClass("gps", contains="oce")
 setClass("landsat", contains="oce")
 setClass("lisst", contains="oce")
 setClass("lobo", contains="oce")
+setClass("logger", contains="oce")
 setClass("met", contains="oce")
-setClass("tdr", contains="oce")
 setClass("sealevel", contains="oce")
 setClass("section", contains="oce")
 setClass("tidem", contains="oce")
@@ -41,8 +41,6 @@ setMethod(f="subset",
               rval
           })
 
-
-
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
@@ -59,8 +57,10 @@ setMethod(f="[[",
                   index <- pmatch(i, names(x@data))
                   if (!is.na(index[1]))
                       return(x@data[[index]])
-                  warning("there is no item named \"", i, "\" in this ", class(x), " object")
-                  return(NULL)
+                  else
+                      return(NULL)
+                  ## if (missing(j) || j != "nowarn")
+                  ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
               }
           })
 
@@ -82,7 +82,7 @@ setMethod(f="[[<-",
                           x@processingLog$value <- c(x@processingLog$value, value)
                       }
                   } else {
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object")
+                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
                   }
               }
               validObject(x)

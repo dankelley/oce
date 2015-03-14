@@ -4,7 +4,9 @@
 
 \title{Plot arrows on a existing map}
 
-\description{Plot arrows on an existing map}
+\description{Plot arrows on an existing map, e.g. to indicate a place location.
+    This is not well-suited for drawing direction fields, e.g. of velocities;
+    for that, see \code{\link{mapDirectionField}}.}
 
 \usage{
 mapArrows(longitude0, latitude0,
@@ -16,12 +18,12 @@ mapArrows(longitude0, latitude0,
 \arguments{
     \item{longitude0, latitude0}{starting points for arrows}
     \item{longitude1, latitude1}{ending points for arrows}
-    \item{length}{length of arrows, passed to \code{\link{arrows}}}
-    \item{angle}{angle of arrow heads, passed to \code{\link{arrows}}}
-    \item{code}{code of arrows, passed to \code{\link{arrows}}}
-    \item{col}{colour of arrows, passed to \code{\link{arrows}}}
-    \item{lty}{line type of arrows, passed to \code{\link{arrows}}}
-    \item{lwd}{line width of arrows, passed to \code{\link{arrows}}}
+    \item{length}{length of the arrow heads, passed to \code{\link{arrows}}}
+    \item{angle}{angle of the arrow heads, passed to \code{\link{arrows}}}
+    \item{code}{numerical code indicating the type of arrows, passed to \code{\link{arrows}}}
+    \item{col}{arrow colour, passed to \code{\link{arrows}}}
+    \item{lty}{arrow line type, passed to \code{\link{arrows}}}
+    \item{lwd}{arrow line width, passed to \code{\link{arrows}}}
     \item{\dots}{optional arguments passed to \code{\link{arrows}}}
 }
 

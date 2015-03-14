@@ -15,7 +15,8 @@ interactive Barnes objective map anlaysis scheme for use with satellite
 and conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22,
 p. 1487-1503.}
 
-\seealso{See \code{interpBarnes} in the Oce package.}
+\seealso{See \code{\link{interpBarnes}}, which uses the present dataset as a
+    example.}
 
 \author{Dan Kelley}
 

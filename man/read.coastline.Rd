@@ -108,8 +108,8 @@ lines(lon-360, lat)
 
     Information about Canadian coastlines in ``shapefile'' format is provided
     at
-    \url{http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm}
-    (link tested Dec 2011 and Sep 2012).  Data may be downloaded, after
+    \code{http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm}
+    (link tested Dec 2011 and Sep 2012; fails March 2015).  Data may be downloaded, after
     registration, from
     \url{http://www.geobase.ca/geobase/en/search.do?produit=nrn&language=en}
     (link tested December 2011).  The ``shapefile'' format is described in

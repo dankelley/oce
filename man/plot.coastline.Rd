@@ -12,6 +12,7 @@
      xlab="", ylab="", showHemi=TRUE,
      asp,
      clongitude, clatitude, span,
+     lonlabel=NULL, latlabel=NULL, sides=NULL,
      projection=NULL, parameters=NULL, orientation=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
@@ -53,18 +54,30 @@
       plotting device, the radius may be smaller than \code{span}.  A value for
       \code{span} must be supplied, if \code{clongitude} and \code{clatitude}
       are supplied.}
+  \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
+      label on the indicated sides of plot, passed to
+      \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+      simple customization.  If they are are not provided, reasonable defaults
+      will be used.}
 
-  \item{projection}{optional map projection to use (see \code{\link{mapPlot}});
-      if not given, a cartesian frame is used, scaled so that coastline shapes
-      near the centre of the plot are preserved.  If a projection is provided,
-      the coordinate system will bear an indirect relationship to longitude and
-      longitude, and further adornment of the plot must be done with
-      e.g.  \code{\link{mapPoints}} instead of \code{\link{points}}.}
-  
-  \item{parameters}{optional parameters to map projection (see
+  \item{projection}{optional map projection to use (see \code{\link{mapPlot}}).
+      If set to \code{FALSE} then no projection is used, and the data are
+      plotted in a cartesion frame, with aspect ratio set to reduce distortion
+      near the middle of the plot.  This option is useful if the coastline
+      produces spurious horizontal lines owing to islands crossing the plot
+      edges (a problem that plagues map projections).  If \code{projection} is
+      not set, a Mercator projection is used for latitudes below about 70
+      degrees, as if \code{projection="+proj=merc"} had been supplied, or a
+      Stereopoloar one is used as if \code{projection="+proj=stere"}.
+      Otherwise, \code{projection} must be a character string identifying a
+      projection accepted by \code{\link{mapPlot}}.}
+
+  \item{parameters}{optional parameters to map projection, if a
+      \code{mapproj}-style \code{projection} is specified (see
       \code{\link{mapPlot}}.}
 
-  \item{orientation}{optional orientation of map projection (see
+  \item{orientation}{optional orientation of map projection, if a
+      \code{mapproj}-style \code{projection} is specified  (see
       \code{\link{mapPlot}}.}
 
   \item{expand}{numerical factor for the expansion of plot limits,

@@ -22,11 +22,11 @@ setMethod(f="subset",
               rval <- x
               if (length(grep("time", subsetString)) ||
                   length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
               } else if (length(grep("profile", subsetString))) {
                   ## add profile into the data, then do as usual
                   x@data$profile <- 1:length(x@data$time)
-                  keep <- eval(substitute(subset), x@data, parent.frame())
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
               } else {
                   stop("may only subset by time, longitude, or latitude, and not by combinations")
               }
@@ -107,7 +107,7 @@ drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
 
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (!require("ncdf4"))
+    if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read drifter data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ofile <- file
@@ -198,13 +198,10 @@ setMethod(f="plot",
           definition=function (x, which = 1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
-                               cex=1,
-                               pch=1,
-                               type='p',
-                               col,
+                               cex=1, pch=1, type='p', col, fill=FALSE, 
                                adorn=NULL,
-                               mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
+                               projection=NULL, parameters=NULL, orientation=NULL,
+                               mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                                tformat,
                                debug=getOption("oceDebug"),
                                ...)
@@ -237,40 +234,34 @@ setMethod(f="plot",
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
-
-              oceDebug(debug, "which:", which, "\n")
-              which <- ocePmatch(which,
-                                 list(trajectory=1,
-                                      "salinity ts"=2,
-                                      "temperature ts"=3,
-                                      "TS"=4,
-                                      "salinity profile"=5,
-                                      "temperature profile"=6))
-              oceDebug(debug, "which:", which, "(after conversion to numerical form)\n")
-
+              which <- oce.pmatch(which,
+                                  list(trajectory=1,
+                                       "salinity ts"=2,
+                                       "temperature ts"=3,
+                                       "TS"=4,
+                                       "salinity profile"=5,
+                                       "temperature profile"=6))
               for (w in 1:nw) {
-                  oceDebug(debug, "which[", w, "] = ", which[w], "\n")
                   if (which[w] == 1) {
-                      asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
-                      plot(x@data$longitude, x@data$latitude, asp=asp, 
-                           type=type, cex=cex, pch=pch,
-                           col=if (missing(col)) "black" else col,
-                           xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
-                      ## FIXME: this coastline code is reproduced in section.R; it should be DRY
-                      ## figure out coastline
+                      oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
+                      ## map
+                      ## FIXME: coastline selection should be DRY
                       haveCoastline <- FALSE
-                      if (!is.character(coastline)) 
-                          stop("coastline must be a character string")
-                      haveOcedata <- require("ocedata", quietly=TRUE)
+                      haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
                       lonr <- range(x[["longitude"]], na.rm=TRUE)
                       latr <- range(x[["latitude"]], na.rm=TRUE)
                       if (coastline == "best") {
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
                               oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              if (bestcoastline == "coastlineWorld") {
+                                  data(list=bestcoastline, package="oce", envir=environment())
+                              } else {
+                                  data(list=bestcoastline, package="ocedata", envir=environment())
+                              }
                               coastline <- get(bestcoastline)
                           } else {
+                              bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
                               oceDebug(debug, " using \"coastlineWorld\" because ocedata package not installed\n")
                               data(coastlineWorld, envir=environment())
                               coastline <- coastlineWorld
@@ -279,7 +270,7 @@ setMethod(f="plot",
                       } else {
                           if (coastline != "none") {
                               if (coastline == "coastlineWorld") {
-                                  data("coastlineWorld", envir=environment())
+                                  data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- coastlineWorld
                               } else if (haveOcedata && coastline == "coastlineWorldFine") {
                                   data("coastlineWorldFine", package="ocedata", envir=environment())
@@ -293,21 +284,56 @@ setMethod(f="plot",
                               haveCoastline <- TRUE
                           }
                       }
-                      if (haveCoastline) {
-                          if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
-                              polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
-                              polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                      ## if (!is.character(coastline)) stop("coastline must be a character string")
+
+                      if (!is.null(projection)) {
+                          meanlat <- mean(x[['latitude']], na.rm=TRUE)
+                          meanlon <- mean(x[['longitude']], na.rm=TRUE)
+                          id <- pmatch(projection, "automatic")
+                          if (!is.na(pmatch(projection, "automatic"))) {
+                              projection <- if (meanlat > 70)
+                                  paste("+proj=stere +lon_0=", meanLon, sep="") else "+proj=merc"
+                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
                           } else {
-                              lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
-                              lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                              oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
-                      }
-                      if (!missing(coastline)) {
-                          polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
-                          if (type[w] == 'l')
-                              lines(x@data$longitude, x@data$latitude)
-                          else
-                              points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=if(!missing(col))col)
+                          mapPlot(x[["longitude"]], x[["latitude"]],
+                                  projection=projection, orientation=orientation, parameters=parameters,
+                                  type='p', cex=cex, pch=pch,
+                                  col=if (missing(col)) "black" else col,
+                                  debug=debug-1)
+                          if (is.logical(fill) && fill) {
+                              mapPolygon(coastline[['longitude']], coastline[['latitude']], col='lightgray')
+                          } else {
+                              if (is.character(fill)) {
+                                  mapPolygon(coastline[['longitude']], coastline[['latitude']], col=fill) 
+                              } else {
+                                  mapPolygon(coastline[['longitude']], coastline[['latitude']])
+                              }
+                          }
+                      } else {
+                          asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
+                          plot(x@data$longitude, x@data$latitude, asp=asp, 
+                               type=type, cex=cex, pch=pch,
+                               col=if (missing(col)) "black" else col,
+                               xlab=resizableLabel("longitude"), ylab=resizableLabel("latitude"), ...)
+
+                          if (haveCoastline) {
+                              if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                                  polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                                  polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                              } else {
+                                  lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                                  lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                              }
+                          }
+                          if (!missing(coastline)) {
+                              polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
+                              if (type[w] == 'l')
+                                  lines(x@data$longitude, x@data$latitude)
+                              else
+                                  points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=if(!missing(col))col)
+                          }
                       }
                       par(mar=mar)
                   } else if (which[w] == 2) {    # salinity timeseries

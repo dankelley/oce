@@ -29,7 +29,7 @@
      xlim, ylim, 
      control,
      useLayout=FALSE,
-     coastline="coastlineWorld",
+     coastline="coastlineWorld", span=300,
      main="",
      grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
      debug=getOption("oceDebug"),
@@ -48,7 +48,7 @@
       option will become available in the future, for the \code{burst} mode
       that some instruments provide.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
-    the default for images is \code{oceColorsPalette(128,1)}, and for
+    the default for images is \code{oce.colorsPalette(128,1)}, and for
     lines and points is black.}
   \item{breaks}{optional breaks for color scheme}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
@@ -124,6 +124,7 @@
   \item{coastline}{a \code{coastline} object, or a character string naming one.
       This is used only for \code{which="map"}.  See notes at
       \code{\link{plot.ctd}} for more information on built-in coastlines.}
+  \item{span}{approximate span of map in km}
   \item{main}{main title for plot, used just on the top panel, if there are several panels.}
   \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
       argument is needed, because calling \code{\link{grid}} after doing a
@@ -175,6 +176,8 @@
     distance-time images of signal quality for the respective beams.  (For RDI
     data derived from instruments, this is the item called ``correlation
     magnitude.'')
+
+    \item \code{which=60} or \code{which="map"} draw a map of location(s).
 
     \item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield
     distance-time images of percent-good for the respective beams.  (For data
@@ -301,6 +304,9 @@
     on the dock or on the ship as it travelled to the mooring site.
 }
 
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
 
 \examples{
 library(oce)

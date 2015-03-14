@@ -11,8 +11,9 @@
     square of buoyancy frequency, (c) a TS diagram and (d) a coastline diagram
     indicating the station location.}
 
-\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5), col=par("fg"),
-     eos=getOption("eos", default='unesco'),
+\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5),
+     col=par("fg"), fill=FALSE,
+     eos=getOption("oceEOS", default='gsw'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
      coastline="best",
@@ -20,6 +21,7 @@
      dpdtlim, timelim,
      lonlim, latlim,
      clongitude, clatitude, span, showHemi=TRUE,
+     lonlabel=NULL, latlabel=NULL, sides=NULL,
      projection=NULL, parameters=NULL, orientation=NULL,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
@@ -71,14 +73,11 @@
     }
   }
   \item{col}{colour of lines or symbols}
-  \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
-      computer must have the TEOS library installed; see \code{\link{teos}}.
-      The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
-      axis and ``conservative temperature'' on the y axis.  Typically, the
-      temperature values will be very similar to those with \code{unesco}, but
-      the salinities will be increased by 0.1 to 0.2 units.  The isopycnals
-      will still run through the same points as for the \code{unesco} style.
-      See \code{\link{teos}} for more information.}
+  \item{fill}{either a logical, indicating whether to fill the land with
+      light-gray, or a color name.  Owing to problems with some projections,
+      the default is not to fill.}
+  \item{eos}{equation of state to be used, either \code{"unesco"} or
+      \code{"gsw"}.}
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
@@ -113,9 +112,21 @@
       chosen to include some points on the nearby coastline.}
   \item{showHemi}{logical indicating whether to show hemisphere in axis tick
       labels.}
-  \item{projection}{projection for map, passed to
-      \code{\link[mapproj]{mapproject}} by \code{plot} with a \code{coastline}
-      object; \code{NULL} for none.}
+  \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
+      label on the indicated sides of plot, passed to
+      \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+      simple customization.  If they are are not provided, reasonable defaults
+      will be used.}
+
+  \item{projection}{projection for map, if desired.  If this is \code{NULL}, no
+      projection will be used; the map will simply show longitude and latitude
+      in a cartesian frame, scaled to retain shapes at the centre.  If this is
+      the string \code{"automatic"}, then either a Mercator or Stereographic
+      projection will be used, depending on whether the CTD station is within
+      70 degrees of the equator or at higher latitudes.  Finally, if this is a
+      string in the format used by \code{\link{mapPlot}}, then it is is passed
+      to that function.}
+
   \item{parameters}{parameters for map, as for \code{projection}.}
   \item{orientation}{orientation for map, as for \code{projection}.}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
@@ -127,11 +138,9 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
-
   \item{df}{optional argument that is ignored except for plotting buoyancy
       frequency; in that case, it is passed to \code{\link{swN2}} as the
       argument named \code{df}.}
-
   \item{keepNA}{flag indicating whether to keep \code{NA} values in linegraphs,
       which will yield breaks in the lines.}
   \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
