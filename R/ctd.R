@@ -475,8 +475,7 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
         casts <- vector("list", ncasts)
         for (i in 1:ncasts) {
             oceDebug(debug, "profile #", i, "of", ncasts, "\n")
-            ii <- seq.int(indices$start[i], indices$end[i])
-            cast <- ctdTrim(x, "index", parameters=ii)
+            cast <- ctdTrim(x, "index", parameters=c(indices$start[i], indices$end[i]))
             cast@processingLog <- processingLog(cast@processingLog,
                                                 paste(paste(deparse(match.call()), sep="", collapse=""),
                                                 " # profile ", i, " of ", ncasts))
