@@ -1,4 +1,5 @@
 0.9-15
+- as.topo() can convert "bathy" objects from the marmap package
 - "+.section" renamed sectionAddStation()
 - oceApprox() renamed oce.approx(), with an alias for compatibility 
 - oce.grid() added

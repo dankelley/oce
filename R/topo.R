@@ -414,6 +414,12 @@ read.topo <- function(file, ...)
 
 as.topo <- function(longitude, latitude, z, filename="")
 {
+    if (inherits(longitude, "bathy")) {
+        bathy <- longitude
+        longitude <- as.numeric(rownames(bathy))
+        latitude <- as.numeric(colnames(bathy))
+        z <- as.matrix(bathy)
+    }
     ncols <- length(longitude)
     nrows <- length(latitude)
     longitudeLowerLeft <- min(longitude, na.rm=TRUE)
