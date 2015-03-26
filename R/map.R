@@ -286,8 +286,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (length(grid) == 1)
         grid <- rep(grid[1], 2)
     drawGrid <- (is.logical(grid[1]) && grid[1]) || (is.numeric(grid[1]) && grid[1] > 0)
-    if (is.logical(grid[1]) && grid[1])
-        grid <- rep(15, 2)
+    # FIXME: 20150326
+    #if (is.logical(grid[1]) && grid[1])
+    #    grid <- rep(15, 2)
     xy <- lonlat2map(longitude, latitude, projection=projection, parameters=parameters, orientation=orientation)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
@@ -461,12 +462,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "span:", span, "\n")
         ## Use span to make auto-scale the grid.
         if (is.logical(grid)) {
-            grid <- c(0, 0)
+            grid <- c(15, 15)
             if (gridOrig[1]) {
-                grid[1] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 2) 1 else 1/60
+                grid[1] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 3) 2 else 1/60
             }
             if (gridOrig[2]) {
-                grid[2] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 2) 1 else 1/60
+                grid[2] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 3) 2 else 1/60
             }
         }
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
