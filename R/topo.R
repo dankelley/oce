@@ -292,7 +292,7 @@ setMethod(f="plot",
                       } else {
                           water.z <- pretty(zr)
                       }
-                      water.z <- rev(sort(water.z))
+                      water.z <- sort(water.z)
                   }
                   nz <- length(water.z)
                   if (missing(col.water))
