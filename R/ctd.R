@@ -1282,21 +1282,21 @@ plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
     scan <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
     for (w in which) {
         if (w == 1) {
-            plot(scan, x@data$pressure, ylab=resizableLabel("p", "y"), xlab="Scan", yaxs='r', type=type)
+            plot(scan, x@data$pressure, ylab=resizableLabel("p", "y"), xlab="Scan", yaxs='r', type=type, ...)
         } else if (w == 2) {
             dp <- diff(x@data$pressure)
             dp <- c(dp, dp[length(dp)])
-            plot(scan, dp, ylab="diff(pressure)", xlab="Scan", yaxs='r', type=type)
+            plot(scan, dp, ylab="diff(pressure)", xlab="Scan", yaxs='r', type=type, ...)
         } else if (w == 3) {
             dp <- diff(x@data$pressure)
             dp <- c(dp, dp[length(dp)])
             plot(scan, x[["temperature"]], ylab=resizableLabel("T", "y"),
-                 xlab="Scan", yaxs='r', type=type)
+                 xlab="Scan", yaxs='r', type=type, ...)
         } else if (w == 4) {
             dp <- diff(x@data$pressure)
             dp <- c(dp, dp[length(dp)])
             plot(scan, x[["salinity"]], ylab=resizableLabel("S", "y"),
-                 xlab="Scan", yaxs='r', type=type)
+                 xlab="Scan", yaxs='r', type=type, ...)
         } else {
             stop("unknown 'which'; must be in 1:4")
         }
