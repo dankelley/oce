@@ -265,10 +265,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (1 == length(gridOrig))
         gridOrig <- rep(gridOrig, 2)
     oceDebug(debug, "mapPlot(longitude, latitude", 
-            ", longitudelim=",
-             if (missing(latitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
-             ", longitudelim=",
-             if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
+             ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
+             ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
              ", projection=\"", projection, "\"",
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
