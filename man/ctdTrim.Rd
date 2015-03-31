@@ -29,7 +29,8 @@ removeDepthInversions=FALSE, parameters, func, debug=getOption("oceDebug"))}
 
   \item{func}{A function that returns a logical vector of length equal to the CTD columnar data.
     This takes as its single argument the \code{data} slot of the CTD object. If \code{func} is
-    provided, then \code{method} and \code{parameters} are ignored. See \dQuote{Details}.}
+    provided, then \code{method}, \code{inferWaterDepth}, \code{removeDepthInversions} and
+    \code{parameters} are all ignored. See \dQuote{Details}.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
     information, or to 2 to get more.} 
