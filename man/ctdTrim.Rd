@@ -97,7 +97,8 @@ data(ctdRaw)
 plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
 plot(ctdTrim(ctdRaw)) # looks like a real profile ...
 plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
-# demonstrate use of a function
+# Demonstrate use of a function. The scan limits were chosen
+# by using locator(2) on a graph made by plotScan(ctdRaw).
 trim <- function(data) {
   130<data[["scan"]] & data[["scan"]]<380
 }
