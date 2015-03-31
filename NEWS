@@ -1,4 +1,5 @@
 0.9-15
+- ctdTrim() gets "func" argument
 - as.topo() can convert "bathy" objects from the marmap package
 - "+.section" renamed sectionAddStation()
 - oceApprox() renamed oce.approx(), with an alias for compatibility 

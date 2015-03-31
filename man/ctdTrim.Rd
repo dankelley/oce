@@ -8,7 +8,7 @@
 \description{Trim start/end portions of a CTD cast.}
 
 \usage{ctdTrim(x, method, inferWaterDepth=TRUE,
-removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
+removeDepthInversions=FALSE, parameters, func, debug=getOption("oceDebug"))}
 
 
 \arguments{
@@ -26,6 +26,10 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
     a section, unless \code{\link{ctdDecimate}} will be used, which will remove the inversions.}
 
   \item{parameters}{A list whose elements depend on the method; see \dQuote{Details}.}
+
+  \item{func}{A function that returns a logical vector of length equal to the CTD columnar data.
+    This takes as its single argument the \code{data} slot of the CTD object. If \code{func} is
+    provided, then \code{method} and \code{parameters} are ignored. See \dQuote{Details}.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
     information, or to 2 to get more.} 
@@ -93,6 +97,12 @@ data(ctdRaw)
 plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
 plot(ctdTrim(ctdRaw)) # looks like a real profile ...
 plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
+# demonstrate use of a function
+trim <- function(data) {
+  130<data[["scan"]] & data[["scan"]]<380
+}
+trimmed <- ctdTrim(ctdRaw, func=trim)
+plot(trimmed)
 }
 
 \references{The Seabird CTD instrument is described at
