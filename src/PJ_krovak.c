@@ -37,7 +37,7 @@
 #include <string.h>
 #include <stdio.h>
 
-PJ_CVSID("$Id: PJ_krovak.c 1856 2010-06-11 03:26:04Z warmerdam $")
+PJ_CVSID("$Id: PJ_krovak.c 1856 2010-06-11 03:26:04Z warmerdam $");	
 
 PROJ_HEAD(krovak, "Krovak") "\n\tPCyl., Ellps.";
 

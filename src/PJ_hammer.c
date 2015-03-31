@@ -6,8 +6,7 @@
 
 # include	"projects.h"
 PROJ_HEAD(hammer, "Hammer & Eckert-Greifendorff")
-    "\n\tMisc Sph, \n\tW= M=";
-	//"\n\tMisc Sph, no inv.\n\tW= M=";
+	"\n\tMisc Sph, no inv.\n\tW= M=";
 FORWARD(s_forward); /* spheroid */
 	double cosphi, d;
 

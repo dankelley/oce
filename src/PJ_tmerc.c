@@ -1,3 +1,4 @@
+#include <R.h>
 #define PROJ_PARMS__ \
 	double	esp; \
 	double	ml0; \
