@@ -487,17 +487,17 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
 }
 
 
-ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE, parameters,
-                   func, debug=getOption("oceDebug"))
+ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE, parameters=NULL,
+                   debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
-    funcGiven <- !missing(func)
+    methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     if (!("scan" %in% names(x)))
         x@data[["scan"]] <- seq_along(x@data[["pressure"]])
     res <- x
-    if (missing(func)) {
+    if (!methodIsFunction) {
         n <- length(x@data$pressure)
         if (n < 2) {
             warning("too few data to ctdTrim()")
@@ -687,9 +687,8 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
         }
     } else {
-        keep <- func(x@data)
+        keep <- method(data=x@data, parameters=parameters)
     }
-
     if (is.data.frame(res@data)) {
         res@data <- res@data[keep,]
     } else {
