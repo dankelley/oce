@@ -94,6 +94,7 @@
     \item{col.grid}{colour for grid.}
     \item{lty.grid}{line type for grid.}
     \item{Slim}{Optional limit for S axis}
+    \item{Clim}{Optional limit for conductivity axis}
     \item{Tlim}{Optional limit for T axis}
     \item{densitylim}{Optional limit for density axis}
     \item{N2lim}{Optional limit for N2 axis}
