@@ -81,9 +81,10 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
     but extends only to scan 100.}
 
   \item{If \code{method} is a function, then it must return a vector of \code{\link{logical}}
-    values, computed based on two arguments: \code{data}, which is set to \code{x@data}, and
-    \code{parameters}, which is copied from the present argument list.  Both \code{inferWaterDepth}
-    and \code{removeInversions} are ignored in the function case. See \dQuote{Examples}.}
+    values, computed based on two arguments: \code{data}, which is set to \code{x@data} (a
+    \code{\link{list}}), and \code{parameters} as supplied to \code{ctdTrim}.  Both
+    \code{inferWaterDepth} and \code{removeInversions} are ignored in the function case. See
+    \dQuote{Examples}.}
 
   }
 }
