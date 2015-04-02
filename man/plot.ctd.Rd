@@ -98,6 +98,7 @@
       coastline, it makes sense to load it in before the first call, and to
       supply the object as an argument, as opposed to the name of the object.}
   \item{Slim}{optional limits of salinity axes}
+  \item{Clim}{optional limits of conductivity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
   \item{densitylim}{optional limits of density axis}
