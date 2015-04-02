@@ -777,7 +777,7 @@ setMethod(f="plot",
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE,
                               coastline="best",
-                              Slim, Tlim, plim, densitylim, N2lim, Rrholim,
+                              Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               clongitude, clatitude, span, showHemi=TRUE,
@@ -893,7 +893,8 @@ setMethod(f="plot",
                                        spice=13,
                                        tritium=14,
                                        Rrho=15,
-                                       RrhoSF=16))
+                                       RrhoSF=16,
+                                       "conductivity"=17))
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
@@ -1027,6 +1028,14 @@ setMethod(f="plot",
                       plotProfile(x, xtype="RrhoSF",
                                   ylim=plim,
                                   col=col,
+                                  eos=eos,
+                                  useSmoothScatter=useSmoothScatter,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  debug=debug-1,
+                                  ...)
+                  } else if (which[w] == 17) {
+                      plotProfile(x, xtype="conductivity", Clim=Clim, ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
@@ -2538,7 +2547,7 @@ plotProfile <- function (x,
                          grid = TRUE,
                          col.grid = "lightgray",
                          lty.grid = "dotted",
-                         Slim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
+                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
                          lwd=par("lwd"),
                          xaxs="r",
                          yaxs="r",
@@ -2837,6 +2846,55 @@ plotProfile <- function (x,
             }
             ## 2014-02-07: use col here, since no second axis to worry about
             plotJustProfile(salinity, y, type=type, lwd=lwd,
+                            cex=cex, pch=pch, col=col, pt.bg=pt.bg,
+                            keepNA=keepNA, debug=debug-1)
+        }
+    } else if (xtype == "C" || xtype == "conductivity") {
+        if ('conductivity' %in% names(x@data)) {
+            conductivity <- x@data$conductivity
+        } else {
+            conductivity <- swCSTp(x[['salinity']], x[['temperature']], x[['pressure']], eos=eos)*42.91754 # mS/cm
+        }
+        if (!any(is.finite(conductivity))) {
+            warning("no valid conductivity data")
+            return(invisible())
+        }
+        if (missing(Clim)) {
+            if ("xlim" %in% names(dots)) Clim <- dots$xlim else Clim <- range(conductivity, na.rm=TRUE)
+        }
+        if (useSmoothScatter) {
+            smoothScatter(conductivity, y, xlim=Clim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
+            axis(2)
+            axis(3)
+            box()
+            if (is.null(xlab)) {
+                mtext(resizableLabel("C", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            } else {
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            }
+        } else {
+            look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
+            if (!add) {
+                plot(conductivity[look], y[look],
+                     xlim=Clim, ylim=ylim,
+                     type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                if (is.null(xlab)) {
+                    mtext(resizableLabel("C", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+                }
+                axis(2)
+                axis(3)
+                box()
+                if (grid) {
+                    at <- par("yaxp")
+                    abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                    at <- par("xaxp")
+                    abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                }
+            }
+            ## 2014-02-07: use col here, since no second axis to worry about
+            plotJustProfile(conductivity, y, type=type, lwd=lwd,
                             cex=cex, pch=pch, col=col, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }

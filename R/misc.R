@@ -806,7 +806,7 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
+resizableLabel <- function(item=c("S", "C", "T", "theta", "sigmaTheta",
                                   "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
                                   "tritium", "spice", "fluorescence",
@@ -829,6 +829,16 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         } else {
             full <- bquote(.(var)*" ( "*degree*"C )")
             abbreviated <- expression(paste("T (", degree, "C)"))
+        }
+    } else if (item == "C") {
+        var <- gettext("Conductivity", domain="R-oce")
+        unit <- gettext("mS/cm", domain="R-oce") #FIXME: how to handle different possible units?
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviate <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviate <- full
         }
     } else if (item == "conservative temperature") {
         var <- gettext("Conservative Temperature", domain="R-oce")

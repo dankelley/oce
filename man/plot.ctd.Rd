@@ -17,7 +17,7 @@
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
      coastline="best",
-     Slim, Tlim, plim, densitylim, N2lim, Rrholim,
+     Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
      lonlim, latlim,
      clongitude, clatitude, span, showHemi=TRUE,
@@ -70,6 +70,9 @@
       \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
       \item \code{which=13} or \code{which="spice"} gives a spiciness profile
       \item \code{which=14} or \code{which="tritium"} gives a tritium profile
+      \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
+      \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
+      \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
     }
   }
   \item{col}{colour of lines or symbols}

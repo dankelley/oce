@@ -8,7 +8,7 @@
     Temperature, and including units as appropriate.}
 
 \usage{
-resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
+resizableLabel(item=c("S", "C", "T", "theta", "sigmaTheta",
   "conservative temperature", "absolute salinity",
   "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
   "tritium", "spice", "fluorescence",
