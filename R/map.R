@@ -296,10 +296,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     y <- xy$y
     yrange <- range(y, na.rm=TRUE)
     ## FIXME: should permit the use of PROJ.4 projections that lack inverses.
-    if (usingProj4() && length(grep("wintri", projection)))
-        stop("cannot handle +proj=wintri because it has no inverse")
-    if (usingProj4() && length(grep("aitoff", projection)))
-        stop("cannot handle +proj=aitoffbecause it has no inverse")
+    #if (usingProj4() && length(grep("wintri", projection)))
+    #    stop("cannot handle +proj=wintri because it has no inverse")
+    #if (usingProj4() && length(grep("aitoff", projection)))
+    #    stop("cannot handle +proj=aitoff because it has no inverse")
     xorig <- x
     yorig <- y
     ## FIXME: maybe *always* do this.
@@ -1544,7 +1544,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         pr <- gsub(" .*$", "", gsub("^\\+proj=", "", projection))
         if (!(pr %in% knownProj4))
             stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
-        if (length(grep("aitoff", pr))) stop("+proj=aitoff cannot be used")
+        #if (length(grep("aitoff", pr))) stop("+proj=aitoff cannot be used")
         #if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
         #if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
         ll <- cbind(longitude, latitude)
