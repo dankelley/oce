@@ -1471,7 +1471,9 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 ## simply haven't been generated enough interest in the broader cartographic
 ## community to merit inclusion in oce.
 
-knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", "calcofi",
+## calcofi is deleted because it's nor really a projection; it's more
+## like a coordinate transformation
+knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
                 "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
