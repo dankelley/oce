@@ -1471,14 +1471,24 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 ## simply haven't been generated enough interest in the broader cartographic
 ## community to merit inclusion in oce.
 
-## calcofi is deleted because it's nor really a projection; it's more
-## like a coordinate transformation
-knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
+## 1. calcofi is deleted because it's nor really a projection; it's more
+##    like a coordinate transformation.
+## 2. isea is delted because it causes segmentation faults that crash R,
+##    at least on a world coastline test.
+## 3. labrd is deleted because it returns NaN for every point
+##    on the coastlineWorld; fixing this is not a high priority
+##    given that it is a niche projection that has caused problems
+##    in PROJ.4 also.
+## 4. wintri is delted because it hangs R when drawing coastlineWorld.
+knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne",
+##knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
                 "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
                 "goode", "gs48", "gs50", "hatano", "healpix", "rhealpix",
-                "igh", "imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
+                ##"igh", "imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
+                ##"igh", "imw_p", "kav5", "kav7", "krovak", "labrd",
+                "igh", "imw_p", "kav5", "kav7", "krovak",
                 "laea", "lonlat", "latlon", "lcc", "lcca", "leac", "lee_os",
                 "loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
@@ -1489,7 +1499,8 @@ knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
                 "robin", "rouss", "sinu", "somerc", "stere", "sterea",
                 "gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
-                "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
+                #"wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
+                "wag3", "wag4", "wag5", "wag6", "weren", "wink1")
 
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {

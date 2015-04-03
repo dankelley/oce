@@ -223,8 +223,8 @@ dev.off()
 \section{Available projections}{All of the projections provided in the
     \code{mapproj} package are available, but the lack of inverses in that
     package mean that sometimes the plot has flaws (especially on axis
-    labelling). The preferred scheme is the \code{PROJ.4} [6] one, and this permits
-    the following projections:
+    labelling). The recommended method is to use the \code{PROJ.4} [6] scheme,
+    which permits the following projections [7]:
     \code{"aea"}, \code{"aeqd"}, \code{"aitoff"}, \code{"alsk"}, \code{"bipc"},
     \code{"bonne"}, \code{"cass"}, \code{"cc"}, \code{"cea"}, \code{"collg"},
     \code{"crast"}, \code{"eck1"}, \code{"eck2"}, \code{"eck3"}, \code{"eck4"},
@@ -251,7 +251,8 @@ dev.off()
     \code{"tpeqd"}, \code{"tpers"}, \code{"ups"}, \code{"urm5"},
     \code{"urmfps"}, \code{"utm"}, \code{"vandg"}, \code{"vitk1"},
     \code{"wag1"}, \code{"wag2"}, \code{"wag3"}, \code{"wag4"}, \code{"wag5"},
-    \code{"wag6"}, \code{"weren"}, \code{"wink1"},  and \code{"wintri"}.
+    \code{"wag6"}, \code{"weren"}, and \code{"wink1"}. (See [7] for invertible
+    projections that are omitted in oce.)
     The PROJ.4 documentation [6] details the additional parameters that may be
     used with each projection.
 }
@@ -292,6 +293,12 @@ dev.off()
 
     6. \code{PROJ.4} website \url{http://trac.osgeo.org/proj}
 
+    7. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
+    used, except for \code{calcofi} (which is not really a projection scheme),
+    \code{isea} (which causes R to segmentation-fault on a world coastline test
+    case), \code{labrd} (which is a niche local projection that has an error
+    making it return \code{NaN} for the entire earth coastline) and
+    \code{wintri} (which hangs R when plotting the world coastline).
 }
 
 

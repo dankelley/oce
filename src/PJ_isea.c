@@ -5,8 +5,8 @@
  */
 
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <float.h>
 
 #ifndef M_PI
