@@ -48,13 +48,15 @@ void proj4_interface(char **proj_spec, int *forward, int *n, double *x, double *
     // project (x,y) -> (X, Y), forward or inverse; *n is length of *x.
     projPJ pj;
     projUV xy, XY;
+#ifdef DEBUG
+    Rprintf("mapping=%s, proj='%s'\n", *forward?"forward":"inverse", *proj_spec);
+#endif
     if (!(pj = pj_init_plus(*proj_spec))) 
         error("ERROR %s\n", pj_strerrno(*pj_get_errno_ref()));
     if (*forward != 0 && *forward != 1)
         error("forward must be 0 or 1");
     double dpr = 180.0 / M_PI;  // degrees per radian
 #ifdef DEBUG
-    Rprintf("mapping=%s, dpr=%f, proj='%s'\n", *forward?"forward":"inverse", dpr, *proj_spec);
     Rprintf(" *n = %d\n", *n);
     Rprintf(" x[0] = %g\n", x[0]);
     Rprintf(" y[0] = %g\n", y[0]);

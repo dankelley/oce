@@ -1,10 +1,10 @@
 #define PJ_LIB__
 #include "projects.h"
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include "proj_api.h"
-#include <errno.h>
+//#include <string.h>
+//#include <stdio.h>
+//#include <math.h>
+//#include "proj_api.h"
+//#include <errno.h>
 
 /* Conversions for the California Cooperative Oceanic Fisheries Investigations 
 Line/Station coordinate system following the algorithm of:
@@ -18,8 +18,7 @@ Station == 1/15 of a degree at O.
 By convention, CalCOFI Line/Station conversions use Clarke 1866 but we use 
 whatever ellipsoid is provided. */
 
-PROJ_HEAD(calcofi, 
-    "Cal Coop Ocean Fish Invest Lines/Stations") "\n\tCyl, Sph&Ell";
+PROJ_HEAD(calcofi, "Cal Coop Ocean Fish Invest Lines/Stations") "\n\tCyl, Sph&Ell";
 
 #define EPS10 1.e-10
 #define DEG_TO_LINE 5
