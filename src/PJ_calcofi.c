@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <proj_api.h>
+#include "proj_api.h"
 #include <errno.h>
 
 /* Conversions for the California Cooperative Oceanic Fisheries Investigations 
