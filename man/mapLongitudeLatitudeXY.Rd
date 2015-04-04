@@ -21,7 +21,7 @@
 }
 
 
-\details{This is mainly a wrapper around \code{\link[mapproj]{mapproject}}.}
+\details{This is mainly a wrapper around \code{mapproject}.}
 
 \value{A list containing \code{x} and \code{y}.}
 

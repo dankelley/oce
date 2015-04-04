@@ -5,17 +5,17 @@
 \title{Plot a map}
 
 \description{Plot coordinates as a map, using one of many possible projections
-    calculated with the \code{mapproj} package or with \code{PROJ.4} [6] code
-    included within oce. The projection parameters are stored in a local
-    variable that can be retrieved by related functions, making it easy to add
-    more items so the map, including points, lines, text, images and contours.}
+    calculated with the \code{PROJ.4} [6] code that is included within oce or,
+    with less flexibility and accuracy, with the \code{mapproj} package.  The
+    projection parameters are stored in a local variable that can be retrieved
+    by related functions, making it easy to add more items so the map,
+    including points, lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
-    projection="mollweide", parameters=NULL, orientation=NULL, trim=TRUE,
-    debug=getOption("oceDebug"), \dots)
-}
+    projection="+proj=moll", parameters=NULL, orientation=NULL, trim=TRUE,
+    debug=getOption("oceDebug"), \dots) }
 
 \arguments{
 
@@ -71,26 +71,28 @@
         defaults will be used.}
 
     \item{projection}{a string indicating the form of projection to be used.
-        This may be in either of two formats.  The first is that used by
-        \code{\link[mapproj]{mapproject}} in the \code{mapproj} package; if
-        this is used, then the next two arguments are also used.  The second
-        form, in which \code{projection} starts with ``\code{+proj=}'', is that
-        used by \code{\link[proj4]{project}} in the \code{proj4} package.  Note
-        that in this second case, there is no need to specify the scale
-        parameter (\code{+k}), the easting parameter (\code{+easting}) or the
-        northing parameter (\code{+northing}), since these are determined from
-        the graph limits.  See \dQuote{Examples}.}
+        This may be in either of two formats, of which the first is preferred.
+        (1) The value of \code{projection} starts with the substring
+        ``\code{+proj=}'', with the rest of the string being in accordance with
+        the PROJ.4 system [6]. Both \code{parameters} and \code{orientation}
+        are ignored in this case.  Note that there is no need to specify the
+        scale parameter (\code{+k}), the easting parameter (\code{+easting}) or
+        the northing parameter (\code{+northing}), since these are determined
+        from the graph limits.  (2) The value of \code{projection} is the name
+        of a projection provided by \code{mapproject} in the \code{mapproj}
+        package, and \code{parameters} and \code{orientation} are also passed
+        to that function.  See \dQuote{Examples}.}
 
     \item{parameters, orientation}{parameters and orientation, if
-        \code{projection} is in \code{mapproj} form; see
-        \code{\link[mapproj]{mapproject}}.}
+        \code{projection} is in \code{mapproj} form; see the help for
+        \code{mapproject} in the \code{mapproj} package.}
 
-    \item{trim}{a logical value indicating whether to trim islands or lakes containing
-        only points that are offscale of the current plot box.  This solves the problem
-        of Antarctica overfilling the entire domain, for an Arctic-centred
-        stereographic projection.  It is not a perfect solution, though,
-        because the line segment joining two offscale points might intersect
-        the plotting box.}
+    \item{trim}{a logical value indicating whether to trim islands or lakes
+        containing only points that are off-scale of the current plot box.
+        This solves the problem of Antarctica overfilling the entire domain,
+        for an Arctic-centred stereographic projection.  It is not a perfect
+        solution, though, because the line segment joining two off-scale points
+        might intersect the plotting box.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
@@ -103,29 +105,24 @@
 
 
 \details{Creates a map using the indicated projection.  As noted in the
-    information on the \code{projection} argument, projections may be
-    specified in the format used by \code{\link[mapproj]{mapproject}} from
-    the \code{mapproj} package, or the one used by
-    \code{\link[proj4]{project}} from the \code{proj4} package.  The first
-    of these packages is probably easier to learn but the second is more
-    powerful and has a wider user base across multiple software systems
-    beyond R.
+    information on the \code{projection} argument, projections may be specified
+    in the format used by \code{mapproject} from the \code{mapproj} package, or
+    the one used by \code{project} from the \code{proj4} package.  The first of
+    these packages is probably easier to learn but the second is more powerful
+    and has a wider user base across multiple software systems beyond R.
     
-    Once a projection is set, the functions that add to a map will follow
-    the same projection.
+    Once a projection is set, the functions that add to a map will follow the
+    same projection.
     
-    The available projections can be found in the documentation for
-    \code{\link[mapproj]{mapproject}} and \code{\link[proj4]{project}}.
-
     For \code{PROJ.4}-style projections, the default is to use \code{PROJ.4}
-    code that is built into Oce.  However, if
-    \code{options(externalProj4=TRUE)}, then the \code{proj4} package will be
-    used instead.  Generally, the default method is better because the
-    \code{proj4} package handles unprojectable points poorly, so that
-    coordinate vectors containing such points must be processed one point at a
-    time, at considerable penalty in speed.  For example, using the external
-    \code{proj4} package on a worldwide mercator plot yields a slowdown by a
-    factor of 50X.
+    code that is built into Oce.  However, in a feature that may be eliminated
+    at any time without notice, if \code{options(externalProj4=TRUE)}, then the
+    \code{proj4} package will be used instead.  Generally, the default method
+    is better because the \code{proj4} package handles unprojectable points
+    poorly, so that coordinate vectors containing such points must be processed
+    one point at a time, at considerable penalty in speed.  For example, using
+    the external \code{proj4} package on a worldwide Mercator plot yields a
+    slowdown by a factor of 50X.
 
     Further details on map projections are provided by [1], an exhaustive
     treatment that includes many illustrations, an overview of the history of

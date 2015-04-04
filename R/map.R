@@ -256,7 +256,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
-                    projection="mollweide", parameters=NULL, orientation=NULL,
+                    projection="+proj=moll", parameters=NULL, orientation=NULL,
                     trim=TRUE, debug=getOption("oceDebug"),
                     ...)
 {
