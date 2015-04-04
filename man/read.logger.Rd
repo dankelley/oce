@@ -10,7 +10,7 @@
     \code{ctd}.}
 
 \usage{read.logger(file, from=1, to, by=1, type,
-            tz=getOption("oceTz", default="UTC"),
+            tz=getOption("oceTz", default="UTC"), patm=TRUE,
             processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -35,9 +35,21 @@
       this argument is not provided, an attempt will be made to infer the type
       from the file name and contents.}
   \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
-  \item{processingLog}{if provided, the action item to be stored in the
-    log.  (Typically only provided for internal calls; the default that
-    it provides is better for normal calls by a user.)}
+
+  \item{patm}{controls the handling of atmospheric pressure. There are three
+      alternatives.  (1) If \code{patm} is \code{TRUE} (the default), then an
+      estimate of atmospheric pressure is subtracted from the raw data and the
+      resultant is the pressure in the return value.  The estimate will be
+      \code{atmosphericPressure} in the data table named \code{deriveDepth} or,
+      if that is not found, it will be 10.1325 dbar. (2) If \code{patm} is
+      \code{FALSE}, then the raw pressures are copied directly to the returned
+      object.  (3) If \code{patm} is a numerical value, then it will be
+      subtracted from the raw data.}
+
+  \item{processingLog}{if provided, the action item to be stored in the log.
+      (Typically only provided for internal calls; the default that it provides
+      is better for normal calls by a user.)}
+
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 

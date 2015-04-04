@@ -270,7 +270,7 @@ setMethod(f="plot",
           })
 
 read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
-                        processingLog, debug=getOption("oceDebug"))
+                        patm=TRUE, processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
@@ -364,7 +364,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             pressureAtmospheric <- deriveDepth$atmosphericPressure 
             warn <- TRUE
         }, silent=TRUE)
-        warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
+        if (warn)
+            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
 
         ## From notes in comments above, it seems necessary to order by
@@ -394,15 +395,25 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         serialNumber <- instruments$serialID
         model <- instruments$model
         RSQLite::dbDisconnect(con)
+        if (is.logical(patm)) {
+            if (patm)
+                data$pressure <- data$pressure - pressureAtmospheric
+        } else {
+            data$pressure <- data$pressure - patm
+        }
 
         if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
             conductivity.standard <- 42.914 ## mS/cm conversion factor
             ## warning("assuming conductivity is in mS/cm")
             ## Use an estimate of at-sea pressure; otherwise can get an error of 0.005 in salinity,
             ## as estimated in a real profile extending to 200m.
-            p <- data$pressure - 10.1325 # use a reasonable estimate of in-water pressure
+            p <- data$pressure
+            if (is.logical(patm) && !patm) {
+                p <- data$pressure - 10.1325 # use a reasonable estimate of in-water pressure
+            }
+            oceDebug(debug, "head(p):", paste(p[1:3], collapse=" "), "\n")
             if ("salinity" %in% names) {
-                S <- dat$salinity
+                S <- data$salinity
             } else {
                 warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
                 S <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
