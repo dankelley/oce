@@ -385,7 +385,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        names(data) <- names[1:dim(data)[2]] # sometimes there are more names than data channels
+        names <- names[1:dim(data)[2]] # sometimes there are more names than data channels
+        names(data) <- names
         data <- as.list(data)
 
         ## message("dim of data: ", paste(dim(data), collapse="x"))
@@ -400,7 +401,12 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             ## Use an estimate of at-sea pressure; otherwise can get an error of 0.005 in salinity,
             ## as estimated in a real profile extending to 200m.
             p <- data$pressure - 10.1325 # use a reasonable estimate of in-water pressure
-            S <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
+            if ("salinity" %in% names) {
+                S <- dat$salinity
+            } else {
+                warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
+                S <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
+            }
             ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature, filename=filename)
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
@@ -416,6 +422,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
             ## The device may have other channels; add them.  (This includes conductivity.)
             for (name in names) {
+                oceDebug(debug, "copying '", name, "' from Ruskin file into ctd object\n", sep="")
                 if (!(name %in% c("temperature", "pressure"))) {
                     ctd@data[[name]] <- data[[name]]
                 }

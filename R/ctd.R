@@ -541,16 +541,16 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             ## 2014-01-08: remove the following block that reverses a profile.  This
             ## was happening for some 24-Hz data (see also below), and it seems unlikely
             ## this block of code will ever be useful, anyway.
-            ascending <- FALSE
-                                        #if (FALSE) {
-                                        #    ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
-                                        #    oceDebug(debug, "ascending=", ascending, "\n")
-                                        #    if (ascending) {
-                                        #        for (name in names(x@data)) {
-                                        #            x@data[[name]] <- rev(x@data[[name]])
-                                        #        }
-                                        #    }
-                                        #}
+            ## 2015-04-04 ascending <- FALSE
+            ## 2015-04-04 if (FALSE) {
+            ## 2015-04-04     ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
+            ## 2015-04-04     oceDebug(debug, "ascending=", ascending, "\n")
+            ## 2015-04-04     if (ascending) {
+            ## 2015-04-04         for (name in names(x@data)) {
+            ## 2015-04-04             x@data[[name]] <- rev(x@data[[name]])
+            ## 2015-04-04         }
+            ## 2015-04-04     }
+            ## 2015-04-04 }
             pmin <- -5
             pminGiven <- FALSE
             if (!missing(parameters)) {
@@ -572,13 +572,17 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             ## 2014-01-08 ## for this reason, the line of code was dropped today.
 
             ## 3. trim the upcast and anything thereafter (ignore beginning and end)
-            trim.top <- as.integer(0.1*n)
-            trim.bottom <- as.integer(0.9*n)
-            max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
-            max.location <- trim.top + max.spot
+            ##2015-04-04 # This was misbehaving on RBR data, and I'd prefer to get the simpler
+            ##2015-04-04 # method working, anyway, so I'm removing the fancy bits.
+            ##2015-04-04 trim.top <- as.integer(0.1*n)
+            ##2015-04-04 trim.bottom <- as.integer(0.9*n)
+            ##2015-04-04 max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
+            ##2015-04-04 max.location <- trim.top + max.spot
+            ##2015-04-04 keep[max.location:n] <- FALSE
+            max.location <- which.max(smooth(x@data$pressure, kind="3R"))
             keep[max.location:n] <- FALSE
-            oceDebug(debug, "removed data at indices from ", max.spot,
-                     " (where pressure is ", x@data$pressure[max.spot], ") to the end of the data\n", sep="")
+            oceDebug(debug, "removed data at indices from ", max.location,
+                     " (where pressure is ", x@data$pressure[max.location], ") to the end of the data\n", sep="")
             ## 2011-02-04 if (FALSE) {
             ## 2011-02-04     ## deleted method: slowly-falling data
             ## 2011-02-04     delta.p.sorted <- sort(delta.p)
@@ -607,12 +611,11 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
                     s0 <-  param[1]
                     p0 <- abs(param[2])
                     dpds <- param[3]
-                    oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
-                    look <- ss >= s0
-                    ssl <- ss[look]
-                    ppl <- pp[look]
-                    sqrt(sum((ppl - (p0 + dpds * (ssl - s0)))^2))
-                    sqrt(sum((abs(ppl - (p0 + dpds * (ssl - s0))))))
+                    model <- ifelse(ss < s0, p0, p0 + dpds * (ss - s0))
+                    diff <- pp - model
+                    misfit <- sqrt(mean(diff^2))
+                    oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "; misfit=", misfit, "\n")
+                    misfit
                 }
                 bilinearB <- function(s, s0, p0, dpds) {
                     oceDebug(debug-1, "bilinearB s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
@@ -645,7 +648,7 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
                     sGuess <- mean(ss, na.rm=TRUE)
                     pGuess <- 0
                     dpdsGuess <- mean(diff(pp)/diff(ss), na.rm=TRUE) 
-                    t <- try(o <- optim(c(sGuess, pGuess, dpdsGuess), bilinearA), silent=TRUE)
+                    t <- try(o <- optim(c(sGuess, pGuess, dpdsGuess), bilinearA), silent=!TRUE)
                     if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
                     scanStart <- o$par[1]
                 } else if (submethod == "B") {
@@ -666,11 +669,12 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
                 oceDebug(debug-1, "scanStart:", scanStart, "\n")
                 keep <- keep & (x@data$scan > scanStart)
             }
-            if (ascending) {
-                for (name in names(x@data)) {
-                    x@data[[name]] <- rev(x@data[[name]])
-                }
-            }
+            ## 2014-01-08: remove the following block that reverses a profile.
+            ## 2015-04-04 if (ascending) {
+            ## 2015-04-04     for (name in names(x@data)) {
+            ## 2015-04-04         x@data[[name]] <- rev(x@data[[name]])
+            ## 2015-04-04     }
+            ## 2015-04-04 }
         } else if (method == "range") {
             if (!("item" %in% names(parameters)))
                 stop("'parameters' must be a list containing 'item'")

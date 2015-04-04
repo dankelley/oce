@@ -1,5 +1,6 @@
 0.9-15
-- ctdTrim() gets "func" argument
+- read.logger() with ctd-type data infers salinity if necessary
+- ctdTrim() can have "method" as a function
 - as.topo() can convert "bathy" objects from the marmap package
 - "+.section" renamed sectionAddStation()
 - oceApprox() renamed oce.approx(), with an alias for compatibility 
