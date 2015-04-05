@@ -409,16 +409,15 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", patm)
         }
         if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
+            conductivityStandard <- 42.914 ## mS/cm conversion factor
             if ("salinity" %in% names) {
                 S <- data$salinity
             } else {
                 ##warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
-                conductivityStandard <- 42.914 ## mS/cm conversion factor
                 S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
             }
-            ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature, filename=filename)
-            if ("conductivity" %in% names)
-                ctd@data[["conductivity"]] <- data$conductivity
+            ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature,
+                       conductivity=data$conductivity/conductivityStandard, filename=filename)
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
             ##ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)

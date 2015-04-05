@@ -2,10 +2,12 @@
 
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,filename="") {
-              if (!missing(pressure)) .Object@data$pressure <- pressure
-              if (!missing(temperature)) .Object@data$temperature <-temperature 
-              if (!missing(salinity)) .Object@data$salinity <- salinity
+          definition=function(.Object,pressure,salinity,temperature,conductivity,filename="") {
+              ## Assign to some columns so they exist if needed later (even if they are NULL)
+              .Object@data$pressure <- if (missing(pressure)) NULL else pressure
+              .Object@data$temperature <- if (missing(temperature)) NULL else temperature
+              .Object@data$salinity <- if (missing(salinity)) NULL else salinity
+              .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
@@ -130,7 +132,7 @@ setMethod(f="[[",
               }
           })
 
-as.ctd <- function(salinity, temperature, pressure,
+as.ctd <- function(salinity, temperature, pressure, conductivity,
                    SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,
                    scan, other,

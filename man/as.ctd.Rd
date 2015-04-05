@@ -3,7 +3,7 @@
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{as.ctd(salinity, temperature, pressure,
+\usage{as.ctd(salinity, temperature, pressure, conductivity,
        SA, CT,
        oxygen, nitrate, nitrite, phosphate, silicate,
        scan, other,
@@ -25,6 +25,12 @@
      if it is not one already.}
   \item{pressure}{pressure through the water column. (If just a single value 
      is given, then it is repeated to match the length of the temperature and salinity.}
+
+  \item{conductivity}{electrical conductivity ratio through the water column
+      (optional). Some devices report raw conductivity in milliSeimens per
+      centimeter, and that number should be divided by 42.914 to get
+      \code{conductivity} for use here.}
+
   \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
       salinity is converted internally to UNESCO-defined practical salinity.}
   \item{CT}{conservative temperature (as in TEOS-10).  If given, the supplied
