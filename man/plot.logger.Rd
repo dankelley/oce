@@ -85,8 +85,7 @@
 \examples{
 library(oce)
 data(logger)
-t <- as.POSIXct('2008-07-04 20:00:00',tz='UTC')
-plot(logger, which=c(1,3), adorn=expression({abline(v=t)}))
+plot(logger, which=c(1,3))
 }
 
 \seealso{The documentation for \code{\link{logger-class}} explains the
