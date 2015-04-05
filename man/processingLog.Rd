@@ -20,11 +20,14 @@ processingLogShow(x)
 
 \arguments{
 
-  \item{h}{a processingLog, e.g. \code{x@processingLog}, if \code{x} is an object
-      of \code{\link{oce-class}}.}
+  \item{h}{an object of \code{\link{oce-class}}, or the \code{processingLog}
+      slot from such an object.}
+  
+  \item{value}{a character string describing the action.}
+ 
+  \item{x}{an \code{oce} object.}
 
-  \item{value}{a character string describing the action.} \item{x}{an
-      \code{oce} object.} }
+}
 
 \details{The \code{processingLog} function is designed for the user to 
     alter the processingLog of an object.  The \code{processingLogItem}
