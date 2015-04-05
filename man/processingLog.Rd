@@ -2,6 +2,7 @@
 
 \alias{processingLog}
 \alias{processingLog<-}
+\alias{processingLogAppend}
 \alias{processingLogItem}
 \alias{processingLogShow}
 
@@ -12,17 +13,15 @@
 \usage{
 processingLog(x) <- value
 processingLog(h, value="")
+processingLogAppend(h, value="")
 processingLogItem(value="")
 processingLogShow(x)
 }
 
 \arguments{
 
-  \item{h}{an oce object, a processingLog, or \code{NULL}.  If \code{h} is an
-      oce object, then \code{processingLog} returns a summary of the processing
-      log, and \code{value} is ignored.  If \code{h} is a processing log, then
-      \code{value} is added to it.  If \code{h} is \code{NULL}, then a new
-      processing log is created, with \code{value} as the single item.}
+  \item{h}{a processingLog, e.g. \code{x@processingLog}, if \code{x} is an object
+      of \code{\link{oce-class}}.}
 
   \item{value}{a character string describing the action.} \item{x}{an
       \code{oce} object.} }

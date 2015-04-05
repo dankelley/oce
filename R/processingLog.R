@@ -26,6 +26,20 @@ processingLog <- function(h, value="")
     res
 }
 
+processingLogAppend <- function(h, value="")
+{
+    res <- if (is.null(h)) list(time=NULL, value=NULL) else h
+    if (is.null(h$time[1])) {
+        res$time <- as.POSIXct(Sys.time(), tz="UTC")
+        res$value <- value
+    } else {
+        res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
+        res$value <- c(res$value, value)
+    }
+    res
+}
+
+
 processingLogItem <- function(value="")
 {
     list(time=c(Sys.time()), value=value)

@@ -10,7 +10,7 @@
     \code{ctd}.}
 
 \usage{read.logger(file, from=1, to, by=1, type,
-            tz=getOption("oceTz", default="UTC"), patm=TRUE,
+            tz=getOption("oceTz", default="UTC"), patm=FALSE,
             processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -36,14 +36,19 @@
       from the file name and contents.}
   \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
 
-  \item{patm}{controls the handling of atmospheric pressure. There are three
-      alternatives.  (1) If \code{patm} is \code{TRUE} (the default), then an
-      estimate of atmospheric pressure is subtracted from the raw data and the
-      resultant is the pressure in the return value.  The estimate will be
-      \code{atmosphericPressure} in the data table named \code{deriveDepth} or,
-      if that is not found, it will be 10.1325 dbar. (2) If \code{patm} is
-      \code{FALSE}, then the raw pressures are copied directly to the returned
-      object.  (3) If \code{patm} is a numerical value, then it will be
+  \item{patm}{controls the handling of atmospheric pressure, an important issue
+      for RBR instruments that record total pressure, i.e. the sum of
+      atmospheric pressure and sea pressure. There are three alternatives.  (1)
+      If \code{patm} is \code{FALSE} (the default), then total pressures are
+      put in the return value. This means that profile plots will start at
+      what appears to be approximately 10 metres depth. It also leads to errors
+      in the calculation of pressure-dependent seawater properties.  However,
+      note that if salinity is calculated by \code{read.logger}, an estimate of
+      atmospheric pressure is first subtracted. The estimate is
+      \code{atmosphericPressure} in the data file or 10.1325 dbar if the file
+      lacks that value. (2) If \code{patm} is \code{TRUE}, then the
+      above-stated estimate of atmospheric pressure is subtracted from the raw
+      data.  (3) If \code{patm} is a numerical value, then it will be
       subtracted from the raw data.}
 
   \item{processingLog}{if provided, the action item to be stored in the log.

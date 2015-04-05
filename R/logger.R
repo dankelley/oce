@@ -270,7 +270,7 @@ setMethod(f="plot",
           })
 
 read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
-                        patm=TRUE, processingLog, debug=getOption("oceDebug"))
+                        patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
@@ -395,34 +395,36 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         serialNumber <- instruments$serialID
         model <- instruments$model
         RSQLite::dbDisconnect(con)
+        ## Will use 'p' to compute S below.
+        pressureNote <- "Storing total pressure (i.e. sea pressure plus air pressure)"
         if (is.logical(patm)) {
-            if (patm)
-                data$pressure <- data$pressure - pressureAtmospheric
-        } else {
-            data$pressure <- data$pressure - patm
-        }
-
-        if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
-            conductivity.standard <- 42.914 ## mS/cm conversion factor
-            ## warning("assuming conductivity is in mS/cm")
-            ## Use an estimate of at-sea pressure; otherwise can get an error of 0.005 in salinity,
-            ## as estimated in a real profile extending to 200m.
-            p <- data$pressure
-            if (is.logical(patm) && !patm) {
-                p <- data$pressure - 10.1325 # use a reasonable estimate of in-water pressure
+            pSea <- data$pressure - pressureAtmospheric
+            if (patm) {
+                data$pressure <- pSea
+                pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", pressureAtmospheric)
             }
-            oceDebug(debug, "head(p):", paste(p[1:3], collapse=" "), "\n")
+        } else {
+            pSea <- data$pressure - patm
+            data$pressure <- pSea
+            pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", patm)
+        }
+        if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
             if ("salinity" %in% names) {
                 S <- data$salinity
             } else {
-                warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
-                S <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
+                ##warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
+                conductivityStandard <- 42.914 ## mS/cm conversion factor
+                S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
             }
             ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature, filename=filename)
+            if ("conductivity" %in% names)
+                ctd@data[["conductivity"]] <- data$conductivity
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
-            ## ctd@processingLog <- processingLog(ctd@processingLog, paste("subtract pressureAtmospheric (", pressureAtmospheric, " dbar) from logger pressure", sep=""))
-
+            ##ctd@processingLog <- processingLog(ctd@processingLog, pressureNote)
+            ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
+            if (!("salinity" %in% names))
+                ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
             ctd@metadata$pressureAtmospheric <- pressureAtmospheric
             ## CR suggests to read "sampleInterval" but I cannot find it from the following
             ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sample
