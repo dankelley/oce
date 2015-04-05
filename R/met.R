@@ -50,7 +50,7 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
@@ -160,7 +160,7 @@ read.met <- function(file, type=NULL, skip,
                      wind=wind, direction=direction)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res
 }
 

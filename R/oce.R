@@ -16,7 +16,7 @@ useHeading <- function(b, g, add=0)
     b.t <- as.numeric(b@data$time) - t0 # FIXME: what if heading in tsSlow?
     g.t <- as.numeric(g@data$time) - t0 # FIXME: what if heading in tsSlow?
     res@data$heading <- approx(x=g.t, y=g@data$heading, xout=b.t)$y + add
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -531,7 +531,7 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # oce.edit()\n", unindent=1)
     x
 }

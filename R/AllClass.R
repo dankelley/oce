@@ -35,9 +35,9 @@ setMethod(f="subset",
               rval <- x
               for (i in seq_along(x@data))
                   rval@data[[i]] <- rval@data[[i]][keep]
-              rval@processingLog <- processingLog(rval@processingLog,
-                                                  paste(deparse(match.call(call=sys.call(sys.parent(1)))),
-                                                                sep="", collapse=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog,
+                                                        paste(deparse(match.call(call=sys.call(sys.parent(1)))),
+                                                              sep="", collapse=""))
               rval
           })
 

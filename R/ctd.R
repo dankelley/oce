@@ -221,11 +221,11 @@ as.ctd <- function(salinity, temperature, pressure,
     if (!missing(missingValue)) {
         data[data==missingValue] <- NA
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (is.na(waterDepth)) {
         waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        res@processingLog <- processingLog(res@processingLog,
-                                           "inferred water depth from maximum pressure")
+        res@processingLog <- processingLogAppend(res@processingLog,
+                                                 "inferred water depth from maximum pressure")
     }
     metadata <- list(header=NULL,
                      type=type, model=model, filename=filename, serialNumber=serialNumber,
@@ -264,7 +264,7 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
@@ -397,7 +397,7 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
     res@data <- dataNew
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # ctdDecimate()\n", unindent=1)
     res
 }
@@ -476,9 +476,9 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
         for (i in 1:ncasts) {
             oceDebug(debug, "profile #", i, "of", ncasts, "\n")
             cast <- ctdTrim(x, "index", parameters=c(indices$start[i], indices$end[i]))
-            cast@processingLog <- processingLog(cast@processingLog,
-                                                paste(paste(deparse(match.call()), sep="", collapse=""),
-                                                " # profile ", i, " of ", ncasts))
+            cast@processingLog <- processingLogAppend(cast@processingLog,
+                                                      paste(paste(deparse(match.call()), sep="", collapse=""),
+                                                            " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
@@ -719,9 +719,9 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
         }
     }
     res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE) # the bad data sometimes have high p
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # ctdTrim()\n", unindent=1)
     res
 }
@@ -1282,7 +1282,7 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
@@ -1714,9 +1714,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # read.ctd.woce()\n" , unindent=1) # FIXME: use S4 for ctd / woce
     res
 }
@@ -2162,9 +2162,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
 
     oceDebug(debug, "} # read.ctd.sbe()\n")
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     res
 }
 
@@ -2305,7 +2305,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     hitem <- processingLogItem(processingLog)
     res <- new("ctd")
     res@data <- data

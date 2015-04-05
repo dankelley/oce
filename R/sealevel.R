@@ -51,7 +51,7 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
@@ -139,7 +139,7 @@ as.sealevel <- function(elevation,
     rval@data$elevation <- elevation
     rval@data$time <- time
     rval@metadata <- metadata
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
     rval
 }
 
@@ -483,8 +483,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     rval@data$elevation <- elevation
     rval@data$time <- time
     rval@metadata <- metadata
-    rval@processingLog <- processingLog(rval@processingLog,
-                                        paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog,
+                                              paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     rval
 }
 

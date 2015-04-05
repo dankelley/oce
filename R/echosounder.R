@@ -177,7 +177,7 @@ setMethod(f="subset",
               } else {
                   stop("can only subset an echosounder object by 'time' or 'depth'")
               }
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
               rval
           })
 
@@ -213,7 +213,7 @@ as.echosounder <- function(time, depth, a, src="",
     res@data$time <- time
     res@data$depth <- depth
     res@data$a<- a
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -795,7 +795,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         res@data$b <- NULL
         res@data$c <- NULL
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }

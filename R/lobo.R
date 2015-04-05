@@ -236,7 +236,7 @@ read.lobo <- function(file, cols=7, processingLog)
     res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature,
                airtemperature=airtemperature, pressure=pressure,
                nitrate=nitrate, fluorescence=fluorescence, filename=filename)
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

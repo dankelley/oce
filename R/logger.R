@@ -70,7 +70,7 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
@@ -104,7 +104,7 @@ as.logger <- function(time, temperature, pressure,
     res@metadata$pressureAtmospheric <- pressureAtmospheric
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res@data <- list(time=time, pressure=pressure, temperature=temperature)
     oceDebug(debug, "} # as.logger()\n", sep="", unindent=1)
     res
@@ -421,7 +421,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
                 ctd@data[["conductivity"]] <- data$conductivity
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
-            ##ctd@processingLog <- processingLog(ctd@processingLog, pressureNote)
+            ##ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
             ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
             if (!("salinity" %in% names))
                 ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
@@ -624,7 +624,7 @@ loggerTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceD
     for (name in names(x@data))
         res@data[[name]] <- subset(x@data[[name]], keep)
     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # loggerTrim()\n", unindent=1)
     res
 }

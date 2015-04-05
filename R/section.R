@@ -167,7 +167,7 @@ setMethod(f="subset",
                   rval@metadata <- metadata
                   rval@data <- data
                   rval@processingLog <- x@processingLog
-                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
               } else if (length(grep("stationId", subsetString))) {
                   keep <- eval(substitute(subset),
                                envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
@@ -176,7 +176,7 @@ setMethod(f="subset",
                   rval@metadata$latitude <- x@metadata$latitude[keep]
                   rval@metadata$date <- x@metadata$date[keep]
                   rval@data$station <- x@data$station[keep]
-                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
               } else {                        # subset within the stations
                   if ("indices" %in% dotsNames)
                       stop("2. cannot give both 'subset' and 'indices'")
@@ -227,7 +227,7 @@ setMethod(f="subset",
                           rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
                       }
                   }
-                  rval@processingLog <- processingLog(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
               }
               rval
           })
@@ -255,7 +255,7 @@ sectionSort <- function(section, by)
     rval@metadata$longitude <- rval@metadata$longitude[o]
     rval@metadata$latitude <- rval@metadata$latitude[o]
     rval@data$station <- rval@data$station[o]
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -335,7 +335,7 @@ makeSection <- function(item, ...)
     res <- new("section")
     res@metadata <- list(sectionId="", stationId=stn, longitude=lon, latitude=lat)
     res@data <- list(station=station)
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -355,7 +355,7 @@ sectionAddStation <- function(section, station)
     res@metadata$longitude <- c(res@metadata$longitude, station@metadata$longitude)
     res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$stationId <- c(res@metadata$stationId, station@metadata$station)
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 sectionAddCtd <- sectionAddStation
@@ -1286,7 +1286,7 @@ read.section <- function(file, directory, sectionId="", flags,
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.section()\n", unindent=1)
     res
 }
@@ -1329,7 +1329,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     for (i in 1:n) {
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }
@@ -1449,7 +1449,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         stop("unknown method \"", method, "\"") # cannot reach here
     }
 
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionSmooth()\n", unindent=1)
     res
 }

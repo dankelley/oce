@@ -129,7 +129,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     gc()
     res
 }

@@ -326,7 +326,7 @@ setMethod(f="subset",
               }
               rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
               rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
               rval
           })
 
@@ -353,7 +353,7 @@ head.adp <- function(x, n = 6L, ...)
             rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -376,7 +376,7 @@ tail.adp <- function(x, n = 6L, ...)
             rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval 
 }
 
@@ -1576,7 +1576,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
             res@data$a[,,beam] <- as.raw(tmp)
         }
         res@metadata$oceBeamUnspreaded <- TRUE
-        res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
     oceDebug(debug, "} # beamUnspreadAdp()\n", unindent=1)
     res
@@ -1664,7 +1664,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res@metadata$oceCoordinate <- "xyz"
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # beamToXyzAdp()\n", unindent=1)
     res
 }
@@ -1831,7 +1831,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$bv[,3] <- enu$up
     }
     res@metadata$oceCoordinate <- "enu"
-    res@processingLog <- processingLog(res@processingLog,
+    res@processingLog <- processingLogAppend(res@processingLog,
                                        paste("xyzToEnu(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
     oceDebug(debug, "} # xyzToEnuAdp()\n", unindent=1)
     res
@@ -1885,7 +1885,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         res@data$bv[,3] <- other$v3new
     }
     res@metadata$oceCoordinate <- "other"
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -1919,7 +1919,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
         rval@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
     }
     oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

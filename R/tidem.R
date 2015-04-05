@@ -584,7 +584,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     rval <- new('tidem')
     rval@metadata <- list(rc=rc)
     rval@data <- data
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

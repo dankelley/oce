@@ -504,7 +504,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         oceDebug(debug, "retiming x@data$timeSlow\n")
         rval@data$timeSlow <- x@data$timeSlow + a + b * (as.numeric(x@data$timeSlow) - as.numeric(t0))
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # retime.adv()\n", unindent=1)
     rval
 }
@@ -1552,7 +1552,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
         }
         rval@data <- out
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1596,7 +1596,7 @@ addColumn <- function (x, data, name)
         rval <- x
         rval@data[[name]] <- data
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1773,7 +1773,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     }
     if ("deltat" %in% names(x@metadata)) # FIXME: should handle for individual cases, not here
         res@metadata$deltat <- by * x@metadata$deltat
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -1814,7 +1814,7 @@ oce.smooth <- function(x, ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 oceSmooth <- oce.smooth
@@ -1980,7 +1980,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
     } else {
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
     rval
 }

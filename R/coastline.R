@@ -24,7 +24,7 @@ setMethod(f="subset",
               rval <- x
               rval@data$latitude[!keep] <- NA
               rval@data$longitude[!keep] <- NA
-              rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
               rval
           })
 
@@ -60,7 +60,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
     rval <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -378,7 +378,7 @@ read.coastline <- function(file,
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.coastline()\n", unindent=1)
     res
 }
@@ -552,7 +552,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.coastline.shapefile()\n", unindent=1)
     res
 }
@@ -613,7 +613,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     res@data$longitude <- longitude
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.coastline.openstreetmap()\n", unindent=1)
     res
 }
