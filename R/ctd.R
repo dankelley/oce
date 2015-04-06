@@ -152,6 +152,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             salinity <- d$salinity
             temperature <- d$temperature
             pressure <- d$pressure
+            if (!missing(conductivity))
+                conductivity <- d$conductivity
             ## FIXME: extract nitrate etc
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
         if (missing(scan) && "scan" %in% names)
@@ -204,6 +206,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                  pressure=pressure,
                  sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
     if (!missing(scan)) data$scan <- as.vector(scan)
+    if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
     if (!missing(quality)) data$quality <- quality
     if (!missing(oxygen)) data$oxygen <- oxygen
     if (!missing(nitrate)) data$nitrate <- nitrate
