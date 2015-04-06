@@ -273,11 +273,15 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
                         patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from),
+             ", to=", if(missing(to))"(not given)" else format(to),
+             ", by=", by,
+             ", type=", if(missing(type)) "(missing)" else type,
+             ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".rsk$", file, ignore.case=TRUE)) && missing(type)) 
+        if (length(grep(".rsk$", file, ignore.case=TRUE))) 
             type <- "rsk"
         file <- file(file, "r")
         on.exit(close(file))
@@ -288,7 +292,6 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         open(file, "r")
         on.exit(close(file))
     }
-    oceDebug(debug, "from=", from, "\n")
     from.keep <- from
     measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
