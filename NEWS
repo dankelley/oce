@@ -1,4 +1,5 @@
 0.9-15
+- mapTissot() added
 - read.logger() with ctd-type data infers salinity if necessary
 - ctdTrim() can have "method" as a function
 - as.topo() can convert "bathy" objects from the marmap package

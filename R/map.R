@@ -257,7 +257,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", parameters=NULL, orientation=NULL,
-                    trim=TRUE, debug=getOption("oceDebug"),
+                    tissot=FALSE, trim=TRUE, debug=getOption("oceDebug"),
                     ...)
 {
     dots <- list(...)
@@ -362,7 +362,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                  xlab="", ylab="", asp=1, axes=FALSE, ...)
         }
     }
-    ## Remove any island/lake that is entirely offscale.  This is not a perfect
+    ## Remove any island/lake that is entirely offscale.  This is not a 
     ## solution to the Antarctica/stereographic problem of issue 545, because the
     ## line segment between two offscale points might intersect the box.  For
     ## this reason, it is done only when trim=TRUE.
@@ -470,15 +470,17 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         if ((is.logical(grid[1]) && grid[1]) || (is.finite(grid[1]) && grid[1] > 0)) {
-            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle)
+            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle, tissot=tissot, debug=debug-1)
         }
         if ((is.logical(grid[2]) && grid[2]) || (is.finite(grid[2]) && grid[2] > 0)) {
-            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle)
+            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle, tissot=tissot, debug=debug-1)
         }
         if (axes) {
             mapAxis(side=1, longitude=.axis()$longitude, debug=debug-1)
             mapAxis(side=2, latitude=.axis()$latitude, debug=debug-1)
         }
+        if (tissot)
+            mapTissot(grid, col='red', debug=debug-1)
         ## 2014-11-16 major code revision
         ## 2014-11-16    if (is.null(lonlabel))
         ## 2014-11-16        lonlabel <- lonlabs
@@ -624,9 +626,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
-                    debug=getOption("oceDebug"))
+                    tissot=FALSE, debug=getOption("oceDebug"))
 {
-    warning("FIXME: mapGrid() should check if longitude or latitude is NULL\n")
+    oceDebug(debug, "mapGrid(dlongitude=", dlongitude, 
+             ", datitude=", dlatitude, ", ..., polarCircle=", polarCircle,
+             ", tissot=", tissot, ", debug)\n", unindent=1, sep="")
+    warning("tissot not used")
     small <- 0
     if (missing(longitude))
         longitude <- seq(-180, 180, dlongitude)
@@ -793,6 +798,22 @@ mapText <- function(longitude, latitude, labels, ...)
     if (length(longitude) > 0) {
         xy <- lonlat2map(longitude, latitude)
         text(xy$x, xy$y, labels, ...)
+    }
+}
+
+mapTissot <- function(grid, scale=0.2, ...)
+{
+    print(grid)
+    if (2 != length(grid) || !is.numeric(grid) || any(!is.finite(grid)))
+        stop("grid must be of length 2, numeric, and finite")
+    theta <- seq(0, 2*pi, length.out=16)
+    d <- scale * min(grid, na.rm=TRUE)
+    for (lon in seq(-180, 180, grid[1])) {
+        for (lat in seq(-90, 90, grid[2])) {
+            LAT <- lat + d*sin(theta)
+            LON <- lon + d*cos(theta) / cos(lat * pi / 180)
+            mapLines(LON, LAT, ...)
+        }
     }
 }
 

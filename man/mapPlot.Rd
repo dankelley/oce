@@ -15,7 +15,7 @@
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
     projection="+proj=moll", parameters=NULL, orientation=NULL, trim=TRUE,
-    debug=getOption("oceDebug"), \dots) }
+    tissot=FALSE, debug=getOption("oceDebug"), \dots) }
 
 \arguments{
 
@@ -93,11 +93,17 @@
         for an Arctic-centred stereographic projection.  It is not a perfect
         solution, though, because the line segment joining two off-scale points
         might intersect the plotting box.}
+    
+    \item{latitude}{latitudes of points to be plotted}
+
+    \item{tissot}{logical indicating whether to use \code{\link{mapTissot}} to
+        plot Tissot indicatrices, i.e. ellipses at grid intersection points,
+        which indicate map distortion.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 
 
-    \item{\dots}{optional arguments passed to plotting functions.  This can be
+    \item{\dots}{optional arguments passed to some plotting functions.  This can be
         useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc
         to reproduce a scale exactly between two plots.}
 }
@@ -135,11 +141,13 @@
 }
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
-    with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons
-    with \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and
-    scale bars with \code{\link{mapScalebar}}..  Points on a map may be
-    determined with mouse clicks using \code{\link{mapLocator}}.  Great
-    circle paths can be calculated with \code{\link{geodGc}}.}
+    with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons with
+    \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale
+    bars with \code{\link{mapScalebar}}.  Points on a map may be determined
+    with mouse clicks using \code{\link{mapLocator}}.  Great circle paths can
+    be calculated with \code{\link{geodGc}}.  See
+    \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html} for a
+    demonstration of the available map projections (with graphs).}
 
 \examples{
 \dontrun{
