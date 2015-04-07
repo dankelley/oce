@@ -630,8 +630,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 {
     oceDebug(debug, "mapGrid(dlongitude=", dlongitude, 
              ", datitude=", dlatitude, ", ..., polarCircle=", polarCircle,
-             ", tissot=", tissot, ", debug)\n", unindent=1, sep="")
-    warning("tissot not used")
+             ", debug)\n", unindent=1, sep="")
     small <- 0
     if (missing(longitude))
         longitude <- seq(-180, 180, dlongitude)
