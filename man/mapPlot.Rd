@@ -143,9 +143,8 @@
     \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale
     bars with \code{\link{mapScalebar}}.  Points on a map may be determined
     with mouse clicks using \code{\link{mapLocator}}.  Great circle paths can
-    be calculated with \code{\link{geodGc}}.  See
-    \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html} for a
-    demonstration of the available map projections (with graphs).}
+    be calculated with \code{\link{geodGc}}.  See [9] for a demonstration of
+    the available map projections (with graphs).}
 
 \examples{
 \dontrun{
@@ -223,42 +222,206 @@ dev.off()
 }
 }
 
-\section{Available projections}{All of the projections provided in the
-    \code{mapproj} package are available, but the lack of inverses in that
-    package mean that sometimes the plot has flaws (especially on axis
-    labelling). The recommended method is to use the \code{PROJ.4} [6] scheme,
-    which permits the following projections [7]:
-    \code{"aea"}, \code{"aeqd"}, \code{"aitoff"}, \code{"alsk"}, \code{"bipc"},
-    \code{"bonne"}, \code{"cass"}, \code{"cc"}, \code{"cea"}, \code{"collg"},
-    \code{"crast"}, \code{"eck1"}, \code{"eck2"}, \code{"eck3"}, \code{"eck4"},
-    \code{"eck5"}, \code{"eck6"}, \code{"eqc"}, \code{"eqdc"}, \code{"euler"},
-    \code{"etmerc"}, \code{"fahey"}, \code{"fouc"}, \code{"fouc_s"},
-    \code{"gall"}, \code{"geos"}, \code{"gn_sinu"}, \code{"gnom"},
-    \code{"goode"}, \code{"gs48"}, \code{"gs50"}, \code{"hatano"},
-    \code{"healpix"}, \code{"rhealpix"}, \code{"igh"}, \code{"imw_p"},
-    \code{"isea"}, \code{"kav5"}, \code{"kav7"}, \code{"krovak"},
-    \code{"labrd"}, \code{"laea"}, \code{"lonlat"}, \code{"latlon"},
-    \code{"lcc"}, \code{"lcca"}, \code{"leac"}, \code{"lee_os"},
-    \code{"loxim"}, \code{"lsat"}, \code{"mbt_s"}, \code{"mbt_fps"},
-    \code{"mbtfpp"}, \code{"mbtfpq"}, \code{"mbtfps"}, \code{"merc"},
-    \code{"mil_os"}, \code{"mill"}, \code{"moll"}, \code{"murd1"},
-    \code{"murd2"}, \code{"murd3"}, \code{"natearth"}, \code{"nell"},
-    \code{"nell_h"}, \code{"nsper"}, \code{"nzmg"}, \code{"ob_tran"},
-    \code{"ocea"}, \code{"oea"}, \code{"omerc"}, \code{"ortho"},
-    \code{"pconic"}, \code{"poly"}, \code{"putp1"}, \code{"putp2"},
-    \code{"putp3"}, \code{"putp3p"}, \code{"putp4"}, \code{"putp4p"},
-    \code{"putp5"}, \code{"putp5p"}, \code{"putp6"}, \code{"putp6p"},
-    \code{"qsc"}, \code{"qua_aut"}, \code{"robin"}, \code{"rouss"},
-    \code{"sinu"}, \code{"somerc"}, \code{"stere"}, \code{"sterea"},
-    \code{"gstmerc"}, \code{"tcea"}, \code{"tissot"}, \code{"tmerc"},
-    \code{"tpeqd"}, \code{"tpers"}, \code{"ups"}, \code{"urm5"},
-    \code{"urmfps"}, \code{"utm"}, \code{"vandg"}, \code{"vitk1"},
-    \code{"wag1"}, \code{"wag2"}, \code{"wag3"}, \code{"wag4"}, \code{"wag5"},
-    \code{"wag6"}, \code{"weren"}, and \code{"wink1"}. (See [7] for invertible
-    projections that are omitted in oce.)
-    The PROJ.4 documentation [6] details the additional parameters that may be
-    used with each projection.
+%\section{Available projections}{All of the projections provided in the
+%    \code{mapproj} package are available, but the lack of inverses in that
+%    package mean that sometimes the plot has flaws (especially on axis
+%    labelling). The recommended method is to use the \code{PROJ.4} [6] scheme,
+%    which permits the following projections [7]:
+%    \code{"aea"}, \code{"aeqd"}, \code{"aitoff"}, \code{"alsk"}, \code{"bipc"},
+%    \code{"bonne"}, \code{"cass"}, \code{"cc"}, \code{"cea"}, \code{"collg"},
+%    \code{"crast"}, \code{"eck1"}, \code{"eck2"}, \code{"eck3"}, \code{"eck4"},
+%    \code{"eck5"}, \code{"eck6"}, \code{"eqc"}, \code{"eqdc"}, \code{"euler"},
+%    \code{"etmerc"}, \code{"fahey"}, \code{"fouc"}, \code{"fouc_s"},
+%    \code{"gall"}, \code{"geos"}, \code{"gn_sinu"}, \code{"gnom"},
+%    \code{"goode"}, \code{"gs48"}, \code{"gs50"}, \code{"hatano"},
+%    \code{"healpix"}, \code{"rhealpix"}, \code{"igh"}, \code{"imw_p"},
+%    \code{"isea"}, \code{"kav5"}, \code{"kav7"}, \code{"krovak"},
+%    \code{"labrd"}, \code{"laea"}, \code{"lonlat"}, \code{"latlon"},
+%    \code{"lcc"}, \code{"lcca"}, \code{"leac"}, \code{"lee_os"},
+%    \code{"loxim"}, \code{"lsat"}, \code{"mbt_s"}, \code{"mbt_fps"},
+%    \code{"mbtfpp"}, \code{"mbtfpq"}, \code{"mbtfps"}, \code{"merc"},
+%    \code{"mil_os"}, \code{"mill"}, \code{"moll"}, \code{"murd1"},
+%    \code{"murd2"}, \code{"murd3"}, \code{"natearth"}, \code{"nell"},
+%    \code{"nell_h"}, \code{"nsper"}, \code{"nzmg"}, \code{"ob_tran"},
+%    \code{"ocea"}, \code{"oea"}, \code{"omerc"}, \code{"ortho"},
+%    \code{"pconic"}, \code{"poly"}, \code{"putp1"}, \code{"putp2"},
+%    \code{"putp3"}, \code{"putp3p"}, \code{"putp4"}, \code{"putp4p"},
+%    \code{"putp5"}, \code{"putp5p"}, \code{"putp6"}, \code{"putp6p"},
+%    \code{"qsc"}, \code{"qua_aut"}, \code{"robin"}, \code{"rouss"},
+%    \code{"sinu"}, \code{"somerc"}, \code{"stere"}, \code{"sterea"},
+%    \code{"gstmerc"}, \code{"tcea"}, \code{"tissot"}, \code{"tmerc"},
+%    \code{"tpeqd"}, \code{"tpers"}, \code{"ups"}, \code{"urm5"},
+%    \code{"urmfps"}, \code{"utm"}, \code{"vandg"}, \code{"vitk1"},
+%    \code{"wag1"}, \code{"wag2"}, \code{"wag3"}, \code{"wag4"}, \code{"wag5"},
+%    \code{"wag6"}, \code{"weren"}, and \code{"wink1"}. (See [7] for invertible
+%    projections that are omitted in oce.)
+%    The PROJ.4 documentation [6] details the additional parameters that may be
+%    used with each projection.
+%}
+
+\section{Available Projections}{Users who choose the (unrecommended) mapproj
+    scheme for setting the projection should consult the documentation for
+    \code{mapproject} in the \code{mapproj} package. Those who choose the
+    (recommended) PROJ.4 system [6,7] have a wide range of projections to
+    choose from. These are listed in the table given below (see [8]).  For
+    example, set \code{projection="+proj=aea"} to select the Albers Equal Aree
+    projection.
+
+    Note that the information shown below is reformatted from the output of the
+    unix command \code{proj -lP}, where \code{proj} is provided by version
+    4.9.0 of the PROJ.4 system. Most of the arguments listed have default
+    values. In addition, most projections can handle arguments \code{lon_0} and
+    \code{lat_0}, for shifting the reference point, although in some cases
+    shifting the longitude can yield poor filling of coastlines.
+
+    Further details of the projections and the controlling arguments are
+    provided at several websites, because PROJ.4 has been incorporated into
+    many software systems; a good starting point for learning is [7].  
+    
+    See \dQuote{Examples} for suggested projections for various applications.
+
+\tabular{lll}{
+\strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
+Albers Equal Area                         \tab \code{aea}      \tab \code{lat_1}, \code{lat_2}\cr
+Azimuthal Equidistant                     \tab \code{aeqd}     \tab \code{lat_0}, \code{guam}\cr
+Aitoff                                    \tab \code{aitoff}   \tab - \cr
+Mod. Stererographics of Alaska            \tab \code{alsk}     \tab - \cr
+Bipolar conic of western hemisphere       \tab \code{bipc}     \tab - \cr
+Bonne Werner                              \tab \code{bonne}    \tab \code{lat_1}\cr
+Cassini                                   \tab \code{cass}     \tab - \cr
+Central Cylindrical                       \tab \code{cc}       \tab - \cr
+Equal Area Cylindrical                    \tab \code{cea}      \tab \code{lat_ts}\cr
+Collignon                                 \tab \code{collg}    \tab - \cr
+Craster Parabolic Putnins P4              \tab \code{crast}    \tab - \cr
+Eckert I                                  \tab \code{eck1}     \tab - \cr
+Eckert II                                 \tab \code{eck2}     \tab - \cr
+Eckert III                                \tab \code{eck3}     \tab - \cr
+Eckert IV                                 \tab \code{eck4}     \tab - \cr
+Eckert V                                  \tab \code{eck5}     \tab - \cr
+Eckert VI                                 \tab \code{eck6}     \tab - \cr
+Equidistant Cylindrical Plate Caree)      \tab \code{eqc}      \tab \code{lat_ts}, \code{lat_0}\cr
+Equidistant Conic                         \tab \code{eqdc}     \tab \code{lat_1}, \code{lat_2}\cr
+Euler                                     \tab \code{euler}    \tab \code{lat_1}, \code{lat_2}\cr
+Extended Transverse Mercator              \tab \code{etmerc}   \tab \code{lat_ts}, \code{lat_0}\cr
+Fahey                                     \tab \code{fahey}    \tab - \cr
+Foucaut                                   \tab \code{fouc}     \tab - \cr
+Foucaut Sinusoidal                        \tab \code{fouc_s}   \tab - \cr
+Gall Gall Stereographic)                  \tab \code{gall}     \tab - \cr
+Geostationary Satellite View              \tab \code{geos}     \tab \code{h}\cr
+General Sinusoidal Series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr
+Gnomonic                                  \tab \code{gnom}     \tab - \cr
+Goode Homolosine                          \tab \code{goode}    \tab - \cr
+Mod. Stererographics of 48 U.S.           \tab \code{gs48}     \tab - \cr
+Mod. Stererographics of 50 U.S.           \tab \code{gs50}     \tab - \cr
+Hatano Asymmetrical Equal Area            \tab \code{hatano}   \tab - \cr
+HEALPix                                   \tab \code{healpix}  \tab - \cr
+rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
+Interrupted Goode Homolosine              \tab \code{igh}      \tab -\cr
+International Map of the World Polyconic  \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
+Kavraisky v                               \tab \code{kav5}     \tab - \cr
+Kavraisky vii                             \tab \code{kav7}     \tab - \cr
+Krovak                                    \tab \code{krovak}   \tab - \cr
+Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
+Lat/long                                  \tab \code{lonlat}   \tab - \cr
+Lat/long                                  \tab \code{latlon}   \tab - \cr
+Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
+Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
+Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
+Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
+Loximuthal                                \tab \code{loxim}    \tab\cr
+Space oblique for landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
+McBryde-thomas flat-polar sine,no. 1      \tab \code{mbt_s}    \tab\cr
+McBryde-thomas flat-pole sine, no. 2      \tab \code{mbt_fps}  \tab\cr
+McBride-thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
+McBryde-thomas flat-polar quartic         \tab \code{mbtfpq}   \tab\cr
+McBryde-thomas flat-polar sinusoidal      \tab \code{mbtfps}   \tab\cr
+Mercator                                  \tab \code{merc}     \tab \code{lat_ts}\cr
+Miller oblated stereographic              \tab \code{mil_os}   \tab\cr
+Miller cylindrical                        \tab \code{mill}     \tab\cr
+Mollweide                                 \tab \code{moll}     \tab\cr
+Murdoch i                                 \tab \code{murd1}    \tab \code{lat_1}, \code{lat_2}\cr
+Murdoch ii                                \tab \code{murd2}    \tab \code{lat_1}, \code{lat_2}\cr
+murdoch iii                               \tab \code{murd3}    \tab \code{lat_1}, \code{lat_2}\cr
+Natural earth                             \tab \code{natearth} \tab\cr
+Nell                                      \tab \code{nell}     \tab\cr
+Nell-hammer                               \tab \code{nell_h}   \tab\cr
+Near-sided perspective                    \tab \code{nsper}    \tab \code{h}\cr
+New Zealand map grid                      \tab \code{nzmg}     \tab\cr
+General oblique transformation            \tab \code{ob_tran}  \tab \code{o_proj}, \code{o_lat_p}, \code{o_lon_p}, \code{o_alpha}, \code{o_lon_c}\cr
+                                          \tab                 \tab \code{o_lat_c}, \code{o_lon_1}, \code{o_lat_1}, \code{o_lon_2}, \code{o_lat_2}\cr
+Oblique cylindrical equal area            \tab \code{ocea}     \tab \code{lat_1}, \code{lat_2}, \code{lon_1}, \code{lon_2}\cr
+Oblated equal area                        \tab \code{oea}      \tab \code{n}, \code{m}, \code{theta}\cr
+Oblique mercator                          \tab \code{omerc}    \tab \code{alpha}, \code{gamma}, \code{no_off}, \code{lonc}, \code{lon_1},\cr
+                                          \tab                 \tab \code{lat_1}, \code{lon_2}, \code{lat_2}\cr
+Orthographic                              \tab \code{ortho}    \tab - \cr
+Perspective conic                         \tab \code{pconic}   \tab \code{lat_1}, \code{lat_2}\cr
+Polyconic american                        \tab \code{poly}     \tab - \cr
+Putnins p1                                \tab \code{putp1}    \tab - \cr
+Putnins p2                                \tab \code{putp2}    \tab - \cr
+Putnins p3                                \tab \code{putp3}    \tab - \cr
+Putnins p3'                               \tab \code{putp3p}   \tab - \cr
+Putnins p4'                               \tab \code{putp4p}   \tab - \cr
+Putnins p5                                \tab \code{putp5}    \tab - \cr
+Putnins p5'                               \tab \code{putp5p}   \tab - \cr
+Putnins p6                                \tab \code{putp6}    \tab - \cr
+Putnins p6'                               \tab \code{putp6p}   \tab - \cr
+Quartic authalic                          \tab \code{qua_aut}  \tab - \cr
+Quadrilateralized spherical cube          \tab \code{qsc}      \tab - \cr
+Robinson                                  \tab \code{robin}    \tab - \cr
+Roussilhe stereographic                   \tab \code{rouss}    \tab - \cr
+Sinusoidal aka sanson-flamsteed           \tab \code{sinu}     \tab - \cr
+Swiss. obl. mercator                      \tab \code{somerc}   \tab - \cr
+Stereographic                             \tab \code{stere}    \tab \code{lat_ts}\cr
+Oblique stereographic alternative         \tab \code{sterea}   \tab - \cr
+Gauss-schreiber transverse mercator       \tab \code{gstmerc}  \tab \code{lat_0}, \code{lon_0}, \code{k_0}\cr
+Transverse Cylindrical Equal Area         \tab \code{tcea}     \tab - \cr
+Tissot                                    \tab \code{tissot}   \tab \code{lat_1}, \code{lat_2}\cr
+Transverse Mercator                       \tab \code{tmerc}    \tab - \cr
+Two Point Equidistant                     \tab \code{tpeqd}    \tab \code{lat_1}, \code{lon_1}, \code{lat_2}, \code{lon_2}\cr
+Tilted perspective                        \tab \code{tpers}    \tab \code{tilt}, \code{azi}, \code{h}\cr
+Universal Polar Stereographic             \tab \code{ups}      \tab \code{south}\cr
+Urmaev Flat-Polar Sinusoidal              \tab \code{urmfps}   \tab \code{n}\cr
+Universal Transverse Mercator             \tab \code{utm}      \tab \code{zone}, \code{south}\cr
+van der Grinten I)                        \tab \code{vandg}    \tab - \cr
+Vitkovsky I                               \tab \code{vitk1}    \tab \code{lat_1}, \code{lat_2}\cr
+Wagner I Kavraisky VI)                    \tab \code{wag1}     \tab - \cr
+Wagner II                                 \tab \code{wag2}     \tab - \cr
+Wagner III                                \tab \code{wag3}     \tab \code{lat_ts}\cr
+Wagner IV                                 \tab \code{wag4}     \tab - \cr
+Wagner V                                  \tab \code{wag5}     \tab - \cr
+Wagner VI                                 \tab \code{wag6}     \tab - \cr
+Werenskiold I                             \tab \code{weren}    \tab - \cr
+Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
 }
+}
+
+\section{Available ellipse formulations}{In the PROJ.4 system of specifying
+    projections, the following ellipse models are available: \code{MERIT},
+    \code{SGS85}, \code{GRS80}, \code{IAU76}, \code{airy}, \code{APL4.9},
+    \code{NWL9D}, \code{mod_airy}, \code{andrae}, \code{aust_SA}, \code{GRS67},
+    \code{bessel}, \code{bess_nam}, \code{clrk66}, \code{clrk80},
+    \code{clrk80ign}, \code{CPM}, \code{delmbr}, \code{engelis},
+    \code{evrst30}, \code{evrst48}, \code{evrst56}, \code{evrst69},
+    \code{evrstSS}, \code{fschr60}, \code{fschr60m}, \code{fschr68},
+    \code{helmert}, \code{hough}, \code{intl}, \code{krass}, \code{kaula},
+    \code{lerch}, \code{mprts}, \code{new_intl}, \code{plessis}, \code{SEasia},
+    \code{walbeck}, \code{WGS60}, \code{WGS66}, \code{WGS72}, \code{WGS84}, and
+    \code{sphere} (the default).  For example, use \code{projection="+proj=aea
+        +ellps=WGS84"} for an Albers Equal Area projection using the most
+    recent of the World Geodetic System model. It is unlikely that changing the
+    ellipse will have a visible effect on plotted material at the plot scale
+    appropriate to most oceanographic applications.}
+
+\section{Available datum formulations}{In the PROJ.4 system of specifying
+    projections, the following datum formulations are available: \code{WGS84},
+    \code{GGRS87}, \code{Greek_Geodetic_Reference_System_1987}, \code{NAD83},
+    \code{North_American_Datum_1983}, \code{NAD27},
+    \code{North_American_Datum_1927}, \code{potsdam}, \code{Potsdam},
+    \code{carthage}, \code{Carthage}, \code{hermannskogel},
+    \code{Hermannskogel}, \code{ire65}, \code{Ireland}, \code{nzgd49},
+    \code{New}, \code{OSGB36}, and \code{Airy}. It is unlikely that changing
+    the datum will have a visible effect on plotted material at the plot scale
+    appropriate to most oceanographic applications.}
 
 \section{Choosing a projection}{The use of the PROJ.4 scheme is greatly
     encouraged. The best choice of projection depends on the application.
@@ -280,6 +443,7 @@ dev.off()
     Generally, issues are tackled first for commonly used projections, such as
     those used in the examples.}
 
+
 \author{Dan Kelley and Clark Richards}
 
 \references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
@@ -296,13 +460,17 @@ dev.off()
 
     6. \code{PROJ.4} website \url{http://trac.osgeo.org/proj}
 
-    7. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
+    7. \code{PROJ.4} projection details are at \url{http://www.remotesensing.org/geotiff/proj_list/}.
+
+    8. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
     used, except for \code{calcofi} (which is not really a projection scheme),
     \code{isea} (which causes R to segmentation-fault on a world coastline test
     case), \code{labrd} (which is a niche local projection that has an error
     making it return \code{NaN} for the entire earth coastline) and
     \code{wintri} (which hangs R when plotting the world coastline).
-}
+
+    9. A gallery of plots with the PROJ.4-style projections is provided at
+    \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  }
 
 
 \keyword{hplot}
