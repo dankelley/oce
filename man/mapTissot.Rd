@@ -7,7 +7,7 @@
 \description{Plot ellipses at grid intersection points, as a method for
     indicating the distortion inherent in the projection [1].}
 
-\usage{mapTissot(grid, scale=0.2, \dots)}
+\usage{mapTissot(grid=rep(15, 2), scale=0.2, \dots)}
 
 
 \arguments{

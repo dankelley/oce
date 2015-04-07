@@ -14,8 +14,8 @@
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
-    projection="+proj=moll", parameters=NULL, orientation=NULL, trim=TRUE,
-    tissot=FALSE, debug=getOption("oceDebug"), \dots) }
+    projection="+proj=moll", parameters=NULL, orientation=NULL,
+    tissot=FALSE, trim=TRUE, debug=getOption("oceDebug"), \dots) }
 
 \arguments{
 
@@ -94,8 +94,6 @@
         solution, though, because the line segment joining two off-scale points
         might intersect the plotting box.}
     
-    \item{latitude}{latitudes of points to be plotted}
-
     \item{tissot}{logical indicating whether to use \code{\link{mapTissot}} to
         plot Tissot indicatrices, i.e. ellipses at grid intersection points,
         which indicate map distortion.}

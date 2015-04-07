@@ -470,10 +470,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         if ((is.logical(grid[1]) && grid[1]) || (is.finite(grid[1]) && grid[1] > 0)) {
-            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle, tissot=tissot, debug=debug-1)
+            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle, debug=debug-1)
         }
         if ((is.logical(grid[2]) && grid[2]) || (is.finite(grid[2]) && grid[2] > 0)) {
-            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle, tissot=tissot, debug=debug-1)
+            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle, debug=debug-1)
         }
         if (axes) {
             mapAxis(side=1, longitude=.axis()$longitude, debug=debug-1)
@@ -626,7 +626,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
-                    tissot=FALSE, debug=getOption("oceDebug"))
+                    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "mapGrid(dlongitude=", dlongitude, 
              ", datitude=", dlatitude, ", ..., polarCircle=", polarCircle,
@@ -801,9 +801,8 @@ mapText <- function(longitude, latitude, labels, ...)
     }
 }
 
-mapTissot <- function(grid, scale=0.2, ...)
+mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
 {
-    print(grid)
     if (2 != length(grid) || !is.numeric(grid) || any(!is.finite(grid)))
         stop("grid must be of length 2, numeric, and finite")
     theta <- seq(0, 2*pi, length.out=16)
