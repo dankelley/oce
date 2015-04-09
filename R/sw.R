@@ -194,28 +194,38 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
     rval
 }
 
-swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"),
+swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=c("ratio", "mS/cm", "S/m"),
                    eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version
-     if (missing(conductivity) || missing(temperature))
-        stop("must supply conductivity, temperature and pressure")
+    if (missing(conductivity)) stop("must supply conductivity (which may be S or a CTD object)")
+    if (inherits(conductivity, "oce")) {
+        ctd <- conductivity
+        conductivity <- ctd[["conductivity"]]
+        tmp <- ctd[["conductivityUnit"]]
+        if (!is.null(tmp))
+            conductivityUnit <- tmp
+        temperature <- ctd[["temperature"]]
+        pressure <- ctd[["pressure"]]
+    }
     conductivityUnit <- match.arg(conductivityUnit)
     if (conductivityUnit == "mS/cm")
         conductivity <- conductivity / 42.914
     else if (conductivityUnit == "S/m")
         conductivity <- conductivity / 4.2914
+    else
+        conductivity <- conductivity
     ## Now, "conductivity" is in ratio form
     dim <- dim(conductivity)
     nC <- length(conductivity)
     nT <- length(temperature)
     if (nC != nT)
-        stop("lengths of C and temperature must agree, but they are ", nC, " and ", nT, ", respectively")
+        stop("lengths of conductivity and temperature must agree, but they are ", nC, " and ", nT)
     if (missing(pressure))
         pressure <- rep(0, nC)
     np <- length(pressure)
     if (nC != np)
-        stop("lengths of C and p must agree, but they are ", nC, " and ", np, ", respectively")
+        stop("lengths of conductivity and pressure must agree, but they are ", nC, " and ", np)
     if (eos == "unesco") {
         rval <- .C("sw_salinity",
                    as.integer(nC),
@@ -306,7 +316,7 @@ swTFreeze <- function(salinity, pressure=0,
                       longitude=300, latitude=30, saturation_fraction=1,
                       eos=getOption("oceEOS", default="gsw"))
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity)) stop("must supply salinity (which may be S or a CTD object)")
     l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                          longitude=longitude, latitude=latitude, eos=eos))
     Smatrix <- is.matrix(l$salinity)
