@@ -9,6 +9,7 @@ setMethod(f="initialize",
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@metadata$filename <- filename
+              .Object@metadata$conductivityUnit <- "ratio"
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)

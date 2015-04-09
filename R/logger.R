@@ -420,10 +420,10 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
                 S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
             }
             ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature,
-                       conductivity=data$conductivity/conductivityStandard, filename=filename)
+                       conductivity=data$conductivity, filename=filename)
+            ctd@metadata[["conductivityUnit"]] <- "mS/cm"
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
-            ##ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
             ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
             if (!("salinity" %in% names))
                 ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")

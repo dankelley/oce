@@ -64,7 +64,22 @@
     (2) text file with four columns, in which the date the time of day are
     given in the first two columns, followed by the temperature, and pressure;
     (3) text file with five columns, in which depth in the water column is
-    given after the pressure; (4) an SQLite-based database format.}
+    given after the pressure; (4) an SQLite-based database format.
+
+    It should be noted that RBR loggers record conductivity in mS/cm, and that
+    it is this value that is stored in the object returned by
+    \code{read.logger}. This can be converted to conductivity ratio (which is
+    what many other instruments report) by dividing by 42.914, which will be
+    necessary in any seawater-related function that takes conductivity ratio as
+    an argument (see \dQuote{Examples}).
+    
+    Another particular aspect of RBR loggers is that they tend to record total
+    pressure (i.e. sea pressure plus atmospheric pressure), many applications
+    will involve an alteration of the pressure. This can be done with the
+    \code{patm} argument, of by subtraction of a constant (or vector) after
+    creating the object.
+
+}
 
 \value{Two cases are handled at present.  If the data do not have conductivity,
     temperature and pressure, then an object of \code{\link[base]{class}}
@@ -72,20 +87,19 @@
     those three quantities are stored in the file, then an object of
     \code{\link[base]{class}} \code{"ctd"} (see \code{\link{ctd-class}}) is
     returned. The class can be switched to \code{logger} using
-    \code{\link{as.logger}}. Since logger files tend to record total pressure, it will be
-    necessary for the user to alter the pressure stored in the \code{ctd}
-    object, probably by subtracting a standard value (10.1325 being the usual
-    estimate for a standard atmosphere at sea level) or a hand-tailored value
-    or set of values; see \dQuote{Examples.}}
+    \code{\link{as.logger}}.}
 
 \examples{
 \dontrun{
 library(oce)
 ## A CTD-style logger
 ctd <- read.logger("cast4.rsk")
+## convert to conductivity ratio (and set metadata so other functions know this)
+ctd[["conductivity"]] <- ctd[["conductivity"]] / 42.914
+ctd@metadata[["conductivityUnit"]] <- "ratio"
 ## In this particular file, the device was raised for the surface for a
-## while, so that a reference (atmospheric) pressure can be estimated
-## averaging pressures for the interval of out-of-water salinity.
+## while, so that atmospheric pressure can be estimated
+## by averaging pressures for the interval of out-of-water salinity.
 p <- ctd[["pressure"]]
 S <- ctd[["salinity"]]
 p0 <- max(p[S<1], na.rm=TRUE)
