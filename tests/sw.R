@@ -218,6 +218,20 @@ stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, toler
 stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="unesco"), 35.000000, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(1.2, 20,2000, eos="unesco"), 37.245628, tolerance=1e-6))
 stopifnot(all.equal.numeric(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, tolerance=1e-6))
+data(ctd)
+## This does not have conductivity, so add it
+salinity <- ctd[["salinity"]]
+temperature <- ctd[["temperature"]]
+pressure <- ctd[["pressure"]]
+conductivity <- swCSTp(salinity, temperature, pressure, eos="unesco")
+ctd <- ctdAddColumn(ctd, conductivity, "conductivity")
+S <- swSCTp(ctd)
+misfit <- sqrt(mean((S-salinity)^2))
+stopifnot(misfit < 1e-3)
+
+
+
+
 ## the C=1 value can be tested directly in gsw, but others are tested against gsw.
 stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6))
 SP <- swSCTp(1.2, 20, 2000, eos="gsw")
