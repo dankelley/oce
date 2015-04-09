@@ -202,6 +202,7 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
     if (inherits(conductivity, "oce")) {
         ctd <- conductivity
         conductivity <- ctd[["conductivity"]]
+        if (is.null(conductivity)) stop("this CTD object has no conductivity")
         tmp <- ctd[["conductivityUnit"]]
         if (!is.null(tmp))
             conductivityUnit <- tmp
