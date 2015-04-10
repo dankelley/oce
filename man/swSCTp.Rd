@@ -6,8 +6,9 @@
 
 \description{Compute salinity based on electrical conductivity, temperature, and pressure.}
 
-\usage{swSCTp(conductivity, temperature=NULL, pressure=0, conductivityUnit=c("ratio", "mS/cm", "S/m"),
-                   eos=getOption("oceEOS", default="gsw"))}
+\usage{swSCTp(conductivity, temperature=NULL, pressure=0,
+       conductivityUnit=c("ratio", "mS/cm", "S/m"),
+       eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
   \item{conductivity}{conductivity ratio, or a CTD object. If a CTD object,
