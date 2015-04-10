@@ -384,6 +384,7 @@ Wagner V                                  \tab \code{wag5}     \tab - \cr
 Wagner VI                                 \tab \code{wag6}     \tab - \cr
 Werenskiold I                             \tab \code{weren}    \tab - \cr
 Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
+Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
 }
 }
 
@@ -457,9 +458,8 @@ Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts
     8. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
     used, except for \code{calcofi} (which is not really a projection scheme),
     \code{isea} (which causes R to segmentation-fault on a world coastline test
-    case), \code{labrd} (which is a niche local projection that has an error
-    making it return \code{NaN} for the entire earth coastline) and
-    \code{wintri} (which hangs R when plotting the world coastline).
+    case), and \code{labrd} which a nich local projection that has an error
+    making it return \code{NaN} for the entire earth coastline.
 
     9. A gallery of plots with the PROJ.4-style projections is provided at
     \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  

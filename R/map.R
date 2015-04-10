@@ -1561,7 +1561,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             if (projection == "robin") proj <- "robin"
             ## FIXME: what about sterea?
             if (projection == "stereographic") proj <- "stere"
-            if (projection == "wintri") proj <- "(no equivalent)"
+            if (projection == "wintri") proj <- "wintri"
             cmd <- paste("+proj=", proj, sep="")
             if (!is.null(parameters)) {
                 names <- names(parameters)
