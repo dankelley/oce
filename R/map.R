@@ -469,10 +469,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             }
         }
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
-        if ((is.logical(grid[1]) && grid[1]) || (is.finite(grid[1]) && grid[1] > 0)) {
+        oceDebug(debug, "drawgrid:", drawGrid, "\n")
+        if (drawGrid) {
             mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle, debug=debug-1)
         }
-        if ((is.logical(grid[2]) && grid[2]) || (is.finite(grid[2]) && grid[2] > 0)) {
+        if (drawGrid) {
             mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle, debug=debug-1)
         }
         if (axes) {
@@ -1520,6 +1521,8 @@ knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 #"wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1")
+
+knownProj4 <- c(knownProj4, "wintri") # TESTING
 
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
