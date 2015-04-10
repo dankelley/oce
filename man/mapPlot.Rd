@@ -128,7 +128,7 @@
     %the external \code{proj4} package on a worldwide Mercator plot yields a
     %slowdown by a factor of 50X.
 
-    Further details on map projections are provided by [1], an exhaustive
+    Further details on map projections are provided by [1,11], an exhaustive
     treatment that includes many illustrations, an overview of the history of
     the topic, and some notes on the strengths and weaknesses of the various
     formulations.  See especially pages 2 through 7, which define terms and
@@ -462,8 +462,16 @@ Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts
     \code{wintri} (which hangs R when plotting the world coastline).
 
     9. A gallery of plots with the PROJ.4-style projections is provided at
-    \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  }
+    \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  
 
+    10. A website with illustrated explanations of projections, including
+    historical notes, is
+    \url{http://www.progonos.com/furuti/MapProj/CartIndex/cartIndex.html}.
+
+    11. A fascinating historical perspective is provided by Snyder, J. P.
+    (1993). Two thousand years of map projections. University of Chicago Press.
+
+}
 
 \keyword{hplot}
 
