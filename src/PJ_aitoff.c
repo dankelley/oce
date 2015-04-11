@@ -121,8 +121,11 @@ INVERSE(s_inverse); /* sphere */
 			while (dl > M_PI) dl -= M_PI; /* set to interval [-M_PI, M_PI]  */
 			while (dl < -M_PI) dl += M_PI; /* set to interval [-M_PI, M_PI]  */
 			lp.phi -= dp;	lp.lam -= dl;
-                        if (fabs(lp.phi) > 10.0) lp.phi = 0.0;
-                        if (fabs(lp.lam) > 10.0) lp.lam = 0.0;
+                        if (fabs(lp.phi) > 10.0 || fabs(lp.lam) > 10.0) {
+                            lp.lam = NA_REAL;
+                            lp.phi = NA_REAL;
+                            return(lp); // just give up
+                        }
                         //Rprintf(" iter=%d, dp=%g, dl=%g, lp.phi=%g lp.lam=%g\n", iter, dp, dl, lp.phi, lp.lam);
 		} while ((fabs(dp) > EPSILON || fabs(dl) > EPSILON) && (iter++ < MAXITER));
 		if (lp.phi > M_PI_2) lp.phi -= 2.*(lp.phi-M_PI_2); /* correct if symmetrical solution for Aitoff */ 
@@ -140,10 +143,8 @@ INVERSE(s_inverse); /* sphere */
 			y = (y + lp.phi) * 0.5;
 		}
 	/* if too far from given values of x,y, repeat with better approximation of phi,lam */
-        //Rprintf("at bottom of loop ... may repeat with new values now\n");
 	} while (((fabs(xy.x-x) > EPSILON) || (fabs(xy.y-y) > EPSILON)) && (round++ < MAXROUND));
-
-	if (iter == MAXITER && round == MAXROUND) error("Warning: Accuracy of 1e-12 not reached. Last increments: dlat=%e and dlon=%e\n", dp, dl);
+	if (iter == MAXITER && round == MAXROUND) Rprintf("Warning: Accuracy of 1e-12 not reached. Last increments: dlat=%e and dlon=%e\n", dp, dl);
 
 	return (lp);
 }
