@@ -118,13 +118,20 @@ INVERSE(s_inverse); /* sphere */
 			f1 -= xy.x; f2 -= xy.y;
 			dl = (f2 * f1p - f1 * f2p) / (dp = f1p * f2l - f2p * f1l);
 			dp = (f1 * f2l - f2 * f1l) / dp;
+#if 0
 			while (dl > M_PI) dl -= M_PI; /* set to interval [-M_PI, M_PI]  */
 			while (dl < -M_PI) dl += M_PI; /* set to interval [-M_PI, M_PI]  */
+#else
+                        // Drazen Tutic 2015-04-12
+                        dl = fmod(dl, M_PI);
+                        dp = fmod(dp, M_PI_2);
+#endif
 			lp.phi -= dp;	lp.lam -= dl;
+                        // Dan Kelley 2015-04-10 or so (if diverging, assume invalid region)
                         if (fabs(lp.phi) > 10.0 || fabs(lp.lam) > 10.0) {
                             lp.lam = NA_REAL;
                             lp.phi = NA_REAL;
-                            return(lp); // just give up
+                            return(lp);
                         }
                         //Rprintf(" iter=%d, dp=%g, dl=%g, lp.phi=%g lp.lam=%g\n", iter, dp, dl, lp.phi, lp.lam);
 		} while ((fabs(dp) > EPSILON || fabs(dl) > EPSILON) && (iter++ < MAXITER));

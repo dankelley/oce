@@ -526,6 +526,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
+    file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
     actualfilename <- gsub(".*/", "", actualfilename)
     headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
