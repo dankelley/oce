@@ -182,12 +182,19 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
                    eos=getOption("oceEOS", default="gsw"))
 
 {
+    if (missing(salinity)) stop("must supply salinity (which may be S or a CTD object)")
+    if (inherits(salinity, "oce")) {
+        ctd <- salinity
+        salinity <- ctd[["salinity"]]
+        temperature <- ctd[["temperature"]]
+        pressure <- ctd[["pressure"]]
+    }
     dim <- dim(salinity)
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
-    if (l$eos == "unesco") {
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    if (eos == "unesco") {
         n <- length(salinity)
         rval <- .C("sw_CSTp", as.integer(n), as.double(salinity), as.double(temperature), as.double(pressure), C=double(n))$C
-    } else if (l$eos == "gsw") {
+    } else {
         rval <- gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / gsw_C_from_SP(35, 15, 0)
     }
     dim(rval) <- dim

@@ -10,7 +10,9 @@
                    eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{salinity}{practical salinity}
+  \item{salinity}{practical salinity, or a CTD object (in which case its
+      temperature and pressure are used, and the next two arguments are
+      ignored)}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
   \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}

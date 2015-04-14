@@ -228,9 +228,10 @@ ctd <- ctdAddColumn(ctd, conductivity, "conductivity")
 S <- swSCTp(ctd)
 misfit <- sqrt(mean((S-salinity)^2))
 stopifnot(misfit < 1e-3)
-
-
-
+# Test that swCSTp() takes both salinity and CTD [issue 630]
+cond1 <- swCSTp(salinity, temperature, pressure, eos="unesco")
+cond2 <- swCSTp(ctd)
+stopifnot(all.equal.numeric(cond1, cond2))
 
 ## the C=1 value can be tested directly in gsw, but others are tested against gsw.
 stopifnot(all.equal.numeric(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6))
@@ -240,6 +241,7 @@ stopifnot(all.equal.numeric(1.2, swCSTp(SP, 20, 2000, eos="gsw")))
 SP <- swSCTp(0.65, 5, 1500, eos="gsw")
 stopifnot(all.equal.numeric(0.65, gsw_C_from_SP(SP, 5, 1500) / gsw_C_from_SP(35, 15, 0)))
 stopifnot(all.equal.numeric(0.65, swCSTp(SP, 5, 1500, eos="gsw")))
+
 
 # 14. depth and pressure
 # The UNESCO test is basically for consistency with old versions, I think, 
