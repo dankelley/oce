@@ -291,15 +291,17 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
+
+    ## BAD fix #1 of 2.
     x <- xy$x
     xrange <- range(x, na.rm=TRUE)
     y <- xy$y
     yrange <- range(y, na.rm=TRUE)
     ## FIXME: should permit the use of PROJ.4 projections that lack inverses.
-    #if (usingProj4() && length(grep("wintri", projection)))
-    #    stop("cannot handle +proj=wintri because it has no inverse")
-    #if (usingProj4() && length(grep("aitoff", projection)))
-    #    stop("cannot handle +proj=aitoff because it has no inverse")
+    ##if (usingProj4() && length(grep("wintri", projection)))
+    ##    stop("cannot handle +proj=wintri because it has no inverse")
+    ##if (usingProj4() && length(grep("aitoff", projection)))
+    ##    stop("cannot handle +proj=aitoff because it has no inverse")
     xorig <- x
     yorig <- y
     ## FIXME: maybe *always* do this.
@@ -324,10 +326,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         x[bad] <- NA                       
         y[bad] <- NA
     }
-
     bad2 <- !is.finite(x) | !is.finite(y)
     x[bad2] <- NA
     y[bad2] <- NA
+    ## END bad fix #1 of 2
 
     dotnames <- names(dots)
     if ("xlim" %in% dotnames || "ylim" %in% dotnames || "xaxs" %in% dotnames || "yaxs" %in% dotnames) {
@@ -367,6 +369,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     ## line segment between two offscale points might intersect the box.  For
     ## this reason, it is done only when trim=TRUE.
     if (trim && usingProj4()) {
+        ## BAD fix #2 of 2.
         ## trim out any polygons that have all points offscale
         usr <- par("usr")
         w <- which(is.na(xorig))
@@ -385,6 +388,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 }
             }
         }
+        ## END OF BAD fix #2 of 2.
     }
 
     if (!is.null(fill))
@@ -1101,6 +1105,68 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
     n <- length(longitude)
     if (n > 0) {
         xy <- lonlat2map(longitude, latitude)
+
+        ## BAD fix #1 of 2.
+        x <- xy$x
+        xrange <- range(x, na.rm=TRUE)
+        y <- xy$y
+        yrange <- range(y, na.rm=TRUE)
+        ## FIXME: should permit the use of PROJ.4 projections that lack inverses.
+        ##if (usingProj4() && length(grep("wintri", projection)))
+        ##    stop("cannot handle +proj=wintri because it has no inverse")
+        ##if (usingProj4() && length(grep("aitoff", projection)))
+        ##    stop("cannot handle +proj=aitoff because it has no inverse")
+        xorig <- x
+        yorig <- y
+        ## FIXME: maybe *always* do this.
+        ## FIXME: maybe *skip Antarctica*.
+        if (usingProj4() ||
+            projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
+            ## FIXME: below is a kludge to avoid weird horiz lines; it
+            ## FIXME: would be better to complete the polygons, so they 
+            ## FIXME: can be filled.  It might be smart to do this in C
+            d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
+            d[!is.finite(d)] <- 0          # FIXME: ok?
+            ##dc <- as.numeric(quantile(d, 1-100*(1/3/length(x)), na.rm=TRUE)) # FIXME: criterion
+            ##bad <- d > dc
+            ##bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
+            antarctic <- latitude < -60
+            bad <- ((d / diff(range(x, na.rm=TRUE))) > 0.1) & !antarctic
+            ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
+            ## FIXME: should we create a series of points to a trace along the edge 
+            ## FIXME: the visible earth?
+            x[bad] <- NA                       
+            y[bad] <- NA
+        }
+        bad2 <- !is.finite(x) | !is.finite(y)
+        x[bad2] <- NA
+        y[bad2] <- NA
+        ## END bad fix #1 of 2
+
+        ## BAD fix #2 of 2.
+        ## trim out any polygons that have all points offscale
+        usr <- par("usr")
+        w <- which(is.na(xorig))
+        if (length(w)) {
+            for (iw in seq(1, -1+length(w))) {
+                ##message("check chunk", iw)
+                look <- seq.int(w[iw]+1, w[iw+1]-1)
+                xl <- xorig[look]
+                yl <- yorig[look]
+                offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
+                offscale <- offscale[is.finite(offscale)]
+                if (all(offscale)) { # probably faster to do this than to make new vectors
+                    ##message("  TRIM")
+                    x[look] <- NA
+                    y[look] <- NA
+                }
+            }
+        }
+        ## END OF BAD fix #2 of 2.
+        xy <- list(x=x, y=y)
+
+
+
         polygon(xy$x, xy$y,
                 density=density, angle=angle, border=border, col=col, lty=lty, ...,
                 fillOddEven=fillOddEven)
