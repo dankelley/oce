@@ -17,7 +17,6 @@ stopifnot(all.equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:00", tz="UT
 #data("lobo")
 #data("logger")
 #data("met")
-#data("nao")
 
 data("sealevel")
 stopifnot(all.equal.numeric(sealevel[["latitude"]],   44.666667))

@@ -1,4 +1,5 @@
 0.9-15
+- data(nao) and data(soi) moved to ocedata
 - mapTissot() added
 - read.logger() with ctd-type data infers salinity if necessary
 - ctdTrim() can have "method" as a function
