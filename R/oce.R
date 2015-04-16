@@ -567,10 +567,10 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-oce.magic <- function(file, debug=getOption("oceDebug"))
+oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
-    oceDebug(debug, paste("oce.magic(file=\"", filename, "\") {\n", sep=""), unindent=1)
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1)
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
@@ -766,11 +766,11 @@ oce.magic <- function(file, debug=getOption("oceDebug"))
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
-oceMagic <- oce.magic
+oce.magic <- oceMagic
 
 read.oce <- function(file, ...)
 {
-    type <- oce.magic(file)
+    type <- oceMagic(file)
     debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",

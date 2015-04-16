@@ -18,7 +18,7 @@ is selected, based on the header.}
 
 \details{
   This function tries to infer the file type from the first line, using
-  \code{\link{oce.magic}}.  If it can be discovered, then an instrument-specific
+  \code{\link{oceMagic}}.  If it can be discovered, then an instrument-specific
   file reading function is called, with the \code{file} and with any additional
   arguments being supplied.
 }
@@ -28,7 +28,7 @@ that signifies the type of data, e.g. \code{"ctd"}, \code{"sealevel"}, etc.}
 
 \seealso{
 The file type is determined by 
-\code{\link{oce.magic}}.  If the file type can be determined, then one 
+\code{\link{oceMagic}}.  If the file type can be determined, then one 
 of the following is called:
 \code{\link{read.ctd}},
 \code{\link{read.coastline}}
