@@ -5,8 +5,8 @@ Title: Analysis of Oceanographic Data
 Authors@R: c(person("Dan", "Kelley", role=c("aut", "cre"), email="Dan.Kelley@Dal.Ca"), person("Clark", "Richards", role=c("aut"), email="clark.richards@gmail.com"))
 Author: Dan Kelley [aut, cre], Clark Richards [aut]
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), utils, methods, mapproj, gsw
-Suggests: ocedata, foreign, ncdf4, tiff, akima, proj4, RSQLite, DBI
+Depends: R (>= 2.15), utils, methods, gsw
+Suggests: ocedata, foreign, mapproj, ncdf4, tiff, akima, proj4, RSQLite, DBI
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data, including ADCP
  measurements, CTD measurements, sectional data, sea-level time series,

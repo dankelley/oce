@@ -1,7 +1,6 @@
 useDynLib(oce)
 import(methods)
 import(gsw)
-importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 importFrom("stats", predict, time, window)

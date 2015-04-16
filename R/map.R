@@ -1541,10 +1541,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne",
                 "robin", "rouss", "sinu", "somerc", "stere", "sterea",
                 "gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
-                #"wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
-                "wag3", "wag4", "wag5", "wag6", "weren", "wink1")
-
-knownProj4 <- c(knownProj4, "wintri") # TESTING
+                "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
 
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
@@ -1562,39 +1559,47 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     if ("" == projection) projection <- .Last.proj4()$projection
     if ('+' != substr(projection, 1, 1)) {
         ## mapproj case
-        xy <- mapproject(longitude, latitude,
-                         projection=projection, parameters=parameters, orientation=orientation)
-        .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
-        if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
-            cmd <- "+proj="
-            proj <- "?"
-            ## See http://www.remotesensing.org/geotiff/proj_list
-            ## After the conversion there may be a comment listing corequisites
-            if (projection == "aitoff") proj <- "(no equivalent)"
-            if (projection == "albers") proj <- "aea" # needs lat0 lat1
-            if (projection == "bonne") proj <- "bonne" # needs lat0
-            if (projection == "gall") proj <- "gall"
-            ## if (projection == "lambert") proj <- "laea" ## ??
-            if (projection == "lambert") proj <- "lcc"
-            if (projection == "mercator") proj <- "merc"
-            if (projection == "mollweide") proj <- "moll"
-            if (projection == "orthographic") proj <- "ortho"
-            if (projection == "polyconic") proj <- "pconic"
-            if (projection == "robin") proj <- "robin"
-            ## FIXME: what about sterea?
-            if (projection == "stereographic") proj <- "stere"
-            if (projection == "wintri") proj <- "wintri"
-            cmd <- paste("+proj=", proj, sep="")
-            if (!is.null(parameters)) {
-                names <- names(parameters)
-                if ("lat0" %in% names) cmd <- paste(cmd, " +lat_0=", parameters[["lat0"]], sep="")
-                if ("lat1" %in% names) cmd <- paste(cmd, " +lat_1=", parameters[["lat1"]], sep="")
+        if (!requireNamespace("mapproj", quietly=TRUE))
+            stop("must install 'mapproj' package to use mapproj-style map projections")
+        xy <- NULL
+        try({
+            xy <- mapproj::mapproject(longitude, latitude,
+                                      projection=projection, parameters=parameters, orientation=orientation)
+            .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
+            if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
+                cmd <- "+proj="
+                proj <- "?"
+                ## See http://www.remotesensing.org/geotiff/proj_list
+                ## After the conversion there may be a comment listing corequisites
+                if (projection == "aitoff") proj <- "(no equivalent)"
+                if (projection == "albers") proj <- "aea" # needs lat0 lat1
+                if (projection == "bonne") proj <- "bonne" # needs lat0
+                if (projection == "gall") proj <- "gall"
+                ## if (projection == "lambert") proj <- "laea" ## ??
+                if (projection == "lambert") proj <- "lcc"
+                if (projection == "mercator") proj <- "merc"
+                if (projection == "mollweide") proj <- "moll"
+                if (projection == "orthographic") proj <- "ortho"
+                if (projection == "polyconic") proj <- "pconic"
+                if (projection == "robin") proj <- "robin"
+                ## FIXME: what about sterea?
+                if (projection == "stereographic") proj <- "stere"
+                if (projection == "wintri") proj <- "wintri"
+                cmd <- paste("+proj=", proj, sep="")
+                if (!is.null(parameters)) {
+                    names <- names(parameters)
+                    if ("lat0" %in% names) cmd <- paste(cmd, " +lat_0=", parameters[["lat0"]], sep="")
+                    if ("lat1" %in% names) cmd <- paste(cmd, " +lat_1=", parameters[["lat1"]], sep="")
+                }
+                if (!is.null(orientation))
+                    cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
+                if (projection == "stereographic")
+                    cmd <- paste(cmd, " +lat_0=90", sep="")
+                message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
             }
-            if (!is.null(orientation))
-                cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
-            if (projection == "stereographic")
-                cmd <- paste(cmd, " +lat_0=90", sep="")
-            message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
+        }, silent=TRUE)
+        if (is.null(xy)) {
+            stop("problem using mapproj; please try using projection=\"+proj=...\" notation instead")
         }
     } else {                           
         ## proj4 case
