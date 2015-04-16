@@ -103,19 +103,13 @@ lines(lon-360, lat)
     }
 }
 
-\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a
-    popular source for coastline data files.
-
-    Information about Canadian coastlines in ``shapefile'' format is provided
-    at
-    \code{http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm}
-    (link tested Dec 2011 and Sep 2012; fails March 2015).  Data may be downloaded, after
-    registration, from
-    \url{http://www.geobase.ca/geobase/en/search.do?produit=nrn&language=en}
-    (link tested December 2011).  The ``shapefile'' format is described in
-    \emph{ESRI Shapefile Technical Description}, March 1998, available at
-    \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf} (link
-    tested Dec 2011 and Sep 2012).  }
+\references{The NOAA website
+    \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html} may be a good
+    starting point for a search for coastline data.  The ``shapefile'' format
+    is described in \emph{ESRI Shapefile Technical Description}, March 1998,
+    available at
+    \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.}
 
 \author{Dan Kelley}
+
 \keyword{misc}
