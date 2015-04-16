@@ -31,15 +31,8 @@
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure
     of LISSTobjects, and also outlines the other functions dealing with them.}
 
-
-\examples{
-library(oce)
-}
-
-\references{The LIST-100 users guide (version 4.65), which provided the
-    information for this function, was downloaded in late May 2012, from
-    \code{http://www.sequoiasci.com/products/fam_LISST_100.aspx}, a link that
-    no longer worked in March 2015.}
+\references{A users's manual for the LISST-100 instrument is available at the
+    manufacturer's website \url{http://www.sequoiasci.com}.}
 
 \author{Dan Kelley}
 
