@@ -95,7 +95,7 @@ plot(m)
     interface for downloading sealevel data in Type 1, with format as described
     at \url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (last checked March
     12, 2015).  The MEDS repository provides Type 2 data, at
-    \url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/twl-mne/inventory-inventaire/index-eng.htm}.}
+    \url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/twl-mne/benchmarks-reperes/index-eng.asp}.}
 
 \author{Dan Kelley}
 
