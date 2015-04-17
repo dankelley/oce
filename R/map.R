@@ -231,7 +231,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        ## axes=TRUE, frame.plot=axes,
                        col=par("fg"), lty=par("lty"), lwd=par("lwd"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
+    if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude","latitude","z") %in% names(longitude@data))) {
@@ -1106,6 +1106,8 @@ map2lonlat <- function(x, y, init=c(0,0))
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
+    if ("none" == .Projection()$type)
+        stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
@@ -1135,11 +1137,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    message("mapImage() cannot figure out if mapproj::.Last.projection exists")
-    message("use :: below??")
-    message("I don't understand how to check. Maybe wrap in a try()")
-    print(.Projection())
-    if (!usingProj4() && (!exists("mapproj::.Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
+    if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
@@ -1561,7 +1559,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
     ## Use proj4 if it has been set up (and still exists).
-    if ("" == projection) projection <- .Last.proj4()$projection # FIXME
+    if ("" == projection) projection <- .Projection()$projection # FIXME
     if ('+' != substr(projection, 1, 1)) {
         ## mapproj case
         if (!requireNamespace("mapproj", quietly=TRUE))
@@ -1570,41 +1568,41 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         try({
             xy <- mapproj::mapproject(longitude, latitude,
                                       projection=projection, parameters=parameters, orientation=orientation)
-            .Last.proj4(list(type="mapproj", projection=projection))     # turn proj4 off, in case it was on
-            if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
-                cmd <- "+proj="
-                proj <- "?"
-                ## See http://www.remotesensing.org/geotiff/proj_list
-                ## After the conversion there may be a comment listing corequisites
-                if (projection == "aitoff") proj <- "(no equivalent)"
-                if (projection == "albers") proj <- "aea" # needs lat0 lat1
-                if (projection == "bonne") proj <- "bonne" # needs lat0
-                if (projection == "gall") proj <- "gall"
-                ## if (projection == "lambert") proj <- "laea" ## ??
-                if (projection == "lambert") proj <- "lcc"
-                if (projection == "mercator") proj <- "merc"
-                if (projection == "mollweide") proj <- "moll"
-                if (projection == "orthographic") proj <- "ortho"
-                if (projection == "polyconic") proj <- "pconic"
-                if (projection == "robin") proj <- "robin"
-                ## FIXME: what about sterea?
-                if (projection == "stereographic") proj <- "stere"
-                if (projection == "wintri") proj <- "wintri"
-                cmd <- paste("+proj=", proj, sep="")
-                if (!is.null(parameters)) {
-                    names <- names(parameters)
-                    if ("lat0" %in% names) cmd <- paste(cmd, " +lat_0=", parameters[["lat0"]], sep="")
-                    if ("lat1" %in% names) cmd <- paste(cmd, " +lat_1=", parameters[["lat1"]], sep="")
-                }
-                if (!is.null(orientation))
-                    cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
-                if (projection == "stereographic")
-                    cmd <- paste(cmd, " +lat_0=90", sep="")
-                message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
-            }
+            .Projection(list(type="mapproj", projection=projection))     # turn proj4 off, in case it was on
+            ## if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
+            ##     cmd <- "+proj="
+            ##     proj <- "?"
+            ##     ## See http://www.remotesensing.org/geotiff/proj_list
+            ##     ## After the conversion there may be a comment listing corequisites
+            ##     if (projection == "aitoff") proj <- "(no equivalent)"
+            ##     if (projection == "albers") proj <- "aea" # needs lat0 lat1
+            ##     if (projection == "bonne") proj <- "bonne" # needs lat0
+            ##     if (projection == "gall") proj <- "gall"
+            ##     ## if (projection == "lambert") proj <- "laea" ## ??
+            ##     if (projection == "lambert") proj <- "lcc"
+            ##     if (projection == "mercator") proj <- "merc"
+            ##     if (projection == "mollweide") proj <- "moll"
+            ##     if (projection == "orthographic") proj <- "ortho"
+            ##     if (projection == "polyconic") proj <- "pconic"
+            ##     if (projection == "robin") proj <- "robin"
+            ##     ## FIXME: what about sterea?
+            ##     if (projection == "stereographic") proj <- "stere"
+            ##     if (projection == "wintri") proj <- "wintri"
+            ##     cmd <- paste("+proj=", proj, sep="")
+            ##     if (!is.null(parameters)) {
+            ##         names <- names(parameters)
+            ##         if ("lat0" %in% names) cmd <- paste(cmd, " +lat_0=", parameters[["lat0"]], sep="")
+            ##         if ("lat1" %in% names) cmd <- paste(cmd, " +lat_1=", parameters[["lat1"]], sep="")
+            ##     }
+            ##     if (!is.null(orientation))
+            ##         cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
+            ##     if (projection == "stereographic")
+            ##         cmd <- paste(cmd, " +lat_0=90", sep="")
+            ##     message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
+            ## }
         }, silent=TRUE)
         if (is.null(xy)) {
-            stop("problem using mapproj; please try using projection=\"+proj=...\" notation instead")
+            xy <- list(x=NA, y=NA)
         }
     } else {                           
         ## proj4 case
@@ -1643,7 +1641,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             }
             xy <- list(x=m[,1], y=m[,2])
         }
-        .Last.proj4(list(type=if (substr(projection, 1, 1)=="+") "proj4" else "mapproj", projection=projection)) # turn on proj4
+        .Projection(list(type=if (substr(projection, 1, 1)=="+") "proj4" else "mapproj", projection=projection)) # turn on proj4
         mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
     xy

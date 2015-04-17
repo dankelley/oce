@@ -157,9 +157,9 @@ data(coastlineWorld)
 # Note that filling is not employed when the prime meridian
 # is shifted, because this causes a problem with Antarctica
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, proj="+proj=moll", fill='gray')
+mapPlot(coastlineWorld, projection="+proj=moll", fill='gray')
 mtext("Mollweide", adj=1)
-mapPlot(coastlineWorld, proj="+proj=moll +lon_0=-180")
+mapPlot(coastlineWorld, projection="+proj=moll +lon_0=-180")
 mtext("Mollweide", adj=1)
 par(mfrow=c(1,1))
 
@@ -179,7 +179,7 @@ mtext("Orthographic", adj=1)
 # away from the equator, here illustrated for the USA and Canada.
 par(mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-        projection="+proj=lcc +lat_0=50 +lat_1=60 +lon_0=-100", fill='gray')
+        projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", fill='gray')
 mtext("Lambert conformal", adj=1)
 
 # Example 4.
