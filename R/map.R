@@ -1134,7 +1134,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      lwd=par("lwd"), lty=par("lty"),
                      filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
 {
-    if (!usingProj4() && (!exists(".Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
+    message("mapImage() cannot figure out if mapproj::.Last.projection exists")
+    message("use :: below??")
+    message("I don't understand how to check. Maybe wrap in a try()")
+    if (!usingProj4() && (!exists("mapproj::.Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
