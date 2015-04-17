@@ -8,12 +8,13 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
-.Last.proj4  <- local({                # emulate mapproj
-    val <- list(projection="")
+.Projection <- local({                # emulate mapproj
+    # type can be 'none', 'proj4' or 'mapproj'
+    val <- list(type="none", projection="")
     function(new) if(!missing(new)) val <<- new else val
 })
 
-usingProj4 <- function() 0 < nchar(.Last.proj4()$projection)
+usingProj4 <- function() "proj4" == .Projection()$type
 
 fixneg <- function(v)
 {
@@ -751,7 +752,7 @@ mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
 {
-    if (0 == nchar(mapproj::.Last.projection()$projection) && 0 == nchar(.Last.proj4()$projection)) {
+    if (0 == nchar(mapproj::.Last.projection()$projection) && 0 == nchar(.Projection()$projection)) { ## FIXME
         warning("mapScalebar() only works for plots created with projections")
         return()
     }
@@ -1033,10 +1034,10 @@ map2lonlat <- function(x, y, init=c(0,0))
         stop("lengths of x and y must match but they are ", n, " and ", length(y))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
-    if (0 < nchar(.Last.proj4()$projection)) {
+    if ("proj4" == .Projection()$type) {
         if (!getOption("externalProj4", FALSE)) {
             ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-            XY <- .C("proj4_interface", as.character(.Last.proj4()$projection), as.integer(FALSE),
+            XY <- .C("proj4_interface", as.character(.Projection()$projection), as.integer(FALSE),
                      as.integer(n), as.double(x), as.double(y),
                      X=double(n), Y=double(n), NAOK=TRUE)
             return(list(longitude=XY$X, latitude=XY$Y))
@@ -1047,7 +1048,7 @@ map2lonlat <- function(x, y, init=c(0,0))
             xy <- list(x=NA, y=NA)
             ## FIXME: maybe we should do point-by-point if this yields an error
             try({
-                xy <- proj4::project(list(x=x, y=y), proj=.Last.proj4()$projection, inverse=TRUE)
+                xy <- proj4::project(list(x=x, y=y), proj=.Projection()$projection, inverse=TRUE)
             }, silent=TRUE)
             return(list(longitude=xy$x, latitude=xy$y))
         }
@@ -1137,6 +1138,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     message("mapImage() cannot figure out if mapproj::.Last.projection exists")
     message("use :: below??")
     message("I don't understand how to check. Maybe wrap in a try()")
+    print(.Projection())
     if (!usingProj4() && (!exists("mapproj::.Last.projection") || 0 == nchar(mapproj::.Last.projection()$projection)))
         stop("must create a map first, with mapPlot()\n")
     breaksGiven <- !missing(breaks)
@@ -1559,7 +1561,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
     ## Use proj4 if it has been set up (and still exists).
-    if ("" == projection) projection <- .Last.proj4()$projection
+    if ("" == projection) projection <- .Last.proj4()$projection # FIXME
     if ('+' != substr(projection, 1, 1)) {
         ## mapproj case
         if (!requireNamespace("mapproj", quietly=TRUE))
@@ -1568,7 +1570,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         try({
             xy <- mapproj::mapproject(longitude, latitude,
                                       projection=projection, parameters=parameters, orientation=orientation)
-            .Last.proj4(list(projection=""))     # turn proj4 off, in case it was on
+            .Last.proj4(list(type="mapproj", projection=projection))     # turn proj4 off, in case it was on
             if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
                 cmd <- "+proj="
                 proj <- "?"
@@ -1641,7 +1643,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             }
             xy <- list(x=m[,1], y=m[,2])
         }
-        .Last.proj4(list(projection=projection)) # turn on proj4
+        .Last.proj4(list(type=if (substr(projection, 1, 1)=="+") "proj4" else "mapproj", projection=projection)) # turn on proj4
         mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
     xy
