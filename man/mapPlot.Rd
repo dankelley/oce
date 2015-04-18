@@ -336,7 +336,7 @@ Lat/long                                  \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
 Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
-Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
+%Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
 McBryde-Thomas flat-polar sine, no. 1     \tab \code{mbt_s}    \tab\cr
