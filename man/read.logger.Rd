@@ -5,9 +5,7 @@
 \title{Read a logger file}
 
 \description{Read a logger file, e.g. a temperature-depth recorder, producing
-    an object of class \code{logger}. As a special case, if the device recorded
-    temperature, conductivity and pressure, return an object of class
-    \code{ctd}.}
+    an object of class \code{logger}.} 
 
 \usage{read.logger(file, from=1, to, by=1, type,
             tz=getOption("oceTz", default="UTC"), patm=FALSE,
@@ -81,36 +79,23 @@
 
 }
 
-\value{Two cases are handled at present.  If the data do not have conductivity,
-    temperature and pressure, then an object of \code{\link[base]{class}}
-    \code{"logger"} is returned (see \code{\link{logger-class}}).  However, if
-    those three quantities are stored in the file, then an object of
-    \code{\link[base]{class}} \code{"ctd"} (see \code{\link{ctd-class}}) is
-    returned. The class can be switched to \code{logger} using
-    \code{\link{as.logger}}.}
+\value{An object of \code{\link{logger-class}}.}
 
 \examples{
 \dontrun{
 library(oce)
 ## A CTD-style logger
-ctd <- read.logger("cast4.rsk")
-## convert to conductivity ratio (and set metadata so other functions know this)
-ctd[["conductivity"]] <- ctd[["conductivity"]] / 42.914
-ctd@metadata[["conductivityUnit"]] <- "ratio"
-## In this particular file, the device was raised for the surface for a
-## while, so that atmospheric pressure can be estimated
-## by averaging pressures for the interval of out-of-water salinity.
-p <- ctd[["pressure"]]
-S <- ctd[["salinity"]]
-p0 <- max(p[S<1], na.rm=TRUE)
-ctd[["pressure"]] <- ctd[["pressure"]] - p0
+logger <- read.logger("cast4.rsk")
+patm <- logger[["pressure"]][1]
+ctd <- as.ctd(logger, pressureAtmospheric=patm)
 plot(ctdTrim(ctd))
 }
 }
 
 \seealso{The documentation for \code{\link{logger-class}} explains the
     structure of \code{logger} objects, and also outlines other functions
-    dealing with them.}
+    dealing with them. See \code{\link{as.ctd}} for the method of converting to
+    a CTD object.}
 
 \author{Dan Kelley}
 

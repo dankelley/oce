@@ -337,13 +337,17 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         if (!missing(to))
             warning("cannot (yet) handle argument 'to' for a ruskin file; using the whole file")
 
-        ## Some, but not all, RSK files have "datasets"
-        #try({
-            datasets <- RSQLite::dbReadTable(con, "datasets")
-            ndatasets <- dim(datasets)[1]
-            if (1 != ndatasets)
-                stop("read.logger() cannot handle multi-dataset files; this file has ", ndatasets)
-        #}, silent=TRUE)
+        ## Some, but not all, RSK files have "datasets". However, I've commented this code
+        ## out because the result, ndatasets, is not used anywhere else.
+        ##
+        ##   ndatasets <- 1
+        ##   try({
+        ##       datasets <- RSQLite::dbReadTable(con, "datasets")
+        ##       ndatasets <- dim(datasets)[1]
+        ##       if (1 != ndatasets)
+        ##           stop("read.logger() cannot handle multi-dataset files; this file has ", ndatasets)
+        ##   }, silent=TRUE)
+        ##
 
         ## ruskin database-schema serial number: hard to decode, so I'll just give up on it
         appSettings <- RSQLite::dbReadTable(con, "appSettings")
@@ -411,7 +415,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             data$pressure <- pSea
             pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", patm)
         }
-        if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
+        canReturnCtd <- FALSE
+        if (canReturnCtd && 3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
             conductivityStandard <- 42.914 ## mS/cm conversion factor
             if ("salinity" %in% names) {
                 S <- data$salinity

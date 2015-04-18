@@ -143,8 +143,37 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    ship="", scientist="", institute="", address="", cruise="", station="",
                    date="", startTime="", recovery="",
                    longitude=NA, latitude=NA,
-                   waterDepth=NA, sampleInterval=NA, src="")
+                   pressureAtmospheric=NA, waterDepth=NA,
+                   sampleInterval=NA, src="")
 {
+    if (inherits(salinity, "logger")) {
+        logger <- salinity
+        namesLogger <- names(logger@data)
+        if (!("pressure" %in% namesLogger))
+            stop("logger object lacks pressure data, so cannot construct a ctd object from it")
+        if (!("temperature" %in% namesLogger))
+            stop("logger object lacks temperature data, so cannot construct a ctd object from it")
+        if (!("conductivity" %in% namesLogger))
+            stop("logger object lacks conductivity data, so cannot construct a ctd object from it")
+        pressure <- logger[["pressure"]]
+        if (!is.na(pressureAtmospheric))
+            pressure <- pressure - pressureAtmospheric
+        temperature <- logger[["temperature"]]
+        conductivity <- logger[["conductivity"]]
+        ## Try to be sensible about converting 
+        cmax <- max(conductivity, na.rm=TRUE)
+        if (cmax > 5) {
+            warning("max(conductivity) exceeds 5, so dividing conductivity by 42.914, assuming unit mS/cm")
+            conductivity <- conductivity / 42.914
+        } else if (cmax > 1) {
+            warning("max(conductivity) between 1 and 5, so dividing conductivity by 4.2914, assuming unit S/m")
+            conductivity <- conductivity / 4.2914
+        }
+        salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
+        ## add atm pressure back in, because we will subtract it in a moment...
+        if (!is.na(pressureAtmospheric))
+            pressure <- pressure + pressureAtmospheric
+    }
     if (!missing(salinity) && class(salinity) == "data.frame") {
         d <- salinity
         names <- names(d)
@@ -169,6 +198,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     pressure <- as.vector(pressure)
+    if (!is.na(pressureAtmospheric))
+        pressure <- pressure - pressureAtmospheric
     haveSA <- !missing(SA)
     haveCT <- !missing(CT)
     if (haveSA != haveCT)

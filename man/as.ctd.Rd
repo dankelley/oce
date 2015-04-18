@@ -13,7 +13,8 @@
        ship="", scientist="", institute="", address="", cruise="", station="", 
        date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
-       waterDepth=NA, sampleInterval=NA, src="")
+       pressureAtmospheric=NA, waterDepth=NA,
+       sampleInterval=NA, src="")
 }
 \arguments{
   \item{salinity}{Salinity through the water column, or a data frame
@@ -65,7 +66,12 @@
   \item{recovery}{optional string indicating the recovery time.}
   \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
   \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
+
+  \item{pressureAtmospheric}{if provided, this value is subtracted from
+      pressure data before storing them in the object.}
+
   \item{waterDepth}{optional numerical value indicating the water depth in metres.}
+
   \item{sampleInterval}{optional numerical value indicating the time
     between samples in the profile.}
   \item{src}{optional string indicating data source}
