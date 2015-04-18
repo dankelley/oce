@@ -176,7 +176,7 @@
 
 2. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}
 
-3. \url{https://landsat.usgs.gov/calibration_notices.php}
+3. \url{http://landsat.usgs.gov/calibration_notices.php}
 
 4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
 
