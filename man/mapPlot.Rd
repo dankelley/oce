@@ -5,8 +5,8 @@
 \title{Plot a map}
 
 \description{Plot coordinates as a map, using one of many possible projections
-    calculated with the \code{PROJ.4} [6] code that is included within oce or,
-    with less flexibility and accuracy, with the \code{mapproj} package.  The
+    calculated with the \code{PROJ.4} [6] code that is included within oce.
+    (For a temporary alternative, see \dQuote{Deprecation notice}.) The
     projection parameters are stored in a local variable that can be retrieved
     by related functions, making it easy to add more items so the map,
     including points, lines, text, images and contours.}
@@ -70,23 +70,11 @@
         simple customization.  If they are are not provided, reasonable
         defaults will be used.}
 
-    \item{projection}{a string indicating the form of projection to be used.
-        This may be in either of two formats, of which the first is preferred.
-        (1) The value of \code{projection} starts with the substring
-        ``\code{+proj=}'', with the rest of the string being in accordance with
-        the PROJ.4 system [6]. Both \code{parameters} and \code{orientation}
-        are ignored in this case.  Note that there is no need to specify the
-        scale parameter (\code{+k}), the easting parameter (\code{+easting}) or
-        the northing parameter (\code{+northing}), since these are determined
-        from the graph limits.  (2) The value of \code{projection} is the name
-        of a projection provided by \code{mapproject} in the \code{mapproj}
-        package, and \code{parameters} and \code{orientation} are also passed
-        to that function.  See \dQuote{Examples}.}
+    \item{projection}{optional indication of projection.  This is normally a
+        string in the format used by the \code{proj4} package, i.e.  starting
+        with \code{+proj=}. (See \dQuote{Deprecation notice}.)}
 
-    \item{parameters, orientation}{parameters and orientation, if
-        \code{projection} is in \code{mapproj} form; see the help for
-        \code{mapproject} in the \code{mapproj} package, but note that the
-        \code{mapproj} notation is not recommended for most applications.}
+    \item{parameters,orientation}{See \dQuote{Deprecation notice}.}
 
     \item{trim}{a logical value indicating whether to trim islands or lakes
         containing only points that are off-scale of the current plot box.
@@ -106,8 +94,6 @@
         useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc
         to reproduce a scale exactly between two plots.}
 }
-
-
 
 \details{Creates a map using the indicated projection.  As noted in the
     information on the \code{projection} argument, projections are best
@@ -132,18 +118,30 @@
     treatment that includes many illustrations, an overview of the history of
     the topic, and some notes on the strengths and weaknesses of the various
     formulations.  See especially pages 2 through 7, which define terms and
-    provide recommendations.  References [2] and [3] are also useful,
-    especially regarding datum shifts; [4] and [5] are less detailed and
-    perhaps better for novices. See [9] for a gallery of projections.
+    provide recommendations.  Reference [2] is also useful,
+    especially regarding datum shifts; [3] and [4] are less detailed and
+    perhaps better for novices. See [8] for a gallery of projections.
     
 }
+
+\section{Deprecation notice}{At the moment of writing, it is still also
+    possible to specify projections using \code{projection}, \code{parameters}
+    and \code{orientation} in the terminology employed by the \code{mapproj}
+    package. In that case, the calculations are done using that package (if it
+    is installed). Unfortunately, this method can yield poor results, because
+    inverse-projection is not handled by \code{mapproj}. For this reason, this
+    capability is likely to be removed in a future version of \code{oce}. It is
+    only provided in the present version to give users time to alter their
+    code. It will be removed sometime in the year 2015.}
+
+
 
 \seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
     with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons with
     \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale
     bars with \code{\link{mapScalebar}}.  Points on a map may be determined
     with mouse clicks using \code{\link{mapLocator}}.  Great circle paths can
-    be calculated with \code{\link{geodGc}}.  See [9] for a demonstration of
+    be calculated with \code{\link{geodGc}}.  See [8] for a demonstration of
     the available map projections (with graphs).}
 
 \examples{
@@ -157,9 +155,9 @@ data(coastlineWorld)
 # Note that filling is not employed when the prime meridian
 # is shifted, because this causes a problem with Antarctica
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, proj="+proj=moll", fill='gray')
+mapPlot(coastlineWorld, projection="+proj=moll", fill='gray')
 mtext("Mollweide", adj=1)
-mapPlot(coastlineWorld, proj="+proj=moll +lon_0=-180")
+mapPlot(coastlineWorld, projection="+proj=moll +lon_0=-180")
 mtext("Mollweide", adj=1)
 par(mfrow=c(1,1))
 
@@ -179,7 +177,7 @@ mtext("Orthographic", adj=1)
 # away from the equator, here illustrated for the USA and Canada.
 par(mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-        projection="+proj=lcc +lat_0=50 +lat_1=60 +lon_0=-100", fill='gray')
+        projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", fill='gray')
 mtext("Lambert conformal", adj=1)
 
 # Example 4.
@@ -254,7 +252,7 @@ dev.off()
 \section{Available Projections}{Users who choose the (unrecommended) mapproj
     scheme for setting the projection should consult the documentation for
     \code{mapproject} in the \code{mapproj} package. Those who choose the
-    (recommended) PROJ.4 system [6,7] have a wide range of projections to
+    (recommended) PROJ.4 system [5,6] have a wide range of projections to
     choose from. These are listed in the table given below.  For example, set
     \code{projection="+proj=aea"} to select the Albers equal area projection.
 
@@ -267,10 +265,10 @@ dev.off()
 
     Further details of the projections and the controlling arguments are
     provided at several websites, because PROJ.4 has been incorporated into
-    many software systems; a good starting point for learning is [7].  
+    many software systems; a good starting point for learning is [6].  
     
     See \dQuote{Examples} for suggested projections for some common
-    applications, and [9] for a gallery indicating how to use every projection.
+    applications, and [8] for a gallery indicating how to use every projection.
 
 \tabular{lll}{
 \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
@@ -443,32 +441,30 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
     Professional Paper: 1395 (available at
     \url{pubs.usgs.gov/pp/1395/report.pdf}).
 
-    2. \url{http://earth-info.nga.mil/GandG/publications/tm8358.1/toc.html}
+    2. Natural Resources Canada \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 
-    3. Natural Resources Canada \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+    3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
 
-    4. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
+    4. Radical Cartography website \url{http://www.radicalcartography.net/?projectionref}
 
-    5. Radical Cartography website \url{http://www.radicalcartography.net/?projectionref}
+    5. \code{PROJ.4} website \url{http://trac.osgeo.org/proj}
 
-    6. \code{PROJ.4} website \url{http://trac.osgeo.org/proj}
+    6. \code{PROJ.4} projection details are at \url{http://www.remotesensing.org/geotiff/proj_list/}.
 
-    7. \code{PROJ.4} projection details are at \url{http://www.remotesensing.org/geotiff/proj_list/}.
-
-    8. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
+    7. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
     used, except for \code{calcofi} (which is not really a projection scheme),
     \code{isea} (which causes R to segmentation-fault on a world coastline test
     case), and \code{labrd} which a nich local projection that has an error
     making it return \code{NaN} for the entire earth coastline.
 
-    9. A gallery of plots with the PROJ.4-style projections is provided at
+    8. A gallery of plots with the PROJ.4-style projections is provided at
     \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  
 
-    10. A website with illustrated explanations of projections, including
+    9. A website with illustrated explanations of projections, including
     historical notes, is
     \url{http://www.progonos.com/furuti/MapProj/CartIndex/cartIndex.html}.
 
-    11. A fascinating historical perspective is provided by Snyder, J. P.
+    10. A fascinating historical perspective is provided by Snyder, J. P.
     (1993). Two thousand years of map projections. University of Chicago Press.
 
 }

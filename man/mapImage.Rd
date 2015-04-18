@@ -138,6 +138,7 @@ mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
 # Levitus SST (requires dataset from http://www.esrl.noaa.gov)
+par(mfrow=c(1,1))
 library(ncdf4)
 con <- nc_open("/data/oar/levitus/temperature_annual_5deg.nc")
 lon <- ncvar_get(con, "lon")
@@ -146,7 +147,7 @@ SST <- ncvar_get(con, "t_mn")[,,1]
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oce.colorsJet)
-mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
 mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
 mapPolygon(coastlineWorld, col='gray')
 }
