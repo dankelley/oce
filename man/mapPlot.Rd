@@ -256,6 +256,14 @@ dev.off()
     choose from. These are listed in the table given below.  For example, set
     \code{projection="+proj=aea"} to select the Albers equal area projection.
 
+    The projection list consists of all the PROJ.4 (version 4.9.1) projections
+    that have inverses, minus a few that cause problems: \code{calcofi} is not
+    a real projection, but rather a coordinate system;  \code{isea} causes
+    segmentation faults on OSX systems; \code{labrd} returns \code{NaN} for
+    most points in \code{coastlineWorld} (and seems to be designed only for
+    Madagascar); \code{krovak} is a niche projection for the Czech Republic
+    that causes problems with world domains.
+
     The information in the table is reformatted from the output of the unix
     command \code{proj -lP}, where \code{proj} is provided by version 4.9.0 of
     the PROJ.4 system. Most of the arguments listed have default values. In
@@ -310,7 +318,7 @@ Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
 International map of the world polyconic  \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
-Krovak                                    \tab \code{krovak}   \tab - \cr
+%Krovak                                    \tab \code{krovak}   \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
 Lat/long                                  \tab \code{lonlat}   \tab - \cr
 Lat/long                                  \tab \code{latlon}   \tab - \cr

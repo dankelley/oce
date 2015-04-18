@@ -1566,16 +1566,15 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 ##    on the coastlineWorld; fixing this is not a high priority
 ##    given that it is a niche projection that has caused problems
 ##    in PROJ.4 also.
-## 4. wintri is delted because it hangs R when drawing coastlineWorld.
+## 4. krovak causes overdrawn coastlines; it's a niche proj for Czech Republic.
+##knownProj4<-c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
 knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne",
-##knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
                 "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
                 "goode", "gs48", "gs50", "hatano", "healpix", "rhealpix",
-                ##"igh", "imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
-                ##"igh", "imw_p", "kav5", "kav7", "krovak", "labrd",
-                "igh", "imw_p", "kav5", "kav7", "krovak",
+                ##"igh","imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
+                "igh", "imw_p",          "kav5", "kav7",
                 "laea", "lonlat", "latlon", "lcc", "lcca", "leac", "lee_os",
                 "loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
