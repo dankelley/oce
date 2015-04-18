@@ -257,12 +257,23 @@ dev.off()
     \code{projection="+proj=aea"} to select the Albers equal area projection.
 
     The projection list consists of all the PROJ.4 (version 4.9.1) projections
-    that have inverses, minus a few that cause problems: \code{calcofi} is not
-    a real projection, but rather a coordinate system;  \code{isea} causes
-    segmentation faults on OSX systems; \code{labrd} returns \code{NaN} for
+    that have inverses, minus a few that cause problems:
+    \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
+    \code{calcofi} is not a real projection, but rather a coordinate system;
+    \code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
+    \code{gs50} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
+    \code{gstmerc} overdraws \code{coastlineWorld};
+    \code{isea} causes segmentation faults on OSX systems; 
+    \code{krovak} overdraws \code{coastlineWorld}, and is a niche projection for the Czech Republic;
+    \code{labrd} returns \code{NaN} for most of the world, and is a niche projection for Madagascar;
+    \code{lee_os} overdraws \code{coastlineWorld};
+    and
+    \code{nzmg} overdraws \code{coastlineWorld}.
+    
+    
+    \code{labrd} returns \code{NaN} for
     most points in \code{coastlineWorld} (and seems to be designed only for
-    Madagascar); \code{krovak} is a niche projection for the Czech Republic
-    that causes problems with world domains.
+    Madagascar);
 
     The information in the table is reformatted from the output of the unix
     command \code{proj -lP}, where \code{proj} is provided by version 4.9.0 of
@@ -309,8 +320,8 @@ Geostationary satellite view              \tab \code{geos}     \tab \code{h}\cr
 General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr
 Gnomonic                                  \tab \code{gnom}     \tab - \cr
 Goode homolosine                          \tab \code{goode}    \tab - \cr
-Mod. stererographics of 48 U.S.           \tab \code{gs48}     \tab - \cr
-Mod. stererographics of 50 U.S.           \tab \code{gs50}     \tab - \cr
+%Mod. stererographics of 48 U.S.           \tab \code{gs48}     \tab - \cr
+%Mod. stererographics of 50 U.S.           \tab \code{gs50}     \tab - \cr
 Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
 HEALPix                                   \tab \code{healpix}  \tab - \cr
 rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr

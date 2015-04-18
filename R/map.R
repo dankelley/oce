@@ -1558,32 +1558,36 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 ## simply haven't been generated enough interest in the broader cartographic
 ## community to merit inclusion in oce.
 
-## 1. calcofi is deleted because it's nor really a projection; it's more
+## 1. alsk overdraws world, pluts it's a niche proj (Alaska)
+## 2. calcofi is deleted because it's nor really a projection; it's more
 ##    like a coordinate transformation.
-## 2. isea is delted because it causes segmentation faults that crash R,
-##    at least on a world coastline test.
-## 3. labrd is deleted because it returns NaN for every point
+## 3. isea is deleted because it causes a segmentation fault on coastlineWorld.
+## 4. krovak causes overdrawn coastlines, plus it's a niche proj (Czech Republic)
+## 5. labrd is deleted because it returns NaN for every point
 ##    on the coastlineWorld; fixing this is not a high priority
 ##    given that it is a niche projection that has caused problems
 ##    in PROJ.4 also.
-## 4. krovak causes overdrawn coastlines; it's a niche proj for Czech Republic.
 ##knownProj4<-c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
-knownProj4 <- c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne",
+knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
                 "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
-                "goode", "gs48", "gs50", "hatano", "healpix", "rhealpix",
+                ##"goode", "gs48", "gs50", "hatano", "healpix", "rhealpix",
+                "goode",                   "hatano", "healpix", "rhealpix",
                 ##"igh","imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
-                "igh", "imw_p",          "kav5", "kav7",
-                "laea", "lonlat", "latlon", "lcc", "lcca", "leac", "lee_os",
+                "igh",  "imw_p",         "kav5", "kav7",
+                ##"laea", "lonlat", "latlon", "lcc", "lcca", "leac", "lee_os",
+                "laea",   "lonlat", "latlon", "lcc", "lcca", "leac",
                 "loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
-                "murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
+                ##"murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
+                "murd3",   "natearth", "nell", "nell_h", "nsper",
                 "ob_tran", "ocea", "oea", "omerc", "ortho", "pconic", "poly",
                 "putp1", "putp2", "putp3", "putp3p", "putp4", "putp4p",
                 "putp5", "putp5p", "putp6", "putp6p", "qsc", "qua_aut",
-                "robin", "rouss", "sinu", "somerc", "stere", "sterea",
-                "gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
+                "robin", "rouss", "sinu", "somerc", "stere", "sterea"
+                ##"gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups"
+                ,            "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
 
