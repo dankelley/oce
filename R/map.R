@@ -460,19 +460,18 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             ## Measure lower-left to upper-right diagonal
             ll <- map2lonlat(usr[1], usr[3])
             ur <- map2lonlat(usr[2], usr[4])
-            if (ll$latitude > 90) ll$latitude <- 90
-            if (ll$latitude < -90) ll$latitude <- -90
-            if (ur$latitude > 90) ur$latitude <- 90
-            if (ur$latitude < -90) ur$latitude <- -90
-            if (ll$longitude > 180) ll$longitude <- 180
-            if (ll$longitude < -180) ll$longitude <- -180
-            if (ur$longitude > 180) ur$longitude <- 180
-            if (ur$longitude < -180) ur$longitude <- -180
-            if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
-                is.finite(ur$longitude) && is.finite(ur$latitude)) {
-                ## estimate span in deg lat by dividing by 111km
-                span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
-            }
+           if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
+               is.finite(ur$longitude) && is.finite(ur$latitude)) {
+               onearth <- function(x) {
+                   x$longitude <- ifelse(x$longitude < -180, -180, ifelse(x$longitude > 180, 180, x$longitude))
+                   x$latitude <- ifelse(x$latitude < -90, -90, ifelse(x$latitude > 90, 90, x$latitude))
+                   x
+               }
+               ll <- onearth(ll)
+               ur <- onearth(ur)
+               ## estimate span in deg lat by dividing by 111km
+               span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
+           }
         } else {                       # 2014-11-16 for issue 543 (will delete next in a week or so)
             ## Now next may fail for e.g. molleweide has ll and ur that are
             ## un-invertable, since the globe may not fill the whole plotting area.
@@ -493,6 +492,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             spanLon <- if (!is.finite(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
             span <- min(abs(spanLat), abs(spanLon))
         }
+        if (span < 1) # something wonky
+            span <- 10e3
         oceDebug(debug, "span:", span, "\n")
         ## Use span to make auto-scale the grid.
         if (is.logical(grid)) {
