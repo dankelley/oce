@@ -227,7 +227,7 @@ points(longitude, latitude, col='red')
 
     The \code{ODV} format, used by the ODV software and some European/British
     data providers, is described at
-    \code{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
+    \url{https://www.bodc.ac.uk/data/codes_and_formats/odv_format/}.
 
     Information about ice-tethered profile data is provided at
     \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
