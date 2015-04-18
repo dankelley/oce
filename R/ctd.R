@@ -2142,11 +2142,29 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (haveData) {
         if (!found.salinity) {
             if (found.conductivity.ratio) {
-                warning("cannot find 'salinity' in this file; calculating from T, C, and p")
-                S <- swSCTp(data$conductivityratio, data$temperature, data$pressure)
+                warning("cannot find 'salinity' in this file; calculating from T, conductivity ratio, and p")
+                C <- data$conductivityratio
+                cmax <- max(C, na.rm=TRUE)
+                if (cmax > 5) {
+                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
+                    C <- C / 42.914
+                } else if (cmax > 1) {
+                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
+                    C <- C / 4.2914
+                }
+                S <- swSCTp(C, data$temperature, data$pressure)
             } else if (found.conductivity) {
-                warning("cannot find 'salinity' in this file; calculating from T, C-ratio, and p")
-                S <- swSCTp(data$conductivity/conductivity.standard, data$temperature, data$pressure)
+                warning("cannot find 'salinity' in this file; calculating from T, conductivity, and p")
+                C <- data$conductivity
+                cmax <- max(C, na.rm=TRUE)
+                if (cmax > 5) {
+                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
+                    C <- C / 42.914
+                } else if (cmax > 1) {
+                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
+                    C <- C / 4.2914
+                }
+                S <- swSCTp(C, data$temperature, data$pressure)
             } else {
                 stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
             }
