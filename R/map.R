@@ -460,6 +460,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             ## Measure lower-left to upper-right diagonal
             ll <- map2lonlat(usr[1], usr[3])
             ur <- map2lonlat(usr[2], usr[4])
+            if (ll$latitude > 90) ll$latitude <- 90
+            if (ll$latitude < -90) ll$latitude <- -90
+            if (ur$latitude > 90) ur$latitude <- 90
+            if (ur$latitude < -90) ur$latitude <- -90
+            if (ll$longitude > 180) ll$longitude <- 180
+            if (ll$longitude < -180) ll$longitude <- -180
+            if (ur$longitude > 180) ur$longitude <- 180
+            if (ur$longitude < -180) ur$longitude <- -180
             if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
                 is.finite(ur$longitude) && is.finite(ur$latitude)) {
                 ## estimate span in deg lat by dividing by 111km
