@@ -62,10 +62,9 @@ data(coastlineWorld)
 par(mar=c(2, 2, 3, 1))
 lonlim <- c(-180, 180)
 latlim <- c(60, 120)
-p <- '+proj=stere +lat_0=90'
-mapPlot(coastlineWorld, projection=p,
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=lonlim, latitudelim=latlim,
-        grid=FALSE) # grid=FALSE will soon become the default
+        grid=FALSE)
 mapGrid(15, 15, polarCircle=1/2)
 mapAxis()
 }

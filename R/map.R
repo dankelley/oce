@@ -1704,7 +1704,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
             xy <- list(x=m[,1], y=m[,2])
         }
         .Projection(list(type=if (substr(projection, 1, 1)=="+") "proj4" else "mapproj", projection=projection)) # turn on proj4
-        mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
+        ##mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
     xy
 }
