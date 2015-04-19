@@ -907,14 +907,17 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
     xy <- lonlat2map(longitude, latitude)
+    n <- length(longitude)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
     DX <- usr[2] - usr[1]
     if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
-        dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
-        bad <- dx / DX > 0.1
-        if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
-            xy$x[bad] <- NA
+        if (n > 10) { # don't mess with short segments 
+            dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
+            bad <- dx / DX > 0.1
+            if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
+                xy$x[bad] <- NA
+            }
         }
         lines(xy$x, xy$y, ...)
     }

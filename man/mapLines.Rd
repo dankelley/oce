@@ -34,9 +34,10 @@ library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
         longitudelim=c(-80,10), latitudelim=c(0,120),
-        projection="+proj=ortho")
+        projection="+proj=ortho +lon_0=-40")
 lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)
+mapPoints(lon, lat, col='red')
 mapLines(lon, lat, col='red')
 }
 }
