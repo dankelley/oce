@@ -17,7 +17,7 @@
 
     \item{latitude}{latitudes of points to be plotted}
 
-    \item{greatCircle}{boolean indicating whether to render line segments as
+    \item{greatCircle}{logical indicating whether to render line segments as
         great circles.  (Ignored at present.)}
 
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}

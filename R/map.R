@@ -912,13 +912,16 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     usr <- par('usr')
     DX <- usr[2] - usr[1]
     if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
-        if (n > 10) { # don't mess with short segments 
-            dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
-            bad <- dx / DX > 0.1
-            if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
-                xy$x[bad] <- NA
-            }
-        }
+        ## 20150421 # Remove code that attempted to delete extraneous lines ... the problem
+        ## 20150421 # is that there's no good way to know which are extraneous, and length
+        ## 20150421 # is not the best indicator.
+        ## 20150421 if (n > 10) { # don't mess with short segments 
+        ## 20150421     dx <- c(0, abs(diff(xy$x, na.rm=TRUE)))
+        ## 20150421     bad <- dx / DX > 0.1
+        ## 20150421     if (any(bad, na.rm=TRUE)) { # FIXME: a kludge that may be problematic
+        ## 20150421         xy$x[bad] <- NA
+        ## 20150421     }
+        ## 20150421 }
         lines(xy$x, xy$y, ...)
     }
 }
