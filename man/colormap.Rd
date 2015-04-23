@@ -10,7 +10,7 @@
          zlim, zclip=FALSE,
          breaks, col=oce.colorsJet,
          name, x0, x1, col0, col1, blend=0,
-         missingColor,
+         missingColor, subdivisions=1,
          debug=getOption("oceDebug"))}
 
 \arguments{
@@ -78,6 +78,10 @@
   \item{missingColor}{color to use for missing values.  If not provided, this
       will be \code{"gray"}, unless \code{name} is given, in which case it
       comes from that color table.}
+
+  \item{subdivisions}{a number specifying the number of subdivisions between
+      colorrs and values. This permits smooth blending between a small numer of
+      colours.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
       moderate amount of debugging information, or to 2 to get more.} 

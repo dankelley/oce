@@ -361,7 +361,7 @@ colormap <- function(z,
                      zlim, zclip=FALSE,
                      breaks, col=oce.colorsJet,
                      name, x0, x1, col0, col1, blend=0,
-                     missingColor,
+                     missingColor, subdivisions=1,
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
@@ -508,6 +508,49 @@ colormap <- function(z,
     if (!nameKnown)
         rval$missingColor <- if (missingColorKnown) missingColor else "gray"
     rval$zclip <- zclip
+    subdivisions <- as.integer(subdivisions)
+    if (subdivisions > 1) {
+        warning("colormap(..., subdivisions=", subdivisions, ") is not working yet")
+        rval$breaks_ <- rval$breaks
+        rval$x0_ <- rval$x0
+        rval$x1_ <- rval$x1
+        rval$col_ <- rval$col
+        rval$col0_ <- rval$col0
+        rval$col1_ <- rval$col1
+        nbreaks <- length(rval$breaks)
+        if (nbreaks > 1) {
+            BREAKS <- NULL
+            for (i in seq.int(2, length(rval$breaks))) {
+                BREAKS <- c(BREAKS, seq(from=rval$breaks[i-1], by=(rval$breaks[i]-rval$breaks[i-1])/subdivisions,
+                                        length.out=subdivisions))
+            }
+            rval$breaks <- BREAKS
+            ## FIXME not using the above -- this is wrong
+            warning("fuzzy thinking in colors.R near line 529\n")
+        }
+        ncol <- length(rval$col)
+        if (ncol > 1) {
+            X0 <- X1 <- NULL
+            COL <- NULL                # FIXME: is this sensible
+            COL0 <- NULL               # FIXME: is this sensible
+            COL1 <- NULL               # FIXME: is this sensible
+            for (i in seq.int(2, ncol)) {
+                X0 <- c(X0, seq(from=rval$x0[i-1], by=(rval$x0[i]-rval$x0[i-1])/subdivisions,
+                                length.out=subdivisions))
+                X1 <- c(X1, seq(from=rval$x1[i-1], by=(rval$x1[i]-rval$x1[i-1])/subdivisions,
+                                length.out=subdivisions))
+                COL <- c(COL, colorRampPalette(c(rval$col[i-1], rval$col[i]))(subdivisions))
+                COL0 <- c(COL0, colorRampPalette(c(rval$col0[i-1], rval$col0[i]))(subdivisions))
+                COL1 <- c(COL1, colorRampPalette(c(rval$col1[i-1], rval$col1[i]))(subdivisions))
+            }
+            rval$col0 <- COL0
+            rval$x0 <- X0
+            rval$x1 <- X1
+            rval$col1 <- COL1
+            rval$col <- COL
+            rval$breaks <- c(rval$x0, tail(rval$x1,1))  ## FIXME this is wrong
+        }
+    }
     class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
