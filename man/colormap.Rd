@@ -10,8 +10,7 @@
          zlim, zclip=FALSE,
          breaks, col=oce.colorsJet,
          name, x0, x1, col0, col1, blend=0,
-         missingColor, subdivisions=1,
-         debug=getOption("oceDebug"))}
+         missingColor, debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -78,10 +77,6 @@
   \item{missingColor}{color to use for missing values.  If not provided, this
       will be \code{"gray"}, unless \code{name} is given, in which case it
       comes from that color table.}
-
-  \item{subdivisions}{a number specifying the number of subdivisions between
-      colorrs and values. This permits smooth blending between a small numer of
-      colours.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
       moderate amount of debugging information, or to 2 to get more.} 
@@ -195,12 +190,43 @@ plot(x, y, bg=c$zcol, pch=21, cex=1)
 grid()
 par(mar=mar)
 
-## Example 2. topographic image with a standard color scheme
 \dontrun{
+## Example 2. topographic image with a standard color scheme
 par(mfrow=c(1,1))
 data(topoWorld)
 cm <- colormap(name="gmt_globe")
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
+
+## Example 3. topographic image with modified colors,
+## black for depths below 4km.
+cm <- colormap(name="gmt_globe")
+deep <- cm$x0 < -4000
+cm$col0[deep] <- 'black'
+cm$col1[deep] <- 'black'
+cm <- colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
+imagep(topoWorld, breaks=cm$breaks, col=cm$col)
+
+## Example 4. image of world topography with water colorized 
+##            smoothly from violet at 8km depth to blue
+##            at 4km depth, then blending in 0.5km increments
+##            to white at the coast, with tan for land.
+cm <- colormap(x0=c(-8000, -4000,   0,  100),
+               x1=c(-4000,     0, 100, 5000),
+               col0=c("violet","blue","white","tan"),
+               col1=c("blue","white","tan","yelloe"),
+               blend=c(100, 8, 0))
+lon <- topoWorld[['longitude']]
+lat <- topoWorld[['latitude']]
+z <- topoWorld[['z']]
+imagep(lon, lat, z, breaks=cm$breaks, col=cm$col)
+contour(lon, lat, z, levels=0, add=TRUE)
+message("colormap() example 4 is broken")
+
+## Example 5. visualize GMT style color map
+cm <- colormap(name="gmt_globe", debug=4)
+plot(seq_along(cm$x0), cm$x0, pch=21, bg=cm$col0)
+grid()
+points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 }
 }
 

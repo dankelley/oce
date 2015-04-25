@@ -361,7 +361,7 @@ colormap <- function(z,
                      zlim, zclip=FALSE,
                      breaks, col=oce.colorsJet,
                      name, x0, x1, col0, col1, blend=0,
-                     missingColor, subdivisions=1,
+                     missingColor,
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
@@ -372,20 +372,34 @@ colormap <- function(z,
     missingColorKnown <- !missing(missingColor)
     if (missingColorKnown)
         oceDebug(debug, 'missingColor:', missingColor, '\n')
-    xcolKnown <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
+    x0Known <- !missing(x0) && !missing(x1) && !missing(col0) && !missing(col1)
+    if (x0Known) {
+        if (length(x0) != length(x1))
+            stop("lengths of x0 and x1 must agree (if they are specified)")
+        if (length(col0) != length(col1))
+            stop("lengths of col0 and col1 must agree (if they are specified)")
+        if (length(x0) != length(col0))
+            stop("lengths of x0 and x0 must agree (if they are specified)")
+    }
+    oceDebug(debug, "x0Known:", x0Known, "\n")
     if (zlimKnown && breaksKnown && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
     if (!zlimKnown) {
         ## set to NULL if must compute later
         if (nameKnown) {
+            oceDebug(debug, "zlimKnown=", zlimKnown, ", so will infer zlim later (I think) from the colormap spec\n",
+                     sep="")
             zlim <- NULL
         } else if (breaksKnown) {
+            oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from breaks\n", sep="")
             zlim <- if (length(breaks) > 1) range(breaks) else NULL
             zlimKnown <- TRUE
         } else if (zKnown) {
+            oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from z\n", sep="")
             zlim <- rangeExtended(z)
             zlimKnown <- TRUE
-        } else if (xcolKnown) {
+        } else if (x0Known) {
+            oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from x0 and x1\n", sep="")
             zlim <- range(c(x0, x1))
             zlimKnown <- TRUE
         } else  {
@@ -396,18 +410,26 @@ colormap <- function(z,
     oceDebug(debug, "zclip=", zclip, "\n")
     if (nameKnown) {
         ## limit to n=1 if 'name' provided
-        blend <- min(1, max(blend, 0))
-        n <- 1
+        blend <- min(1L, max(blend, 0L))
+        n <- 1L
     } else {
-        blend <- max(blend, 0)
-        n <- if (blend > 1) as.integer(round(blend)) else 1L
+        blend <- max(blend, 0L)
+        n <- if (blend > 1L) as.integer(round(blend)) else 1L
     }
     oceDebug(debug, "blend=", blend, "; n=", n, "\n")
     if (zlimKnown && !breaksKnown) {
-        breaks <- seq(min(zlim, na.rm=TRUE), max(zlim, na.rm=TRUE), length.out=200)
+        if (x0Known) {
+            oceDebug(debug, "processing case A (zlimKnown && !breaksKnown && x0Known)\n")
+            cm <- colormapGMT(x0=x0, x1=x1, col0=col0, col1=col1, bpl=1)
+            breaks <- cm$breaks
+            col <- cm$col
+        } else {
+            oceDebug(debug, "processing case A (zlimKnown && !breaksKnown && !x0Known)\n")
+            breaks <- seq(min(zlim, na.rm=TRUE), max(zlim, na.rm=TRUE), length.out=200)
+        }
         breaksKnown <- TRUE            # this makes next block execute also
     } else {
-        if (zKnown && !breaksKnown && !nameKnown && !xcolKnown) {
+        if (zKnown && !breaksKnown && !nameKnown && !x0Known) {
             oceDebug(debug, "processing case A (z given, breaks not given, name not given, x0 not given)\n")
             breaks <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=200)
             breaksKnown <- TRUE            # this makes next block execute also
@@ -431,6 +453,7 @@ colormap <- function(z,
             ##message(sprintf("range(rval$breaks): %f to %f", min(rval$breaks), max(rval$breaks)))
         } else {
             oceDebug(debug, "processing case B.2 (i.e. z is not known)\n")
+            oceDebug(debug, "length(breaks)=", length(breaks), "\n", sep="")
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
             if (missing(missingColor)) {
@@ -452,7 +475,7 @@ colormap <- function(z,
             oceDebug(debug, "processing case C: 'name' was given\n")
             rval <- colormap_colormap(name=name, debug=debug-1)
         } else {
-            if (xcolKnown) {
+            if (x0Known) {
                 oceDebug(debug, "processing case D: 'x0', 'x1', 'col0' and 'col1' were given, all of length",
                          length(x0), "\n")
                 rval <- colormap_colormap(x0=x0, x1=x1, col0=col0, col1=col1, n=n, debug=debug-1)
@@ -508,49 +531,6 @@ colormap <- function(z,
     if (!nameKnown)
         rval$missingColor <- if (missingColorKnown) missingColor else "gray"
     rval$zclip <- zclip
-    subdivisions <- as.integer(subdivisions)
-    if (subdivisions > 1) {
-        warning("colormap(..., subdivisions=", subdivisions, ") is not working yet")
-        rval$breaks_ <- rval$breaks
-        rval$x0_ <- rval$x0
-        rval$x1_ <- rval$x1
-        rval$col_ <- rval$col
-        rval$col0_ <- rval$col0
-        rval$col1_ <- rval$col1
-        nbreaks <- length(rval$breaks)
-        if (nbreaks > 1) {
-            BREAKS <- NULL
-            for (i in seq.int(2, length(rval$breaks))) {
-                BREAKS <- c(BREAKS, seq(from=rval$breaks[i-1], by=(rval$breaks[i]-rval$breaks[i-1])/subdivisions,
-                                        length.out=subdivisions))
-            }
-            rval$breaks <- BREAKS
-            ## FIXME not using the above -- this is wrong
-            warning("fuzzy thinking in colors.R near line 529\n")
-        }
-        ncol <- length(rval$col)
-        if (ncol > 1) {
-            X0 <- X1 <- NULL
-            COL <- NULL                # FIXME: is this sensible
-            COL0 <- NULL               # FIXME: is this sensible
-            COL1 <- NULL               # FIXME: is this sensible
-            for (i in seq.int(2, ncol)) {
-                X0 <- c(X0, seq(from=rval$x0[i-1], by=(rval$x0[i]-rval$x0[i-1])/subdivisions,
-                                length.out=subdivisions))
-                X1 <- c(X1, seq(from=rval$x1[i-1], by=(rval$x1[i]-rval$x1[i-1])/subdivisions,
-                                length.out=subdivisions))
-                COL <- c(COL, colorRampPalette(c(rval$col[i-1], rval$col[i]))(subdivisions))
-                COL0 <- c(COL0, colorRampPalette(c(rval$col0[i-1], rval$col0[i]))(subdivisions))
-                COL1 <- c(COL1, colorRampPalette(c(rval$col1[i-1], rval$col1[i]))(subdivisions))
-            }
-            rval$col0 <- COL0
-            rval$x0 <- X0
-            rval$x1 <- X1
-            rval$col1 <- COL1
-            rval$col <- COL
-            rval$breaks <- c(rval$x0, tail(rval$x1,1))  ## FIXME this is wrong
-        }
-    }
     class(rval) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
     rval
