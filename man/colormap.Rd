@@ -4,7 +4,9 @@
 
 \title{Calculate color map}
 
-\description{Map values to colors, for use in palettes and plots.}
+\description{Map values to colors, for use in palettes and plots. There are
+    many ways to use this function, and some study of the arguments should
+    prove fruitful in cases that extend far beyond the examples.}
 
 \usage{colormap(z,
          zlim, zclip=FALSE,
@@ -21,16 +23,16 @@
       \code{zcol} will contain just one item, the color \code{"black"}.}
 
   \item{zlim}{optional vector containing two numbers that specify the \code{z}
-      limits for the colorscale.  If not given, this will be determined from
-      the other arguments, as follows.  If \code{name} is given, then the
-      \code{\link{range}} of numerical values contained therein will be
-      used for \code{zlim}.  Otherwise, if \code{z} is given, then its
+      limits for the colorscale.  If provided, it overrides defaults as
+      describe in the following.  If \code{name} is given, then the
+      \code{\link{range}} of numerical values contained therein will be used
+      for \code{zlim}.  Otherwise, if \code{z} is given, then its
       \code{\link{rangeExtended}} sets \code{zlim}.  Otherwise, if \code{x0}
-      and \code{x1} are given, then their \code{\link{range}} sets
-      \code{zlim}.  Otherwise, there is no way to infer \code{zlim} and indeed
-      there is no way to construct a colormap, so an error is reported.  It is
-      an error to specify both \code{zlim} and \code{breaks}, if the length of
-      the latter does not equal 1.}
+      and \code{x1} are given, then their \code{\link{range}} sets \code{zlim}.
+      Otherwise, there is no way to infer \code{zlim} and indeed there is no
+      way to construct a colormap, so an error is reported.  It is an error to
+      specify both \code{zlim} and \code{breaks}, if the length of the latter
+      does not equal 1.}
 
   \item{zclip}{logical, indicating whether to clip the colors to those
       corresponding to \code{zlim}, if the latter is provided.  Clipped regions
@@ -69,10 +71,9 @@
       value of 0 means to use \code{col0[i]} through the interval \code{x0[i]}
       to \code{x1[i]}.   A value of 1 means to use \code{col1[i]} in that
       interval.  A value between 0 and 1 means to blend between the two colors
-      according to the stated fraction.  Values exceeding 1 mean to break up
-      the domain into \code{blend} sub-intervals; making this a large number
-      yields a palette that blends smoothly between the fixed colors specified
-      in \code{col0} and \code{col1}.}
+      according to the stated fraction.  Values exceeding 1 are an error at
+      present, but there is a plan to use this to indicate subintervals, so a
+      smooth palette can be created from a few colours.}
 
   \item{missingColor}{color to use for missing values.  If not provided, this
       will be \code{"gray"}, unless \code{name} is given, in which case it
