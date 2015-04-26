@@ -1325,6 +1325,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ##}
 
     xy <- lonlat2map(poly$longitude, poly$latitude)
+    ## issue #638 - kludge to get data into same longitue scheme as axes
+    usr12 <- par("usr")[1:2]
+    xrange <- range(xy$x, na.rm=TRUE)
+    if (xrange[1] > usr12[2])
+        xy$x <- xy$x - 360
 
     ## map_check_polygons tries to fix up longitude cut-point problem, which
     ## otherwise leads to lines crossing the graph horizontally because the
