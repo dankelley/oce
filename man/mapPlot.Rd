@@ -479,11 +479,7 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
     8. A gallery of plots with the PROJ.4-style projections is provided at
     \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  
 
-    9. A website with illustrated explanations of projections, including
-    historical notes, is
-    \url{http://www.progonos.com/furuti/MapProj/CartIndex/cartIndex.html}.
-
-    10. A fascinating historical perspective is provided by Snyder, J. P.
+    9. A fascinating historical perspective is provided by Snyder, J. P.
     (1993). Two thousand years of map projections. University of Chicago Press.
 
 }

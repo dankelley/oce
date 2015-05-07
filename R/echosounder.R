@@ -236,7 +236,7 @@ setMethod(f="plot",
                               type="l", col=oce.colorsJet, lwd=2,
                               despike=FALSE,
                               drawBottom, ignore=5,
-                              drawTimeRange=FALSE,
+                              drawTimeRange=FALSE, drawPalette=TRUE,
                               radius, coastline,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
@@ -310,6 +310,7 @@ setMethod(f="plot",
                                         col=col,
                                         mgp=mgp, mar=mar,
                                         tformat=tformat,
+                                        drawPalette=drawPalette,
                                         debug=debug-1, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
@@ -332,6 +333,7 @@ setMethod(f="plot",
                                         col=col,
                                         mgp=mgp, mar=mar,
                                         tformat=tformat,
+                                        drawPalette=drawPalette,
                                         debug=debug-1,
                                         zlab=beam[w],
                                         ...)
@@ -377,6 +379,7 @@ setMethod(f="plot",
                                     mgp=mgp, mar=mar,
                                     tformat=tformat,
                                     col=col,
+                                    drawPalette=drawPalette,
                                     debug=debug-1)
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)

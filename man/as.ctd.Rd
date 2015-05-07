@@ -104,11 +104,6 @@ summary(ctd)
 plot(ctd)
 }
 
-\references{
-\url{http://cchdo.ucsd.edu/static/information/policies/CCHDO_DataSubmitGuide.pdf}
-\url{http://cchdo.ucsd.edu/static/information/manuals/pdf/90_1/chap4.pdf}
-}
-
 \author{Dan Kelley}
 
 \keyword{misc}

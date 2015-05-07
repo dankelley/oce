@@ -1,4 +1,5 @@
 0.9-15
+- plot.echosounder() gets new argument 'drawPalette'
 - data(landsat) taken from ocedata (and shrunk)
 - data(nao) and data(soi) moved to ocedata
 - mapTissot() added
