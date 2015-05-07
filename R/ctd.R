@@ -146,7 +146,9 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    pressureAtmospheric=NA, waterDepth=NA,
                    sampleInterval=NA, src="")
 {
-    if (inherits(salinity, "logger")) {
+    isLogger <- inherits(salinity, "logger")
+    samplingInterval <- NA
+    if (isLogger) {
         logger <- salinity
         namesLogger <- names(logger@data)
         if (!("pressure" %in% namesLogger))
@@ -155,11 +157,17 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             stop("logger object lacks temperature data, so cannot construct a ctd object from it")
         if (!("conductivity" %in% namesLogger))
             stop("logger object lacks conductivity data, so cannot construct a ctd object from it")
+        filename <- logger[["filename"]]
+        model <- logger[["model"]]
+        serialNumber <- logger[["serialNumber"]]
         pressure <- logger[["pressure"]]
         if (!is.na(pressureAtmospheric))
             pressure <- pressure - pressureAtmospheric
         temperature <- logger[["temperature"]]
         conductivity <- logger[["conductivity"]]
+        if ("sampleInterval" %in% names(logger@metadata))
+            sampleInterval <- logger@metadata$sampleInterval
+        time <- if ("time" %in% names(logger@data)) logger[["time"]] else NULL
         ## Try to be sensible about converting 
         cmax <- max(conductivity, na.rm=TRUE)
         if (cmax > 5) {
@@ -237,6 +245,11 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                  temperature=temperature,
                  pressure=pressure,
                  sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
+    if (isLogger) {
+        if (!is.null(time))
+            data$time <- time
+    }
+   
     if (!missing(scan)) data$scan <- as.vector(scan)
     if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
     if (!missing(quality)) data$quality <- quality

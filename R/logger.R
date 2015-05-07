@@ -379,7 +379,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         ## timestamp (tstamp). Ordering does not seem to be an option for
         ## dbReadTable(), so we use dbFetch().
 
-        ## First, get time stamp. Note the trick of making it floating-point
+        ## Get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
         res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
         t1000 <- DBI::dbFetch(res, n=-1)[[1]]
@@ -458,6 +458,12 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             rval <- new("logger", time=time, filename=filename)
             for (name in names)
                 rval@data[[name]] <- data[[name]]
+            rval@metadata$model <- model
+            rval@metadata$serialNumber <- serialNumber
+            ## CR suggests to read "sampleInterval" but I cannot find it from the following
+            ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
+            ## so I just infer it from the data
+            rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
             oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
             return(rval)
         }
