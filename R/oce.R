@@ -366,7 +366,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       tformat=tformat,
                                       debug=debug-1)
             xat <- xlabs
-            ##message("drawing x axis; set xat=c(", paste(xat, collapse=","),")")
+            oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","),")", "\n", sep="")
         }
         if (grid) {
             lwd <- par("lwd")
@@ -1019,10 +1019,20 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 60) {                       # under a min
+    if (d < 5) {
+        ## FIXME: will this work well? Think more about issue 641.
         t.start <- rr[1]
         t.end <- rr[2]
         z <- seq(t.start, t.end, length.out=10)
+        oceDebug(debug, "time range is under 5 seconds\n")
+        oceDebug(debug, vectorShow(z, "z"))
+        if (missing(tformat))
+            tformat <- "%S"
+    } else if (d < 60) {                       # under a min
+        rr <- as.POSIXct(round(rr, "sec"))
+        t.start <- rr[1]
+        t.end <- rr[2]
+        z <- seq(t.start, t.end, by="1 sec")
         oceDebug(debug, "time range is under a minute\n")
         oceDebug(debug, vectorShow(z, "z"))
         if (missing(tformat))
