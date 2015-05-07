@@ -434,7 +434,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
                 ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
             ctd@metadata$pressureAtmospheric <- pressureAtmospheric
             ## CR suggests to read "sampleInterval" but I cannot find it from the following
-            ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sample
+            ##   echo ".dump"|sqlite3 cast4.rsk | grep -i sample
             ## so I just infer it from the data
             ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
             ctd@metadata$latitude <- NaN
