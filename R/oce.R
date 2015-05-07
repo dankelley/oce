@@ -1019,7 +1019,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 5) {
+    if (d < 2) {
         ## FIXME: will this work well? Think more about issue 641.
         t.start <- rr[1]
         t.end <- rr[2]
@@ -1028,10 +1028,10 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z, "z"))
         if (missing(tformat))
             tformat <- "%S"
+        warning("time axis may be erroneous since time range is under 2 seconds")
     } else if (d < 60) {                       # under a min
-        rr <- as.POSIXct(round(rr, "sec"))
-        t.start <- rr[1]
-        t.end <- rr[2]
+        t.start <- trunc(rr[1]-1, "secs")
+        t.end <- trunc(rr[2]+1, "secs")
         z <- seq(t.start, t.end, by="1 sec")
         oceDebug(debug, "time range is under a minute\n")
         oceDebug(debug, vectorShow(z, "z"))
