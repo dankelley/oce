@@ -277,6 +277,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res@processingLog <- processingLogAppend(res@processingLog,
                                                  "inferred water depth from maximum pressure")
     }
+    names <- names(data)
+    labels <- paste(toupper(substring(names,1,1)),substring(names,2),sep="")
     metadata <- list(header=NULL,
                      type=type, model=model, filename=filename, serialNumber=serialNumber,
                      filename.orig=filename,
@@ -286,8 +288,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                      latitude=latitude, longitude=longitude,
                      waterDepth=waterDepth,
                      sampleInterval=sampleInterval,
-                     names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
-                     labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
+                     names=names, labels=labels,
                      src=src)
     res@metadata <- metadata
     res@data <- data
