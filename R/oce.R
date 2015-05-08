@@ -1020,15 +1020,25 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
     if (d < 2) {
-        ## FIXME: will this work well? Think more about issue 641.
+        ## The time rounding will fail for very small time intervals;
+        ## a wider range can be added easily.
         t.start <- rr[1]
         t.end <- rr[2]
-        z <- seq(t.start, t.end, length.out=10)
+        span <- as.numeric(t.end) - as.numeric(t.start)
+        if (     span > 1     ) round <- 0.5
+        else if (span > 0.1   ) round <- 0.05
+        else if (span > 0.01  ) round <- 0.005
+        else if (span > 0.001 ) round <- 0.0005
+        else if (span > 0.0001) round <- 0.00005
+        else round <- 0.00001
+        t0 <- trunc(t.start, "sec")
+        t.start <- t0+round*floor((as.numeric(t.start)-as.numeric(t0))/round)
+        t.end <- t0+round*floor((as.numeric(t.end)-as.numeric(t0))/round)
+        z <- seq(t.start, t.end, by=round)
         oceDebug(debug, "time range is under 5 seconds\n")
         oceDebug(debug, vectorShow(z, "z"))
         if (missing(tformat))
-            tformat <- "%S"
-        warning("time axis may be erroneous since time range is under 2 seconds")
+            tformat <- "%OS" # FIXME: not too useful if span is under 1ms
     } else if (d < 60) {                       # under a min
         t.start <- trunc(rr[1]-1, "secs")
         t.end <- trunc(rr[2]+1, "secs")
