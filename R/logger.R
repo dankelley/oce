@@ -464,6 +464,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
             ## so I just infer it from the data
             rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+            rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR loggers?
             oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
             return(rval)
         }
