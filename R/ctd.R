@@ -9,7 +9,7 @@ setMethod(f="initialize",
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@metadata$filename <- filename
-              .Object@metadata$conductivityUnit <- "ratio"
+              .Object@metadata$conductivityUnit <- "unknown"
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
@@ -1906,6 +1906,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
+    conductivityUnit = "unknown"
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
@@ -1950,10 +1951,16 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             if (0 < regexpr("conductivity", lline)) {
                 if (0 < regexpr("ratio", lline)) {
                     found.conductivity.ratio <- TRUE;
-                    name <- "conductivityratio";
+                    name <- "conductivityratio"
+                    conductivityUnit = "ratio"
                 } else {
                     found.conductivity <- TRUE;
-                    name <- "conductivity";
+                    name <- "conductivity"
+                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
+                    if (length(grep("S/m", unit)))
+                        conductivityUnit <- "S/m"
+                    else if (length(grep("mS/cm", unit)))
+                        conductivityUnit <- "mS/cm"
                 }
             }
             if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
@@ -2123,6 +2130,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      hexfilename=hexfilename, # from instrument
                      serialNumber=serialNumber,
                      serialNumberConductivity=serialNumberConductivity,
+                     conductivityUnit=conductivityUnit,
                      serialNumberTemperature=serialNumberTemperature,
                      systemUploadTime=systemUploadTime,
                      ship=ship,
