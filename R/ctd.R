@@ -2225,7 +2225,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
-            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), rep(0, length(res@data$salinity)))
+            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure", unit="dbar", debug=debug-1)
             warning("created a pressure column from the depth column\n")
         }
