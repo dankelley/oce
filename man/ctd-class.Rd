@@ -28,8 +28,11 @@
     \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  The TEOS-10
     notation for these quantities also works, with \code{ctd[["SP"]]},
     \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
-    returned for the longer names.  After these names have been checked, the
-    remaining names in the \code{data} slot are checked using
+    returned for the longer names.  (FIXME: GSW "t" should be T in ITS-90, but
+    "temperature" will be whatever happens to be in the datafile, which could
+    be IPTS-68 or ITS-90. Maybe there should be methods for "ITS-90" etc. This
+    needs to be adjusted in code and documentation.) After these names have
+    been checked, the remaining names in the \code{data} slot are checked using
     \code{\link{pmatch}}, so that e.g. \code{ctd[["sal"]]} will recover
     practical \code{salinity}, \code{ctd[["sc"]]} will recover \code{scan} (if
     it exists), etc.
