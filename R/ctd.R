@@ -1907,6 +1907,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     conductivityUnit = "unknown"
+    temperatureUnit = "unknown"
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
@@ -1943,9 +1944,15 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             }
             if (0 < regexpr("temperature", lline)) {
                 ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-                if (0 > regexpr("pressure", lline)) {
+                if (0 > regexpr("pressure", lline) && 0 > regexpr("potential", lline)) {
                     name <- "temperature"
                     found.temperature <- TRUE
+                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
+                    if (length(grep("68", unit)))
+                        temperatureUnit <- "IPTS-68"
+                    else if (length(grep("90", unit)))
+                        temperatureUnit <- "ITS-90"
+                    oceDebug(debug, "temperatureUnit: ", temperatureUnit, "(inferred from '", unit, "'\n", sep="")
                 }
             }
             if (0 < regexpr("conductivity", lline)) {
@@ -2131,6 +2138,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      serialNumber=serialNumber,
                      serialNumberConductivity=serialNumberConductivity,
                      conductivityUnit=conductivityUnit,
+                     temperatureUnit=temperatureUnit,
                      serialNumberTemperature=serialNumberTemperature,
                      systemUploadTime=systemUploadTime,
                      ship=ship,
