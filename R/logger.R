@@ -87,14 +87,18 @@ as.logger <- function(time, temperature, pressure,
         class(time) <- "logger"
         return(time)
     }
-    if (missing(time) || missing(temperature) || missing(pressure))
-        stop("must give (at least) time, temperature, and pressure")
+    if (missing(time))
+        stop("must give time")
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
+    temperatureGiven <- !missing(temperature)
+    pressureGiven <- !missing(pressure)
+    if (!temperatureGiven && !pressureGiven)
+        stop("must give either temperature or pressure")
     time <- as.POSIXct(time)
-    if (length(time) != length(temperature))
+    if (temperatureGiven && length(time) != length(temperature))
         stop("lengths of 'time' and 'temperature' must match")
-    if (length(time) != length(pressure))
+    if (pressureGiven && length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
     res <- new("logger")
     res@metadata$instrumentType <- instrumentType
@@ -105,7 +109,11 @@ as.logger <- function(time, temperature, pressure,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    res@data <- list(time=time, pressure=pressure, temperature=temperature)
+    res@data <- list(time=time)
+    if (pressureGiven)
+        res@data$pressure <- pressure
+    if (temperatureGiven)
+        res@data$temperature <- temperature
     oceDebug(debug, "} # as.logger()\n", sep="", unindent=1)
     res
 }

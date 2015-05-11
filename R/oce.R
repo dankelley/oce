@@ -812,15 +812,35 @@ read.oce <- function(file, ...)
     if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.
-        d <- readLines(file, encoding="UTF-8")
-        nlines <- length(d)
-        headerEnd <- grep("-- DATA --", d)
+        fromHeader <- function(key)
+        {
+            i <- grep(key, lines)
+            if (length(i) < 1)
+                ""
+            else
+                gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
+        }
+        lines <- readLines(file, encoding="UTF-8")
+        nlines <- length(lines)
+        headerEnd <- grep("-- DATA --", lines)
         if (1 != length(headerEnd))
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
-        header <- d[1:headerEnd]
-        data <- d[seq.int(headerEnd+1, nlines)]
+        header <- lines[1:headerEnd]
+        data <- lines[seq.int(headerEnd+1, nlines)]
         d <- read.table(text=data, header=FALSE, col.names=c("time","temperature","ptotal","psea","depth"))
         d$time <- strptime(d$time,"%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
+        missing_value <- -99.0 # FIXME: it's different for each column
+        d[d==missing_value] <- NA
+        attr(d, "scientist") <- fromHeader("CHIEF_SCIENTIST")
+        attr(d, "latitude") <- fromHeader("INITIAL_LATITUDE")
+        attr(d, "longitude") <- fromHeader("INITIAL_LONGITUDE")
+        attr(d, "cruise_name") <- fromHeader("CRUISE_NAME")
+        attr(d, "cruise_description") <- fromHeader("CRUISE_DESCRIPTION")
+        attr(d, "inst_type") <- fromHeader("INST_TYPE")
+        attr(d, "model") <- fromHeader("MODEL")
+        attr(d, "serial_number") <- fromHeader("SERIAL_NUMBER")
+        attr(d, "missing_value") <- missing_value
+        warning("The format of mtg/odf objects is likely to change throughout April, 2015")
         return(d)
     }
     if (type == "ctd/odv")
