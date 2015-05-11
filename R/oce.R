@@ -602,7 +602,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
-            return(paste(subtype, "odf", sep="/"))
+            rval <- paste(subtype, "odf", sep="/")
+            oceDebug(debug, "file type:", rval, "\n")
+            return(rval)
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
@@ -807,6 +809,20 @@ read.oce <- function(file, ...)
         return(read.ctd.woce(file, processingLog=processingLog, ...))
     if (type == "ctd/odf" || type == "mctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "mtg/odf") {
+        ## FIXME: document this data type
+        ## Moored tide gauge: returns a data frame.
+        d <- readLines(file, encoding="UTF-8")
+        nlines <- length(d)
+        headerEnd <- grep("-- DATA --", d)
+        if (1 != length(headerEnd))
+            stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
+        header <- d[1:headerEnd]
+        data <- d[seq.int(headerEnd+1, nlines)]
+        d <- read.table(text=data, header=FALSE, col.names=c("time","temperature","ptotal","psea","depth"))
+        d$time <- strptime(d$time,"%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
+        return(d)
+    }
     if (type == "ctd/odv")
         return(read.ctd.odv(file, processingLog=processingLog, ...))
     if (type == "ctd/itp")
