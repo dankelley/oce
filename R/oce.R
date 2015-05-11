@@ -832,14 +832,15 @@ read.oce <- function(file, ...)
         missing_value <- -99.0 # FIXME: it's different for each column
         d[d==missing_value] <- NA
         attr(d, "scientist") <- fromHeader("CHIEF_SCIENTIST")
-        attr(d, "latitude") <- fromHeader("INITIAL_LATITUDE")
-        attr(d, "longitude") <- fromHeader("INITIAL_LONGITUDE")
+        attr(d, "latitude") <- as.numeric(fromHeader("INITIAL_LATITUDE"))
+        attr(d, "longitude") <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
         attr(d, "cruise_name") <- fromHeader("CRUISE_NAME")
         attr(d, "cruise_description") <- fromHeader("CRUISE_DESCRIPTION")
         attr(d, "inst_type") <- fromHeader("INST_TYPE")
         attr(d, "model") <- fromHeader("MODEL")
         attr(d, "serial_number") <- fromHeader("SERIAL_NUMBER")
         attr(d, "missing_value") <- missing_value
+        warning("Missing-value code for mtg/odf is hard-wired to -99, which will likely be wrong in other files")
         warning("The format of mtg/odf objects is likely to change throughout April, 2015")
         return(d)
     }
