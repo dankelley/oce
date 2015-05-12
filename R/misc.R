@@ -806,7 +806,9 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "C", "T", "theta", "sigmaTheta",
+resizableLabel <- function(item=c("S", "C",
+                                  "conductivity mS/cm", "conductivity S/m",
+                                  "T", "theta", "sigmaTheta",
                                   "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
                                   "tritium", "spice", "fluorescence",
@@ -830,9 +832,29 @@ resizableLabel <- function(item=c("S", "C", "T", "theta", "sigmaTheta",
             full <- bquote(.(var)*" ( "*degree*"C )")
             abbreviated <- expression(paste("T (", degree, "C)"))
         }
-    } else if (item == "C") {
+    } else if (item == "conductivity mS/cm") {
         var <- gettext("Conductivity", domain="R-oce")
-        unit <- gettext("ratio", domain="R-oce") #FIXME: how to handle different possible units?
+        unit <- gettext("mS/cm", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviate <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviate <- full
+        }
+     } else if (item == "conductivity S/m") {
+        var <- gettext("Conductivity", domain="R-oce")
+        unit <- gettext("S/m", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviate <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviate <- full
+        }
+    } else if (item == "C") { # unitless form
+        var <- gettext("Conductivity Ratio", domain="R-oce")
+        unit <- gettext("unitless", domain="R-oce") #FIXME: how to handle different possible units?
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")
             abbreviate <- full

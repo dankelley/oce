@@ -2957,6 +2957,7 @@ plotProfile <- function (x,
             axis(3)
             box()
             if (is.null(xlab)) {
+                ## FIXME: check conductivity unit here, if non-CTD object (CTDs store only ratio)
                 mtext(resizableLabel("C", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
@@ -2968,6 +2969,7 @@ plotProfile <- function (x,
                      xlim=Clim, ylim=ylim,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
+                    ## FIXME: check conductivity unit here, if non-CTD object (CTDs store only ratio)
                     mtext(resizableLabel("C", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
                 } else {
                     mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
