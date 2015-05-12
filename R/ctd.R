@@ -2942,7 +2942,7 @@ plotProfile <- function (x,
         if ('conductivity' %in% names(x@data)) {
             conductivity <- x@data$conductivity
         } else {
-            conductivity <- swCSTp(x[['salinity']], x[['temperature']], x[['pressure']], eos=eos)*42.91754 # mS/cm
+            conductivity <- swCSTp(x[['salinity']], x[['temperature']], x[['pressure']], eos=eos)
         }
         if (!any(is.finite(conductivity))) {
             warning("no valid conductivity data")

@@ -832,7 +832,7 @@ resizableLabel <- function(item=c("S", "C", "T", "theta", "sigmaTheta",
         }
     } else if (item == "C") {
         var <- gettext("Conductivity", domain="R-oce")
-        unit <- gettext("mS/cm", domain="R-oce") #FIXME: how to handle different possible units?
+        unit <- gettext("ratio", domain="R-oce") #FIXME: how to handle different possible units?
         if (getOption("oceUnitBracket") == '[') {
             full <- paste(var, "[", unit, "]")
             abbreviate <- full
