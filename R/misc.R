@@ -1,25 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Convert from IPTS68 temperature to ITS90 temperature using Saunders' (1990) formula
-#'
-#' @param T68 temperature expressed in the IPTS68 scale
-#'
-#' @return Temperature expressed in the ITS90 scale
-ITS90 <- function(T68)
-{
-    T68 / 1.00024
-}
-
-#' Convert from ITS90 temperature to IPTS68 temperature using Saunders' (1990) formula
-#'
-#' @param T90 temperature expressed in the ITS90 scale
-#'
-#' @return Temperature expressed in the IPTS68 scale
-IPTS68 <- function(T90)
-{
-    T90 * 1.00024
-}
-
+T68fromT90 <- function(temperature) temperature * 1.00024
+T90fromT68 <- function(temperature) temperature / 1.00024
+T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
 
 #' Show an argument to a function, e.g. for debugging
 #'

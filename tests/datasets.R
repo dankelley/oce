@@ -8,7 +8,7 @@ library(oce)
 data("ctd")
 stopifnot(all.equal.numeric(ctd[["latitude"]],   44.6842666666667))
 stopifnot(all.equal.numeric(ctd[["longitude"]], -63.6438833333333))
-stopifnot(all.equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:00", tz="UTC")))
+stopifnot(all.equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC")))
 
 #data("ctdRaw")
 #data("drifter")

@@ -9,7 +9,7 @@ setMethod(f="initialize",
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@metadata$filename <- filename
-              .Object@metadata$conductivityUnit <- "unknown"
+              .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
@@ -1906,8 +1906,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-    conductivityUnit = "unknown"
-    temperatureUnit = "unknown"
+    conductivityUnit = "ratio" # guess
+    temperatureUnit = "ITS-90" # guess
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
