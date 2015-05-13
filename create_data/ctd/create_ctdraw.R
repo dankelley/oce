@@ -1,5 +1,5 @@
 library(oce)
-ctdraw <- read.oce("ctdraw.cnv")
+ctdraw <- read.oce("BED0302.CNV")
 ctdraw <- oce.edit(ctdraw, "startTime", ctdraw[["systemUploadTime"]],
                    reason="startTime is not in file", person="Dan Kelley")
 ctdraw <- oce.edit(ctdraw, "temperature", T90fromT48(ctdraw[["temperature"]]),
