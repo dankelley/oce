@@ -1272,6 +1272,7 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
+        thisStation@metadata$temperatureUnit <- "ITS-90" # FIXME: an assumption; this info is not in files
 	if (debug) cat(length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
         if (sum(ok) == 0)
             warning("station ", i, " has no data\n")
