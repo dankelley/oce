@@ -1,12 +1,12 @@
 library(oce)
-ctdraw <- read.oce("BED0302.CNV")
-ctdraw <- oce.edit(ctdraw, "startTime", ctdraw[["systemUploadTime"]],
+ctdRaw <- read.oce("BED0302.CNV")
+ctdRaw <- oce.edit(ctdRaw, "startTime", ctdRaw[["systemUploadTime"]],
                    reason="startTime is not in file", person="Dan Kelley")
-ctdraw <- oce.edit(ctdraw, "temperature", T90fromT48(ctdraw[["temperature"]]),
+ctdRaw <- oce.edit(ctdRaw, "temperature", T90fromT48(ctdRaw[["temperature"]]),
                    reason="File uses old IPTS-68 convention", person="Dan Kelley")
-ctdraw <- oce.edit(ctdraw, "temperatureUnit", "ITS-90",
+ctdRaw <- oce.edit(ctdRaw, "temperatureUnit", "ITS-90",
                    reason="File uses old IPTS-68 convention", person="Dan Kelley")
-save(ctdraw, file="ctdraw.rda")
-tools::resaveRdaFiles("ctdraw.rda")
+save(ctdRaw, file="ctdRaw.rda")
+tools::resaveRdaFiles("ctdRaw.rda")
 
 
