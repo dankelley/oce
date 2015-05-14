@@ -555,7 +555,41 @@ detrend <- function(x, y)
 }
 
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
-                    replace=c("reference","NA"))
+                    replace=c("reference","NA"), skip)
+{
+    if (is.vector(x)) {
+        x <- despikeColumn(x, reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+    } else {
+        if (missing(skip)) {
+            if (inherits(x, "ctd"))
+                skip <- c("time", "scan", "pressure")
+            else
+                skip <- NULL
+        }
+        if (inherits(x, "oce")) {
+            columns <- names(x@data)
+            for (column in columns) {
+                if (!(column %in% skip)) {
+                    x[[column]] <- despikeColumn(x[[column]],
+                                                 reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                }
+            }
+            x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        } else {
+            columns <- names(x)
+            for (column in columns) {
+                if (!(column %in% skip)) {
+                    x[[column]] <- despikeColumn(x[[column]],
+                                                 reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                }
+            }
+        }
+    }
+    x
+}
+
+despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
+                          replace=c("reference","NA"))
 {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
