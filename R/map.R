@@ -363,6 +363,19 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     y <- xy$y
     xorig <- xy$x
     yorig <- xy$y
+    ## Insert NA to break long horizontal jumps, which can be caused by coastline
+    ## segments that "pass across" the edge of a plot.
+    dx <- abs(diff(x))
+    bigJumps <- which(dx > (mean(dx,na.rm=TRUE) + 10 * sd(dx, na.rm=TRUE)))
+    ##print(longitude[bigJumps])
+    for (j in bigJumps) {
+        ##message("chopping j=", j)
+        lenx <- length(x)
+        x <- c(x[seq.int(1, j)], NA, x[seq.int(j+1, lenx)])
+        longitude <- c(longitude[seq.int(1, j)], NA, longitude[seq.int(j+1, lenx)])
+        y <- c(y[seq.int(1, j)], NA, y[seq.int(j+1, lenx)])
+        latitude <- c(latitude[seq.int(1, j)], NA, latitude[seq.int(j+1, lenx)])
+    }
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, na.rm=TRUE)
     xy <- badFillFix1(x=x, y=y, latitude=latitude, projection=projection)
@@ -460,9 +473,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             ## Measure lower-left to upper-right diagonal
             ll <- map2lonlat(usr[1], usr[3])
             ur <- map2lonlat(usr[2], usr[4])
-           if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
+            if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
                is.finite(ur$longitude) && is.finite(ur$latitude)) {
-               onearth <- function(x) {
+                onearth <- function(x) {
                    x$longitude <- ifelse(x$longitude < -180, -180, ifelse(x$longitude > 180, 180, x$longitude))
                    x$latitude <- ifelse(x$latitude < -90, -90, ifelse(x$latitude > 90, 90, x$latitude))
                    x
@@ -494,7 +507,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (span < 1) # something wonky
             span <- 10e3
-        oceDebug(debug, "span:", span, "\n")
         ## Use span to make auto-scale the grid.
         if (is.logical(grid)) {
             grid <- c(15, 15)
