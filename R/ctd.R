@@ -537,6 +537,26 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
     }
 }
 
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+                         debug=getOption("oceDebug"), processingLog, ...)
+{
+    if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
+    o <- read.odf(file)
+    if (!is.null(station))
+        o@metadata$station <- station
+    names <- names(o@data)
+    if (!("salinity" %in% names)) stop("no salinity in ODF file")
+    if (!("pressure" %in% names)) stop("no pressure in ODF file")
+    if (!("temperature" %in% names)) stop("no temperature in ODF file")
+    res <- new("ctd")
+    res@metadata <- o@metadata
+    res@data <- o@data
+    res@processingLog<- o@processingLog
+    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
+                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
+    res
+}
+
 
 ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE, parameters=NULL,
                    debug=getOption("oceDebug"))
@@ -2250,155 +2270,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
         res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
-    res
-}
-
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
-{
-    fromHeader <- function(key)
-    {
-        i <- grep(key, lines)
-        if (length(i) < 1)
-            ""
-        else
-            gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
-    }
-    oceDebug(debug, "read.ctd.odf() {\n", unindent=1)
-    if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "r")
-        on.exit(close(file))
-    } else {
-        filename <- ""
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
-    lines <- readLines(file, encoding="UTF-8")
-    dataStart <- grep("-- DATA --", lines)
-    if (!length(dataStart))
-        stop("cannot locate a line containing '-- DATA --'")
-    parameterStart <- grep("PARAMETER_HEADER", lines)
-    if (!length(parameterStart))
-        stop("cannot locate any lines containing 'PARAMETER_HEADER'")
-    namesWithin <- parameterStart[1]:dataStart[1]
-    ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
-    nullValue <- as.numeric(fromHeader("NULL_VALUE")[1]) # FIXME: should do this for columns separately
-    names <- lines[grep("^\\s*CODE\\s*=", lines)]
-    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim start/end whitespace
-    names <- gsub(",", "", names) # trim commas
-    names <- gsub("'", "", names) # trim single quotes
-    names <- gsub(",\\s*$", "", gsub("^\\s*","", names)) # "  CODE=PRES_01," -> "CODE=PRES_01"
-    names <- gsub("^CODE\\s*=\\s*", "", names) # "CODE=PRES_01" -> "PRES_01"
-    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim remnant start/end spaces
-    scientist <- fromHeader("CHIEF_SCIENTIST")
-    ship <- fromHeader("PLATFORM") # maybe should rename, e.g. for helicopter
-    institute <- fromHeader("ORGANIZATION") # maybe should rename, e.g. for helicopter
-    latitude <- as.numeric(fromHeader("INITIAL_LATITUDE"))
-    longitude <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
-    cruise <- fromHeader("CRUISE_NAME")
-    countryInstituteCode <- fromHeader("COUNTRY_INSTITUTE_CODE")
-    cruiseNumber <- fromHeader("CRUISE_NUMBER")
-    date <- strptime(fromHeader("START_DATE"), "%b %d/%y")
-    startTime <- strptime(tolower(fromHeader("START_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    waterDepth <- as.numeric(fromHeader("SOUNDING"))
-    station <- fromHeader("EVENT_NUMBER")
-
-    ## water depth could be missing or e.g. -999
-    waterDepthWarning <- FALSE
-    if (is.na(waterDepth)) {
-        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
-    if (!is.na(waterDepth) && waterDepth < 0)
-        waterDepth <- NA
-
-    type <- fromHeader("INST_TYPE")
-    if (length(grep("sea", type, ignore.case=TRUE)))
-        type <- "SBE"
-    serialNumber <- fromHeader("SERIAL_NUMBER")
-    model <- fromHeader("MODEL")
-    metadata <- list(header=NULL, # FIXME
-                     type=type,        # only odt
-                     model=model,      # only odt
-                     serialNumber=serialNumber,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=NULL,
-                     cruise=cruise,
-                     station=station,
-                     countryInstituteCode=countryInstituteCode, # ODF only
-                     cruiseNumber=cruiseNumber, # ODF only
-                     date=startTime,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=NULL,
-                     waterDepth=waterDepth,
-                     sampleInterval=NA,
-                     filename=filename)
-    fff <- textConnection(lines)
-    data <- read.table(fff, skip=dataStart)
-    close(fff)
-    if (length(data) != length(names))
-        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
-    if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
-    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
-    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
-    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
-    ## view of names.
-    ## Step 1: trim numbers at end (which occur for BIO files)
-    ## Step 2: recognize some official names
-    names[grep("CNTR_*.*", names)[1]] <- "scan"
-    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
-    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
-    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
-    names[grep("PSAL_*.*", names)[1]] <- "salinity"
-    names[grep("PSAR_*.*", names)[1]] <- "par"
-    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
-    names[grep("TEMP_*.*", names)[1]] <- "temperature"
-    names[grep("TE90_*.*", names)[1]] <- "temperature"
-    names[grep("PRES_*.*", names)[1]] <- "pressure"
-    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
-    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
-    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
-    names[grep("FFFF_*.*", names)[1]] <- "flag"
-    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
-    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
-    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
-    ## Step 3: recognize something from moving-vessel CTDs
-    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
-    if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
-    names(data) <- names
-    if (!is.na(nullValue)) {
-        data[data==nullValue] <- NA
-    }
-    if (!("salinity" %in% names)) warning("missing data$salinity")
-    if (!("pressure" %in% names)) warning("missing data$pressure")
-    if (!("temperature" %in% names)) warning("missing data$temperature")
-    if ("time" %in% names)
-        data$time <- strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC")
-    metadata$names <- names
-    metadata$labels <- names
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    if (waterDepthWarning)
-        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
-    hitem <- processingLogItem(processingLog)
-    res <- new("ctd")
-    res@data <- data
-    res@metadata <- metadata
-    res@processingLog <- hitem
-    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
-    oceDebug(debug, "} # read.ctd.odf()\n")
     res
 }
 
