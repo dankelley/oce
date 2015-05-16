@@ -13,6 +13,65 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="plot",
+          signature=signature("odf"),
+          definition=function(x) {
+              names <- names(x@data)
+              n <- length(names) - 1
+              par(mfrow=c(n, 1))
+              for (i in 1:n) {
+                   if (names[i] != "time") {
+                       oce.plot.ts(x[["time"]], x[[names[i]]], ylab=names[i])
+                   }
+              }
+          })
+
+setMethod(f="summary",
+          signature="odf",
+          definition=function(object, ...) {
+              cat("CTD Summary\n-----------\n\n")
+              showMetadataItem(object, "type", "Instrument: ")
+              showMetadataItem(object, "model", "Instrument model:  ")
+              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
+              showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
+              showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
+              showMetadataItem(object, "filename", "File source:         ")
+              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
+              showMetadataItem(object, "institute", "Institute:      ")
+              showMetadataItem(object, "scientist", "Chief scientist:      ")
+              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
+              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",  "Cruise:              ")
+              showMetadataItem(object, "ship",    "Vessel:              ")
+              showMetadataItem(object, "station", "Station:             ")
+              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                               object@metadata$longitude,
+                                                               digits=5), "\n")
+              showMetadataItem(object, "waterDepth", "Water depth: ")
+              showMetadataItem(object, "levels", "Number of levels: ")
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of data::\n")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
+
+ 
 findInHeader <- function(key, lines)
 {
     i <- grep(key, lines)
@@ -166,13 +225,10 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         data$time <- strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC")
     metadata$names <- names
     metadata$labels <- names
-    if (waterDepthWarning)
-        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
-    hitem <- processingLogItem(processingLog)
     res <- new("odf")
     res@data <- data
     res@metadata <- metadata
-    res@processingLog <- hitem
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
     res
 }

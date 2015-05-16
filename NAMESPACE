@@ -313,5 +313,5 @@ S3method(tail, adp)
 S3method(time, oce)
 S3method(window, oce)
 
-exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, logger, met, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, logger, met, odf, sealevel, section, tidem, topo, windrose)
 
