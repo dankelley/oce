@@ -146,7 +146,22 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    pressureAtmospheric=NA, waterDepth=NA,
                    sampleInterval=NA, src="")
 {
+    isODF <- inherits(salinity, "odf")
     isLogger <- inherits(salinity, "logger")
+    if (isODF) {
+        odf <- salinity
+        names <- names(odf@data)
+        if (!("salinity" %in% names)) stop("no salinity in ODF object")
+        if (!("pressure" %in% names)) stop("no pressure in ODF object")
+        if (!("temperature" %in% names)) stop("no temperature in ODF object")
+        res <- new("ctd")
+        res@metadata <- odf@metadata
+        res@data <- odf@data
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
+                            name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
+        return(res)
+    }
     samplingInterval <- NA
     if (isLogger) {
         logger <- salinity
@@ -541,19 +556,10 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                          debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    o <- read.odf(file)
+    odf <- read.odf(file)
+    res <- as.ctd(odf)
     if (!is.null(station))
-        o@metadata$station <- station
-    names <- names(o@data)
-    if (!("salinity" %in% names)) stop("no salinity in ODF file")
-    if (!("pressure" %in% names)) stop("no pressure in ODF file")
-    if (!("temperature" %in% names)) stop("no temperature in ODF file")
-    res <- new("ctd")
-    res@metadata <- o@metadata
-    res@data <- o@data
-    res@processingLog<- o@processingLog
-    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
+        res@metadata$station <- station
     res
 }
 
