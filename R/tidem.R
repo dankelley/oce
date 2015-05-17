@@ -358,7 +358,7 @@ tidemAstron <- function(t)
 
     oceDebug(debug, "astro=",astro,"\n")
 
-    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days")
+    rem <- as.numeric(difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days"))
 
     oceDebug(debug, "rem2=",rem,"\n")
 
