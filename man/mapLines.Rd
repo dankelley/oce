@@ -17,7 +17,7 @@
 
     \item{latitude}{latitudes of points to be plotted}
 
-    \item{greatCircle}{boolean indicating whether to render line segments as
+    \item{greatCircle}{logical indicating whether to render line segments as
         great circles.  (Ignored at present.)}
 
     \item{\dots}{optional arguments passed to \code{\link{lines}}.}
@@ -32,13 +32,12 @@
 \dontrun{
 library(oce)
 data(coastlineWorld)
-longitude <- coastlineWorld[['longitude']]
-latitude <- coastlineWorld[['latitude']]
-mapPlot(longitude, latitude, type='l',
-longitudelim=c(-80,10), latitudelim=c(0,120),
-projection="orthographic", orientation=c(45,-100,0))
+mapPlot(coastlineWorld, type='l',
+        longitudelim=c(-80,10), latitudelim=c(0,120),
+        projection="+proj=ortho +lon_0=-40")
 lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)
+mapPoints(lon, lat, col='red')
 mapLines(lon, lat, col='red')
 }
 }

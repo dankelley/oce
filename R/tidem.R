@@ -358,7 +358,7 @@ tidemAstron <- function(t)
 
     oceDebug(debug, "astro=",astro,"\n")
 
-    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days")
+    rem <- as.numeric(difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days"))
 
     oceDebug(debug, "rem2=",rem,"\n")
 
@@ -584,7 +584,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     rval <- new('tidem')
     rval@metadata <- list(rc=rc)
     rval@data <- data
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

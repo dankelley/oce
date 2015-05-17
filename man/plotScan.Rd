@@ -12,7 +12,7 @@
     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), \dots)}
 
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{which}{A vector containing numerical codes specifying the panels to
       draw: 1 for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for
       temperature vs scan, and 4 for salinity vs scan.}

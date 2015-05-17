@@ -1,5 +1,9 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+T68fromT90 <- function(temperature) temperature * 1.00024
+T90fromT68 <- function(temperature) temperature / 1.00024
+T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
+
 #' Show an argument to a function, e.g. for debugging
 #'
 #' @param x the argument
@@ -504,7 +508,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         oceDebug(debug, "retiming x@data$timeSlow\n")
         rval@data$timeSlow <- x@data$timeSlow + a + b * (as.numeric(x@data$timeSlow) - as.numeric(t0))
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # retime.adv()\n", unindent=1)
     rval
 }
@@ -551,7 +555,41 @@ detrend <- function(x, y)
 }
 
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
-                    replace=c("reference","NA"))
+                    replace=c("reference","NA"), skip)
+{
+    if (is.vector(x)) {
+        x <- despikeColumn(x, reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+    } else {
+        if (missing(skip)) {
+            if (inherits(x, "ctd"))
+                skip <- c("time", "scan", "pressure")
+            else
+                skip <- NULL
+        }
+        if (inherits(x, "oce")) {
+            columns <- names(x@data)
+            for (column in columns) {
+                if (!(column %in% skip)) {
+                    x[[column]] <- despikeColumn(x[[column]],
+                                                 reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                }
+            }
+            x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        } else {
+            columns <- names(x)
+            for (column in columns) {
+                if (!(column %in% skip)) {
+                    x[[column]] <- despikeColumn(x[[column]],
+                                                 reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                }
+            }
+        }
+    }
+    x
+}
+
+despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
+                          replace=c("reference","NA"))
 {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
@@ -806,7 +844,9 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
+resizableLabel <- function(item=c("S", "C",
+                                  "conductivity mS/cm", "conductivity S/m",
+                                  "T", "theta", "sigmaTheta",
                                   "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
                                   "tritium", "spice", "fluorescence",
@@ -829,6 +869,36 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         } else {
             full <- bquote(.(var)*" ( "*degree*"C )")
             abbreviated <- expression(paste("T (", degree, "C)"))
+        }
+    } else if (item == "conductivity mS/cm") {
+        var <- gettext("Conductivity", domain="R-oce")
+        unit <- gettext("mS/cm", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviate <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviate <- full
+        }
+     } else if (item == "conductivity S/m") {
+        var <- gettext("Conductivity", domain="R-oce")
+        unit <- gettext("S/m", domain="R-oce")
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviate <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviate <- full
+        }
+    } else if (item == "C") { # unitless form
+        var <- gettext("Conductivity Ratio", domain="R-oce")
+        unit <- gettext("unitless", domain="R-oce") #FIXME: how to handle different possible units?
+        if (getOption("oceUnitBracket") == '[') {
+            full <- paste(var, "[", unit, "]")
+            abbreviate <- full
+        } else {
+            full <- paste(var, "(", unit, ")")
+            abbreviate <- full
         }
     } else if (item == "conservative temperature") {
         var <- gettext("Conservative Temperature", domain="R-oce")
@@ -1542,7 +1612,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
         }
         rval@data <- out
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1586,7 +1656,7 @@ addColumn <- function (x, data, name)
         rval <- x
         rval@data[[name]] <- data
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1763,7 +1833,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     }
     if ("deltat" %in% names(x@metadata)) # FIXME: should handle for individual cases, not here
         res@metadata$deltat <- by * x@metadata$deltat
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -1804,7 +1874,7 @@ oce.smooth <- function(x, ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 oceSmooth <- oce.smooth
@@ -1970,7 +2040,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
     } else {
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
     rval
 }

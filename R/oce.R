@@ -16,7 +16,7 @@ useHeading <- function(b, g, add=0)
     b.t <- as.numeric(b@data$time) - t0 # FIXME: what if heading in tsSlow?
     g.t <- as.numeric(g@data$time) - t0 # FIXME: what if heading in tsSlow?
     res@data$heading <- approx(x=g.t, y=g@data$heading, xout=b.t)$y + add
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -366,7 +366,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       tformat=tformat,
                                       debug=debug-1)
             xat <- xlabs
-            ##message("drawing x axis; set xat=c(", paste(xat, collapse=","),")")
+            oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","),")", "\n", sep="")
         }
         if (grid) {
             lwd <- par("lwd")
@@ -531,7 +531,7 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # oce.edit()\n", unindent=1)
     x
 }
@@ -567,10 +567,10 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-oce.magic <- function(file, debug=getOption("oceDebug"))
+oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
-    oceDebug(debug, paste("oce.magic(file=\"", filename, "\") {\n", sep=""), unindent=1)
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1)
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
@@ -602,7 +602,9 @@ oce.magic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
-            return(paste(subtype, "odf", sep="/"))
+            rval <- paste(subtype, "odf", sep="/")
+            oceDebug(debug, "file type:", rval, "\n")
+            return(rval)
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
@@ -766,11 +768,11 @@ oce.magic <- function(file, debug=getOption("oceDebug"))
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
-oceMagic <- oce.magic
+oce.magic <- oceMagic
 
 read.oce <- function(file, ...)
 {
-    type <- oce.magic(file)
+    type <- oceMagic(file)
     debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
@@ -807,6 +809,43 @@ read.oce <- function(file, ...)
         return(read.ctd.woce(file, processingLog=processingLog, ...))
     if (type == "ctd/odf" || type == "mctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (length(grep("/odf$", type)))
+        return(read.odf(file))
+    if (type == "mtg/odf") {
+        ## FIXME: document this data type
+        ## Moored tide gauge: returns a data frame.
+        fromHeader <- function(key)
+        {
+            i <- grep(key, lines)
+            if (length(i) < 1)
+                ""
+            else
+                gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
+        }
+        lines <- readLines(file, encoding="UTF-8")
+        nlines <- length(lines)
+        headerEnd <- grep("-- DATA --", lines)
+        if (1 != length(headerEnd))
+            stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
+        header <- lines[1:headerEnd]
+        data <- lines[seq.int(headerEnd+1, nlines)]
+        d <- read.table(text=data, header=FALSE, col.names=c("time","temperature","ptotal","psea","depth"))
+        d$time <- strptime(d$time,"%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
+        missing_value <- -99.0 # FIXME: it's different for each column
+        d[d==missing_value] <- NA
+        attr(d, "scientist") <- fromHeader("CHIEF_SCIENTIST")
+        attr(d, "latitude") <- as.numeric(fromHeader("INITIAL_LATITUDE"))
+        attr(d, "longitude") <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
+        attr(d, "cruise_name") <- fromHeader("CRUISE_NAME")
+        attr(d, "cruise_description") <- fromHeader("CRUISE_DESCRIPTION")
+        attr(d, "inst_type") <- fromHeader("INST_TYPE")
+        attr(d, "model") <- fromHeader("MODEL")
+        attr(d, "serial_number") <- fromHeader("SERIAL_NUMBER")
+        attr(d, "missing_value") <- missing_value
+        warning("Missing-value code for mtg/odf is hard-wired to -99, which will likely be wrong in other files")
+        warning("The format of mtg/odf objects is likely to change throughout April, 2015")
+        return(d)
+    }
     if (type == "ctd/odv")
         return(read.ctd.odv(file, processingLog=processingLog, ...))
     if (type == "ctd/itp")
@@ -828,7 +867,8 @@ read.oce <- function(file, ...)
     if (type == "logger")
         return(read.logger(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
-        return(read.logger(file, processingLog=processingLog, type='rsk'))
+        return(read.logger(file, processingLog=processingLog, ...))
+        ##return(read.logger(file, processingLog=processingLog, type='rsk'))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
@@ -1018,10 +1058,30 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 60) {                       # under a min
+    if (d < 2) {
+        ## The time rounding will fail for very small time intervals;
+        ## a wider range can be added easily.
         t.start <- rr[1]
         t.end <- rr[2]
-        z <- seq(t.start, t.end, length.out=10)
+        span <- as.numeric(t.end) - as.numeric(t.start)
+        if (     span > 1     ) round <- 0.5
+        else if (span > 0.1   ) round <- 0.05
+        else if (span > 0.01  ) round <- 0.005
+        else if (span > 0.001 ) round <- 0.0005
+        else if (span > 0.0001) round <- 0.00005
+        else round <- 0.00001
+        t0 <- trunc(t.start, "sec")
+        t.start <- t0+round*floor((as.numeric(t.start)-as.numeric(t0))/round)
+        t.end <- t0+round*floor((as.numeric(t.end)-as.numeric(t0))/round)
+        z <- seq(t.start, t.end, by=round)
+        oceDebug(debug, "time range is under 5 seconds\n")
+        oceDebug(debug, vectorShow(z, "z"))
+        if (missing(tformat))
+            tformat <- "%OS" # FIXME: not too useful if span is under 1ms
+    } else if (d < 60) {                       # under a min
+        t.start <- trunc(rr[1]-1, "secs")
+        t.end <- trunc(rr[2]+1, "secs")
+        z <- seq(t.start, t.end, by="1 sec")
         oceDebug(debug, "time range is under a minute\n")
         oceDebug(debug, vectorShow(z, "z"))
         if (missing(tformat))

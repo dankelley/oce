@@ -86,9 +86,9 @@ ENTRY0(chamb)
 	char line[10];
 
 	for (i = 0; i < 3; ++i) { /* get control point locations */
-		(void)sprintf(line, "rlat_%d", i+1);
+		//(void)sprintf(line, "rlat_%d", i+1);
 		P->c[i].phi = pj_param(P->ctx, P->params, line).f;
-		(void)sprintf(line, "rlon_%d", i+1);
+		//(void)sprintf(line, "rlon_%d", i+1);
 		P->c[i].lam = pj_param(P->ctx, P->params, line).f;
 		P->c[i].lam = adjlon(P->c[i].lam - P->lam0);
 		P->c[i].cosphi = cos(P->c[i].phi);

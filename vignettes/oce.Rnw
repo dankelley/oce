@@ -488,17 +488,16 @@ right angles.
 \index{data!coastline}
 \index{data!topography}
 
-Coastline data are available from a variety of sources. The NOAA site
-\url{http://www.ngdc.noaa.gov/mgg_coastline/} is particularly popular, and it
-has the advantage of providing data in Splus format.  The function
+Coastline data are available from a variety of sources. In years past, the
+former NOAA site \verb@http://www.ngdc.noaa.gov/mgg_coastline/@ was particularly
+popular, having the advantage of providing data in Splus format.  The function
 \verb@read.coastline@ can handle reading that format (plus some other formats),
 and \verb@plot@ on the resulting object will produce a simple coastline map.
 The only real advantage over plotting things yourself is that latitude and
-longitude are scaled to give natural shapes near the centre of the
-plot.  (All \verb@oce@ functions that have arguments for latitude and
-longitude place latitude first, in accordance with convention as documented in
-the ISO standard 6709 ``Standard representation of geographic point location by
-coordinates.'')
+longitude are scaled to give natural shapes near the centre of the plot.  (All
+\verb@oce@ functions that have arguments for latitude and longitude place
+latitude first, in accordance with convention as documented in the ISO standard
+6709 ``Standard representation of geographic point location by coordinates.'')
 
 Bathymetric charts, or more generally topographic maps, can be produced easily, e.g. (Figure~\ref{fig:topo})
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=

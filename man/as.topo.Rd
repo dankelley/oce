@@ -9,7 +9,9 @@
 \usage{as.topo(longitude, latitude, z, filename="")}
 
 \arguments{
-  \item{longitude}{a vector of longitudes}
+  \item{longitude}{either a vector of longitudes, or a \code{bathy} object
+      created by \code{getNOAA.bathy()} from the \code{marmap} package; in the
+      second case, all other arguments are ignored}
   \item{latitude}{a vector of latitudes}
   \item{z}{a matrix of heights (positive over land)}
   \item{filename}{name of data (used when called by \code{\link{read.topo}})}

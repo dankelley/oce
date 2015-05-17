@@ -17,7 +17,7 @@
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
      coastline="best",
-     Slim, Tlim, plim, densitylim, N2lim, Rrholim,
+     Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
      dpdtlim, timelim,
      lonlim, latlim,
      clongitude, clatitude, span, showHemi=TRUE,
@@ -70,6 +70,9 @@
       \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
       \item \code{which=13} or \code{which="spice"} gives a spiciness profile
       \item \code{which=14} or \code{which="tritium"} gives a tritium profile
+      \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
+      \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
+      \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
     }
   }
   \item{col}{colour of lines or symbols}
@@ -95,6 +98,7 @@
       coastline, it makes sense to load it in before the first call, and to
       supply the object as an argument, as opposed to the name of the object.}
   \item{Slim}{optional limits of salinity axes}
+  \item{Clim}{optional limits of conductivity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
   \item{densitylim}{optional limits of density axis}

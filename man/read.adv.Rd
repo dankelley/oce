@@ -126,7 +126,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \enumerate{
 
     \item The use must choose the appropriate \code{read.adv} variant corresponding to the
-    instrument in question.  (This is necessary because \code{\link{oce.magic}}, which is used by the
+    instrument in question.  (This is necessary because \code{\link{oceMagic}}, which is used by the
     generic \code{\link{read.oce}} routine, cannot determine the type of instrument by examining a
     file that lacks a header.)
 

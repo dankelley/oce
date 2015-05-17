@@ -1,0 +1,41 @@
+\name{T90fromT68}
+\alias{temperature conversion}
+\alias{T90fromT68}
+\alias{T68fromT90}
+\alias{T90fromT48}
+
+\title{Convert between temperature scales}
+
+\usage{
+T90fromT48(temperature)
+T90fromT68(temperature)
+T68fromT90(temperature)
+}
+
+\arguments{
+    \item{temperature}{expressed in one scale}
+}
+
+\value{Temperature expressed in the second scale}
+
+\description{Today's instruments typically record in the ITS-90 scale, but some
+    old datasets will be in the IPTS-68 scale. \code{T90fromT68()} converts
+    from the IPTS-68 to the ITS-90 scale, using Saunders' (1990) formula, while
+    \code{T68fromT90()} does the reverse. The difference between IPTS-68 and
+    ITS-90 values is typically a few millidegrees (see \sQuote{Examples}),
+    which is seldom visible on a typical temperature profile, but may be of
+    interest in some precise work.  Mostly for historical interest,
+    \code{T90fromT48()} is provided to convert from the ITS-48 system to
+    ITS-90.}
+
+\examples{
+library(oce)
+T68 <- seq(3, 20, 1)
+T90 <- T90fromT68(T68)
+sqrt(mean((T68-T90)^2))
+}
+
+\references{P. M. Saunders, 1990. The international temperature scale of 1990,
+    ITS-90.  WOCE Newsletter, volume 10, September 1990, page 10.
+    (\url{http://www.nodc.noaa.gov/woce/wdiu/wocedocs/newsltr/news10/contents.htm})}
+

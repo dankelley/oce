@@ -5,6 +5,7 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
+              .Object@metadata$temperatureUnit <- "ITS-90"
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'logger' object"
               return(.Object)
@@ -70,7 +71,7 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
@@ -87,14 +88,18 @@ as.logger <- function(time, temperature, pressure,
         class(time) <- "logger"
         return(time)
     }
-    if (missing(time) || missing(temperature) || missing(pressure))
-        stop("must give (at least) time, temperature, and pressure")
+    if (missing(time))
+        stop("must give time")
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
+    temperatureGiven <- !missing(temperature)
+    pressureGiven <- !missing(pressure)
+    if (!temperatureGiven && !pressureGiven)
+        stop("must give either temperature or pressure")
     time <- as.POSIXct(time)
-    if (length(time) != length(temperature))
+    if (temperatureGiven && length(time) != length(temperature))
         stop("lengths of 'time' and 'temperature' must match")
-    if (length(time) != length(pressure))
+    if (pressureGiven && length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
     res <- new("logger")
     res@metadata$instrumentType <- instrumentType
@@ -104,8 +109,12 @@ as.logger <- function(time, temperature, pressure,
     res@metadata$pressureAtmospheric <- pressureAtmospheric
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
-    res@data <- list(time=time, pressure=pressure, temperature=temperature)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
+    res@data <- list(time=time)
+    if (pressureGiven)
+        res@data$pressure <- pressure
+    if (temperatureGiven)
+        res@data$temperature <- temperature
     oceDebug(debug, "} # as.logger()\n", sep="", unindent=1)
     res
 }
@@ -270,14 +279,18 @@ setMethod(f="plot",
           })
 
 read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
-                        processingLog, debug=getOption("oceDebug"))
+                        patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from),
+             ", to=", if(missing(to))"(not given)" else format(to),
+             ", by=", by,
+             ", type=", if(missing(type)) "(missing)" else type,
+             ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".rsk$", file, ignore.case=TRUE)) && missing(type)) 
+        if (length(grep(".rsk$", file, ignore.case=TRUE))) 
             type <- "rsk"
         file <- file(file, "r")
         on.exit(close(file))
@@ -288,7 +301,6 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         open(file, "r")
         on.exit(close(file))
     }
-    oceDebug(debug, "from=", from, "\n")
     from.keep <- from
     measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
@@ -334,13 +346,17 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         if (!missing(to))
             warning("cannot (yet) handle argument 'to' for a ruskin file; using the whole file")
 
-        ## Some, but not all, RSK files have "datasets"
-        #try({
-            datasets <- RSQLite::dbReadTable(con, "datasets")
-            ndatasets <- dim(datasets)[1]
-            if (1 != ndatasets)
-                stop("read.logger() cannot handle multi-dataset files; this file has ", ndatasets)
-        #}, silent=TRUE)
+        ## Some, but not all, RSK files have "datasets". However, I've commented this code
+        ## out because the result, ndatasets, is not used anywhere else.
+        ##
+        ##   ndatasets <- 1
+        ##   try({
+        ##       datasets <- RSQLite::dbReadTable(con, "datasets")
+        ##       ndatasets <- dim(datasets)[1]
+        ##       if (1 != ndatasets)
+        ##           stop("read.logger() cannot handle multi-dataset files; this file has ", ndatasets)
+        ##   }, silent=TRUE)
+        ##
 
         ## ruskin database-schema serial number: hard to decode, so I'll just give up on it
         appSettings <- RSQLite::dbReadTable(con, "appSettings")
@@ -364,14 +380,15 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             pressureAtmospheric <- deriveDepth$atmosphericPressure 
             warn <- TRUE
         }, silent=TRUE)
-        warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
+        if (warn)
+            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
 
         ## From notes in comments above, it seems necessary to order by
         ## timestamp (tstamp). Ordering does not seem to be an option for
         ## dbReadTable(), so we use dbFetch().
 
-        ## First, get time stamp. Note the trick of making it floating-point
+        ## Get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
         res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
         t1000 <- DBI::dbFetch(res, n=-1)[[1]]
@@ -385,7 +402,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        names(data) <- names[1:dim(data)[2]] # sometimes there are more names than data channels
+        names <- names[1:dim(data)[2]] # sometimes there are more names than data channels
+        names(data) <- names
         data <- as.list(data)
 
         ## message("dim of data: ", paste(dim(data), collapse="x"))
@@ -393,22 +411,39 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         serialNumber <- instruments$serialID
         model <- instruments$model
         RSQLite::dbDisconnect(con)
-
-        if (3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
-            conductivity.standard <- 42.914 ## mS/cm conversion factor
-            ## warning("assuming conductivity is in mS/cm")
-            ## Use an estimate of at-sea pressure; otherwise can get an error of 0.005 in salinity,
-            ## as estimated in a real profile extending to 200m.
-            p <- data$pressure - 10.1325 # use a reasonable estimate of in-water pressure
-            S <- swSCTp(data$conductivity / conductivity.standard, data$temperature, p)
-            ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature, filename=filename)
+        ## Will use 'p' to compute S below.
+        pressureNote <- "Storing total pressure (i.e. sea pressure plus air pressure)"
+        if (is.logical(patm)) {
+            pSea <- data$pressure - pressureAtmospheric
+            if (patm) {
+                data$pressure <- pSea
+                pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", pressureAtmospheric)
+            }
+        } else {
+            pSea <- data$pressure - patm
+            data$pressure <- pSea
+            pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", patm)
+        }
+        canReturnCtd <- FALSE
+        if (canReturnCtd && 3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
+            conductivityStandard <- 42.914 ## mS/cm conversion factor
+            if ("salinity" %in% names) {
+                S <- data$salinity
+            } else {
+                ##warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
+                S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
+            }
+            ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature,
+                       conductivity=data$conductivity, filename=filename)
+            ctd@metadata[["conductivityUnit"]] <- "mS/cm"
             ctd@data[["time"]] <- time
             ctd@data[["scan"]] <- seq_along(data$pressure)
-            ## ctd@processingLog <- processingLog(ctd@processingLog, paste("subtract pressureAtmospheric (", pressureAtmospheric, " dbar) from logger pressure", sep=""))
-
+            ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
+            if (!("salinity" %in% names))
+                ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
             ctd@metadata$pressureAtmospheric <- pressureAtmospheric
             ## CR suggests to read "sampleInterval" but I cannot find it from the following
-            ##   echo ".dump"|sqlite3 050107_20130620_2245cast4.rsk | grep -i sample
+            ##   echo ".dump"|sqlite3 cast4.rsk | grep -i sample
             ## so I just infer it from the data
             ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
             ctd@metadata$latitude <- NaN
@@ -416,6 +451,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
             ## The device may have other channels; add them.  (This includes conductivity.)
             for (name in names) {
+                oceDebug(debug, "copying '", name, "' from Ruskin file into ctd object\n", sep="")
                 if (!(name %in% c("temperature", "pressure"))) {
                     ctd@data[[name]] <- data[[name]]
                 }
@@ -431,6 +467,13 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             rval <- new("logger", time=time, filename=filename)
             for (name in names)
                 rval@data[[name]] <- data[[name]]
+            rval@metadata$model <- model
+            rval@metadata$serialNumber <- serialNumber
+            ## CR suggests to read "sampleInterval" but I cannot find it from the following
+            ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
+            ## so I just infer it from the data
+            rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+            rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR loggers?
             oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
             return(rval)
         }
@@ -604,7 +647,7 @@ loggerTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceD
     for (name in names(x@data))
         res@data[[name]] <- subset(x@data[[name]], keep)
     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # loggerTrim()\n", unindent=1)
     res
 }

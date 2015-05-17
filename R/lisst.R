@@ -124,7 +124,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     t0 <- as.POSIXct(paste(year, "-01-01 00:00:00", sep=""), tz=tz)
     data$time <- t0 + 86400 * decimalday / 365.25
     rval@data <- data
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

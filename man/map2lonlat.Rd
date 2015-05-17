@@ -30,9 +30,9 @@
   
     The values of \code{x} and \code{y} have a clear meaning for
     \code{proj4}-style projections.  This is not true for \code{mapproj}-style
-    projections, since \code{\link{mapproject}} shifts the \code{x} component
-    of its return value to have mean value equal to 0, up to a calculation
-    error. 
+    projections, since \code{mapproject} in the \code{mapproj} package shifts
+    the \code{x} component of its return value to have mean value equal to 0,
+    up to a calculation error. 
 
     The accuracy of \code{map2lonlat} tends to be higher for \code{proj4}-style
     projections than for \code{mapproj}-style projections.  This is because the
@@ -57,8 +57,6 @@ library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 cs <- list(longitude=-64.49657,latitude=45.33462)
 xy <- lonlat2map(cs, projection="+proj=merc")
-map2lonlat(xy)
-xy <- lonlat2map(cs, projection="mercator")
 map2lonlat(xy)
 }
 

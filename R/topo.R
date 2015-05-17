@@ -71,7 +71,7 @@ setMethod(f="subset",
               } else {
                   stop("the subset must be based on longitude or latitude")
               }
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
               rval
           })
 
@@ -292,7 +292,7 @@ setMethod(f="plot",
                       } else {
                           water.z <- pretty(zr)
                       }
-                      water.z <- rev(sort(water.z))
+                      water.z <- sort(water.z)
                   }
                   nz <- length(water.z)
                   if (missing(col.water))
@@ -407,13 +407,19 @@ read.topo <- function(file, ...)
             z[z == missingValue] <- NA
         rval <- as.topo(longitude, latitude, z, filename=file)
     }
-    rval@processingLog <- processingLog(rval@processingLog,
-                                        paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog <- processingLogAppend(rval@processingLog,
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
 as.topo <- function(longitude, latitude, z, filename="")
 {
+    if (inherits(longitude, "bathy")) {
+        bathy <- longitude
+        longitude <- as.numeric(rownames(bathy))
+        latitude <- as.numeric(colnames(bathy))
+        z <- as.matrix(bathy)
+    }
     ncols <- length(longitude)
     nrows <- length(latitude)
     longitudeLowerLeft <- min(longitude, na.rm=TRUE)
@@ -424,7 +430,7 @@ as.topo <- function(longitude, latitude, z, filename="")
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
     rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename)
-    rval@processingLog <- processingLog(rval@processingLog,
+    rval@processingLog <- processingLogAppend(rval@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     rval
 }

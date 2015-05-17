@@ -1,7 +1,6 @@
 useDynLib(oce)
 import(methods)
 import(gsw)
-importFrom("mapproj", mapproject)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 importFrom("stats", predict, time, window)
@@ -126,6 +125,7 @@ export(abbreviateTimeLabels,
        mapPolygon,
        mapScalebar,
        mapText,
+       mapTissot,
        mapZones,
        map2lonlat,
        matchBytes,
@@ -167,6 +167,7 @@ export(abbreviateTimeLabels,
        predict.tidem,
        "processingLog<-",
        processingLog,
+       processingLogAppend,
        processingLogItem,
        processingLogShow,
        phosphate,
@@ -218,6 +219,7 @@ export(abbreviateTimeLabels,
        read.observatory,
        read.observatory.ctd,
        read.oce,
+       read.odf,
        read.logger,
        read.sealevel,
        read.section,
@@ -272,6 +274,9 @@ export(abbreviateTimeLabels,
        swTSrho,
        swViscosity,
        subtractBottomVelocity,
+       T68fromT90,
+       T90fromT48,
+       T90fromT68,
        temperature,
        "temperature<-",
        threenum,
@@ -308,5 +313,5 @@ S3method(tail, adp)
 S3method(time, oce)
 S3method(window, oce)
 
-exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, logger, met, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adp, adv, cm, coastline, ctd, drifter, landsat, lisst, lobo, logger, met, odf, sealevel, section, tidem, topo, windrose)
 

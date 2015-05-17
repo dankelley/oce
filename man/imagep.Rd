@@ -87,7 +87,9 @@
         1 plus the number of breaks, or a function specifying colors,
         e.g. \code{\link{oce.colorsJet}} for a rainbow.}
     \item{colormap}{a color map as created by \code{\link{colormap}}.  If
-        provided, this takes precedence over \code{breaks} and \code{col}.}
+        provided, then \code{colormap$breaks} and \code{colormap$col} take
+        precedence over the present arguments \code{breaks} and \code{col}.
+        (All of the other contents of \code{colormap} are ignored, though.)}
     \item{labels}{optional vector of labels for ticks on palette axis (must
         correspond with \code{at})}
     \item{at}{optional vector of positions for the \code{label}s}

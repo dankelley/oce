@@ -1,4 +1,11 @@
 0.9-15
+- plot.echosounder() gets new argument 'drawPalette'
+- data(landsat) taken from ocedata (and shrunk)
+- data(nao) and data(soi) moved to ocedata
+- mapTissot() added
+- read.logger() with ctd-type data infers salinity if necessary
+- ctdTrim() can have "method" as a function
+- as.topo() can convert "bathy" objects from the marmap package
 - "+.section" renamed sectionAddStation()
 - oceApprox() renamed oce.approx(), with an alias for compatibility 
 - oce.grid() added
@@ -169,7 +176,7 @@
 - data(giss) added
 - data(topo2) added
 - plotPolar() added
-- oce.magic() new name for magic()
+- oce.magic() new name for magic(); renamed oceMagic() in 0.9-15
 - errorBars() added
 - numberAsPOSIXct() add a leap second for July 2012
 

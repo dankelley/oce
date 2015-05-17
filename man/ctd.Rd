@@ -6,7 +6,10 @@
 
 \title{A CTD profile in Halifax Harbour}
 
-\description{A CTD profile measured in Halifax Harbour in 2003.}
+\description{A CTD profile measured in Halifax Harbour in 2003, based on
+    \code{\link{ctdRaw}}, but trimmed to just the downcast with
+    \code{\link{ctdTrim}}, using indices inferred by inspection of the results
+    from \code{\link{plotScan}}.}
 
 \usage{data(ctd)}
 
@@ -14,7 +17,7 @@
 \dontrun{
 library(oce)
 data(ctd)
-plot(ctd, which=c(1,2,3,5), coastline="coastlineWorldFine")
+plot(ctd)
 }
 }
 

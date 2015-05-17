@@ -19,6 +19,7 @@ setClass("lisst", contains="oce")
 setClass("lobo", contains="oce")
 setClass("logger", contains="oce")
 setClass("met", contains="oce")
+setClass("odf", contains="oce")
 setClass("sealevel", contains="oce")
 setClass("section", contains="oce")
 setClass("tidem", contains="oce")
@@ -35,9 +36,9 @@ setMethod(f="subset",
               rval <- x
               for (i in seq_along(x@data))
                   rval@data[[i]] <- rval@data[[i]][keep]
-              rval@processingLog <- processingLog(rval@processingLog,
-                                                  paste(deparse(match.call(call=sys.call(sys.parent(1)))),
-                                                                sep="", collapse=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog,
+                                                        paste(deparse(match.call(call=sys.call(sys.parent(1)))),
+                                                              sep="", collapse=""))
               rval
           })
 

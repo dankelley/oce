@@ -3,7 +3,7 @@
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{as.ctd(salinity, temperature, pressure,
+\usage{as.ctd(salinity, temperature, pressure, conductivity,
        SA, CT,
        oxygen, nitrate, nitrite, phosphate, silicate,
        scan, other,
@@ -13,7 +13,8 @@
        ship="", scientist="", institute="", address="", cruise="", station="", 
        date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
-       waterDepth=NA, sampleInterval=NA, src="")
+       pressureAtmospheric=NA, waterDepth=NA,
+       sampleInterval=NA, src="")
 }
 \arguments{
   \item{salinity}{Salinity through the water column, or a data frame
@@ -25,6 +26,12 @@
      if it is not one already.}
   \item{pressure}{pressure through the water column. (If just a single value 
      is given, then it is repeated to match the length of the temperature and salinity.}
+
+  \item{conductivity}{electrical conductivity ratio through the water column
+      (optional). Some devices report raw conductivity in milliSeimens per
+      centimeter, and that number should be divided by 42.914 to get
+      \code{conductivity} for use here.}
+
   \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
       salinity is converted internally to UNESCO-defined practical salinity.}
   \item{CT}{conservative temperature (as in TEOS-10).  If given, the supplied
@@ -59,7 +66,12 @@
   \item{recovery}{optional string indicating the recovery time.}
   \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
   \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
+
+  \item{pressureAtmospheric}{if provided, this value is subtracted from
+      pressure data before storing them in the object.}
+
   \item{waterDepth}{optional numerical value indicating the water depth in metres.}
+
   \item{sampleInterval}{optional numerical value indicating the time
     between samples in the profile.}
   \item{src}{optional string indicating data source}
@@ -90,11 +102,6 @@ salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
 ctd <- as.ctd(salinity, temperature, pressure)
 summary(ctd)
 plot(ctd)
-}
-
-\references{
-\url{http://cchdo.ucsd.edu/static/information/policies/CCHDO_DataSubmitGuide.pdf}
-\url{http://cchdo.ucsd.edu/static/information/manuals/pdf/90_1/chap4.pdf}
 }
 
 \author{Dan Kelley}

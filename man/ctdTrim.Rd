@@ -14,8 +14,9 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
 
-  \item{method}{A string (or a vector of two strings) specifying the trimming method. If not
-    provided, \code{"downcast"} is assumed. See \dQuote{Details}.}
+  \item{method}{A string (or a vector of two strings) specifying the trimming method, or a function
+    to be used to determine data indices to keep.  If \code{method} is not provided,
+    \code{"downcast"} is assumed. See \dQuote{Details}.}
 
   \item{inferWaterDepth}{boolean, set to \code{TRUE} if the water depth
     (\code{metadata$water.depth}) is to be determined from the maximum of the trimmed pressure.
@@ -78,8 +79,14 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
     continues to the end, while
     \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
     but extends only to scan 100.}
-  }
 
+  \item{If \code{method} is a function, then it must return a vector of \code{\link{logical}}
+    values, computed based on two arguments: \code{data}, which is set to \code{x@data} (a
+    \code{\link{list}}), and \code{parameters} as supplied to \code{ctdTrim}.  Both
+    \code{inferWaterDepth} and \code{removeInversions} are ignored in the function case. See
+    \dQuote{Examples}.}
+
+  }
 }
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with data having been trimmed in some way.}
@@ -93,6 +100,13 @@ data(ctdRaw)
 plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
 plot(ctdTrim(ctdRaw)) # looks like a real profile ...
 plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
+# Demonstrate use of a function. The scan limits were chosen
+# by using locator(2) on a graph made by plotScan(ctdRaw).
+trimByIndex <- function(data, parameters) {
+  parameters[1] < data$scan & data$scan < parameters[2]
+}
+trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
+plot(trimmed)
 }
 
 \references{The Seabird CTD instrument is described at

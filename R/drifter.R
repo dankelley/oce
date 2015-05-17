@@ -36,7 +36,7 @@ setMethod(f="subset",
               rval@data$salinity <- x@data$salinity[,keep]
               rval@data$temperature <- x@data$temperature[,keep]
               rval@data$pressure <- x@data$pressure[,keep]
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               rval
           })
 
@@ -159,7 +159,7 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -189,7 +189,7 @@ as.drifter <- function(time, longitude, latitude,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

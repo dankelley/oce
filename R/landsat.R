@@ -526,6 +526,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
     rval <- new("landsat")
+    file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
     actualfilename <- gsub(".*/", "", actualfilename)
     headerfilename <- paste(file, "/", actualfilename, "_MTL.txt", sep="")
@@ -588,7 +589,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
         }
     }
     options(warn=options$warn) 
-    rval@processingLog <- processingLog(rval@processingLog,
+    rval@processingLog <- processingLogAppend(rval@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.landsat()\n", unindent=1)
     rval
@@ -738,9 +739,9 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
             "ullat=", x@metadata$ullat,
             "urlat=", x@metadata$urlat, "\n")
  
-    x@processingLog <- processingLog(x@processingLog,
-                                     sprintf("landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f))",
-                                             ll$longitude, ll$latitude, ur$longitude, ur$latitude))
+    x@processingLog <- processingLogAppend(x@processingLog,
+                                           sprintf("landsatTrim(x, ll=list(longitude=%f, latitude=%f), ur=list(longitude=%f, latitude=%f))",
+                                                   ll$longitude, ll$latitude, ur$longitude, ur$latitude))
     x
 }
 

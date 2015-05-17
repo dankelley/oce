@@ -35,11 +35,8 @@
         \code{d}.}
 }
 
-\references{The LIST-100 users guide (version 4.65), which provided the
-    information for this function, was downloaded in late May 2012, from
-    \code{http://www.sequoiasci.com/products/fam_LISST_100.aspx}; as of March
-    2015, that link is broken, although it is still provided on other
-    websites.}
+\references{A users's manual for the LISST-100 instrument is available at the
+    manufacturer's website \url{http://www.sequoiasci.com}.}
 
 \seealso{One may read lisst objets with \code{\link{read.lisst}}, plot them
     with \code{\link{plot.lisst}}, and summarize them with

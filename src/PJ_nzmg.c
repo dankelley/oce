@@ -31,7 +31,7 @@
 #define PJ_LIB__
 #include	"projects.h"
 
-PJ_CVSID("$Id: PJ_nzmg.c 1504 2009-01-06 02:11:57Z warmerdam $")
+PJ_CVSID("$Id: PJ_nzmg.c 1504 2009-01-06 02:11:57Z warmerdam $");
 
 PROJ_HEAD(nzmg, "New Zealand Map Grid") "\n\tfixed Earth";
 

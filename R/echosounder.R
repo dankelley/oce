@@ -177,7 +177,7 @@ setMethod(f="subset",
               } else {
                   stop("can only subset an echosounder object by 'time' or 'depth'")
               }
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
               rval
           })
 
@@ -213,7 +213,7 @@ as.echosounder <- function(time, depth, a, src="",
     res@data$time <- time
     res@data$depth <- depth
     res@data$a<- a
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -236,7 +236,7 @@ setMethod(f="plot",
                               type="l", col=oce.colorsJet, lwd=2,
                               despike=FALSE,
                               drawBottom, ignore=5,
-                              drawTimeRange=FALSE,
+                              drawTimeRange=FALSE, drawPalette=TRUE,
                               radius, coastline,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
@@ -310,6 +310,7 @@ setMethod(f="plot",
                                         col=col,
                                         mgp=mgp, mar=mar,
                                         tformat=tformat,
+                                        drawPalette=drawPalette,
                                         debug=debug-1, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
@@ -332,6 +333,7 @@ setMethod(f="plot",
                                         col=col,
                                         mgp=mgp, mar=mar,
                                         tformat=tformat,
+                                        drawPalette=drawPalette,
                                         debug=debug-1,
                                         zlab=beam[w],
                                         ...)
@@ -377,6 +379,7 @@ setMethod(f="plot",
                                     mgp=mgp, mar=mar,
                                     tformat=tformat,
                                     col=col,
+                                    drawPalette=drawPalette,
                                     debug=debug-1)
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
@@ -795,7 +798,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         res@data$b <- NULL
         res@data$c <- NULL
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }

@@ -1,13 +1,13 @@
-\name{oce.magic}
+\name{oceMagic}
 
-\alias{oce.magic}
 \alias{oceMagic}
+\alias{oce.magic}
 
 \title{Find the type of an oceanographic data file}
 
 \description{Find the type of an oceanographic data file.}
 
-\usage{oce.magic(file, debug=getOption("oceDebug"))}
+\usage{oceMagic(file, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
