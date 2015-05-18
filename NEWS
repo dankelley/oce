@@ -1,3 +1,6 @@
+0.9-16
+-
+
 0.9-15
 - plot.echosounder() gets new argument 'drawPalette'
 - data(landsat) taken from ocedata (and shrunk)
