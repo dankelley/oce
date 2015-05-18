@@ -42,7 +42,7 @@
 #  define M_PI_2 1.57079632679489661923
 #endif
 
-PJ_CVSID("$Id: PJ_aitoff.c 2623 2015-02-21 14:09:44Z rouault $");
+PJ_CVSID("$Id: PJ_aitoff.c 2623 2015-02-21 14:09:44Z rouault $")
 
 PROJ_HEAD(aitoff, "Aitoff") "\n\tMisc Sph";
 PROJ_HEAD(wintri, "Winkel Tripel") "\n\tMisc Sph\n\tlat_1";
