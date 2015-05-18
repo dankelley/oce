@@ -1,3 +1,4 @@
+create_data/*.rda
 *~
 .Rhistory
 inst
@@ -9,7 +10,6 @@ src
 .DS_Store
 .RData
 .Rapp.history
-
 oce.Rproj
 oce.aux
 oce.out
