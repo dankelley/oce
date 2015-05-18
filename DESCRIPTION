@@ -10,10 +10,9 @@ Suggests: ocedata, foreign, mapproj, ncdf4, tiff, akima, proj4, RSQLite, DBI
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data, including ADCP
  measurements, CTD measurements, sectional data, sea-level time series,
- coastline files, etc.  Handles dozens of specialized Provides UNESCO (and
- TEOS-10, if installed) functions for calculating seawater properties such as
- potential temperature and density, as well as derived properties such as
- buoyancy frequency and dynamic height.
+ coastline files, etc.  Handles dozens of specialized functions for calculating
+ seawater properties such as potential temperature and density, as well as
+ derived properties such as buoyancy frequency and dynamic height.
 License: GPL (>= 2)
 URL: http://dankelley.github.com/oce/
 LazyLoad: yes
