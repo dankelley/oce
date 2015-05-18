@@ -1,5 +1,5 @@
 0.9-16
--
+- address package-build warnings; improve DESCRIPTION (thanks, BR)
 
 0.9-15
 - plot.echosounder() gets new argument 'drawPalette'
