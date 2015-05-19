@@ -673,7 +673,7 @@ in the St Lawrence Estuary Internal Wave Experiment.
 \end{center}
 \caption{Measurements made with an ADP in the
   St Lawrence Estuary.  The data were recorded in beam format, so a two-step
-  process is used to convert to enu coordinates.  The green curve indicates
+  process is used to convert to enu coordinates.  The black curve indicates
   the water surface, inferred from the pressure measured by the ADP.}
 \label{fig:adp}
 \end{figure}
