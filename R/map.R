@@ -363,24 +363,27 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     y <- xy$y
     xorig <- xy$x
     yorig <- xy$y
-    ## Insert NA to break long horizontal jumps, which can be caused by coastline
-    ## segments that "pass across" the edge of a plot.
-    dx <- abs(diff(x))
-    bigJumps <- which(dx > (mean(dx,na.rm=TRUE) + 10 * sd(dx, na.rm=TRUE)))
-    ##print(longitude[bigJumps])
-    for (j in bigJumps) {
-        ##message("chopping j=", j)
-        lenx <- length(x)
-        x <- c(x[seq.int(1, j)], NA, x[seq.int(j+1, lenx)])
-        longitude <- c(longitude[seq.int(1, j)], NA, longitude[seq.int(j+1, lenx)])
-        y <- c(y[seq.int(1, j)], NA, y[seq.int(j+1, lenx)])
-        latitude <- c(latitude[seq.int(1, j)], NA, latitude[seq.int(j+1, lenx)])
+    if (FALSE) {
+        ## Insert NA to break long horizontal jumps, which can be caused by coastline
+        ## segments that "pass across" the edge of a plot.
+        dx <- abs(diff(x))
+        bigJumps <- which(dx > (mean(dx,na.rm=TRUE) + 10 * sd(dx, na.rm=TRUE)))
+        ##print(longitude[bigJumps])
+        for (j in bigJumps) {
+            ##message("chopping j=", j)
+            lenx <- length(x)
+            x <- c(x[seq.int(1, j)], NA, x[seq.int(j+1, lenx)])
+            longitude <- c(longitude[seq.int(1, j)], NA, longitude[seq.int(j+1, lenx)])
+            y <- c(y[seq.int(1, j)], NA, y[seq.int(j+1, lenx)])
+            latitude <- c(latitude[seq.int(1, j)], NA, latitude[seq.int(j+1, lenx)])
+        }
+        xy <- badFillFix1(x=x, y=y, latitude=latitude, projection=projection)
+        x <- xy$x
+        y <- xy$y
     }
+
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, na.rm=TRUE)
-    xy <- badFillFix1(x=x, y=y, latitude=latitude, projection=projection)
-    x <- xy$x
-    y <- xy$y
 
     dotnames <- names(dots)
     if ("xlim" %in% dotnames || "ylim" %in% dotnames || "xaxs" %in% dotnames || "yaxs" %in% dotnames) {
