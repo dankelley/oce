@@ -17,8 +17,8 @@ setMethod(f="plot",
           signature=signature("odf"),
           definition=function(x) {
               names <- names(x@data)
-              n <- length(names) - 1
-              par(mfrow=c(n, 1))
+              n <- length(names)
+              par(mfrow=c(n-1, 1))
               for (i in 1:n) {
                    if (names[i] != "time") {
                        oce.plot.ts(x[["time"]], x[[names[i]]], ylab=names[i])
