@@ -251,10 +251,12 @@ dev.off()
 
 \section{Available Projections}{Users who choose the (unrecommended) mapproj
     scheme for setting the projection should consult the documentation for
-    \code{mapproject} in the \code{mapproj} package. Those who choose the
-    (recommended) PROJ.4 system [5,6] have a wide range of projections to
-    choose from. These are listed in the table given below.  For example, set
-    \code{projection="+proj=aea"} to select the Albers equal area projection.
+    \code{mapproject} in the \code{mapproj} package. 
+    
+    Those who choose the (recommended) PROJ.4 system [5,6] have a wide range of
+    projections to choose from. These are listed in the table given below.  For
+    example, set \code{projection="+proj=aea"} to select the Albers equal area
+    projection.
 
     The projection list consists of all the PROJ.4 (version 4.9.1) projections
     that have inverses, minus a few that cause problems:
@@ -454,11 +456,8 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
     those used in the examples.}
 
 
-\author{Dan Kelley and Clark Richards wrote the various \code{map*} R functions
-    and the C code that connects with PROJ.4 code written by Gerald Evenden,
-    Frank Warmerdam, Howard Butler, Brent Fraser, Chris Stuber, Craig Bruce,
-    Victor Osipkov, Andrea Antonello, Charles Karney, Karsten Engsager, and
-    Knud Poder.}
+\author{Dan Kelley and Clark Richards (see \code{\link{lonlat2map}} for a note
+    on the authors of PROJ.4).}
 
 \references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
@@ -470,7 +469,8 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
 
     4. Radical Cartography website \url{http://www.radicalcartography.net/?projectionref}
 
-    5. \code{PROJ.4} website \url{http://trac.osgeo.org/proj}
+    5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it
+    is the place to start to learn about the code. 
 
     6. \code{PROJ.4} projection details are at \url{http://www.remotesensing.org/geotiff/proj_list/}.
 

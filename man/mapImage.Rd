@@ -153,5 +153,7 @@ mapPolygon(coastlineWorld, col='gray')
 }
 }
 
-\author{Dan Kelley}
+\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
+    PROJ.4).}
+
 \keyword{hplot}
