@@ -57,7 +57,10 @@ map2lonlat(xy)
     already been drawn with \code{\link{mapPlot}}, because that function cannot
     alter an existing projection.}
 
-\author{Dan Kelley}
+\author{Dan Kelley wrote the \code{lonlat2map()} and the C code that connects
+    with PROJ.4 code written by Gerald Evenden, Frank Warmerdam, Howard Butler,
+    Brent Fraser, Chris Stuber, Craig Bruce, Victor Osipkov, Andrea Antonello,
+    Charles Karney, Karsten Engsager, and Knud Poder.}
 
 \keyword{misc}
 
