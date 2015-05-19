@@ -65,7 +65,10 @@ map2lonlat(xy)
 \references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
     downloaded May 31, 2014.}
 
-\author{Dan Kelley}
+\author{Dan Kelley wrote the \code{map2lonlat()} and the C code that connects
+    with PROJ.4 code written by Gerald Evenden, Frank Warmerdam, Howard Butler,
+    Brent Fraser, Chris Stuber, Craig Bruce, Victor Osipkov, Andrea Antonello,
+    Charles Karney, Karsten Engsager, and Knud Poder.}
 
 \keyword{misc}
 
