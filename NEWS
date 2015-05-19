@@ -1,4 +1,5 @@
 0.9-16
+- cite PROJ.4 contributors in DESCRIPTION
 - address package-build warnings; improve DESCRIPTION (thanks, BR)
 
 0.9-15
