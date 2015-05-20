@@ -53,7 +53,8 @@ mapContour(lon, lat, z, levels=c(-100, -2000, -3000),col=1:3,lwd=2)
 }
 }
 
-\author{Dan Kelley}
+\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
+    PROJ.4).}
 
 \keyword{hplot}
 
