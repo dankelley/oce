@@ -273,10 +273,6 @@ dev.off()
     \code{nzmg} overdraws \code{coastlineWorld}.
     
     
-    \code{labrd} returns \code{NaN} for
-    most points in \code{coastlineWorld} (and seems to be designed only for
-    Madagascar);
-
     The information in the table is reformatted from the output of the unix
     command \code{proj -lP}, where \code{proj} is provided by version 4.9.0 of
     the PROJ.4 system. Most of the arguments listed have default values. In
@@ -449,7 +445,7 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
     the ``edge'' of the map at which to put longitude and latitude labels.
     This design choice greatly simplifies the coding effort, freeing up time to
     work on issues regarded as more pressing.  Chief among those issues are (a)
-    the occurrence of horizontal lines in maps that have employ prime meridians
+    the occurrence of horizontal lines in maps that have prime meridians
     (b) inaccurate filling of land regions that (again) occur with shifted
     meridians and (c) inaccurate filling of Antarctica in some projections.
     Generally, issues are tackled first for commonly used projections, such as
