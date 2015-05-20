@@ -4,20 +4,20 @@ Date: 2015-05-19
 Title: Analysis of Oceanographic Data
 Authors@R: c(person("Dan", "Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
  person("Clark", "Richards", email="clark.richards@gmail.com", role=c("aut")),
- person("Chantelle", "Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment="curl() coauthor"),
- person("Gerald", "Evenden", role=c("ctb"), comment="PROJ.4 author"),
- person("Frank", "Warmerdam", email="warmerdam@pobox.com", role=c("ctb"), comment="PROJ.4 author"),
- person("Howard", "Butler", email="howard@hobu.co", role=c("ctb"), comment="PROJ.4 author"),
- person("Brent", "Fraser", email="bfraser@geoanalytic.com", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Chris", "Stuber", email="imap@chesapeake.net", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Craig", "Bruce", email="cbruce@cubewerx.com", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Victor", "Osipkov", email="vctos@email.com", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Andrea", "Antonello", email="andrea.antonello@hydrologis.com", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Charles", "Karney", email="charles.karney@sri.com", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Karsten", "Engsager", role="ctb", comment="PROJ.4 contributor"),
- person("Knud", "Poder", role=c("ctb"), comment="PROJ.4 contributor"),
- person("Robert", "Gentleman", role=c("ctb"), comment="author of approx() code, used in binmapAdp()"),
- person("Ross", "Ihaka", role=c("ctb"), comment="author of approx() code, used in binmapAdp()"))
+ person("Chantelle", "Layton", email="chantelle.layton@dal.ca", role=c("ctb","cph"), comment="curl() coauthor"),
+ person("Gerald", "Evenden", role=c("ctb","cph"), comment="PROJ.4 author"),
+ person("Frank", "Warmerdam", email="warmerdam@pobox.com", role=c("ctb","cph"), comment="PROJ.4 author"),
+ person("Howard", "Butler", email="howard@hobu.co", role=c("ctb","cph"), comment="PROJ.4 author"),
+ person("Brent", "Fraser", email="bfraser@geoanalytic.com", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Chris", "Stuber", email="imap@chesapeake.net", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Craig", "Bruce", email="cbruce@cubewerx.com", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Victor", "Osipkov", email="vctos@email.com", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Andrea", "Antonello", email="andrea.antonello@hydrologis.com", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Charles", "Karney", email="charles.karney@sri.com", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Karsten", "Engsager", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Knud", "Poder", role=c("ctb","cph"), comment="PROJ.4 contributor"),
+ person("Robert", "Gentleman", role=c("ctb","cph"), comment="author of approx() code, used in binmapAdp()"),
+ person("Ross", "Ihaka", role=c("ctb","cph"), comment="author of approx() code, used in binmapAdp()"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, gsw
 Suggests: ocedata, foreign, mapproj, ncdf4, tiff, akima, proj4, RSQLite, DBI

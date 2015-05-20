@@ -22,7 +22,6 @@ plot(landsat)
 \usage{data(landsat)}
 
 \source{The original data were downloaded from the USGS earthexplorer website,
-    \url{http://earthexplorer.usgs.gov},
     although other sites can also be used
     to uncover it by name.  The code below shows how the dataset was created.
     The decimation by 100 reduces file size from about 1GB to under 100Kb.
