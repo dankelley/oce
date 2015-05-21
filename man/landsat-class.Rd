@@ -172,7 +172,7 @@
 }
 
 \references{
-1. \url{http://glovis.usgs.gov} 
+1. See the USGS "glovis" web site.
 
 2. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}
 
