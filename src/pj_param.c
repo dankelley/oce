@@ -87,7 +87,7 @@ pj_param(projCtx ctx, paralist *pl, const char *opt) {
 		default:
 bum_type:	/* note: this is an error in parameter, not a user error */
 			error("invalid request to pj_param, fatal\n");
-			exit(1);
+			//exit(1);
 		}
 	} else /* not given */
 		switch (type) {
