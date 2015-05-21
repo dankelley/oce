@@ -1,3 +1,6 @@
+0.9-17
+- remove an exit() call in a C function
+
 0.9-16
 - cite PROJ.4 contributors in DESCRIPTION
 - address package-build warnings; improve DESCRIPTION (thanks, BR)
