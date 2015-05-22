@@ -16,3 +16,4 @@ vignettes/.build.timestamp
 ^\.Rproj\.user$
 src/*.o$
 
+autom4te.cache
