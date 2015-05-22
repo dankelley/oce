@@ -14,11 +14,11 @@ The easy way to install the ``develop`` branch is to execute the
 following commands in R.
 ```splus
 library(devtools)
-install_github('oce/dankelley', ref='develop')
+install_github('dankelley/oce', ref='develop')
 ```
 and most readers should also install Ocedata, with
 ```splus
-install_github('ocedata/dankelley', ref='master')
+install_github('dankelley/ocedata', ref='master')
 ```
 
 Oce is emphatically an open-source system, and so the participation of users is
