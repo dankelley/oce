@@ -1,3 +1,6 @@
+0.9-17
+- remove PROJ.4 code; use rgdal package instead
+
 0.9-16
 - cite PROJ.4 contributors in DESCRIPTION
 - address package-build warnings; improve DESCRIPTION (thanks, BR)

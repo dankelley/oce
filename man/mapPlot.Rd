@@ -5,11 +5,12 @@
 \title{Plot a map}
 
 \description{Plot coordinates as a map, using one of many possible projections
-    calculated with the \code{PROJ.4} [6] code that is included within oce.
-    (For a temporary alternative, see \dQuote{Deprecation notice}.) The
-    projection parameters are stored in a local variable that can be retrieved
-    by related functions, making it easy to add more items so the map,
-    including points, lines, text, images and contours.}
+    calculated with the \code{PROJ.4} projections [6] provided by the
+    \code{rgdal} package.  (For a temporary alternative, see
+    \dQuote{Deprecation notice}.) The projection parameters are stored in a
+    local variable that can be retrieved by related functions, making it easy
+    to add more items so the map, including points, lines, text, images and
+    contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
@@ -104,16 +105,6 @@
     Once a projection is set, the many functions that add more material to a
     map will use that same projection.
     
-    %For \code{PROJ.4}-style projections, the default is to use \code{PROJ.4}
-    %code that is built into Oce.  However, in a feature that may be eliminated
-    %at any time without notice, if \code{options(externalProj4=TRUE)}, then the
-    %\code{rgdal} package will be used instead.  The default method is much
-    %better because the \code{rgdal} package handles unprojectable points
-    %poorly, so that coordinate vectors containing such points must be processed
-    %one point at a time, at considerable penalty in speed.  For example, using
-    %the external \code{rgdal} package on a worldwide Mercator plot yields a
-    %slowdown by a factor of 50X.
-
     Further details on map projections are provided by [1,11], an exhaustive
     treatment that includes many illustrations, an overview of the history of
     the topic, and some notes on the strengths and weaknesses of the various
