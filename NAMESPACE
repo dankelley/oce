@@ -1,6 +1,8 @@
 useDynLib(oce)
 import(methods)
 import(gsw)
+#import(rgdal)
+#importFrom("rgdal", project)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 importFrom("stats", predict, time, window)

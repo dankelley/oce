@@ -29,7 +29,7 @@
    poly <- .Call("map_assemble_polygons", lon, lat)
    drawPalette(Tlim, col=oce.colorsJet)
    mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-   xy <- mapproject(poly$longitude, poly$latitude)
+   xy <- mapproj::mapproject(poly$longitude, poly$latitude)
    pal <- oce.colorsJet(100)
    plot(range(xy$x, na.rm=TRUE), range(xy$y, na.rm=TRUE), type='n', asp=1, xlab="", ylab="", axes=FALSE)
    ok <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)

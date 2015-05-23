@@ -1311,7 +1311,7 @@ setMethod(f="plot",
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,1], 2, mean, na.rm=TRUE)
                           plot(value, x@data$distance, xlab=beamName(x, 1),
-                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
+                               ylab=resizableLabel("distance"), type='l', ...)
                           xaxp <- par("xaxp")
                           xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                           yaxp <- par("yaxp")
@@ -1321,7 +1321,7 @@ setMethod(f="plot",
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,2], 2, mean, na.rm=TRUE)
                           plot(value, x@data$distance, xlab=beamName(x, 2),
-                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
+                               ylab=resizableLabel("distance"), type='l', ...)
                           xaxp <- par("xaxp")
                           xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                           yaxp <- par("yaxp")
@@ -1331,7 +1331,7 @@ setMethod(f="plot",
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           value <- apply(x@data$v[,,3], 2, mean, na.rm=TRUE)
                           plot(value, x@data$distance, xlab=beamName(x, 3),
-                               ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
+                               ylab=resizableLabel("distance"), type='l', ...)
                           xaxp <- par("xaxp")
                           xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                           yaxp <- par("yaxp")
@@ -1342,7 +1342,7 @@ setMethod(f="plot",
                               par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                               value <- apply(x@data$v[,,4], 2, mean, na.rm=TRUE)
                               plot(value, x@data$distance, xlab=beamName(x, 4),
-                                   ylab=resizableLabel("distance", domain="R-oce"), type='l', ...)
+                                   ylab=resizableLabel("distance"), type='l', ...)
                               xaxp <- par("xaxp")
                               xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                               yaxp <- par("yaxp")

@@ -71,7 +71,7 @@
         defaults will be used.}
 
     \item{projection}{optional indication of projection.  This is normally a
-        string in the format used by the \code{proj4} package, i.e.  starting
+        string in the format used by the \code{rgdal} package, i.e.  starting
         with \code{+proj=}. (See \dQuote{Deprecation notice}.)}
 
     \item{parameters,orientation}{See \dQuote{Deprecation notice}.}
@@ -97,7 +97,7 @@
 
 \details{Creates a map using the indicated projection.  As noted in the
     information on the \code{projection} argument, projections are best
-    specified in the notation used by \code{project()} in the \code{proj4}
+    specified in the notation used by \code{project()} in the \code{rgdal}
     package, although (at least temporarily) it is also possible to specify it
     in the notation of \code{mapproject()} in the \code{mapproj} package.
     
@@ -107,11 +107,11 @@
     %For \code{PROJ.4}-style projections, the default is to use \code{PROJ.4}
     %code that is built into Oce.  However, in a feature that may be eliminated
     %at any time without notice, if \code{options(externalProj4=TRUE)}, then the
-    %\code{proj4} package will be used instead.  The default method is much
-    %better because the \code{proj4} package handles unprojectable points
+    %\code{rgdal} package will be used instead.  The default method is much
+    %better because the \code{rgdal} package handles unprojectable points
     %poorly, so that coordinate vectors containing such points must be processed
     %one point at a time, at considerable penalty in speed.  For example, using
-    %the external \code{proj4} package on a worldwide Mercator plot yields a
+    %the external \code{rgdal} package on a worldwide Mercator plot yields a
     %slowdown by a factor of 50X.
 
     Further details on map projections are provided by [1,11], an exhaustive

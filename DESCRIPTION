@@ -19,8 +19,8 @@ Authors@R: c(person("Dan", "Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "c
  person("Robert", "Gentleman", role=c("ctb","cph"), comment="author of approx() code, used in binmapAdp()"),
  person("Ross", "Ihaka", role=c("ctb","cph"), comment="author of approx() code, used in binmapAdp()"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.15), utils, methods, gsw
-Suggests: ocedata, foreign, mapproj, ncdf4, tiff, akima, proj4, RSQLite, DBI
+Depends: R (>= 2.15), utils, methods, rgdal, gsw
+Suggests: ocedata, foreign, mapproj, ncdf4, tiff, akima, RSQLite, DBI
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data, including ADCP
  measurements, CTD measurements, sectional data, sea-level time series,

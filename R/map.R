@@ -1094,23 +1094,33 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if ("proj4" == .Projection()$type) {
-        if (!getOption("externalProj4", FALSE)) {
-            ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-            XY <- .C("proj4_interface", as.character(.Projection()$projection), as.integer(FALSE),
-                     as.integer(n), as.double(x), as.double(y),
-                     X=double(n), Y=double(n), NAOK=TRUE)
-            return(list(longitude=XY$X, latitude=XY$Y))
-        } else {
-            ##message("doing projection calculations with 'proj4' package")
-            if (!requireNamespace("proj4", quietly=TRUE))
-                stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
-            xy <- list(x=NA, y=NA)
-            ## FIXME: maybe we should do point-by-point if this yields an error
-            try({
-                xy <- proj4::project(list(x=x, y=y), proj=.Projection()$projection, inverse=TRUE)
-            }, silent=TRUE)
-            return(list(longitude=xy$x, latitude=xy$y))
-        }
+        owarn <- options()$warn
+        options(warn=-1)
+        XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+        options(warn=owarn)
+        return(list(longitude=XY[,1], latitude=XY[,2]))
+        ## 20150523 if (!getOption("externalProj4", FALSE)) {
+        ## 20150523     ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
+        ## 20150523     owarn <- options()$warn
+        ## 20150523     options(warn=-1)
+        ## 20150523     XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+        ## 20150523     options(warn=owarn)
+        ## 20150523     return(list(longitude=XY[,1], latitude=XY[,2]))
+        ## 20150523     ##pre-rgdal XY <- .C("proj4_interface", as.character(.Projection()$projection), as.integer(FALSE),
+        ## 20150523     ##pre-rgdal          as.integer(n), as.double(x), as.double(y),
+        ## 20150523     ##pre-rgdal          X=double(n), Y=double(n), NAOK=TRUE)
+        ## 20150523     ##pre-rgdal return(list(longitude=XY$X, latitude=XY$Y))
+        ## 20150523 } else {
+        ## 20150523     ##message("doing projection calculations with 'proj4' package")
+        ## 20150523     if (!requireNamespace("proj4", quietly=TRUE))
+        ## 20150523         stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
+        ## 20150523     xy <- list(x=NA, y=NA)
+        ## 20150523     ## FIXME: maybe we should do point-by-point if this yields an error
+        ## 20150523     try({
+        ## 20150523         xy <- proj4::project(list(x=x, y=y), proj=.Projection()$projection, inverse=TRUE)
+        ## 20150523     }, silent=TRUE)
+        ## 20150523     return(list(longitude=xy$x, latitude=xy$y))
+        ## 20150523 }
     } else if ("mapproj" == .Projection()$type) {
         if (!requireNamespace("mapproj", quietly=TRUE))
             stop("must install 'mapproj' package to use mapproj-style map projections")
@@ -1701,34 +1711,49 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         #if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
         #if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
         ll <- cbind(longitude, latitude)
-        if (!getOption("externalProj4", FALSE)) {
-            ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-            if (0 == length(grep("ellps=", projection)))
-                projection<- paste(projection, "+ellps=sphere")
-            n <- length(longitude)
-            XY <- .C("proj4_interface", as.character(projection), as.integer(TRUE),
-                     as.integer(n), as.double(longitude), as.double(latitude),
-                     X=double(n), Y=double(n), NAOK=TRUE)
-            xy <- list(x=XY$X, y=XY$Y)
-        } else {
-            ## message("doing projection calculations with 'proj4' package")
-            if (!requireNamespace("proj4", quietly=TRUE))
-                stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
-            m <- NULL                 # for the try()
-            try({
-                m <- proj4::project(ll, proj=projection)
-            }, silent=TRUE)
-            if (is.null(m)) {
-                m <- matrix(unlist(lapply(1:n, function(i)
-                                          {
-                                              t <- try({proj4::project(ll[i,], proj=projection)}, silent=TRUE)
-                                              if (inherits(t, "try-error")) c(NA, NA) else t[1,]
-                                          })),
-                            ncol=2, byrow=TRUE)
-                warning("proj4 calculation is slow because it was done pointwise")
-            }
-            xy <- list(x=m[,1], y=m[,2])
-        }
+
+        ## Next added 20150523 for rgdal transition; keep old code for a while
+        if (0 == length(grep("ellps=", projection)))
+            projection<- paste(projection, "+ellps=sphere")
+        n <- length(longitude)
+        owarn <- options()$warn
+        options(warn=-1)
+        XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
+        options(warn=owarn)
+        xy <- list(x=XY[,1], y=XY[,2])
+        ## 20150523 if (!getOption("externalProj4", FALSE)) {
+        ## 20150523     ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
+        ## 20150523     if (0 == length(grep("ellps=", projection)))
+        ## 20150523         projection<- paste(projection, "+ellps=sphere")
+        ## 20150523     n <- length(longitude)
+        ## 20150523     owarn <- options()$warn
+        ## 20150523     options(warn=-1)
+        ## 20150523     XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
+        ## 20150523     options(warn=owarn)
+        ## 20150523     xy <- list(x=XY[,1], y=XY[,2])
+        ## 20150523     ##pre-rgdal XY <- .C("proj4_interface", as.character(projection), as.integer(TRUE),
+        ## 20150523     ##pre-rgdal          as.integer(n), as.double(longitude), as.double(latitude),
+        ## 20150523     ##pre-rgdal          X=double(n), Y=double(n), NAOK=TRUE)
+        ## 20150523     ##pre-rgdal xy <- list(x=XY$X, y=XY$Y)
+        ## 20150523 } else {
+        ## 20150523     ## message("doing projection calculations with 'proj4' package")
+        ## 20150523     if (!requireNamespace("proj4", quietly=TRUE))
+        ## 20150523         stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
+        ## 20150523     m <- NULL                 # for the try()
+        ## 20150523     try({
+        ## 20150523         m <- proj4::project(ll, proj=projection)
+        ## 20150523     }, silent=TRUE)
+        ## 20150523     if (is.null(m)) {
+        ## 20150523         m <- matrix(unlist(lapply(1:n, function(i)
+        ## 20150523                                   {
+        ## 20150523                                       t <- try({proj4::project(ll[i,], proj=projection)}, silent=TRUE)
+        ## 20150523                                       if (inherits(t, "try-error")) c(NA, NA) else t[1,]
+        ## 20150523                                   })),
+        ## 20150523                     ncol=2, byrow=TRUE)
+        ## 20150523         warning("proj4 calculation is slow because it was done pointwise")
+        ## 20150523     }
+        ## 20150523     xy <- list(x=m[,1], y=m[,2])
+        ## 20150523 }
         .Projection(list(type=if (substr(projection, 1, 1)=="+") "proj4" else "mapproj", projection=projection)) # turn on proj4
         ##mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }
