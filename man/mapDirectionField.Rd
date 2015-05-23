@@ -56,9 +56,7 @@ mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
 }
 }
 
-\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
-    PROJ.4).}
-
+\author{Dan Kelley}
 
 \keyword{hplot}
 

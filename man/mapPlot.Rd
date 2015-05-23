@@ -245,12 +245,12 @@ dev.off()
     \code{mapproject} in the \code{mapproj} package. 
     
     Those who choose the (recommended) PROJ.4 system [5,6] have a wide range of
-    projections to choose from. These are listed in the table given below.  For
-    example, set \code{projection="+proj=aea"} to select the Albers equal area
-    projection.
+    projections to choose from. These are provided by the \code{rgdal} package,
+    and listed in the table given below.  For example, set
+    \code{projection="+proj=aea"} to select the Albers equal area projection.
 
-    The projection list consists of all the PROJ.4 (version 4.9.1) projections
-    that have inverses, minus a few that cause problems:
+    The projection list consists of all the PROJ.4 projections provided by
+    \code{rgdal} that have inverses, minus a few that cause problems:
     \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
     \code{calcofi} is not a real projection, but rather a coordinate system;
     \code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
@@ -273,7 +273,8 @@ dev.off()
 
     Further details of the projections and the controlling arguments are
     provided at several websites, because PROJ.4 has been incorporated into
-    many software systems; a good starting point for learning is [6].  
+    \code{rgdal} and other R packages, plus many other software systems; a good
+    starting point for learning is [6].  
     
     See \dQuote{Examples} for suggested projections for some common
     applications, and [8] for a gallery indicating how to use every projection.
@@ -443,8 +444,7 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
     those used in the examples.}
 
 
-\author{Dan Kelley and Clark Richards (see \code{\link{lonlat2map}} for a note
-    on the authors of PROJ.4).}
+\author{Dan Kelley and Clark Richards.}
 
 \references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at
