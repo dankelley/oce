@@ -1094,11 +1094,15 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if ("proj4" == .Projection()$type) {
-        owarn <- options()$warn
-        options(warn=-1)
-        XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
-        options(warn=owarn)
-        return(list(longitude=XY[,1], latitude=XY[,2]))
+        if (requireNamespace("rgdal", quietly=TRUE)) {
+            owarn <- options()$warn
+            options(warn=-1)
+            XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+            options(warn=owarn)
+            return(list(longitude=XY[,1], latitude=XY[,2]))
+        } else {
+            stop('must install.packages("rgdal") to plot maps with projections')
+        }
         ## 20150523 if (!getOption("externalProj4", FALSE)) {
         ## 20150523     ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
         ## 20150523     owarn <- options()$warn
@@ -1716,11 +1720,15 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         if (0 == length(grep("ellps=", projection)))
             projection<- paste(projection, "+ellps=sphere")
         n <- length(longitude)
-        owarn <- options()$warn
-        options(warn=-1)
-        XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
-        options(warn=owarn)
-        xy <- list(x=XY[,1], y=XY[,2])
+        if (requireNamespace("rgdal", quietly=TRUE)) {
+            owarn <- options()$warn
+            options(warn=-1)
+            XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
+            options(warn=owarn)
+            xy <- list(x=XY[,1], y=XY[,2])
+        } else {
+            stop('must install.packages("rgdal") to plot maps with projections')
+        }
         ## 20150523 if (!getOption("externalProj4", FALSE)) {
         ## 20150523     ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
         ## 20150523     if (0 == length(grep("ellps=", projection)))

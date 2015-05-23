@@ -1195,8 +1195,7 @@ setMethod(f="plot",
                           yloc <- yloc - d.yloc
                       }
                   } else if (which[w] == 5) {
-                      warning("plot(ctd) is skipping the map because something is broken 2015-05-23")
-                      if (FALSE && is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
+                      if (is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## FIXME: use waterdepth to guess a reasonable span, if not supplied
                           if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
@@ -1283,13 +1282,13 @@ setMethod(f="plot",
                                   oceDebug(debug, "fill=", fill, "\n")
                                   str(coastline)
                                   oceDebug(debug, "ok, about to call plot(coastline)\n")
-                                  plot(coastline)#, projection="NULL",
-                                       #clatitude=mean(latlim.c), clongitude=clon, span=span,
-                                       #projection=projection, parameters=parameters, orientation=orientation,
-                                       #fill=fill,
-                                       #mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       #lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                                       #debug=debug-1)
+                                  plot(coastline,
+                                       clatitude=mean(latlim.c), clongitude=clon, span=span,
+                                       projection=projection, parameters=parameters, orientation=orientation,
+                                       fill=fill,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                                   oceDebug(debug, " ... did plot(coastline)\n")
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
