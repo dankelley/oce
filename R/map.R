@@ -354,7 +354,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     #    grid <- rep(15, 2)
     #message("000")
     xy <- lonlat2map(longitude, latitude, projection=projection, parameters=parameters, orientation=orientation)
-    #message("/000")
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
@@ -430,7 +429,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         x <- xy$x
         y <- xy$y
     }
-
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
@@ -474,8 +472,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         span <- 10e3 # assume hemispheric, if we cannot determine otherwise
         if (TRUE) {                    # 2014-11-16 for issue 543
             ## Measure lower-left to upper-right diagonal
-            ll <- map2lonlat(usr[1], usr[3])
-            ur <- map2lonlat(usr[2], usr[4])
+            ## rgdal::project(cbind(usr[1], usr[3]), proj=projection, inv=TRUE)
+            ## ll <- map2lonlat(usr[1], usr[3])
+            ## ur <- map2lonlat(usr[2], usr[4])
+            ll <- map2lonlat(min(x, na.rm=TRUE), min(y, na.rm=TRUE))
+            ur <- map2lonlat(max(x, na.rm=TRUE), max(y, na.rm=TRUE))
             if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
                is.finite(ur$longitude) && is.finite(ur$latitude)) {
                 onearth <- function(x) {
