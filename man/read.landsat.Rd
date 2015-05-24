@@ -79,7 +79,7 @@ read.landsat(file, band="all", emissivity=0.984, debug=getOption("oceDebug"))
     trim Landsat objects geographically and \code{\link{landsatAdd}} to add new
     ``bands.''  The accessor operator (\code{[[}) is used to access band
     information, full or decimated, and to access certain derived quantities.
-    A sample dataset named \code{landsat} is available in the \code{ocedata}
+    A sample dataset named \code{landsat} is available in the \CRANpkg{ocedata}
     package.}
 
 \references{Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of

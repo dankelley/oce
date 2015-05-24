@@ -24,7 +24,7 @@ swZ(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 \details{If \code{eos="unesco"} then depth is calculated from pressure using
     Saunders and Fofonoff's method, with the formula refitted for 1980 UNESCO
     equation of state [1].  If \code{eos="gsw"}, then
-    \code{\link[gsw]{gsw_z_from_p}} from the \code{gsw} package [2,3] is used.}
+    \code{\link[gsw]{gsw_z_from_p}} from the \CRANpkg{gsw} package [2,3] is used.}
 
 \value{For \code{swDepth}, depth below the ocean surface, in metres.
   For \code{swZ}, the negative of the depth, i.e. the distance above

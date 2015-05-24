@@ -25,7 +25,7 @@
     the corresponding arguments to the present function are ignored.
 
     The conservative temperature is calculated using the TEOS-10 function
-    \code{\link[gsw]{gsw_CT_from_t}} from the \code{gsw} package.}
+    \code{\link[gsw]{gsw_CT_from_t}} from the \CRANpkg{gsw} package.}
 
 \value{Conservative temperature in degrees Celcius.}
 

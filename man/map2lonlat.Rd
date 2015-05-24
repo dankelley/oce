@@ -29,10 +29,10 @@
     \code{\link{mapPlot}} or \code{\link{lonlat2map}}.
   
     The values of \code{x} and \code{y} have a clear meaning for
-    \code{rgdal}-style projections.  This is not true for \code{mapproj}-style
-    projections, since \code{mapproject} in the \code{mapproj} package shifts
-    the \code{x} component of its return value to have mean value equal to 0,
-    up to a calculation error. 
+    \CRANpkg{rgdal}-style projections.  This is not true for
+    \code{mapproj}-style projections, since \code{mapproject} in the
+    \code{mapproj} package shifts the \code{x} component of its return value to
+    have mean value equal to 0, up to a calculation error. 
 
     The accuracy of \code{map2lonlat} tends to be higher for \code{rgdal}-style
     projections than for \code{mapproj}-style projections.  This is because the

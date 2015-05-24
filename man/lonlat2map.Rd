@@ -19,7 +19,7 @@
       \code{longitude} is a list, as described above).}
 
   \item{projection}{optional indication of projection.  This is normally a
-      string in the format used by the \code{rgdal} package, i.e.  starting
+      string in the format used by the \CRANpkg{rgdal} package, i.e.  starting
       with \code{+proj=}. (See the \dQuote{Deprecation notice} for
       \code{\link{mapPlot}}.)}
   

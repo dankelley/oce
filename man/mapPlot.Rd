@@ -6,7 +6,7 @@
 
 \description{Plot coordinates as a map, using one of many possible projections
     calculated with the \code{PROJ.4} projections [6] provided by the
-    \code{rgdal} package.  (For a temporary alternative, see
+    \CRANpkg{rgdal} package.  (For a temporary alternative, see
     \dQuote{Deprecation notice}.) The projection parameters are stored in a
     local variable that can be retrieved by related functions, making it easy
     to add more items so the map, including points, lines, text, images and
