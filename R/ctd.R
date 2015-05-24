@@ -1280,7 +1280,6 @@ setMethod(f="plot",
                                   oceDebug(debug, "parameters=", parameters, "\n")
                                   oceDebug(debug, "orientation=", orientation, "\n")
                                   oceDebug(debug, "fill=", fill, "\n")
-                                  str(coastline)
                                   oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
