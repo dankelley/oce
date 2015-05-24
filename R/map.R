@@ -1,7 +1,9 @@
-## Author notes on proj4:
+## Author notes on PROJ.4:
 ## 1. http://stackoverflow.com/questions/tagged/proj4
-## 2. proj4 used by:
+## 2. PROJ.4 is used by the following R packages:
 ##    1. openstreetmap
+##    2. proj4
+##    3. rgdal
 
 .axis <- local({
     val <- list(longitude=NULL, latitude=NULL)
@@ -165,35 +167,37 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
         oceDebug(debug, "drawing axis on side 2\n")
         AT <- NULL
         LAB <- NULL
+        f <- function(lon) lonlat2map(lon,lat)$x-usr[1]
+        ## FIXME: if this uniroot() method looks good for side=2, try for side=1 also.
+        LONLIST <- seq(-360, 360, 180) # FIXME: smaller increments are slower
         for (lat in latitude) {
             if (debug > 3)
                 oceDebug(debug, "check ", lat, "N for axis on side=2\n", sep="")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            for (hemisphere in 1:2) {
-                LONLOOK <- if (1 == hemisphere) c(-360, 0) else c(0, 360)
-                o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]),
-                              lower=LONLOOK[1], upper=LONLOOK[2])
-                if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                    if (debug > 3)
-                        oceDebug(debug, "  ", lat, "N is unmappable [hemisphere ", hemisphere, "]; o$objective=", o$objective, "\n", sep="")
+            for (iLON in 2:length(LONLIST)) {
+                #if (lat == 55) browser()
+                LONLOOK <- LONLIST[iLON+c(-1,0)]
+                if (f(LONLOOK[1])*f(LONLOOK[2]) > 0)
                     next
-                }
-                ##cat("lat:", lat, ", o$minimum:", o$minimum, "(best)\n")
-                ## Check that the point matches lat, as well as lon (this matters for full-globe)
-                P <- lonlat2map(o$minimum, lat)
-                ## oceDebug(debug, "Investigate point at x=", P$x, ", y=", P$y, "; note usr[3]=", usr[3], "\n")
+                r <- uniroot(f, lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
+                P <- lonlat2map(r$root, lat)
+                ##OLD| ## using optimize. This seems slower, and can hit boundaries.
+                ##OLD| o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]), lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
+                ##OLD| if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
+                ##OLD|     if (debug > 3) oceDebug(debug, "  ", lat, "N is unmappable for iLON=", iLON, "; o$objective=", o$objective, "\n", sep="")
+                ##OLD|     next
+                ##OLD| }
+                ##OLD| # Check that the point matches lat, as well as lon (this matters for full-globe)
+                #P <- lonlat2map(o$minimum, lat)
                 y <- P$y
                 if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
                     if (!is.na(y) && usr[3] < y && y < usr[4]) {
                         label <- fixneg(paste(lat, "N", sep=""))
-                        ## mtext(label, side=2, at=y)
                         AT <- c(AT, y)
                         LAB <- c(LAB, label)
-                        if (debug > 3)
-                            oceDebug(debug, "  ", label, " intersects side 2 [hemisphere ", hemisphere, "]\n", sep="")
+                        if (debug > 3) oceDebug(debug, "  ", label, " intersects side 2\n", sep="")
                     } else {
-                        if (debug > 3)
-                            oceDebug(debug, "  ", lat, "N does not intersect side 2 [hemisphere ", hemisphere, "]\n", sep="")
+                        if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
                     }
                 } else {
                     oceDebug(debug, "skipping off-globe point\n")
