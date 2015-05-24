@@ -169,7 +169,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
         LAB <- NULL
         f <- function(lon) lonlat2map(lon,lat)$x-usr[1]
         ## FIXME: if this uniroot() method looks good for side=2, try for side=1 also.
-        LONLIST <- seq(-360, 360, 45) # FIXME: smaller increments are slower
+        LONLIST <- seq(-360, 360, 20) # smaller increments are slower but catch more labels
         for (lat in latitude) {
             if (debug > 3)
                 oceDebug(debug, "check ", lat, "N for axis on side=2\n", sep="")
