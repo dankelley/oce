@@ -1197,7 +1197,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
                      lwd=par("lwd"), lty=par("lty"),
-                     filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))
+                     filledContour=FALSE, missingColor=NA,
+                     debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -1413,7 +1414,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 return(if (zclip) missingColor else colLast)
             }
             ## issue522: this was w <- which(zval <= breaks)[1]
-            w <- which(zval <= breaks)[1]
+            ## issue655: this was w <- which(zval <= breaks)[1]
+            w <- which(zval < breaks)[1]
             #if (zval == 0) browser()
             ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
             ##     message("zval:", zval, ", w:", w)
