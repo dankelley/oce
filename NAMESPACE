@@ -197,6 +197,7 @@ export(abbreviateTimeLabels,
        read.aquadopp, # wrapper for read.adp.nortek()
        read.aquadoppProfiler, # wrapper for read.adp.nortek()
        read.aquadoppHR, # wrapper for read.adp.nortek()
+       read.bremen,
        read.cm,
        read.coastline,
        read.coastline.shapefile,
