@@ -374,7 +374,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     y <- xy$y
     xorig <- xy$x
     yorig <- xy$y
-    if (FALSE) {
+    if (options()$oce_uhl == "method 1") {
         ## Insert NA to break long horizontal jumps, which can be caused by coastline
         ## segments that "pass across" the edge of a plot.
         dx <- abs(diff(x))
