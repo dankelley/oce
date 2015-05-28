@@ -10,6 +10,27 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="plot",
+          signature=signature("bremen"),
+          definition=function(x) {
+              names <- names(x@data)
+              n <- length(names)
+              if ("salinity" %in% names) {
+                  ## CTD
+                  plot(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]))
+              } else {
+                  ## assume lowered adcp
+                  par(mfrow=c(1, n-1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+                  Depth <- x[["depth"]]
+                  for (i in 1:n) {
+                      if (names[i] != "depth") {
+                          plot(x[[names[i]]], Depth, ylim=rev(range(Depth)), type='l', xlab=names[i])
+                          grid()
+                      }
+                  }
+              }
+          })
+
 read.bremen <- function(file)
 {
     if (is.character(file)) {
