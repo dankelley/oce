@@ -6,8 +6,6 @@
 
 \description{Read a Bremen data file (TEMPORARY CODE)}
 
-\description{Read a CTD data file, producing an object of type \code{bremen}.}
-
 \usage{read.bremen(file)}
 
 \arguments{
