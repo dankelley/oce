@@ -1111,8 +1111,15 @@ map2lonlat <- function(x, y, init=c(0,0))
             owarn <- options()$warn
             options(warn=-1)
             XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+            ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
+            ## up on the idea of using rawTransform().
+            ##> n <- length(x)
+            ##> XY <- rgdal::rawTransform(projfom=as.character(.Projection()$projection), projto="+proj=longlat", n=n, x=x, y=y)
             options(warn=owarn)
             return(list(longitude=XY[,1], latitude=XY[,2]))
+            ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
+            ## up on the idea of using rawTransform().
+            ##> return(list(longitude=XY[[1]], latitude=XY[[2]]))
         } else {
             stop('must install.packages("rgdal") to plot maps with projections')
         }
