@@ -4,12 +4,12 @@
 \alias{coastlineCut}
 \title{Cut a coastline file at specified longitude}
 \usage{
-coastlineCut(coastline, lon0 = 0)
+coastlineCut(coastline, lon_0 = 0)
 }
 \arguments{
 \item{coastline}{original coastline object}
 
-\item{lon0}{longitude as would be given in a \code{+lon_0=} item in a proj.4 string (but note the difference in names).}
+\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a proj.4 string}
 }
 \value{
 a new coastline object
@@ -20,14 +20,14 @@ Cut a coastline file at specified longitude
 \details{
 This can be helpful in preventing \code{\link{mapPlot}} from producing ugly
 horizontal lines in world maps. These lines occur when a coastline segment
-is intersected by longitude lon0+180.  Since the coastline files in the oce
+is intersected by longitude lon_0+180.  Since the coastline files in the oce
 and ocedata packages are already "cut" at longitudes of -180 and 180, the present
 function is not needed for default maps, which have \code{+lon_0=0}. However,
-it is needed for almost any other value for \code{lon0}.
+it is needed for almost any other value for \code{lon_0}.
 }
 \examples{
 library(oce)
 data(coastlineWorld)
-mapPlot(coastlineCut(coastlineWorld, lon0=100), proj="+proj=robin +lon_0=100", fill='gray')
+mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", fill='gray')
 }
 
