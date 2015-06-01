@@ -467,7 +467,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "yfrac:", yfrac, "\n")
     oceDebug(debug, "finally fractionOfGlobe:", fractionOfGlobe, "\n")
     if (axes || drawGrid) {
-        message(" -- A")
         ## Grid lines and axes.
         ## Find ll and ur corners of plot, if possible, for use in calculating
         ## lon and lat spans.  This will not work in all cases; e.g. for a
@@ -484,27 +483,21 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
         ## Estimate the span (km) of the displayed portion of the earth.
         span <- 10e3 # assume hemispheric, if we cannot determine otherwise
-        if (TRUE) {                    # 2014-11-16 for issue 543
-            message(" -- B")
+        if (TRUE) {
+            ## 2014-11-16 for issue 543
+            ## 2015-05-01 for issue 640
             ## Measure lower-left to upper-right diagonal
-            ## rgdal::project(cbind(usr[1], usr[3]), proj=projection, inv=TRUE)
-            ## ll <- map2lonlat(usr[1], usr[3])
-            ## ur <- map2lonlat(usr[2], usr[4])
-            message(proj)
-            message("LL: ", min(x, na.rm=TRUE), " ", min(y, na.rm=TRUE))
-            message("UR: ", max(x, na.rm=TRUE), " ", max(y, na.rm=TRUE))
-            ## 1e-3 hangs on "+proj=wintri +lon_0=90"
+            ## Use alpha because min/max fail with some projections (e.g. wintri)
+            ## that are not cleanly invertable in PROJ.4. What can happen is that
+            ## a particular lon/lat will yield an x/y that cannot be inverted
+            ## because of a loop that diverges instead of converging.
+            ## NB. alpha=0.001 fails "+proj=wintri +lon_0=90", so increase
+            ## by factor 20, which seems to work in my globe-drawing tests.
             alpha <- 0.02 # because min() fails with some proj (e.g. wintri)
             qx <- quantile(x, c(alpha, 1.0-alpha), na.rm=TRUE)
             qy <- quantile(y, c(alpha, 1.0-alpha), na.rm=TRUE)
-            message("qx: ", paste(qx, collapse=" "))
-            message("qy: ", paste(qy, collapse=" "))
-            ##project(cbind(qx[1],qy[1]), proj=proj,inv=TRUE)
-            ## ll <- map2lonlat(min(x, na.rm=TRUE), min(y, na.rm=TRUE))
-            ## ur <- map2lonlat(max(x, na.rm=TRUE), max(y, na.rm=TRUE))
             ll <- map2lonlat(qx[1], qy[1])
             ur <- map2lonlat(qx[2], qy[2])
-            message(" -- C")
             if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
                 is.finite(ur$longitude) && is.finite(ur$latitude)) {
                 onearth <- function(x) {
@@ -512,13 +505,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     x$latitude <- ifelse(x$latitude < -90, -90, ifelse(x$latitude > 90, 90, x$latitude))
                     x
                 }
-                message(" -- D")
                 ll <- onearth(ll)
                 ur <- onearth(ur)
                 ## estimate span in deg lat by dividing by 111km
                 span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
             }
-        } else {                       # 2014-11-16 for issue 543 (will delete next in a week or so)
+        } else {
+            ## **NOT DONE**
             ## Now next may fail for e.g. molleweide has ll and ur that are
             ## un-invertable, since the globe may not fill the whole plotting area.
             mlat <- mean(longitude,na.rm=TRUE)
