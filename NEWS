@@ -1,4 +1,5 @@
 0.9-17
+- add coastlineCut()
 - remove PROJ.4 code; use rgdal package instead
 
 0.9-16
