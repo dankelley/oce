@@ -139,7 +139,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    waterDepth <- as.numeric(findInHeader("SOUNDING", lines))
+    waterDepth <- as.numeric(findInHeader("MAX_DEPTH", lines))
     station <- findInHeader("EVENT_NUMBER", lines)
 
     ## water depth could be missing or e.g. -999
