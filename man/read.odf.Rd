@@ -20,10 +20,19 @@ Read an ODF file
 \details{
 ODF (Ocean Data Format) is a
 format developed at the Bedford Institute of Oceanography and also used
-at other Department of Fisheries and Oceans (Canada) facilities.
+at other Canadian Department of Fisheries and Oceans (DFO) facilities.
 It can hold various types of time-series data, which includes a variety
-of instrument types. Thus, \code{read.odf()}
-is used by \code{read.ctd.odf} for CTD data, etc.
+of instrument types. Thus, \code{read.odf}
+is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
+\code{read.odf} is still in development, with features being added as  a
+project with DFO makes available more files.
+
+Note that some elements of the metadata are particular to ODF objects,
+e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
+are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
+and \code{SOUNDING}, respectively. In addition, the more common metadata
+item \code{waterDepth}, which is used in \code{ctd} objects to refer to
+the total water depth, is here identical to \code{sounding}.
 }
 \references{
 Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)

@@ -86,10 +86,19 @@ findInHeader <- function(key, lines)
 #' @details
 #' ODF (Ocean Data Format) is a 
 #' format developed at the Bedford Institute of Oceanography and also used
-#' at other Department of Fisheries and Oceans (Canada) facilities.
+#' at other Canadian Department of Fisheries and Oceans (DFO) facilities.
 #' It can hold various types of time-series data, which includes a variety
-#' of instrument types. Thus, \code{read.odf()} 
-#' is used by \code{read.ctd.odf} for CTD data, etc.
+#' of instrument types. Thus, \code{read.odf} 
+#' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
+#' \code{read.odf} is still in development, with features being added as  a 
+#' project with DFO makes available more files.
+#'
+#' Note that some elements of the metadata are particular to ODF objects,
+#' e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
+#' are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
+#' and \code{SOUNDING}, respectively. In addition, the more common metadata
+#' item \code{waterDepth}, which is used in \code{ctd} objects to refer to
+#' the total water depth, is here identical to \code{sounding}.
 #'
 #' @param file the file containing the data.
 #' @param debug a debugging flag, 0 for none, 1 for some debugging
@@ -139,7 +148,10 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    waterDepth <- as.numeric(findInHeader("MAX_DEPTH", lines))
+    depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
+    depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
+    sounding <- as.numeric(findInHeader("SOUNDING", lines))
+    waterDepth <- as.numeric(findInHeader("SOUNDING", lines))
     station <- findInHeader("EVENT_NUMBER", lines)
 
     ## water depth could be missing or e.g. -999
@@ -173,7 +185,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      latitude=latitude,
                      longitude=longitude,
                      recovery=NULL,
-                     waterDepth=waterDepth,
+                     waterDepth=waterDepth, # this is not the sensor depth
+                     depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
                      sampleInterval=NA,
                      filename=filename)
     data <- read.table(text=lines, skip=dataStart)
