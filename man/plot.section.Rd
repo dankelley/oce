@@ -34,6 +34,7 @@
      showStations=FALSE,
      showStart=TRUE,
      showBottom=TRUE,
+     axes=TRUE,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -101,7 +102,8 @@
         defaults to a vector of length 200, with values spanning the data
         range.}
 
-    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}},
+        or set to the empty string to avoid plotting a legend.}
 
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number of
@@ -118,6 +120,7 @@
         allowed methods are: \code{polygon}, which fills the space to the bottom,
         or \code{lines}, which draws lines from stations to the bottom, or
         \code{points}, which draws points at the bottom.}
+    \item{axes}{logical value indicating whether to draw axes.}
     \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
         also for \code{par(mar)}, computed from this.  The default is
         tighter than the R default, in order to use more space for the data
