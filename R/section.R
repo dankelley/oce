@@ -289,13 +289,43 @@ makeSection <- function(item, ...)
 	lon <- vector("numeric", numStations)
 	lat <- vector("numeric", numStations)
 	if (numStations > 1) {
-	    for (i in 1:numStations) {
-                thisItem <- item[[i]]
-		stn[i] <- thisItem@metadata$station
-		lon[i] <- thisItem@metadata$longitude
-		lat[i] <- thisItem@metadata$latitude
-		station[[i]] <- thisItem
-	    }
+            if (inherits(item, "oce") {
+                for (i in 1:numStations) {
+                    thisItem <- item[[i]]
+                    stn[i] <- thisItem@metadata$station
+                    lon[i] <- thisItem@metadata$longitude
+                    lat[i] <- thisItem@metadata$latitude
+                    station[[i]] <- thisItem
+                }
+          } else {
+              ## perhaps it's a list of lists, or a list of data frames
+              for (thisItem in item) {
+                  message("** item **")
+                  names <- names(thisItem)
+                  if (!("longitude" %in% names)) stop("each item entry must contain longitude")
+                  if (!("latitude" %in% names)) stop("each item must entry contain latitude")
+                  ## FIXME: maybe permits 'depth' here
+                  if (!("pressure" %in% names)) stop("each item must entry contain pressure")
+                  if (!("station" %in% names)) thisItem$station <- seq_along(thisItem$longitude)
+                  message("FIXME: next: save things in 'names', except lon/lat/station")
+                  len <- length(thisItem$pressure)
+                  print(names)
+                  names <- names[names!="longitude"]
+                  names <- names[names!="latitude"]
+                  names <- names[names!="station"]
+                  print(names)
+                  data <- list()
+                  for (name in names) {
+                      message("check '", name, "'")
+                      if (length(name) == len) {
+                          message(" ... should save '", name, "'")
+                          data[[name]] <- thisItem[[name]]
+                      }
+                  }
+                  str(data)
+                  browser()
+              }
+          }
 	} else {
 	    stop("need more than 1 station to make a section")
 	}
@@ -330,7 +360,7 @@ makeSection <- function(item, ...)
 	    }
 	}
     } else {
-	stop("first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
+	stop("first argument must be a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
     }
     res <- new("section")
     res@metadata <- list(sectionId="", stationId=stn, longitude=lon, latitude=lat)
