@@ -386,6 +386,7 @@ setMethod(f="plot",
                               showStations=FALSE,
                               showStart=TRUE,
                               showBottom=TRUE,
+                              axes=TRUE,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5),
                               col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -452,10 +453,12 @@ setMethod(f="plot",
                                          ztype=c("contour", "image", "points"),
                                          legend=TRUE,
                                          debug=0,
+                                         axes=TRUE,
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)", "...) {\n", sep="", unindent=1)
+                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                           ", axes=", axes, ", ...) {\n", sep="", unindent=1)
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
@@ -644,10 +647,13 @@ setMethod(f="plot",
                                xlab=xlab,
                                ylab=ylab,
                                axes=FALSE)
-                          axis(4, labels=FALSE)
-                          ytics <- axis(2, labels=FALSE)
-                          axis(2, at=ytics, labels=-ytics)
-                          axis(1)
+                          if (axes) {
+                              oceDebug(debug, "drawing axes")
+                              axis(4, labels=FALSE)
+                              ytics <- axis(2, labels=FALSE)
+                              axis(2, at=ytics, labels=-ytics)
+                              axis(1)
+                          }
                           box()
                       } else {
                           plot(xxrange, yyrange,
@@ -656,9 +662,11 @@ setMethod(f="plot",
                                xlim=xlim, ylim=ylim,
                                col="white",
                                xlab="", ylab=ylab, axes=FALSE)
-                          axis(1, at=at, labels=labels)
-                          axis(2)
-                          axis(4, labels=FALSE)
+                          if (axes) {
+                              axis(1, at=at, labels=labels)
+                              axis(2)
+                              axis(4, labels=FALSE)
+                          }
                           box()
                       }
                       ## Bottom trace
@@ -716,7 +724,7 @@ setMethod(f="plot",
 
                       ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
                       ##waterDepth <- -waterDepth
-                      if (!grid)
+                      if (!grid && axes)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
                       bottom.x <- c(xx[1], xx, xx[length(xx)])
                       bottom.y <- c(graph.bottom, -waterDepth, graph.bottom)
@@ -857,7 +865,8 @@ setMethod(f="plot",
                           box()
                       }
                       ##axis(1, pretty(xxOrig))
-                      axis(1)
+                      if (axes)
+                          axis(1)
                       if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
@@ -972,77 +981,77 @@ setMethod(f="plot",
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate", "nitrate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite", "nitrite",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen", "oxygen",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate", "phosphate",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate", "silicate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         col=col, debug=debug-1, ...) 
+                                         axes=axes, col=col, debug=debug-1, ...) 
                       }
                   } else {
                       if (which[w] == 1) {
                           plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
                           plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
                           plotSubsection("sigmaTheta", expression(sigma[theta]),
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
                           plotSubsection("nitrate",     "nitrate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
                           plotSubsection("nitrite",     "nitrite",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
                           plotSubsection("oxygen",      "oxygen",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
                           plotSubsection("phosphate",   "phosphate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
                           plotSubsection("silicate",    "silicate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
-                                         col=col, debug=debug-1, ...)
+                                         axes=axes, col=col, debug=debug-1, ...)
                       }
                   }
                   if (which[w] == 20)
