@@ -398,7 +398,6 @@ setMethod(f="plot",
               ztype <- match.arg(ztype)
               drawPoints <- ztype == "points"
               coastline <- match.arg(coastline)
-              legend.loc <- match.arg(legend.loc)
 
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
@@ -859,7 +858,7 @@ setMethod(f="plot",
                       }
                       ##axis(1, pretty(xxOrig))
                       axis(1)
-                      if (legend)
+                      if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
 

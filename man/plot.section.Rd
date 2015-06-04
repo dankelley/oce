@@ -101,7 +101,8 @@
         defaults to a vector of length 200, with values spanning the data
         range.}
 
-    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}},
+        or set to the empty string to avoid plotting a legend.}
 
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number of
