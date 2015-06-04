@@ -34,6 +34,7 @@
      showStations=FALSE,
      showStart=TRUE,
      showBottom=TRUE,
+     axes=TRUE,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -119,6 +120,7 @@
         allowed methods are: \code{polygon}, which fills the space to the bottom,
         or \code{lines}, which draws lines from stations to the bottom, or
         \code{points}, which draws points at the bottom.}
+    \item{axes}{logical value indicating whether to draw axes.}
     \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
         also for \code{par(mar)}, computed from this.  The default is
         tighter than the R default, in order to use more space for the data
