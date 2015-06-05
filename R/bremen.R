@@ -19,14 +19,8 @@ setMethod(f="plot",
                   ## CTD
                   plot(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]))
               } else {
-                  ## assume lowered adcp
-                  par(mfrow=c(1, n-1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-                  for (i in 1:n) {
-                      if (names[i] != "pressure") {
-                          plot(x[[names[i]]], pressure, ylim=rev(range(pressure)), type='l', xlab=names[i])
-                          grid()
-                      }
-                  }
+                  ## assume lowered adcp ... FIXME: add other types as needed
+                  plot(as.ladp(x))
               }
           })
 
