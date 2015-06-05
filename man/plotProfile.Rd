@@ -2,9 +2,12 @@
 
 \alias{plotProfile}
 
-\title{Plot a CTD profile of various quantities}
+\title{Plot a profile, with decreasing pressure on the y axis}
 
-\description{Plot a CTD profile, in any of several common formats.}
+\description{Plot a profile, showing variation of some quantity (or quantities)
+    with pressure, using the oceanographic convention of putting lower
+    pressures nearer the top of the plot. This works for any \code{oce} object
+    that has a pressure column in its \code{data} slot.}
 
 \usage{plotProfile(x,
     xtype="salinity+temperature", 

@@ -2566,8 +2566,8 @@ plotProfile <- function (x,
         }
         oceDebug(debug, "} # plotJustProfile\n")
     }                                  # plotJustProfile
-    if (!inherits(x, "ctd"))
-        stop("method is only for objects of class '", "ctd", "'")
+    #if (!inherits(x, "ctd"))
+    #    stop("method is only for objects of class '", "ctd", "'")
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
@@ -2610,7 +2610,7 @@ plotProfile <- function (x,
         time <- x@data$time
     } else {
         time <- 0:(length(x@data$pressure) - 1)
-        if (!is.na(x@metadata$sampleInterval)) {
+        if (!is.null(x@metadata$sampleInterval) && !is.na(x@metadata$sampleInterval)) {
             know.time.unit <- TRUE
             time <- time * x@metadata$sampleInterval
         }
@@ -2866,7 +2866,8 @@ plotProfile <- function (x,
                             cex=cex, pch=pch, col=col, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
-    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
+    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
+                            "u" ,"v")) {
         if (!(xtype %in% names(x@data)))
             stop("no ", xtype, " in this station")
         if (!any(!is.na(x@data[[xtype]])))
