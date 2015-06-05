@@ -148,6 +148,10 @@
         \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
         \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
         \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+        \item \code{which=9} or \code{"u"} for eastward velocity
+        \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
+        \item \code{which=11} or \code{"v"} for northward velocity
+        \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
         \item \code{which=20} or \code{"data"} for a dot for each data location
         \item \code{which=99} or \code{"map"} for a location map
     }

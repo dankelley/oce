@@ -14,7 +14,7 @@
 
 \section{Methods}{
 
-    Consider a CTD object named \code{ctd}.
+    Consider an object named \code{ctd}.
 
     \emph{Accessing metadata.}
   

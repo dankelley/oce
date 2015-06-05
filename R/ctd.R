@@ -349,8 +349,8 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
     oceDebug(debug, "ctdDecimate(x, p, method=\"",
              if (methodFunction) "(a function)" else method,
              "\", ...) {\n", sep="", unindent=1)
-    if (!inherits(x, "ctd"))
-        stop("method is only for objects of class '", "ctd", "'")
+    ## if (!inherits(x, "ctd"))
+    ##     stop("method is only for objects of class '", "ctd", "'")
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
