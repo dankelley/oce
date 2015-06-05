@@ -84,7 +84,7 @@ fixColumn <- function(x) {
     as.vector(x)
 }
 
-as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, src="")
+as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (missing(longitude)) stop("must supply longitude")
     if (missing(latitude)) stop("must supply latitude")
