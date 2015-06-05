@@ -24,7 +24,7 @@ setMethod(f="summary",
                       stn.sum[i, 1] <- stn@metadata$longitude
                       stn.sum[i, 2] <- stn@metadata$latitude
                       stn.sum[i, 3] <- length(stn@data$pressure)
-                      if (is.finite(stn@metadata$waterDepth)) {
+                      if (!is.null(stn@metadata$waterDepth) && is.finite(stn@metadata$waterDepth)) {
                           stn.sum[i, 4] <- stn@metadata$waterDepth
                       } else {
                           temp <- stn@data$temperature
@@ -119,9 +119,9 @@ setMethod(f="show",
                   cat("    ")
                   if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                       cat(thisStn@metadata$station, " ")
-                  cat(sprintf("%.5f N   %.5f E   %.0f m", object@data$station[[i]]@metadata$latitude,
-                              object@data$station[[i]]@metadata$longitude,
-                              object@data$station[[i]]@metadata$waterDepth))
+                  cat(sprintf("%.5f N   %.5f E   %.0f m", thisStn@metadata$latitude,
+                              thisStn@metadata$longitude,
+                              thisStn@metadata$waterDepth))
                   cat("\n")
               }
           })
@@ -274,7 +274,7 @@ makeSection <- function(item, ...)
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
-                ##cat("adding station i=", i, "\n")
+                cat("adding station i=", i, "\n")
                 thisStn <- extra.args[[i-1]]
 		stn[i] <- thisStn@metadata$station
 		lon[i] <- thisStn@metadata$longitude
@@ -282,53 +282,58 @@ makeSection <- function(item, ...)
 		station[[i]] <- thisStn
 	    }
 	}
-    } else if (inherits(item, "list")) {
+    } else if (inherits(item, "list") && !inherits(item[[1]], "oce")) {
+        stop("cannot yet handle a list of non-oce objects")
+    } else if (inherits(item, "list") && inherits(item[[1]], "oce")) {
 	numStations <- length(item)
 	station <- vector("list", numStations)
 	stn <- vector("character", numStations)
 	lon <- vector("numeric", numStations)
 	lat <- vector("numeric", numStations)
-	if (numStations > 1) {
-            if (inherits(item, "oce") {
-                for (i in 1:numStations) {
-                    thisItem <- item[[i]]
-                    stn[i] <- thisItem@metadata$station
-                    lon[i] <- thisItem@metadata$longitude
-                    lat[i] <- thisItem@metadata$latitude
-                    station[[i]] <- thisItem
+	if (numStations < 1) 
+            stop("need more than 1 item in the list, to create a section")
+        if (inherits(item[[1]], "oce")) {
+            for (i in 1:numStations) {
+                if (!inherits(item[[i]], "oce"))
+                    stop("list cannot be a mixture of oce and non-oce items")
+                thisItem <- item[[i]]
+                stn[i] <- if (is.null(thisItem@metadata$station)) i else thisItem@metadata$station
+                lon[i] <- thisItem@metadata$longitude
+                lat[i] <- thisItem@metadata$latitude
+                station[[i]] <- thisItem
+            }
+        } else {
+            message("BB BB BB")
+            ## demand that items contain @data$pressure
+            if ("pressure" %in% names(item[[1]]) || "pressure" %in% names(item[[1]]@data)) {
+                stop("items must contain pressure")
+            }
+            message("NOTE -- entering provisional code ... may not work ... contact author if not")
+            for (thisItem in item) {
+                names <- names(thisItem)
+                if (!("longitude" %in% names)) stop("each item entry must contain longitude")
+                if (!("latitude" %in% names)) stop("each item must entry contain latitude")
+                ## FIXME: maybe permits 'depth' here
+                if (!("pressure" %in% names)) stop("each item must entry contain pressure")
+                if (!("station" %in% names)) thisItem$station <- seq_along(thisItem$longitude)
+                message("FIXME: next: save things in 'names', except lon/lat/station")
+                len <- length(thisItem$pressure)
+                print(names)
+                names <- names[names!="longitude"]
+                names <- names[names!="latitude"]
+                names <- names[names!="station"]
+                print(names)
+                data <- list()
+                for (name in names) {
+                    message("check '", name, "'")
+                    if (length(name) == len) {
+                        message(" ... should save '", name, "'")
+                        data[[name]] <- thisItem[[name]]
+                    }
                 }
-          } else {
-              ## perhaps it's a list of lists, or a list of data frames
-              for (thisItem in item) {
-                  message("** item **")
-                  names <- names(thisItem)
-                  if (!("longitude" %in% names)) stop("each item entry must contain longitude")
-                  if (!("latitude" %in% names)) stop("each item must entry contain latitude")
-                  ## FIXME: maybe permits 'depth' here
-                  if (!("pressure" %in% names)) stop("each item must entry contain pressure")
-                  if (!("station" %in% names)) thisItem$station <- seq_along(thisItem$longitude)
-                  message("FIXME: next: save things in 'names', except lon/lat/station")
-                  len <- length(thisItem$pressure)
-                  print(names)
-                  names <- names[names!="longitude"]
-                  names <- names[names!="latitude"]
-                  names <- names[names!="station"]
-                  print(names)
-                  data <- list()
-                  for (name in names) {
-                      message("check '", name, "'")
-                      if (length(name) == len) {
-                          message(" ... should save '", name, "'")
-                          data[[name]] <- thisItem[[name]]
-                      }
-                  }
-                  str(data)
-                  browser()
-              }
-          }
-	} else {
-	    stop("need more than 1 station to make a section")
-	}
+                str(data)
+            }
+        }
     } else if (class(item) == "character") {
 	numStations <- length(item)
 	station <- vector("list", numStations)
@@ -436,7 +441,9 @@ setMethod(f="plot",
               which <- oce.pmatch(which,
                                   list(temperature=1, salinity=2, 
                                        sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                       phosphate=7, silicate=8, data=20, map=99))
+                                       phosphate=7, silicate=8, 
+                                       u=9, uz=10, v=11, vz=12, # lowered adcp
+                                       data=20, map=99))
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
 
 
@@ -489,6 +496,7 @@ setMethod(f="plot",
               {
                   oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
+
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
@@ -678,7 +686,7 @@ setMethod(f="plot",
                                ylab=ylab,
                                axes=FALSE)
                           if (axes) {
-                              oceDebug(debug, "drawing axes")
+                              oceDebug(debug, "drawing axes\n")
                               axis(4, labels=FALSE)
                               ytics <- axis(2, labels=FALSE)
                               axis(2, at=ytics, labels=-ytics)
@@ -706,6 +714,7 @@ setMethod(f="plot",
                       ## For ztype == "points", plot the points.  Otherwise, collect them in zz
                       ## for the contour or image plot.
                       for (i in 1:numStations) {
+                          ##oceDebug(debug, "filling matrix for station", i, "\n")
                           if (variable != "data") {
                               if (drawPoints) {
                                   p <- x@data$station[[stationIndices[i]]]@data$pressure
@@ -719,19 +728,21 @@ setMethod(f="plot",
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
-                                  if (eos == "teos" && variable == "temperature")
+                                  if (eos == "teos" && variable == "temperature") {
                                       zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
-                                  else if (eos == "teos" && variable == "salinity")
+                                  } else if (eos == "teos" && variable == "salinity") {
                                       zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
-                                  else
+                                  } else {
                                       zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                                  }
                               }
                           }
                           if (grid && !drawPoints)
                               points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                           temp <- x@data$station[[stationIndices[i]]]@data$temperature
                           len <- length(temp)
-                          if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
+                          if ("waterDepth" %in% names(x@data$station[[stationIndices[i]]]@metadata)
+                              && is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
                               wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
                               ##oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
                           } else {
@@ -811,7 +822,7 @@ setMethod(f="plot",
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
-                                      stop("unkown ztype: \"", ztype, "\" [1]")
+                                      stop("unknown ztype: \"", ztype, "\" [1]")
                                   }
                               } else {
                                   if (ztype == 'contour') {
@@ -829,7 +840,7 @@ setMethod(f="plot",
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
-                                      stop("unkown ztype: \"", ztype, "\" [2]")
+                                      stop("unknown ztype: \"", ztype, "\" [2]")
                                   }
                               }
                           } else {
@@ -837,11 +848,7 @@ setMethod(f="plot",
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                              axes=FALSE, labcex=0.8,
-                                              add=TRUE,
-                                              col=col,
-                                              xaxs="i", yaxs="i",
-                                              ...)
+                                              labcex=0.8, add=TRUE, col=col, ...)
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
@@ -853,7 +860,7 @@ setMethod(f="plot",
                                   } else if (ztype == "points") {
                                       ## nothing to do now
                                   } else {
-                                      stop("unkown ztype: \"", ztype, "\" [3]")
+                                      stop("unknown ztype: \"", ztype, "\" [3]")
                                   }
                               } else {
                                   if (ztype == 'contour') {
@@ -871,7 +878,7 @@ setMethod(f="plot",
                                       .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
-                                      stop("unkown ztype: \"", ztype, "\" [4]")
+                                      stop("unknown ztype: \"", ztype, "\" [4]")
                                   }
                               }
                           }
@@ -968,7 +975,7 @@ setMethod(f="plot",
                       } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$latitude
                       } else {
-                          stop('unkown xtype; it must be one of: "distance", "track", "longitude", or "latitude"')
+                          stop('unknown xtype; it must be one of: "distance", "track", "longitude", or "latitude"')
                       }
                   }
               } else {
@@ -1040,6 +1047,22 @@ setMethod(f="plot",
                           plotSubsection("silicate", "silicate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 9) {
+                          plotSubsection("u", "u",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 10) {
+                          plotSubsection("uz", "du/dz",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 11) {
+                          plotSubsection("v", "v",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 12) {
+                          plotSubsection("vz", "dv/dz",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
                       }
                   } else {
                       if (which[w] == 1) {
@@ -1082,6 +1105,22 @@ setMethod(f="plot",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
+                      } else if (which[w] == 9) {
+                          plotSubsection("u", "u",
+                                         xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 10) {
+                          plotSubsection("uz", "du/dz",
+                                         xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 11) {
+                          plotSubsection("v", "v",
+                                         xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
+                      } else if (which[w] == 12) {
+                          plotSubsection("vz", "dv/dz",
+                                         xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...) 
                       }
                   }
                   if (which[w] == 20)

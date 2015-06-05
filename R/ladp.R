@@ -1,0 +1,104 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+setMethod(f="initialize",
+          signature="ladp",
+          definition=function(.Object,longitude,latitude,station,time,
+                              pressure,u,v,salinity,temperature, ...) {
+              ## Assign to some columns so they exist if needed later (even if they are NULL)
+              .Object@metadata$longitude <- if (missing(longitude)) "?" else longitude
+              .Object@metadata$latitude <- if (missing(latitude)) "?" else latitude
+              .Object@metadata$station <- if (missing(station)) "?" else station
+              .Object@metadata$time <- if (missing(time)) NULL else time
+              .Object@data$pressure <- if (missing(pressure)) NULL else pressure
+              .Object@data$u <- if (missing(u)) NULL else u
+              .Object@data$v <- if (missing(v)) NULL else v
+              .Object@data$salinity <- if (missing(salinity)) NULL else salinity
+              .Object@data$temperature <- if (missing(temperature)) NULL else temperature
+              dots <- list(...)
+              dotsNames <- names(dots)
+              for (i in seq_along(dots)) {
+                  ##message("extra column named: ", dotsNames[i])
+                  .Object@data[dotsNames[i]] <- dots[[i]]
+              }
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'ladp' object"
+              return(.Object)
+          })
+
+
+setMethod(f="summary",
+          signature="ladp",
+          definition=function(object, ...) {
+              cat("LADP Summary\n------------\n\n")
+              showMetadataItem(object, "station", "Station:             ")
+              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                               object@metadata$longitude,
+                                                               digits=5), "\n")
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of data::\n")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
+setMethod(f="[[",
+          signature(x="ladp", i="ANY", j="ANY"),
+          ##definition=function(x, i, j=NULL, drop=NULL) {
+          definition=function(x, i, j, drop) {
+              if (i == "pressure" || i == "p") {
+                  x@data$pressure
+              } else if (i == "u") {
+                  x@data$v
+              } else if (i == "v") {
+                  x@data$v
+              } else if (i == "uz") {
+                  x@data$uz
+              } else if (i == "vz") {
+                  x@data$vz
+              } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
+                  x@data$temperature
+              } else if (i == "salinity" || i == "S") {
+                  x@data$salinity
+              } else {
+                  ## I use 'as' because I could not figure out callNextMethod() etc
+                  ## rval <- as(x, "oce")[[i, j, drop]]
+                  as(x, "oce")[[i]]
+              }
+          })
+
+fixColumn <- function(x) {
+    x[!is.finite(x)] <- NA
+    as.vector(x)
+}
+
+as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, src="")
+{
+    if (missing(longitude)) stop("must supply longitude")
+    if (missing(latitude)) stop("must supply latitude")
+    if (missing(station)) station <- "?"
+    if (missing(time)) time <- NULL
+    if (missing(pressure)) stop("must supply pressure")
+    if (missing(u)) stop("must supply u") else u <- fixColumn(u)
+    if (missing(v)) stop("must supply v") else v <- fixColumn(v)
+    uz <- if (missing(uz)) NULL else fixColumn(uz)
+    vz <- if (missing(vz)) NULL else fixColumn(vz)
+    salinity <- if (missing(salinity)) NULL else fixColumn(salinity)
+    temperature <- if (missing(temperature)) NULL else fixColumn(temperature)
+    new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
+        pressure=pressure, u=u, v=v, salinity=salinity, temperature=temperature,
+        uz=uz, vz=vz)  
+}
+
