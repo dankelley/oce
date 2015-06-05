@@ -21,10 +21,9 @@ setMethod(f="plot",
               } else {
                   ## assume lowered adcp
                   par(mfrow=c(1, n-1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-                  Depth <- x[["depth"]]
                   for (i in 1:n) {
-                      if (names[i] != "depth") {
-                          plot(x[[names[i]]], Depth, ylim=rev(range(Depth)), type='l', xlab=names[i])
+                      if (names[i] != "pressure") {
+                          plot(x[[names[i]]], pressure, ylim=rev(range(pressure)), type='l', xlab=names[i])
                           grid()
                       }
                   }
@@ -76,7 +75,7 @@ read.bremen <- function(file)
     names[nicknames=="sth"] <- "sigmaTheta"
     names[nicknames=="s"] <- "salinity"
     names[nicknames=="o"] <- "oxygen"
-    names[nicknames=="z"] <- "depth"
+    names[nicknames=="z"] <- "pressure" # NOTE: bremen files have positive z values
     ## infer column names from last line of header (guessing a bit)
     data <- read.table(text=lines[-seq.int(1, headerLength)], header=FALSE, col.names=names)
     for (name in names(data)) {
