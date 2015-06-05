@@ -7,7 +7,9 @@
     pressure, u, v, uz, vz, salinity, temperature, ...)}
 
 \arguments{
-    \item{longitude}{longitude in degrees east (use negative in western hemisphere).}
+    \item{longitude}{longitude in degrees east, or an \code{oce} object that
+        contains the data otherwise given by \code{longitude} and the
+        other arguments.}
     \item{latitude}{latitude in degrees east (use negative in southern hemisphere).}
     \item{station}{number or string indicating station ID.}
     \item{time}{time at the start of the profile, constructed by e.g. \code{\link{as.POSIXct}}.}
