@@ -119,9 +119,10 @@ setMethod(f="show",
                   cat("    ")
                   if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                       cat(thisStn@metadata$station, " ")
+                  waterDepth <- if (is.null(thisStn@metadata$waterDepth)) max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                   cat(sprintf("%.5f N   %.5f E   %.0f m", thisStn@metadata$latitude,
                               thisStn@metadata$longitude,
-                              thisStn@metadata$waterDepth))
+                              waterDepth))
                   cat("\n")
               }
           })
