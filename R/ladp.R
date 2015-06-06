@@ -2,12 +2,13 @@
 
 setMethod(f="initialize",
           signature="ladp",
-          definition=function(.Object,longitude,latitude,station,time,
+          definition=function(.Object,longitude,latitude,station,waterDepth,time,
                               pressure,u,v,salinity,temperature, ...) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$longitude <- if (missing(longitude)) "?" else longitude
               .Object@metadata$latitude <- if (missing(latitude)) "?" else latitude
               .Object@metadata$station <- if (missing(station)) "?" else station
+              .Object@metadata$waterDepth <- if (missing(station)) NA else waterDepth
               .Object@metadata$time <- if (missing(time)) NULL else time
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$u <- if (missing(u)) NULL else u
@@ -34,6 +35,7 @@ setMethod(f="summary",
               cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                                object@metadata$longitude,
                                                                digits=5), "\n")
+              cat("* Water depth:        ",       object@metadata$waterDepth, "\n")
               names <- names(object@data)
               ndata <- length(names)
               isTime <- names == "time"
