@@ -24,9 +24,9 @@
 \details{For \code{eos="unesco"}, finds the practical salinity that yields the
     given density, with the given in-situ temperature and pressure.  The method
     is a bisection search with a salinity tolerance of 0.001.  For
-    \code{eos="gsw"}, the \code{gsw} function
-    \code{\link[gsw]{gsw_SA_from_rho}} is used to infer Absoute Salinity from
-    Conservative Temperature.}
+    \code{eos="gsw"}, the function \code{\link[gsw]{gsw_SA_from_rho}} in the
+    \CRANpkg{gsw} packae is used to infer Absoute Salinity from Conservative
+    Temperature.}
 
 \value{Practical Salinity, if \code{eos="unesco"}, or Absolute Salinity, if
     \code{eos="gsw"}.}

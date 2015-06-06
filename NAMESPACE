@@ -1,6 +1,7 @@
 useDynLib(oce)
 import(methods)
 import(gsw)
+#import(rgdal)
 importFrom("graphics", plot)
 importFrom("utils", head, tail)
 importFrom("stats", predict, time, window)
@@ -53,6 +54,7 @@ export(abbreviateTimeLabels,
        ctdTrim,
        ctdUpdateHeader,
        ctimeToSeconds,
+       coastlineCut,
        curl,
        decimate,
        decodeHeaderNortek,

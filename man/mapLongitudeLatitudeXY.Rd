@@ -39,8 +39,7 @@ plot(xy, type='l', asp=1)
 }
 }
 
-\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
-    PROJ.4).}
+\author{Dan Kelley}
 
 \keyword{hplot}
 

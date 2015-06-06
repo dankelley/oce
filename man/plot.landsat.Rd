@@ -124,7 +124,7 @@
 
 \seealso{The documentation for \code{\link{landsat-class}} explains the
     structure of landsat objects, and also outlines the other functions dealing
-    with them.  The \code{ocedata} package provides a dataset named
+    with them.  The \CRANpkg{ocedata} package provides a dataset named
     \code{landsat}.}
 
 \references{1. \url{http://terralook.cr.usgs.gov/what_is_terralook.php}}

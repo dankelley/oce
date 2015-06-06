@@ -1,7 +1,9 @@
-## Author notes on proj4:
+## Author notes on PROJ.4:
 ## 1. http://stackoverflow.com/questions/tagged/proj4
-## 2. proj4 used by:
+## 2. PROJ.4 is used by the following R packages:
 ##    1. openstreetmap
+##    2. proj4
+##    3. rgdal
 
 .axis <- local({
     val <- list(longitude=NULL, latitude=NULL)
@@ -165,35 +167,45 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
         oceDebug(debug, "drawing axis on side 2\n")
         AT <- NULL
         LAB <- NULL
+        f <- function(lon) lonlat2map(lon,lat)$x-usr[1]
+        ## FIXME: if this uniroot() method looks good for side=2, try for side=1 also.
+        LONLIST <- seq(-360, 360, 20) # smaller increments are slower but catch more labels
         for (lat in latitude) {
             if (debug > 3)
                 oceDebug(debug, "check ", lat, "N for axis on side=2\n", sep="")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
-            for (hemisphere in 1:2) {
-                LONLOOK <- if (1 == hemisphere) c(-360, 0) else c(0, 360)
-                o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]),
-                              lower=LONLOOK[1], upper=LONLOOK[2])
-                if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
-                    if (debug > 3)
-                        oceDebug(debug, "  ", lat, "N is unmappable [hemisphere ", hemisphere, "]; o$objective=", o$objective, "\n", sep="")
+            for (iLON in 2:length(LONLIST)) {
+                #if (lat == 55) browser()
+                LONLOOK <- LONLIST[iLON+c(-1,0)]
+                #cat("LONLOOK[1]", LONLOOK[1], "f(...)", f(LONLOOK[1]), "\n")
+                #cat("LONLOOK[2]", LONLOOK[2], "f(...)", f(LONLOOK[2]), "\n")
+                f1 <- f(LONLOOK[1])
+                if (!is.finite(f1))
                     next
-                }
-                ##cat("lat:", lat, ", o$minimum:", o$minimum, "(best)\n")
-                ## Check that the point matches lat, as well as lon (this matters for full-globe)
-                P <- lonlat2map(o$minimum, lat)
-                ## oceDebug(debug, "Investigate point at x=", P$x, ", y=", P$y, "; note usr[3]=", usr[3], "\n")
+                f2 <- f(LONLOOK[2])
+                if (!is.finite(f2))
+                    next
+                if (f1 * f2 > 0)
+                    next
+                r <- uniroot(f, lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
+                P <- lonlat2map(r$root, lat)
+                ##OLD| ## using optimize. This seems slower, and can hit boundaries.
+                ##OLD| o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]), lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
+                ##OLD| if (is.na(o$objective) || o$objective > 0.01*axisSpan) {
+                ##OLD|     if (debug > 3) oceDebug(debug, "  ", lat, "N is unmappable for iLON=", iLON, "; o$objective=", o$objective, "\n", sep="")
+                ##OLD|     next
+                ##OLD| }
+                ##OLD| # Check that the point matches lat, as well as lon (this matters for full-globe)
+                #P <- lonlat2map(o$minimum, lat)
                 y <- P$y
                 if (is.finite(P$x) && (abs(P$x - usr[1]) < 0.01 * (usr[2] - usr[1]))) {
                     if (!is.na(y) && usr[3] < y && y < usr[4]) {
                         label <- fixneg(paste(lat, "N", sep=""))
-                        ## mtext(label, side=2, at=y)
                         AT <- c(AT, y)
                         LAB <- c(LAB, label)
-                        if (debug > 3)
-                            oceDebug(debug, "  ", label, " intersects side 2 [hemisphere ", hemisphere, "]\n", sep="")
+                        if (debug > 3) oceDebug(debug, "  ", label, " intersects side 2\n", sep="")
                     } else {
-                        if (debug > 3)
-                            oceDebug(debug, "  ", lat, "N does not intersect side 2 [hemisphere ", hemisphere, "]\n", sep="")
+                        if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
                     }
                 } else {
                     oceDebug(debug, "skipping off-globe point\n")
@@ -354,7 +366,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     #    grid <- rep(15, 2)
     #message("000")
     xy <- lonlat2map(longitude, latitude, projection=projection, parameters=parameters, orientation=orientation)
-    #message("/000")
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
     limitsGiven <- !missing(latitudelim) && !missing(longitudelim)
@@ -363,7 +374,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     y <- xy$y
     xorig <- xy$x
     yorig <- xy$y
-    if (FALSE) {
+    oce_uhl <- options()$oce_uhl
+    if (!is.null(oce_uhl) && oce_uhl == "method 1") {
         ## Insert NA to break long horizontal jumps, which can be caused by coastline
         ## segments that "pass across" the edge of a plot.
         dx <- abs(diff(x))
@@ -430,7 +442,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         x <- xy$x
         y <- xy$y
     }
-
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
     usr <- par('usr')
@@ -472,23 +483,35 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
         ## Estimate the span (km) of the displayed portion of the earth.
         span <- 10e3 # assume hemispheric, if we cannot determine otherwise
-        if (TRUE) {                    # 2014-11-16 for issue 543
+        if (TRUE) {
+            ## 2014-11-16 for issue 543
+            ## 2015-05-01 for issue 640
             ## Measure lower-left to upper-right diagonal
-            ll <- map2lonlat(usr[1], usr[3])
-            ur <- map2lonlat(usr[2], usr[4])
+            ## Use alpha because min/max fail with some projections (e.g. wintri)
+            ## that are not cleanly invertable in PROJ.4. What can happen is that
+            ## a particular lon/lat will yield an x/y that cannot be inverted
+            ## because of a loop that diverges instead of converging.
+            ## NB. alpha=0.001 fails "+proj=wintri +lon_0=90", so increase
+            ## by factor 20, which seems to work in my globe-drawing tests.
+            alpha <- 0.02 # because min() fails with some proj (e.g. wintri)
+            qx <- quantile(x, c(alpha, 1.0-alpha), na.rm=TRUE)
+            qy <- quantile(y, c(alpha, 1.0-alpha), na.rm=TRUE)
+            ll <- map2lonlat(qx[1], qy[1])
+            ur <- map2lonlat(qx[2], qy[2])
             if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
-               is.finite(ur$longitude) && is.finite(ur$latitude)) {
+                is.finite(ur$longitude) && is.finite(ur$latitude)) {
                 onearth <- function(x) {
-                   x$longitude <- ifelse(x$longitude < -180, -180, ifelse(x$longitude > 180, 180, x$longitude))
-                   x$latitude <- ifelse(x$latitude < -90, -90, ifelse(x$latitude > 90, 90, x$latitude))
-                   x
-               }
-               ll <- onearth(ll)
-               ur <- onearth(ur)
-               ## estimate span in deg lat by dividing by 111km
-               span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
-           }
-        } else {                       # 2014-11-16 for issue 543 (will delete next in a week or so)
+                    x$longitude <- ifelse(x$longitude < -180, -180, ifelse(x$longitude > 180, 180, x$longitude))
+                    x$latitude <- ifelse(x$latitude < -90, -90, ifelse(x$latitude > 90, 90, x$latitude))
+                    x
+                }
+                ll <- onearth(ll)
+                ur <- onearth(ur)
+                ## estimate span in deg lat by dividing by 111km
+                span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
+            }
+        } else {
+            ## **NOT DONE**
             ## Now next may fail for e.g. molleweide has ll and ur that are
             ## un-invertable, since the globe may not fill the whole plotting area.
             mlat <- mean(longitude,na.rm=TRUE)
@@ -1093,23 +1116,44 @@ map2lonlat <- function(x, y, init=c(0,0))
     ## NB. if projections are set by mapPlot() or lonlat2map(), only one of the 
     ## following two tests can be true.
     if ("proj4" == .Projection()$type) {
-        if (!getOption("externalProj4", FALSE)) {
-            ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-            XY <- .C("proj4_interface", as.character(.Projection()$projection), as.integer(FALSE),
-                     as.integer(n), as.double(x), as.double(y),
-                     X=double(n), Y=double(n), NAOK=TRUE)
-            return(list(longitude=XY$X, latitude=XY$Y))
+        if (requireNamespace("rgdal", quietly=TRUE)) {
+            owarn <- options()$warn
+            options(warn=-1)
+            XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+            ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
+            ## up on the idea of using rawTransform().
+            ##> n <- length(x)
+            ##> XY <- rgdal::rawTransform(projfom=as.character(.Projection()$projection), projto="+proj=longlat", n=n, x=x, y=y)
+            options(warn=owarn)
+            return(list(longitude=XY[,1], latitude=XY[,2]))
+            ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
+            ## up on the idea of using rawTransform().
+            ##> return(list(longitude=XY[[1]], latitude=XY[[2]]))
         } else {
-            ##message("doing projection calculations with 'proj4' package")
-            if (!requireNamespace("proj4", quietly=TRUE))
-                stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
-            xy <- list(x=NA, y=NA)
-            ## FIXME: maybe we should do point-by-point if this yields an error
-            try({
-                xy <- proj4::project(list(x=x, y=y), proj=.Projection()$projection, inverse=TRUE)
-            }, silent=TRUE)
-            return(list(longitude=xy$x, latitude=xy$y))
+            stop('must install.packages("rgdal") to plot maps with projections')
         }
+        ## 20150523 if (!getOption("externalProj4", FALSE)) {
+        ## 20150523     ##message("doing PROJ.4 calculations within Oce, for speed and accuracy")
+        ## 20150523     owarn <- options()$warn
+        ## 20150523     options(warn=-1)
+        ## 20150523     XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+        ## 20150523     options(warn=owarn)
+        ## 20150523     return(list(longitude=XY[,1], latitude=XY[,2]))
+        ## 20150523     ##pre-rgdal XY <- .C("proj4_interface", as.character(.Projection()$projection), as.integer(FALSE),
+        ## 20150523     ##pre-rgdal          as.integer(n), as.double(x), as.double(y),
+        ## 20150523     ##pre-rgdal          X=double(n), Y=double(n), NAOK=TRUE)
+        ## 20150523     ##pre-rgdal return(list(longitude=XY$X, latitude=XY$Y))
+        ## 20150523 } else {
+        ## 20150523     ##message("doing projection calculations with 'proj4' package")
+        ## 20150523     if (!requireNamespace("proj4", quietly=TRUE))
+        ## 20150523         stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
+        ## 20150523     xy <- list(x=NA, y=NA)
+        ## 20150523     ## FIXME: maybe we should do point-by-point if this yields an error
+        ## 20150523     try({
+        ## 20150523         xy <- proj4::project(list(x=x, y=y), proj=.Projection()$projection, inverse=TRUE)
+        ## 20150523     }, silent=TRUE)
+        ## 20150523     return(list(longitude=xy$x, latitude=xy$y))
+        ## 20150523 }
     } else if ("mapproj" == .Projection()$type) {
         if (!requireNamespace("mapproj", quietly=TRUE))
             stop("must install 'mapproj' package to use mapproj-style map projections")
@@ -1702,34 +1746,53 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         #if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
         #if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
         ll <- cbind(longitude, latitude)
-        if (!getOption("externalProj4", FALSE)) {
-            ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-            if (0 == length(grep("ellps=", projection)))
-                projection<- paste(projection, "+ellps=sphere")
-            n <- length(longitude)
-            XY <- .C("proj4_interface", as.character(projection), as.integer(TRUE),
-                     as.integer(n), as.double(longitude), as.double(latitude),
-                     X=double(n), Y=double(n), NAOK=TRUE)
-            xy <- list(x=XY$X, y=XY$Y)
+
+        ## Next added 20150523 for rgdal transition; keep old code for a while
+        if (0 == length(grep("ellps=", projection)))
+            projection<- paste(projection, "+ellps=sphere")
+        n <- length(longitude)
+        if (requireNamespace("rgdal", quietly=TRUE)) {
+            owarn <- options()$warn
+            options(warn=-1)
+            XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
+            options(warn=owarn)
+            xy <- list(x=XY[,1], y=XY[,2])
         } else {
-            ## message("doing projection calculations with 'proj4' package")
-            if (!requireNamespace("proj4", quietly=TRUE))
-                stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
-            m <- NULL                 # for the try()
-            try({
-                m <- proj4::project(ll, proj=projection)
-            }, silent=TRUE)
-            if (is.null(m)) {
-                m <- matrix(unlist(lapply(1:n, function(i)
-                                          {
-                                              t <- try({proj4::project(ll[i,], proj=projection)}, silent=TRUE)
-                                              if (inherits(t, "try-error")) c(NA, NA) else t[1,]
-                                          })),
-                            ncol=2, byrow=TRUE)
-                warning("proj4 calculation is slow because it was done pointwise")
-            }
-            xy <- list(x=m[,1], y=m[,2])
+            stop('must install.packages("rgdal") to plot maps with projections')
         }
+        ## 20150523 if (!getOption("externalProj4", FALSE)) {
+        ## 20150523     ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
+        ## 20150523     if (0 == length(grep("ellps=", projection)))
+        ## 20150523         projection<- paste(projection, "+ellps=sphere")
+        ## 20150523     n <- length(longitude)
+        ## 20150523     owarn <- options()$warn
+        ## 20150523     options(warn=-1)
+        ## 20150523     XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
+        ## 20150523     options(warn=owarn)
+        ## 20150523     xy <- list(x=XY[,1], y=XY[,2])
+        ## 20150523     ##pre-rgdal XY <- .C("proj4_interface", as.character(projection), as.integer(TRUE),
+        ## 20150523     ##pre-rgdal          as.integer(n), as.double(longitude), as.double(latitude),
+        ## 20150523     ##pre-rgdal          X=double(n), Y=double(n), NAOK=TRUE)
+        ## 20150523     ##pre-rgdal xy <- list(x=XY$X, y=XY$Y)
+        ## 20150523 } else {
+        ## 20150523     ## message("doing projection calculations with 'proj4' package")
+        ## 20150523     if (!requireNamespace("proj4", quietly=TRUE))
+        ## 20150523         stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
+        ## 20150523     m <- NULL                 # for the try()
+        ## 20150523     try({
+        ## 20150523         m <- proj4::project(ll, proj=projection)
+        ## 20150523     }, silent=TRUE)
+        ## 20150523     if (is.null(m)) {
+        ## 20150523         m <- matrix(unlist(lapply(1:n, function(i)
+        ## 20150523                                   {
+        ## 20150523                                       t <- try({proj4::project(ll[i,], proj=projection)}, silent=TRUE)
+        ## 20150523                                       if (inherits(t, "try-error")) c(NA, NA) else t[1,]
+        ## 20150523                                   })),
+        ## 20150523                     ncol=2, byrow=TRUE)
+        ## 20150523         warning("proj4 calculation is slow because it was done pointwise")
+        ## 20150523     }
+        ## 20150523     xy <- list(x=m[,1], y=m[,2])
+        ## 20150523 }
         .Projection(list(type=if (substr(projection, 1, 1)=="+") "proj4" else "mapproj", projection=projection)) # turn on proj4
         ##mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     }

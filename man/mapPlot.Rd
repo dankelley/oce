@@ -5,11 +5,12 @@
 \title{Plot a map}
 
 \description{Plot coordinates as a map, using one of many possible projections
-    calculated with the \code{PROJ.4} [6] code that is included within oce.
-    (For a temporary alternative, see \dQuote{Deprecation notice}.) The
-    projection parameters are stored in a local variable that can be retrieved
-    by related functions, making it easy to add more items so the map,
-    including points, lines, text, images and contours.}
+    calculated with the \code{PROJ.4} projections [6] provided by the
+    \CRANpkg{rgdal} package.  (For a temporary alternative, see
+    \dQuote{Deprecation notice}.) The projection parameters are stored in a
+    local variable that can be retrieved by related functions, making it easy
+    to add more items so the map, including points, lines, text, images and
+    contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
     grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
@@ -71,7 +72,7 @@
         defaults will be used.}
 
     \item{projection}{optional indication of projection.  This is normally a
-        string in the format used by the \code{proj4} package, i.e.  starting
+        string in the format used by the \code{rgdal} package, i.e.  starting
         with \code{+proj=}. (See \dQuote{Deprecation notice}.)}
 
     \item{parameters,orientation}{See \dQuote{Deprecation notice}.}
@@ -97,23 +98,13 @@
 
 \details{Creates a map using the indicated projection.  As noted in the
     information on the \code{projection} argument, projections are best
-    specified in the notation used by \code{project()} in the \code{proj4}
+    specified in the notation used by \code{project()} in the \code{rgdal}
     package, although (at least temporarily) it is also possible to specify it
     in the notation of \code{mapproject()} in the \code{mapproj} package.
     
     Once a projection is set, the many functions that add more material to a
     map will use that same projection.
     
-    %For \code{PROJ.4}-style projections, the default is to use \code{PROJ.4}
-    %code that is built into Oce.  However, in a feature that may be eliminated
-    %at any time without notice, if \code{options(externalProj4=TRUE)}, then the
-    %\code{proj4} package will be used instead.  The default method is much
-    %better because the \code{proj4} package handles unprojectable points
-    %poorly, so that coordinate vectors containing such points must be processed
-    %one point at a time, at considerable penalty in speed.  For example, using
-    %the external \code{proj4} package on a worldwide Mercator plot yields a
-    %slowdown by a factor of 50X.
-
     Further details on map projections are provided by [1,11], an exhaustive
     treatment that includes many illustrations, an overview of the history of
     the topic, and some notes on the strengths and weaknesses of the various
@@ -254,12 +245,12 @@ dev.off()
     \code{mapproject} in the \code{mapproj} package. 
     
     Those who choose the (recommended) PROJ.4 system [5,6] have a wide range of
-    projections to choose from. These are listed in the table given below.  For
-    example, set \code{projection="+proj=aea"} to select the Albers equal area
-    projection.
+    projections to choose from. These are provided by the \code{rgdal} package,
+    and listed in the table given below.  For example, set
+    \code{projection="+proj=aea"} to select the Albers equal area projection.
 
-    The projection list consists of all the PROJ.4 (version 4.9.1) projections
-    that have inverses, minus a few that cause problems:
+    The projection list consists of all the PROJ.4 projections provided by
+    \code{rgdal} that have inverses, minus a few that cause problems:
     \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
     \code{calcofi} is not a real projection, but rather a coordinate system;
     \code{gs48} overdraws \code{coastlineWorld}, and is a niche projection for the USA;
@@ -282,7 +273,8 @@ dev.off()
 
     Further details of the projections and the controlling arguments are
     provided at several websites, because PROJ.4 has been incorporated into
-    many software systems; a good starting point for learning is [6].  
+    \code{rgdal} and other R packages, plus many other software systems; a good
+    starting point for learning is [6].  
     
     See \dQuote{Examples} for suggested projections for some common
     applications, and [8] for a gallery indicating how to use every projection.
@@ -452,8 +444,7 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
     those used in the examples.}
 
 
-\author{Dan Kelley and Clark Richards (see \code{\link{lonlat2map}} for a note
-    on the authors of PROJ.4).}
+\author{Dan Kelley and Clark Richards.}
 
 \references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
     Professional Paper: 1395 (available at

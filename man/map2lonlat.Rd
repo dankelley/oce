@@ -29,14 +29,14 @@
     \code{\link{mapPlot}} or \code{\link{lonlat2map}}.
   
     The values of \code{x} and \code{y} have a clear meaning for
-    \code{proj4}-style projections.  This is not true for \code{mapproj}-style
-    projections, since \code{mapproject} in the \code{mapproj} package shifts
-    the \code{x} component of its return value to have mean value equal to 0,
-    up to a calculation error. 
+    \CRANpkg{rgdal}-style projections.  This is not true for
+    \code{mapproj}-style projections, since \code{mapproject} in the
+    \code{mapproj} package shifts the \code{x} component of its return value to
+    have mean value equal to 0, up to a calculation error. 
 
-    The accuracy of \code{map2lonlat} tends to be higher for \code{proj4}-style
+    The accuracy of \code{map2lonlat} tends to be higher for \code{rgdal}-style
     projections than for \code{mapproj}-style projections.  This is because the
-    \code{proj4} package provides inverse functions, while \code{mapproj} does
+    \code{rgdal} package provides inverse functions, while \code{mapproj} does
     not, so that in the latter case the longitude and latitude are determined
     by a minimization procedure using \code{\link{optim}}.  See \dQuote{Bugs}.
 
@@ -50,7 +50,7 @@
     Since \code{map2lonlat} is called by many mapping functions, this can yield
     errors of various types, e.g. unaesthetic axis labelling.  In many cases
     those errors can be circumvented by switching to the equivalent
-    \code{proj4}-style projection.}
+    \code{rgdal}-style projection.}
 
 \examples{
 library(oce)
@@ -65,11 +65,7 @@ map2lonlat(xy)
 \references{\url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
     downloaded May 31, 2014.}
 
-\author{Dan Kelley wrote the \code{map2lonlat()} and the C code that
-    connects with PROJ.4 code. The PROJ.4 code was written by Gerald
-    Evenden, Frank Warmerdam, Howard Butler, Brent Fraser, Chris Stuber,
-    Craig Bruce, Victor Osipkov, Andrea Antonello, Charles Karney,
-    Karsten Engsager, and Knud Poder.}
+\author{Dan Kelley}
 
 \keyword{misc}
 

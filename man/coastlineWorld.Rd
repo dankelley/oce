@@ -33,7 +33,7 @@
 \source{Downloaded from \url{http://www.naturalearthdata.com}, in
     \code{ne_110m_admin_0_countries.shp}.}
 
-\seealso{The \code{ocedata} package provides two more coastlines with better
+\seealso{The \CRANpkg{ocedata} package provides two more coastlines with better
     resolution: \code{coastlineWorldMedium} and \code{coastlineWorldFine}.
     
     The documentation for \code{\link{coastline-class}} explains the structure

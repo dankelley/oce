@@ -1229,7 +1229,7 @@ setMethod(f="plot",
                                             x[['latitude']])
                               nearest <- d[which.min(d)] # in km
                               span <- 3 * nearest
-                              oceDebug(debug, "span not given, and nearest point is=", nearest,
+                              oceDebug(debug, "span not given, and nearest point is", nearest,
                                        "km away (coarse coastline), so set span=", span, "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
@@ -1243,7 +1243,7 @@ setMethod(f="plot",
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           ##message("projection:", projection)
-                          oceDebug(debug, "projection=", projection, ", span=", span, "km\n")
+                          oceDebug(debug, "projection=", if (is.null(projection)) "NULL" else projection, ", span=", span, "km (ctd.R line 1239)\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (requireNamespace("ocedata", quietly=TRUE)) {
@@ -1275,9 +1275,19 @@ setMethod(f="plot",
                               lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                               clon <- mean(lonlim.c)
                               if (missing(latlim)) {
-                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection", projection, "\n")
+                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=", 
+                                           if (is.null(projection)) "NULL" else projection, "\n")
                                   latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
+                                  oceDebug(debug, "about to plot coastline\n")
+                                  oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
+                                  oceDebug(debug, "clongitude=", clon, "\n")
+                                  oceDebug(debug, "span=", span, "\n")
+                                  oceDebug(debug, "projection=", projection, "\n")
+                                  oceDebug(debug, "parameters=", parameters, "\n")
+                                  oceDebug(debug, "orientation=", orientation, "\n")
+                                  oceDebug(debug, "fill=", fill, "\n")
+                                  oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
                                        clatitude=mean(latlim.c), clongitude=clon, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
@@ -1285,6 +1295,7 @@ setMethod(f="plot",
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
+                                  oceDebug(debug, " ... did plot(coastline)\n")
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)

@@ -32,8 +32,8 @@
 
     If \code{eos="unesco"}, the sound speed is calculated using the formulation
     in section 9 of Fofonoff and Millard (1983). If \code{eos="gsw"}, then the
-    \code{\link[gsw]{gsw_sound_speed}} function from the \code{gsw} package is
-    used.
+    \code{\link[gsw]{gsw_sound_speed}} function from the \CRANpkg{gsw} package
+    is used.
 
 }
 

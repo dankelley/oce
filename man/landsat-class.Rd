@@ -163,7 +163,8 @@
 
 \seealso{A file containing Landsat data may be read with
     \code{\link{read.landsat}} or \code{\link{read.oce}}, and one such file is
-    provided by the \code{ocedata} package as a dataset named \code{landsat}.
+    provided by the \CRANpkg{ocedata} package as a dataset named
+    \code{landsat}.
 
     Plots may be made with \code{\link{plot.landsat}}.  Since plotting can be
     quite slow, decimation is available both in the plotting function and as

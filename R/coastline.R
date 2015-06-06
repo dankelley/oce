@@ -652,3 +652,42 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     oceDebug(debug, "}\n", unindent=1)
     return(rval)
 }
+
+#' Cut a coastline file at specified longitude
+#'
+#' @details
+#' This can be helpful in preventing \code{\link{mapPlot}} from producing ugly
+#' horizontal lines in world maps. These lines occur when a coastline segment
+#' is intersected by longitude lon_0+180.  Since the coastline files in the oce
+#' and ocedata packages are already "cut" at longitudes of -180 and 180, the present
+#' function is not needed for default maps, which have \code{+lon_0=0}. However,
+#' it is needed for almost any other value for \code{lon_0}.
+#' 
+#' @param coastline original coastline object
+#' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a proj.4 string
+#' 
+#' @examples
+#' library(oce)
+#' data(coastlineWorld)
+#' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", fill='gray')
+#'
+#' @return a new coastline object
+coastlineCut <- function(coastline, lon_0=0)
+{
+    if (lon_0 == 0)
+        return(coastline)
+    cleanAngle <- function(a)
+        ifelse(a<(-180), a+360, ifelse(a>180, a-360, a))
+    loncut <- cleanAngle(lon_0+180)
+    lon <- coastline[["longitude"]]
+    lat <- coastline[["latitude"]]
+    nlon <- length(lon)
+    e <- 4                             # a bit over 2 should be more than enough for any coastline
+    cut <- .C("polygon_subdivide_vertically_smash_1",
+              n=as.integer(nlon), x=as.double(lon), y=as.double(lat), x0=as.double(loncut),
+              nomax=as.integer(e*nlon), no=integer(1), xo=double(e*nlon), yo=double(e*nlon),
+              NAOK=TRUE)
+    cut$xo <- cut$xo[1:cut$no]
+    cut$yo <- cut$yo[1:cut$no]
+    as.coastline(longitude=cut$xo, latitude=cut$yo)
+}

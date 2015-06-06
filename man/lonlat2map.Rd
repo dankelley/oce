@@ -19,7 +19,7 @@
       \code{longitude} is a list, as described above).}
 
   \item{projection}{optional indication of projection.  This is normally a
-      string in the format used by the \code{proj4} package, i.e.  starting
+      string in the format used by the \CRANpkg{rgdal} package, i.e.  starting
       with \code{+proj=}. (See the \dQuote{Deprecation notice} for
       \code{\link{mapPlot}}.)}
   
@@ -57,11 +57,7 @@ map2lonlat(xy)
     already been drawn with \code{\link{mapPlot}}, because that function cannot
     alter an existing projection.}
 
-\author{Dan Kelley wrote the \code{lonlat2map()} and the C code that
-    connects with PROJ.4 code. The PROJ.4 code was written by Gerald
-    Evenden, Frank Warmerdam, Howard Butler, Brent Fraser, Chris Stuber,
-    Craig Bruce, Victor Osipkov, Andrea Antonello, Charles Karney,
-    Karsten Engsager, and Knud Poder.}
+\author{Dan Kelley}
 
 \keyword{misc}
 

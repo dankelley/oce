@@ -496,7 +496,6 @@ setMethod(f="plot",
               {
                   oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
-
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
