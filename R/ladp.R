@@ -152,7 +152,9 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
         salinity <- if (missing(salinity)) NULL else fixColumn(salinity)
         temperature <- if (missing(temperature)) NULL else fixColumn(temperature)
     }
-    new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
-        pressure=pressure, u=u, v=v, uz=uz, vz=vz, salinity=salinity, temperature=temperature, ...)  
+    rval <- new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
+                pressure=pressure, u=u, v=v, uz=uz, vz=vz, salinity=salinity, temperature=temperature, ...)  
+    rval@metadata$waterDepth <- max(pressure, na.rm=TRUE)
+    rval
 }
 
