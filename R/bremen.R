@@ -43,6 +43,7 @@ setMethod(f="summary",
               showMetadataItem(object, "cruise",  "Cruise:              ")
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
+              showMetadataItem(object, "profile", "Profile:             ")
               cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                                object@metadata$longitude,
                                                                digits=5), "\n")
