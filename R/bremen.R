@@ -24,6 +24,58 @@ setMethod(f="plot",
               }
           })
 
+setMethod(f="summary",
+          signature="bremen",
+          definition=function(object, ...) {
+              cat("Bremen Summary\n--------------\n\n")
+              #showMetadataItem(object, "type", "Instrument: ")
+              showMetadataItem(object, "model", "Instrument model:    ")
+              #showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
+              #showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
+              #showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
+              showMetadataItem(object, "filename", "File source:         ")
+              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
+              showMetadataItem(object, "institute", "Institute:           ")
+              showMetadataItem(object, "scientist", "Chief scientist:     ")
+              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
+              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",  "Cruise:              ")
+              showMetadataItem(object, "ship",    "Vessel:              ")
+              showMetadataItem(object, "station", "Station:             ")
+              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                               object@metadata$longitude,
+                                                               digits=5), "\n")
+              showMetadataItem(object, "waterDepth", "Water depth: ")
+              showMetadataItem(object, "levels", "Number of levels: ")
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of data::\n")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
+
+findInHeaderBremen <- function(key, lines)
+{
+    i <- grep(paste("^", key, sep=""), lines)[1] # only take first -- may be problematic
+    if (length(i) < 1) "" else gsub("^.*=[ ]*", "", lines[i])
+}
+
+
 read.bremen <- function(file)
 {
     if (is.character(file)) {
@@ -42,24 +94,31 @@ read.bremen <- function(file)
     ## Discover header as lines starting with a letter
     headerLength <- max(grep("^[a-zA-Z]", lines))
     h <- lines[1:headerLength]
+    rval@metadata$filename <- filename
     rval@metadata$header <- h
-    lat <- strsplit(strsplit(h[grep("Latitude", h)], " = ")[[1]][2], " ")[[1]]
+    lat <- strsplit(findInHeaderBremen("Latitude", h), " ")[[1]]
     latitude <- as.numeric(lat[1]) + as.numeric(lat[2]) / 60 # assume N hemi
     if (lat[3] == "S")
         latitude <- -latitude
     rval@metadata$latitude <- latitude
-    lon <- strsplit(strsplit(h[grep("Longitude", h)], " = ")[[1]][2], " ")[[1]]
+    lon <- strsplit(findInHeaderBremen("Longitude", h), " ")[[1]]
     longitude <- as.numeric(lon[1]) + as.numeric(lon[2]) / 60 # assume N hemi
     if (lon[3] == "W")
         longitude <- -longitude
     rval@metadata$longitude <- longitude
-    date <- strsplit(h[grep("^Date", h)], "=[ ]*")[[1]][2]
-    time <- strsplit(h[grep("^Time", h)], "=[ ]*")[[1]][2]
+    date <- findInHeaderBremen("Date", h)
+    time <- findInHeaderBremen("Time", h)
     datetime <- paste(date, " ", time, ":00", sep="")
     rval@metadata$time <- as.POSIXct(datetime, tz="UTC")
-    rval@metadata$station <- strsplit(h[grep("^Station", h)], "=[ ]*")[[1]][2]
-    rval@metadata$profile <- strsplit(h[grep("^Profile", h)], "=[ ]*")[[1]][2]
-
+    rval@metadata$station <- findInHeaderBremen("Station", h)
+    rval@metadata$profile <- findInHeaderBremen("Profile", h)
+    rval@metadata$ship <- findInHeaderBremen("Shipname", h)
+    rval@metadata$cruise <- findInHeaderBremen("Cruise", h)
+    rval@metadata$scientist<- findInHeaderBremen("CruisePI", h)
+    rval@metadata$institute <- findInHeaderBremen("Affiliation", h)
+    rval@metadata$model <- findInHeaderBremen("CTD_Model", h)
+    rval@metadata$waterDepth <- as.numeric(findInHeaderBremen("WaterDepth", h))
+    rval@metadata$maxPress <- as.numeric(findInHeaderBremen("MaxPress", h))
     ## Columns have nicknames
     nicknames <- strsplit(gsub(" ", "", strsplit(h[grep("^(Columns)|(Fields)", h)], "=")[[1]][2]), ":")[[1]]
     names <- nicknames
