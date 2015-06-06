@@ -81,10 +81,10 @@ setMethod(f="[[",
 
 setMethod(f="plot",
           signature=signature("ladp"),
-          definition=function(x) {
-              par(mfrow=c(1, 2))
-              plotProfile(x, xtype="u")
-              plotProfile(x, xtype="v")
+          definition=function(x, which=c("u", "v"), ...) {
+              par(mfrow=c(1, length(which)))
+              for (w in which)
+                  plotProfile(x, xtype=w, ...)
           })
  
 fixColumn <- function(x) {

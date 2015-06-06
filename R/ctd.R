@@ -148,19 +148,26 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
 {
     isODF <- inherits(salinity, "odf")
     isLogger <- inherits(salinity, "logger")
-    if (isODF) {
-        odf <- salinity
-        names <- names(odf@data)
-        if (!("salinity" %in% names)) stop("no salinity in ODF object")
-        if (!("pressure" %in% names)) stop("no pressure in ODF object")
-        if (!("temperature" %in% names)) stop("no temperature in ODF object")
+    if (inherits(salinity, "oce")) {
+        ctd <- salinity
+        names <- names(ctd@data)
+        if (!("salinity" %in% names)) stop("no salinity in oce object")
+        if (!("pressure" %in% names)) stop("no pressure in oce object")
+        if (!("temperature" %in% names)) stop("no temperature in oce object")
         res <- new("ctd")
-        res@metadata <- odf@metadata
-        res@data <- odf@data
+        res@metadata <- ctd@metadata
+        res@data <- ctd@data
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         return(res)
+    }
+    if (is.list(salinity) || is.data.frame(salinity)) {
+        x <- salinity
+        pressure <- x$pressure
+        salinity <- x$salinity
+        temperature <- x$temperature
+        res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature)
     }
     samplingInterval <- NA
     if (isLogger) {

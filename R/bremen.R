@@ -12,15 +12,15 @@ setMethod(f="initialize",
 
 setMethod(f="plot",
           signature=signature("bremen"),
-          definition=function(x) {
+          definition=function(x, type, ...) {
               names <- names(x@data)
               n <- length(names)
-              if ("salinity" %in% names) {
-                  ## CTD
-                  plot(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]))
+              if (missing(type)) {
+                  if ("salinity" %in% names) plot(as.ctd(x), ...)
+                  else plot(as.ladp(x), ...)
               } else {
-                  ## assume lowered adcp ... FIXME: add other types as needed
-                  plot(as.ladp(x))
+                  if (!is.na(pmatch(type, "ctd"))) plot(as.ctd(x), ...)
+                  else if (!is.na(pmatch(type, "ladp"))) plot(as.ladp(x), ...)
               }
           })
 
