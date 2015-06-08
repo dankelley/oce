@@ -31,7 +31,7 @@
 
 \author{Dan Kelley}
 
-\references{1. \url{http://www.rbr-global.com/products}}
+\references{1. \href{http://www.rbr-global.com/products}{RBR website}.}
 
 \keyword{classes}
 
