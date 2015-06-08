@@ -34,9 +34,9 @@ mapLines(l$longitude, l$latitude, col='red', lwd=2)
 }
 
 \author{Dan Kelley, based on code from Clark Richards, in turn based on
-    formulae provided by Ed Williams.}
+    formulae provided by Ed Williams [1].}
 
-\source{\url{http://williams.best.vwh.net/avform.htm#Intermediate}}
+\references{1.  \url{http://williams.best.vwh.net/avform.htm#Intermediate}}
 
 \keyword{misc}
 
