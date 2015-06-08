@@ -1518,6 +1518,9 @@ geodGc <- function(longitude, latitude, dmax)
     }
     lon <- c(lon, longitude[n])
     lat <- c(lat, latitude[n])
+    ## use range 0 to 360 if input longitudes in that way
+    if (any(longitude > 180))
+        lon <- ifelse(lon < 0, lon+360, lon)
     list(longitude=lon, latitude=lat)
 }
 

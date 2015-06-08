@@ -1,6 +1,6 @@
 Package: oce
 Version: 0.9-18
-Date: 2015-06-07
+Date: 2015-06-08
 Title: Analysis of Oceanographic Data
 Authors@R: c(person("Dan", "Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
  person("Clark", "Richards", email="clark.richards@gmail.com", role=c("aut")),
@@ -15,7 +15,7 @@ Description: Supports the analysis of Oceanographic data, including ADCP
  coastline files, etc.  Handles dozens of specialized functions for calculating
  seawater properties such as potential temperature and density, as well as
  derived properties such as buoyancy frequency and dynamic height. Map projections
- are calculated using PROJ.4 functions included within the oce.
+ are calculated using the rgdal package, so it must be installed if mapPlot() is used.
 License: GPL (>= 2)
 URL: http://dankelley.github.com/oce/
 LazyLoad: yes
