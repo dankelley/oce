@@ -11,9 +11,7 @@
 
 \title{Class to store rsk data}
 
-\description{Class to store rsk data, with standard slots \code{metadata},
-  \code{data} and \code{processingLog}.  Only RBR devices
-  (\url{http://www.rbr-global.com/products}) are supported at this time.}
+\description{Class for data stored in the ``Ruskin'' format used by RBR [1].}
 
 \section{Methods}{Data may be accessed as e.g. \code{rsk[["time"]]}, where the
   string could also be \code{"pressure"} or \code{"temperature"}.  Items in
@@ -32,6 +30,10 @@
   record-keeping at sea.}
 
 \author{Dan Kelley}
+
+\references{1. \url{http://www.rbr-global.com/products}}
+
 \keyword{classes}
+
 \keyword{oce}
 
