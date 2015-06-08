@@ -1,14 +1,14 @@
-\name{plot.logger}
+\name{plot.rsk}
 
-\alias{plot.logger}
-\alias{plot,logger,missing-method}
-\alias{plot,logger-method}
+\alias{plot.rsk}
+\alias{plot,rsk,missing-method}
+\alias{plot,rsk-method}
 
-\title{Plot logger data}
+\title{Plot rsk data}
 
-\description{Plot logger data}
+\description{Plot rsk data}
 
-\usage{\S4method{plot}{logger}(x,
+\usage{\S4method{plot}{rsk}(x,
      which=c(1,3,4), title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
@@ -23,7 +23,7 @@
      \dots)}
 
 \arguments{
-  \item{x}{\code{logger} object, typically result of \code{\link{read.logger}}.}
+  \item{x}{\code{rsk} object, typically result of \code{\link{read.rsk}}.}
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
@@ -84,12 +84,12 @@
 
 \examples{
 library(oce)
-data(logger)
-plot(logger, which=c(1,3))
+data(rsk)
+plot(rsk, which=c(1,3))
 }
 
-\seealso{The documentation for \code{\link{logger-class}} explains the
-    structure of \code{logger} objects, and also outlines the other functions
+\seealso{The documentation for \code{\link{rsk-class}} explains the
+    structure of \code{rsk} objects, and also outlines the other functions
     dealing with them.}
 
 \author{Dan Kelley}

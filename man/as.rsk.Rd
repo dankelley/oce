@@ -1,20 +1,20 @@
-\name{as.logger}
+\name{as.rsk}
 
-\alias{as.logger}
+\alias{as.rsk}
 
-\title{Create a logger object}
+\title{Create a rsk object}
 
-\description{Create a logger object.}
+\description{Create a rsk object.}
 
-\usage{as.logger(time, temperature, pressure,
+\usage{as.rsk(time, temperature, pressure,
       filename="", instrumentType="rbr", serialNumber="", model="",
       pressureAtmospheric=NA, processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{time}{a vector of times for the data, or an object of class \code{ctd}; in
-      the second case, the class is simply changed to \code{logger} and \code{time}
+      the second case, the class is simply changed to \code{rsk} and \code{time}
       is returned. This is a way to undo the assignment of \code{ctd} class by
-      \code{\link{read.logger}}.}
+      \code{\link{read.rsk}}.}
   \item{temperature}{temperatures at the give times.}
   \item{pressure}{pressures at the give times.}
   \item{filename}{optional name of file containing the data}
@@ -28,9 +28,9 @@
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{This is used by \code{\link{read.logger}} to create \code{logger} objects.}  
+\details{This is used by \code{\link{read.rsk}} to create \code{rsk} objects.}  
 
-\value{An object of \code{\link[base]{class}} \code{"logger"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"rsk"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -50,8 +50,8 @@
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The documentation for \code{\link{logger-class}} explains the structure of
-    \code{logger} objects, and also outlines the other functions dealing with
+\seealso{The documentation for \code{\link{rsk-class}} explains the structure of
+    \code{rsk} objects, and also outlines the other functions dealing with
     them.}
 
 \author{Dan Kelley}

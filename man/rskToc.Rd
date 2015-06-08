@@ -1,0 +1,55 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+
+\name{rskToc}
+
+\alias{rskToc}
+
+\title{Decode table-of-contents file from a rsk file}
+
+\description{Decode table-of-contents file from a rsk file, of the sort used by
+  some researchers at Dalhousie University.}
+
+  \usage{rskToc(dir, from, to, debug=getOption("oceDebug"))}
+
+  \arguments{
+    \item{dir}{name of a directory containing a single table-of-contents
+      file, with \code{.TBL} at the end of its file name.}
+    \item{from}{optional \code{\link{POSIXct}} time, indicating the
+      beginning of a data interval of interest.  This must have timezone
+      \code{"UTC"}.} 
+    \item{to}{optional \code{\link{POSIXct}} time, indicating the end of
+      a data interval of interest.  This must have timezone
+      \code{"UTC"}.}
+    \item{debug}{optional integer to control debugging, with positive
+      values indicating to print information about the processing.}
+  }
+
+\details{It is assumed that the \code{.TBL} file contains lines of the form
+  \code{"File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"} The
+  first step is to parse these lines to get day and hour information, i.e.  179
+  and 023 in the line above.  Then, recognizing that it is common to change the
+  names of such files, the rest of the file-name information in the line is
+  ignored, and instead a new file name is constructed based on the data files
+  that are found in the directory.  (In other words, the
+  \code{"\\day179\\SL08A"} portion of the line is replaced.)  Once the file list
+  is complete, with all times put into R format, then (optionally) the list is
+  trimmed to the time interval indicated by \code{from} and \code{to}.  It is
+  important that \code{from} and \code{to} be in the \code{UTC} time zone,
+  because that time zone is used in decoding the lines in the \code{.TBL} file.}
+
+\examples{
+\dontrun{
+table <- rskToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
+from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
+    to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
+print(table)
+}
+}
+
+\value{A list with two elements: \code{filename}, a vector of file names, and
+  \code{startTime}, a vector of \code{\link{POSIXct}} times indicating the
+  (real) times of the first datum in the corresponding files.}
+
+\author{Dan Kelley}
+
+\keyword{misc}
