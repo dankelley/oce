@@ -1,5 +1,7 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
+PLEN <- 300 # palette has this many default levels
+
 prettyLocal <- function(x, n, digits=10)
 {
     round(pretty(x, n), digits)
@@ -211,7 +213,7 @@ drawPalette <- function(zlim, zlab="",
                     contours <- breaks
                 } else {
                     if (is.function(col)) {
-                        breaks <- seq(zlim[1], zlim[2], length.out=128) # smooth image colorscale
+                        breaks <- seq(zlim[1], zlim[2], length.out=PLEN) # smooth image colorscale
                         contours <- pretty(zlim)
                     } else {
                         breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
@@ -235,7 +237,7 @@ drawPalette <- function(zlim, zlab="",
         else
             par(mai=pc$mai1)
         if (!breaksGiven) {
-            palette <- seq(zlim[1], zlim[2], length.out=300)
+            palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             if (pos == 1 || pos == 3) {
                 image(x=palette, y=1, z=matrix(palette, ncol=1), axes=FALSE, xlab="", ylab="",
                       col=col, zlim=zlim)
@@ -253,7 +255,7 @@ drawPalette <- function(zlim, zlab="",
                 stop("pos must be 1, 2, 3 or 4") # cannot be reached
             }
         } else {
-            palette <- seq(zlim[1], zlim[2], length.out=300)
+            palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             oceDebug(debug, "drawing palette image, with par('mai')=c(",
                      paste(round(par('mai'), 2), collapse=","), ")\n")
             oceDebug(debug, "palette image width =",
@@ -581,7 +583,7 @@ imagep <- function(x, y, z,
                         if (breaks[length(breaks)] > zrange[2])
                             breaks[length(breaks)] <- zrange[2]
                     } else {
-                        breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+                        breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))PLEN else 1+length(col))
                     }
                     breaksOrig <- breaks
                 } else {
@@ -593,7 +595,7 @@ imagep <- function(x, y, z,
                         oceDebug(debug, "inferred breaks:", head(breaks), "...\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
-                                      length.out=if(is.function(col))128 else 1+length(col))
+                                      length.out=if(is.function(col))PLEN else 1+length(col))
                         oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
