@@ -365,6 +365,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     #if (is.logical(grid[1]) && grid[1])
     #    grid <- rep(15, 2)
     #message("000")
+    if (nchar(projection) && substr(projection, 1, 1) != "+")
+        warning("use PROJ.4 format, e.g. projection=\"+proj=merc\" for Mercator, \"+proj=robin\" for Robinson", sep="")
     xy <- lonlat2map(longitude, latitude, projection=projection, parameters=parameters, orientation=orientation)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
@@ -1681,7 +1683,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     #message("projection=", projection)
     if ("" == projection) projection <- .Projection()$projection # FIXME
     if ('+' != substr(projection, 1, 1)) {
-        #message("lonlat2map (mapproj case)")
+        ## message("lonlat2map (mapproj case)")
         ## mapproj case
         if (!requireNamespace("mapproj", quietly=TRUE))
             stop("must install 'mapproj' package to use mapproj-style map projections")
@@ -1736,6 +1738,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
         }, silent=!TRUE)
         if (is.null(xy)) {
             xy <- list(x=NA, y=NA)
+            warning("problem with mapproj-style projection. Please use PROJ.4 style\n")
         }
         #message("xy:")
         #str(xy)
