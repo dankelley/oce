@@ -151,9 +151,15 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     if (inherits(salinity, "oce")) {
         ctd <- salinity
         names <- names(ctd@data)
-        if (!("salinity" %in% names)) stop("no salinity in oce object")
         if (!("pressure" %in% names)) stop("no pressure in oce object")
         if (!("temperature" %in% names)) stop("no temperature in oce object")
+        if (!("salinity" %in% names)) {
+            if (!"conductivity" %in% names)
+                stop("no salinity in oce object")
+            ctd@data$salinity <- swSCTp(ctd[["conductivity"]], ctd[["temperature"]], ctd[["pressure"]],
+                                        conductivityUnit=ctd[["conductivityUnit"]])
+        }
+        mnames <- names(ctd@metadata)
         res <- new("ctd")
         res@metadata <- ctd@metadata
         res@data <- ctd@data
@@ -1229,8 +1235,11 @@ setMethod(f="plot",
                                                          ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
                           yloc <- yloc - d.yloc
                       }
-                  } else if (which[w] == 5) {
-                      if (is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
+                  } else if (which[w] == 5) { # map
+                      if (!is.null(x[["latitude"]]) &&
+                          !is.null(x[["longitude"]]) &&
+                          is.finite(x[["latitude"]][1]) &&
+                          is.finite(x[["longitude"]][1])) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## FIXME: use waterdepth to guess a reasonable span, if not supplied
                           if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
