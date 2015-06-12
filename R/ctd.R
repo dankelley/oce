@@ -147,7 +147,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    sampleInterval=NA, src="")
 {
     isODF <- inherits(salinity, "odf")
-    isLogger <- inherits(salinity, "logger")
+    isRsk <- inherits(salinity, "rsk")
     if (inherits(salinity, "oce")) {
         ctd <- salinity
         names <- names(ctd@data)
@@ -187,26 +187,26 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature)
     }
     samplingInterval <- NA
-    if (isLogger) {
-        logger <- salinity
-        namesLogger <- names(logger@data)
-        if (!("pressure" %in% namesLogger))
-            stop("logger object lacks pressure data, so cannot construct a ctd object from it")
-        if (!("temperature" %in% namesLogger))
-            stop("logger object lacks temperature data, so cannot construct a ctd object from it")
-        if (!("conductivity" %in% namesLogger))
-            stop("logger object lacks conductivity data, so cannot construct a ctd object from it")
-        filename <- logger[["filename"]]
-        model <- logger[["model"]]
-        serialNumber <- logger[["serialNumber"]]
-        pressure <- logger[["pressure"]]
+    if (isRsk) {
+        rsk <- salinity
+        names<- names(rsk@data)
+        if (!("pressure" %in% names))
+            stop("rskobject lacks pressure data, so cannot construct a ctd object from it")
+        if (!("temperature" %in% names))
+            stop("rsk object lacks temperature data, so cannot construct a ctd object from it")
+        if (!("conductivity" %in% names))
+            stop("rsk object lacks conductivity data, so cannot construct a ctd object from it")
+        filename <- rsk[["filename"]]
+        model <- rsk[["model"]]
+        serialNumber <- rsk[["serialNumber"]]
+        pressure <- rsk[["pressure"]]
         if (!is.na(pressureAtmospheric))
             pressure <- pressure - pressureAtmospheric
-        temperature <- logger[["temperature"]]
-        conductivity <- logger[["conductivity"]]
-        if ("sampleInterval" %in% names(logger@metadata))
-            sampleInterval <- logger@metadata$sampleInterval
-        time <- if ("time" %in% names(logger@data)) logger[["time"]] else NULL
+        temperature <- rsk[["temperature"]]
+        conductivity <- rsk[["conductivity"]]
+        if ("sampleInterval" %in% names(rsk@metadata))
+            sampleInterval <- rsk@metadata$sampleInterval
+        time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else NULL
         ## Try to be sensible about converting 
         cmax <- max(conductivity, na.rm=TRUE)
         if (cmax > 5) {
@@ -284,7 +284,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                  temperature=temperature,
                  pressure=pressure,
                  sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
-    if (isLogger) {
+    if (isRsk) {
         if (!is.null(time))
             data$time <- time
     }
