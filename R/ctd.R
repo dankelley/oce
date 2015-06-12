@@ -162,6 +162,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         mnames <- names(ctd@metadata)
         res <- new("ctd")
         res@metadata <- ctd@metadata
+        if (is.na(waterDepth) && !("waterDepth" %in% mnames))
+            res@metadata$waterDepth <- max(ctd[["pressure"]], na.rm=TRUE)
         res@data <- ctd@data
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
