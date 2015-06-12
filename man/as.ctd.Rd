@@ -19,11 +19,11 @@
 }
 \arguments{
 
-  \item{salinity}{Salinity through the water column, or a data frame, list or
-    \code{oce} object from which it is possible to infer salinity, temperature,
-    and pressure.  In the second case, these three values are extracted from
-    \code{salinity} and the other arguments to the present function are
-    ignored.}
+  \item{salinity}{This can be salinity through the water column, in which case
+    the other arguments are obeyed as stated below. Another option is that it is
+    something from which salinity can be inferred (e.g. a data frame, a list,
+    or an \code{oce} object); see \dQuote{Details}.}
+    
   \item{temperature}{Temperature through the water column. (This is converted to
     a vector, if it is not one already.}
   \item{pressure}{pressure through the water column. (If just a single value is
@@ -76,20 +76,39 @@
   \item{pressureAtmospheric}{if provided, this value is subtracted from
     pressure data before storing them in the object.}
   \item{waterDepth}{optional numerical value indicating the water depth in
-    metres.}
+    metres. See \dQuote{Details.}}
   \item{sampleInterval}{optional numerical value indicating the time between
     samples in the profile.}
   \item{src}{optional string indicating data source}
 }
 
-\details{This function assembles vectors of salinity, temperature, and pressure,
-  to create a \code{ctd} object, e.g. so that \code{\link{plot.ctd}} can be used
-  to make a standard four-panel plot, or so that a section can be constructed
-  with \code{\link{makeSection}}.  Normally, the input vectors will be of the
-  same length, but \code{as.ctd} can also handle cases in which one or two of
-  these is of unit length.  For example, if only a temperature profile is
-  available, \code{as.ctd(35, T, p)} could be used to construct a \code{ctd}
-  object with constant salinity.}
+\details{Two cases are possible.
+  
+  \enumerate{
+    \item{When the first argument is a vector, This function assembles vectors
+      of salinity, temperature, and pressure, to create a \code{ctd} object,
+      e.g. so that \code{\link{plot.ctd}} can be used to make a standard
+      four-panel plot, or so that a section can be constructed with
+      \code{\link{makeSection}}.  Normally, the input vectors will be of the
+      same length, but \code{as.ctd} can also handle cases in which one or two
+      of these is of unit length.  For example, if only a temperature profile is
+      available, \code{as.ctd(35, T, p)} could be used to construct a \code{ctd}
+      object with constant salinity.}
+
+    \item{When the first argument is a data frame, a list or an \code{oce}
+      object, an attempt is made to infer salinity, etc., from that argument.
+      In this coercion mode, values within the first argument take precedence
+      over values provided in the other arguments. However, not all \code{oce}
+      objects contain the necessary quantities (e.g. \code{latitude},
+      \code{longitude} and \code{waterDepth} are somewhat specialized to
+      \code{ctd} objects, and may not be present in other \code{oce} objects,
+      and in this case the other arguments are used and, if they are \code{NA}
+      or otherwise invalid, attempts are made to infer such values sensibly.
+      Thus, for example, if the first argument does not contain
+      \code{waterDepth} and if a non-\code{NA} value is supplied as an argument,
+      then it is used; otherwise, maximum pressure is used.}
+  }
+}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"} (for details, see
   \code{\link{read.ctd}}).}
