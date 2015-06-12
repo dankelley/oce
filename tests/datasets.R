@@ -15,7 +15,7 @@ stopifnot(all.equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:38", tz="UT
 #data("echosounder")
 #data("lisst")
 #data("lobo")
-#data("logger")
+#data("rsk")
 #data("met")
 
 data("sealevel")

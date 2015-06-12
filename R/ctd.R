@@ -147,15 +147,32 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    sampleInterval=NA, src="")
 {
     isODF <- inherits(salinity, "odf")
-    isLogger <- inherits(salinity, "logger")
+    isRsk <- inherits(salinity, "rsk")
     if (inherits(salinity, "oce")) {
         ctd <- salinity
         names <- names(ctd@data)
-        if (!("salinity" %in% names)) stop("no salinity in oce object")
         if (!("pressure" %in% names)) stop("no pressure in oce object")
         if (!("temperature" %in% names)) stop("no temperature in oce object")
+        if (!("salinity" %in% names)) {
+            if (!"conductivity" %in% names)
+                stop("no salinity in oce object")
+            ctd@data$salinity <- swSCTp(ctd[["conductivity"]], ctd[["temperature"]], ctd[["pressure"]],
+                                        conductivityUnit=ctd[["conductivityUnit"]])
+        }
+        mnames <- names(ctd@metadata)
         res <- new("ctd")
         res@metadata <- ctd@metadata
+        ## Use waterDepth from first argument, if possible. 
+        ## Otherwise see if provided as its own argument; otherwise, as a
+        ## last-ditch method, take to be max(pressure)
+        res@metadata$waterDepth <- if ("waterDepth" %in% mnames) {
+            ctd@metadata$waterDepth
+        } else {
+            if (!is.na(waterDepth))
+                waterDepth
+            else
+                max(ctd[["pressure"]], na.rm=TRUE)
+        }
         res@data <- ctd@data
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
@@ -170,26 +187,26 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature)
     }
     samplingInterval <- NA
-    if (isLogger) {
-        logger <- salinity
-        namesLogger <- names(logger@data)
-        if (!("pressure" %in% namesLogger))
-            stop("logger object lacks pressure data, so cannot construct a ctd object from it")
-        if (!("temperature" %in% namesLogger))
-            stop("logger object lacks temperature data, so cannot construct a ctd object from it")
-        if (!("conductivity" %in% namesLogger))
-            stop("logger object lacks conductivity data, so cannot construct a ctd object from it")
-        filename <- logger[["filename"]]
-        model <- logger[["model"]]
-        serialNumber <- logger[["serialNumber"]]
-        pressure <- logger[["pressure"]]
+    if (isRsk) {
+        rsk <- salinity
+        names<- names(rsk@data)
+        if (!("pressure" %in% names))
+            stop("rskobject lacks pressure data, so cannot construct a ctd object from it")
+        if (!("temperature" %in% names))
+            stop("rsk object lacks temperature data, so cannot construct a ctd object from it")
+        if (!("conductivity" %in% names))
+            stop("rsk object lacks conductivity data, so cannot construct a ctd object from it")
+        filename <- rsk[["filename"]]
+        model <- rsk[["model"]]
+        serialNumber <- rsk[["serialNumber"]]
+        pressure <- rsk[["pressure"]]
         if (!is.na(pressureAtmospheric))
             pressure <- pressure - pressureAtmospheric
-        temperature <- logger[["temperature"]]
-        conductivity <- logger[["conductivity"]]
-        if ("sampleInterval" %in% names(logger@metadata))
-            sampleInterval <- logger@metadata$sampleInterval
-        time <- if ("time" %in% names(logger@data)) logger[["time"]] else NULL
+        temperature <- rsk[["temperature"]]
+        conductivity <- rsk[["conductivity"]]
+        if ("sampleInterval" %in% names(rsk@metadata))
+            sampleInterval <- rsk@metadata$sampleInterval
+        time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else NULL
         ## Try to be sensible about converting 
         cmax <- max(conductivity, na.rm=TRUE)
         if (cmax > 5) {
@@ -267,7 +284,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                  temperature=temperature,
                  pressure=pressure,
                  sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
-    if (isLogger) {
+    if (isRsk) {
         if (!is.null(time))
             data$time <- time
     }
@@ -1229,8 +1246,11 @@ setMethod(f="plot",
                                                          ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
                           yloc <- yloc - d.yloc
                       }
-                  } else if (which[w] == 5) {
-                      if (is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
+                  } else if (which[w] == 5) { # map
+                      if (!is.null(x[["latitude"]]) &&
+                          !is.null(x[["longitude"]]) &&
+                          is.finite(x[["latitude"]][1]) &&
+                          is.finite(x[["longitude"]][1])) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## FIXME: use waterdepth to guess a reasonable span, if not supplied
                           if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))

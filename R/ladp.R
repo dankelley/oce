@@ -63,7 +63,7 @@ setMethod(f="[[",
               if (i == "pressure" || i == "p") {
                   x@data$pressure
               } else if (i == "u") {
-                  x@data$v
+                  x@data$u
               } else if (i == "v") {
                   x@data$v
               } else if (i == "uz") {

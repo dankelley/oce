@@ -615,7 +615,7 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 \section{Temperature-Depth Recorder data}
 The commands
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-png("logger.png", width=600, height=300, pointsize=13)
+png("rsk.png", width=600, height=300, pointsize=13)
 @
 <<>>=
 library(oce)
@@ -634,7 +634,7 @@ thus providing a rough indication of the temperature profile.  Note that this
 graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
-\includegraphics[width=\hsize]{logger}
+\includegraphics[width=\hsize]{rsk}
 \end{center}
 \caption{Measurements made with a pressure-temperature recorder in the
   St Lawrence Estuary.  Note that the record contains in-air
@@ -646,7 +646,7 @@ graph contains in-air as well as in-water data.
 \label{fig:pt}
 \end{figure}
 
-\workedexercise{7}{Trim the in-air measurements from this \texttt{logger} record, and
+\workedexercise{7}{Trim the in-air measurements from this \texttt{rsk} record, and
 then remove the atmospheric pressure from the signal.}
 
 
@@ -859,11 +859,10 @@ mtext("M2",at=1/12.42,side=3)
 @
 
 \workedanswer{7}{Pressure-temperature Recorder plot}
-\index{subset!using with logger data}
-\index{data!logger}
+\index{subset!using with rsk data}
 
 The accuracy of automatic removal of the atmospheric component done
-with \verb@logger.trim()@ can be quite good if the instrument has recorded
+with \verb@rsk.trim()@ can be quite good if the instrument has recorded
 in the air at the start and end of the record.  Even so, it always
 makes sense to investigate the data by eye, in order to select a time
 window.  Manual selection of a time window is also important when a

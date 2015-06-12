@@ -21,9 +21,9 @@
         range is used.}
     \item{zlab}{label for the palette scale.}
     \item{breaks}{the z values for breaks in the colour scheme.}
-    \item{col}{either a vector of colours corresponding to the breaks, of length
-        1 plus the number of breaks, or a function specifying colours,
-        e.g. \code{\link{oce.colorsJet}} for a rainbow.}
+    \item{col}{either a vector of colours corresponding to the breaks, of
+        length 1 less than the number of breaks, or a function specifying
+        colours, e.g. \code{\link{oce.colorsJet}} for a rainbow.}
     \item{colormap}{a color map as created by \code{\link{colormap}}.  If
         provided, this takes precedence over \code{breaks} and \code{col}.}
     \item{mai}{margins for palette, as defined in the usual way; see

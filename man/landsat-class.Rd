@@ -175,19 +175,19 @@
 \references{
 1. See the USGS "glovis" web site.
 
-2. \url{http://landsat.gsfc.nasa.gov/?page_id=5377}
+2. see landsat.gsfc.nasa.gov/?page_id=5377
 
-3. \url{http://landsat.usgs.gov/calibration_notices.php}
+3. see landsat.usgs.gov/calibration_notices.php
 
 4. \url{http://dankelley.github.io/r/2014/07/01/landsat.html}
 
 5. \url{http://scienceofdoom.com/2010/12/27/emissivity-of-the-ocean/}
 
-6. \url{http://landsat.usgs.gov/Landsat8_Using_Product.php}
+6. see landsat.usgs.gov/Landsat8_Using_Product.php
 
-7. \url{http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf}
+7. see landsathandbook.gsfc.nasa.gov/pdfs/Landsat7_Handbook.pdf
 
-8. \url{http://landsat.usgs.gov/band_designations_landsat_satellites.php}
+8. see landsat.usgs.gov/band_designations_landsat_satellites.php
 
 9. Yu, X. X. Guo and Z. Wu., 2014. Land Surface Temperature Retrieval from
 Landsat 8 TIRS-Comparison between Radiative Transfer Equation-Based Method,
