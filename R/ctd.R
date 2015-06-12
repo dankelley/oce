@@ -1492,9 +1492,9 @@ plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
 
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    ## Special case: ruskin files are handled by read.logger()
+    ## Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$",file))) {
-        return(read.logger(file=file, debug=debug))
+        return(read.rsk(file=file, debug=debug))
     }
 
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -1503,7 +1503,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
     if (is.null(type)) {
         if (is.character(file)) {
             if (length(grep(".rsk$",file))) {
-                return(read.logger(file=file, debug=debug))
+                return(read.rsk(file=file, debug=debug))
             }
             filename <- fullFilename(file)
             file <- file(file, "r")

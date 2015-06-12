@@ -655,7 +655,7 @@ unabbreviateYear <- function(year)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
-loggerToc <- function(dir, from, to, debug=getOption("oceDebug"))
+rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
     if (missing(dir))
         stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")

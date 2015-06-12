@@ -753,8 +753,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         return("topo")
     }
     if ("RBR TDR" == substr(line, 1, 7))  {
-        oceDebug(debug, "this is logger\n")
-        return("logger")
+        oceDebug(debug, "this is rsk\n")
+        return("rsk")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
         oceDebug(debug, "this is section\n")
@@ -864,10 +864,10 @@ read.oce <- function(file, ...)
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
         return(read.topo(file, processingLog=processingLog, ...))
-    if (type == "logger")
-        return(read.logger(file, processingLog=processingLog, ...))
+    if (type == "rsk") # FIXME: is this right? 
+        return(read.rsk(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
-        return(read.logger(file, processingLog=processingLog, ...))
+        return(read.rsk(file, processingLog=processingLog, ...))
         ##return(read.logger(file, processingLog=processingLog, type='rsk'))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))

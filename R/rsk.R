@@ -1,5 +1,5 @@
 setMethod(f="initialize",
-          signature="logger",
+          signature="rsk",
           definition=function(.Object,time,pressure,temperature,filename="") {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(pressure)) .Object@data$pressure <- pressure
@@ -7,15 +7,15 @@ setMethod(f="initialize",
               .Object@metadata$filename <- filename
               .Object@metadata$temperatureUnit <- "ITS-90"
               .Object@processingLog$time <- as.POSIXct(Sys.time())
-              .Object@processingLog$value <- "create 'logger' object"
+              .Object@processingLog$value <- "create 'rsk' object"
               return(.Object)
           })
 
 
 setMethod(f="summary",
-          signature="logger",
+          signature="rsk",
           definition=function(object, ...) {
-              cat("Logger Summary\n----------\n", ...)
+              cat("Rsk Summary\n-------\n", ...)
               cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
                         "``, model ``", object@metadata$model, "``\n", sep=""))
               if ("pressureAtmospheric" %in% names(object@metadata)) {
@@ -41,9 +41,9 @@ setMethod(f="summary",
 
 
 setMethod(f="subset",
-          signature="logger",
+          signature="rsk",
           definition=function(x, subset, ...) {
-              rval <- new("logger") # start afresh in case x@data is a data.frame
+              rval <- new("rsk") # start afresh in case x@data is a data.frame
               rval@metadata <- x@metadata
               rval@processingLog <- x@processingLog
               ## message("NOTE: debugging output coming up!")
@@ -71,11 +71,11 @@ setMethod(f="subset",
               }
               names(rval@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.logger(x, subset=", subsetString, ")", sep=""))
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
               rval
           })
  
-as.logger <- function(time, temperature, pressure,
+as.rsk <- function(time, temperature, pressure,
                       filename="",
                       instrumentType="rbr",
                       serialNumber="", model="",
@@ -83,9 +83,9 @@ as.logger <- function(time, temperature, pressure,
                       processingLog, debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
-    oceDebug(debug, "as.logger(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
+    oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
     if (inherits(time, "ctd")) {
-        class(time) <- "logger"
+        class(time) <- "rsk"
         return(time)
     }
     if (missing(time))
@@ -101,7 +101,7 @@ as.logger <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (pressureGiven && length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
-    res <- new("logger")
+    res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -115,12 +115,12 @@ as.logger <- function(time, temperature, pressure,
         res@data$pressure <- pressure
     if (temperatureGiven)
         res@data$temperature <- temperature
-    oceDebug(debug, "} # as.logger()\n", sep="", unindent=1)
+    oceDebug(debug, "} # as.rsk()\n", sep="", unindent=1)
     res
 }
 
 setMethod(f="plot",
-          signature=signature("logger"),
+          signature=signature("rsk"),
           definition=function(x, which=c(1, 3, 4), title="", adorn=NULL,
                               tlim, plim, Tlim,
                               xlab, ylab,
@@ -134,17 +134,17 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              oceDebug(debug, "plot.logger(..., which=", which, ", ...) {\n", unindent=1)
-              if (!inherits(x, "logger"))
-                  stop("method is only for objects of class '", "logger", "'")
+              oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
+              if (!inherits(x, "rsk"))
+                  stop("method is only for objects of class '", "rsk", "'")
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.logger() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
+                  stop("in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
               if ("ylim" %in% dotsNames)
-                  stop("in plot.logger() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
+                  stop("in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
 
               ## Trim out plots that we cannot do.
               names <- names(x@data)
@@ -274,15 +274,15 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "} # plot.logger()\n", unindent=1)
+              oceDebug(debug, "} # plot.rsk()\n", unindent=1)
               invisible()
           })
 
-read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
+read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default="UTC"),
                         patm=FALSE, processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "read.logger(file=\"", file, "\", from=", format(from),
+    oceDebug(debug, "read.rsk(file=\"", file, "\", from=", format(from),
              ", to=", if(missing(to))"(not given)" else format(to),
              ", by=", by,
              ", type=", if(missing(type)) "(missing)" else type,
@@ -310,7 +310,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         to.keep <- to
     by.keep <- by
     host.time <- 0
-    logger.time <- 0
+    rsk.time <- 0
     subsampleStart <- 0
     subsampleEnd <- 0
     subsamplePeriod <- 0
@@ -328,9 +328,9 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
     pressureAtmospheric <- NA
     if (!missing(type) && type == 'rsk') {
         if (!requireNamespace("RSQLite", quietly=TRUE))
-            stop('must install.packages("RSQLite") to read logger data')
+            stop('must install.packages("RSQLite") to read rsk data')
         if (!requireNamespace("DBI", quietly=TRUE))
-            stop('must install.packages("DBI") to read logger data')
+            stop('must install.packages("DBI") to read rsk data')
         con <- DBI::dbConnect(RSQLite::SQLite(), dbname=filename)
 
         ## Some, but not all, RSK files have "deployments", but we don't use it anyway.
@@ -354,7 +354,7 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         ##       datasets <- RSQLite::dbReadTable(con, "datasets")
         ##       ndatasets <- dim(datasets)[1]
         ##       if (1 != ndatasets)
-        ##           stop("read.logger() cannot handle multi-dataset files; this file has ", ndatasets)
+        ##           stop("read.rsk() cannot handle multi-dataset files; this file has ", ndatasets)
         ##   }, silent=TRUE)
         ##
 
@@ -461,10 +461,10 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             ctd@metadata$type <- "RBR"
             ctd@metadata$model <- model
             ctd@metadata$filename <- filename
-            oceDebug(debug, "} # read.logger() -- returning a CTD object\n", sep="", unindent=1)
+            oceDebug(debug, "} # read.rsk() -- returning a CTD object\n", sep="", unindent=1)
             return(ctd)
         } else {
-            rval <- new("logger", time=time, filename=filename)
+            rval <- new("rsk", time=time, filename=filename)
             for (name in names)
                 rval@data[[name]] <- data[[name]]
             rval@metadata$model <- model
@@ -473,8 +473,8 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
             ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
             ## so I just infer it from the data
             rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
-            rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR loggers?
-            oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
+            rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
+            oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
             return(rval)
         }
     } else {
@@ -581,20 +581,20 @@ read.logger <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", defa
         pressure <- as.numeric(d[pcol, look])
         model <- ""
     }
-    rval <- as.logger(time, temperature, pressure, instrumentType="rbr",
+    rval <- as.rsk(time, temperature, pressure, instrumentType="rbr",
                       serialNumber=serialNumber, model=model,
                       pressureAtmospheric=pressureAtmospheric,
                       filename=filename,
                       processingLog=paste(deparse(match.call()), sep="", collapse=""),
                       debug=debug-1)
-    oceDebug(debug, "} # read.logger()\n", sep="", unindent=1)
+    oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     rval
 }
 
 
-loggerPatm <- function(x, dp=0.5)
+rskPatm <- function(x, dp=0.5)
 {
-    p <- if (inherits(x, "logger")) x@data$pressure else x
+    p <- if (inherits(x, "rsk")) x@data$pressure else x
     sap <- 10.1325                      # standard atm pressure
     if (length(p) < 1)
         return(rep(sap, 4))
@@ -606,16 +606,16 @@ loggerPatm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-loggerTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
+rskTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "loggerTrim() {\n", unindent=1)
-    if (!inherits(x, "logger"))
-        stop("method is only for objects of class '", "logger", "'")
+    oceDebug(debug, "rskTrim() {\n", unindent=1)
+    if (!inherits(x, "rsk"))
+        stop("method is only for objects of class '", "rsk", "'")
     res <- x
     n <- length(x@data$temperature)
     oceDebug(debug, "dataset has", n, "points\n")
     if (n < 2) {
-        warning("too few data to trim logger record")
+        warning("too few data to trim rsk record")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         oceDebug(debug, "using method", which.method, "\n")
@@ -648,6 +648,6 @@ loggerTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceD
         res@data[[name]] <- subset(x@data[[name]], keep)
     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # loggerTrim()\n", unindent=1)
+    oceDebug(debug, "} # rskTrim()\n", unindent=1)
     res
 }

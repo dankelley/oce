@@ -619,8 +619,8 @@ png("logger.png", width=600, height=300, pointsize=13)
 @
 <<>>=
 library(oce)
-data(logger)
-plot(logger, useSmoothScatter=TRUE)
+data(rsk)
+plot(rsk, useSmoothScatter=TRUE)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
