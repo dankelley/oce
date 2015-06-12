@@ -365,8 +365,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     #if (is.logical(grid[1]) && grid[1])
     #    grid <- rep(15, 2)
     #message("000")
-    if (nchar(projection) && substr(projection, 1, 1) != "+")
-        warning("use PROJ.4 format, e.g. projection=\"+proj=merc\" for Mercator, \"+proj=robin\" for Robinson", sep="")
+    if (nchar(projection) && substr(projection, 1, 1) != "+") {
+        warning("use PROJ.4 format, e.g. projection=\"+proj=merc\" for Mercator\n  (this warning will turn into an error sometime during 2015)", sep="")
+        ## call mapproject() so it can remember the projection
+        mapproj::mapproject(0, 0, projection=projection, parameters=parameters, orientation=orientation)
+    }
     xy <- lonlat2map(longitude, latitude, projection=projection, parameters=parameters, orientation=orientation)
     if (!missing(latitudelim) && 0 == diff(latitudelim)) stop("lattudelim must contain two distinct values")
     if (!missing(longitudelim) && 0 == diff(longitudelim)) stop("longitudelim must contain two distinct values")
@@ -1669,6 +1672,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 
 lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orientation=NULL)
 {
+    ##cat("map.R:1676 in lonlat2map(..., projection='", projection, "', ...)\n", sep="")
     ## NOTE: the proj4 method can run into errors (e.g. "ortho" for points on opposite
     ## side of the earth) an may have to be done (slowly) point by point; a warning is
     ## issued if so.
@@ -1682,6 +1686,7 @@ lonlat2map <- function(longitude, latitude, projection="", parameters=NULL, orie
     ## Use proj4 if it has been set up (and still exists).
     #message("projection=", projection)
     if ("" == projection) projection <- .Projection()$projection # FIXME
+    ##cat("  projection='", projection, "'\n", sep='')
     if ('+' != substr(projection, 1, 1)) {
         ## message("lonlat2map (mapproj case)")
         ## mapproj case
