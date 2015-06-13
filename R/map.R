@@ -76,7 +76,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 {
     usr <- par("usr")
     w <- which(is.na(xorig))
-    if (length(w)) {
+    if (length(w) > 1) {
         for (iw in seq(1, -1+length(w))) {
             ##message("check chunk", iw)
             look <- seq.int(w[iw]+1, w[iw+1]-1)
@@ -541,6 +541,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## Use span to make auto-scale the grid.
         if (is.logical(grid)) {
             grid <- c(15, 15)
+            ## FIXME: the span is wrong (issue 665)
             if (gridOrig[1]) {
                 grid[1] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 3) 2 else 1/60
             }
