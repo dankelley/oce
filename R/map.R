@@ -150,7 +150,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                     if (debug > 3) oceDebug(debug, "    ", lon, "E does not intersect side 1\n")
                 }
             } else {
-                oceDebug(debug, "skipping off-globe point\n")
+                ## oceDebug(debug, "skipping off-globe point\n")
             }
         }
         if (!is.null(AT)) {
@@ -208,7 +208,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                         if (debug > 3) oceDebug(debug, "  ", lat, "N does not intersect side 2\n", sep="")
                     }
                 } else {
-                    oceDebug(debug, "skipping off-globe point\n")
+                    ##oceDebug(debug, "skipping off-globe point\n")
                 }
             }
         }
@@ -486,67 +486,52 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         options <- options('warn') # turn off warnings temporarily
         options(warn=-1) 
 
-        ## Estimate the span (km) of the displayed portion of the earth.
-        span <- 10e3 # assume hemispheric, if we cannot determine otherwise
-        if (TRUE) {
-            ## 2014-11-16 for issue 543
-            ## 2015-05-01 for issue 640
-            ## Measure lower-left to upper-right diagonal
-            ## Use alpha because min/max fail with some projections (e.g. wintri)
-            ## that are not cleanly invertable in PROJ.4. What can happen is that
-            ## a particular lon/lat will yield an x/y that cannot be inverted
-            ## because of a loop that diverges instead of converging.
-            ## NB. alpha=0.001 fails "+proj=wintri +lon_0=90", so increase
-            ## by factor 20, which seems to work in my globe-drawing tests.
-            alpha <- 0.02 # because min() fails with some proj (e.g. wintri)
-            qx <- quantile(x, c(alpha, 1.0-alpha), na.rm=TRUE)
-            qy <- quantile(y, c(alpha, 1.0-alpha), na.rm=TRUE)
-            ll <- map2lonlat(qx[1], qy[1])
-            ur <- map2lonlat(qx[2], qy[2])
-            if (is.finite(ll$longitude) && is.finite(ll$latitude) &&
-                is.finite(ur$longitude) && is.finite(ur$latitude)) {
-                onearth <- function(x) {
-                    x$longitude <- ifelse(x$longitude < -180, -180, ifelse(x$longitude > 180, 180, x$longitude))
-                    x$latitude <- ifelse(x$latitude < -90, -90, ifelse(x$latitude > 90, 90, x$latitude))
-                    x
-                }
-                ll <- onearth(ll)
-                ur <- onearth(ur)
-                ## estimate span in deg lat by dividing by 111km
-                span <- geodDist(ll$longitude, ll$latitude, ur$longitude, ur$latitude) / 111
-            }
-        } else {
-            ## **NOT DONE**
-            ## Now next may fail for e.g. molleweide has ll and ur that are
-            ## un-invertable, since the globe may not fill the whole plotting area.
-            mlat <- mean(longitude,na.rm=TRUE)
-            mlon <- mean(latitude, na.rm=TRUE)
-            ll <- map2lonlat(xll, yll)
-            if (is.na(ll$longitude))
-                ll <- map2lonlat(xll, yll, init=c(mlon, mlat))
-            ur <- map2lonlat(xur, yur)
-            if (is.na(ur$longitude))
-                ur <- map2lonlat(xur, yur, init=c(mlon, mlat))
-            if (!is.finite(ll$longitude) || !is.finite(ll$latitude) ||
-                !is.finite(ur$longitude) || !is.finite(ur$latitude)) {
-                ur <- list(longitude=180, latitude=90)
-                ll <- list(longitude=-180, latitude=-90)
-            }
-            spanLat <- if (!is.finite(ur$latitude - ll$latitude)) diff(latitudelim) else ur$latitude - ll$latitude
-            spanLon <- if (!is.finite(ur$longitude - ll$longitude)) diff(longitudelim) else ur$longitude - ll$longitude
-            span <- min(abs(spanLat), abs(spanLon))
-        }
-        if (span < 1) # something wonky
-            span <- 10e3
-        ## Use span to make auto-scale the grid.
         if (is.logical(grid)) {
-            grid <- c(15, 15)
-            ## FIXME: the span is wrong (issue 665)
-            if (gridOrig[1]) {
-                grid[1] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 3) 2 else 1/60
-            }
-            if (gridOrig[2]) {
-                grid[2] <- if (span > 45) 15 else if (span > 10) 5 else if (span > 3) 2 else 1/60
+            ## Determining a grid automatically has proved to be quite tricky,
+            ## and the code near this spot has been reworked repeatedly. 
+            ## At one time, the code near this spot looked at par("usr")
+            ## and tried to invert the corners, to get an idea of scale, and
+            ## this failed because the Winkel Tripel ("wintri") projection
+            ## goes into what seems to be an infinite loop when trying to do the
+            ## inverse of a point that is beyond the edge of the earth
+            ## disk. (I think it fails just on the disk edge, too.) When oce had
+            ## the PROJ.4 code embedded within its src, this was not a problem,
+            ## because I had a workaround.  This workaround has been reported
+            ## to the PROJ.4 community, so I expect that sometime in the year
+            ## 2015 this problem will go away.
+            ##
+            ## Given the above, the present code focusses near the centre of
+            ## the plot region.  A region that might correspond to one tick
+            ## on the axes (assuming 10 ticks per side) is inverse mapped,
+            ## and the corners are used to determine a tick scale. Rather
+            ## than use pretty(), the scale is determined from a list
+            ## of standards (because maps should have 5deg increments, if
+            ## this is good for a view, but not 4deg).
+            usr <- par('usr')
+            x0 <- 0.5 * sum(usr[1:2])
+            y0 <- 0.5 * sum(usr[3:4])
+            ntick <- 8
+            dx <- (usr[2] - usr[1]) / ntick
+            dy <- (usr[4] - usr[3]) / ntick
+            ll <- map2lonlat(x0-dx, y0-dy)
+            ur <- map2lonlat(x0+dx, y0+dy)
+            ls <- geodDist(ll$longitude, ll$latitude, ll$longitude, ur$latitude)
+            rs <- geodDist(ur$longitude, ll$latitude, ur$longitude, ur$latitude)
+            ts <- geodDist(ll$longitude, ur$latitude, ur$longitude, ur$latitude)
+            bs <- geodDist(ll$longitude, ll$latitude, ur$longitude, ll$latitude)
+            t <- median(c(ls, rs, ts, bs)) / 111 # tick, in degrees
+            oceDebug(debug, "t: ", t, "(scale for ticks, in deg)\n")
+            ## message("tickEW: ", tickEW)
+            ## message("tickNS: ", tickNS)
+            ## message("tick: ", tick)
+            if (!is.finite(t)) {
+                grid <- c(5, 5) # may be ok in many instances
+            } else {
+                oceDebug(debug, "t: ", t, "\n")
+                g <- if (t > 45) 45 else if (t > 10) 15 else if (t > 5) 10
+                    else if (t > 4) 5 else if (t > 2) 1 else pretty(t)[2]
+                grid <- rep(g, 2)
+                oceDebug(debug, "grid:", grid[1], "\n")
             }
         }
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
