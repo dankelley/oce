@@ -89,6 +89,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
+
+    vsdStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectNortekVectorSd <- function(tFind, add=0, debug=0) { # tFind=time add=offset debug=debug
         oceDebug(debug, "\n")
         oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ")\n")

@@ -1,139 +1,126 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{mapPlot}
 
 \alias{mapPlot}
 
 \title{Plot a map}
 
-\description{Plot coordinates as a map, using one of many possible projections
-    calculated with the \code{PROJ.4} projections [6] provided by the
-    \CRANpkg{rgdal} package.  (For a temporary alternative, see
-    \dQuote{Deprecation notice}.) The projection parameters are stored in a
-    local variable that can be retrieved by related functions, making it easy
-    to add more items so the map, including points, lines, text, images and
-    contours.}
+\description{Plot coordinates as a map, using one of the subset of projections
+  provided by the \CRANpkg{rgdal} package.  The projection information specified
+  with the \code{mapPlot} call is stored so that can be retrieved by related
+  functions, making it easy to add more items so the map, including points,
+  lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
-    grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
-    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
-    projection="+proj=moll", parameters=NULL, orientation=NULL,
-    tissot=FALSE, trim=TRUE, debug=getOption("oceDebug"), \dots) }
+        grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+        showHemi=TRUE, polarCircle=0,
+        lonlabel=NULL, latlabel=NULL, sides=NULL,
+        projection="+proj=moll", tissot=FALSE, trim=TRUE,
+        debug=getOption("oceDebug"), \dots) }
 
 \arguments{
 
-    \item{longitude}{longitudes of points to be plotted, or an object with a
-        slot named \code{data} that contains items named \code{longitude} and
-        \code{latitude} (e.g. an \code{\link{coastline-class}} object), in
-        which case position is inferred from the object and the second argument
-        to this function is ignored.  If \code{longitude} is missing, it is set
-        to \code{\link{coastlineWorld}}, which is a moderate-resolution
-        coastline object.}
+  \item{longitude}{either a vector of longitudes of points to be plotted, or
+    something (an \code{oce} object, a list, or a data frame) from which both
+    longitude and latitude may be inferred (in which case the \code{latitude}
+    argument is ignored).  If \code{longitude} is missing, both it and
+    \code{latitude} are taken from \code{\link{coastlineWorld}}.}
 
-    \item{latitude}{latitudes of points to be plotted}
+  \item{latitude}{latitudes of points to be plotted (ignored if the first
+    argument contains both latitude and longitude).}
 
-    \item{longitudelim}{optional limit of longitudes to plot}
+  \item{longitudelim}{optional limit of longitudes to plot}
 
-    \item{latitudelim}{optional limit of latitudes to plot}
+  \item{latitudelim}{optional limit of latitudes to plot}
 
-    \item{grid}{either a number (or pair of numbers) indicating the spacing of
-        longitude and latitude lines, in degrees, or a logical value (or pair
-        of values) indicating whether to draw an auto-scaled grid, or whether
-        to skip the grid drawing.  In the case of numerical values, \code{NA}
-        can be used to turn off the grid in longitude or latitude.  For precise
-        control, it can be best to set \code{grid=FALSE} and to add a grid
-        later, using \code{\link{mapGrid}}.}
+  \item{grid}{either a number (or pair of numbers) indicating the spacing of
+    longitude and latitude lines, in degrees, or a logical value (or pair of
+    values) indicating whether to draw an auto-scaled grid, or whether to skip
+    the grid drawing.  In the case of numerical values, \code{NA} can be used to
+    turn off the grid in longitude or latitude.  Grids are set up based on
+    examination of the scale used in middle 10 percent of the plot area, and for
+    most projections this works quite well.  If not, one may set
+    \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.}
 
-    \item{bg}{background colour for plot (ignored at present).}
+  \item{bg}{background colour for plot (ignored at present).}
 
-    \item{fill}{colour to be used to fill land regions, or \code{NULL} to avoid
-        filling.  Filling is inaccurate for projections, e.g. yielding as
-        misshaped Antarticic continent or oceans filled instead of land. In
-        such cases, it makes sense to turn filling off.}
+  \item{fill}{colour to be used to fill land regions, or \code{NULL} to avoid
+    filling.  Filling is inaccurate for projections, e.g. yielding as misshaped
+    Antarticic continent or oceans filled instead of land. In such cases, it
+    makes sense to turn filling off.}
         
-    \item{type}{value to indicate type of plot, as with
-        \code{\link{par}("plot")}.}
+  \item{type}{value to indicate type of plot, as with
+    \code{\link{par}("plot")}.}
 
-    \item{axes}{logical value indicating whether to draw longitude and latitude
-        values in the lower and left margin, respectively.  This may not work
-        well for some projections or scales.}
+  \item{axes}{logical value indicating whether to draw longitude and latitude
+    values in the lower and left margin, respectively.  This may not work well
+    for some projections or scales.}
 
-    \item{drawBox}{logical value indicating whether to draw a box around the
-        plot.  This is helpful for many projections at sub-global scale.}
+  \item{drawBox}{logical value indicating whether to draw a box around the plot.
+    This is helpful for many projections at sub-global scale.}
 
-    \item{showHemi}{logical value indicating whether to show the hemisphere in
-        axis tick labels.}
+  \item{showHemi}{logical value indicating whether to show the hemisphere in
+    axis tick labels.}
 
-    \item{polarCircle}{a number indicating the number of degrees of latitude
-        extending from the poles, within which zones are not drawn.}
+  \item{polarCircle}{a number indicating the number of degrees of latitude
+    extending from the poles, within which zones are not drawn.}
 
-    \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude
-        to label on the indicated sides of plot, passed to
-        \code{\link{plot.coastline}}.  Using these arguments permits reasonably
-        simple customization.  If they are are not provided, reasonable
-        defaults will be used.}
+  \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude
+    to label on the indicated sides of plot, passed to
+    \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+    simple customization.  If they are are not provided, reasonable defaults
+    will be used.}
 
-    \item{projection}{optional indication of projection.  This is normally a
-        string in the format used by the \code{rgdal} package, i.e.  starting
-        with \code{+proj=}. (See \dQuote{Deprecation notice}.)}
+  \item{projection}{optional indication of projection, a character string that
+    in the format used by the \code{rgdal} package (and in much of computer
+    cartography). For example, \code{projection="+proj=merc"} specifies a
+    Mercator projection. See \dQuote{Details}.)}
 
-    \item{parameters,orientation}{See \dQuote{Deprecation notice}.}
-
-    \item{trim}{a logical value indicating whether to trim islands or lakes
-        containing only points that are off-scale of the current plot box.
-        This solves the problem of Antarctica overfilling the entire domain,
-        for an Arctic-centred stereographic projection.  It is not a perfect
-        solution, though, because the line segment joining two off-scale points
-        might intersect the plotting box.}
+  \item{trim}{a logical value indicating whether to trim islands or lakes
+    containing only points that are off-scale of the current plot box.  This
+    solves the problem of Antarctica overfilling the entire domain, for an
+    Arctic-centred stereographic projection.  It is not a perfect solution,
+    though, because the line segment joining two off-scale points might
+    intersect the plotting box.}
     
-    \item{tissot}{logical indicating whether to use \code{\link{mapTissot}} to
-        plot Tissot indicatrices, i.e. ellipses at grid intersection points,
-        which indicate map distortion.}
+  \item{tissot}{logical indicating whether to use \code{\link{mapTissot}} to
+    plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
+    indicate map distortion.}
 
-    \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-        amount of debugging information, or to 2 to get more.} 
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
+    amount of debugging information, or to 2 to get more.} 
 
-    \item{\dots}{optional arguments passed to some plotting functions.  This can be
-        useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc
-        to reproduce a scale exactly between two plots.}
+  \item{\dots}{optional arguments passed to some plotting functions.  This can
+    be useful in many ways, e.g.  Example 5 shows how to use \code{xlim} etc to
+    reproduce a scale exactly between two plots.}
+
 }
 
 \details{Creates a map using the indicated projection.  As noted in the
-    information on the \code{projection} argument, projections are best
-    specified in the notation used by \code{project()} in the \code{rgdal}
-    package, although (at least temporarily) it is also possible to specify it
-    in the notation of \code{mapproject()} in the \code{mapproj} package.
+  information on the \code{projection} argument, projections are specified in
+  the notation used by \code{project()} in the \code{rgdal} package; see
+  \dQuote{Available Projections} for a list of possibilities.
     
-    Once a projection is set, the many functions that add more material to a
-    map will use that same projection.
+  Once a projection is set, other \code{map*} functions may be used to add to
+  the map.
     
-    Further details on map projections are provided by [1,11], an exhaustive
-    treatment that includes many illustrations, an overview of the history of
-    the topic, and some notes on the strengths and weaknesses of the various
-    formulations.  See especially pages 2 through 7, which define terms and
-    provide recommendations.  Reference [2] is also useful,
-    especially regarding datum shifts; [3] and [4] are less detailed and
-    perhaps better for novices. See [8] for a gallery of projections.
+  Further details on map projections are provided by [1,11], an exhaustive
+  treatment that includes many illustrations, an overview of the history of the
+  topic, and some notes on the strengths and weaknesses of the various
+  formulations.  See especially pages 2 through 7, which define terms and
+  provide recommendations.  Reference [2] is also useful, especially regarding
+  datum shifts; [3] and [4] are less detailed and perhaps better for novices.
+  See [8] for a gallery of projections.
     
 }
 
-\section{Deprecation notice}{At the moment of writing, it is still also
-    possible to specify projections using \code{projection}, \code{parameters}
-    and \code{orientation} in the terminology employed by the \code{mapproj}
-    package. In that case, the calculations are done using that package (if it
-    is installed). Unfortunately, this method can yield poor results, because
-    inverse-projection is not handled by \code{mapproj}. For this reason, this
-    capability is likely to be removed in a future version of \code{oce}. It is
-    only provided in the present version to give users time to alter their
-    code. It will be removed sometime in the year 2015.}
-
-
-
-\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines
-    with \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons with
-    \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale
-    bars with \code{\link{mapScalebar}}.  Points on a map may be determined
-    with mouse clicks using \code{\link{mapLocator}}.  Great circle paths can
-    be calculated with \code{\link{geodGc}}.  See [8] for a demonstration of
-    the available map projections (with graphs).}
+\seealso{Points may be added to a map with \code{\link{mapPoints}}, lines with
+  \code{\link{mapLines}}, text with \code{\link{mapText}}, polygons with
+  \code{\link{mapPolygon}}, images with \code{\link{mapImage}}, and scale bars
+  with \code{\link{mapScalebar}}.  Points on a map may be determined with mouse
+  clicks using \code{\link{mapLocator}}.  Great circle paths can be calculated
+  with \code{\link{geodGc}}.  See [8] for a demonstration of the available map
+  projections (with graphs).}
 
 \examples{
 \dontrun{
@@ -202,54 +189,14 @@ for (i in ilon) {
 dev.off()
 }
 }
+\section{Available Projections}{Map projections are provided by the
+    \code{rgdal} package, but not all projections in that package are
+    available. The available list is given in the table
+    below. The cartographic community has set up a naming scheme in a coded
+    scheme, e.g. \code{projection="+proj=aea"} selects the Albers equal area
+    projection.
 
-%\section{Available projections}{All of the projections provided in the
-%    \code{mapproj} package are available, but the lack of inverses in that
-%    package mean that sometimes the plot has flaws (especially on axis
-%    labelling). The recommended method is to use the \code{PROJ.4} [6] scheme,
-%    which permits the following projections [7]:
-%    \code{"aea"}, \code{"aeqd"}, \code{"aitoff"}, \code{"alsk"}, \code{"bipc"},
-%    \code{"bonne"}, \code{"cass"}, \code{"cc"}, \code{"cea"}, \code{"collg"},
-%    \code{"crast"}, \code{"eck1"}, \code{"eck2"}, \code{"eck3"}, \code{"eck4"},
-%    \code{"eck5"}, \code{"eck6"}, \code{"eqc"}, \code{"eqdc"}, \code{"euler"},
-%    \code{"etmerc"}, \code{"fahey"}, \code{"fouc"}, \code{"fouc_s"},
-%    \code{"gall"}, \code{"geos"}, \code{"gn_sinu"}, \code{"gnom"},
-%    \code{"goode"}, \code{"gs48"}, \code{"gs50"}, \code{"hatano"},
-%    \code{"healpix"}, \code{"rhealpix"}, \code{"igh"}, \code{"imw_p"},
-%    \code{"isea"}, \code{"kav5"}, \code{"kav7"}, \code{"krovak"},
-%    \code{"labrd"}, \code{"laea"}, \code{"lonlat"}, \code{"latlon"},
-%    \code{"lcc"}, \code{"lcca"}, \code{"leac"}, \code{"lee_os"},
-%    \code{"loxim"}, \code{"lsat"}, \code{"mbt_s"}, \code{"mbt_fps"},
-%    \code{"mbtfpp"}, \code{"mbtfpq"}, \code{"mbtfps"}, \code{"merc"},
-%    \code{"mil_os"}, \code{"mill"}, \code{"moll"}, \code{"murd1"},
-%    \code{"murd2"}, \code{"murd3"}, \code{"natearth"}, \code{"nell"},
-%    \code{"nell_h"}, \code{"nsper"}, \code{"nzmg"}, \code{"ob_tran"},
-%    \code{"ocea"}, \code{"oea"}, \code{"omerc"}, \code{"ortho"},
-%    \code{"pconic"}, \code{"poly"}, \code{"putp1"}, \code{"putp2"},
-%    \code{"putp3"}, \code{"putp3p"}, \code{"putp4"}, \code{"putp4p"},
-%    \code{"putp5"}, \code{"putp5p"}, \code{"putp6"}, \code{"putp6p"},
-%    \code{"qsc"}, \code{"qua_aut"}, \code{"robin"}, \code{"rouss"},
-%    \code{"sinu"}, \code{"somerc"}, \code{"stere"}, \code{"sterea"},
-%    \code{"gstmerc"}, \code{"tcea"}, \code{"tissot"}, \code{"tmerc"},
-%    \code{"tpeqd"}, \code{"tpers"}, \code{"ups"}, \code{"urm5"},
-%    \code{"urmfps"}, \code{"utm"}, \code{"vandg"}, \code{"vitk1"},
-%    \code{"wag1"}, \code{"wag2"}, \code{"wag3"}, \code{"wag4"}, \code{"wag5"},
-%    \code{"wag6"}, \code{"weren"}, and \code{"wink1"}. (See [7] for invertible
-%    projections that are omitted in oce.)
-%    The PROJ.4 documentation [6] details the additional parameters that may be
-%    used with each projection.
-%}
-
-\section{Available Projections}{Users who choose the (unrecommended) mapproj
-    scheme for setting the projection should consult the documentation for
-    \code{mapproject} in the \code{mapproj} package. 
-    
-    Those who choose the (recommended) PROJ.4 system [5,6] have a wide range of
-    projections to choose from. These are provided by the \code{rgdal} package,
-    and listed in the table given below.  For example, set
-    \code{projection="+proj=aea"} to select the Albers equal area projection.
-
-    The projection list consists of all the PROJ.4 projections provided by
+    The allowed projections include those PROJ.4 projections provided by
     \code{rgdal} that have inverses, minus a few that cause problems:
     \code{alsk} overdraws \code{coastlineWorld}, and is a niche projection for Alaska;
     \code{calcofi} is not a real projection, but rather a coordinate system;
@@ -316,7 +263,7 @@ Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
 HEALPix                                   \tab \code{healpix}  \tab - \cr
 rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
 Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-International map of the world polyconic  \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
+Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 %Krovak                                    \tab \code{krovak}   \tab - \cr
@@ -331,7 +278,7 @@ Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
 McBryde-Thomas flat-polar sine, no. 1     \tab \code{mbt_s}    \tab\cr
 McBryde-Thomas flat-polar sine, no. 2     \tab \code{mbt_fps}  \tab\cr
-McBride-Thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
+McBryde-Thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
 McBryde-Thomas flat-polar quartic         \tab \code{mbtfpq}   \tab\cr
 McBryde-Thomas flat-polar sinusoidal      \tab \code{mbtfps}   \tab\cr
 Mercator                                  \tab \code{merc}     \tab \code{lat_ts}\cr
@@ -447,31 +394,28 @@ Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts
 \author{Dan Kelley and Clark Richards.}
 
 \references{1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
-    Professional Paper: 1395 (available at
-    \url{pubs.usgs.gov/pp/1395/report.pdf}).
+  Professional Paper: 1395 (available at
+  \url{pubs.usgs.gov/pp/1395/report.pdf}).
 
-    2. Natural Resources Canada \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+  2. Natural Resources Canada
+  \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 
-    3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
+  3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
 
-    4. Radical Cartography website \url{http://www.radicalcartography.net/?projectionref}
+  4. Radical Cartography website
+  \url{http://www.radicalcartography.net/?projectionref}
 
-    5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it
-    is the place to start to learn about the code. 
+  5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
+  the place to start to learn about the code. 
 
-    6. \code{PROJ.4} projection details are at \url{http://www.remotesensing.org/geotiff/proj_list/}.
+  6. \code{PROJ.4} projection details are at
+  \url{http://www.remotesensing.org/geotiff/proj_list/}.
 
-    7. All the \code{PROJ.4} (version 4.9.0) schemes that have inverses are
-    used, except for \code{calcofi} (which is not really a projection scheme),
-    \code{isea} (which causes R to segmentation-fault on a world coastline test
-    case), and \code{labrd} which a nich local projection that has an error
-    making it return \code{NaN} for the entire earth coastline.
+  7. A gallery of map plots is provided at
+  \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  
 
-    8. A gallery of plots with the PROJ.4-style projections is provided at
-    \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.  
-
-    9. A fascinating historical perspective is provided by Snyder, J. P.
-    (1993). Two thousand years of map projections. University of Chicago Press.
+  8. A fascinating historical perspective is provided by Snyder, J. P.
+  (1993). Two thousand years of map projections. University of Chicago Press.
 
 }
 

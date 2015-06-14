@@ -275,7 +275,6 @@ makeSection <- function(item, ...)
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
-                cat("adding station i=", i, "\n")
                 thisStn <- extra.args[[i-1]]
 		stn[i] <- thisStn@metadata$station
 		lon[i] <- thisStn@metadata$longitude
@@ -673,7 +672,7 @@ setMethod(f="plot",
                           } else {
                               xlab <- switch(which.xtype, 
                                              resizableLabel("distance km"),
-                                             resizabelLabel("along-track distance km"),
+                                             resizableLabel("along-track distance km"),
                                              gettext("Longitude", domain="R-oce"),
                                              gettext("Latitude", domain="R-oce"))
                           }
