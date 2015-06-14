@@ -23,7 +23,10 @@ horizontal lines in world maps. These lines occur when a coastline segment
 is intersected by longitude lon_0+180.  Since the coastline files in the oce
 and ocedata packages are already "cut" at longitudes of -180 and 180, the present
 function is not needed for default maps, which have \code{+lon_0=0}. However,
-it is needed for almost any other value for \code{lon_0}.
+may help with other values of \code{lon_0}.
+
+This function is provisional, and both its behaviour and name may change
+through the summer and possibly autumn of 2015.
 }
 \examples{
 library(oce)

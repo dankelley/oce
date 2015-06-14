@@ -8,6 +8,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
+    profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectSontekAdp <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectSontekAdp(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         len <- length(profileStart)

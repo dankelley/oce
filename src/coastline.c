@@ -12,13 +12,14 @@
   yo[(*no)]=(y);\
   ++(*no);\
 }
-//if (DEBUG) Rprintf(" [ %7.2f %7.2f @ %3d ]\n", (x), (y), (*no));
 
 // smash the opposite side, retaining y but fixing x as x0 +- epsilon
 void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *x0,
     int *nomax, int *no, double *xo, double *yo)
 {
-  //Rprintf("polygon_subdivide_vertically3(*n=%d, ..., *x0=%f, *nomax=%d, ...)\n", *n, *x0, *nomax);
+#ifdef DEBUG
+  Rprintf("polygon_subdivide_vertically3(*n=%d, ..., *x0=%f, *nomax=%d, ...)\n", *n, *x0, *nomax);
+#endif
   unsigned int *poly_start = (unsigned int*)R_alloc(*(nomax), sizeof(unsigned int));
   unsigned int *poly_end = (unsigned int*)R_alloc(*(nomax), sizeof(unsigned int));
   unsigned int ipoly=0, npoly = 0;
@@ -33,14 +34,14 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
     if (!ISNA(x[start]))
       break;
   }
-  poly_start[npoly] = start + 1;
+  poly_start[npoly] = start;
   int i = start;
   while (i < (*n)) {
     // Find first non-NA
     while (ISNA(x[i]) && (i < (*n))) {
       i++;
     }
-    poly_start[npoly] = i + 1;
+    poly_start[npoly] = i;
     // Find last non-NA
     while (!ISNA(x[i]) && (i < (*n))) {
       i++;
@@ -51,6 +52,10 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
   }
   if (npoly == 0) 
     error("no polygons\n");
+#ifdef DEBUG
+  Rprintf("poly_start[0]: %d\n", poly_start[0]);
+  Rprintf("poly_end[0]: %d\n", poly_end[0]);
+#endif
   //Rprintf("found %d polygons\n", npoly);
   //
   // 2. Process each polygon individually.
@@ -74,9 +79,14 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
       }
     }
     if (crossing) {
-      //Rprintf("ipoly=%4d npoly=%d @ i=%d:%d (first y %.1f) CROSSES (recall *n=%d)\n", ipoly, npoly, poly_start[ipoly], poly_end[ipoly], y[poly_start[ipoly]], (*n));
+#ifdef DEBUG
+      Rprintf("CROSSING\n");
+      Rprintf("ipoly=%4d npoly=%d @ i=%d:%d (first y %.1f) CROSSES (recall *n=%d)\n", ipoly, npoly, poly_start[ipoly], poly_end[ipoly], y[poly_start[ipoly]], (*n));
+#endif
       for (i = poly_start[ipoly]; i <= poly_end[ipoly]; i++) {
-	//Rprintf("POLY LHS i=%d\n", i);
+#ifdef DEBUG
+	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) LHS\n", i, x[i], i, y[i], ipoly);
+#endif
 	if (i == (*n))
 	  return;
 	if (x[i] > ((*x0) - epsilon)) {
@@ -87,7 +97,9 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
       }
       SAVE(NA_REAL, NA_REAL);
       for (i = poly_start[ipoly]; i <= poly_end[ipoly]; i++) {
-	//Rprintf("POLY RHS i=%d\n", i);
+#ifdef DEBUG
+	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) RHS\n", i, x[i], i, y[i], ipoly);
+#endif
 	if (i == (*n))
 	  return;
 	if (x[i] < ((*x0) + epsilon)) {
@@ -97,14 +109,14 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
 	}
       }
     } else {
-      //Rprintf("ipoly=%4d npoly=%d @ i=%d:%d DOES NOT CROSS (recall *n=%d)\n", ipoly, npoly, poly_start[ipoly], poly_end[ipoly], (*n));
       for (i = poly_start[ipoly]; i <= poly_end[ipoly]; i++) {
-	//if (ipoly==286) Rprintf("i=%d %d:%d n=%d\n", i, poly_start[ipoly], poly_end[ipoly], *n);
+#ifdef DEBUG
+	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) NO CROSSING\n", i, x[i], i, y[i], ipoly);
+#endif
 	if (i < (*n))
 	  SAVE(x[i], y[i])
       }
       SAVE(NA_REAL, NA_REAL);
-      //if (ipoly==286) Rprintf("done with poly 286\n");
     }
   }
 }

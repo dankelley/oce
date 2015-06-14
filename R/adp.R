@@ -735,7 +735,7 @@ setMethod(f="plot",
                               dim(z) <- dim(x@data$aDia)[1:2]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
                               zlim <- if (zlimGiven) zlimAsGiven[w,] else {
-                                  if (breaksGIven) NULL else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$aDia[,y.look,]), na.rm=TRUE) 
                               }
                               zlab <- c(expression(aDia[1]),expression(a[2]),expression(aDia[3]),expression(aDia[4]))[which[w]-4]
                           } else {

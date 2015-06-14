@@ -661,7 +661,10 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' is intersected by longitude lon_0+180.  Since the coastline files in the oce
 #' and ocedata packages are already "cut" at longitudes of -180 and 180, the present
 #' function is not needed for default maps, which have \code{+lon_0=0}. However,
-#' it is needed for almost any other value for \code{lon_0}.
+#' may help with other values of \code{lon_0}.
+#'
+#' This function is provisional, and both its behaviour and name may change
+#' through the summer and possibly autumn of 2015.
 #' 
 #' @param coastline original coastline object
 #' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a proj.4 string
@@ -689,5 +692,6 @@ coastlineCut <- function(coastline, lon_0=0)
               NAOK=TRUE)
     cut$xo <- cut$xo[1:cut$no]
     cut$yo <- cut$yo[1:cut$no]
+    warning("coastlineCut() may change name or behaviour through the summer of 2015")
     as.coastline(longitude=cut$xo, latitude=cut$yo)
 }

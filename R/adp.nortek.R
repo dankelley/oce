@@ -323,7 +323,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"),
                             ...)
 {
-    degToRad <- atan2(1, 1) / 45
+    ##degToRad <- atan2(1, 1) / 45
+    profileStart <- NULL # prevents scope warning in rstudio; defined later anyway
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profileStart)
