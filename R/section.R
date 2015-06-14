@@ -673,7 +673,7 @@ setMethod(f="plot",
                           } else {
                               xlab <- switch(which.xtype, 
                                              resizableLabel("distance km"),
-                                             resizabelLabel("along-track distance km"),
+                                             resizableLabel("along-track distance km"),
                                              gettext("Longitude", domain="R-oce"),
                                              gettext("Latitude", domain="R-oce"))
                           }

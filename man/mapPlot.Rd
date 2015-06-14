@@ -6,28 +6,28 @@
 \title{Plot a map}
 
 \description{Plot coordinates as a map, using one of the subset of projections
-  [6] provided by the \CRANpkg{rgdal} package.  The projection information
-  specified here is stored so that can be retrieved by related functions, making
-  it easy to add more items so the map, including points, lines, text, images
-  and contours.}
+  provided by the \CRANpkg{rgdal} package.  The projection information specified
+  with the \code{mapPlot} call is stored so that can be retrieved by related
+  functions, making it easy to add more items so the map, including points,
+  lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
-    grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
-    polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
-    projection="+proj=moll", tissot=FALSE, trim=TRUE,
-    debug=getOption("oceDebug"), \dots) }
+        grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+        showHemi=TRUE, polarCircle=0,
+        lonlabel=NULL, latlabel=NULL, sides=NULL,
+        projection="+proj=moll", tissot=FALSE, trim=TRUE,
+        debug=getOption("oceDebug"), \dots) }
 
 \arguments{
 
-  \item{longitude}{longitudes of points to be plotted, or an object with a slot
-    named \code{data} that contains items named \code{longitude} and
-    \code{latitude} (e.g. an \code{\link{coastline-class}} object), in which
-    case position is inferred from the object and the second argument to this
-    function is ignored.  If \code{longitude} is missing, it is set to
-    \code{\link{coastlineWorld}}, which is a moderate-resolution coastline
-    object.}
+  \item{longitude}{either a vector of longitudes of points to be plotted, or
+    something (an \code{oce} object, a list, or a data frame) from which both
+    longitude and latitude may be inferred (in which case the \code{latitude}
+    argument is ignored).  If \code{longitude} is missing, both it and
+    \code{latitude} are taken from \code{\link{coastlineWorld}}.}
 
-  \item{latitude}{latitudes of points to be plotted}
+  \item{latitude}{latitudes of points to be plotted (ignored if the first
+    argument contains both latitude and longitude).}
 
   \item{longitudelim}{optional limit of longitudes to plot}
 
@@ -37,9 +37,10 @@
     longitude and latitude lines, in degrees, or a logical value (or pair of
     values) indicating whether to draw an auto-scaled grid, or whether to skip
     the grid drawing.  In the case of numerical values, \code{NA} can be used to
-    turn off the grid in longitude or latitude.  For precise control, it can be
-    best to set \code{grid=FALSE} and to add a grid later, using
-    \code{\link{mapGrid}}.}
+    turn off the grid in longitude or latitude.  Grids are set up based on
+    examination of the scale used in middle 10 percent of the plot area, and for
+    most projections this works quite well.  If not, one may set
+    \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.}
 
   \item{bg}{background colour for plot (ignored at present).}
 
@@ -96,12 +97,12 @@
 }
 
 \details{Creates a map using the indicated projection.  As noted in the
-  information on the \code{projection} argument, projections are specified
-  in the notation used by \code{project()} in the \code{rgdal} package; see
+  information on the \code{projection} argument, projections are specified in
+  the notation used by \code{project()} in the \code{rgdal} package; see
   \dQuote{Available Projections} for a list of possibilities.
     
-  Once a projection is set, the many functions that add more material to a map
-  will use that same projection.
+  Once a projection is set, other \code{map*} functions may be used to add to
+  the map.
     
   Further details on map projections are provided by [1,11], an exhaustive
   treatment that includes many illustrations, an overview of the history of the
@@ -188,44 +189,6 @@ for (i in ilon) {
 dev.off()
 }
 }
-
-%\section{Available projections}{All of the projections provided in the
-%    \code{mapproj} package are available, but the lack of inverses in that
-%    package mean that sometimes the plot has flaws (especially on axis
-%    labelling). The recommended method is to use the \code{PROJ.4} [6] scheme,
-%    which permits the following projections [7]:
-%    \code{"aea"}, \code{"aeqd"}, \code{"aitoff"}, \code{"alsk"}, \code{"bipc"},
-%    \code{"bonne"}, \code{"cass"}, \code{"cc"}, \code{"cea"}, \code{"collg"},
-%    \code{"crast"}, \code{"eck1"}, \code{"eck2"}, \code{"eck3"}, \code{"eck4"},
-%    \code{"eck5"}, \code{"eck6"}, \code{"eqc"}, \code{"eqdc"}, \code{"euler"},
-%    \code{"etmerc"}, \code{"fahey"}, \code{"fouc"}, \code{"fouc_s"},
-%    \code{"gall"}, \code{"geos"}, \code{"gn_sinu"}, \code{"gnom"},
-%    \code{"goode"}, \code{"gs48"}, \code{"gs50"}, \code{"hatano"},
-%    \code{"healpix"}, \code{"rhealpix"}, \code{"igh"}, \code{"imw_p"},
-%    \code{"isea"}, \code{"kav5"}, \code{"kav7"}, \code{"krovak"},
-%    \code{"labrd"}, \code{"laea"}, \code{"lonlat"}, \code{"latlon"},
-%    \code{"lcc"}, \code{"lcca"}, \code{"leac"}, \code{"lee_os"},
-%    \code{"loxim"}, \code{"lsat"}, \code{"mbt_s"}, \code{"mbt_fps"},
-%    \code{"mbtfpp"}, \code{"mbtfpq"}, \code{"mbtfps"}, \code{"merc"},
-%    \code{"mil_os"}, \code{"mill"}, \code{"moll"}, \code{"murd1"},
-%    \code{"murd2"}, \code{"murd3"}, \code{"natearth"}, \code{"nell"},
-%    \code{"nell_h"}, \code{"nsper"}, \code{"nzmg"}, \code{"ob_tran"},
-%    \code{"ocea"}, \code{"oea"}, \code{"omerc"}, \code{"ortho"},
-%    \code{"pconic"}, \code{"poly"}, \code{"putp1"}, \code{"putp2"},
-%    \code{"putp3"}, \code{"putp3p"}, \code{"putp4"}, \code{"putp4p"},
-%    \code{"putp5"}, \code{"putp5p"}, \code{"putp6"}, \code{"putp6p"},
-%    \code{"qsc"}, \code{"qua_aut"}, \code{"robin"}, \code{"rouss"},
-%    \code{"sinu"}, \code{"somerc"}, \code{"stere"}, \code{"sterea"},
-%    \code{"gstmerc"}, \code{"tcea"}, \code{"tissot"}, \code{"tmerc"},
-%    \code{"tpeqd"}, \code{"tpers"}, \code{"ups"}, \code{"urm5"},
-%    \code{"urmfps"}, \code{"utm"}, \code{"vandg"}, \code{"vitk1"},
-%    \code{"wag1"}, \code{"wag2"}, \code{"wag3"}, \code{"wag4"}, \code{"wag5"},
-%    \code{"wag6"}, \code{"weren"}, and \code{"wink1"}. (See [7] for invertible
-%    projections that are omitted in oce.)
-%    The PROJ.4 documentation [6] details the additional parameters that may be
-%    used with each projection.
-%}
-
 \section{Available Projections}{Map projections are provided by the
     \code{rgdal} package, but not all projections in that package are
     available. The available list is given in the table
@@ -300,7 +263,7 @@ Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
 HEALPix                                   \tab \code{healpix}  \tab - \cr
 rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
 Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-International map of the world polyconic  \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
+Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 %Krovak                                    \tab \code{krovak}   \tab - \cr
@@ -315,7 +278,7 @@ Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
 McBryde-Thomas flat-polar sine, no. 1     \tab \code{mbt_s}    \tab\cr
 McBryde-Thomas flat-polar sine, no. 2     \tab \code{mbt_fps}  \tab\cr
-McBride-Thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
+McBryde-Thomas flat-polar parabolic       \tab \code{mbtfpp}   \tab\cr
 McBryde-Thomas flat-polar quartic         \tab \code{mbtfpq}   \tab\cr
 McBryde-Thomas flat-polar sinusoidal      \tab \code{mbtfps}   \tab\cr
 Mercator                                  \tab \code{merc}     \tab \code{lat_ts}\cr

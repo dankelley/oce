@@ -271,6 +271,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
+    profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profileStart)
