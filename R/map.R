@@ -16,8 +16,6 @@
     function(new) if(!missing(new)) val <<- new else val
 })
 
-usingProj4 <- function() "proj4" == .Projection()$type
-
 fixneg <- function(v)
 {
     rval <- v
@@ -41,16 +39,7 @@ badFillFix1 <- function(x, y, latitude, projection="")
 {
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, na.rm=TRUE)
-    ## FIXME: should permit the use of PROJ.4 projections that lack inverses.
-    ##if (usingProj4() && length(grep("wintri", projection)))
-    ##    stop("cannot handle +proj=wintri because it has no inverse")
-    ##if (usingProj4() && length(grep("aitoff", projection)))
-    ##    stop("cannot handle +proj=aitoff because it has no inverse")
-    ## FIXME: maybe *always* do this.
-    ## FIXME: maybe *skip Antarctica*.
-    if (usingProj4() ||
-        projection %in% c('mollweide', 'polyconic')) { ## kludge trim wild points [github issue 227]
-        warning("PLEASE tell dan.kelley@dal.ca that badFillFix1 needs adjustment")
+    if (TRUE) {
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
         ## FIXME: can be filled.  It might be smart to do this in C
@@ -443,8 +432,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     ## solution to the Antarctica/stereographic problem of issue 545, because the
     ## line segment between two offscale points might intersect the box.  For
     ## this reason, it is done only when trim=TRUE.
-    if (trim && usingProj4()) {
-        warning("PLEASE tell dan.kelley@dal.ca that trim/usingProj4 needs adjustment")
+    if (trim) {
         xy <- badFillFix2(x=x, y=y, xorig=xorig, yorig=yorig)
         x <- xy$x
         y <- xy$y
