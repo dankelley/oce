@@ -1170,11 +1170,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         col <- col(n=length(breaks)-1)
         oceDebug(debug, "col is a function\n")
     }
-    if (debug > 10) {
-        message("zclip: ", zclip)
-        message("breaks: ", paste(breaks, collapse=" "))
-        message("col: ", paste(col, collapse=" "))
-    }
+    oceDebug(debug, "zclip: ", zclip, "\n")
+    oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
+    oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
     ## 20140816 END
     ni <- dim(z)[1]
     nj <- dim(z)[2]
@@ -1302,7 +1300,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
             ## issue522: this was w <- which(zval <= breaks)[1]
             ## issue655: this was w <- which(zval <= breaks)[1]
-            w <- which(zval < breaks)[1]
+            w <- which(zval < breaks + small)[1]
             #if (zval == 0) browser()
             ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
             ##     message("zval:", zval, ", w:", w)
