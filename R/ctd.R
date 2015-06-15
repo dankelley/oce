@@ -136,7 +136,7 @@ setMethod(f="[[",
 as.ctd <- function(salinity, temperature, pressure, conductivity,
                    SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,
-                   scan, other,
+                   scan, time, other,
                    missingValue,
                    quality,
                    filename="", type="", model="", serialNumber="",
@@ -206,7 +206,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         conductivity <- rsk[["conductivity"]]
         if ("sampleInterval" %in% names(rsk@metadata))
             sampleInterval <- rsk@metadata$sampleInterval
-        time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else NULL
+        time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else if (!missing(time)) time else NULL
         ## Try to be sensible about converting 
         cmax <- max(conductivity, na.rm=TRUE)
         if (cmax > 5) {
@@ -297,6 +297,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     if (!missing(nitrite)) data$nitrite <- nitrite
     if (!missing(phosphate)) data$phosphate <- phosphate
     if (!missing(silicate)) data$silicate <- silicate
+    if (!missing(time)) data$time <- time
     if (!missing(other)) {
         names <- names(other)
         for (i in seq_along(names)) {
