@@ -831,10 +831,6 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
         xy <- lonlat2map(longitude, latitude)
         points(xy$x, xy$y, ...)
     }
-    if (debug > 90) {
-        cat("par('usr'):", paste(par("usr"), collapse=" "), "\n")
-        cat("first point: lon:", longitude[1], ", lat:", latitude[1], "x:", xy$x[1], "y:", xy$y[1], "\n")
-    }
 }
 
 mapArrows <- function(longitude0, latitude0,
