@@ -1,8 +1,6 @@
 sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 {
     if (missing(t)) stop("must provide t")
-    if (missing(longitude)) stop("must provide longitude")
-    if (missing(latitude)) stop("must provide latitude")
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -11,7 +9,13 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
             stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
         }
     }
-    nt <- length(t)
+    t <- as.POSIXct(t) # so we can get length ... FIXME: silly, I know
+    tOrig <- t
+    ok <- !is.na(t)
+    ntOrig <- length(t)
+    nt <- sum(ok)
+    t <- t[ok]
+    t <- as.POSIXlt(t) # so we can get yday etc ... FIXME: silly, I know
     nlon <- length(longitude)
     nlat <- length(latitude)
     if (nlon != nlat) stop("lengths of longitude and latitude must match")
@@ -19,8 +23,14 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         longitude <- rep(longitude, nt) # often, give a time vector but just one location
         latitude <- rep(latitude, nt)
     } else {
-        if (nt != nlon) stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
+        if (ntOrig != nlon) stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
     }
+    ## need vectors to handle NA
+    azOut <- rep(NA, length.out=ntOrig)
+    elOut <- rep(NA, length.out=ntOrig)
+    soldiaOut <- rep(NA, length.out=ntOrig)
+    soldstOut <- rep(NA, length.out=ntOrig)
+
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
     t <- as.POSIXlt(t)                 # use this so we can work on hours, etc
@@ -51,6 +61,7 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         warning("longitude(s) trimmed to range -180 to 180")
         longitude[longitude >  180] <-  180
     }
+
     delta <- year - 1949
     leap <- delta %/% 4
     ## FIXME: using fortran-style int and mod here; must check for leap-year cases
@@ -107,5 +118,9 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         stop("output argument el out of range")
     if (any(az < 0) || any(az > 360))
         stop("output argument az out of range")
-    list(time=t, azimuth=az, altitude=el, diameter=soldia, distance=soldst)
+    azOut[ok] <- az
+    elOut[ok] <- el
+    soldiaOut[ok] <- soldia
+    soldstOut[ok] <- soldst
+    list(time=tOrig, azimuth=azOut, altitude=elOut, diameter=soldiaOut, distance=soldstOut)
 }
