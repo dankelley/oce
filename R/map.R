@@ -527,10 +527,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
         oceDebug(debug, "drawgrid:", drawGrid, "\n")
         if (drawGrid) {
-            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle, debug=debug-1)
+            mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle,
+                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (drawGrid) {
-            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle, debug=debug-1)
+            mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle,
+                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
             mapAxis(side=1, longitude=.axis()$longitude, debug=debug-1)
@@ -545,6 +547,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
+                    longitudelim, latitudelim, 
                     debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
@@ -557,6 +560,19 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         longitude <- seq(-180, 180, dlongitude)
     if (missing(latitude))
         latitude <- seq(-90+small, 90-small, dlatitude)
+    if (!missing(longitudelim) && !missing(latitudelim)) {
+        ## limit to 1.5 timex lon/lim limit range
+        lonMin <- longitudelim[1] - diff(longitudelim) / 2
+        lonMax <- longitudelim[2] + diff(longitudelim) / 2
+        latMin <- latitudelim[1] - diff(latitudelim) / 2
+        latMax <- latitudelim[2] + diff(latitudelim) / 2
+        if (debug>3) message("before: lon range ", paste(range(longitude, na.rm=TRUE), collapse=" "))
+        if (debug>3) message("before: lat range ", paste(range(latitude, na.rm=TRUE), collapse=" "))
+        longitude <- longitude[lonMin <= longitude & longitude <= lonMax]
+        latitude <- latitude[latMin <= latitude & latitude <= latMax]
+        if (debug>3) message("after: lon range ", paste(range(longitude), collapse=" "))
+        if (debug>3) message("after: lat range ", paste(range(latitude), collapse=" "))
+    }
     n <- 360                           # number of points on line
     xspan <- diff(par('usr')[1:2])
     ## Update the global axis information
@@ -592,7 +608,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         polarCircle <- 0
     n <- 360                           # number of points on line
     for (l in longitude) {             # FIXME: should use mapLines here
-        if (debug > 2) oceDebug(debug, "lon=", l, " N\n")
+        if (debug > 2) oceDebug(debug, "lon=", l, " E\n")
         line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
         x <- line$x
         y <- line$y
