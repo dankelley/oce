@@ -560,18 +560,20 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         longitude <- seq(-180, 180, dlongitude)
     if (missing(latitude))
         latitude <- seq(-90+small, 90-small, dlatitude)
-    if (!missing(longitudelim) && !missing(latitudelim)) {
-        ## limit to 1.5 timex lon/lim limit range
+    if (!missing(longitudelim)) {
         lonMin <- longitudelim[1] - diff(longitudelim) / 2
         lonMax <- longitudelim[2] + diff(longitudelim) / 2
+        oceDebug(debug, "before trimming to longitudelim+: lon range ", paste(range(longitude, na.rm=TRUE), collapse=" "), "\n")
+        longitude <- longitude[lonMin <= longitude & longitude <= lonMax]
+        oceDebug(debug, "after: lon range ", paste(range(longitude), collapse=" "), "\n")
+    }
+    if (!missing(latitudelim)) {
+        ## limit to 1.5 timex lon/lim limit range
         latMin <- latitudelim[1] - diff(latitudelim) / 2
         latMax <- latitudelim[2] + diff(latitudelim) / 2
-        if (debug>3) message("before: lon range ", paste(range(longitude, na.rm=TRUE), collapse=" "))
-        if (debug>3) message("before: lat range ", paste(range(latitude, na.rm=TRUE), collapse=" "))
-        longitude <- longitude[lonMin <= longitude & longitude <= lonMax]
+        oceDebug(debug, "before trimming to latitudelim+: lat range ", paste(range(latitude, na.rm=TRUE), collapse=" "), "\n")
         latitude <- latitude[latMin <= latitude & latitude <= latMax]
-        if (debug>3) message("after: lon range ", paste(range(longitude), collapse=" "))
-        if (debug>3) message("after: lat range ", paste(range(latitude), collapse=" "))
+        oceDebug(debug, "after: lat range ", paste(range(latitude), collapse=" "), "\n")
     }
     n <- 360                           # number of points on line
     xspan <- diff(par('usr')[1:2])
