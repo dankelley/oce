@@ -18,7 +18,7 @@
      \dots)
 }
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.met}}, or a
+  \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.met}}, or a
       list containing items named \code{salinity} and \code{temperature}.}
   \item{which}{list of desired plot types.  
     \itemize{
