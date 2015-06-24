@@ -662,6 +662,13 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     #if (nStart < 0 || nStart > 1) stop("internal error trimming (nStart)")
     #if (nEnd < 0 || nEnd > 1) stop("internal error trimming (nEnd)")
 
+
+    ## istart <- round((ll$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    ## iend <- round((ur$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    ## istart <- round((ll$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    ## iend <- round((ur$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    
+
     ## Convert lat-lon limits to i-j indices
     for (b in seq_along(x@data)) {
         oceDebug(debug, "Trimming band", x@metadata$bands[b], "\n")
@@ -672,19 +679,19 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         ilim[1] <- max(1, ilim[1])
         ilim[2] <- min(ilim[2], dim[1])
         oceDebug(debug, "ilim:", ilim[1], "to", ilim[2], "\n")
-        ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
-        ilim <- ilimUTM # FIXME: clean up this code
-        oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
+        ##? ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
+        ##? ilim <- ilimUTM # FIXME: clean up this code
+        ##? oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
         jlim <- round(c(1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ll$latitude-x@metadata$lllat),
                         1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ur$latitude-x@metadata$lllat)))
         jlim[1] <- max(1, jlim[1])
         jlim[2] <- min(jlim[2], dim[2])
         oceDebug(debug, "jlim:", jlim[1], "to", jlim[2], "\n")
-        jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
-        oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
-        jlim <- jlimUTM # FIXME: clean up this code
+        ##? jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
+        ##? jlim <- jlimUTM # FIXME: clean up this code
+        ##? oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
         if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
-            stop("no intersection between landsat image and trimming box")
+            stop("no intersection between landsat image and trimming box.")
         oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
                  ilim[1]/dim[1], " to ", ilim[2]/dim[1], sep="", "\n")
         oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
