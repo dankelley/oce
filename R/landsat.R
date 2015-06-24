@@ -627,34 +627,49 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
     ur$latitude <- min(ur$latitude, x@metadata$urlat)
     utm <- TRUE                        # FIXME: make this an arg
     if (!("llUTM" %in% names(x@metadata))) {
+        oceDebug(debug, "adding llUTM and urUTM to metadata\n")
         x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
         x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
     }
     llTrimUTM <- lonlat2utm(ll, zone=x@metadata$llUTM$zone)
     urTrimUTM <- lonlat2utm(ur, zone=x@metadata$llUTM$zone)
     oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting) 
-    oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing) 
     trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)
+    oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing) 
     trimmedNorthingRange <- c(llTrimUTM$northing, urTrimUTM$northing)
     eStart <- (trimmedEastingRange[1] - oldEastingRange[1])/(diff(oldEastingRange))
     eEnd <- (trimmedEastingRange[2] - oldEastingRange[1])/(diff(oldEastingRange))
     eStart <- min(max(eStart, 0), 1)
     eEnd <- min(max(eEnd, 0), 1)
-    #if (eStart < 0 || eStart > 1) stop("internal error trimming (eStart)")
-    #if (eEnd < 0 || eEnd > 1) stop("internal error trimming (eEnd)")
     nStart <- (trimmedNorthingRange[1] - oldNorthingRange[1])/(diff(oldNorthingRange))
     nEnd <- (trimmedNorthingRange[2] - oldNorthingRange[1])/(diff(oldNorthingRange))
     nStart <- min(max(nStart, 0), 1)
     nEnd <- min(max(nEnd, 0), 1)
+    oceDebug(debug, "llTrimUTM:", paste(llTrimUTM, collapse=" "), "\n")
+    oceDebug(debug, "urTrimUTM:", paste(urTrimUTM, collapse=" "), "\n")
+    oceDebug(debug, "oldEastingRange:     ", paste(oldEastingRange, collapse=" "), "\n")
+    oceDebug(debug, "oldNorthingRange:    ", paste(oldNorthingRange, collapse=" "), "\n")
+    oceDebug(debug, "trimmedEastingRange: ", paste(round(trimmedEastingRange), collapse=" "), "\n")
+    oceDebug(debug, "trimmedNorthingRange:", paste(round(trimmedNorthingRange), collapse=" "), "\n")
+    oceDebug(debug, "eStart:", eStart, ", eEnd:", eEnd, "before trimming to (0,1)\n")
+    oceDebug(debug, "      :", eStart, ", eEnd:", eEnd, "after trimming\n")
+    oceDebug(debug, "nStart:", nStart, ", nEnd:", nEnd, "before trimming to (0,1)\n")
+    oceDebug(debug, "      :", nStart, ", nEnd:", nEnd, "after trimming\n")
+    oceDebug(debug, "Easting  trim range: eStart:", eStart, ", eEnd:", eEnd, "\n")
+    oceDebug(debug, "Northing trim range: nStart:", nStart, ", nEnd:", nEnd, "\n")
+    #if (eStart < 0 || eStart > 1) stop("internal error trimming (eStart)")
+    #if (eEnd < 0 || eEnd > 1) stop("internal error trimming (eEnd)")
     #if (nStart < 0 || nStart > 1) stop("internal error trimming (nStart)")
     #if (nEnd < 0 || nEnd > 1) stop("internal error trimming (nEnd)")
 
-    oceDebug(debug, "Easting trim range:", eStart, "to", eEnd, "\n")
-    oceDebug(debug, "Northing trim range:", nStart, "to", nEnd, "\n")
 
+    ## istart <- round((ll$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    ## iend <- round((ur$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    ## istart <- round((ll$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    ## iend <- round((ur$longitude - x@metadata$lllon) / (x@metadata$urlon-x@metadata$lllon) * dim[1])
+    
 
     ## Convert lat-lon limits to i-j indices
-
     for (b in seq_along(x@data)) {
         oceDebug(debug, "Trimming band", x@metadata$bands[b], "\n")
         isList <- is.list(x@data[[b]])
@@ -664,19 +679,19 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         ilim[1] <- max(1, ilim[1])
         ilim[2] <- min(ilim[2], dim[1])
         oceDebug(debug, "ilim:", ilim[1], "to", ilim[2], "\n")
-        ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
-        ilim <- ilimUTM # FIXME: clean up this code
-        oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
+        ##? ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
+        ##? ilim <- ilimUTM # FIXME: clean up this code
+        ##? oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
         jlim <- round(c(1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ll$latitude-x@metadata$lllat),
                         1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ur$latitude-x@metadata$lllat)))
         jlim[1] <- max(1, jlim[1])
         jlim[2] <- min(jlim[2], dim[2])
         oceDebug(debug, "jlim:", jlim[1], "to", jlim[2], "\n")
-        jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
-        oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
-        jlim <- jlimUTM # FIXME: clean up this code
+        ##? jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
+        ##? jlim <- jlimUTM # FIXME: clean up this code
+        ##? oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
         if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
-            stop("no intersection between landsat image and trimming box")
+            stop("no intersection between landsat image and trimming box.")
         oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
                  ilim[1]/dim[1], " to ", ilim[2]/dim[1], sep="", "\n")
         oceDebug(debug, "  trimming j to range ", jlim[1], ":", jlim[2], ", percent range ",
