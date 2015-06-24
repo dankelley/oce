@@ -1403,6 +1403,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
     if (missing(zone)) {
         zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
         zone <- ifelse(zone > 60, zone-60, zone)
+        ## message("zone not given; inferred to be ", zone)
     }
     lambda0 <- rpd * (zone * 6 - 183)
     xiprime <- atan(t / cos(lambda - lambda0))
