@@ -16,7 +16,7 @@
 \arguments{
 
   \item{action}{An indication of the action, either \code{action="map"} to draw a map or
-    \code{actoin="predict"} to get a prediction; see \sQuote{Details}.}
+    \code{action="predict"} to get a prediction; see \sQuote{Details}.}
   
   \item{longitude}{longitude at which prediction is required (ignored if \code{node} is given).}
 
@@ -74,8 +74,11 @@ prediction <- webtide("predict", lon=-69.61, lat=48.14)
 }
 
 \references{The WebTide software may be downloaded for free at
-  \url{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-eng.php}, along with a
-  suite of databases for various geographical regions.  Note that WebTide is not an open-source
+  the Department of Fisheries and Oceans (Canada) website, at a URL
+  that changes too frequently to be citable here.
+  %\url{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-eng.php}
+  %\url{https://inter-l01.dfo-mpo.gc.ca/sites/bio/science/research-recherche/ocean/webtide/index-en.php},
+  Note that WebTide is not an open-source
   application, as it consists mainly of compiled Java code, which precludes examination of the
   source.}
 

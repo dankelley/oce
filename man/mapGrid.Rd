@@ -8,6 +8,7 @@
 
 \usage{mapGrid(dlongitude=15, dlatitude=15, longitude, latitude,
        col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
+       longitudelim, latitudelim, 
        debug=getOption("oceDebug"))}
 
 
@@ -33,6 +34,15 @@
 
     \item{polarCircle}{a number indicating the number of degrees of latitude
         extending from the poles, within which zones are not drawn.}
+    
+    \item{longitudelim}{optional argument specifying suggested longitude limits
+        for the grid. If this is not supplied, grid lines are drawn for the
+        whole globe, which can yield excessively slow drawing speeds for
+        small-region plots. This, and \code{latitudelim}, are both set by
+        \code{\link{mapPlot}} if the arguments of the same name are passed to
+        that function.}
+
+    \item{latitudelim}{similar to \code{longitudelim}.}
     
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
         amount of debugging information, or to 2 to get more.} 

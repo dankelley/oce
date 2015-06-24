@@ -7,7 +7,7 @@
 \usage{as.ctd(salinity, temperature, pressure, conductivity,
        SA, CT,
        oxygen, nitrate, nitrite, phosphate, silicate,
-       scan, other,
+       scan, time, other,
        missingValue,
        quality, 
        filename="", type="", model="", serialNumber="",
@@ -50,6 +50,7 @@
   \item{silicate}{optional silicate concentration [micromole/kg]}
   \item{scan}{optional scan number.  If not provided, this will be set to
     \code{1:length(salinity)}.}
+  \item{time}{optional vector of times of observation}
   \item{other}{optional list of other data columns that are not in the standard list}
   \item{missingValue}{optional missing value, indicating data that should be
     taken as \code{NA}.}
