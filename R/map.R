@@ -1402,6 +1402,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
     t <- sinh(atanh(sin(phi)) - (2*sqrt(n))/(1+n) * atanh((2*sqrt(n))/(1+n)*sin(phi)))
     if (missing(zone)) {
         zone <- floor((180+longitude)/6)  # FIXME: this works for zone but not positive its ok
+        zone <- floor((longitude / 6) + 31)
         zone <- ifelse(zone > 60, zone-60, zone)
         ## message("zone not given; inferred to be ", zone)
     }
@@ -1424,6 +1425,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
                                     alpha2*cos(4*xiprime)*sinh(4*etaprime)+
                                     alpha3*cos(6*xiprime)*sinh(6*etaprime)))
     N0 <- ifelse(latitude>0, 0, 10000)
+    N0 <- 0                            # to obey Landsat-8 convention
     N <- N0 + k0 * A * (xiprime  + (alpha1*sin(2*xiprime)*cosh(2*etaprime)+
                                     alpha2*sin(4*xiprime)*cosh(4*etaprime)+
                                     alpha3*sin(6*xiprime)*cosh(6*etaprime)))
