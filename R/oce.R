@@ -716,8 +716,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     }
     if (bytes[1] == 0x9b && bytes[2] == 0x00) {
         warning(paste("Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
-                      "the author has not located file-format documents.  If you get such documents\n",
-                      "from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
+                      " the author has not located file-format documents.  If you get such documents\n",
+                      " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
         return("possibly RDI CTD")
     }
 
