@@ -341,7 +341,15 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         data("coastlineWorld", envir=environment())
         longitude <- get("coastlineWorld")
     }
-    if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
+
+    isTopo <- FALSE
+    if (inherits(longitude, "topo")) {
+        topo <- longitude
+        isTopo <- TRUE
+        ## set up to corners of topo lonlat box
+        longitude <- range(topo[["longitude"]], na.rm=TRUE)
+        latitude <- range(topo[["latitude"]], na.rm=TRUE)
+    } else if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
         2 == sum(c("longitude","latitude") %in% names(longitude@data))) {
         latitude <- longitude@data$latitude
         longitude <- longitude@data$longitude
@@ -439,6 +447,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     }
     if (!is.null(fill))
         polygon(x, y, col=fill, ...)
+    if (isTopo) {
+        mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
+    }
     usr <- par('usr')
     ## FIXME: meridians and zones should be added later because they can change depending
     ## FIXME: on the 'pretty' operation below.
