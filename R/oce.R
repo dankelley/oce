@@ -714,6 +714,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         ##} else if (as.integer(bytes[1]) == 87) {
         ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
+    if (bytes[1] == 0x9b && bytes[2] == 0x00) {
+        warning(paste("Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
+                      "the author has not located file-format documents.  If you get such documents\n",
+                      "from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
+        return("possibly RDI CTD")
+    }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
     if (substr(line, 1, 3) == "CTD") {
