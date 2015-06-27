@@ -11,7 +11,7 @@ from within R with
 install.packages("oce")
 {% endhighlight %}
 </p>
-<p>Users who are set up to build packages (which requires a C compiler, etc) may stay at the cutting edge by installing a development version.  This may be done in several ways, of which the third is probably the best for most users.</p>
+<p>Users who are set up to build packages (which requires a C compiler, etc; see note 1) may stay at the cutting edge by installing a development version.  This may be done in several ways, of which the third is probably the best for most users.</p>
 <ol>
     <li> Download the source for oce and ocedata as tarballs
     (<a href="http://github.com/dankelley/oce/tarball/develop">oce</a>
@@ -43,5 +43,13 @@ install_github("dankelley/ocedata", ref="master")
 {% endhighlight %}
 </ol>
 
-<p>Some Windows and OS X users find it hard to install from source, so they may visit <a href="https://www.dropbox.com/sh/awlz31v1jj7w0ct/620Tf2ZkGz">dropbox.com</a> to get binary files.  Since these files tend to be somewhat out of date, the best plan is to get set up to build packages.</p>
+<p><b>Note 1.</b> Getting ready to compile (by installing the gcc compiler,
+etc.) is easy on linux, although the method depends on the system. On
+MSWindows, install [Rtools from
+CRAN](http://cran.r-project.org/bin/windows/Rtools/). OSX instructions are
+provided at [the ATT site](http://r.research.att.com/tools/) ... although it is
+possible that RStudio comes with the requisite tools, so you might want to try
+that first.</p>
+
+<p><b>Note 2.</b> Some Windows and OS X users find it hard to install from source, so they may visit <a href="https://www.dropbox.com/sh/awlz31v1jj7w0ct/620Tf2ZkGz">dropbox.com</a> to get binary files.  Since these files tend to be somewhat out of date, the best plan is to get set up to build packages.</p>
 
