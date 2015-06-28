@@ -647,7 +647,7 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
                 stop("if provided, 'method' must be of length 1 or 2")
             }
         }
-        method <- match.arg(method, c("downcast", "index", "range"))
+        method <- match.arg(method, c("downcast", "index", "scan", "range"))
         oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
@@ -656,11 +656,26 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
                     stop("for method=\"index\", need length(parameters) to match number of pressure values")
                 keep <- parameters
             } else {
+                print(parameters)
                 if (length(parameters) == 2) {
                     parameters[1] <- max(1, as.integer(parameters[1]))
                     parameters[2] <- min(n, as.integer(parameters[2]))
                     keep <- rep(FALSE, n)
                     keep[seq.int(parameters[1], parameters[2])] <- TRUE
+                } else {
+                    stop("length of parameters must be 2, or must match the ctd column length")
+                }
+            }
+        } else if (method == "scan") {
+            if (!"scan" %in% names(x@data)) stop("no \"scan\" in this ctd dataset")
+            scan <- x[["scan"]]
+            if (is.logical(parameters)) {
+                if (length(parameters) != n)
+                    stop("for method=\"scan\", need length(parameters) to match number of pressure values")
+                keep <- parameters
+            } else {
+                if (length(parameters) == 2) {
+                    keep <- parameters[1] <= scan & scan <= parameters[2]
                 } else {
                     stop("length of parameters must be 2, or must match the ctd column length")
                 }
@@ -818,7 +833,7 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             if ("to" %in% names(parameters))
                 keep <- keep & (x@data[[item]] <= parameters$to)
         } else {
-            stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
+            stop("'method' not recognized; must be 'index', 'downcast', 'scan', or 'range'")
         }
     } else {
         keep <- method(data=x@data, parameters=parameters)
