@@ -26,15 +26,28 @@ setMethod(f="summary",
                           format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
                           format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
                           1 / object@metadata$deltat))
-              cat("* Statistics of subsample::\n\n")
-              time.range <- range(object@data$time, na.rm=TRUE)
-              threes <- matrix(nrow=2, ncol=3)
-              threes[1,] <- threenum(object@data$temperature)
-              threes[2,] <- threenum(object@data$pressure)
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- c("Temperature", "Pressure")
-              print(threes)
-              cat('\n')
+              cat("* Statistics of data::\n")
+              print(threes, indent='  ')
+              ## time.range <- range(object@data$time, na.rm=TRUE)
+              ## threes <- matrix(nrow=2, ncol=3)
+              ## threes[1,] <- threenum(object@data$temperature)
+              ## threes[2,] <- threenum(object@data$pressure)
+              ## colnames(threes) <- c("Min.", "Mean", "Max.")
+              ## rownames(threes) <- c("Temperature", "Pressure")
+              ## print(threes)
               processingLogShow(object)
               invisible(NULL)
           })
