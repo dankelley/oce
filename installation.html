@@ -5,12 +5,25 @@ title: Installation
 submenu: installation
 ---
 
+<h1>The stable version</h1>
 <p>The stable version of oce is provided on the R archives.  It is installed
 from within R with
 {% highlight R %}
 install.packages("oce")
 {% endhighlight %}
 </p>
+
+<h1>Pre-compiled development version (for casual users)</h1>
+
+<p>About once per week, <code>oce</code> is compiled for MSWindows and for OS X. The results are stored 
+at <a href="https://www.dropbox.com/sh/awlz31v1jj7w0ct/620Tf2ZkGz">a Dropbox
+    site</a>. Visit that site and the appropriate subdirectory (<code>osx</code> or <code>windows</code>), and download both <code>oce</code> and <code>ocedata</code>. Then install as, for example on OS X,
+{% highlight %}
+R CMD install oce_0.9-18.tgz 
+R CMD install ocedata_0.1.4.tgz 
+{% endhighlight %}
+
+<h1>Source code for the development version (for advanced users)</h1>
 <p>Users who are set up to build packages (which requires a C compiler, etc; see note 1) may stay at the cutting edge by installing a development version.  This may be done in several ways, of which the third is probably the best for most users.</p>
 <ol>
     <li> Download the source for oce and ocedata as tarballs
@@ -50,6 +63,4 @@ Rtools from CRAN</a>.  OSX instructions are provided at <a
                       href="http://r.research.att.com/tools/">the ATT site</a>
 ... although it is possible that RStudio comes with the requisite tools, so you
 might want to try that first.</p>
-
-<p><b>Note 2.</b> Some Windows and OS X users find it hard to install from source, so they may visit <a href="https://www.dropbox.com/sh/awlz31v1jj7w0ct/620Tf2ZkGz">dropbox.com</a> to get binary files.  Since these files tend to be somewhat out of date, the best plan is to get set up to build packages.</p>
 
