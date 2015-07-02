@@ -217,13 +217,12 @@ points(longitude, latitude, col='red')
     \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
 
     The ODF format, used by the Canadian Department of Fisheries and Oceans, is
-    described at
-    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}, and this
-    was used as a base for \code{read.ctd.odf}.  However, it was only a
-    starting point, for examination of data files revealed many variants in the
-    names of the data columns.  If anything odd happens with ODF files (e.g. if
-    they cannot be plotted), the first thing to do is to reread the files with
-    \code{debug=1}, to see if column names were converted properly.
+    described to some extent in the documentation for \code{\link{read.odf}}.
+    It is not clear that ODF format is handled correctly in
+    \code{read.ctd.odf}, or the more general function \code{\link{read.odf}},
+    because the format seems to be somewhat variable and some of the R code is
+    designed mainly by examination of some particular files being used in the
+    author's research.
 
     The \code{ODV} format, used by the ODV software and some European/British
     data providers, is described at
