@@ -284,6 +284,8 @@ pre {
     word-wrap: break-word;
 }
 
+b { font-weight: bold; color: #333; }
+
 code {
     font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     background-color: #F5F5F5;
