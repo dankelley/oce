@@ -857,7 +857,7 @@ resizableLabel <- function(item=c("S", "C",
                                   "eastward", "northward", "depth", "elevation",
                                   "latitude", "longitude",
                                   "frequency cph", "spectral density m2/cph"),
-                           axis=c("x", "y"), psep="")
+                           axis=c("x", "y"), sep)
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -868,8 +868,12 @@ resizableLabel <- function(item=c("S", "C",
         L <- " ("
         R <- ")"
     }
-    L <- paste(L, psep, sep="")
-    R <- paste(psep, R, sep="")
+    if (missing(sep)) {
+        tmp <- getOption("oceUnitSep")
+        sep <- if (!is.null(tmp)) tmp else ""
+    }
+    L <- paste(L, sep, sep="")
+    R <- paste(sep, R, sep="")
     if (item == "T") {
         var <- gettext("Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
@@ -915,22 +919,12 @@ resizableLabel <- function(item=c("S", "C",
         }
     } else if (item == "sigmaTheta") {
         var <- gettext("Potential density anomaly", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*kg/m^3*"]")
-            abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
-        } else {
-            full <- bquote(.(var)*" ("*kg/m^3*")")
-            abbreviated <- expression(paste(sigma[theta], " (", kg/m^3, ")"))
-        }
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[theta]*.(L)*kg/m^3*.(R))
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [ "*degree*"C ]")
-            abbreviated <- expression(paste(theta, " [", degree, "C]"))
-        } else {
-            full <- bquote(.(var)*" ("*degree*"C)")
-            abbreviated <- expression(paste(theta, " (", degree, "C)"))
-        }
+        full <- bquote(.(var)*.(L)*degree*"C"*.(R))
+        abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
     } else if (item == "tritium") {
         var <- gettext("Tritium", domain="R-oce")
         unit <- gettext("Tu", domain="R-oce")
@@ -1029,16 +1023,10 @@ resizableLabel <- function(item=c("S", "C",
             abbreviated <- expression(paste(S[A], " (g/kg)"))
         }
     } else if (item == "p") {
-        ## FIXME: for some reason I need to set the domain for pressure
         var <- gettext("Pressure", domain="R-oce")
         unit <- gettext("dbar", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- paste("p [", unit, "]") # guessing initial same in all languages
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- paste("p (", unit, ")") # guessing initial same in all languages
-        }
+        full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        abbreviated <- bquote("p"*.(L)*.(unit)*.(R))
     } else if (item == "z") {
         if (getOption("oceUnitBracket") == '[') {
             abbreviated <- expression(paste(z, " [m]"))

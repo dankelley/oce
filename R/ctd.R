@@ -3151,12 +3151,14 @@ plotProfile <- function (x,
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        tmpsep <- getOption("oceUnitSep")
+        sep <- if (!is.null(tmpsep)) tmpsep else ""
         if (getOption("oceUnitBracket") == '[') {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
-                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
+            label <- if (eos == "unesco") bquote(sigma[theta]*" ["*.(sep)*kg/m^3*.(sep)*"]") else
+                bquote(sigma[0]*" ["*.(sep)*kg/m^3*.(sep)*"]")
         } else {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
-                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
+            label <- if (eos == "unesco") bquote(sigma[theta]*" ("*.(sep)*kg/m^3*.(sep)*")") else
+                bquote(sigma[0]*" ("*.(sep)*kg/m^3*.(sep)*")")
         }
         mtext(label, side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         axis(2)
