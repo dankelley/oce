@@ -857,19 +857,23 @@ resizableLabel <- function(item=c("S", "C",
                                   "eastward", "northward", "depth", "elevation",
                                   "latitude", "longitude",
                                   "frequency cph", "spectral density m2/cph"),
-                           axis=c("x", "y"))
+                           axis=c("x", "y"), psep="")
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
+    if (getOption("oceUnitBracket") == "[") {
+        L <- " [" 
+        R <- "]" 
+    } else {
+        L <- " ("
+        R <- ")"
+    }
+    L <- paste(L, psep, sep="")
+    R <- paste(psep, R, sep="")
     if (item == "T") {
         var <- gettext("Temperature", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [ "*degree*"C ]")
-            abbreviated <- expression(paste("T [", degree, "C]"))
-        } else {
-            full <- bquote(.(var)*" ( "*degree*"C )")
-            abbreviated <- expression(paste("T (", degree, "C)"))
-        }
+        full <- bquote(.(var)*.(L)*degree*"C"*.(R))
+        abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
     } else if (item == "conductivity mS/cm") {
         var <- gettext("Conductivity", domain="R-oce")
         unit <- gettext("mS/cm", domain="R-oce")
