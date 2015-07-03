@@ -1,10 +1,23 @@
 useDynLib(oce)
+
 import(methods)
 import(gsw)
-importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis", "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image", "legend", "lines", "locator", "mtext", "par", "plot", "plot.new", "plot.window", "points", "polygon", "rect", "segments", "smoothScatter", "strwidth", "text", "xinch", "yinch")
-importFrom("grDevices", "col2rgb", "colorRamp", "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
-importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov", "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm", "median", "na.exclude", "nls", "optim", "optimize", "predict", "quantile", "runmed", "sd", "smooth", "smooth.spline", "spectrum", "time", "ts", "uniroot", "var", "weighted.mean", "window")
-importFrom("utils", "head", "flush.console", "read.csv", "read.table", "setTxtProgressBar", "str", "tail", "txtProgressBar", "write.table")
+importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
+           "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image",
+           "layout", "legend", "lines", "locator", "mtext", "par", "plot",
+           "plot.new", "plot.window", "points", "polygon", "rect", "segments",
+           "smoothScatter", "strwidth", "text", "xinch", "yinch")
+importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
+           "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
+importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
+           "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
+           "median", "na.exclude", "nls", "optim", "optimize", "predict",
+           "printCoefmat", "quantile", "rnorm", "runmed", "sd", "smooth",
+           "smooth.spline", "spectrum", "time", "title", "ts", "uniroot",
+           "var", "weighted.mean", "window")
+importFrom("utils", "data", "head", "flush.console", "read.csv", "read.table",
+           "setTxtProgressBar", "str", "tail", "txtProgressBar", "write.table")
+
 
 exportMethods(plot)
 exportMethods(subset)
