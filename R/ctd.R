@@ -69,12 +69,12 @@ setMethod(f="[[",
               } else if (i == "SR") {
                   gsw_SR_from_SP(SP=x@data$salinity)
                } else if (i == "Sstar") {
-                  SA <- gsw_SA_from_SP(SP=ctd@data$salinity, p=ctd@data$pressure,
-                                       longitude=ctd@metadata$longitude,
-                                       latitude=ctd@metadata$latitude)
-                  gsw_Sstar_from_SA(SA=SA, p=ctd@data$pressure,
-                                    longitude=ctd@metadata$longitude,
-                                    latitude=ctd@metadata$latitude)
+                  SA <- gsw_SA_from_SP(SP=x@data$salinity, p=x@data$pressure,
+                                       longitude=x@metadata$longitude,
+                                       latitude=x@metadata$latitude)
+                  gsw_Sstar_from_SA(SA=SA, p=x@data$pressure,
+                                    longitude=x@metadata$longitude,
+                                    latitude=x@metadata$latitude)
               } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
                   x@data$temperature
               } else if (i == "pressure" || i == "p") {
