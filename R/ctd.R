@@ -656,7 +656,7 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
                     stop("for method=\"index\", need length(parameters) to match number of pressure values")
                 keep <- parameters
             } else {
-                print(parameters)
+                oceDebug(debug, paste("trimming from index \"", parameters[1], " to ", parameters[2], "\"\n", sep=""))
                 if (length(parameters) == 2) {
                     parameters[1] <- max(1, as.integer(parameters[1]))
                     parameters[2] <- min(n, as.integer(parameters[2]))
