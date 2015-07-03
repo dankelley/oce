@@ -9,23 +9,26 @@
   Temperature, and including units as appropriate.}
 
 \usage{
-resizableLabel(item=c("S", "C", "conductivity mS/cm", "conductivity S/m",
-  "T", "theta", "sigmaTheta",
-  "conservative temperature", "absolute salinity",
-  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
-  "tritium", "spice", "fluorescence",
-  "p", "z",
-  "distance", "distance km", "along-track distance km",
-  "heading", "pitch", "roll",
-  "u", "v", "w", "speed", "direction",
-  "eastward", "northward", "depth", "elevation",
-  "latitude", "longitude",
-  "frequency cph", "spectral density m2/cph"),
-               axis=c("x", "y"), sep)}
+resizableLabel(item, axis, sep)}
 
 \arguments{
-  \item{item}{code for the label.}
-  \item{axis}{which axis to use.}
+
+  \item{item}{code for the label.  This must be an element from the following
+    list, or an abbreviation that uniquely identifies an element through its
+    first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
+    \code{"conductivity S/m"}, \code{"T"}, \code{"theta"}, \code{"sigmaTheta"},
+    \code{"conservative temperature"}, \code{"absolute salinity"},
+    \code{"nitrate"}, \code{"nitrite"}, \code{"oxygen"}, \code{"phosphate"},
+    \code{"silicate"}, \code{"tritium"}, \code{"spice"}, \code{"fluorescence"},
+    \code{"p"}, \code{"z"}, \code{"distance"}, \code{"distance km"},
+    \code{"along-track distance km"}, \code{"heading"}, \code{"pitch"},
+    \code{"roll"}, \code{"u"}, \code{"v"}, \code{"w"}, \code{"speed"},
+    \code{"direction"}, \code{"eastward"}, \code{"northward"}, \code{"depth"},
+    \code{"elevation"}, \code{"latitude"}, \code{"longitude"}, \code{"frequency
+      cph"}, or \code{"spectral density m2/cph"}.}
+
+  \item{axis}{a string indicating which axis to use; must be \code{x} or
+    \code{y}.}
 
   \item{sep}{optional character string inserted between the unit and the
     parentheses or brackets that enclose it. If not provided, then

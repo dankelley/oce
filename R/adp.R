@@ -784,7 +784,7 @@ setMethod(f="plot",
                                                     else oce.colorsPalette(length(breaks)-1, 1)
                                                 },
                                                 breaks=breaks,
-                                                ylab=resizableLabel("distance"),
+                                                ylab=resizableLabel("distance m"),
                                                 xlab="Time",
                                                 zlab=zlab,
                                                 tformat=tformat,
