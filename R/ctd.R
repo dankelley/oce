@@ -2595,7 +2595,7 @@ plotProfile <- function (x,
                          grid = TRUE,
                          col.grid = "lightgray",
                          lty.grid = "dotted",
-                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
+                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
                          lwd=par("lwd"),
                          xaxs="r",
                          yaxs="r",
@@ -2663,6 +2663,10 @@ plotProfile <- function (x,
                         depth=resizableLabel("depth", "y"),
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
+    ## if plim given on a pressure plot, then it takes precedence over ylim
+    if (ytype == "pressure")
+       if (!missing(plim))
+          ylim <- plim
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
