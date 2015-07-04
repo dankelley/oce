@@ -2047,7 +2047,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     conductivityUnit = "ratio" # guess
-    temperatureUnit = "ITS-90" # guess
+    temperatureUnit = "ITS-90" # guess; other option is IPTS-68
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
@@ -2385,9 +2385,16 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
         waterDepthWarning <- TRUE
     }
-
-    oceDebug(debug, "} # read.ctd.sbe()\n")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    ## update to temperature IPTS-90, if have an older version
+    if ("IPTS-68" == metadata$temperatureUnit) {
+        res@data$temperature68 <- res@data$temperature
+        res@data$temperature <- T90fromT68(res@data$temperature68)
+        metadata$temperatureUnit <- "ITS-90"
+        warning("converted temperature from IPTS-69 to ITS-90")
+        res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-69 to ITS-90")
+    }
+    oceDebug(debug, "} # read.ctd.sbe()\n")
     if (waterDepthWarning)
         res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     res

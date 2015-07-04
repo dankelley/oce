@@ -1,12 +1,14 @@
+# vim:filetype=r:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 useDynLib(oce)
 
 import(methods)
 import(gsw)
 importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
            "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image",
-           "layout", "legend", "lines", "locator", "mtext", "par", "plot",
-           "plot.new", "plot.window", "points", "polygon", "rect", "segments",
-           "smoothScatter", "strwidth", "text", "title", "xinch", "yinch")
+           "layout", "lcm", "legend", "lines", "locator", "mtext", "par",
+           "plot", "plot.new", "plot.window", "points", "polygon", "rect",
+           "segments", "smoothScatter", "strwidth", "text", "title", "xinch",
+           "yinch")
 importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
            "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
 importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",

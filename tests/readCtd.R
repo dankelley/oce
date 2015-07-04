@@ -20,9 +20,11 @@ stopifnot(d1[["cruise"]] == "Halifax Harbour")
 stopifnot(d1[["station"]] == "Stn 2")
 stopifnot(all.equal.numeric(d1[["latitude"]], 44.68427, tolerance=0.0001))
 stopifnot(all.equal.numeric(d1[["longitude"]], -63.64388, tolerance=0.0001))
-stopifnot(all.equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052)))
-stopifnot(all.equal(d1[['temperature']][1:3], c(14.2245, 14.2299, 14.2285)))
 stopifnot(all.equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206)))
+stopifnot(all.equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052)))
+## check conversion from IPTS-68 to ITS-90 worked
+stopifnot(all.equal(d1[['temperature68']][1:3], c(14.2245, 14.2299, 14.2285)))
+stopifnot(all.equal(d1[['temperature']][1:3], T90fromT68(c(14.2245, 14.2299, 14.2285))))
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
 ## I am not sure if this was a standardized format, but I had to work
