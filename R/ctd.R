@@ -10,6 +10,8 @@ setMethod(f="initialize",
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@metadata$filename <- filename
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
+              .Object@metadata$latitude <- NA
+              .Object@metadata$longitude <- NA
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
@@ -185,6 +187,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         salinity <- x$salinity
         temperature <- x$temperature
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature)
+        res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
+                            name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        return(res)
     }
     samplingInterval <- NA
     if (isRsk) {
