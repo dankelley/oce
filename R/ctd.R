@@ -1051,7 +1051,7 @@ setMethod(f="plot",
                       next
                   }
                   if (which[w] == 1) {
-                      plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
+                      plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, plim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
@@ -1060,7 +1060,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 2) {
                       plotProfile(x, xtype="density+N2",
-                                  ylim=plim,
+                                  plim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   df=df,
@@ -1070,7 +1070,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 6) {
                       plotProfile(x, xtype="density+dpdt",
-                                  ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                                  plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -1080,7 +1080,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 7) {
                       plotProfile(x, xtype="density+time",
-                                  ylim=plim, densitylim=densitylim, timelim=timelim,
+                                  plim=plim, densitylim=densitylim, timelim=timelim,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
@@ -1088,7 +1088,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 8) {
                       plotProfile(x, xtype="index",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -1098,7 +1098,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 9) {
                       plotProfile(x, xtype="salinity",
-                                  ylim=plim,
+                                  plim=plim,
                                   Slim=Slim,
                                   col=col,
                                   eos=eos,
@@ -1109,7 +1109,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 10) {
                       plotProfile(x, xtype="temperature",
-                                  ylim=plim,
+                                  plim=plim,
                                   Tlim=Tlim,
                                   col=col,
                                   eos=eos,
@@ -1120,7 +1120,7 @@ setMethod(f="plot",
                                   ...)
                    } else if (which[w] == 11) {
                       plotProfile(x, xtype="density",
-                                  ylim=plim,
+                                  plim=plim,
                                   densitylim=densitylim,
                                   grid=grid,
                                   col=col,
@@ -1132,7 +1132,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 12) {
                       plotProfile(x, xtype="N2",
-                                  ylim=plim,
+                                  plim=plim,
                                   N2lim=N2lim,
                                   grid=grid,
                                   col=col,
@@ -1145,7 +1145,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 13) {
                       plotProfile(x, xtype="spice",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -1155,7 +1155,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 14) {
                       plotProfile(x, xtype="tritium",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -1165,7 +1165,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 15) {
                       plotProfile(x, xtype="Rrho",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -1175,7 +1175,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 16) {
                       plotProfile(x, xtype="RrhoSF",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -1184,7 +1184,7 @@ setMethod(f="plot",
                                   debug=debug-1,
                                   ...)
                   } else if (which[w] == 17) {
-                      plotProfile(x, xtype="conductivity", Clim=Clim, ylim=plim,
+                      plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
