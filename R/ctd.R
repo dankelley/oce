@@ -659,8 +659,9 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
     methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    if (!("scan" %in% names(x)))
-        x@data[["scan"]] <- seq_along(x@data[["pressure"]])
+    if (!("scan" %in% names(x@data))) {
+        x@data$scan <- seq_along(x@data[["pressure"]])
+    }
     res <- x
     if (!methodIsFunction) {
         n <- length(x@data$pressure)
