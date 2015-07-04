@@ -568,7 +568,9 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     if (eos == "unesco") {
-        rval <- .C("sw_rho", as.integer(nS), as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
+        rval <- .C("sw_rho", as.integer(nS), as.double(l$salinity),
+                   as.double(T68fromT90(l$temperature)),
+                   as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
         SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
@@ -758,7 +760,8 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    rval <- .C("sw_spice", as.integer(nS), as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
+    rval <- .C("sw_spice", as.integer(nS), as.double(l$salinity),
+               as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     if (Smatrix) dim(rval) <- dim
     rval

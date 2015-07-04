@@ -25,17 +25,21 @@
     \emph{Accessing measured data.}
 
     Column data may be accessed by name, e.g. \code{ctd[["salinity"]]},
-    \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  The TEOS-10
-    notation for these quantities also works, with \code{ctd[["SP"]]},
-    \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
-    returned for the longer names.  (FIXME: GSW "t" should be T in ITS-90, but
-    "temperature" will be whatever happens to be in the datafile, which could
-    be IPTS-68 or ITS-90. Maybe there should be methods for "ITS-90" etc. This
-    needs to be adjusted in code and documentation.) After these names have
-    been checked, the remaining names in the \code{data} slot are checked using
-    \code{\link{pmatch}}, so that e.g. \code{ctd[["sal"]]} will recover
-    practical \code{salinity}, \code{ctd[["sc"]]} will recover \code{scan} (if
-    it exists), etc.
+    \code{ctd[["temperature"]]}, \code{ctd[["pressure"]]}, etc.  
+    
+    Temperature is stored in the ITS-90 scale within the object, but the
+    IPTS-68 value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and
+    this must be done in using various seawater functions, e.g. the density
+    function \code{\link{swRho}}, if the UNESCO formulation is being requested.
+    
+    The TEOS-10 notation for these quantities also works, with
+    \code{ctd[["SP"]]}, \code{ctd[["t"]]} and \code{ctd[["p"]]} returning
+    identical values to those returned for the longer names.  
+
+    After the names listed above have been checked, the remaining names in the
+    \code{data} slot are checked using \code{\link{pmatch}}, so that e.g.
+    \code{ctd[["sal"]]} will recover practical \code{salinity},
+    \code{ctd[["sc"]]} will recover \code{scan} (if it exists), etc.
 
     \emph{Accessing derived data.}
 

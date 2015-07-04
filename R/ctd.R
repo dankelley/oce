@@ -67,11 +67,12 @@ setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, drop) {
+              dataNames <- names(x@data)
               if (i == "salinity" || i == "SP") {
                   x@data$salinity
               } else if (i == "SR") {
                   gsw_SR_from_SP(SP=x@data$salinity)
-               } else if (i == "Sstar") {
+              } else if (i == "Sstar") {
                   SA <- gsw_SA_from_SP(SP=x@data$salinity, p=x@data$pressure,
                                        longitude=x@metadata$longitude,
                                        latitude=x@metadata$latitude)
@@ -80,6 +81,8 @@ setMethod(f="[[",
                                     latitude=x@metadata$latitude)
               } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
                   x@data$temperature
+              } else if (i == "temperature68") {
+                  T68fromT90(x@data$temperature)
               } else if (i == "pressure" || i == "p") {
                   x@data$pressure
               } else if (i == "N2") {
