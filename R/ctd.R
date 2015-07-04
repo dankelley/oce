@@ -12,6 +12,7 @@ setMethod(f="initialize",
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
               .Object@metadata$latitude <- NA
               .Object@metadata$longitude <- NA
+              .Object@metadata$waterDepth <- NA
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
@@ -148,6 +149,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    pressureAtmospheric=NA, waterDepth=NA,
                    sampleInterval=NA, src="")
 {
+    if (missing(salinity)) stop("must provide salinity")
     isODF <- inherits(salinity, "odf")
     isRsk <- inherits(salinity, "rsk")
     if (inherits(salinity, "oce")) {
@@ -183,12 +185,33 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     }
     if (is.list(salinity) || is.data.frame(salinity)) {
         x <- salinity
+        names <- names(x)
+        if (!"salinity" %in% names) stop("first argument must contain \"salinity\"")
+        if (!"temperature" %in% names) stop("first argument must contain \"temperature\"")
+        if (!"pressure" %in% names) stop("first argument must contain \"pressure\"")
         pressure <- x$pressure
         salinity <- x$salinity
         temperature <- x$temperature
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature)
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
+        if ("scan" %in% names)
+            res@data$scan <- x$scan
+        if ("time" %in% names)
+            res@data$time <- x$time
+        if ("longitude" %in% names && "latitude" %in% names) {
+            longitude <- x$longitude
+            latitude <- x$latitude
+            if (length(longitude) != length(latitude)) stop("lengths of longitude and latitude must match")
+            if (1 == length(longitude)) {
+                res@metadata$longitude <- longitude
+                res@metadata$latitude <- latitude
+            } else {
+                if (length(longitude) != length(salinity)) stop("lengths of longitude and salinity must match")
+                res@data$longitude <- longitude
+                res@data$latitude <- latitude
+            }
+        }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         return(res)
     }
@@ -226,27 +249,26 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         ## add atm pressure back in, because we will subtract it in a moment...
         if (!is.na(pressureAtmospheric))
             pressure <- pressure + pressureAtmospheric
+        ## FIXME: code would be simplified if did *all* the rsk work here and returned in this block.
     }
-    if (!missing(salinity) && class(salinity) == "data.frame") {
-        d <- salinity
-        names <- names(d)
-        if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
-            ## FIXME: extract SA and CT if they exist
-            salinity <- d$salinity
-            temperature <- d$temperature
-            pressure <- d$pressure
-            if (!missing(conductivity))
-                conductivity <- d$conductivity
-            ## FIXME: extract nitrate etc
-        } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
-        if (missing(scan) && "scan" %in% names)
-            scan <- d$scan
-    } else {
-        if (missing(temperature) && missing(CT))
-            stop("must give temperature or CT")
-        if (missing(pressure))
-            stop("must give pressure")
-    }
+    ##> if (!missing(salinity) && class(salinity) == "data.frame") {
+    ##>     d <- salinity
+    ##>     names <- names(d)
+    ##>     if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
+    ##>         ## FIXME: extract SA and CT if they exist
+    ##>         salinity <- d$salinity
+    ##>         temperature <- d$temperature
+    ##>         pressure <- d$pressure
+    ##>         if (!missing(conductivity))
+    ##>             conductivity <- d$conductivity
+    ##>         ## FIXME: extract nitrate etc
+    ##>     } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
+    ##>     if (missing(scan) && "scan" %in% names)
+    ##>         scan <- d$scan
+    ##> } else {
+    if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
+    if (missing(pressure)) stop("must give pressure")
+    ##> }
     res <- new('ctd')
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
@@ -325,6 +347,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     }
     names <- names(data)
     labels <- paste(toupper(substring(names,1,1)),substring(names,2),sep="")
+    if (length(longitude) != length(latitude))
+        stop("lengths of longitude and latitude must match")
+    if (1 < length(longitude) && length(longitude) != length(salinity))
+        stop("lengths of salinity and longitude must match")
     metadata <- list(header=NULL,
                      type=type, model=model, filename=filename, serialNumber=serialNumber,
                      filename.orig=filename,
@@ -1342,12 +1368,12 @@ setMethod(f="plot",
                               }
                           }
                           if (missing(lonlim)) {
-                              lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
+                              lonlim.c <- mean(x@metadata$longitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mean(x@metadata$longitude, na.rm=TRUE)))
                               clon <- mean(lonlim.c)
                               if (missing(latlim)) {
                                   oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=", 
                                            if (is.null(projection)) "NULL" else projection, "\n")
-                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - mean(x@metadata$latitude, na.rm=TRUE)))
                                   latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
                                   oceDebug(debug, "about to plot coastline\n")
                                   oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
@@ -1384,7 +1410,7 @@ setMethod(f="plot",
                               clon <- mean(lonlim)
                               if (missing(latlim)) {
                                   oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   clat <- mean(latlim.c)
                                   plot(coastline,
                                        clatitude=clat, clongitude=clon, span=span,
