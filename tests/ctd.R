@@ -15,7 +15,7 @@ stopifnot(all.equal.numeric(ctd[["salinity"]], ctd_l[["salinity"]]))
 stopifnot(all.equal.numeric(ctd[["temperature"]], ctd_l[["temperature"]]))
 stopifnot(all.equal.numeric(ctd[["pressure"]], ctd_l[["pressure"]]))
 
-## 2. trimming.
+## 2. subsetting and trimming.
 ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
 ## changing the dataset should be done only when really necessary, e.g. the July 2015
 ## transition to use ITS-90 based temperature.
@@ -27,6 +27,21 @@ stopifnot(all.equal.numeric(ctdTrimmed[["scan"]][1:3], c(150,151,152)))
 stopifnot(all.equal.numeric(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928)))
 stopifnot(all.equal.numeric(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770)))
 stopifnot(all.equal.numeric(ctdTrimmed[["temperature"]][1:3], c(11.734383747900503536,11.630308725905782907,11.4245581060545475790))) 
+## next is form a test for issue 669
+data(ctd)
+n <- length(ctd[["salinity"]])
+set.seed(669)
+lon <- ctd[["longitude"]] + rnorm(n, sd=0.05)
+lat <- ctd[["latitude"]] + rnorm(n, sd=0.05)
+ctdnew <- ctd
+ctdnew@data$longitude <- lon
+ctdnew@data$latitude <- lat
+ctdnewSubset <- subset(ctdnew, 200 <= scan & scan <= 300)
+ctdnewTrim <- ctdTrim(ctdnew, method='scan', parameters = c(200, 300))
+stopifnot(all.equal(ctdnewSubset[['salinity']], ctdnewTrim[['salinity']]))
+stopifnot(all.equal(ctdnewSubset[['scan']], ctdnewTrim[['scan']]))
+stopifnot(all.equal(length(ctdnewSubset[['scan']]), length(ctdnewSubset[['longitude']])))
+
 
 ## 3. alter metadata
 ctd[["longitude"]] <- 1

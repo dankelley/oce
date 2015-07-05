@@ -71,9 +71,13 @@
   \item{startTime}{optional string containing the start time.}
   \item{recovery}{optional string indicating the recovery time.}
   \item{longitude}{optional numerical value containing longitude in decimal
-    degrees, positive in the eastern hemisphere.}
+    degrees, positive in the eastern hemisphere. If this is a single number,
+    then it is stored in the \code{metadata} slot of the returned value; if it
+    is a vector of numbers, they are stored in \code{data} and a mean value is
+    stored in \code{metadata}.  }
   \item{latitude}{optional numerical value containing the latitude in decimal
-    degrees, positive in the northern hemisphere.}
+    degrees, positive in the northern hemisphere. See the note on length, for
+    the \code{longitude} argument.}
   \item{pressureAtmospheric}{if provided, this value is subtracted from
     pressure data before storing them in the object.}
   \item{waterDepth}{optional numerical value indicating the water depth in

@@ -10,8 +10,8 @@ setMethod(f="initialize",
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@metadata$filename <- filename
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
-              .Object@metadata$latitude <- NA
-              .Object@metadata$longitude <- NA
+              #.Object@metadata$latitude <- NA
+              #.Object@metadata$longitude <- NA
               .Object@metadata$waterDepth <- NA
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
@@ -38,9 +38,17 @@ setMethod(f="summary",
               showMetadataItem(object, "cruise",  "Cruise:              ")
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
-              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                               object@metadata$longitude,
-                                                               digits=5), "\n")
+              if ("longitude" %in% names(object@data)) {
+                  cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
+                                                                   mean(object@data$longitude, na.rm=TRUE),
+                                                                   digits=5), "\n")
+              } else if ("longitude" %in% names(object@metadata)) {
+                  cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                                   object@metadata$longitude,
+                                                                   digits=5), "\n")
+              } else {
+                  cat("* Mean location:      unknown\n")
+              }
               showMetadataItem(object, "waterDepth", "Water depth: ")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
@@ -85,6 +93,10 @@ setMethod(f="[[",
                   T68fromT90(x@data$temperature)
               } else if (i == "pressure" || i == "p") {
                   x@data$pressure
+              } else if (i == "longitude") {
+                  if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
+              } else if (i == "latitude") {
+                  if ("latitude" %in% names(x@data)) x@data$latitude else x@metadata$latitude
               } else if (i == "N2") {
                   swN2(x)
               } else if (i == "sigmaTheta") {
@@ -205,8 +217,6 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                 res@data$longitude <- longitude
                 res@data$latitude <- latitude
             }
-            res@metadata$longitude <- mean(longitude, na.rm=TRUE)
-            res@metadata$latitude <- mean(latitude, na.rm=TRUE)
         } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
             res@metadata$longitude <- m$longitude
             res@metadata$latitude <- m$latitude
