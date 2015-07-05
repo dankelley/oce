@@ -1312,7 +1312,7 @@ setMethod(f="plot",
                               ##     span <- 5000
                               ## oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
                               ## find nearest point on (coarse) globe
-                              data("coastlineWorld", envir=environment())
+                              data("coastlineWorld", package="oce", envir=environment())
                               d <- geodDist(coastlineWorld[['longitude']],
                                             coastlineWorld[['latitude']],
                                             x[['longitude']],
@@ -1344,21 +1344,21 @@ setMethod(f="plot",
                                       data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
-                                      data("coastlineWorld", envir=environment())
-                                      coastline <- coastlineWorld
+                                      data("coastlineWorld", package="oce", envir=environment())
+                                      coastline <- get("coastlineWorld")
                                   } else if (coastline == "coastlineWorldFine") {
-                                      data("coastlineWorldFine", envir=environment())
-                                      coastline <- coastlineWorldFine
+                                      data("coastlineWorldFine", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldFine")
                                   } else if (coastline == "coastlineWorldMedium") {
-                                      data("coastlineWorldMedium", envir=environment())
-                                      coastline <- coastlineWorldMedium
+                                      data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldMedium")
                                   }  else {
                                       stop("there is no built-in coastline file of name \"", coastline, "\"")
                                   }
                               } else {
                                   warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
-                                  data("coastlineWorld", envir=environment())
-                                  coastline <- coastlineWorld
+                                  data("coastlineWorld", package="oce", envir=environment())
+                                  coastline <- get("coastlineWorld")
                               }
                           }
                           if (missing(lonlim)) {

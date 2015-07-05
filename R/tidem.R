@@ -135,7 +135,7 @@ setMethod(f="plot",
 tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
-    data("tidedata", envir=environment())
+    data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
 
     a <- tidemAstron(t)
@@ -406,7 +406,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
-    data("tidedata", envir=environment())
+    data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
@@ -639,7 +639,7 @@ webtide <- function(action=c("map", "predict"),
             usr <- par('usr')
             best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
             warning("tidem: using default coastline for testing")
-            data("coastlineWorld", envir=environment())
+            data("coastlineWorld", package="oce", envir=environment())
             coastlineWorld <- get("coastlineWorld")
             ##data(best, envir=environment(), debug=debug-1)
             ##coastline <- get(best)
@@ -675,7 +675,7 @@ webtide <- function(action=c("map", "predict"),
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
-        data("tidedata", envir=environment())
+        data("tidedata", package="oce", envir=environment())
         tidedata  <- get("tidedata")#,   pos=globalenv())
         for (i in 1:nconstituents) {
             period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]

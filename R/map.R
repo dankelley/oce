@@ -338,7 +338,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
-        data("coastlineWorld", envir=environment())
+        data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
     }
 
