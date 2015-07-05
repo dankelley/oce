@@ -216,7 +216,32 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     }
     ## 2. coerce a data-frame or list
     if (is.list(salinity) || is.data.frame(salinity)) {
-        stop("FIXME: code data-frame/list mode")
+        x <- salinity
+        names <- names(x)
+        if (3 != sum(c("salinity", "temperature", "pressure") %in% names))
+            stop("the first argument must contain salinity, temperature, and pressure")
+        res <- new("ctd", pressure=x$pressure, salinity=x$salinity, temperature=x$temperature)
+        if ("longitude" %in% names) {
+            if (1 == length(longitude))
+                res@metadata$longitude <- x$longitude
+            else
+                res@data$longitude <- x$longitude
+        }
+        if ("latitude" %in% names) {
+            if (1 == length(latitude))
+                res@metadata$latitude <- x$latitude
+            else
+                res@data$latitude <- x$latitude
+        }
+        if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
+        if ("quality" %in% names)res@data$quality <- x$quality
+        if ("oxygen" %in% names)res@data$oxygen <- x$oxygen
+        if ("nitrate" %in% names)res@data$nitrate <- x$nitrate
+        if ("nitrite" %in% names)res@data$nitrite <- x$nitrite
+        if ("phosphate" %in% names)res@data$phosphate <- x$phosphate
+        if ("silicate" %in% names)res@data$silicate <- x$silicate
+        if ("time" %in% names)res@data$time <- x$time
+        return(res)
     }
     ## 3. explicit mode
     if (missing(temperature) && missing(CT)) stop("must give temperature or CT")

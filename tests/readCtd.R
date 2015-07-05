@@ -76,7 +76,7 @@ stopifnot(all.equal.numeric(d3[['salinity']][1:3], c(25.1637,25.1964,25.3011), t
 ##'  INITIAL_LONGITUDE=-63.316700,'
 ##'  START_DATE='Jan 01/2010','
 ##'  SOUNDING=161.000000,'
-d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce"))
+d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce"), debug=3)
 stopifnot(d4[["ship"]] == "Launch  Sigma-T")
 stopifnot(d4[["cruise"]] == "Scotian Shelf")
 stopifnot(d4[["scientist"]] == "Glen Harrison")

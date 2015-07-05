@@ -1,5 +1,4 @@
 library(oce)
-source("~/src/oce/R/sw.R")
 # Table of contents.
 #  1. rho and sigma
 #  2. potential temperature
