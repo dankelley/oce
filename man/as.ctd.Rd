@@ -26,15 +26,14 @@
     temperature, etc., can be inferred. In that case, the relevant information
     is extracted and the rest of the arguments to \code{as.ctd} are ignored.}
     
-  \item{temperature}{Temperature through the water column. (This is converted to
-    a vector, if it is not one already.} \item{pressure}{pressure through the
-    water column. (If just a single value is given, then it is repeated to match
-    the length of the temperature and salinity.}
+  \item{temperature}{Temperature through the water column.}
+
+  \item{pressure}{pressure through the water column. If only one value is given,
+    then it is repeated to match the length of the temperature vector.}
 
   \item{conductivity}{electrical conductivity ratio through the water column
-    (optional). Some devices report raw conductivity in milliSeimens per
-    centimeter, and that number should be divided by 42.914 to get
-    \code{conductivity} for use here.}
+    (optional). To convert from raw conductivity in milliSeimens per centimeter
+    divide by 42.914 to get conductivity ratio.}
 
   \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
     salinity is converted internally to UNESCO-defined practical salinity.}

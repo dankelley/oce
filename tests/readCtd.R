@@ -80,7 +80,7 @@ d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oc
 stopifnot(d4[["ship"]] == "Launch  Sigma-T")
 stopifnot(d4[["cruise"]] == "Scotian Shelf")
 stopifnot(d4[["scientist"]] == "Glen Harrison")
-stopifnot(all.equal.numeric(d4[["waterDepth"]], 161, tolerance=0.0001)) # "SOUNDING", not "MAX_DEPTH"
+## There is no water depth in this file
 stopifnot(all.equal.numeric(d4[["latitude"]], 44.2667, tolerance=0.0001))
 stopifnot(all.equal.numeric(d4[["longitude"]], -63.3167, tolerance=0.0001))
 stopifnot(all.equal.numeric(d4[['pressure']][1:3], c(1.0,1.5,2.0), tolerance=0.001))

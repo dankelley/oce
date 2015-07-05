@@ -97,9 +97,8 @@ as.rsk <- function(time, temperature, pressure,
 {
     debug <- min(debug, 1)
     oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
-    if (inherits(time, "ctd")) {
-        class(time) <- "rsk"
-        return(time)
+    if (inherits(time, "oce")) {
+        stop("cannot coerce from general oce object to rsk; submit an issue if you need this")
     }
     if (missing(time))
         stop("must give time")
