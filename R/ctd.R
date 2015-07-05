@@ -153,48 +153,78 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    sampleInterval=NA, src="")
 {
     if (missing(salinity)) stop("must provide salinity")
-    isODF <- inherits(salinity, "odf")
+    isOce <- inherits(salinity, "oce")
     isRsk <- inherits(salinity, "rsk")
-    if (inherits(salinity, "oce")) {
-        ctd <- salinity
-        names <- names(ctd@data)
-        if (!("pressure" %in% names)) stop("no pressure in oce object")
-        if (!("temperature" %in% names)) stop("no temperature in oce object")
-        if (!("salinity" %in% names)) {
-            if (!"conductivity" %in% names)
-                stop("no salinity in oce object")
-            ctd@data$salinity <- swSCTp(ctd[["conductivity"]], ctd[["temperature"]], ctd[["pressure"]],
-                                        conductivityUnit=ctd[["conductivityUnit"]])
-        }
-        mnames <- names(ctd@metadata)
-        res <- new("ctd")
-        res@metadata <- ctd@metadata
-        ## Use waterDepth from first argument, if possible. 
-        ## Otherwise see if provided as its own argument; otherwise, as a
-        ## last-ditch method, take to be max(pressure)
-        res@metadata$waterDepth <- if ("waterDepth" %in% mnames) {
-            ctd@metadata$waterDepth
-        } else {
-            if (!is.na(waterDepth))
-                waterDepth
-            else
-                max(ctd[["pressure"]], na.rm=TRUE)
-        }
-        res@data <- ctd@data
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-        res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                            name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
-        return(res)
-    }
-    if (is.list(salinity) || is.data.frame(salinity)) {
-        x <- salinity
+    ##20160705 if (inherits(salinity, "oce")) {
+    ##20160705     ctd <- salinity
+    ##20160705     names <- names(ctd@data)
+    ##20160705     if (!("pressure" %in% names)) stop("no pressure in oce object")
+    ##20160705     if (!("temperature" %in% names)) stop("no temperature in oce object")
+    ##20160705     if (!("salinity" %in% names)) {
+    ##20160705         if (!"conductivity" %in% names)
+    ##20160705             stop("no salinity in oce object")
+    ##20160705         ctd@data$salinity <- swSCTp(ctd[["conductivity"]], ctd[["temperature"]], ctd[["pressure"]],
+    ##20160705                                     conductivityUnit=ctd[["conductivityUnit"]])
+    ##20160705     }
+    ##20160705     mnames <- names(ctd@metadata)
+    ##20160705     res <- new("ctd")
+    ##20160705     res@metadata <- ctd@metadata
+    ##20160705     ## Use waterDepth from first argument, if possible. 
+    ##20160705     ## Otherwise see if provided as its own argument; otherwise, as a
+    ##20160705     ## last-ditch method, take to be max(pressure)
+    ##20160705     res@metadata$waterDepth <- if ("waterDepth" %in% mnames) {
+    ##20160705         ctd@metadata$waterDepth
+    ##20160705     } else {
+    ##20160705         if (!is.na(waterDepth))
+    ##20160705             waterDepth
+    ##20160705         else
+    ##20160705             max(ctd[["pressure"]], na.rm=TRUE)
+    ##20160705     }
+    ##20160705     res@data <- ctd@data
+    ##20160705     res@processingLog <- processingLogAppend(res@processingLog,
+    ##20160705         paste(deparse(match.call()), sep="", collapse=""))
+    ##20160705     res <- ctdAddColumn(res,swSigmaTheta(res@data$salinity,res@data$temperature,res@data$pressure),
+    ##20160705                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
+    ##20160705     return(res)
+    ##20160705 }
+    if (is.list(salinity) || is.data.frame(salinity) || (isOce && !isRsk)) {
+        x <- isOce salinity@data else salinity
         names <- names(x)
-        if (!"salinity" %in% names) stop("first argument must contain \"salinity\"")
-        if (!"temperature" %in% names) stop("first argument must contain \"temperature\"")
-        if (!"pressure" %in% names) stop("first argument must contain \"pressure\"")
-        pressure <- x$pressure
-        salinity <- x$salinity
-        temperature <- x$temperature
+        if (isRsk) {                   # does not store salinity
+            rsk <- salinity
+            filename <- rsk[["filename"]]
+            model <- rsk[["model"]]
+            serialNumber <- rsk[["serialNumber"]]
+            pressure <- rsk[["pressure"]]
+            pressureAtmospheric <- rsk[["pressureAtmospheric"]]
+            if (!is.na(pressureAtmospheric))
+                pressure <- pressure - pressureAtmospheric ## FIXME: check this makes sense
+            temperature <- rsk[["temperature"]]
+            conductivity <- rsk[["conductivity"]]
+            if ("sampleInterval" %in% names(rsk@metadata))
+                sampleInterval <- rsk@metadata$sampleInterval
+            time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else if (!missing(time)) time else NULL
+            ## Try to be sensible about converting 
+            cmax <- max(conductivity, na.rm=TRUE)
+            if (cmax > 5) {
+                warning("max(conductivity) exceeds 5, so dividing conductivity by 42.914, assuming unit mS/cm")
+                conductivity <- conductivity / 42.914
+            } else if (cmax > 1) {
+                warning("max(conductivity) between 1 and 5, so dividing conductivity by 4.2914, assuming unit S/m")
+                conductivity <- conductivity / 4.2914
+            }
+            salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
+            ## add atm pressure back in, because we will subtract it in a moment...
+            if (!is.na(pressureAtmospheric))
+                pressure <- pressure + pressureAtmospheric
+        } else {
+            if (!"salinity" %in% names) stop("first argument must contain \"salinity\"")
+            if (!"temperature" %in% names) stop("first argument must contain \"temperature\"")
+            if (!"pressure" %in% names) stop("first argument must contain \"pressure\"")
+            pressure <- x$pressure
+            salinity <- x$salinity
+            temperature <- x$temperature
+        }
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature)
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
@@ -202,6 +232,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             res@data$scan <- x$scan
         if ("time" %in% names)
             res@data$time <- x$time
+        if ("waterDepth" %in% names)
+            res@metadata$waterDepth <- x$waterDepth
         if ("longitude" %in% names && "latitude" %in% names) {
             longitude <- x$longitude
             latitude <- x$latitude
@@ -218,40 +250,44 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         return(res)
     }
-    samplingInterval <- NA
-    if (isRsk) {
-        rsk <- salinity
-        names<- names(rsk@data)
-        if (!("pressure" %in% names))
-            stop("rskobject lacks pressure data, so cannot construct a ctd object from it")
-        if (!("temperature" %in% names))
-            stop("rsk object lacks temperature data, so cannot construct a ctd object from it")
-        if (!("conductivity" %in% names))
-            stop("rsk object lacks conductivity data, so cannot construct a ctd object from it")
-        filename <- rsk[["filename"]]
-        model <- rsk[["model"]]
-        serialNumber <- rsk[["serialNumber"]]
-        pressure <- rsk[["pressure"]]
-        if (!is.na(pressureAtmospheric))
-            pressure <- pressure - pressureAtmospheric
-        temperature <- rsk[["temperature"]]
-        conductivity <- rsk[["conductivity"]]
-        if ("sampleInterval" %in% names(rsk@metadata))
-            sampleInterval <- rsk@metadata$sampleInterval
-        time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else if (!missing(time)) time else NULL
-        ## Try to be sensible about converting 
-        cmax <- max(conductivity, na.rm=TRUE)
-        if (cmax > 5) {
-            warning("max(conductivity) exceeds 5, so dividing conductivity by 42.914, assuming unit mS/cm")
-            conductivity <- conductivity / 42.914
-        } else if (cmax > 1) {
-            warning("max(conductivity) between 1 and 5, so dividing conductivity by 4.2914, assuming unit S/m")
-            conductivity <- conductivity / 4.2914
-        }
-        salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
-        ## add atm pressure back in, because we will subtract it in a moment...
-        if (!is.na(pressureAtmospheric))
-            pressure <- pressure + pressureAtmospheric
+    ##20150705 if (isRsk) {
+    ##20150705     rsk <- salinity
+    ##20150705     names<- names(rsk@data)
+    ##20150705     if (!("pressure" %in% names))
+    ##20150705         stop("rskobject lacks pressure data, so cannot construct a ctd object from it")
+    ##20150705     if (!("temperature" %in% names))
+    ##20150705         stop("rsk object lacks temperature data, so cannot construct a ctd object from it")
+    ##20150705     if (!("conductivity" %in% names))
+    ##20150705         stop("rsk object lacks conductivity data, so cannot construct a ctd object from it")
+    ##20150705     ##<
+    ##20150705     if (isRsk) {
+    ##20150705         filename <- rsk[["filename"]]
+    ##20150705         model <- rsk[["model"]]
+    ##20150705         serialNumber <- rsk[["serialNumber"]]
+    ##20150705         pressure <- rsk[["pressure"]]
+    ##20150705         pressureAtmospheric <- rsk[["pressureAtmospheric"]]
+    ##20150705         if (!is.na(pressureAtmospheric))
+    ##20150705             pressure <- pressure - pressureAtmospheric
+    ##20150705         temperature <- rsk[["temperature"]]
+    ##20150705         conductivity <- rsk[["conductivity"]]
+    ##20150705         if ("sampleInterval" %in% names(rsk@metadata))
+    ##20150705             sampleInterval <- rsk@metadata$sampleInterval
+    ##20150705         time <- if ("time" %in% names(rsk@data)) rsk[["time"]] else if (!missing(time)) time else NULL
+    ##20150705         ## Try to be sensible about converting 
+    ##20150705         cmax <- max(conductivity, na.rm=TRUE)
+    ##20150705         if (cmax > 5) {
+    ##20150705             warning("max(conductivity) exceeds 5, so dividing conductivity by 42.914, assuming unit mS/cm")
+    ##20150705             conductivity <- conductivity / 42.914
+    ##20150705         } else if (cmax > 1) {
+    ##20150705             warning("max(conductivity) between 1 and 5, so dividing conductivity by 4.2914, assuming unit S/m")
+    ##20150705             conductivity <- conductivity / 4.2914
+    ##20150705         }
+    ##20150705         salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
+    ##20150705         ## add atm pressure back in, because we will subtract it in a moment...
+    ##20150705         if (!is.na(pressureAtmospheric))
+    ##20150705             pressure <- pressure + pressureAtmospheric
+    ##20150705     }
+    ##20150705 }
         ## FIXME: code would be simplified if did *all* the rsk work here and returned in this block.
     }
     ##> if (!missing(salinity) && class(salinity) == "data.frame") {
