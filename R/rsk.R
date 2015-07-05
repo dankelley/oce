@@ -15,13 +15,13 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="rsk",
           definition=function(object, ...) {
-              cat("Rsk Summary\n-------\n", ...)
-              cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
-                        "``, model ``", object@metadata$model, "``\n", sep=""))
+              cat("rsk summary\n-------\n", ...)
+              cat("* Instrument:         ", object@metadata$model,
+                  ", serial number " , object@metadata$serialNumber, "\n", sep='')
               if ("pressureAtmospheric" %in% names(object@metadata)) {
-                  cat(paste("* Atmospheric pressure: ", object@metadata$pressureAtmospheric, "\n", sep=""))
+                  cat(paste("* Atmosph. pressure:  ", object@metadata$pressureAtmospheric, "\n", sep=""))
               }
-              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""), ...)
+              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""))
               cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                           format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
                           format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
@@ -39,7 +39,7 @@ setMethod(f="summary",
               }
               rownames(threes) <- paste("   ", names[!isTime])
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
+              cat("* Statistics of data:\n")
               print(threes, indent='  ')
               ## time.range <- range(object@data$time, na.rm=TRUE)
               ## threes <- matrix(nrow=2, ncol=3)
