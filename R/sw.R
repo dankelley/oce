@@ -788,7 +788,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     referencePressure <- rep(referencePressure[1], length.out=nS)
     if (eos == "unesco") {
         rval <- .C("theta_UNESCO_1983",
-                   as.integer(nS), as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
+                   as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                    as.double(referencePressure),
                    value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {

@@ -18,8 +18,8 @@
     from the object, and must not be provided in the argument list).}
 
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C] on the
-    ITS-90 scale; see \code{\link{swRho}} for issues of conversion and storage
-    within oce object.}
+    ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+      \code{\link{swRho}}.}
 
   \item{pressure}{seawater pressure [dbar]}
 }
@@ -41,9 +41,6 @@
 
 \value{Spice [kg/m\eqn{^3}{^3}].}
 
-\examples{
-spice <- swSpice(35, 10, 0) # 1.1 by eye, from Flament's fig2
-}
 
 \references{P. Flament, 2002.
 A state variable for characterizing water masses and their diffusive

@@ -17,7 +17,7 @@
     which case \code{salinity}, \code{temperature} (in the ITS-90 scale; see
     next item), etc. are inferred from the object.}
 
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], as defined
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
     on the ITS-90 scale.  This scale is used by GSW-style calculation (as
     requested by setting \code{eos="gsw"}), and is the value contained within
     \code{ctd} objects (and probably most other objects created with data
@@ -46,9 +46,18 @@
   If \code{eos="unesco"}, the density is calculated using the UNESCO equation of
   state for seawater [1,2], and if \code{eos="gsw"}, the GSW formulation [3,4]
   is used.
-
 }
-    
+
+\section{Temperature units}{The UNESCO formulae are defined in terms of
+  temperature measured on the IPTS-68 scale, whereas the replacement GSW
+  formulae are based on the ITS-90 scale. Prior to the addition of GSW
+  capabilities, the various \code{sw*} functions took temperature to be in
+  IPTS-68 units. As GSW capabilities were added in early 2015, the assumed unit
+  of \code{temperature} was taken to be ITS-90.  This change means that old code
+  has to be modified, by replacing e.g. \code{swRho(S, T, p)} with
+  \code{swRho(S, T90fromT68(T), p)}. At typical oceanic values, the difference
+  between the two scales is a few millidegrees.}
+
 \value{\emph{In-situ} density [kg/m\eqn{^3}{^3}].}
 
 \seealso{Related density routines include
