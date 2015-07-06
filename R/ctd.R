@@ -1313,8 +1313,9 @@ setMethod(f="plot",
                               ## oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
                               ## find nearest point on (coarse) globe
                               data("coastlineWorld", package="oce", envir=environment())
-                              d <- geodDist(coastlineWorld[['longitude']],
-                                            coastlineWorld[['latitude']],
+                              coastline <- get("coastlineWorld")
+                              d <- geodDist(coastline[['longitude']],
+                                            coastline[['latitude']],
                                             x[['longitude']],
                                             x[['latitude']])
                               nearest <- d[which.min(d)] # in km
