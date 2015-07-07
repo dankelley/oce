@@ -38,9 +38,7 @@
 
 }
 
-
 \value{Spice [kg/m\eqn{^3}{^3}].}
-
 
 \references{P. Flament, 2002.
 A state variable for characterizing water masses and their diffusive

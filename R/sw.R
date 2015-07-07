@@ -270,7 +270,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
     if (eos == "unesco") {
         rval <- .C("sw_strho",
                    as.integer(nt),
-                   as.double(temperature),
+                   as.double(T68fromT90(temperature)),
                    as.double(sigma),
                    as.double(pressure),
                    as.integer(teos),
@@ -318,6 +318,7 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
                      as.integer(teos),
                      temperature = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$t
+        this.T <- T90fromT68(this.T)
     	if (i == 1) rval <- this.T else rval <- c(rval, this.T)
     }
     dim(rval) <- dim
@@ -336,6 +337,7 @@ swTFreeze <- function(salinity, pressure=0,
     n <- length(l$salinity)
     if (eos == "unesco") {
         rval <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
+        rval <- T90fromT68(rval)
     } else if (eos == "gsw") {
         SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         rval <- gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=1)
@@ -707,7 +709,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     l$pressure <- rep(l$pressure, length.out=nS)
     if (eos == "unesco") {
-        rval <- .C("sw_svel", as.integer(nS), as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
+        rval <- .C("sw_svel", as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
         SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
@@ -736,7 +738,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     if (eos == "unesco") {
-        rval <- .Fortran("cp_driver", as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
+        rval <- .Fortran("cp_driver", as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                          as.integer(nS), CP=double(nS))$CP
     } else {
         SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)

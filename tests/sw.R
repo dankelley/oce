@@ -62,8 +62,13 @@ stopifnot(all.equal.numeric(rhoGSW, rho))
 # Now use density to test sigma (not provided by gsw).
 sigma <- swSigma(SP, t, p, longitude, latitude, "gsw")
 stopifnot(all.equal.numeric(rhoGSW-1000, sigma))
+stopifnot(all.equal.numeric(30.823971,swSigma(35,13,1000,eos="gsw"),scale=1,tolerance=0.000001))
+stopifnot(all.equal.numeric(30.818302,swSigma(35,T90fromT68(13),1000,eos="unesco"),scale=1,tolerance=0.000001))
+# The sigmaT tests are not from definititive test values, and so are just
+# checks against future changes.
+stopifnot(all.equal(swSigmaT(35, 13, 1000, eos="gsw"), 26.396816, scale=1, tolerance=0.000001))
+stopifnot(all.equal(swSigmaT(35, T90fromT68(13), 1000, eos="unesco"), 26.393538, scale=1, tolerance=0.000001))
 
-warning("swTheta() etc not tested!\n")
 # 2 potential temperature
 # 2.1 UNESCO potential temperature
 #
@@ -97,8 +102,8 @@ stopifnot(all.equal.numeric(CT, swConservativeTemperature(ctd)))
 
 # 4. sound speed 
 # 4.1 UNESCO
-stopifnot(all.equal.numeric(1731.995, swSoundSpeed(40, 40, 1e4, eos="unesco"), tolerance=0.001))
-stopifnot(all.equal.numeric(1731.995, swSoundSpeed(as.ctd(40, 40, 1e4), eos="unesco"), tolerance=0.001))
+stopifnot(all.equal(1731.995,swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),scale=1,tolerance=0.001))
+stopifnot(all.equal(1731.995,swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),scale=1,tolerance=0.001))
 SA <- gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
 CT <- gsw_CT_from_t(SA, 40, 1e4)
 # 4.2 GSW sound speed
@@ -109,7 +114,7 @@ stopifnot(all.equal.numeric(speedGSW, speed))
 # 5. Freezing temperature
 # 5.1 UNESCO freezing temperature [1 p29]
 Tf <- swTFreeze(40, 500, eos="unesco")
-stopifnot(all.equal.numeric(Tf, -2.588567, tolerance=1e-6))
+stopifnot(all.equal.numeric(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6))
 # 5.2 GSW freezing temperature 
 SA <- gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
 TfGSW <- gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
@@ -123,8 +128,8 @@ t <- 40
 SP <- 40
 lon <- 300
 lat <- 30
-C <- swSpecificHeat(salinity=SP, temperature=t, pressure=p, eos="unesco")
-stopifnot(all.equal.numeric(C, 3849.500, tolerance=1e-3))
+C <- swSpecificHeat(salinity=SP, temperature=T90fromT68(t), pressure=p, eos="unesco")
+stopifnot(all.equal.numeric(C, 3849.499, scale=1, tolerance=1e-3))
 # 6.2 GSW specific heat
 SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
 CGSW <- gsw_cp_t_exact(SA=SA, t=t, p=p)
@@ -177,23 +182,22 @@ stopifnot(all.equal.numeric(b, bGSW))
 
 # 9. swSTrho
 # This is used to draw isopycnals on TS diagrams.
-t <- 10
+T <- 10
 rho <- 1022
+p <- 0
 # 9.1 UNESCO swSTrho
-Su <- swSTrho(t, rho, 0, eos="unesco")
-if (FALSE) {
-    stopifnot(all.equal(Su, 28.65114808083))
-    stopifnot(all.equal(rho, swRho(Su, t, 0, eos="unesco")))
-} else {
-    warning("sw test 9 skipped for now -- must code swSTrho() first\n")
-    message("sw test 9 skipped for now -- must code swSTrho() first")
-}
-
+Su <- swSTrho(T90fromT68(T), rho, p, eos="unesco")
+stopifnot(all.equal(Su, 28.65114808083))
+stopifnot(all.equal(rho, swRho(Su, T90fromT68(t), 0, eos="unesco")))
 # 9.2 GSW swSTrho
-Sg <- swSTrho(t, rho, 0, eos="gsw")
-stopifnot(all.equal(Sg, 28.76287326771))
-stopifnot(all.equal.numeric(rho, gsw_rho(Sg, t, 0)))
+CT <- gsw_CT_from_t(Su, T, p)
+Sg <- swSTrho(CT, rho, p, eos="gsw")
+stopifnot(all.equal(gsw_rho(Sg,CT,p), rho, scale=1, tolerance=1e-8))
+stopifnot(all.equal(Sg, 28.7842812841013, scale=1, tolerance=1e-8))
 
+T <- swTSrho(35, 23, 0, eos="unesco") # 26.11301
+stopifnot(all.equal(T68fromT90(T), 26.1130113601685, scale=1, tolerance=1e-8))
+stopifnot(all.equal(swRho(35, T, 0, eos="unesco"), 1023, scale=1, tolerance=1e-5))
 
 # 10. sound absorption
 # Compared with Table IV of Fisher & Simmons 1977.
@@ -204,8 +208,8 @@ stopifnot(all.equal.numeric(alpha, 0.000829, tolerance=0.01)) # 1% test
 
 
 # 11. viscosity
-visc <- swViscosity(30, 10)
-stopifnot(all.equal.numeric(visc, 0.001383779, tolerance=1e-7))
+# Merely a test against future changes; the original reference did not provide a test value.
+stopifnot(all.equal(swViscosity(30, 10), 0.001383779, scale=1, tolerance=0.000000001))
 
 
 # 12. thermal conductivity
