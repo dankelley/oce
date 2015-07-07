@@ -387,7 +387,7 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
 
 ##method=c("boxcar", "approx", "lm", "rr", "unesco"),
 ## SHOULD ADD: spline; supsmu; ...
-ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebug"))
+ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
     if (!methodFunction) {
