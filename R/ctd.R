@@ -352,8 +352,6 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             stop("lengths of latitude and temperature must match")
         data$longitude <- longitude
         data$latitude <- latitude
-        metadata$longitude <- mean(longitude, na.rm=TRUE)
-        metadata$latitude <- mean(latitude, na.rm=TRUE)
     }
     res@metadata <- metadata
     res@data <- data
@@ -476,8 +474,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 if (!length(x[[datumName]])) {
                     dataNew[[datumName]] <- NULL
                 } else {
-                    if (datumName != "pressure") {
-                        ## FIXME: we should probably not e averaging scan, flag, etc
+                    if (datumName != "pressure" && datumName != "scan" && datumName != "flag") {
                         dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
                     }
                 }
@@ -1312,21 +1309,25 @@ setMethod(f="plot",
                               ##     span <- 5000
                               ## oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
                               ## find nearest point on (coarse) globe
-                              data("coastlineWorld", package="oce", envir=environment())
-                              coastline <- get("coastlineWorld")
-                              d <- geodDist(coastline[['longitude']],
-                                            coastline[['latitude']],
-                                            x[['longitude']],
-                                            x[['latitude']])
-                              nearest <- d[which.min(d)] # in km
-                              span <- 3 * nearest
+
+                              ## FIXME: maybe pick coastline based on water depth
+                              data("coastlineWorldMedium", package="ocedata", envir=environment())
+                              mcoastline <- get("coastlineWorldMedium")
+                              d <- geodDist(mcoastline[['longitude']],
+                                            mcoastline[['latitude']],
+                                            mean(x[['longitude']], na.rm=TRUE),
+                                            mean(x[['latitude']], na.rm=TRUE))
+                              rm(mcoastline)
+                              ## FIXME: maybe demand say 10 coastline points in view
+                              nearest <- mean(head(sort(d), 20), na.rm=TRUE) # in km
+                              span <- 2 * nearest
                               oceDebug(debug, "span not given, and nearest point is", nearest,
-                                       "km away (coarse coastline), so set span=", span, "\n")
+                                       "km away, so set span=", span, "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
                           if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {
-                              meanlon <- x[["longitude"]][1]
-                              meanlat <- x[["latitude"]][1]
+                              meanlon <- mean(x[["longitude"]], na.rm=TRUE)
+                              meanlat <- mean(x[["latitude"]], na.rm=TRUE)
                               projection <- if (meanlat > 70)
                                   paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"
                               oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
@@ -1334,7 +1335,7 @@ setMethod(f="plot",
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           ##message("projection:", projection)
-                          oceDebug(debug, "projection=", if (is.null(projection)) "NULL" else projection, ", span=", span, "km (ctd.R line 1239)\n")
+                          oceDebug(debug, "projection=", if (is.null(projection)) "NULL" else projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (requireNamespace("ocedata", quietly=TRUE)) {
@@ -1363,12 +1364,14 @@ setMethod(f="plot",
                               }
                           }
                           if (missing(lonlim)) {
-                              lonlim.c <- mean(x@metadata$longitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mean(x@metadata$longitude, na.rm=TRUE)))
+                              mlon <- mean(x[["longitude"]], na.rm=TRUE)
+                              lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
                               clon <- mean(lonlim.c)
                               if (missing(latlim)) {
+                                  mlat <- mean(x[["latitude"]], na.rm=TRUE)
                                   oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=", 
                                            if (is.null(projection)) "NULL" else projection, "\n")
-                                  latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - mean(x@metadata$latitude, na.rm=TRUE)))
+                                  latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - mlat))
                                   latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
                                   oceDebug(debug, "about to plot coastline\n")
                                   oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
@@ -1427,11 +1430,11 @@ setMethod(f="plot",
                               }
                           }
                           if (is.null(projection)) {
-                              points(x@metadata$longitude, x@metadata$latitude,
+                              points(x[["longitude"]], x[["latitude"]],
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
                               mapScalebar()
-                              mapPoints(x@metadata$longitude, x@metadata$latitude,
+                              mapPoints(x[["longitude"]], x[["latitude"]],
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
