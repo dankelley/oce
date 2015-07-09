@@ -5,8 +5,8 @@
 
 \title{Read a rsk file}
 
-\description{Read a rsk file, e.g. a temperature-depth recorder, producing
-    an object of class \code{rsk}.} 
+\description{Read a rsk file, e.g. a temperature-depth recorder, producing an
+  object of class \code{rsk}.} 
 
 \usage{read.rsk(file, from=1, to, by=1, type,
             tz=getOption("oceTz", default="UTC"), patm=FALSE,
@@ -33,32 +33,36 @@
     this argument is not provided, an attempt will be made to infer the type
     from the file name and contents.}
   \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
+
   \item{patm}{controls the handling of atmospheric pressure, an important issue
-    for RBR instruments that record total pressure, i.e. the sum of atmospheric
-    pressure and sea pressure. There are three alternatives.  (1) If \code{patm}
-    is \code{FALSE} (the default), then total pressures are put in the return
-    value. This means that profile plots will start at what appears to be
-    approximately 10 metres depth. It also leads to errors in the calculation of
-    pressure-dependent seawater properties.  However, note that if salinity is
-    calculated by \code{read.rsk}, an estimate of atmospheric pressure is first
-    subtracted. The estimate is \code{atmosphericPressure} in the data file or
-    10.1325 dbar if the file lacks that value. (2) If \code{patm} is
-    \code{TRUE}, then the above-stated estimate of atmospheric pressure is
-    subtracted from the raw data.  (3) If \code{patm} is a numerical value, then
-    it will be subtracted from the raw data.}
+    for RBR instruments that record absolute pressure, i.e. the sum of
+    atmospheric pressure and sea pressure. There are three alternatives.  (1) If
+    \code{patm} is \code{FALSE} (the default), then total pressure is stored in
+    the \code{data} slot of return value, and the \code{metadata} item
+    \code{pressureType} is set to the string \code{absolute}.  (2) If
+    \code{patm} is \code{TRUE}, then an estimate of atmospheric pressure is
+    subtracted from the raw data. For files in the SQLite format (i.e.
+    \code{*.rsk} files), this estimate will be the value stored in the file, or
+    the standard value 10.1325 dbar.  (3) If \code{patm} is a numerical value,
+    then that value will be subtracted from the raw data. In any case where
+    atmospheric pressure is subtracted, and additional column named
+    \code{pressureOriginal} is stored in the \code{data} slot.}
+
   \item{processingLog}{if provided, the action item to be stored in the log.
     (Typically only provided for internal calls; the default that it provides is
     better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{Read a rsk file produced by one of several instruments produced by RBR.
-  At the moment, four styles are understood: (1) text file with columns for
-  temperature and pressure (with sampling times indicated in the header); (2)
-  text file with four columns, in which the date the time of day are given in
-  the first two columns, followed by the temperature, and pressure; (3) text
-  file with five columns, in which depth in the water column is given after the
-  pressure; (4) an SQLite-based database format.
+\details{This can read rsk files produced by several RBR instruments.  At the
+  moment, four styles are understood: (1) text file with columns for temperature
+  and pressure (with sampling times indicated in the header); (2) text file with
+  four columns, in which the date the time of day are given in the first two
+  columns, followed by the temperature, and pressure; (3) text file with five
+  columns, in which depth in the water column is given after the pressure; (4)
+  an SQLite-based database format. The first three options are provided mainly
+  for historical reasons, since RBR instruments at the date of writing commonly
+  use the SQLite format.
 
   It should be noted that RBR devices record conductivity in mS/cm, and that it
   is this value that is stored in the object returned by \code{read.rsk}. This
@@ -66,11 +70,12 @@
   report) by dividing by 42.914, which will be necessary in any seawater-related
   function that takes conductivity ratio as an argument (see \dQuote{Examples}).
     
-  Another particular aspect of RBR devices is that they tend to record total
-  pressure (i.e. sea pressure plus atmospheric pressure), many applications will
-  involve an alteration of the pressure. This can be done with the \code{patm}
-  argument, of by subtraction of a constant (or vector) after creating the
-  object.
+  Also, RBR devices tend to record absolute pressure (i.e. sea pressure plus
+  atmospheric pressure), unlike most oceanographic instruments that at least
+  attempt to record sea pressure.  The user is given control over how pressure
+  is handled with the \code{patm} argument of \code{read.rsk}; see notes about
+  that argument elsewhere in this help page, for important details of how this
+  is handled.
 
 }
 

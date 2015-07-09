@@ -5,6 +5,7 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
+              .Object@metadata$pressureType <- "absolute"
               .Object@metadata$temperatureUnit <- "ITS-90"
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'rsk' object"
@@ -451,78 +452,75 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             data$pressure <- pSea
             pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", patm)
         }
-        canReturnCtd <- FALSE
-        if (canReturnCtd && 3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
-            conductivityStandard <- 42.914 ## mS/cm conversion factor
-            if ("salinity" %in% names) {
-                S <- data$salinity
-            } else {
-                ##warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
-                S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
-            }
-            ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature,
-                       conductivity=data$conductivity, filename=filename)
-            ctd@metadata[["conductivityUnit"]] <- "mS/cm"
-            ctd@data[["time"]] <- time
-            ctd@data[["scan"]] <- seq_along(data$pressure)
-            ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
-            if (!("salinity" %in% names))
-                ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
-            ctd@metadata$pressureAtmospheric <- pressureAtmospheric
-            ## CR suggests to read "sampleInterval" but I cannot find it from the following
-            ##   echo ".dump"|sqlite3 cast4.rsk | grep -i sample
-            ## so I just infer it from the data
-            ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
-            ctd@metadata$latitude <- NaN
-            ctd@metadata$longitude <- NaN
-            ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
-            ## The device may have other channels; add them.  (This includes conductivity.)
-            for (name in names) {
-                oceDebug(debug, "copying '", name, "' from Ruskin file into ctd object\n", sep="")
-                if (!(name %in% c("temperature", "pressure"))) {
-                    ctd@data[[name]] <- data[[name]]
-                }
-            }
-            ## Add some metadata directly (FIXME: this is brittle to changes in names of the metadata)
-            ctd@metadata$serialNumber <- serialNumber
-            ctd@metadata$type <- "RBR"
-            ctd@metadata$model <- model
-            ctd@metadata$filename <- filename
-            oceDebug(debug, "} # read.rsk() -- returning a CTD object\n", sep="", unindent=1)
-            return(ctd)
-        } else {
-            rval <- new("rsk", time=time, filename=filename)
-            for (name in names)
-                rval@data[[name]] <- data[[name]]
-            if ("pressure" %in% names) {
-                if (is.logical(patm)) {
-                    if (patm) {
-                        ## FIXME: should check the metadata
-                        rval@data$pressureOriginal <- rval@data$pressure
-                        rval@data$pressure <- rval@data$pressure - 10.1325
-                        rval@metadata$pressureType <- "sea, assuming atmopheric pressure 10.1325"
-                    } else {
-                        rval@metadata$pressureType <- "absolute"
-                    }
-                } else if (is.numeric(patm)) {
+        ## canReturnCtd <- FALSE
+        ## if (canReturnCtd && 3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
+        ##     conductivityStandard <- 42.914 ## mS/cm conversion factor
+        ##     if ("salinity" %in% names) {
+        ##         S <- data$salinity
+        ##     } else {
+        ##         ##warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
+        ##         S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
+        ##     }
+        ##     ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature,
+        ##                conductivity=data$conductivity, filename=filename)
+        ##     ctd@metadata[["conductivityUnit"]] <- "mS/cm"
+        ##     ctd@data[["time"]] <- time
+        ##     ctd@data[["scan"]] <- seq_along(data$pressure)
+        ##     ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
+        ##     if (!("salinity" %in% names))
+        ##         ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
+        ##     ctd@metadata$pressureAtmospheric <- pressureAtmospheric
+        ##     ## CR suggests to read "sampleInterval" but I cannot find it from the following
+        ##     ##   echo ".dump"|sqlite3 cast4.rsk | grep -i sample
+        ##     ## so I just infer it from the data
+        ##     ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
+        ##     ctd@metadata$latitude <- NaN
+        ##     ctd@metadata$longitude <- NaN
+        ##     ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
+        ##     ## The device may have other channels; add them.  (This includes conductivity.)
+        ##     for (name in names) {
+        ##         oceDebug(debug, "copying '", name, "' from Ruskin file into ctd object\n", sep="")
+        ##         if (!(name %in% c("temperature", "pressure"))) {
+        ##             ctd@data[[name]] <- data[[name]]
+        ##         }
+        ##     }
+        ##     ## Add some metadata directly (FIXME: this is brittle to changes in names of the metadata)
+        ##     ctd@metadata$serialNumber <- serialNumber
+        ##     ctd@metadata$type <- "RBR"
+        ##     ctd@metadata$model <- model
+        ##     ctd@metadata$filename <- filename
+        ##     oceDebug(debug, "} # read.rsk() -- returning a CTD object\n", sep="", unindent=1)
+        ##     return(ctd)
+        ## } else {
+        rval <- new("rsk", time=time, filename=filename)
+        for (name in names)
+            rval@data[[name]] <- data[[name]]
+        if ("pressure" %in% names) { # possibly compute sea pressure
+            if (is.logical(patm)) {
+                if (patm) {
                     rval@data$pressureOriginal <- rval@data$pressure
-                    rval@data$pressure <- rval@data$pressure - patm[1]
-                    rval@metadata$pressureType <- sprintf("sea, assuming atmopheric pressure %f", patm[1])
-                } else {
-                    stop("patm must be logical or numeric")
+                    rval@data$pressure <- rval@data$pressure - 10.1325
+                    rval@metadata$pressureType <- "sea, assuming atmopheric pressure 10.1325" # default is "absolute"
                 }
+            } else if (is.numeric(patm)) {
+                rval@data$pressureOriginal <- rval@data$pressure
+                rval@data$pressure <- rval@data$pressure - patm[1]
+                rval@metadata$pressureType <- sprintf("sea, assuming atmopheric pressure %f", patm[1])
+            } else {
+                stop("patm must be logical or numeric")
             }
-            rval@metadata$model <- model
-            rval@metadata$serialNumber <- serialNumber
-            ## CR suggests to read "sampleInterval" but I cannot find it from the following
-            ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
-            ## so I just infer it from the data
-            rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
-            rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
-            rval@metadata$pressureAtmospheric <- pressureAtmospheric
-            oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
-            return(rval)
         }
+        rval@metadata$model <- model
+        rval@metadata$serialNumber <- serialNumber
+        ## CR suggests to read "sampleInterval" but I cannot find it from the following
+        ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
+        ## so I just infer it from the data
+        rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+        rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
+        rval@metadata$pressureAtmospheric <- pressureAtmospheric
+        oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
+        return(rval)
+        ##}
     } else {
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
@@ -652,48 +650,49 @@ rskPatm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-rskTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "rskTrim() {\n", unindent=1)
-    if (!inherits(x, "rsk"))
-        stop("method is only for objects of class '", "rsk", "'")
-    res <- x
-    n <- length(x@data$temperature)
-    oceDebug(debug, "dataset has", n, "points\n")
-    if (n < 2) {
-        warning("too few data to trim rsk record")
-    } else {
-        which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
-        oceDebug(debug, "using method", which.method, "\n")
-        if (which.method == 1) {        # "water"
-            keep <- rep(FALSE, n)
-            air <- x@data$pressure < 10.5 # NB. standard pressure is 10.1325
-            waterIndices <- which(!air)
-            b <- 2                      # trim a few descending points
-            i.start <- waterIndices[1] + b
-            i.stop <- waterIndices[-b + length(waterIndices)]
-            keep[i.start:i.stop] <- TRUE
-        } else if (which.method == 2) { # "time"
-            oceDebug(debug, "trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n")
-            keep <- rep(TRUE, n)
-            keep[x@data$time < as.POSIXlt(parameters[1])] <- FALSE
-            keep[x@data$time > as.POSIXlt(parameters[2])] <- FALSE
-        } else if (which.method == 3) { # "index"
-            oceDebug(debug, "parameters:",parameters,"\n")
-            if (min(parameters) < 1)
-                stop("Cannot select indices < 1");
-            if (max(parameters) > n)
-                stop(paste("Cannot select past end of array, i.e. past ", n))
-            keep <- rep(FALSE, n)
-            keep[parameters[1]:parameters[2]] <- TRUE
-        } else {
-            stop("Unknown method")
-        }
-    }
-    for (name in names(x@data))
-        res@data[[name]] <- subset(x@data[[name]], keep)
-    res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # rskTrim()\n", unindent=1)
-    res
-}
+## remove 2015-07-09
+## rskTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
+## {
+##     oceDebug(debug, "rskTrim() {\n", unindent=1)
+##     if (!inherits(x, "rsk"))
+##         stop("method is only for objects of class '", "rsk", "'")
+##     res <- x
+##     n <- length(x@data$temperature)
+##     oceDebug(debug, "dataset has", n, "points\n")
+##     if (n < 2) {
+##         warning("too few data to trim rsk record")
+##     } else {
+##         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
+##         oceDebug(debug, "using method", which.method, "\n")
+##         if (which.method == 1) {        # "water"
+##             keep <- rep(FALSE, n)
+##             air <- x@data$pressure < 10.5 # NB. standard pressure is 10.1325
+##             waterIndices <- which(!air)
+##             b <- 2                      # trim a few descending points
+##             i.start <- waterIndices[1] + b
+##             i.stop <- waterIndices[-b + length(waterIndices)]
+##             keep[i.start:i.stop] <- TRUE
+##         } else if (which.method == 2) { # "time"
+##             oceDebug(debug, "trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n")
+##             keep <- rep(TRUE, n)
+##             keep[x@data$time < as.POSIXlt(parameters[1])] <- FALSE
+##             keep[x@data$time > as.POSIXlt(parameters[2])] <- FALSE
+##         } else if (which.method == 3) { # "index"
+##             oceDebug(debug, "parameters:",parameters,"\n")
+##             if (min(parameters) < 1)
+##                 stop("Cannot select indices < 1");
+##             if (max(parameters) > n)
+##                 stop(paste("Cannot select past end of array, i.e. past ", n))
+##             keep <- rep(FALSE, n)
+##             keep[parameters[1]:parameters[2]] <- TRUE
+##         } else {
+##             stop("Unknown method")
+##         }
+##     }
+##     for (name in names(x@data))
+##         res@data[[name]] <- subset(x@data[[name]], keep)
+##     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     oceDebug(debug, "} # rskTrim()\n", unindent=1)
+##     res
+## }

@@ -24,10 +24,8 @@
   while \code{\link{summary.rsk}} produces statistical summaries and \code{show}
   produces overviews.   If atmospheric pressure has not been removed from the
   data, the functions \code{\link{rskPatm}} may provide guidance as to its
-  value.  Similarly, if the record contains periods when the instrument was in
-  the air, \code{\link{rskTrim}} may prove useful in isolating the times when it
-  was in the water.  However, these last two functions are no equal to decent
-  record-keeping at sea.}
+  value; however, this last function is no equal to decent record-keeping at
+  sea.}
 
 \author{Dan Kelley}
 
