@@ -181,6 +181,12 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         pressure <- d$pressure
         ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
         if (inherits(o, "rsk")) {
+            pressureMin <- minimum(o@data$pressure
+            ## FIXME: could examine min(pressure) to see if it's between 9 and 11.
+            if (is.null(o@metadata$pressureType)) {
+                warning("no \"pressureType\" in metadata, so assuming it to be \"total\"\n")
+            } else {
+            }
             pressure <- pressure - if (is.na(m$pressureAtmospheric)) 10.1325 else m$pressureAtmospheric
         }
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity

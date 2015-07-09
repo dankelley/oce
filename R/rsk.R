@@ -494,6 +494,24 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             rval <- new("rsk", time=time, filename=filename)
             for (name in names)
                 rval@data[[name]] <- data[[name]]
+            if ("pressure" %in% names) {
+                if (is.logical(patm)) {
+                    if (patm) {
+                        ## FIXME: should check the metadata
+                        rval@data$pressureOriginal <- rval@data$pressure
+                        rval@data$pressure <- rval@data$pressure - 10.1325
+                        rval@metadata$pressureType <- "sea, assuming atmopheric pressure 10.1325"
+                    } else {
+                        rval@metadata$pressureType <- "absolute"
+                    }
+                } else if (is.numeric(patm)) {
+                    rval@data$pressureOriginal <- rval@data$pressure
+                    rval@data$pressure <- rval@data$pressure - patm[1]
+                    rval@metadata$pressureType <- sprintf("sea, assuming atmopheric pressure %f", patm[1])
+                } else {
+                    stop("patm must be logical or numeric")
+                }
+            }
             rval@metadata$model <- model
             rval@metadata$serialNumber <- serialNumber
             ## CR suggests to read "sampleInterval" but I cannot find it from the following
