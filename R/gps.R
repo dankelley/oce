@@ -298,7 +298,7 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     }
     type <- match.arg(type, c("gpx"))
     oceDebug(debug, "file type:", type, "\n")
-    lines <- readLines(file, )
+    lines <- readLines(file)
     look <- grep("lat=", lines)
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)

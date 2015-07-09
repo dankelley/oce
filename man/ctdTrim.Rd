@@ -37,8 +37,9 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
   made in the air, in an equilibration phase in which the device is held below the water surface,
   and then the upcast phase that follows the downcast.  This is handled reasonably well by
   \code{ctdTrim} with \code{method="downcast"}, although it is almost always best to use
-  \code{\link{plotScan}} to investigate the data, and then use the \code{method="index"} method
-  based on visual inspection of the data.  The details methods are as follows.
+  \code{\link{plotScan}} to investigate the data, and then use the \code{method="index"} or
+  \code{method="scan"} method based on visual inspection of the data.  The details methods are as
+  follows.
 
   \itemize{
   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
@@ -62,10 +63,11 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
   portion, but that takes the pressure to be (a fitted) constant there. Case \code{"C"} is the same,
   except that the pressure in the surface region is taken to be zero.} 
   
-  \item{If \code{method="index"} then each column of data is subsetted according to the
+  \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
   value of \code{parameters}. If the latter is a logical vector of length matching data column
   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
-  two elements, then the integers between those values (if positive) are used for subsetting.  The
+  two elements, then the index or scan values that lie between \code{parameters[1]}
+  and \code{parameters[2]} (inclusive) are used for subsetting.  The
   two-element method is probably the most useful, with the values being determined by visual
   inspection of the results of \code{\link{plotScan}}. While this may take a minute or two, the
   analyst should bear in mind that a deep-water CTD profile might take 6 hours, corresponding to

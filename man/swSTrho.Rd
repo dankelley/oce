@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swSTrho}
 
 \alias{swSTrho}
@@ -5,38 +6,36 @@
 \title{Seawater salinity from temperature and density}
 
 \description{Compute Practical or Absolute Salinity, given in-situ or
-    Conservative Temperature, density, and pressure. This is mainly used to
-    draw isopycnal lines on TS diagrams, hence the dual meanings for salinity
-    and temperature, depending on the value of \code{eos}.}
+  Conservative Temperature, density, and pressure. This is mainly used to draw
+  isopycnal lines on TS diagrams, hence the dual meanings for salinity and
+  temperature, depending on the value of \code{eos}.}
 
 \usage{swSTrho(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], if
-      \code{eos="unesco"}, or Conservative Temperature, if \code{eos="gsw"}.}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C] in the
+    ITS-90 scale, if \code{eos="unesco"}, or Conservative Temperature, if 
+    \code{eos="gsw".}}
   \item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-      [3,4].}
+    [3,4].}
 }
 
 \details{For \code{eos="unesco"}, finds the practical salinity that yields the
-    given density, with the given in-situ temperature and pressure.  The method
-    is a bisection search with a salinity tolerance of 0.001.  For
-    \code{eos="gsw"}, the function \code{\link[gsw]{gsw_SA_from_rho}} in the
-    \CRANpkg{gsw} packae is used to infer Absoute Salinity from Conservative
-    Temperature.}
+  given density, with the given in-situ temperature and pressure.  The method is
+  a bisection search with a salinity tolerance of 0.001.  For \code{eos="gsw"},
+  the function \code{\link[gsw]{gsw_SA_from_rho}} in the \CRANpkg{gsw} package is
+  used to infer Absolute Salinity from Conservative Temperature.}
 
 \value{Practical Salinity, if \code{eos="unesco"}, or Absolute Salinity, if
-    \code{eos="gsw"}.}
+  \code{eos="gsw"}.}
 
 \seealso{\code{\link{swTSrho}}}
 
 \examples{
-swSTrho(10, 22, 0) # 28.76285
 swSTrho(10, 22, 0, eos="gsw") # 28.76285
-swSTrho(10, 22, 0, eos="unesco") # 28.65115
+swSTrho(10, 22, 0, eos="unesco") # 28.651625
 }
 
 \references{

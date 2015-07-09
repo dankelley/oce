@@ -436,6 +436,10 @@ imagep <- function(x, y, z,
     xat <- NULL
     yat <- NULL
 
+    ## issue 674: permit POSIXlt in addition to POSIXct
+    if (inherits(x, "POSIXt"))
+        x <- as.POSIXct(x)
+
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)

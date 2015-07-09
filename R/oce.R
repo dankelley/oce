@@ -716,8 +716,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     }
     if (bytes[1] == 0x9b && bytes[2] == 0x00) {
         warning(paste("Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
-                      "the author has not located file-format documents.  If you get such documents\n",
-                      "from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
+                      " the author has not located file-format documents.  If you get such documents\n",
+                      " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
         return("possibly RDI CTD")
     }
 
@@ -1363,7 +1363,7 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "s
         leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
                                        "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
                                        "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01",
-                                       "2012-07-01"),
+                                       "2012-07-01", "2015-07-01"),
                                      format="%Y-%m-%d", tz="UTC"))
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
         for (l in 1:length(leaps)) {

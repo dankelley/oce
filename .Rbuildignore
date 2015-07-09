@@ -12,6 +12,7 @@ README.rst
 inst/doc/.gitignore
 inst/doc/ctd-object.svg
 vignettes/.build.timestamp
+vignettes/oce.log
 ^.*\.Rproj$
 ^\.Rproj\.user$
 src/*.o$

@@ -1,10 +1,26 @@
+# vim:filetype=r:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 useDynLib(oce)
+
 import(methods)
 import(gsw)
-#import(rgdal)
-importFrom("graphics", plot)
-importFrom("utils", head, tail)
-importFrom("stats", predict, time, window)
+importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
+           "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image",
+           "layout", "lcm", "legend", "lines", "locator", "mtext", "par",
+           "plot", "plot.new", "plot.window", "points", "polygon", "rect",
+           "segments", "smoothScatter", "strwidth", "text", "title", "xinch",
+           "yinch")
+importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
+           "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
+importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
+           "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
+           "median", "na.exclude", "nls", "optim", "optimize", "predict",
+           "printCoefmat", "quantile", "rnorm", "runmed", "sd", "smooth",
+           "smooth.spline", "spectrum", "time", "ts", "uniroot", "var",
+           "weighted.mean", "window")
+importFrom("utils", "data", "head", "flush.console", "read.csv", "read.table",
+           "setTxtProgressBar", "str", "tail", "txtProgressBar", "write.table")
+
+
 exportMethods(plot)
 exportMethods(subset)
 exportMethods(summary)

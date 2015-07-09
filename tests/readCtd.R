@@ -20,9 +20,11 @@ stopifnot(d1[["cruise"]] == "Halifax Harbour")
 stopifnot(d1[["station"]] == "Stn 2")
 stopifnot(all.equal.numeric(d1[["latitude"]], 44.68427, tolerance=0.0001))
 stopifnot(all.equal.numeric(d1[["longitude"]], -63.64388, tolerance=0.0001))
-stopifnot(all.equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052)))
-stopifnot(all.equal(d1[['temperature']][1:3], c(14.2245, 14.2299, 14.2285)))
 stopifnot(all.equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206)))
+stopifnot(all.equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052)))
+## check conversion from IPTS-68 to ITS-90 worked
+stopifnot(all.equal(d1[['temperature68']][1:3], c(14.2245, 14.2299, 14.2285)))
+stopifnot(all.equal(d1[['temperature']][1:3], T90fromT68(c(14.2245, 14.2299, 14.2285))))
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
 ## I am not sure if this was a standardized format, but I had to work
@@ -74,11 +76,11 @@ stopifnot(all.equal.numeric(d3[['salinity']][1:3], c(25.1637,25.1964,25.3011), t
 ##'  INITIAL_LONGITUDE=-63.316700,'
 ##'  START_DATE='Jan 01/2010','
 ##'  SOUNDING=161.000000,'
-d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce"))
+d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce"), debug=3)
 stopifnot(d4[["ship"]] == "Launch  Sigma-T")
 stopifnot(d4[["cruise"]] == "Scotian Shelf")
 stopifnot(d4[["scientist"]] == "Glen Harrison")
-stopifnot(all.equal.numeric(d4[["waterDepth"]], 161, tolerance=0.0001)) # "SOUNDING", not "MAX_DEPTH"
+## There is no water depth in this file
 stopifnot(all.equal.numeric(d4[["latitude"]], 44.2667, tolerance=0.0001))
 stopifnot(all.equal.numeric(d4[["longitude"]], -63.3167, tolerance=0.0001))
 stopifnot(all.equal.numeric(d4[['pressure']][1:3], c(1.0,1.5,2.0), tolerance=0.001))

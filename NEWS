@@ -1,4 +1,6 @@
 0.9-17
+- use ITS-90 as default temperature unit
+- ctd objects can have vector longitude and latitude
 - rename logger class to rsk
 - add 'bremen' class
 - add coastlineCut()

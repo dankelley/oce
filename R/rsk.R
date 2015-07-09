@@ -15,26 +15,39 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="rsk",
           definition=function(object, ...) {
-              cat("Rsk Summary\n-------\n", ...)
-              cat(paste("* Instrument:         RBR, serial number ``", object@metadata$serialNumber,
-                        "``, model ``", object@metadata$model, "``\n", sep=""))
+              cat("rsk summary\n-------\n", ...)
+              cat("* Instrument:         ", object@metadata$model,
+                  ", serial number " , object@metadata$serialNumber, "\n", sep='')
               if ("pressureAtmospheric" %in% names(object@metadata)) {
-                  cat(paste("* Atmospheric pressure: ", object@metadata$pressureAtmospheric, "\n", sep=""))
+                  cat(paste("* Atmosph. pressure:  ", object@metadata$pressureAtmospheric, "\n", sep=""))
               }
-              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""), ...)
+              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""))
               cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                           format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
                           format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
                           1 / object@metadata$deltat))
-              cat("* Statistics of subsample::\n\n")
-              time.range <- range(object@data$time, na.rm=TRUE)
-              threes <- matrix(nrow=2, ncol=3)
-              threes[1,] <- threenum(object@data$temperature)
-              threes[2,] <- threenum(object@data$pressure)
+              names <- names(object@data)
+              ndata <- length(names)
+              isTime <- names == "time"
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- c("Temperature", "Pressure")
-              print(threes)
-              cat('\n')
+              cat("* Statistics of data:\n")
+              print(threes, indent='  ')
+              ## time.range <- range(object@data$time, na.rm=TRUE)
+              ## threes <- matrix(nrow=2, ncol=3)
+              ## threes[1,] <- threenum(object@data$temperature)
+              ## threes[2,] <- threenum(object@data$pressure)
+              ## colnames(threes) <- c("Min.", "Mean", "Max.")
+              ## rownames(threes) <- c("Temperature", "Pressure")
+              ## print(threes)
               processingLogShow(object)
               invisible(NULL)
           })
@@ -84,9 +97,8 @@ as.rsk <- function(time, temperature, pressure,
 {
     debug <- min(debug, 1)
     oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
-    if (inherits(time, "ctd")) {
-        class(time) <- "rsk"
-        return(time)
+    if (inherits(time, "oce")) {
+        stop("cannot coerce from general oce object to rsk; submit an issue if you need this")
     }
     if (missing(time))
         stop("must give time")
@@ -121,7 +133,8 @@ as.rsk <- function(time, temperature, pressure,
 
 setMethod(f="plot",
           signature=signature("rsk"),
-          definition=function(x, which=c(1, 3, 4), title="", adorn=NULL,
+          ##definition=function(x, which=c(1, 3, 4), title="", adorn=NULL,
+          definition=function(x, which="timeseries", title="", adorn=NULL,
                               tlim, plim, Tlim,
                               xlab, ylab,
                               tformat,
@@ -145,133 +158,147 @@ setMethod(f="plot",
                   stop("in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
               if ("ylim" %in% dotsNames)
                   stop("in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
-
-              ## Trim out plots that we cannot do.
-              names <- names(x@data)
-              haveTemperature <- ("temperature" %in% names) && any(is.finite(x@data$temperature))
-              havePressure <- ("pressure" %in% names) && any(is.finite(x@data$pressure))
-              which <- oce.pmatch(which,
-                                  list(temperature=1, text=2, pressure=3, profile=4))
-              if (!haveTemperature) 
-                  which <- which[which != 1 & which != 4]
-              if (!havePressure) 
-                  which <- which[which != 3 & which != 4]
-              nw <- length(which)
-              opar <- par(no.readonly = TRUE)
-              if (nw > 1)
-                  on.exit(par(opar))
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, nw)
-                  adorn.length <- nw
-              }
-              if (nw == 2) {
-                  layout(cbind(c(1,2)))
-              } else if (nw==3 || nw==4) {
-                  layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
-              }
-              par(mgp=mgp, mar=mar)
-              if (missing(main))
-                  main <- rep('', length.out=nw)
-              else
-                  main <- rep(main, length.out=nw)
-              oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-              for (w in 1:nw) {
-                  oceDebug(debug, "which[", w, "]=", which[w], "\n")
-                  if (which[w] == 1) {           # temperature timeseries
-                      if (haveTemperature) {
-                          oce.plot.ts(x@data$time, x@data$temperature,
-                                      xlab=if (!missing(xlab))xlab else "",
-                                      ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
-                                      type='l',
-                                      xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                      ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                                      tformat=tformat,
-                                      drawTimeRange=drawTimeRange,
-                                      mgp=mgp, mar=mar, main=main[w], ...)
-                          drawTimeRange <- FALSE    # only the first time panel gets the time indication
-                          axis(2)
-                      }
-                  } else if (which[w] == 3) {    # pressure timeseries
-                      if (havePressure) {
-                          oce.plot.ts(x@data$time, x@data$pressure,
-                                      xlab=if (!missing(xlab))xlab else "",
-                                      ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
-                                      type='l',
-                                      xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                      ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
-                                      tformat=tformat,
-                                      drawTimeRange=drawTimeRange,
-                                      mgp=mgp, mar=mar, main=main[w], ...)
-                          drawTimeRange <- FALSE
-                      }
-                  } else if (which[w] == 2) {
-                      text.item <- function(item, cex=4/5*par("cex")) {
-                          if (!is.null(item) && !is.na(item)) {
-                              text(xloc, yloc, item, adj = c(0, 0), cex=cex);
-                          }
-                      }
-                      xfake <- seq(0:10)
-                      yfake <- seq(0:10)
-                      mar <- par("mar")
-                      par(mar=c(0,0,0,0))
-
-                      plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
-                      xloc <- 1
-                      yloc <- 10
-                      d.yloc <- 0.7
-                      cex <- par("cex")
-                      text.item(title, cex=1.25*cex)
-                      yloc <- yloc - d.yloc
-                      ##if (!is.null(object@metadata$filename))
-                      ##    text.item(object@metadata$filename, cex=cex)
-                      if (!is.null(x@metadata$serialNumber)) {
-                          text.item(paste(gettext("Serial Number", domain="R-oce"), x@metadata$serialNumber),cex=cex)
-                          yloc <- yloc - d.yloc
-                      }
-                      if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
-                          text.item(paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
-                          yloc <- yloc - d.yloc
-                          text.item(paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
-                          yloc <- yloc - d.yloc
-                          text.item(paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
-                          yloc <- yloc - d.yloc
-                      }
-                      par(mar=mar)
-                  } else if (which[w] == 4) {     # "profile"
-                      if (haveTemperature && havePressure) {
-                          args <- list(x=x@data$temperature, y=x@data$pressure,
-                                       xlab="",
-                                       ylab=resizableLabel("p"),
-                                       xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                                       ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
-                                       ...)
-                          a <- names(list(...))
-                          if (!("type" %in% a))
-                              args <- c(args, type="p")
-                          if (!("cex"  %in% a))
-                              args <- c(args, cex=1/2)
-                          if (!("axes" %in% a))
-                              args <- c(args, axes=FALSE)
-                          np <- length(x@data$pressure)
-                          if (nw == 1)
-                              par(mar=c(1, 3.5, 4, 1))
-                          if (useSmoothScatter) {
-                              args <- args[names(args) != "type"]
-                              do.call(smoothScatter, args)
-                          } else {
-                              do.call(plot, args)
-                          }
-                          box()
-                          axis(2)
-                          axis(3)
-                          mtext(resizableLabel("T", "x"), side = 3, line = 2)
-                      }
+              whichOk <- c("timeseries", "temperature", "text", "pressure", "profile")
+              whichNew <- oce.pmatch(which, list(timeseries=0, temperature=1, text=2, pressure=3, profile=4))
+              if (any(is.na(whichNew))) stop("plot.rsk(..., which=\"", which, "\") not understood; try one of: ", paste(whichOk, collapse=" "), call.=FALSE)
+              which <- whichNew # now it's numeric
+              if (any(which==0))
+                  which <- 0 # "timeseries" overrides any others
+              if (length(which) == 1 && which==0) {
+                  names <- names(x@data)
+                  if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
+                  names <- names[names != "time"]
+                  par(mfrow=c(length(names), 1))
+                  for (name in names) {
+                      oce.plot.ts(x[["time"]], x[[name]], ylab=name, ...)
                   }
-                  if (w <= adorn.length) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+              } else {
+                  ## individual panels
+                  ## Trim out plots that we cannot do.
+                  names <- names(x@data)
+                  haveTemperature <- ("temperature" %in% names) && any(is.finite(x@data$temperature))
+                  havePressure <- ("pressure" %in% names) && any(is.finite(x@data$pressure))
+                  if (!haveTemperature) 
+                      which <- which[which != 1 & which != 4]
+                  if (!havePressure) 
+                      which <- which[which != 3 & which != 4]
+                  nw <- length(which)
+                  opar <- par(no.readonly = TRUE)
+                  if (nw > 1)
+                      on.exit(par(opar))
+                  adorn.length <- length(adorn)
+                  if (adorn.length == 1) {
+                      adorn <- rep(adorn, nw)
+                      adorn.length <- nw
+                  }
+                  ## Old-style for pT sensors; others, just 
+                  if (3 == length(which) && 1 %in% which && 3 %in% which && 4 %in% which)
+                      layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
+                  else
+                      layout(matrix(1:nw))
+                  par(mgp=mgp, mar=mar)
+                  if (missing(main))
+                      main <- rep('', length.out=nw)
+                  else
+                      main <- rep(main, length.out=nw)
+                  oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+                  for (w in 1:nw) {
+                      oceDebug(debug, "which[", w, "]=", which[w], "\n")
+                      if (which[w] == 1) {           # temperature timeseries
+                          if (haveTemperature) {
+                              oce.plot.ts(x@data$time, x@data$temperature,
+                                          xlab=if (!missing(xlab))xlab else "",
+                                          ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
+                                          type='l',
+                                          xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                          ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                          tformat=tformat,
+                                          drawTimeRange=drawTimeRange,
+                                          mgp=mgp, mar=mar, main=main[w], ...)
+                              drawTimeRange <- FALSE    # only the first time panel gets the time indication
+                              axis(2)
+                          }
+                      } else if (which[w] == 3) {    # pressure timeseries
+                          if (havePressure) {
+                              oce.plot.ts(x@data$time, x@data$pressure,
+                                          xlab=if (!missing(xlab))xlab else "",
+                                          ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
+                                          type='l',
+                                          xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                          ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
+                                          tformat=tformat,
+                                          drawTimeRange=drawTimeRange,
+                                          mgp=mgp, mar=mar, main=main[w], ...)
+                              drawTimeRange <- FALSE
+                          }
+                      } else if (which[w] == 2) {
+                          text.item <- function(item, cex=4/5*par("cex")) {
+                              if (!is.null(item) && !is.na(item)) {
+                                  text(xloc, yloc, item, adj = c(0, 0), cex=cex);
+                              }
+                          }
+                          xfake <- seq(0:10)
+                          yfake <- seq(0:10)
+                          mar <- par("mar")
+                          par(mar=c(0,0,0,0))
+
+                          plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
+                          xloc <- 1
+                          yloc <- 10
+                          d.yloc <- 0.7
+                          cex <- par("cex")
+                          text.item(title, cex=1.25*cex)
+                          yloc <- yloc - d.yloc
+                          ##if (!is.null(object@metadata$filename))
+                          ##    text.item(object@metadata$filename, cex=cex)
+                          if (!is.null(x@metadata$serialNumber)) {
+                              text.item(paste(gettext("Serial Number", domain="R-oce"), x@metadata$serialNumber),cex=cex)
+                              yloc <- yloc - d.yloc
+                          }
+                          if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
+                              text.item(paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
+                              yloc <- yloc - d.yloc
+                              text.item(paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
+                              yloc <- yloc - d.yloc
+                              text.item(paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
+                              yloc <- yloc - d.yloc
+                          }
+                          par(mar=mar)
+                      } else if (which[w] == 4) {     # "profile"
+                          if (haveTemperature && havePressure) {
+                              args <- list(x=x@data$temperature, y=x@data$pressure,
+                                           xlab="",
+                                           ylab=resizableLabel("p"),
+                                           xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                           ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
+                                           ...)
+                              a <- names(list(...))
+                              if (!("type" %in% a))
+                                  args <- c(args, type="p")
+                              if (!("cex"  %in% a))
+                                  args <- c(args, cex=1/2)
+                              if (!("axes" %in% a))
+                                  args <- c(args, axes=FALSE)
+                              np <- length(x@data$pressure)
+                              if (nw == 1)
+                                  par(mar=c(1, 3.5, 4, 1))
+                              if (useSmoothScatter) {
+                                  args <- args[names(args) != "type"]
+                                  do.call(smoothScatter, args)
+                              } else {
+                                  do.call(plot, args)
+                              }
+                              box()
+                              axis(2)
+                              axis(3)
+                              mtext(resizableLabel("T", "x"), side = 3, line = 2)
+                          }
+                      }
+                      if (w <= adorn.length) {
+                          t <- try(eval(adorn[w]), silent=TRUE)
+                          if (class(t) == "try-error")
+                              warning("cannot evaluate adorn[", w, "]\n")
+                      }
                   }
               }
               oceDebug(debug, "} # plot.rsk()\n", unindent=1)
@@ -474,6 +501,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             ## so I just infer it from the data
             rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
             rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
+            rval@metadata$pressureAtmospheric <- pressureAtmospheric
             oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
             return(rval)
         }

@@ -528,21 +528,21 @@ setMethod(f="plot",
                               coastline <- get(bestcoastline)
                           } else {
                               oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")
-                              data(coastlineWorld, envir=environment())
-                              coastline <- coastlineWorld
+                              data("coastlineWorld", package="oce", envir=environment())
+                              coastline <- get("coastlineWorld")
                           }
                           haveCoastline <- TRUE
                       } else {
                           if (coastline != "none") {
                               if (coastline == "coastlineWorld") {
-                                  data("coastlineWorld", envir=environment())
-                                  coastline <- coastlineWorld
+                                  data("coastlineWorld", package="oce", envir=environment())
+                                  coastline <- get("coastlineWorld")
                               } else if (haveOcedata && coastline == "coastlineWorldFine") {
                                   data("coastlineWorldFine", package="ocedata", envir=environment())
-                                  coastline <- coastlineWorldFine
+                                  coastline <- get("coastlineWorldFine")
                               } else if (haveOcedata && coastline == "coastlineWorldMedium") {
                                   data("coastlineWorldMedium", package="ocedata", envir=environment())
-                                  coastline <- coastlineWorldMedium
+                                  coastline <- get("coastlineWorldMedium")
                               }  else {
                                   stop("there is no built-in coastline file of name \"", coastline, "\"")
                               }

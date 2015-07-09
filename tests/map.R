@@ -69,4 +69,3 @@ xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
 cs2 <- map2lonlat(xy$x, xy$y)
 stopifnot(all.equal(cs, cs2, tolerance=1e-6)) # on 64bit machine can go to 1e-15
 
-

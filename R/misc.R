@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 T68fromT90 <- function(temperature) temperature * 1.00024
 T90fromT68 <- function(temperature) temperature / 1.00024
@@ -844,370 +844,168 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "C",
-                                  "conductivity mS/cm", "conductivity S/m",
-                                  "T", "theta", "sigmaTheta",
-                                  "conservative temperature", "absolute salinity",
-                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
-                                  "tritium", "spice", "fluorescence",
-                                  "p", "z",
-                                  "distance", "distance km", "along-track distance km",
-                                  "heading", "pitch", "roll",
-                                  "u", "v", "w", "speed", "direction",
-                                  "eastward", "northward", "depth", "elevation",
-                                  "latitude", "longitude",
-                                  "frequency cph", "spectral density m2/cph"),
-                           axis=c("x", "y"))
+resizableLabel <- function(item, axis, sep)
 {
-    item <- match.arg(item)
-    axis <- match.arg(axis)
+    if (missing(item))
+        stop("must provide 'item'")
+    if (missing(axis))
+        axis <- "x"
+    if (axis != "x" && axis != "y")
+        stop("axis must be \"x\" or \"y\"")
+    itemAllowed <- c("S", "C", "conductivity mS/cm", "conductivity S/m", "T",
+                     "theta", "sigmaTheta", "conservative temperature",
+                     "absolute salinity", "nitrate", "nitrite", "oxygen",
+                     "phosphate", "silicate", "tritium", "spice",
+                     "fluorescence", "p", "z", "distance", "distance km",
+                     "along-track distance km", "heading", "pitch", "roll", "u",
+                     "v", "w", "speed", "direction", "eastward", "northward",
+                     "depth", "elevation", "latitude", "longitude", "frequency cph",
+                     "spectral density m2/cph")
+    iitem <- pmatch(item, itemAllowed)
+    if (is.na(iitem))
+        stop("item=\"", item, "\" is not allowed; try one of: \"",
+             paste(itemAllowed, collapse="\", \""), "\"", sep="")
+    item <- itemAllowed[iitem[1]]
+    if (getOption("oceUnitBracket") == "[") {
+        L <- " [" 
+        R <- "]" 
+    } else {
+        L <- " ("
+        R <- ")"
+    }
+    if (missing(sep)) {
+        tmp <- getOption("oceUnitSep")
+        sep <- if (!is.null(tmp)) tmp else ""
+    }
+    L <- paste(L, sep, sep="")
+    R <- paste(sep, R, sep="")
     if (item == "T") {
         var <- gettext("Temperature", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [ "*degree*"C ]")
-            abbreviated <- expression(paste("T [", degree, "C]"))
-        } else {
-            full <- bquote(.(var)*" ( "*degree*"C )")
-            abbreviated <- expression(paste("T (", degree, "C)"))
-        }
+        full <- bquote(.(var)*.(L)*degree*"C"*.(R))
+        abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
     } else if (item == "conductivity mS/cm") {
         var <- gettext("Conductivity", domain="R-oce")
-        unit <- gettext("mS/cm", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviate <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviate <- full
-        }
+        full <- bquote(.(var)*.(L)*mS/cm*.(R))
+        abbreviated <- bquote("C"*.(L)*mS/cm*.(R))
      } else if (item == "conductivity S/m") {
         var <- gettext("Conductivity", domain="R-oce")
-        unit <- gettext("S/m", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviate <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviate <- full
-        }
+        full <- bquote(.(var)*.(L)*S/m*.(R))
+        abbreviated <- bquote("C"*.(L)*S/m*.(R))
     } else if (item == "C") { # unitless form
         var <- gettext("Conductivity Ratio", domain="R-oce")
-        unit <- gettext("unitless", domain="R-oce") #FIXME: how to handle different possible units?
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviate <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviate <- full
-        }
+        unit <- gettext("unitless", domain="R-oce")
+        full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        abbreviated <- bquote("C")
     } else if (item == "conservative temperature") {
         var <- gettext("Conservative Temperature", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*degree*"C]")
-            abbreviated <- expression(paste(Theta, "[", degree, "C]"))
-        } else {
-            full <- bquote(.(var)*" ("*degree*"C)")
-            abbreviated <- expression(paste(Theta, "(", degree, "C)"))
-        }
+        full <- bquote(.(var)*.(L)*degree*"C"*.(R))
+        abbreviated <- bquote(Theta*.(L)*degree*"C"*.(R))
     } else if (item == "sigmaTheta") {
         var <- gettext("Potential density anomaly", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*kg/m^3*"]")
-            abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
-        } else {
-            full <- bquote(.(var)*" ("*kg/m^3*")")
-            abbreviated <- expression(paste(sigma[theta], " (", kg/m^3, ")"))
-        }
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[theta]*.(L)*kg/m^3*.(R))
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [ "*degree*"C ]")
-            abbreviated <- expression(paste(theta, " [", degree, "C]"))
-        } else {
-            full <- bquote(.(var)*" ("*degree*"C)")
-            abbreviated <- expression(paste(theta, " (", degree, "C)"))
-        }
+        full <- bquote(.(var)*.(L)*degree*"C"*.(R))
+        abbreviated <- bquote(theta*.(L)*degree*"C"*.(R))
     } else if (item == "tritium") {
         var <- gettext("Tritium", domain="R-oce")
-        unit <- gettext("Tu", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviate <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviate <- full
-        }
+        full <- bquote(.(var)*.(L)*Tu*.(R))
+        abbreviated <- bquote(phantom()^3*H*.(L)*Tu*.(R))
     } else if (item ==  "nitrate") {
         var <- gettext("Nitrate", domain="R-oce")
-        vara <- gettext("NO3", domain="R-oce")
-        unit <- gettext("umol/kg", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviate <- paste(vara, "[", unit, "]")
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviate <- paste(vara, "(", unit, ")")
-        }
+        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+        abbreviated <- bquote(N*O[3]*.(L)*mu*mol/kg*.(R))
     } else if (item ==  "nitrite") {
         var <- gettext("Nitrite", domain="R-oce")
-        vara <- gettext("NO2", domain="R-oce")
-        unit <- gettext("umol/kg", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviate <- paste(vara, "[", unit, "]")
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviate <- paste(vara, "[", unit, "]")
-        }
+        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+        abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
     } else if (item ==  "oxygen") {
+        ## FIXME: allow other O2 units (and is this the best default?)
         var <- gettext("Oxygen", domain="R-oce")
-        vara <- gettext("O2", domain="R-oce")
-        unit <- gettext("umol/kg", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- paste(vara, "[", unit, "]")
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- paste(vara, "(", unit, ")")
-        }
+        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+        abbreviated <- bquote(O[2]*.(L)*mu*mol/kg*.(R))
     } else if (item ==  "phosphate") {
         var <- gettext("Phosphate", domain="R-oce")
-        vara <- gettext("PO4", domain="R-oce")
-        unit <- gettext("umol/kg", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- paste(vara, "[", unit, "]")
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- paste(vara, "(", unit, ")")
-        }
+        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+        abbreviated <- bquote(P*O[4]*.(L)*mu*mol/kg*.(R))
     } else if (item ==  "silicate") {
         var <- gettext("Silicate", domain="R-oce")
-        vara <- gettext("SiO4", domain="R-oce")
-        unit <- gettext("umol/kg", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- paste(vara, "[", unit, "]")
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- paste(vara, "(", unit, ")")
-        }
+        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+        abbreviated <- bquote(Si*O[4]*.(L)*mu*mol/kg*.(R))
     } else if (item == "fluorescence") {
         var <- gettext("Fluorescence", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- var
-            abbreviated <- full
-        } else {
-            full <- var
-            abbreviated <- full
-        }
+        ## FIXME: need to consider units
+        abbreviated <- full <- bquote(.(var))
     } else if (item == "spice") {
         var <- gettext("Spice", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["* kg / m^3*" ]")
-            abbreviated <- full
-        } else {
-            full <- bquote(.(var)*" ("* kg / m^3*" )")
-            abbreviated <- full
-        }
-        ##title(full, line=-5)
+        abbreviated <- full <- bquote(.(var)*.(L)*kg/m^3*.(R))
     } else if (item == "S") {
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
         var <- gettext("Absolute Salinity", domain="R-oce")
-        unit <- gettext("g/kg", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- expression(paste(S[A], " [g/kg]"))
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- expression(paste(S[A], " (g/kg)"))
-        }
+        full <- bquote(.(var)*.(L)*g/kg*.(R))
+        abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
     } else if (item == "p") {
-        ## FIXME: for some reason I need to set the domain for pressure
         var <- gettext("Pressure", domain="R-oce")
         unit <- gettext("dbar", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- paste("p [", unit, "]") # guessing initial same in all languages
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- paste("p (", unit, ")") # guessing initial same in all languages
-        }
+        full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        abbreviated <- bquote("p"*.(L)*.(unit)*.(R))
     } else if (item == "z") {
-        if (getOption("oceUnitBracket") == '[') {
-            abbreviated <- expression(paste(z, " [m]"))
-            full <- expression(paste(z, " [m]"))
-        } else {
-            abbreviated <- expression(paste(z, " (m)"))
-            full <- expression(paste(z, " (m)"))
-        }
+        var <- "z"
+        abbreviated <- full <- bquote("z"*.(L)*m*.(R))
     } else if (item == "distance") {
         var <- gettext("Distance", domain="R-oce")
-        unit <- gettext("m", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*m*.(R))
     } else if (item == "distance km") {
         var <- gettext("Distance", domain="R-oce")
-        unit <- gettext("km", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
     } else if (item == "along-track distance km") {
         var <- gettext("Along-track Distance", domain="R-oce")
-        unit <- gettext("km", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*km*.(R))
     } else if (item == "heading") {
         var <- gettext("Heading", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [deg]")
-        } else {
-            full <- bquote(.(var)*" (deg)")
-        }
-        abbreviated <- full
+        abbreviated <- full <- bquote(.(var)*.(L)*degree*.(R))
     } else if (item == "pitch") {
         var <- gettext("Pitch", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [deg]")
-        } else {
-            full <- bquote(.(var)*" (deg)")
-        }
-        abbreviated <- full
+        abbreviated <- full <- bquote(.(var)*.(L)*degree*.(R))
     } else if (item == "roll") {
         var <- gettext("Roll", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" [deg]")
-        } else {
-            full <- bquote(.(var)*" (deg)")
-        }
-        abbreviated <- full
-    } else if (item == "u") {
-        var <- gettext("u", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*m/s*"]")
-        } else {
-            full <- bquote(.(var)*" ("*m/s*")")
-        }
-        abbreviated <- full
-    } else if (item == "v") {
-        var <- gettext("v", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*m/s*"]")
-        } else {
-            full <- bquote(.(var)*" ("*m/s*")")
-        }
-        abbreviated <- full
-    } else if (item == "w") {
-        var <- gettext("w", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*m/s*"]")
-        } else {
-            full <- bquote(.(var)*" ("*m/s*")")
-        }
-        abbreviated <- full
+        abbreviated <- full <- bquote(.(var)*.(L)*degree*.(R))
+    } else if (item == "u" || item == "v" || item == "w") {
+        abbreviated <- full <- bquote(item*.(L)*m/s*.(R))
     } else if (item == "eastward") {
         var <- gettext("Eastward", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*m/s*"]")
-        } else {
-            full <- bquote(.(var)*" ("*m/s*")")
-        }
-        abbreviated <- full
+        abbreviated <- full <- bquote(.(var)*.(L)*m/s*.(R))
     } else if (item == "northward") {
         var <- gettext("Northward", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["*m/s*"]")
-        } else {
-            full <- bquote(.(var)*" ("*m/s*")")
-        }
-        abbreviated <- full
+        abbreviated <- full <- bquote(.(var)*.(L)*m/s*.(R))
     } else if (item == "depth") {
         var <- gettext("Depth", domain="R-oce")
-        unit <- gettext("m", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*m*.(R))
     } else if (item == "elevation") {
         var <- gettext("Elevation", domain="R-oce")
-        unit <- gettext("m", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*m*.(R))
     } else if (item ==  "speed") {
         var <- gettext("Speed", domain="R-oce")
-        unit <- gettext("m/s", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "(", unit, ")")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*m/s*.(R))
     } else if (item == "latitude") {
         var <- gettext("Latitude", domain="R-oce")
         ## maybe add deg "N" "S" etc here, but maybe not (aesthetics)
-        if (getOption("oceUnitBracket") == '[') {
-            full <- var
-            abbreviated <- full
-        } else {
-            full <- var
-            abbreviated <- full
-        }
+        abbreviated <- full <- var
     } else if (item == "longitude") {
         var <- gettext("Longitude", domain="R-oce")
-        ## maybe add deg "N" "S" etc here, but maybe not (aesthetics)
-        if (getOption("oceUnitBracket") == '[') {
-            full <- var
-            abbreviated <- full
-        } else {
-            full <- var
-            abbreviated <- full
-        }
+        ## maybe add deg "E" "W" etc here, but maybe not (aesthetics)
+        abbreviated <- full <- var
     } else if (item == "frequency cph") {
         var <- gettext("Frequency", domain="R-oce")
         unit <- gettext("cph", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        } else {
-            full <- paste(var, "[", unit, "]")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*.(unit)*.(R))
     } else if (item == "spectral density m2/cph") {
         var <- gettext("Spectral density", domain="R-oce")
-        if (getOption("oceUnitBracket") == '[') {
-            full <- bquote(.(var)*" ["* m^2 / cph*" ]")
-            abbreviated <- full
-        } else {
-            full <- bquote(.(var)*" ("* m^2 / cph*" )")
-            abbreviated <- full
-        }
+        abbreviated <- full <- bquote(.(var)*.(L)*.m^2/cph*.(R))
     }
-
     spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
@@ -1217,6 +1015,8 @@ resizableLabel <- function(item=c("S", "C",
     ##cat("whichAxis=", whichAxis, "\n")
     ##cat("spaceAvailable=", spaceAvailable, "\n")
     ##cat("fraction=", fraction, "\n")
+    #print(full)
+    #print(abbreviated)
     if (fraction < 1) full else abbreviated
 }
 

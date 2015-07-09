@@ -40,8 +40,9 @@ map2lonlat(xy)
 }
 
 \seealso{\code{mapLongitudeLatitudeXY} is a safer alternative, if a map has
-    already been drawn with \code{\link{mapPlot}}, because that function cannot
-    alter an existing projection.}
+  already been drawn with \code{\link{mapPlot}}, because that function cannot
+  alter an existing projection. \code{\link{map2lonlat}} is an inverse to
+  \code{map2lonlat}.}
 
 \author{Dan Kelley}
 

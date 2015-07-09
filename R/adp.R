@@ -784,7 +784,7 @@ setMethod(f="plot",
                                                     else oce.colorsPalette(length(breaks)-1, 1)
                                                 },
                                                 breaks=breaks,
-                                                ylab=resizableLabel("distance"),
+                                                ylab=resizableLabel("distance m"),
                                                 xlab="Time",
                                                 zlab=zlab,
                                                 tformat=tformat,
@@ -1466,17 +1466,17 @@ setMethod(f="plot",
                                   if (requireNamespace("ocedata", quietly=TRUE)) {
                                       if (coastline == "best") {
                                           best <- coastlineBest(span=span, debug=debug-1)
-                                          data(list=best, envir=environment())
+                                          data(list=best, package="oce", envir=environment())
                                           coastline <- get(best)
                                       } else if (coastline == "coastlineWorld") {
-                                          data("coastlineWorld", envir=environment())
-                                          coastline <- coastlineWorld
+                                          data("coastlineWorld", package="oce", envir=environment())
+                                          coastline <- get("coastlineWorld")
                                       } else if (coastline == "coastlineWorldFine") {
-                                          data("coastlineWorldFine", envir=environment())
-                                          coastline <- coastlineWorldFine
+                                          data("coastlineWorldFine", package="ocedata", envir=environment())
+                                          coastline <- get("coastlineWorldFine")
                                       } else if (coastline == "coastlineWorldMedium") {
-                                          data("coastlineWorldMedium", envir=environment())
-                                          coastline <- coastlineWorldMedium
+                                          data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                          coastline <- get("coastlineWorldMedium")
                                       }  else {
                                           stop("there is no built-in coastline file of name \"", coastline, "\"")
                                       }
