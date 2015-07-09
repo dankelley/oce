@@ -181,7 +181,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         pressure <- d$pressure
         ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
         if (inherits(o, "rsk")) {
-            pressure <- pressure - if (is.na(m$pressureAtmospheric)) 11.4 else m$pressureAtmospheric
+            pressure <- pressure - if (is.na(m$pressureAtmospheric)) 10.1325 else m$pressureAtmospheric
         }
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
         conductivity <- d$conductivity
