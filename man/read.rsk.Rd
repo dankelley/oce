@@ -35,22 +35,12 @@
   \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
 
   \item{patm}{controls the handling of atmospheric pressure, an important issue
-    for RBR instruments that record absolute pressure, i.e. the sum of
-    atmospheric pressure and sea pressure. There are three alternatives.  (1) If
-    \code{patm} is \code{FALSE} (the default), then total pressure is stored in
-    the \code{data} slot of return value, and the \code{metadata} item
-    \code{pressureType} is set to the string \code{absolute}.  (2) If
-    \code{patm} is \code{TRUE}, then an estimate of atmospheric pressure is
-    subtracted from the raw data. For files in the SQLite format (i.e.
-    \code{*.rsk} files), this estimate will be the value stored in the file, or
-    the standard value 10.1325 dbar.  (3) If \code{patm} is a numerical value,
-    then that value will be subtracted from the raw data. In any case where
-    atmospheric pressure is subtracted, and additional column named
-    \code{pressureOriginal} is stored in the \code{data} slot.}
+    for RBR instruments that record absolute pressure; see \dQuote{Details}.}
 
   \item{processingLog}{if provided, the action item to be stored in the log.
     (Typically only provided for internal calls; the default that it provides is
     better for normal calls by a user.)}
+
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
@@ -64,18 +54,31 @@
   for historical reasons, since RBR instruments at the date of writing commonly
   use the SQLite format.
 
-  It should be noted that RBR devices record conductivity in mS/cm, and that it
-  is this value that is stored in the object returned by \code{read.rsk}. This
-  can be converted to conductivity ratio (which is what many other instruments
-  report) by dividing by 42.914, which will be necessary in any seawater-related
-  function that takes conductivity ratio as an argument (see \dQuote{Examples}).
+  \emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and
+  that it is this value that is stored in the object returned by
+  \code{read.rsk}. This can be converted to conductivity ratio (which is what
+  many other instruments report) by dividing by 42.914, which will be necessary
+  in any seawater-related function that takes conductivity ratio as an argument
+  (see \dQuote{Examples}).
     
-  Also, RBR devices tend to record absolute pressure (i.e. sea pressure plus
-  atmospheric pressure), unlike most oceanographic instruments that at least
-  attempt to record sea pressure.  The user is given control over how pressure
-  is handled with the \code{patm} argument of \code{read.rsk}; see notes about
-  that argument elsewhere in this help page, for important details of how this
-  is handled.
+  \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
+  sea pressure plus atmospheric pressure), unlike most oceanographic instruments
+  that at least attempt to record sea pressure.  The user is given control over
+  how pressure is handled with the \code{patm} argument, for which there are
+  three possibilities.  (1) If \code{patm} is \code{FALSE} (the default), then
+  the pressure stored in the data file is copied directly to the \code{data}
+  slot of return value, and the \code{metadata} item \code{pressureType} is set
+  to the string \code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an
+  estimate of atmospheric pressure is subtracted from the raw data. For data
+  files in the SQLite format (i.e.  \code{*.rsk} files), this estimate will be
+  the value stored in the file, or the ``standard atmosphere'' value 10.1325
+  dbar, if no value is stored in the file.  (3) If \code{patm} is a numerical
+  value, then that value will be subtracted from the raw data.  In cases 2 and
+  3, an additional column named \code{pressureOriginal} is stored in the
+  \code{data} slot, and \code{pressureType} is set to a string starting with
+  \code{"sea"}. See \code{\link{as.ctd}} for details of how this setup
+  facilitates the conversion of \code{\link{rsk-class}} objects to
+  \code{\link{ctd-class}} objects.
 
 }
 

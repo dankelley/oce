@@ -203,7 +203,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                     pressure <- pressure - pressureAtmosphericStandard
                 }
                 warning("subtracting 10.1325 no \"pressureType\" in metadata, so assuming it to be \"total\"\n")
-                pressure <- presxure - 10.1325
+                pressure <- pressure - 10.1325
             } else {
             }
             pressure <- pressure - if (is.na(m$pressureAtmospheric)) 10.1325 else m$pressureAtmospheric
