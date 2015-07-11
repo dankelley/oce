@@ -162,9 +162,11 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    date="", startTime="", recovery="",
                    longitude=NA, latitude=NA,
                    pressureAtmospheric=NA, waterDepth=NA,
-                   sampleInterval=NA, src="")
+                   sampleInterval=NA, src="",
+                   debug=getOption("oceDebug"))
 {
     if (missing(salinity)) stop("must provide salinity")
+    oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     ## 1. coerce an oce object (with special tweaks for rsk)
     if (inherits(salinity, "oce")) {
         o <- salinity
@@ -181,7 +183,36 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         pressure <- d$pressure
         ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
         if (inherits(o, "rsk")) {
-            pressure <- pressure - if (is.na(m$pressureAtmospheric)) 10.1325 else m$pressureAtmospheric
+            oceDebug(debug, "first argument is an rsk object\n")
+            pressureAtmosphericStandard <- 10.1325
+            pressureMin <- min(pressure, na.rm=TRUE)
+            ## FIXME: could examine min(pressure) to see if it's between 9 and 11.
+            if (is.null(o@metadata$pressureType)) {
+                oceDebug(debug, "metadata$pressureType is NULL\n")
+                warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
+                pressure <- pressure - pressureAtmosphericStandard
+            } else {
+                ## subtract atm pressure, if it has not already been subtracted
+                oceDebug(debug, "metadata$pressureType is not NULL\n")
+                if ("sea" != substr(o@metadata$pressureType, 1, 3)) {
+                    oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
+                    if (is.na(m$pressureAtmospheric)) {
+                        oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
+                        pressure <- pressure - 10.1325
+                    } else {
+                        pressure <- pressure - m$pressureAtmospheric
+                        oceDebug(debug, "pressure is 'absolute'; subtracting metadata 10.1325dbar\n")
+                    }
+                } else {
+                    oceDebug(debug, "this rsk object contains sea pressure, so no need to remove atmospheric pressure\n")
+                }
+            }
+        }
+        if (!is.na(pressureAtmospheric)) {
+            len <- length(pressureAtmospheric)
+            if (1 != len && len != length(pressure))
+                stop("length(pressureAtmospheric) must be 1 or length(pressure)")
+            pressure <- pressure - pressureAtmospheric
         }
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
         conductivity <- d$conductivity
@@ -222,6 +253,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             res@metadata$latitude <- m$latitude
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
     }
     ## 2. coerce a data-frame or list
@@ -251,6 +283,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         if ("phosphate" %in% names)res@data$phosphate <- x$phosphate
         if ("silicate" %in% names)res@data$silicate <- x$silicate
         if ("time" %in% names)res@data$time <- x$time
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
     }
     ## 3. explicit mode
@@ -355,6 +388,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     }
     res@metadata <- metadata
     res@data <- data
+    oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     res
 }
 

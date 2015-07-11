@@ -114,8 +114,8 @@ setMethod(f="show",
               if ("filename" %in% names(object@metadata))
                   filename <- object[["filename"]]
               else
-                  filename <- "(no filename known)"
-              if (is.null(filename) || filename == "")
+                  filename <- "(filename unknown)"
+              if (is.null(filename) || filename == "" || is.na(filename))
                   cat(class(object)[1], " object has data as follows.\n", sep="")
               else
                   cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")

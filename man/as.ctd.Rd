@@ -15,8 +15,9 @@
        date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
        pressureAtmospheric=NA, waterDepth=NA,
-       sampleInterval=NA, src="")
-}
+       sampleInterval=NA, src="",
+       debug=getOption("oceDebug"))}
+
 \arguments{
 
   \item{salinity}{There are two choices for \code{salinity}. First, it can be a
@@ -24,7 +25,8 @@
     case, \code{as.ctd} employs the other arguments listed below. The second
     choice is that \code{salinity} is something from which practical salinity,
     temperature, etc., can be inferred. In that case, the relevant information
-    is extracted and the rest of the arguments to \code{as.ctd} are ignored.}
+    is extracted and the other arguments to \code{as.ctd} are ignored, except
+    for \code{pressureAtmospheric}; see \dQuote{Details}.}
     
   \item{temperature}{Temperature through the water column.}
 
@@ -78,14 +80,40 @@
   \item{latitude}{optional numerical value containing the latitude in decimal
     degrees, positive in the northern hemisphere. See the note on length, for
     the \code{longitude} argument.}
-  \item{pressureAtmospheric}{if provided, this value is subtracted from
-    pressure data before storing them in the object.}
+  \item{pressureAtmospheric}{if \code{NA} (the default), then pressure is copied
+    from the \code{pressure} argument or from the contents of the first argument
+    (as described above for \code{salinity}). Otherwise, if
+    \code{pressureAtmospheric} is a numerical value (a constant or a vector),
+    then it is subtracted from pressure before storing it in the return value.
+    See \dQuote{Details} for special considerations if \code{salinity}
+    is a \code{\link{rsk-class}} object.}
   \item{waterDepth}{optional numerical value indicating the water depth in
     metres. See \dQuote{Details.}}
   \item{sampleInterval}{optional numerical value indicating the time between
     samples in the profile.}
   \item{src}{optional string indicating data source}
+  \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
+
+\details{If the first argument is an \code{\link{rsk-class}} object, the
+  pressure it contains may need to adjustment, because \code{rsk} objects may
+  contain either absolute pressure or sea pressure. This adjustment is handled
+  automatically by \code{as.ctd}, by examination of the metadata item named
+  \code{pressureType} (described in the documentation for
+  \code{\link{read.rsk}}). Once the sea pressure is determined, adjustments may
+  be made with the \code{pressureAtmospheric} argument, although in
+  that case it is better considered a pressure adjustment than the atmospheric
+  pressure.
+
+  \code{\link{rsk-class}} objects may store sea pressure or absolute pressure
+  (the sum of sea pressure and atmospheric pressure), depending on how the
+  object was created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.
+  However, \code{\link{ctd-class}} objects store sea pressure, which is needed
+  for plotting, calculating density, etc. This poses no difficulities, however,
+  because \code{as.ctd} automatically converts absolute pressure to sea
+  pressure, if the metadata in the \code{\link{rsk-class}} object indicates that
+  this is appropriate. Further alteration of the pressure can be accomplished
+  with the \code{pressureAtmospheric} argument, as noted above.}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"} (for details, see
   \code{\link{read.ctd}}).}

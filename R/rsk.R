@@ -5,7 +5,11 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
+              .Object@metadata$model <- NA
+              .Object@metadata$conductivityUnit <- "mS/cm"
               .Object@metadata$temperatureUnit <- "ITS-90"
+              .Object@metadata$pressureType <- "absolute"
+              .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'rsk' object"
               return(.Object)
@@ -15,18 +19,22 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="rsk",
           definition=function(object, ...) {
-              cat("rsk summary\n-------\n", ...)
-              cat("* Instrument:         ", object@metadata$model,
-                  ", serial number " , object@metadata$serialNumber, "\n", sep='')
-              if ("pressureAtmospheric" %in% names(object@metadata)) {
-                  cat(paste("* Atmosph. pressure:  ", object@metadata$pressureAtmospheric, "\n", sep=""))
-              }
-              cat(paste("* Source:             ``", object@metadata$filename, "``\n", sep=""))
+              m <- object@metadata
+              mnames <- names(m)
+              cat("rsk summary\n-----------\n", ...)
+              cat("* Instrument:         model ", m$model,
+                  " serial number " , m$serialNumber, "\n", sep='')
+              if ("pressureAtmospheric" %in% mnames)
+                  cat(paste("* Atmosph. pressure:  ", m$pressureAtmospheric, "\n", sep=""))
+              if ("pressureType" %in% mnames)
+                  cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
+              cat(paste("* Source:             ``", m$filename, "``\n", sep=""))
               cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(object@metadata$tstart), attr(object@metadata$tstart, "tzone"),
-                          format(object@metadata$tend), attr(object@metadata$tend, "tzone"),
-                          1 / object@metadata$deltat))
-              names <- names(object@data)
+                          format(m$tstart), attr(m$tstart, "tzone"),
+                          format(m$tend), attr(m$tend, "tzone"),
+                          1 / m$deltat))
+              d <- object@data
+              names <- names(d)
               ndata <- length(names)
               isTime <- names == "time"
               threes <- matrix(nrow=sum(!isTime), ncol=3)
@@ -34,20 +42,13 @@ setMethod(f="summary",
               for (i in 1:ndata) {
                   if (isTime[i])
                       next
-                  threes[ii,] <- threenum(object@data[[i]])
+                  threes[ii,] <- threenum(d[[i]])
                   ii <- ii + 1
               }
               rownames(threes) <- paste("   ", names[!isTime])
               colnames(threes) <- c("Min.", "Mean", "Max.")
               cat("* Statistics of data:\n")
               print(threes, indent='  ')
-              ## time.range <- range(object@data$time, na.rm=TRUE)
-              ## threes <- matrix(nrow=2, ncol=3)
-              ## threes[1,] <- threenum(object@data$temperature)
-              ## threes[2,] <- threenum(object@data$pressure)
-              ## colnames(threes) <- c("Min.", "Mean", "Max.")
-              ## rownames(threes) <- c("Temperature", "Pressure")
-              ## print(threes)
               processingLogShow(object)
               invisible(NULL)
           })
@@ -88,12 +89,9 @@ setMethod(f="subset",
               rval
           })
  
-as.rsk <- function(time, temperature, pressure,
-                      filename="",
-                      instrumentType="rbr",
-                      serialNumber="", model="",
-                      pressureAtmospheric=NA,
-                      processingLog, debug=getOption("oceDebug"))
+as.rsk <- function(time, columns,
+                   filename="", instrumentType="rbr", serialNumber="", model="",
+                   debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
     oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
@@ -104,29 +102,21 @@ as.rsk <- function(time, temperature, pressure,
         stop("must give time")
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
-    temperatureGiven <- !missing(temperature)
-    pressureGiven <- !missing(pressure)
-    if (!temperatureGiven && !pressureGiven)
-        stop("must give either temperature or pressure")
     time <- as.POSIXct(time)
-    if (temperatureGiven && length(time) != length(temperature))
-        stop("lengths of 'time' and 'temperature' must match")
-    if (pressureGiven && length(time) != length(pressure))
-        stop("lengths of 'time' and 'pressure' must match")
     res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
-    res@metadata$model <- model
+    if (nchar(model)) 
+        res@metadata$model <-model
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
-    res@metadata$pressureAtmospheric <- pressureAtmospheric
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res@data <- list(time=time)
-    if (pressureGiven)
-        res@data$pressure <- pressure
-    if (temperatureGiven)
-        res@data$temperature <- temperature
+    if (!missing(columns)) {
+        for (item in names(columns)) {
+            res@data[[item]] <- columns[[item]]
+        }
+    }
     oceDebug(debug, "} # as.rsk()\n", sep="", unindent=1)
     res
 }
@@ -401,6 +391,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## }
         ## atmospheric pressure
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
+        oceDebug(debug, "first, guess pressureAtmospheric=", pressureAtmospheric, "\n")
         warn <- FALSE
         try({ # need to wrap in try() because this can fail
             deriveDepth <- RSQLite::dbReadTable(con, "deriveDepth")
@@ -410,6 +401,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (warn)
             warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
+        oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
         ## From notes in comments above, it seems necessary to order by
         ## timestamp (tstamp). Ordering does not seem to be an option for
@@ -432,79 +424,48 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         names <- names[1:dim(data)[2]] # sometimes there are more names than data channels
         names(data) <- names
         data <- as.list(data)
-
-        ## message("dim of data: ", paste(dim(data), collapse="x"))
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
         model <- instruments$model
         RSQLite::dbDisconnect(con)
-        ## Will use 'p' to compute S below.
-        pressureNote <- "Storing total pressure (i.e. sea pressure plus air pressure)"
-        if (is.logical(patm)) {
-            pSea <- data$pressure - pressureAtmospheric
-            if (patm) {
-                data$pressure <- pSea
-                pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", pressureAtmospheric)
-            }
-        } else {
-            pSea <- data$pressure - patm
-            data$pressure <- pSea
-            pressureNote <- sprintf("Storing sea pressure, i.e. total pressure minus %f dbar", patm)
-        }
-        canReturnCtd <- FALSE
-        if (canReturnCtd && 3 == sum(c("conductivity", "temperature", "pressure") %in% names)) {
-            conductivityStandard <- 42.914 ## mS/cm conversion factor
-            if ("salinity" %in% names) {
-                S <- data$salinity
-            } else {
-                ##warning("computing salinity from conductivity (assumed mS/cm), temperature, and pressure")
-                S <- swSCTp(data$conductivity / conductivityStandard, data$temperature, pSea)
-            }
-            ctd <- new("ctd", pressure=data$pressure, salinity=S, temperature=data$temperature,
-                       conductivity=data$conductivity, filename=filename)
-            ctd@metadata[["conductivityUnit"]] <- "mS/cm"
-            ctd@data[["time"]] <- time
-            ctd@data[["scan"]] <- seq_along(data$pressure)
-            ctd@processingLog <- processingLogAppend(ctd@processingLog, pressureNote)
-            if (!("salinity" %in% names))
-                ctd@processingLog <- processingLogAppend(ctd@processingLog, "Calculated salinity from conductivity, temperature, and adjusted pressure")
-            ctd@metadata$pressureAtmospheric <- pressureAtmospheric
-            ## CR suggests to read "sampleInterval" but I cannot find it from the following
-            ##   echo ".dump"|sqlite3 cast4.rsk | grep -i sample
-            ## so I just infer it from the data
-            ctd@metadata$sampleInterval <- median(diff(as.numeric(ctd@data$time))) 
-            ctd@metadata$latitude <- NaN
-            ctd@metadata$longitude <- NaN
-            ctd@metadata$waterDepth <- max(data$pressure, na.rm=TRUE)
-            ## The device may have other channels; add them.  (This includes conductivity.)
-            for (name in names) {
-                oceDebug(debug, "copying '", name, "' from Ruskin file into ctd object\n", sep="")
-                if (!(name %in% c("temperature", "pressure"))) {
-                    ctd@data[[name]] <- data[[name]]
+        rval <- new("rsk", time=time, filename=filename)
+        for (name in names)
+            rval@data[[name]] <- data[[name]]
+        if ("pressure" %in% names) { # possibly compute sea pressure
+            if (is.logical(patm)) {
+                if (patm) {
+                    rval@data$pressureOriginal <- rval@data$pressure
+                    rval@data$pressure <- rval@data$pressure - 10.1325
+                    ## No need to check patm=FALSE case because object default is "absolute"
+                    rval@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325 dbar"
+                    oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
+            } else if (is.numeric(patm)) {
+                npatm <- length(patm)
+                if (1 < npatm && npatm != length(pressure))
+                    stop("if patm is numeric, its length must equal 1, or the length(pressure).")
+                oceDebug(debug, "patm is numeric, so removing std atmospheric pressure, 10.1325 dbar\n")
+                rval@data$pressureOriginal <- rval@data$pressure
+                rval@data$pressure <- rval@data$pressure - patm
+                if (npatm == 1)
+                    rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm)
+                else 
+                    rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f, %f, ...", patm[1], patm[2])
+            } else {
+                stop("patm must be logical or numeric")
             }
-            ## Add some metadata directly (FIXME: this is brittle to changes in names of the metadata)
-            ctd@metadata$serialNumber <- serialNumber
-            ctd@metadata$type <- "RBR"
-            ctd@metadata$model <- model
-            ctd@metadata$filename <- filename
-            oceDebug(debug, "} # read.rsk() -- returning a CTD object\n", sep="", unindent=1)
-            return(ctd)
-        } else {
-            rval <- new("rsk", time=time, filename=filename)
-            for (name in names)
-                rval@data[[name]] <- data[[name]]
-            rval@metadata$model <- model
-            rval@metadata$serialNumber <- serialNumber
-            ## CR suggests to read "sampleInterval" but I cannot find it from the following
-            ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
-            ## so I just infer it from the data
-            rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
-            rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
-            rval@metadata$pressureAtmospheric <- pressureAtmospheric
-            oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
-            return(rval)
         }
+        rval@metadata$model <- model
+        rval@metadata$serialNumber <- serialNumber
+        ## CR suggests to read "sampleInterval" but I cannot find it from the following
+        ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
+        ## so I just infer it from the data
+        rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+        rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
+        rval@metadata$pressureAtmospheric <- pressureAtmospheric
+        rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
+        return(rval)
     } else {
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
@@ -609,12 +570,26 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         pressure <- as.numeric(d[pcol, look])
         model <- ""
     }
-    rval <- as.rsk(time, temperature, pressure, instrumentType="rbr",
-                      serialNumber=serialNumber, model=model,
-                      pressureAtmospheric=pressureAtmospheric,
-                      filename=filename,
-                      processingLog=paste(deparse(match.call()), sep="", collapse=""),
-                      debug=debug-1)
+    rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
+                   instrumentType="rbr",
+                   serialNumber=serialNumber, model=model,
+                   filename=filename,
+                   debug=debug-1)
+    if (is.logical(patm)) {
+        if (patm) {
+            rval@data$pressureOriginal <- rval@data$pressure
+            rval@data$pressure <- rval@data$pressure - 10.1325
+            ## No need to check patm=FALSE case because object default is "absolute"
+            rval@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325"
+        }
+    } else if (is.numeric(patm)) {
+        rval@data$pressureOriginal <- rval@data$pressure
+        rval@data$pressure <- rval@data$pressure - patm[1]
+        rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm[1])
+    } else {
+        stop("patm must be logical or numeric")
+    }
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     rval
 }
@@ -634,48 +609,49 @@ rskPatm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-rskTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "rskTrim() {\n", unindent=1)
-    if (!inherits(x, "rsk"))
-        stop("method is only for objects of class '", "rsk", "'")
-    res <- x
-    n <- length(x@data$temperature)
-    oceDebug(debug, "dataset has", n, "points\n")
-    if (n < 2) {
-        warning("too few data to trim rsk record")
-    } else {
-        which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
-        oceDebug(debug, "using method", which.method, "\n")
-        if (which.method == 1) {        # "water"
-            keep <- rep(FALSE, n)
-            air <- x@data$pressure < 10.5 # NB. standard pressure is 10.1325
-            waterIndices <- which(!air)
-            b <- 2                      # trim a few descending points
-            i.start <- waterIndices[1] + b
-            i.stop <- waterIndices[-b + length(waterIndices)]
-            keep[i.start:i.stop] <- TRUE
-        } else if (which.method == 2) { # "time"
-            oceDebug(debug, "trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n")
-            keep <- rep(TRUE, n)
-            keep[x@data$time < as.POSIXlt(parameters[1])] <- FALSE
-            keep[x@data$time > as.POSIXlt(parameters[2])] <- FALSE
-        } else if (which.method == 3) { # "index"
-            oceDebug(debug, "parameters:",parameters,"\n")
-            if (min(parameters) < 1)
-                stop("Cannot select indices < 1");
-            if (max(parameters) > n)
-                stop(paste("Cannot select past end of array, i.e. past ", n))
-            keep <- rep(FALSE, n)
-            keep[parameters[1]:parameters[2]] <- TRUE
-        } else {
-            stop("Unknown method")
-        }
-    }
-    for (name in names(x@data))
-        res@data[[name]] <- subset(x@data[[name]], keep)
-    res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # rskTrim()\n", unindent=1)
-    res
-}
+## remove 2015-07-09
+## rskTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
+## {
+##     oceDebug(debug, "rskTrim() {\n", unindent=1)
+##     if (!inherits(x, "rsk"))
+##         stop("method is only for objects of class '", "rsk", "'")
+##     res <- x
+##     n <- length(x@data$temperature)
+##     oceDebug(debug, "dataset has", n, "points\n")
+##     if (n < 2) {
+##         warning("too few data to trim rsk record")
+##     } else {
+##         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
+##         oceDebug(debug, "using method", which.method, "\n")
+##         if (which.method == 1) {        # "water"
+##             keep <- rep(FALSE, n)
+##             air <- x@data$pressure < 10.5 # NB. standard pressure is 10.1325
+##             waterIndices <- which(!air)
+##             b <- 2                      # trim a few descending points
+##             i.start <- waterIndices[1] + b
+##             i.stop <- waterIndices[-b + length(waterIndices)]
+##             keep[i.start:i.stop] <- TRUE
+##         } else if (which.method == 2) { # "time"
+##             oceDebug(debug, "trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n")
+##             keep <- rep(TRUE, n)
+##             keep[x@data$time < as.POSIXlt(parameters[1])] <- FALSE
+##             keep[x@data$time > as.POSIXlt(parameters[2])] <- FALSE
+##         } else if (which.method == 3) { # "index"
+##             oceDebug(debug, "parameters:",parameters,"\n")
+##             if (min(parameters) < 1)
+##                 stop("Cannot select indices < 1");
+##             if (max(parameters) > n)
+##                 stop(paste("Cannot select past end of array, i.e. past ", n))
+##             keep <- rep(FALSE, n)
+##             keep[parameters[1]:parameters[2]] <- TRUE
+##         } else {
+##             stop("Unknown method")
+##         }
+##     }
+##     for (name in names(x@data))
+##         res@data[[name]] <- subset(x@data[[name]], keep)
+##     res@data$pressure <- res@data$pressure - 10.1325 # remove avg sealevel pressure
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     oceDebug(debug, "} # rskTrim()\n", unindent=1)
+##     res
+## }
