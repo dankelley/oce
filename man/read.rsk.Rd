@@ -63,21 +63,22 @@
     
   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
-  that at least attempt to record sea pressure.  The user is given control over
-  how pressure is handled with the \code{patm} argument, for which there are
-  three possibilities.  (1) If \code{patm} is \code{FALSE} (the default), then
-  the pressure stored in the data file is copied directly to the \code{data}
-  slot of return value, and the \code{metadata} item \code{pressureType} is set
-  to the string \code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an
-  estimate of atmospheric pressure is subtracted from the raw data. For data
-  files in the SQLite format (i.e.  \code{*.rsk} files), this estimate will be
-  the value stored in the file, or the ``standard atmosphere'' value 10.1325
-  dbar, if no value is stored in the file.  (3) If \code{patm} is a numerical
-  value, then that value will be subtracted from the raw data.  In cases 2 and
-  3, an additional column named \code{pressureOriginal} is stored in the
-  \code{data} slot, and \code{pressureType} is set to a string starting with
-  \code{"sea"}. See \code{\link{as.ctd}} for details of how this setup
-  facilitates the conversion of \code{\link{rsk-class}} objects to
+  that record sea pressure (or an estimate thereof).  The handling of pressure
+  is controlled with the \code{patm} argument, for which there are three
+  possibilities.  (1) If \code{patm} is \code{FALSE} (the default), then
+  pressure read from the data file is stored in the \code{data} slot of return
+  value, and the \code{metadata} item \code{pressureType} is set to the string
+  \code{"absolute"}.  (2) If \code{patm} is \code{TRUE}, then an estimate of
+  atmospheric pressure is subtracted from the raw data. For data files in the
+  SQLite format (i.e.  \code{*.rsk} files), this estimate will be the value read
+  from the file, or the ``standard atmosphere'' value 10.1325 dbar, if the file
+  lacks this information.  (3) If \code{patm} is a numerical value (or list of
+  values, one for each sampling time), then \code{patm} is subtracted from the
+  raw data.  In cases 2 and 3, an additional column named
+  \code{pressureOriginal} is added to the \code{data} slot to store the value
+  contained in the data file, and \code{pressureType} is set to a string
+  starting with \code{"sea"}.  See \code{\link{as.ctd}} for details of how this
+  setup facilitates the conversion of \code{\link{rsk-class}} objects to
   \code{\link{ctd-class}} objects.
 
 }

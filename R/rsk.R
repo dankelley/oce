@@ -6,8 +6,10 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@metadata$model <- NA
-              .Object@metadata$pressureType <- "absolute"
+              .Object@metadata$conductivityUnit <- "mS/cm"
               .Object@metadata$temperatureUnit <- "ITS-90"
+              .Object@metadata$pressureType <- "absolute"
+              .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'rsk' object"
               return(.Object)
@@ -87,12 +89,9 @@ setMethod(f="subset",
               rval
           })
  
-as.rsk <- function(time, temperature, pressure,
-                      filename="",
-                      instrumentType="rbr",
-                      serialNumber="", model="",
-                      pressureAtmospheric=NA,
-                      processingLog, debug=getOption("oceDebug"))
+as.rsk <- function(time, columns,
+                   filename="", instrumentType="rbr", serialNumber="", model="",
+                   debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
     oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="", unindent=1)
@@ -103,31 +102,21 @@ as.rsk <- function(time, temperature, pressure,
         stop("must give time")
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
-    temperatureGiven <- !missing(temperature)
-    pressureGiven <- !missing(pressure)
-    if (!temperatureGiven && !pressureGiven)
-        stop("must give either temperature or pressure")
     time <- as.POSIXct(time)
-    if (temperatureGiven && length(time) != length(temperature))
-        stop("lengths of 'time' and 'temperature' must match")
-    if (pressureGiven && length(time) != length(pressure))
-        stop("lengths of 'time' and 'pressure' must match")
     res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
     if (nchar(model)) 
         res@metadata$model <-model
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
-    res@metadata$pressureAtmospheric <- pressureAtmospheric
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res@data <- list(time=time)
-    if (pressureGiven)
-        res@data$pressure <- pressure
-    ## FIXME: need something for pressureType (also need to doc all this)
-    if (temperatureGiven)
-        res@data$temperature <- temperature
+    if (!missing(columns)) {
+        for (item in names(columns)) {
+            res@data[[item]] <- columns[[item]]
+        }
+    }
     oceDebug(debug, "} # as.rsk()\n", sep="", unindent=1)
     res
 }
@@ -402,6 +391,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## }
         ## atmospheric pressure
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
+        oceDebug(debug, "first, guess pressureAtmospheric=", pressureAtmospheric, "\n")
         warn <- FALSE
         try({ # need to wrap in try() because this can fail
             deriveDepth <- RSQLite::dbReadTable(con, "deriveDepth")
@@ -411,6 +401,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (warn)
             warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
+        oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
         ## From notes in comments above, it seems necessary to order by
         ## timestamp (tstamp). Ordering does not seem to be an option for
@@ -446,12 +437,20 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                     rval@data$pressureOriginal <- rval@data$pressure
                     rval@data$pressure <- rval@data$pressure - 10.1325
                     ## No need to check patm=FALSE case because object default is "absolute"
-                    rval@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325"
+                    rval@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325 dbar"
+                    oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
             } else if (is.numeric(patm)) {
+                npatm <- length(patm)
+                if (1 < npatm && npatm != length(pressure))
+                    stop("if patm is numeric, its length must equal 1, or the length(pressure).")
+                oceDebug(debug, "patm is numeric, so removing std atmospheric pressure, 10.1325 dbar\n")
                 rval@data$pressureOriginal <- rval@data$pressure
-                rval@data$pressure <- rval@data$pressure - patm[1]
-                rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm[1])
+                rval@data$pressure <- rval@data$pressure - patm
+                if (npatm == 1)
+                    rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm)
+                else 
+                    rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f, %f, ...", patm[1], patm[2])
             } else {
                 stop("patm must be logical or numeric")
             }
@@ -571,12 +570,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         pressure <- as.numeric(d[pcol, look])
         model <- ""
     }
-    rval <- as.rsk(time, temperature, pressure, instrumentType="rbr",
-                      serialNumber=serialNumber, model=model,
-                      pressureAtmospheric=pressureAtmospheric,
-                      filename=filename,
-                      processingLog=paste(deparse(match.call()), sep="", collapse=""),
-                      debug=debug-1)
+    rval <- as.rsk(time, columns(temperature=temperature, pressure=pressure),
+                   instrumentType="rbr",
+                   serialNumber=serialNumber, model=model,
+                   filename=filename,
+                   debug=debug-1)
+    warning("read.rsk() ignoring pressureAtmospheric")
     if (is.logical(patm)) {
         if (patm) {
             rval@data$pressureOriginal <- rval@data$pressure
@@ -591,6 +590,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     } else {
         stop("patm must be logical or numeric")
     }
+    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     rval
 }

@@ -11,7 +11,22 @@
 
 \title{Class to store rsk data}
 
-\description{Class for data stored in the ``Ruskin'' format used by RBR [1].}
+\description{Class for data stored in the ``Ruskin'' format used by RBR [1],
+  with the standard \code{oce} slots, as follows.\itemize{
+    \item{data}{a data table containing the \code{time}, plus other columns
+      for data recorded by the device.}
+    \item{metadata}{a list containing the following items, and perhaps more (e.g.
+      it will contain also \code{pressureType}, if that is a relevant
+      quantity for the object).
+      \describe{
+        \item{\code{header}}{the header itself, as read from the input file.}
+        \item{\code{serialNumber}}{serial number of instrument.}
+        \item{\code{samplePeriod}}{seconds between samples.}
+      }
+    }
+    \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
+  }
+}
 
 \section{Methods}{Data may be accessed as e.g. \code{rsk[["time"]]}, where the
   string could also be \code{"pressure"} or \code{"temperature"}.  Items in

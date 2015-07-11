@@ -15,8 +15,9 @@
        date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
        pressureAtmospheric=NA, waterDepth=NA,
-       sampleInterval=NA, src="")
-}
+       sampleInterval=NA, src="",
+       debug=getOption("oceDebug"))}
+
 \arguments{
 
   \item{salinity}{There are two choices for \code{salinity}. First, it can be a
@@ -79,50 +80,40 @@
   \item{latitude}{optional numerical value containing the latitude in decimal
     degrees, positive in the northern hemisphere. See the note on length, for
     the \code{longitude} argument.}
-
   \item{pressureAtmospheric}{if \code{NA} (the default), then pressure is copied
-    from the \code{\link{rsk-class}} object. Otherwise, if a numerical value,
-    then that value is subtracted from pressure before storing it in the object.
-    See \dQuote{Details}.}
-
+    from the \code{pressure} argument or from the contents of the first argument
+    (as described above for \code{salinity}). Otherwise, if
+    \code{pressureAtmospheric} is a numerical value (a constant or a vector),
+    then it is subtracted from pressure before storing it in the return value.
+    See \dQuote{Details} for special considerations if \code{salinity}
+    is a \code{\link{rsk-class}} object.}
   \item{waterDepth}{optional numerical value indicating the water depth in
     metres. See \dQuote{Details.}}
   \item{sampleInterval}{optional numerical value indicating the time between
     samples in the profile.}
   \item{src}{optional string indicating data source}
+  \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{In the case where the first argument is an \code{oce} object, the
-  conversion is complicated enough to merit discussion. Consider
-  \code{\link{rsk-class}} objects, which may store sea pressure or absolute
-  pressure (the sum of sea pressure and atmospheric pressure), depending on how
-  the object was created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.
+\details{If the first argument is an \code{\link{rsk-class}} object, the
+  pressure it contains may need to adjustment, because \code{rsk} objects may
+  contain either absolute pressure or sea pressure. This adjustment is handled
+  automatically by \code{as.ctd}, by examination of the metadata item named
+  \code{pressureType} (described in the documentation for
+  \code{\link{read.rsk}}). Once the sea pressure is determined, adjustments may
+  be made with the \code{pressureAtmospheric} argument, although in
+  that case it is better considered a pressure adjustment than the atmospheric
+  pressure.
+
+  \code{\link{rsk-class}} objects may store sea pressure or absolute pressure
+  (the sum of sea pressure and atmospheric pressure), depending on how the
+  object was created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.
   However, \code{\link{ctd-class}} objects store sea pressure, which is needed
-  for plotting, calculating density, etc. The decision of whether atmospheric
-  pressure must be subtracted is controlled by the \code{pressureAtmospheric}
-  argument of the present function, along with metadata item named
-  \code{pressureType} in the \code{\link{rsk-class}} object,
-  the value of which is set by \code{\link{read.rsk}} and \code{\link{as.rsk}}.
-  \emph{(BEGIN GARBLED TEXT. I need to think about this, and am just committing
-  to be able to continue work at another location.)}
-  There are several
-  possibilities.
-  (a) If \code{pressureType}
-  is a
-  string beginning with \code{"sea"}, then the pressure data column is copied
-  unaltered to the \code{ctd} object, regardless of the value of
-  the \code{pressureAtmospheric} argument of the present function.  However, if \code{pressureType} is
-  \code{"absolute"}, then atmospheric pressure must be removed, and there are
-  two choices for how this is done. If \code{pressureAtmospheric} is \code{NA}
-  (the default), then the atmospheric pressure recorded in the \code{rsk} file
-  is used. However, if \code{pressureAtmospheric} is a numerical value, then
-  that value is the pressure to be removed. All of this may sound more
-  complicated than it actually is. A common method of working is to write
-  \code{plot(as.ctd(read.oce("file.rsk")))}, for example; this relies upon the
-  ability of \code{\link{read.oce}} to realize that the data file is in RSK
-  format, and the ability of \code{as.ctd} to remove the atmospheric pressure.
-  \emph{(END GARBLED TEXT)}
-}
+  for plotting, calculating density, etc. This poses no difficulities, however,
+  because \code{as.ctd} automatically converts absolute pressure to sea
+  pressure, if the metadata in the \code{\link{rsk-class}} object indicates that
+  this is appropriate. Further alteration of the pressure can be accomplished
+  with the \code{pressureAtmospheric} argument, as noted above.}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"} (for details, see
   \code{\link{read.ctd}}).}
