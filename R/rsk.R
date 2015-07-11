@@ -570,12 +570,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         pressure <- as.numeric(d[pcol, look])
         model <- ""
     }
-    rval <- as.rsk(time, columns(temperature=temperature, pressure=pressure),
+    rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
                    instrumentType="rbr",
                    serialNumber=serialNumber, model=model,
                    filename=filename,
                    debug=debug-1)
-    warning("read.rsk() ignoring pressureAtmospheric")
     if (is.logical(patm)) {
         if (patm) {
             rval@data$pressureOriginal <- rval@data$pressure
