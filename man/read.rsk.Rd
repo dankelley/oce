@@ -86,14 +86,14 @@
 \value{An object of \code{\link{rsk-class}}.}
 
 \examples{
-\dontrun{
 library(oce)
 ## A CTD-style rsk
-rsk <- read.rsk("cast4.rsk")
-patm <- rsk[["pressure"]][1]
-ctd <- as.ctd(rsk, pressureAtmospheric=patm)
+file <- system.file("extdata", "sample.rsk.gz", package="oce")
+tmp <- tempfile(fileext=".rsk")
+R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
+rsk <- read.rsk(tmp)
+ctd <- as.ctd(rsk)
 plot(ctdTrim(ctd))
-}
 }
 
 \seealso{The documentation for \code{\link{rsk-class}} explains the
