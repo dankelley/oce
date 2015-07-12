@@ -1,3 +1,4 @@
+## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
 ## The tests below employ the UL,UR,LL,LR bounding box for the two Landsat-8
@@ -43,29 +44,32 @@ library(oce)
 ## CORNER_LR_PROJECTION_Y_PRODUCT = 4820400.000
 ## UTM_ZONE = 20
 
-
 longitude <- c(-40.27900, -38.22680, -40.28255, -38.22465,
                -64.12716, -61.13114, -64.08660, -61.19836)
 latitude <- c(-3.28874,-3.28927, -5.39159, -5.39245,
-               45.66729, 45.65756, 43.53138, 43.52235)
+              45.66729, 45.65756, 43.53138, 43.52235)
 easting <- c(357900.000, 585900.000, 357900.000, 585900.000,
              412200.000, 645600.000, 412200.000, 645600.000)
 northing <- c(-363600.000, -363600.000, -596100.000, -596100.000,
               5057700.000, 5057700.000, 4820400.000, 4820400.000)
 zone <- c(rep(24, 4), rep(20, 4))
 
-## Projections: utm
-lonlat <- utm2lonlat(easting, northing, zone, "N")
-stopifnot(all.equal(lonlat$longitude, longitude, tolerance=1e-5))
-stopifnot(all.equal(lonlat$latitude, latitude, tolerance=1e-5))
-utm <- lonlat2utm(lonlat$longitude, lonlat$latitude)
-stopifnot(all.equal(utm$easting, easting, tolerance=1e-5))
-stopifnot(all.equal(utm$northing, northing, tolerance=1e-5))
-stopifnot(all.equal(utm$zone, zone, tolerance=1e-5))
+context("map calculations")
 
-## "cs" is near Cape Split, in the Bay of Fundy
-cs <- list(longitude=-64.4966,latitude=45.3346)
-xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
-cs2 <- map2lonlat(xy$x, xy$y)
-stopifnot(all.equal(cs, cs2, tolerance=1e-6)) # on 64bit machine can go to 1e-15
+test_that("utm2lonlat() on some points known from Landsat metadata", {
+          lonlat <- utm2lonlat(easting, northing, zone, "N")
+          expect_equal(lonlat$longitude, longitude, tolerance=1e-5)
+          expect_equal(lonlat$latitude, latitude, tolerance=1e-5)
+          utm <- lonlat2utm(lonlat$longitude, lonlat$latitude)
+          expect_equal(utm$easting, easting, tolerance=1e-5)
+          expect_equal(utm$northing, northing, tolerance=1e-5)
+          expect_equal(utm$zone, zone, tolerance=1e-5)
+              })
+test_that("lonlat2map()", {
+          ## "cs" is near Cape Split, in the Bay of Fundy
+          cs <- list(longitude=-64.4966,latitude=45.3346)
+          xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
+          cs2 <- map2lonlat(xy$x, xy$y)
+          expect_equal(cs, cs2, tolerance=1e-6) # on 64bit machine can go to 1e-15
+              })
 
