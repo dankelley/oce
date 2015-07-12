@@ -65,6 +65,7 @@ test_that("utm2lonlat() on some points known from Landsat metadata", {
           expect_equal(utm$northing, northing, tolerance=1e-5)
           expect_equal(utm$zone, zone, tolerance=1e-5)
               })
+
 test_that("lonlat2map()", {
           ## "cs" is near Cape Split, in the Bay of Fundy
           cs <- list(longitude=-64.4966,latitude=45.3346)
@@ -73,3 +74,19 @@ test_that("lonlat2map()", {
           expect_equal(cs, cs2, tolerance=1e-6) # on 64bit machine can go to 1e-15
               })
 
+context("geod calculations")
+
+test_that("geodDist()", {
+          d <- geodDist(10, 45, 10, 46)
+          expect_equal(d, 111.1415, tolerance=1e-4)
+
+          xy <- geodXy(0,46,0,45)/1000
+          expect_equal(xy$x,     0, tolerance=1e-4)
+          expect_equal(xy$y, 111.1, tolerance=1e-3)
+
+          f <- coriolis(45)
+          expect_equal(f, 1.031261e-4, tolerance=1e-6)
+
+          g <- gravity(45)
+          expect_equal(g, 9.8, tolerance=1e-2)
+              })
