@@ -5,8 +5,8 @@
 
 \title{Read a rsk file}
 
-\description{Read a rsk file, e.g. as produced by an RBR logger,
-  producing an object of class \code{rsk}.}
+\description{Read an rsk file, e.g. as produced by an RBR logger, producing an
+  object of class \code{rsk}.}
 
 \usage{read.rsk(file, from=1, to, by=1, type,
             tz=getOption("oceTz", default="UTC"), patm=FALSE,
