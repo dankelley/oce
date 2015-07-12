@@ -88,12 +88,14 @@
 \examples{
 library(oce)
 ## A CTD-style rsk
-file <- system.file("extdata", "sample.rsk.gz", package="oce")
-tmp <- tempfile(fileext=".rsk")
-R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
-rsk <- read.rsk(tmp)
-ctd <- as.ctd(rsk)
-plot(ctdTrim(ctd))
+if (requireNamespace("R.utils")) {
+  file <- system.file("extdata", "sample.rsk.gz", package="oce")
+  tmp <- tempfile(fileext=".rsk")
+  R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
+  rsk <- read.rsk(tmp)
+  ctd <- as.ctd(rsk)
+  plot(ctdTrim(ctd))
+}
 }
 
 \seealso{The documentation for \code{\link{rsk-class}} explains the
