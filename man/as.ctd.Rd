@@ -88,7 +88,9 @@
     See \dQuote{Details} for special considerations if \code{salinity}
     is a \code{\link{rsk-class}} object.}
   \item{waterDepth}{optional numerical value indicating the water depth in
-    metres. See \dQuote{Details.}}
+    metres. This is different from the maximum recorded pressure, although
+    the latter is used by some oce functions as a guess on water depth, the
+    most important example being \code{\link{plot.section}}.}
   \item{sampleInterval}{optional numerical value indicating the time between
     samples in the profile.}
   \item{src}{optional string indicating data source}
