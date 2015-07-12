@@ -1,4 +1,4 @@
-% vim:textwidth=100:expandtab:shiftwidth=2:softtabstop=2
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{landsatAdd}
 
 \alias{landsatAdd}
@@ -20,14 +20,17 @@
     information, or a higher value for more debugging.}
 }
 
-\details{This may be used to add new ``bands'' to a landsat object.  These are stored differently
-  than the real bands.  Real bands are stored in one or two byte (raw)  matrices (see
-  \code{\link{landsat-class}}) but added bands are conventional numerical matrices.  See examples.}
+\details{This may be used to add new ``bands'' to a landsat object.  These are
+  stored differently than the real bands.  Real bands are stored in one or two
+  byte (raw)  matrices (see \code{\link{landsat-class}}) but added bands are
+  conventional numerical matrices.  See examples.}
   
-\value{An object of \code{\link[base]{class}} \code{"landsat"}, with a new ``band''.}
+\value{An object of \code{\link[base]{class}} \code{"landsat"}, with a new
+  ``band''.}
 
-\seealso{The documentation for \code{\link{landsat-class}} explains the structure
-    of landsat objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{landsat-class}} explains the
+  structure of landsat objects, and also outlines the other functions dealing
+  with them.}
 
 \examples{
 \dontrun{

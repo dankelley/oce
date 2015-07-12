@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{as.lisst}
 
 \alias{as.lisst}
@@ -21,18 +22,18 @@
 }
 
 \details{If \code{data} contains fewer than 42 columns, an error is reported.
-    If it contains more than 42 columns, only the first 42 are used.  This is
-    used by \code{\link{read.lisst}}, the documentation on which explains the
-    meanings of the columns.}
+  If it contains more than 42 columns, only the first 42 are used.  This is used
+  by \code{\link{read.lisst}}, the documentation on which explains the meanings
+  of the columns.}
 
-\value{An object of \code{\link[base]{class}} \code{"lisst"} (for details,
-  see \code{\link{read.lisst}}).}
+\value{An object of \code{\link[base]{class}} \code{"lisst"} (for details, see
+  \code{\link{read.lisst}}).}
 
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure
-    of LISSTobjects, and also outlines the other functions dealing with them.}
+  of LISSTobjects, and also outlines the other functions dealing with them.}
 
 \references{A users's manual for the LISST-100 instrument is available at the
-    manufacturer's website \url{http://www.sequoiasci.com}.}
+  manufacturer's website \url{http://www.sequoiasci.com}.}
 
 \author{Dan Kelley}
 
