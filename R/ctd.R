@@ -178,6 +178,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         m <- o@metadata
         dnames <- names(d)
         mnames <- names(m)
+        ship <- m$ship
+        cruise <- m$cruise
+        station <- m$station
+        scientist <- m$station
         filename <- m$filename
         model <- m$model
         serialNumber <- m$serialNumber
@@ -235,6 +239,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         ## copy relevant metadata
         res@metadata$filename <- o@metadata$filename
+        res@metadata$ship <- o@metadata$ship
+        res@metadata$cruise <- o@metadata$cruise
+        res@metadata$station <- o@metadata$station
+        res@metadata$scientist <- o@metadata$scientist
         res@metadata$conductivityUnit <- conductivityUnit
         res@metadata$serialNumber <- o@metadata$serialNumber
 
