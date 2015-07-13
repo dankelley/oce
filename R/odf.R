@@ -170,7 +170,6 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
-    message("ship: '", ship, "'")
     metadata <- list(header=NULL, # FIXME
                      type=type,        # only odt
                      model=model,      # only odt
