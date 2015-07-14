@@ -2,7 +2,7 @@
 useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b@data))
-        stop("'from' does not have any heading data (in b@data$heading)")
+        stop("'b' does not have any heading data (in b@data$heading)")
     if (!"time" %in% names(b@data))
         stop("'b' does not have any time data (in b@data$time)")
     if (!"heading" %in% names(g@data))
@@ -12,7 +12,7 @@ useHeading <- function(b, g, add=0)
     res <- b
     t0 <- as.numeric(g@data$time[1])
     if (is.na(t0))
-        stop("need first element of from@data$time to be non-NA")
+        stop("need first element of g@data$time to be non-NA")
     b.t <- as.numeric(b@data$time) - t0 # FIXME: what if heading in tsSlow?
     g.t <- as.numeric(g@data$time) - t0 # FIXME: what if heading in tsSlow?
     res@data$heading <- approx(x=g.t, y=g@data$heading, xout=b.t)$y + add
