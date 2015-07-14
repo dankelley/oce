@@ -1,6 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-context("reading rsk files")
+context("Reading rsk files")
 file <- system.file("extdata", "sample.rsk.gz", package="oce")
 
 ## There are 6 tests in all, stemming from 3 choices for read.rsk() and 2

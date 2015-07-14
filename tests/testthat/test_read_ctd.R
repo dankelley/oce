@@ -1,7 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 
 library(oce)
-context("reading ctd files")
+context("Reading ctd files")
 
 ## A Dalhousie-produced cnv file.
 ##

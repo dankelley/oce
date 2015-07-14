@@ -56,6 +56,8 @@ setMethod(f="plot",
                                       lts=33, voltage=34, aux=35, lrs=36,
                                       pressure=37, temperature=38, transmission=41, beam=42))
               oceDebug(debug, "which:", which, "\n")
+              opar <- par(no.readonly = TRUE)
+              if (length(which) > 1) on.exit(par(opar))
               par(mfrow=c(nw, 1))
               time <- x[["time"]]
               for (w in 1:nw) {

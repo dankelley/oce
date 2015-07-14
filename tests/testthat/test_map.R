@@ -1,7 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("map calculations")
+context("Map calculations")
 
 test_that("utm2lonlat() on some points known from Landsat metadata", {
           longitude <- c(-40.27900, -38.22680, -40.28255, -38.22465,
