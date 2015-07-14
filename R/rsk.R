@@ -154,7 +154,10 @@ setMethod(f="plot",
               which <- whichNew # now it's numeric
               if (any(which==0))
                   which <- 0 # "timeseries" overrides any others
-              if (length(which) == 1 && which==0) {
+              opar <- par(no.readonly = TRUE)
+              on.exit(par(opar))
+              lw <- length(which)
+              if (lw == 1 && which==0) {
                   names <- names(x@data)
                   if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
                   names <- names[names != "time"]
