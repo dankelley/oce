@@ -154,7 +154,10 @@ setMethod(f="plot",
               which <- whichNew # now it's numeric
               if (any(which==0))
                   which <- 0 # "timeseries" overrides any others
-              if (length(which) == 1 && which==0) {
+              opar <- par(no.readonly = TRUE)
+              on.exit(par(opar))
+              lw <- length(which)
+              if (lw == 1 && which==0) {
                   names <- names(x@data)
                   if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
                   names <- names[names != "time"]
@@ -304,7 +307,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
              ", by=", by,
              ", type=", if(missing(type)) "(missing)" else type,
              ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
-    file <- fullFilename(file)
+    ## file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
         if (length(grep(".rsk$", file, ignore.case=TRUE))) 

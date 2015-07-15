@@ -152,6 +152,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
     waterDepth <- as.numeric(findInHeader("SOUNDING", lines))
+    if (is.null(waterDepth))
+        waterDepth <- NA
     station <- findInHeader("EVENT_NUMBER", lines)
 
     ## water depth could be missing or e.g. -999

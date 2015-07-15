@@ -5,8 +5,8 @@
 
 \title{Read a rsk file}
 
-\description{Read a rsk file, e.g. a temperature-depth recorder, producing an
-  object of class \code{rsk}.} 
+\description{Read an rsk file, e.g. as produced by an RBR logger, producing an
+  object of class \code{rsk}.}
 
 \usage{read.rsk(file, from=1, to, by=1, type,
             tz=getOption("oceTz", default="UTC"), patm=FALSE,
@@ -86,13 +86,15 @@
 \value{An object of \code{\link{rsk-class}}.}
 
 \examples{
-\dontrun{
 library(oce)
 ## A CTD-style rsk
-rsk <- read.rsk("cast4.rsk")
-patm <- rsk[["pressure"]][1]
-ctd <- as.ctd(rsk, pressureAtmospheric=patm)
-plot(ctdTrim(ctd))
+if (requireNamespace("R.utils")) {
+  file <- system.file("extdata", "sample.rsk.gz", package="oce")
+  tmp <- tempfile(fileext=".rsk")
+  R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
+  rsk <- read.rsk(tmp)
+  ctd <- as.ctd(rsk)
+  plot(ctdTrim(ctd))
 }
 }
 

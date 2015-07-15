@@ -4,7 +4,7 @@
 
 \title{Geodesic distance on earth}
 
-\description{ Compute geodesic distance on surface of earth.}
+\description{Compute geodesic distance on surface of earth.}
 
 \usage{geodDist(lon1, lat1=NULL, lon2=NULL, lat2=NULL, alongPath=FALSE)}
 

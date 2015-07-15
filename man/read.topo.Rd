@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.topo}
 
 \alias{read.topo}
@@ -15,11 +16,11 @@
 }
 
 \value{An object of type \code{\link[base]{class}} \code{"topo"},
-  which is a list containing the following items.
-  \item{data}{a data frame containing \code{lat},
-    \code{lon}, and \code{z}}
-  \item{metadata}{a list containing the source filename}
-  \item{processingLog}{a processingLog, in the standard \code{oce} format.}
+  which has the following slots.
+  \item{\code{data}}{: a data frame containing \code{lat}, \code{lon}, and
+    \code{z}}
+  \item{\code{metadata}}{: a list containing the source filename}
+  \item{\code{processingLog}}{: a log, in the standard \code{oce} format.}
 }
 
 \examples{
@@ -31,8 +32,8 @@ plot(topographyMaritimes)
 }
 
 \references{[1] NOAA website that provides datasets:
-    \url{http://maps.ngdc.noaa.gov/viewers/wcs-client} with the \code{ArcGIS
-        ASCII Grid} menu item selected.}
+  \url{http://maps.ngdc.noaa.gov/viewers/wcs-client} with the \code{ArcGIS ASCII
+    Grid} menu item selected.}
 
 \author{Dan Kelley}
 

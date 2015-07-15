@@ -162,7 +162,7 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
   they prove to have been idiosyncratic features of the particular files used in
   early development of \code{oce}.)
 
-  \item{data}{a data table containing the profile data.  The column names are
+  \item{\code{data}}{: a list containing the profile data.  The column names are
     discovered from the header, and may differ from file to file.  For example,
     some CTD instruments may have a fluorometer connected, others may not.  The
     order of the columns may vary from case to case, and so it is important to
@@ -171,7 +171,7 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
     \code{data$sigmatheta}. (\eqn{\sigma_\theta}{sigma-theta} is calculated
     using \code{\link{swSigmaTheta}}.)}
 
-  \item{metadata}{a list containing the following items
+  \item{\code{metadata}}{: a list containing the following items
     \describe{
       \item{\code{header}}{the header itself, normally containing
 	several dozen lines of information.}
@@ -198,7 +198,8 @@ read.ctd.itp(file, columns=NULL, station=NULL, missing.value=-999,
 	seconds.}
     }
   }
-  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
+  \item{\code{processingLog}}{: a log of processing, in the standard \code{oce}
+    format.}
 }
 
 \seealso{The documentation for \code{\link{ctd-class}} explains the structure of

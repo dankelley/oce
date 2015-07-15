@@ -27,7 +27,7 @@
 
 \value{Conductivity ratio [unitless], i.e. the ratio of conductivity to the
     conductivity at salinity=35, temperature=15 and pressure=0, which has
-    numerical value 42.91754.}
+    numerical value 42.9140.}
 
 \seealso{For thermal (as opposed to electrical) conductivity, see
     \code{\link{swThermalConductivity}}. For computation of salinity from

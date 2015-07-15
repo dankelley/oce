@@ -132,7 +132,7 @@ setMethod(f="plot",
               which2 <- oce.pmatch(which,
                                    list(temperature=1, salinity=2, TS=3, u=4, v=5, nitrate=6, fluoresence=7))
               oceDebug(debug, "which2:", which2, "\n")
-              ##on.exit(par(opar))
+              if (length(which) > 1) on.exit(par(opar))
               par(mgp=mgp, mar=mar)
               adornLength <- length(adorn)
               if (adornLength < nw) {

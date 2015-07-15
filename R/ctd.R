@@ -8,7 +8,11 @@ setMethod(f="initialize",
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
+              names <- names(.Object@data)
+              .Object@metadata$names <- names
+              .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               .Object@metadata$filename <- filename
+              .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
@@ -174,6 +178,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         m <- o@metadata
         dnames <- names(d)
         mnames <- names(m)
+        ship <- m$ship
+        cruise <- m$cruise
+        station <- m$station
+        scientist <- m$station
         filename <- m$filename
         model <- m$model
         serialNumber <- m$serialNumber
@@ -229,7 +237,15 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    conductivity=conductivity)
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
+        ## copy relevant metadata
+        res@metadata$filename <- o@metadata$filename
+        res@metadata$ship <- o@metadata$ship
+        res@metadata$cruise <- o@metadata$cruise
+        res@metadata$station <- o@metadata$station
+        res@metadata$scientist <- o@metadata$scientist
         res@metadata$conductivityUnit <- conductivityUnit
+        res@metadata$serialNumber <- o@metadata$serialNumber
+
         if ("scan" %in% dnames) res@data$scan <- d$scan
         if ("time" %in% dnames) res@data$time <- d$time
         if ("quality" %in% dnames) res@data$quality <- d$quality
@@ -355,11 +371,11 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         data[data==missingValue] <- NA
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (is.na(waterDepth)) {
-        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        res@processingLog <- processingLogAppend(res@processingLog,
-                                                 "inferred water depth from maximum pressure")
-    }
+    ##20150712 if (is.na(waterDepth)) {
+    ##20150712     waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+    ##20150712     res@processingLog <- processingLogAppend(res@processingLog,
+    ##20150712                                              "inferred water depth from maximum pressure")
+    ##20150712 }
     names <- names(data)
     labels <- paste(toupper(substring(names,1,1)),substring(names,2),sep="")
     if (length(longitude) != length(latitude))

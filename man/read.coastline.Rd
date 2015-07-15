@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.coastline}
 
 \alias{read.coastline}
@@ -33,8 +34,8 @@ read.coastline.openstreetmap(file, lonlim=c(-180,180), latlim=c(-90,90),
     it provides is better for normal calls by a user.)}
 }
 
-\details{The S and R formats are identical, and consist of two columns,
-  lon and lat, with land-jump segments separated by lines with two NAs.
+\details{The S and R formats are identical, and consist of two columns, lon and
+  lat, with land-jump segments separated by lines with two NAs.
 
 The MapGen format is of the form
 \preformatted{
@@ -47,7 +48,7 @@ BUG: the 'arc/info ungenerate' format is not yet understood.
 
 \value{An object of \code{\link[base]{class}} \code{"coastline"}, 
 which is a \code{\link[base]{list}} containing
-  \item{data}{a list containing 
+  \item{\code{data}}{: a list containing 
     \describe{
       \item{longitude}{the longitude in decimal degrees positive east of
 	Greenwich.}
@@ -55,13 +56,14 @@ which is a \code{\link[base]{list}} containing
 	the equator.}
     }
   }
-  \item{metadata}{a NULL item that may be used in a future version.}
-  \item{processingLog}{A processingLog of processing, in the standard \code{oce} format.}
+  \item{\code{metadata}}{: a NULL item that may be used in a future version.}
+  \item{\code{processingLog}}{: a log of processing, in the standard \code{oce}
+    format.}
 }
 
 \seealso{The documentation for \code{\link{coastline-class}} explains the
-    structure of coastline objects, and also outlines the other functions
-    dealing with them.}
+  structure of coastline objects, and also outlines the other functions dealing
+  with them.}
 
 \examples{
 \dontrun{

@@ -36,7 +36,7 @@
 
 }
 
-\details{ The \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are
+\details{The \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are
     described in the documentation for \code{\link{ctdDecimate}}, which is used
     to do this processing.  The default \code{"approx"} method is best for
     bottle data, the \code{"boxcar"} is best for ctd data, and the \code{"lm"}

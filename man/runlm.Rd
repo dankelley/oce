@@ -36,7 +36,8 @@
     scalar length scale \code{L}.  If \code{deriv=0}, a vector of values is
     returned, and if \code{deriv=1}, a vector of derivatives is returned.}
     
-\examples{ library(oce)
+\examples{
+library(oce)
 
 # Case 1: smooth a noisy signal
 x <- 1:100

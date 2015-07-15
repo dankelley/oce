@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.lisst}
 
 \alias{read.lisst}
@@ -17,17 +18,18 @@
   \item{latitude}{latitude of observation (stored in metadata)}
 }
 
-\details{The file should contain 42 columns, with no header.  If there are
-    fewer than 42 columns, an error results.  If there are more, only the first
-    42 are used.  Note that \code{\link{read.oce}} can recognize LISST files by
-    their having a name ending in \code{".asc"} and by having 42 elements on
-    the first line.  Even so, it is preferred to use the present function,
-    because it gives the opportunity to specify the year and timezone, so that
-    times can be calculated properly.}
+\details{The file should contain 42 columns, with no header.  If there are fewer
+  than 42 columns, an error results.  If there are more, only the first 42 are
+  used.  Note that \code{\link{read.oce}} can recognize LISST files by their
+  having a name ending in \code{".asc"} and by having 42 elements on the first
+  line.  Even so, it is preferred to use the present function, because it gives
+  the opportunity to specify the year and timezone, so that times can be
+  calculated properly.}
 
-\value{An object of \code{\link[base]{class}} \code{"lisst"}, which is a
-  list with slots as detailed below. 
-  \item{data}{a data frame containing columns named \code{C1} to \code{C32}, 
+\value{An object of \code{\link[base]{class}} \code{"lisst"}, which is a list
+  with slots as detailed below. 
+
+  \item{\code{data}}{: a list containing columns named \code{C1} to \code{C32}, 
       which are volume concentrations (in microliters per liter) for size
       classes 1 through 32, along with
       \code{lts} (laser transmission sensor, column 33),
@@ -46,10 +48,12 @@
           or the present year, if the year was not given, and using timezone
           \code{tz}.}
   }
-  \item{metadata}{a list containing the following items \code{filename}, the
-      name of the file holding the data, \code{latitude}, the latitude of the
-      observations, and \code{longitude}, the longitude of the observations.}
-  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
+  \item{\code{metadata}}{: a list containing the following items
+    \code{filename}, the name of the file holding the data, \code{latitude}, the
+    latitude of the observations, and \code{longitude}, the longitude of the
+    observations.}
+  \item{\code{processingLog}}{: a log of processing, in the standard \code{oce}
+    format.}
 }
 
 
