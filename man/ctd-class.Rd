@@ -98,7 +98,7 @@
   Low-level manipulation may be done with functions such as
   \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
   many of the contents of CTD objects may be altered with the \code{[[]]} scheme
-  discussed above, and skilled uses may also manipulate the contents directly.
+  discussed above, and skilled users may also manipulate the contents directly.
 
 }
 
