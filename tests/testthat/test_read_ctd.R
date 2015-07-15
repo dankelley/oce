@@ -84,7 +84,7 @@ test_that("ODF file", {
           expect_equal(d4[["ship"]], "Launch  Sigma-T")
           expect_equal(d4[["cruise"]], "Scotian Shelf")
           expect_equal(d4[["scientist"]], "Glen Harrison")
-          expect_equal(d4[["waterDepth"]], NA)
+          expect_null(d4[["waterDepth"]])
           expect_equal(d4[["latitude"]], 44.2667)
           expect_equal(d4[["longitude"]], -63.3167)
           expect_equal(d4[['pressure']][1:3], c(1.0,1.5,2.0))

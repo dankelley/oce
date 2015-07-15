@@ -2,7 +2,7 @@
 
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,conductivity,filename="") {
+          definition=function(.Object,pressure,salinity,temperature,conductivity) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
@@ -11,12 +11,12 @@ setMethod(f="initialize",
               names <- names(.Object@data)
               .Object@metadata$names <- names
               .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
-              .Object@metadata$filename <- filename
+              ##.Object@metadata$filename <- filename
               .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
-              .Object@metadata$waterDepth <- NA
+              #.Object@metadata$waterDepth <- NA
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
@@ -161,12 +161,12 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    scan, time, other,
                    missingValue,
                    quality,
-                   filename="", type="", model="", serialNumber="",
-                   ship="", scientist="", institute="", address="", cruise="", station="",
-                   date="", startTime="", recovery="",
+                   filename, type, model, serialNumber,
+                   ship, scientist, institute, address, cruise, station,
+                   date, startTime, recovery,
                    longitude=NA, latitude=NA,
-                   pressureAtmospheric=NA, waterDepth=NA,
-                   sampleInterval=NA, src="",
+                   pressureAtmospheric, waterDepth,
+                   sampleInterval, src,
                    debug=getOption("oceDebug"))
 {
     if (missing(salinity)) stop("must provide salinity")
@@ -182,7 +182,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         cruise <- m$cruise
         station <- m$station
         scientist <- m$station
-        filename <- m$filename
+        filename <- if ("filename" %in% mnames) m$filename else ""
         model <- m$model
         serialNumber <- m$serialNumber
         sampleInterval <- m$sampleInterval
@@ -204,7 +204,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                 oceDebug(debug, "metadata$pressureType is not NULL\n")
                 if ("sea" != substr(o@metadata$pressureType, 1, 3)) {
                     oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
-                    if (is.na(m$pressureAtmospheric)) {
+                    if (!("pressureAtmospheric" %in% mnames)) {
                         oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
                         pressure <- pressure - 10.1325
                     } else {
@@ -216,7 +216,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                 }
             }
         }
-        if (!is.na(pressureAtmospheric)) {
+        if (!missing(pressureAtmospheric)) {
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
                 stop("length(pressureAtmospheric) must be 1 or length(pressure)")
@@ -238,13 +238,13 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         ## copy relevant metadata
-        res@metadata$filename <- o@metadata$filename
-        res@metadata$ship <- o@metadata$ship
-        res@metadata$cruise <- o@metadata$cruise
-        res@metadata$station <- o@metadata$station
-        res@metadata$scientist <- o@metadata$scientist
-        res@metadata$conductivityUnit <- conductivityUnit
-        res@metadata$serialNumber <- o@metadata$serialNumber
+        if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
+        if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber
+        if ("ship" %in% mnames) res@metadata$ship <- o@metadata$ship
+        if ("cruise" %in% mnames) res@metadata$cruise <- o@metadata$cruise
+        if ("station" %in% mnames) res@metadata$station <- o@metadata$station
+        if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
+        if ("conductivityUnit" %in% mnames) res@metadata$conductivityUnit <- conductivityUnit
 
         if ("scan" %in% dnames) res@data$scan <- d$scan
         if ("time" %in% dnames) res@data$time <- d$time
@@ -309,7 +309,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     pressure <- as.vector(pressure)
-    if (!is.na(pressureAtmospheric))
+    if (!missing(pressureAtmospheric))
         pressure <- pressure - pressureAtmospheric
     haveSA <- !missing(SA)
     haveCT <- !missing(CT)
@@ -382,27 +382,35 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         stop("lengths of longitude and latitude must match")
     if (1 < length(longitude) && length(longitude) != length(salinity))
         stop("lengths of salinity and longitude must match")
-    metadata <- list(header=NULL,
-                     type=type, model=model, filename=filename, serialNumber=serialNumber,
-                     filename.orig=filename,
-                     systemUploadTime=NULL,
-                     ship=ship,scientist=scientist,institute=institute,address=address,cruise=cruise,station=station,
-                     date=date, startTime=startTime, recovery=recovery,
-                     waterDepth=waterDepth,
-                     sampleInterval=sampleInterval,
-                     names=names, labels=labels,
-                     src=src)
+    ## FIXME: should sampleInterval be a default?
+    ##metadata <- list(sampleInterval=sampleInterval, names=names, labels=labels)
+    res@metadata$names <- names
+    res@metadata$labels <- labels
+    if (!missing(filename)) res@metadata$filename <- filename
+    if (!missing(ship)) res@metadata$ship <- ship
+    if (!missing(scientist)) res@metadata$scientist <- scientist
+    if (!missing(institute)) res@metadata$institute <- institute
+    if (!missing(address)) res@metadata$address <- address
+    if (!missing(cruise)) res@metadata$cruise <- cruise
+    if (!missing(station)) res@metadata$station <- station
+    if (!missing(date)) res@metadata$date <- date
+    if (!missing(startTime)) res@metadata$startTime <- startTime
+    if (!missing(recovery)) res@metadata$recovery <- recovery
+    if (!missing(type)) res@metadata$type <- type
+    if (!missing(model)) res@metadata$model <- model
+    if (!missing(serialNumber)) res@metadata$serialNumber <- serialNumber
+    ## if (!missing(systemUploadTime)) metadata$systemUploadTime <- systemUploadTime
+    if (!missing(src)) res@metadata$src <- src
     ## If lon and lat are vectors, place in data, with averages in metadata.
     if (length(latitude) == 1) {
-        metadata$longitude <- longitude
-        metadata$latitude <- latitude
+        res@metadata$longitude <- longitude
+        res@metadata$latitude <- latitude
     } else {
         if (length(latitude) != length(temperature))
             stop("lengths of latitude and temperature must match")
         data$longitude <- longitude
         data$latitude <- latitude
     }
-    res@metadata <- metadata
     res@data <- data
     oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     res
@@ -919,7 +927,8 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
         }
     }
     waterDepthWarning <- FALSE
-    if (inferWaterDepth && !is.finite(res@metadata$waterDepth)) {
+    #if (inferWaterDepth && !is.finite(res@metadata$waterDepth)) {
+    if (inferWaterDepth) {
         res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
         waterDepthWarning <- TRUE
     }
@@ -936,7 +945,6 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             warning("should add note about trimming depth inversions to processingLog")
         }
     }
-    res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE) # the bad data sometimes have high p
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (waterDepthWarning)
         res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")

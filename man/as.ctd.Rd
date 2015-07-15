@@ -10,12 +10,12 @@
        scan, time, other,
        missingValue,
        quality, 
-       filename="", type="", model="", serialNumber="",
-       ship="", scientist="", institute="", address="", cruise="", station="", 
-       date="", startTime="", recovery="",
+       filename, type, model, serialNumber,
+       ship, scientist, institute, address, cruise, station, 
+       date, startTime, recovery,
        longitude=NA, latitude=NA,
-       pressureAtmospheric=NA, waterDepth=NA,
-       sampleInterval=NA, src="",
+       pressureAtmospheric, waterDepth,
+       sampleInterval, src,
        debug=getOption("oceDebug"))}
 
 \arguments{
