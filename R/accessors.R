@@ -79,6 +79,42 @@ extract <- function(x, names)
     rval
 }
 
+#' Get a data item from an oce object
+#'
+#' @details
+#' Get a named item from the object, returning a provided default if not found.
+#'
+#' @param object An oce object.
+#' @param name Name of the desired item.
+#' @param default A default value to be returned if \code{name} is not found
+#' @return The desired item, or the default, if the item is not present in the data slot.
+oceData <- function(object, name, default=NA)
+{
+    if (!inherits(object, "oce"))
+        stop("oceData() only works for oce objects")
+    if (missing(name))
+        stop("'name' must be supplied")
+    if (name %in% names(object@data)) object@data[name] else default
+}
+
+#' Get a metadata item from an oce object
+#'
+#' @details
+#' Get a named item from the object, returning a provided default if not found.
+#'
+#' @param object An oce object.
+#' @param name Name of the desired item.
+#' @param default A default value to be returned if \code{name} is not found
+#' @return The desired item, or the default, if the item is not present in the metadata slot.
+oceMetadata <- function(object, name, default=NA)
+{
+    if (!inherits(object, "oce"))
+        stop("oceMetadata() only works for oce objects")
+    if (missing(name))
+        stop("'name' must be supplied")
+    if (name %in% names(object@metadata)) object@metadata[name] else default
+}
+
 header <- function(x)
 {
     if (!inherits(x, "oce"))
