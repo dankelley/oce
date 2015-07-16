@@ -536,7 +536,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (i == 1) {
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
-                            navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL                      
+                            navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL
+                            ## slongitude is "first longitude" etc
+                            avgSpeed <- trackTrue <- trackMagnetic <- speedMadeGood <- directionMadeGood <- NULL
                         } else {
                             if (!isVMDAS)
                                 badVMDAS <- c(badVMDAS, i)
@@ -555,6 +557,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             eNavTime <- tmpTime + readBin(buf[o+22:25], 'integer', n=4, size=4, endian='little')/10000
                             elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
                             elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
+                            ## FIXME: DK: I need to figure out the difference between eNavTime and navTime
                             tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
                                                    as.integer(buf[o+57]), #month
                                                    as.integer(buf[o+56]), #day
@@ -562,6 +565,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                    tz=tz)
                             navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=4, size=4, endian='little')/100)
                             navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
+                            avgSpeed <- c(avgSpeed, 0.001*readBin(buf[o+34:35], 'integer', n=1, size=2, endian='little'))
+                            trackTrue <- c(trackTrue, readBin(buf[o+36:37], 'integer', n=1, size=2, endian='little'))
+                            trackMagnetic <- c(trackMagnetic, readBin(buf[o+38:39], 'integer', n=1, size=2, endian='little'))
+                            speedMadeGood <- c(speedMadeGood, 0.001*readBin(buf[o+40:41], 'integer', n=1, size=2, endian='little'))
+                            directionMadeGood <- c(directionMadeGood, 0.0055*readBin(buf[o+42:43], 'integer', n=1, size=2, endian='little'))
                         }
                     }
                     if (monitor) {
@@ -779,7 +787,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             slongitude=slongitude,
                             slatitude=slatitude,
                             elongitude=elongitude,
-                            elatitude=elatitude)
+                            elatitude=elatitude,
+                            avgSpeed=avgSpeed,
+                            trackTrue=trackTrue,
+                            trackMagnetic=trackMagnetic,
+                            speedMadeGood=speedMadeGood,
+                            directionMadeGood=directionMadeGood)
            } else {
                data <- list(v=v, q=q, a=a, g=g,
                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
