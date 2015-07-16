@@ -293,7 +293,7 @@ plotScan(ctdRaw)
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.55\textwidth}
-<<label=ctdrawfig, fig=TRUE,width=6, height=6, echo=FALSE>>=
+<<label=ctdrawfig, fig=TRUE,width=6, height=4, echo=FALSE>>=
 <<ctdrawplot>>
 @
 \end{center}
@@ -377,16 +377,16 @@ and a better idea to write
 \index{oce object changelog}
 \index{logged changes to oce objects}
 \index{editing oce objects}
-\index{oce.edit}
+\index{oceEdit}
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO") # better way
+x <- oceEdit(x, "institute", "SIO") # better way
 @
 Even better, provide a reason for the change, and sign the change with your
 name:
 <<ctdfix3,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
+x <- oceEdit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
 @
 
 For a real-world example (with warts!), visit
@@ -483,40 +483,67 @@ right angles.
 
 \workedexercise{4}{Plot dynamic height and geostrophic velocity across the Gulf Stream.}
 
-\section{Coastline and topographic data}
+\section{Maps}
 
 \index{data!coastline}
-\index{data!topography}
+%\index{data!topography}
+\index{map projections}
 
-Coastline data are available from a variety of sources. In years past, the
-former NOAA site \verb@http://www.ngdc.noaa.gov/mgg_coastline/@ was particularly
-popular, having the advantage of providing data in Splus format.  The function
-\verb@read.coastline@ can handle reading that format (plus some other formats),
-and \verb@plot@ on the resulting object will produce a simple coastline map.
-The only real advantage over plotting things yourself is that latitude and
-longitude are scaled to give natural shapes near the centre of the plot.  (All
-\verb@oce@ functions that have arguments for latitude and longitude place
-latitude first, in accordance with convention as documented in the ISO standard
-6709 ``Standard representation of geographic point location by coordinates.'')
+% Coastline data are available from a variety of sources, e.g.
+% \verb@http://www.ngdc.noaa.gov/mgg_coastline/@.  The function
+% \verb@read.coastline@ can handle reading that format (plus some other formats),
+% and \verb@plot@ on the resulting object will produce a simple coastline map.
+% The only real advantage over plotting things yourself is that latitude and
+% longitude are scaled to give natural shapes near the centre of the plot.
+% 
+% Bathymetric charts, or more generally topographic maps, can be produced easily,
+% e.g. (Figure~\ref{fig:projection})
 
-Bathymetric charts, or more generally topographic maps, can be produced easily, e.g. (Figure~\ref{fig:topo})
+There are several ways to handle map projections in R and other systems. Oce
+uses the \verb@rgdal@ package to calculate the details of map projections.  A
+suite of functions for plotting maps is provided.  The first step is to use
+``\verb@mapPlot()@'' to construct the map, and after that, points can be added
+with \verb@mapPoints@, lines with \verb@mapLines@, etc. For example,
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-jpeg("topo.jpg", quality=70, width=800, height=400, pointsize=13)
+jpeg("projection.png", width=800, height=450, pointsize=13)
+par(mar=rep(0, 4))
 @
 <<>>=
 library(oce)
-data(topoWorld)
-plot(topoWorld, clatitude=30, clongitude=370, span=9000)
+data(coastlineWorld)
+par(mar=rep(0, 4))
+mapPlot(coastlineWorld, projection="+proj=wintri", fill="lightgray")
 @
+plots a world coastline in the Winkel Tripel projection, using light gray ink
+for the land (Figure~\ref{fig:projection}).
+Adding the cruise track for the \verb@oce@ dataset called
+\verb@section@ is a simple matter
+<<>>=
+data(section)
+lon <- section[["longitude", "byStation"]]
+lat <- section[["latitude", "byStation"]]
+mapLines(lon, lat, col='red', lwd=2)
+@
+
+% <<fig=FALSE, eval=TRUE, echo=FALSE>>=
+% jpeg("topo.jpg", quality=70, width=800, height=400, pointsize=13)
+% @
+% <<>>=
+% library(oce)
+% data(topoWorld)
+% plot(topoWorld, clatitude=30, clongitude=370, span=9000)
+% @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
 @
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.9\hsize]{topo}
+\includegraphics[width=0.7\hsize]{projection}
 \end{center}
-\caption{Topography of eastern Canada, centred on Prince Edward Island.}
-\label{fig:topo}
+
+\caption{World coastline in Winkel Tripel projection, with a cruise track
+indicated in red.}
+\label{fig:projection}
 \end{figure}
 
 \section{Sea-level data}
@@ -654,7 +681,7 @@ then remove the atmospheric pressure from the signal.}
 \index{ADP}
 The commands
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-png("adp.png", width=800, height=400, pointsize=18)
+png("adp.png", width=800, height=250, pointsize=18)
 @
 <<label=adpplot>>=
 library(oce)
