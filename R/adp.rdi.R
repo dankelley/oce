@@ -536,7 +536,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (i == 1) {
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
-                            navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL
+                            sNavTime <- eNavTime <- navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL
                             ## slongitude is "first longitude" etc
                             avgSpeed <- trackTrue <- trackMagnetic <- speedMadeGood <- directionMadeGood <- NULL
                         } else {
@@ -550,14 +550,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                    as.integer(buf[o+2]), #day
                                                    0, 0, 0,
                                                    tz=tz)
-                            sNavTime <- tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000
+                            sNavTime <- c(sNavTime, tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000)
+                            sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
                             cfac <- 180/2^31 # from rdradcp.m line 825
                             slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=4, size=4, endian='little')*cfac)
                             slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=4, size=4, endian='little')*cfac)
-                            eNavTime <- tmpTime + readBin(buf[o+22:25], 'integer', n=4, size=4, endian='little')/10000
+                            eNavTime <- c(eNavTime, tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000)
+                            eNavTime <- as.POSIXct(eNavTime, origin='1970-01-01', tz=tz)
                             elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
                             elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
                             ## FIXME: DK: I need to figure out the difference between eNavTime and navTime
+                            ## FIXME: CR: what you are calling navTime should be the same as the "ADCP time"
                             tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
                                                    as.integer(buf[o+57]), #month
                                                    as.integer(buf[o+56]), #day
@@ -783,6 +786,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             attitudeTemp=attitudeTemp,
                             attitude=attitude,
                             contaminationSensor=contaminationSensor,
+                            sNavTime=sNavTime,
+                            eNavTime=eNavTime,
                             navTime=navTime,
                             slongitude=slongitude,
                             slatitude=slatitude,
