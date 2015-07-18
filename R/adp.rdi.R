@@ -538,7 +538,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             isVMDAS <- TRUE
                             sNavTime <- eNavTime <- navTime <- slongitude <- slatitude <- elatitude <- elongitude <- NULL
                             ## slongitude is "first longitude" etc
-                            avgSpeed <- trackTrue <- trackMagnetic <- speedMadeGood <- directionMadeGood <- NULL
+                            avgSpeed <- avgTrackTrue <- avgTrackMagnetic <- speedMadeGood <- directionMadeGood <- NULL
                         } else {
                             if (!isVMDAS)
                                 badVMDAS <- c(badVMDAS, i)
@@ -550,15 +550,16 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                    as.integer(buf[o+2]), #day
                                                    0, 0, 0,
                                                    tz=tz)
-                            sNavTime <- c(sNavTime, tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000)
-                            sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
+                            clockOffset <- 0.001 * readBin(buf[o+10:13], 'integer', n=1, size=4, endian='little')
+                            sNavTime <- c(sNavTime, tmpTime + clockOffset+readBin(buf[o+6:9],'integer',n=1,size=4,endian='little')/10000)
+                            ##704 sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
                             cfac <- 180/2^31 # from rdradcp.m line 825
-                            slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=4, size=4, endian='little')*cfac)
-                            slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=4, size=4, endian='little')*cfac)
-                            eNavTime <- c(eNavTime, tmpTime + readBin(buf[o+6:9], 'integer', n=4, size=4, endian='little')/10000)
-                            eNavTime <- as.POSIXct(eNavTime, origin='1970-01-01', tz=tz)
-                            elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=4, size=4, endian='little')*cfac)
-                            elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=4, size=4, endian='little')*cfac)
+                            slatitude <- c(slatitude, readBin(buf[o+14:17], 'integer', n=1, size=4, endian='little')*cfac)
+                            slongitude <- c(slongitude, readBin(buf[o+18:21], 'integer', n=1, size=4, endian='little')*cfac)
+                            eNavTime <- c(eNavTime, tmpTime + clockOffset+readBin(buf[o+22:25], 'integer', n=1, size=4, endian='little')/10000)
+                            ##704 eNavTime <- as.POSIXct(eNavTime, origin='1970-01-01', tz=tz)
+                            elatitude <- c(elatitude, readBin(buf[o+26:29], 'integer', n=1, size=4, endian='little')*cfac)
+                            elongitude <- c(elongitude, readBin(buf[o+30:33], 'integer', n=1, size=4, endian='little')*cfac)
                             ## FIXME: DK: I need to figure out the difference between eNavTime and navTime
                             ## FIXME: CR: what you are calling navTime should be the same as the "ADCP time"
                             tmpTime <- ISOdatetime(as.integer(buf[o+54]) + 256*as.integer(buf[o+55]), #year
@@ -566,13 +567,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                    as.integer(buf[o+56]), #day
                                                    0, 0, 0,
                                                    tz=tz)
-                            navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=4, size=4, endian='little')/100)
-                            navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
+                            navTime <- c(navTime, tmpTime + readBin(buf[o+58:61], 'integer', n=1, size=4, endian='little')/100)
+                            ##(A) navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
                             avgSpeed <- c(avgSpeed, 0.001*readBin(buf[o+34:35], 'integer', n=1, size=2, endian='little'))
-                            trackTrue <- c(trackTrue, readBin(buf[o+36:37], 'integer', n=1, size=2, endian='little'))
-                            trackMagnetic <- c(trackMagnetic, readBin(buf[o+38:39], 'integer', n=1, size=2, endian='little'))
+                            avgTrackTrue <- c(avgTrackTrue, readBin(buf[o+36:37], 'integer', n=1, size=2, endian='little'))
+                            avgTrackMagnetic <- c(avgTrackMagnetic, readBin(buf[o+38:39], 'integer', n=1, size=2, endian='little'))
                             speedMadeGood <- c(speedMadeGood, 0.001*readBin(buf[o+40:41], 'integer', n=1, size=2, endian='little'))
-                            directionMadeGood <- c(directionMadeGood, 0.0055*readBin(buf[o+42:43], 'integer', n=1, size=2, endian='little'))
+                            directionMadeGood <- c(directionMadeGood, (360/2^16)*readBin(buf[o+42:43], 'integer', n=1, size=2, endian='little'))
                         }
                     }
                     if (monitor) {
@@ -600,9 +601,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+8]),      # minute
                                 as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
                                 tz=tz)
-
-
+            if (isVMDAS) {
+                navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
+                sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
+                eNavTime <- as.POSIXct(eNavTime, origin='1970-01-01', tz=tz)
+            }
             if (length(badProfiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
+                ## FIXME: won't we need to handle VmDas here, also?
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fillGap(as.numeric(time) - as.numeric(t0)) + t0
                 nbad <- length(badProfiles)
@@ -794,8 +799,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             elongitude=elongitude,
                             elatitude=elatitude,
                             avgSpeed=avgSpeed,
-                            trackTrue=trackTrue,
-                            trackMagnetic=trackMagnetic,
+                            avgTrackTrue=avgTrackTrue,
+                            avgTrackMagnetic=avgTrackMagnetic,
                             speedMadeGood=speedMadeGood,
                             directionMadeGood=directionMadeGood)
            } else {

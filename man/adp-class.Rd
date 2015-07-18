@@ -81,16 +81,41 @@
       The precise meanings of the data items depend on the instrument type.  All
       instruments have \code{v} (for velocity), \code{q} (for a measure of data
       quality) and \code{a} (for a measure of backscatter amplitude, also called
-      echo intensity).  Devices from Teledyne-RDI profilers have an additional
-      item \code{g} (for percent-good). VmDas-equipped Teledyne-RDI profiles have
-      additional navigation data, stored in items named \code{sNavTime},
-      \code{eNavTime}, \code{navTime}, \code{slongitude}, \code{slatitude},
-      \code{elatitude}, \code{elongitude} \code{avgSpeed}, \code{trackTrue},
-      \code{trackMagnetic}, \code{speedMadeGood}, and \code{directionMadeGood},
-      the meanings of which are explained in section 12 of [2]; note that here
-      the prefix \code{s} indicates start and \code{e} indicates end, so that
-      e.g. \code{sNavTime} is the same as \code{FIRST LATITUDE} in Figure 35 of
-      [2].
+      echo intensity).  
+      
+      Teledyne-RDI profilers have an additional item \code{g} (for
+      percent-good). 
+      
+      VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+      details listed in the table below; note that the RDI documentation [2] and
+      the RDI gui use inconsistent names for most items.
+
+      \tabular{lll}{
+        \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
+        \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
+        \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir <FIXME 1>\cr
+        \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab (not displayed)\cr
+        \code{sNavTime}\tab UTC Time of first fix\tab Start Time\cr
+        \code{sLatitude}\tab First latitude\tab Start Lat\cr
+        \code{sLongitude}\tab First longitude\tab Start Lon\cr
+        \code{eLatitude}\tab Last latitude\tab End Lat\cr
+        \code{eLongitude}\tab Last longitude\tab End Lon\cr
+        \code{eNavTime}\tab UTC Time of last fix\tab End Time\cr
+        \code{navTime}\tab ADCP Ensemble Time\tab (not displayed) <FIXME 2, 3>\cr
+        \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+        \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
+      }
+
+      \emph{FIXME 1: ask CR if he thinks this is True or Magnetic ... does the help in
+      the GUI tell us?}
+
+      \emph{FIXME 2: ask CR if he thinks the GUI displays this.}
+
+      \emph{FIXME 3: ask CR if he feels we need to rename navTime, or indeed any
+        other variable. The VmDas has been updated a lot in the past few days,
+        and now is the time for a name change if we require it. I vote "no" on
+        this, because the table listed above should solve any problems users
+        might have in guessing names.}
     
       For Teledyne-RDI profilers, there are four three-dimensional arrays
       holding beamwise data.  In these, the first index indicates time, the
