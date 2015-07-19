@@ -31,7 +31,8 @@ library(oce)
 data(ctd)
 ctd2 <- ctd
 ctd2[["temperature"]] <- ctd[["temperature"]] + 0.5
-ctd2[["latitude"]] <- ctd[["latitude"]] + 0.1
+ctd2[["salinity"]] <- ctd[["salinity"]] + 0.1
+ctd2[["longitude"]] <- ctd[["longitude"]] + 0.01
 section <- makeSection(ctd, ctd2)
 summary(section)
 # Below is how to create a section from well-named CSV files

@@ -697,7 +697,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 }
 
 
-ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE, parameters=NULL,
+ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
@@ -926,12 +926,12 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
             res@data[[i]] <- res@data[[i]][keep]
         }
     }
-    waterDepthWarning <- FALSE
-    #if (inferWaterDepth && !is.finite(res@metadata$waterDepth)) {
-    if (inferWaterDepth) {
-        res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
+    ## waterDepthWarning <- FALSE
+    ## if (inferWaterDepth) {
+    ##     message("DANNY")
+    ##     res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
+    ##     waterDepthWarning <- TRUE
+    ## }
     if (removeDepthInversions) {
         badDepths <- c(FALSE, diff(res@data$pressure) <= 0)
         nbad <- sum(badDepths)
@@ -946,8 +946,8 @@ ctdTrim <- function(x, method, inferWaterDepth=TRUE, removeDepthInversions=FALSE
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (waterDepthWarning)
-        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
+    ## if (waterDepthWarning)
+    ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # ctdTrim()\n", unindent=1)
     res
 }
@@ -1650,10 +1650,10 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
                    ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
     ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
-    if (!"waterDepth" %in% names(rval@metadata)) # may be entirely missing
-        rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
-    if (rval@metadata$waterDepth < 1)   # may be silly
-        rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
+    #if (!"waterDepth" %in% names(rval@metadata)) # may be entirely missing
+    #    rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
+    #if (rval@metadata$waterDepth < 1)   # may be silly
+    #    rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
     rval
 }
 
@@ -2436,11 +2436,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     }
-    waterDepthWarning <- FALSE
-    if (is.na(res@metadata$waterDepth)) {
-        res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
+    ## waterDepthWarning <- FALSE
+    ## if (is.na(res@metadata$waterDepth)) {
+    ##     res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+    ##     waterDepthWarning <- TRUE
+    ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
     if ("IPTS-68" == metadata$temperatureUnit) {
@@ -2451,8 +2451,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-69 to ITS-90")
     }
     oceDebug(debug, "} # read.ctd.sbe()\n")
-    if (waterDepthWarning)
-        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
+    ## if (waterDepthWarning)
+    ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     res
 }
 

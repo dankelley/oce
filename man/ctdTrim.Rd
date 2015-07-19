@@ -7,8 +7,8 @@
 
 \description{Trim start/end portions of a CTD cast.}
 
-\usage{ctdTrim(x, method, inferWaterDepth=TRUE,
-removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
+\usage{ctdTrim(x, method, removeDepthInversions=FALSE, parameters,
+        debug=getOption("oceDebug"))}
 
 
 \arguments{
@@ -17,10 +17,6 @@ removeDepthInversions=FALSE, parameters, debug=getOption("oceDebug"))}
   \item{method}{A string (or a vector of two strings) specifying the trimming method, or a function
     to be used to determine data indices to keep.  If \code{method} is not provided,
     \code{"downcast"} is assumed. See \dQuote{Details}.}
-
-  \item{inferWaterDepth}{boolean, set to \code{TRUE} if the water depth
-    (\code{metadata$water.depth}) is to be determined from the maximum of the trimmed pressure.
-    (This is ignored if the original data file contained the water depth in the header.)}
 
   \item{removeDepthInversions}{Logical value indicating whether to remove any levels at which depth
     is less than, or equal to, a depth above.  (This is needed if the object is to be assembled into
