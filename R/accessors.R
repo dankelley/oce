@@ -79,41 +79,64 @@ extract <- function(x, names)
     rval
 }
 
-#' Get a data item from an oce object
-#'
-#' @details
-#' Get a named item from the object, returning a provided default if not found.
-#'
-#' @param object An oce object.
-#' @param name Name of the desired item.
-#' @param default A default value to be returned if \code{name} is not found
-#' @return The desired item, or the default, if the item is not present in the data slot.
-oceData <- function(object, name, default=NA)
+oceGetData <- function(object, name, default=NA)
 {
     if (!inherits(object, "oce"))
-        stop("oceData() only works for oce objects")
+        stop("oceGetData() only works for oce objects")
     if (missing(name))
         stop("'name' must be supplied")
-    if (name %in% names(object@data)) object@data[name] else default
+    if (name %in% names(object@data)) object@data[[name]] else default
+}
+oceDeleteData <- function(object, name)
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    if (name %in% names(object@data))
+        object@data[[name]] <- NULL
+    object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
+    object
+}
+oceSetData <- function(object, name, value, note="")
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    object@metadata[[name]] <- value
+    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (nchar(note) > 0)
+        object@processingLog <- processingLogAppend(object@processingLog, note)
+    object
 }
 
-#' Get a metadata item from an oce object
-#'
-#' @details
-#' Get a named item from the object, returning a provided default if not found.
-#'
-#' @param object An oce object.
-#' @param name Name of the desired item.
-#' @param default A default value to be returned if \code{name} is not found
-#' @return The desired item, or the default, if the item is not present in the metadata slot.
-oceMetadata <- function(object, name, default=NA)
+oceGetMetadata <- function(object, name, default=NA)
 {
     if (!inherits(object, "oce"))
-        stop("oceMetadata() only works for oce objects")
+        stop("oceGetData() only works for oce objects")
     if (missing(name))
         stop("'name' must be supplied")
-    if (name %in% names(object@metadata)) object@metadata[name] else default
+    if (name %in% names(object@metadata)) object@metadata[[name]] else default
 }
+oceDeleteMetadata <- function(object, name)
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    if (name %in% names(object@metadata))
+        object@metadata[[name]] <- NULL
+    object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteMetadata() removed metadadata$", name, sep="", collapse=""))
+    object
+}
+oceSetMetadata <- function(object, name, value, note="")
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    object@metadata[[name]] <- value
+    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (nchar(note) > 0)
+        object@processingLog <- processingLogAppend(object@processingLog, note)
+    object
+}
+
+
+
 
 header <- function(x)
 {
