@@ -18,51 +18,39 @@ read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
   monitor=FALSE, despike=FALSE, processingLog,
-  debug=getOption("oceDebug"),
-  \dots)
+  debug=getOption("oceDebug"), \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   type=c("workhorse"),
   monitor=FALSE, despike=FALSE, processingLog,
   testing=FALSE,
-  debug=getOption("oceDebug"),
-  \dots)
-
+  debug=getOption("oceDebug"), \dots)
 read.aquadopp(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
-  debug=getOption("oceDebug"),
-  \dots)
-
+  debug=getOption("oceDebug"), \dots)
 read.aquadoppHR(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
-  debug=getOption("oceDebug"),
-  \dots)
+  debug=getOption("oceDebug"), \dots)
 read.aquadoppProfiler(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
-  debug=getOption("oceDebug"),
-  \dots)
-
+  debug=getOption("oceDebug"), \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
-  debug=getOption("oceDebug"),
-  \dots)
-
+  debug=getOption("oceDebug"), \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   type=c("adp","pcadp"),
   monitor=FALSE, despike=FALSE, processingLog,
-  debug=getOption("oceDebug"),
-  \dots)
-
+  debug=getOption("oceDebug"), \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   longitude=NA, latitude=NA,
   type=c("adp", "pcadp"),
