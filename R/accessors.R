@@ -79,6 +79,65 @@ extract <- function(x, names)
     rval
 }
 
+oceGetData <- function(object, name, default=NA)
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    if (missing(name))
+        stop("'name' must be supplied")
+    if (name %in% names(object@data)) object@data[[name]] else default
+}
+oceDeleteData <- function(object, name)
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    if (name %in% names(object@data))
+        object@data[[name]] <- NULL
+    object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
+    object
+}
+oceSetData <- function(object, name, value, note="")
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    object@metadata[[name]] <- value
+    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (nchar(note) > 0)
+        object@processingLog <- processingLogAppend(object@processingLog, note)
+    object
+}
+
+oceGetMetadata <- function(object, name, default=NA)
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    if (missing(name))
+        stop("'name' must be supplied")
+    if (name %in% names(object@metadata)) object@metadata[[name]] else default
+}
+oceDeleteMetadata <- function(object, name)
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    if (name %in% names(object@metadata))
+        object@metadata[[name]] <- NULL
+    object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteMetadata() removed metadadata$", name, sep="", collapse=""))
+    object
+}
+oceSetMetadata <- function(object, name, value, note="")
+{
+    if (!inherits(object, "oce"))
+        stop("oceGetData() only works for oce objects")
+    object@metadata[[name]] <- value
+    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (nchar(note) > 0)
+        object@processingLog <- processingLogAppend(object@processingLog, note)
+    object
+}
+
+
+
+
 header <- function(x)
 {
     if (!inherits(x, "oce"))
