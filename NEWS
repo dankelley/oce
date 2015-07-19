@@ -1,4 +1,5 @@
 0.9-17
+- read.adp.rdi() reads more VmDas (navigational) data
 - use ITS-90 as default temperature unit
 - ctd objects can have vector longitude and latitude
 - rename logger class to rsk

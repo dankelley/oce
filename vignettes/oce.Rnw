@@ -51,7 +51,7 @@
 \begin{document}
 
 \title{The OCE package}
-\author{Dan E. Kelley}
+\author{Dan E. Kelley and Clark Richards}
 \maketitle
 
 

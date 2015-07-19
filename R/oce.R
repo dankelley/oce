@@ -1335,7 +1335,8 @@ numberAsHMS <- function(t, default=0)
     list(hour=hour, minute=minute, second=second)
 }
 
-numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss", "yearday"), tz="UTC")
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
+                                      "ncep", "sas", "spss", "yearday"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -1349,9 +1350,9 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "s
             stop("'t' must have two columns, one for year, the other for yearday")
         return(ISOdatetime(t[,1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[,2] * 24 * 3600)
     } else if (type == "argo") {
-        return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
-    } else if (type == "argo") {
-        return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
+        return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
+    } else if (type == "ncep") {
+        return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
