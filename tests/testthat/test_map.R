@@ -1,7 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("Map calculations")
+context("Map and geod calculations")
 
 test_that("utm2lonlat() on some points known from Landsat metadata", {
           longitude <- c(-40.27900, -38.22680, -40.28255, -38.22465,
@@ -29,8 +29,6 @@ test_that("lonlat2map()", {
           cs2 <- map2lonlat(xy$x, xy$y)
           expect_equal(cs, cs2, tolerance=1e-6) # on 64bit machine can go to 1e-15
 })
-
-context("geod calculations")
 
 test_that("geodDist()", {
           d <- geodDist(10, 45, 10, 46)
