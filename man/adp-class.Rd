@@ -93,30 +93,18 @@
       \tabular{lll}{
         \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
         \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
-        \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir <FIXME 1>\cr
-        \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab (not displayed)\cr
-        \code{sNavTime}\tab UTC Time of first fix\tab Start Time\cr
-        \code{sLatitude}\tab First latitude\tab Start Lat\cr
-        \code{sLongitude}\tab First longitude\tab Start Lon\cr
-        \code{eLatitude}\tab Last latitude\tab End Lat\cr
-        \code{eLongitude}\tab Last longitude\tab End Lon\cr
-        \code{eNavTime}\tab UTC Time of last fix\tab End Time\cr
-        \code{navTime}\tab ADCP Ensemble Time\tab (not displayed) <FIXME 2, 3>\cr
-        \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+        \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+        \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab (not displayed?)\cr
         \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
+        \code{firstLatitude}\tab First latitude\tab Start Lat\cr
+        \code{firstLongitude}\tab First longitude\tab Start Lon\cr
+        \code{firstTime}\tab UTC Time of last fix\tab End Time\cr
+        \code{lastLatitude}\tab Last latitude\tab End Lat\cr
+        \code{lastLongitude}\tab Last longitude\tab End Lon\cr
+        \code{lastTime}\tab UTC Time of last fix\tab End Time\cr
+        \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
       }
 
-      \emph{FIXME 1: ask CR if he thinks this is True or Magnetic ... does the help in
-      the GUI tell us?}
-
-      \emph{FIXME 2: ask CR if he thinks the GUI displays this.}
-
-      \emph{FIXME 3: ask CR if he feels we need to rename navTime, or indeed any
-        other variable. The VmDas has been updated a lot in the past few days,
-        and now is the time for a name change if we require it. I vote "no" on
-        this, because the table listed above should solve any problems users
-        might have in guessing names.}
-    
       For Teledyne-RDI profilers, there are four three-dimensional arrays
       holding beamwise data.  In these, the first index indicates time, the
       second bin number, and the third beam number (or coordinate number, for
@@ -210,7 +198,7 @@
   (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.}
 
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 
 \keyword{classes}
