@@ -94,7 +94,7 @@
         \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
         \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
         \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
-        \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab (not displayed?)\cr
+        \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
         \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
         \code{firstLatitude}\tab First latitude\tab Start Lat\cr
         \code{firstLongitude}\tab First longitude\tab Start Lon\cr
