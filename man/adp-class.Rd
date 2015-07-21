@@ -93,8 +93,12 @@
       \tabular{lll}{
         \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
         \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
-        \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+        \code{avgMagnitudeVelocityEast}\tab Avg Mag Vel East\tab ?\cr
+        \code{avgMagnitudeVelocityNorth}\tab Avg Mag Vel North\tab ?\cr
         \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
+        \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+        \code{avgTrueVelocityEast}\tab Avg True Vel East\tab ?\cr
+        \code{avgTrueVelocityNorth}\tab Avg True Vel North\tab ?\cr
         \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
         \code{firstLatitude}\tab First latitude\tab Start Lat\cr
         \code{firstLongitude}\tab First longitude\tab Start Lon\cr
@@ -102,7 +106,18 @@
         \code{lastLatitude}\tab Last latitude\tab End Lat\cr
         \code{lastLongitude}\tab Last longitude\tab End Lon\cr
         \code{lastTime}\tab UTC Time of last fix\tab End Time\cr
+        \code{numberOfHeadingSamplesAveraged}\tab Number heading samples averaged\tab ?\cr
+        \code{numberOfMagneticTrackSamplesAveraged}\tab Number of magnetic track samples averaged\tab ? \cr
+        \code{numberOfPitchRollSamplesAvg}\tab Number of magnetic track samples averaged\tab ? \cr
+        \code{numberOfSpeedSamplesAveraged}\tab Number of speed samples averaged\tab ? \cr
+        \code{numberOfTrueTrackSamplesAvg}\tab Number of true track samples averaged\tab ? \cr
+        \code{primaryFlags}\tab Primary Flags\tab ?\cr
+        \code{shipHeading}\tab Heading\tab ?\cr
+        \code{shipPitch}\tab Pitch\tab ?\cr
+        \code{shipRoll}\tab Roll\tab ?\cr
         \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+        \code{speedMadeGoodEast}\tab Speed MG East\tab ?\cr
+        \code{speedMadeGoodNorth}\tab Speed MG North\tab ?\cr
       }
 
       For Teledyne-RDI profilers, there are four three-dimensional arrays

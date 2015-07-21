@@ -538,7 +538,16 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             isVMDAS <- TRUE
                             firstTime <- firstLongitude <- firstLatitude <- NULL
                             lastTime <- lastLongitude <- lastLatitude <- NULL
-                            avgSpeed <- avgTrackTrue <- avgTrackMagnetic <- speedMadeGood <- directionMadeGood <- NULL
+                            avgSpeed <- avgTrackTrue <- avgTrackMagnetic <- NULL
+                            speedMadeGood <- speedMadeGoodNorth <- speedMadeGoodEast <- NULL
+                            directionMadeGood <- NULL
+                            shipPitch <- shipRoll <- shipHeading <- NULL
+                            numberOfSpeedSamplesAveraged <- numberOfTrueTrackSamplesAveraged <-
+                                numberOfMagneticTrackSamplesAveraged <- numberOfHeadingSamplesAveraged <-
+                                    numberOfPitchRollSamplesAveraged <- NULL
+                            avgTrueVelocityNorth <- avgTrueVelocityEast <- NULL
+                            avgMagnitudeVelocityNorth <- avgMagnitudeVelocityEast <- NULL
+                            primaryFlags <- NULL
                         } else {
                             if (!isVMDAS)
                                 badVMDAS <- c(badVMDAS, i)
@@ -573,6 +582,38 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             avgTrackMagnetic <- c(avgTrackMagnetic, readBin(buf[o+38:39], 'integer', n=1, size=2, endian='little'))
                             speedMadeGood <- c(speedMadeGood, 0.001*readBin(buf[o+40:41], 'integer', n=1, size=2, endian='little'))
                             directionMadeGood <- c(directionMadeGood, (360/2^16)*readBin(buf[o+42:43], 'integer', n=1, size=2, endian='little'))
+                            ## jul21 {
+                            shipPitch <- c(shipPitch,
+                                           (360/2^16)*readBin(buf[o+62:63], 'integer', n=1, size=2, endian='little'))
+                            shipRoll <- c(shipRoll,
+                                          (360/2^16)*readBin(buf[o+64:65], 'integer', n=1, size=2, endian='little'))
+                            shipHeading <- c(shipHeading,
+                                             (360/2^16)*readBin(buf[o+66:67], 'integer', n=1, size=2, endian='little'))
+                            numberOfSpeedSamplesAveraged <- c(numberOfSpeedSamplesAveraged,
+                                                              readBin(buf[o+68:69], 'integer', n=1, size=2, endian='little'))
+                            numberOfTrueTrackSamplesAveraged <- c(numberOfTrueTrackSamplesAveraged,
+                                                                  readBin(buf[o+70:71], 'integer', n=1, size=2, endian='little'))
+                            numberOfMagneticTrackSamplesAveraged <- c(numberOfMagneticTrackSamplesAveraged,
+                                                                      readBin(buf[o+72:73], 'integer', n=1, size=2, endian='little'))
+                            numberOfHeadingSamplesAveraged <- c(numberOfHeadingSamplesAveraged,
+                                                                readBin(buf[o+74:75], 'integer', n=1, size=2, endian='little'))
+                            numberOfPitchRollSamplesAveraged <- c(numberOfPitchRollSamplesAveraged,
+                                                                  readBin(buf[o+76:77], 'integer', n=1, size=2, endian='little'))
+                            avgTrueVelocityNorth <- c(avgTrueVelocityNorth,
+                                                      readBin(buf[o+78:79], 'integer', n=1, size=2, endian='little'))
+                            avgTrueVelocityEast <- c(avgTrueVelocityEast,
+                                                     readBin(buf[o+80:81], 'integer', n=1, size=2, endian='little'))
+                            avgMagnitudeVelocityNorth <- c(avgMagnitudeVelocityNorth,
+                                                           readBin(buf[o+82:83], 'integer', n=1, size=2, endian='little'))
+                            avgMagnitudeVelocityEast <- c(avgMagnitudeVelocityEast,
+                                                          readBin(buf[o+84:85], 'integer', n=1, size=2, endian='little'))
+                            speedMadeGoodNorth <- c(speedMadeGoodNorth,
+                                                    0.001*readBin(buf[o+86:87], 'integer', n=1, size=2, endian='little'))
+                            speedMadeGoodEast <- c(speedMadeGoodEast,
+                                                   0.001*readBin(buf[o+88:89], 'integer', n=1, size=2, endian='little'))
+                            primaryFlags <- c(primaryFlags,
+                                              readBin(buf[o+90:91], 'integer', n=1, size=2, endian='little'))
+                            ## } jul21
                         }
                     }
                     if (monitor) {
@@ -792,8 +833,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             contaminationSensor=contaminationSensor,
                             ## Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
                             avgSpeed=avgSpeed,
-                            avgTrackTrue=avgTrackTrue,
+                            avgMagnitudeVelocityEast=avgMagnitudeVelocityEast,
+                            avgMagnitudeVelocityNorth=avgMagnitudeVelocityNorth,
                             avgTrackMagnetic=avgTrackMagnetic,
+                            avgTrackTrue=avgTrackTrue,
+                            avgTrueVelocityEast=avgTrueVelocityEast,
+                            avgTrueVelocityNorth=avgTrueVelocityNorth,
                             directionMadeGood=directionMadeGood,
                             firstLatitude=firstLatitude,
                             firstLongitude=firstLongitude,
@@ -801,7 +846,18 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             lastLatitude=lastLatitude,
                             lastLongitude=lastLongitude,
                             lastTime=lastTime,
-                            speedMadeGood=speedMadeGood)
+                            numberOfHeadingSamplesAveraged=numberOfHeadingSamplesAveraged,
+                            numberOfMagneticTrackSamplesAveraged=numberOfMagneticTrackSamplesAveraged,
+                            numberOfPitchRollSamplesAveraged=numberOfPitchRollSamplesAveraged,
+                            numberOfSpeedSamplesAveraged=numberOfSpeedSamplesAveraged,
+                            numberOfTrueTrackSamplesAveraged=numberOfTrueTrackSamplesAveraged,
+                            primaryFlags=primaryFlags,
+                            shipHeading=shipHeading,
+                            shipPitch=shipPitch,
+                            shipRoll=shipRoll,
+                            speedMadeGood=speedMadeGood,
+                            speedMadeGoodEast=speedMadeGoodEast,
+                            speedMadeGoodNorth=speedMadeGoodNorth)
            } else {
                data <- list(v=v, q=q, a=a, g=g,
                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
