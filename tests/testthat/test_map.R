@@ -22,7 +22,41 @@ test_that("utm2lonlat() on some points known from Landsat metadata", {
           expect_equal(utm$zone, zone, tolerance=1e-5)
 })
 
-test_that("lonlat2map()", {
+## CORNER_UL_LAT_PRODUCT = 70.68271
+## CORNER_UL_LON_PRODUCT = -54.28961
+## CORNER_UR_LAT_PRODUCT = 70.67792
+## CORNER_UR_LON_PRODUCT = -47.45356
+## CORNER_LL_LAT_PRODUCT = 68.46651
+## CORNER_LL_LON_PRODUCT = -53.96471
+## CORNER_LR_LAT_PRODUCT = 68.46225
+## CORNER_LR_LON_PRODUCT = -47.80372
+## CORNER_UL_PROJECTION_X_PRODUCT = 378600.000
+## CORNER_UL_PROJECTION_Y_PRODUCT = 7845300.000
+## CORNER_UR_PROJECTION_X_PRODUCT = 630900.000
+## CORNER_UR_PROJECTION_Y_PRODUCT = 7845300.000
+## CORNER_LL_PROJECTION_X_PRODUCT = 378600.000
+## CORNER_LL_PROJECTION_Y_PRODUCT = 7597800.000
+## CORNER_LR_PROJECTION_X_PRODUCT = 630900.000
+## CORNER_LR_PROJECTION_Y_PRODUCT = 7597800.000
+
+test_that("lonlat2map() on image for issue 707 (corners cross zones)", {
+          longitude <- c(-54.28961, -47.45356, -53.96471, -47.80372)
+          latitude <- c(70.68271, 70.67792, 68.46651, 68.46225)
+          northing <- c(7845300, 7845300, 7597800, 7597800)
+          easting <- c(378600, 630900, 378600, 630900)
+          ## in fact, the corners are in different zones 21 and 23, but the Landsat
+          ## metadata indicate calculation in a single zone (22), so that is
+          ## used here.
+          zone <- rep(22, 4)
+          utm <- lonlat2utm(longitude, latitude, zone=zone)
+          ## Use tolerance to acknowledge the fact that the Landsat metadata 
+          ## have x and y given metres. I am not sure if rounded or truncated;
+          ## the test assumes that rounded.
+          expect_equal(utm$northing, northing, scale=1, tolerance=0.5)
+          expect_equal(utm$easting, easting, scale=1, tolerance=0.5)
+})
+
+test_that("lonlat2map() near Cape Split", {
           ## "cs" is near Cape Split, in the Bay of Fundy
           cs <- list(longitude=-64.4966,latitude=45.3346)
           xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
