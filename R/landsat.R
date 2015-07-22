@@ -370,8 +370,8 @@ setMethod(f="plot",
                       zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
                   if (utm) {
                       if (!("llUTM" %in% names(x@metadata))) {
-                          x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat)
-                          x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$llUTM$zone)
+                          x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
+                          x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
                       }
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
@@ -631,8 +631,8 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
         x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
     }
-    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$llUTM$zone)
-    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$llUTM$zone)
+    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
+    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
     oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting) 
     trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)
     oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing) 
@@ -687,8 +687,6 @@ landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
         jlim[1] <- max(1, jlim[1])
         jlim[2] <- min(jlim[2], dim[2])
         oceDebug(debug, "jlim:", jlim[1], "to", jlim[2], "\n")
-
-       #browser()
 
         ##? jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
         ##? jlim <- jlimUTM # FIXME: clean up this code
