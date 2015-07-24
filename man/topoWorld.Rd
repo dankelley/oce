@@ -9,6 +9,12 @@
 \description{Global topographic dataset at half-degree resolution,
   created by decimating the ETOPO5 dataset.}
 
+\details{The coarse resolution can be a problem in plotting depth contours
+    along with coastlines in regions of steep topography. For example, the
+    topography is so steep near the southeast corner of Newfoundland that a
+    200m contour will overlap the \CRANpkg{ocedata} coastline named
+    \code{coastlineWorldFine}.}
+
 \usage{data(topoWorld)}
 
 \source{The ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
