@@ -121,6 +121,21 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         on.exit(close(file))
     }
     lines <- readLines(file, encoding="UTF-8")
+    
+    # Read the ODF file using BIO R code and assign place the complete headers
+    # within an object of the OdfHeader class which will be assigned to the 
+    # attribute "header" of the slot "metadata".
+    A <- read_odf(filename)
+    oh <- new('odfheader')
+    oh@odf.header <- A$ODF_HEADER
+    oh@cruise.header <- A$CRUISE_HEADER
+    oh@event.header <- A$EVENT_HEADER
+    oh@instrument.header <- A$INSTRUMENT_HEADER
+    oh@history.header <- A$HISTORY_HEADER
+    oh@parameter.header <- A$PARAMETER_HEADER
+    oh@record.header <- A$RECORD_HEADER
+    rm(A)
+    
     dataStart <- grep("-- DATA --", lines)
     if (!length(dataStart))
         stop("cannot locate a line containing '-- DATA --'")
@@ -137,6 +152,13 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     names <- gsub(",\\s*$", "", gsub("^\\s*","", names)) # "  CODE=PRES_01," -> "CODE=PRES_01"
     names <- gsub("^CODE\\s*=\\s*", "", names) # "CODE=PRES_01" -> "PRES_01"
     names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim remnant start/end spaces
+    pnames <- lines[grep("^\\s*NAME\\s*=", lines)]
+    pnames <- gsub("\\s*$", "", gsub("^\\s*", "", pnames)) # trim start/end whitespace
+    pnames <- gsub(",", "", pnames) # trim commas
+    pnames <- gsub("'", "", pnames) # trim single quotes
+    pnames <- gsub(",\\s*$", "", gsub("^\\s*","", pnames)) # "  CODE=PRES_01," -> "CODE=PRES_01"
+    pnames <- gsub("^NAME\\s*=\\s*", "", pnames) # "CODE=PRES_01" -> "PRES_01"
+    pnames <- gsub("\\s*$", "", gsub("^\\s*", "", pnames)) # trim remnant start/end spaces
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
@@ -170,7 +192,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
-    metadata <- list(header=NULL, # FIXME
+    metadata <- list(header=oh, # Save original ODF header
                      type=type,        # only odt
                      model=model,      # only odt
                      serialNumber=serialNumber,
@@ -195,7 +217,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
+    ## Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
@@ -227,8 +249,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     names[grep("ERRV_*.*", names)[1]] <- "error"
     ## next is  NAME='Average Echo Intensity (AGC)'
     names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
-    names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
-
+    names[grep("Percent Good Pings", pnames)[1]] <- "g" # percent good
+    
     ## Step 3: recognize something from moving-vessel CTDs
     names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
