@@ -2104,13 +2104,22 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     conductivityUnit = "ratio" # guess
     temperatureUnit = "ITS-90" # guess; other option is IPTS-68
-    while (TRUE) {
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+
+    lines <- readLines(file)
+    for (iline in seq_along(lines)) {
+        line <- lines[iline]
+        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) break;
+        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+            ## Sometimes SBE files have a header line after the *END* line.
+            iline <- iline + 1  
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
+                iline <- iline + 1
+            break
+        }
         lline <- tolower(aline)
         ## BUG: discovery of column names is brittle to format changes
         if (0 < (r <- regexpr("# name ", lline))) {
@@ -2357,13 +2366,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
+
+    ## Handle similar names by tacking numbers on the end, e.g. the first column that
+    ## is automatically inferred to hold temperature is called "temperature", while the
+    ## next one is called "temperature2", and a third would be called "temperature3".
     col.names.inferred <- tolower(col.names.inferred)
+    for (uname in unique(col.names.inferred)) {
+        w <- which(uname == col.names.inferred)
+        lw <- length(w)
+        ##message("uname:", uname, ", lw: ", lw)
+        if (1 != lw) {
+            col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
+        }
+    }
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        t <- try(data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric")), silent=TRUE)
-        if (class(t) == "try-error") {
-            stop("data-header conflict; check that #names matches #columns")
-        }
+        data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
+                                   header=FALSE, col.names=col.names.inferred))
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
@@ -2378,7 +2397,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
-        dataAll <- read.table(file, header=FALSE, colClasses="numeric")
+        dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
+                              header=FALSE, col.names=col.names.inferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
             names(data) <- names(columns)
