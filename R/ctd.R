@@ -1369,13 +1369,21 @@ setMethod(f="plot",
                               ## find nearest point on (coarse) globe
 
                               ## FIXME: maybe pick coastline based on water depth
-                              data("coastlineWorldMedium", package="ocedata", envir=environment())
-                              mcoastline <- get("coastlineWorldMedium")
-                              d <- geodDist(mcoastline[['longitude']],
-                                            mcoastline[['latitude']],
-                                            mean(x[['longitude']], na.rm=TRUE),
-                                            mean(x[['latitude']], na.rm=TRUE))
-                              rm(mcoastline)
+                              if (requireNamespace("ocedata", quietly=TRUE)) {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                  mcoastline <- get("coastlineWorldMedium")
+                                  d <- geodDist(mcoastline[['longitude']],
+                                                mcoastline[['latitude']],
+                                                mean(x[['longitude']], na.rm=TRUE),
+                                                mean(x[['latitude']], na.rm=TRUE))
+                                  rm(mcoastline)
+                              } else {
+                                  data("coastlineWorld")
+                                  d <- geodDist(coastlineWorld[['longitude']],
+                                                coastlineWorld[['latitude']],
+                                                mean(x[['longitude']], na.rm=TRUE),
+                                                mean(x[['latitude']], na.rm=TRUE))
+                              }
                               ## FIXME: maybe demand say 10 coastline points in view
                               nearest <- mean(head(sort(d), 20), na.rm=TRUE) # in km
                               span <- 2 * nearest
