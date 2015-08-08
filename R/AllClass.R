@@ -28,6 +28,10 @@ setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
+setClass("odfheader",
+         slots = list(odf.header = "list", cruise.header = "list", event.header = "list", 
+                      instrument.header = "list", history.header = "list", 
+                      parameter.header = "list", record.header = "list"))
 
 setMethod(f="subset",
           signature="oce",
