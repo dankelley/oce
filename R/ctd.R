@@ -35,7 +35,7 @@ setMethod(f="summary",
               showMetadataItem(object, "filename", "File source:         ")
               showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
               showMetadataItem(object, "institute", "Institute:      ")
-              showMetadataItem(object, "scientist", "Chief scientist:      ")
+              showMetadataItem(object, "scientist", "Chief scientist:     ")
               showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
               showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
               showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
