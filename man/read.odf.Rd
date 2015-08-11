@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{read.odf}
 \alias{read.odf}
-\title{Read an ODF file}
+\title{Read an ODF file, producing an oce object}
 \usage{
 read.odf(file, debug = getOption("oceDebug"))
 }
@@ -15,7 +15,7 @@ read.odf(file, debug = getOption("oceDebug"))
 an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 }
 \description{
-Read an ODF file
+Read an ODF file, producing an oce object
 }
 \details{
 ODF (Ocean Data Format) is a
