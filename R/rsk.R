@@ -470,18 +470,25 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
         return(rval)
     } else if (!(missing(type)) && type=='txt') {
-        cat('RBR txt format\n')
+        oceDebug('RBR txt format\n')
+        oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
         l <- readLines(file, n=100)         # read first 100 lines to get header
         model <- unlist(strsplit(l[grep('Model', l)], '='))[2]
         serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l)], '='))[2])
         sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l)], '='))[2]))
         numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l)], '='))[2])
+        oceDebug(debug, "Model: ", model, "\n")
+        oceDebug(debug, "serialNumber: ", serialNumber, "\n")
+        oceDebug(debug, "sampleInterval: ", sampleInterval, "\n")
+        oceDebug(debug, "File has ", numberOfChannels, "channels", "\n")
         channelNames <- NULL
         for (iChannel in 1:numberOfChannels) {
             channelNames <- c(channelNames,
                               tolower(unlist(strsplit(l[grep(paste0('Channel[', iChannel,']'), l, fixed=TRUE)], '='))[2]))
         }
+        oceDebug(debug, "Channel names are:", channelNames, "\n")
         skip <- grep('Date & Time', l)      # Where should I start reading the data?
+        oceDebug(debug, "Data starts on line", skip, "\n")
         d <- read.table(file, skip=skip, stringsAsFactors = FALSE)
         ## Assume date and time are first two columns
         time <- as.POSIXct(paste(d$V1, d$V2), format='%d-%b-%Y %H:%M:%OS', tz=tz)
