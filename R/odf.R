@@ -81,7 +81,75 @@ findInHeader <- function(key, lines)
         gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
 }
 
-#' Read an ODF file
+ODF2oce <- function(ODF, coerce=TRUE) 
+{
+    ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
+    ## FIXME: add other types, starting with ADCP perhaps
+    isCTD <- FALSE
+    if (coerce) {
+        if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
+            isCTD <- TRUE
+            rval <- new("ctd")
+        } else {
+            rval <- new("odf") # FIXME: other types
+        }
+    } else {
+        rval <- new("odf")
+    }
+    ## Save the whole header as read by BIO routine read_ODF()
+    rval@metadata <- list(odfHeader=list(ODF_HEADER=ODF$ODF_HEADER,
+                                         CRUISE_HEADER=ODF$CRUISE_HEADER,
+                                         EVENT_HEADER=ODF$EVENT_HEADER,
+                                         INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
+                                         HISTORY_HEADER=ODF$HISTORY_HEADER,
+                                         PARAMETER_HEADER=ODF$PARAMETER_HEADER,
+                                         RECORD_HEADER=ODF$RECORD_HEADER,
+                                         INPUT_FILE=ODF$INPUT_FILE)) 
+    ## Define some standard items that are used in plotting and summaries
+    if (isCTD) {
+        rval@metadata$type <- rval@metadata$odfHeader$INSTRUMENT_HEADER$INST_TYPE
+        rval@metadata$model <- rval@metadata$odfHeader$INSTRUMENT_HEADER$INST_MODEL
+        rval@metadata$serialNumber <- rval@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
+    }
+    rval@metadata$startTime <- strptime(rval@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
+                                        "%d-%B-%Y %H:%M:%S", tz="UTC")
+    rval@metadata$filename <- rval@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
+    rval@metadata$serialNumber <- rval@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
+    rval@metadata$ship <- rval@metadata$odfHeader$CRUISE_HEADER$PLATFORM
+    rval@metadata$cruise <- rval@metadata$odfHeader$CRUISE_HEADER$CRUISE_NUMBER
+    rval@metadata$station <- rval@metadata$odfHeader$EVENT_HEADER$EVENT_NUMBER # FIXME: is this right?
+    rval@metadata$scientist <- rval@metadata$odfHeader$CRUISE_HEADER$CHIEF_SCIENTIST
+    rval@metadata$latitude <- rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE
+    rval@metadata$longitude <- rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE
+
+    ## Stage 2. insert data (renamed to Oce convention)
+    xnames <- names(ODF$DATA)
+    rval@data <- ODF$DATA
+    ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
+    odfRegexp <- c("CNTR.*", "CRAT.*", "FFFF.*", "PRES.*", "PSAL.*", "SIGP.*", "TEMP.*")
+    ## FIXME: be sure to record unit as conductivityRatio.
+    oceNames <- c("scan", "conductivity", "flag", "pressure", "salinity", "sigmaTheta", "temperature")
+    nknown <- length(odfRegexp)
+    rvalNames <- rep("", nknown)
+    for (iname in 1:length(xnames)) {
+        ##message(xnames[iname])
+        for (j in 1:nknown) {
+            match <- grep(odfRegexp[j], xnames[iname])
+            ## message(" odfRegexp[", j, "]:", odfRegexp[j], ", length(match):", length(match))
+            if (length(match)) {
+                ## message(" -> ", match, " -> ", oceNames[j])
+                rvalNames[iname] <- oceNames[j]
+                break
+            }
+        }
+    }
+    ## data.frame(xnames=xnames, rvalNames=rvalNames)
+    names(rval@data) <- rvalNames
+    rval
+}
+
+
+#' Read an ODF file, producing an oce object
 #'
 #' @details
 #' ODF (Ocean Data Format) is a 

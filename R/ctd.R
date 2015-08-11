@@ -1378,7 +1378,7 @@ setMethod(f="plot",
                                                 mean(x[['latitude']], na.rm=TRUE))
                                   rm(mcoastline)
                               } else {
-                                  data("coastlineWorld")
+                                  data("coastlineWorld", package="oce", envir=environment())
                                   d <- geodDist(coastlineWorld[['longitude']],
                                                 coastlineWorld[['latitude']],
                                                 mean(x[['longitude']], na.rm=TRUE),
