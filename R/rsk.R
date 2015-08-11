@@ -472,7 +472,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     } else if (!(missing(type)) && type=='txt') {
         oceDebug('RBR txt format\n')
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
-        l <- readLines(file, n=100)         # read first 100 lines to get header
+        l <- readLines(file, n=1000)         # read first 1000 lines to get header
         model <- unlist(strsplit(l[grep('Model', l)], '='))[2]
         serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l)], '='))[2])
         sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l)], '='))[2]))
