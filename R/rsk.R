@@ -469,7 +469,34 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
         return(rval)
-    } else {
+    } else if (!(missing(type)) && type=='txt') {
+        cat('RBR txt format\n')
+        l <- readLines(file, n=100)         # read first 100 lines to get header
+        model <- unlist(strsplit(l[grep('Model', l)], '='))[2]
+        serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l)], '='))[2])
+        sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l)], '='))[2]))
+        numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l)], '='))[2])
+        channelNames <- NULL
+        for (iChannel in 1:numberOfChannels) {
+            channelNames <- c(channelNames,
+                              tolower(unlist(strsplit(l[grep(paste0('Channel[', iChannel,']'), l, fixed=TRUE)], '='))[2]))
+        }
+        skip <- grep('Date & Time', l)      # Where should I start reading the data?
+        d <- read.table(file, skip=skip, stringsAsFactors = FALSE)
+        ## Assume date and time are first two columns
+        time <- as.POSIXct(paste(d$V1, d$V2), format='%d-%b-%Y %H:%M:%OS', tz=tz)
+        channels <- list()
+        for (iChannel in 1:numberOfChannels) {
+            channels[[iChannel]] <- d[,iChannel+2]
+        }
+        names(channels) <- channelNames
+        ## FIXME: Add subsetting as in the other case
+        rval <- as.rsk(time, columns=channels,
+                       instrumentType="rbr",
+                       serialNumber=serialNumber, model=model,
+                       filename=filename,
+                       debug=debug-1)
+    } else { # to read the "old" TDR files
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
             if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) break
@@ -572,12 +599,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         temperature <- as.numeric(d[Tcol, look])
         pressure <- as.numeric(d[pcol, look])
         model <- ""
+        rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
+                       instrumentType="rbr",
+                       serialNumber=serialNumber, model=model,
+                       filename=filename,
+                       debug=debug-1)
     }
-    rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
-                   instrumentType="rbr",
-                   serialNumber=serialNumber, model=model,
-                   filename=filename,
-                   debug=debug-1)
     if (is.logical(patm)) {
         if (patm) {
             rval@data$pressureOriginal <- rval@data$pressure

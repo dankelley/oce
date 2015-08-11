@@ -762,6 +762,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is rsk\n")
         return("rsk")
     }
+    if ("Model=" == substr(line, 1, 6))  {
+        oceDebug(debug, "this is rsk\n")
+        return("rsk")
+    }
     if ("BOTTLE"  == substr(line, 1, 6))  {
         oceDebug(debug, "this is section\n")
         return("section")
