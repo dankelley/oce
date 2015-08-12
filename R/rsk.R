@@ -312,6 +312,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     if (is.character(file)) {
         if (length(grep(".rsk$", file, ignore.case=TRUE))) 
             type <- "rsk"
+        else if (length(grep(".txt$", file, ignore.case=TRUE))) 
+            type <- "txt"
         file <- file(file, "r")
         on.exit(close(file))
     }
