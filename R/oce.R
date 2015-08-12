@@ -758,9 +758,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is topo\n")
         return("topo")
     }
-    if ("RBR TDR" == substr(line, 1, 7))  {
-        oceDebug(debug, "this is rsk\n")
-        return("rsk")
+    if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
+        oceDebug(debug, "this is RBR/dat\n")
+        return("RBR/dat")
+    }
+    if ("Model=" == substr(line, 1, 6))  {
+        oceDebug(debug, "this is RBR/txt\n")
+        return("RBR/txt")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
         oceDebug(debug, "this is section\n")
@@ -870,11 +874,12 @@ read.oce <- function(file, ...)
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
         return(read.topo(file, processingLog=processingLog, ...))
-    if (type == "rsk") # FIXME: is this right? 
+    if (type == "RBR/dat") # FIXME: obsolete; to be removed by Fall 2015
         return(read.rsk(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
         return(read.rsk(file, processingLog=processingLog, ...))
-        ##return(read.rsk(file, processingLog=processingLog, type='rsk'))
+    if (type == "RBR/txt")
+        return(read.rsk(file, processingLog=processingLog, type='txt', ...))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
