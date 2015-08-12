@@ -610,10 +610,16 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
     rval
 }
 
-landsatTrim <- function(x, ll, ur, debug=getOption("oceDebug"))
+landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))
         stop("method is only for landsat objects")
+    if (!missing(ll) && !missing (ur) && !missing(box))
+        stop("must provide either ll/ur *or* box")
+    if (!missing(box)) {
+        ll <- list(longitude=box$x[1], latitude=box$y[1])
+        ur <- list(longitude=box$x[2], latitude=box$y[2])
+    }
     oceDebug(debug, "ll:", ll$longitude, "E, ", ll$latitude, "N\n", sep="")
     oceDebug(debug, "ur:", ur$longitude, "E, ", ur$latitude, "N\n", sep="")
     if (2 != sum(c("longitude", "latitude") %in% names(ll)))
