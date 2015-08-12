@@ -21,7 +21,8 @@ setMethod(f="plot",
               par(mfrow=c(n-1, 1))
               for (i in 1:n) {
                    if (names[i] != "time") {
-                       oce.plot.ts(x[["time"]], x[[names[i]]], ylab=names[i])
+                       oce.plot.ts(x[["time"]], x[[names[i]]],
+                                   ylab=names[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
                    }
               }
           })
@@ -81,6 +82,82 @@ findInHeader <- function(key, lines)
         gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
 }
 
+#' Translate from ODF names to oce names
+#'
+#' @details
+#' The following table gives the regular expressions that define recognized
+#' ODF names, along with the translated names as used in oce objects. Note
+#' that if an item is repeated, then the second one has a \code{2} appended
+#' at the end, etc.
+#' \tabular{lll}{
+#'     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
+#'     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
+#'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
+#'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{DEPH_*.*} \tab \code{pressure}           \tab Used in \code{ctd} (may just be pressure)                  \cr
+#'     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
+#'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
+#'     \code{FFFF_*.*} \tab \code{flag}               \tab Used in many objects                                       \cr
+#'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+#'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
+#'     \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
+#'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
+#'     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects (FIXME: check if IPTS68) \cr
+#'     \code{UNKN_*.*} \tab \code{g}                  \tab Used in ??                                                 \cr
+#'     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
+#' }
+#'
+#' @param names Data names in ODF format.
+#' @return A vector of string strings.
+
+ODFNames2oceNames <- function(names)
+{
+    ## Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
+    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
+    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
+    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
+    ## view of names.
+    names[grep("CNTR_*.*", names)[1]] <- "scan"
+    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
+    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
+    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
+    names[grep("PSAL_*.*", names)[1]] <- "salinity"
+    names[grep("PSAR_*.*", names)[1]] <- "par"
+    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
+    names[grep("TEMP_*.*", names)[1]] <- "temperature"
+    names[grep("TE90_*.*", names)[1]] <- "temperature"
+    names[grep("PRES_*.*", names)[1]] <- "pressure"
+    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
+    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
+    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
+    names[grep("FFFF_*.*", names)[1]] <- "flag"
+    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
+    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
+    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
+    ## Below are some codes that seem to be useful for ADCP, inferred from a file from BIO
+    ## [1] "EWCT_01" "NSCT_01" "VCSP_01" "ERRV_01" "BEAM_01" "UNKN_01" "time"   
+    names[grep("EWCT_*.*", names)[1]] <- "u"
+    names[grep("NSCT_*.*", names)[1]] <- "v"
+    names[grep("VCSP_*.*", names)[1]] <- "w"
+    names[grep("ERRV_*.*", names)[1]] <- "error"
+    ## next is  NAME='Average Echo Intensity (AGC)'
+    names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
+    names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
+    ## Step 3: recognize something from moving-vessel CTDs
+    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+    names
+}
+
 ODF2oce <- function(ODF, coerce=TRUE) 
 {
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
@@ -124,26 +201,14 @@ ODF2oce <- function(ODF, coerce=TRUE)
 
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
-    rval@data <- ODF$DATA
+    rval@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
-    odfRegexp <- c("CNTR.*", "CRAT.*", "FFFF.*", "PRES.*", "PSAL.*", "SIGP.*", "TEMP.*")
     ## FIXME: be sure to record unit as conductivityRatio.
-    oceNames <- c("scan", "conductivity", "flag", "pressure", "salinity", "sigmaTheta", "temperature")
-    nknown <- length(odfRegexp)
-    rvalNames <- rep("", nknown)
-    for (iname in 1:length(xnames)) {
-        ##message(xnames[iname])
-        for (j in 1:nknown) {
-            match <- grep(odfRegexp[j], xnames[iname])
-            ## message(" odfRegexp[", j, "]:", odfRegexp[j], ", length(match):", length(match))
-            if (length(match)) {
-                ## message(" -> ", match, " -> ", oceNames[j])
-                rvalNames[iname] <- oceNames[j]
-                break
-            }
-        }
-    }
-    ## data.frame(xnames=xnames, rvalNames=rvalNames)
+    odfRegexp <- c("CNTR.*",       "CRAT.*", "FFFF.*",  "POTM.*",   "PRES.*",   "PSAL.*",     "SIGP.*",
+                   "SIGT.*", "SYTM.*", "TEMP.*")
+    oceNames <- c(   "scan", "conductivity",   "flag",   "theta", "pressure", "salinity", "sigmaTheta",
+                  "sigmat",    "time", "temperature")
+    rvalNames <- ODFNames2oceNames(xnames)
     names(rval@data) <- rvalNames
     rval
 }
@@ -263,42 +328,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
-    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
-    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
-    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
-    ## view of names.
-    ## Step 1: trim numbers at end (which occur for BIO files)
-    ## Step 2: recognize some official names
-    names[grep("CNTR_*.*", names)[1]] <- "scan"
-    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
-    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
-    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
-    names[grep("PSAL_*.*", names)[1]] <- "salinity"
-    names[grep("PSAR_*.*", names)[1]] <- "par"
-    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
-    names[grep("TEMP_*.*", names)[1]] <- "temperature"
-    names[grep("TE90_*.*", names)[1]] <- "temperature"
-    names[grep("PRES_*.*", names)[1]] <- "pressure"
-    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
-    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
-    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
-    names[grep("FFFF_*.*", names)[1]] <- "flag"
-    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
-    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
-    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
-    ## Below are some codes that seem to be useful for ADCP, inferred from a file from BIO
-    ## [1] "EWCT_01" "NSCT_01" "VCSP_01" "ERRV_01" "BEAM_01" "UNKN_01" "time"   
-    names[grep("EWCT_*.*", names)[1]] <- "u"
-    names[grep("NSCT_*.*", names)[1]] <- "v"
-    names[grep("VCSP_*.*", names)[1]] <- "w"
-    names[grep("ERRV_*.*", names)[1]] <- "error"
-    ## next is  NAME='Average Echo Intensity (AGC)'
-    names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
-    names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
-
-    ## Step 3: recognize something from moving-vessel CTDs
-    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+   names <- ODFNames2oceNames(names)
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (!is.na(nullValue)) {

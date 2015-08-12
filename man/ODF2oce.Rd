@@ -10,8 +10,6 @@
     The present function constructs an oce object from such data, facilitating
     processing and plotting with the general oce functions.}
 
-
- 
 \usage{ODF2oce(ODF, coerce=TRUE)}
 
 \arguments{
@@ -24,15 +22,15 @@
 
 \details{This function works by storing the 8 headers verbatim in the
     \code{odfHeaders} in the \code{metadata} slot. It copies some of the header
-    information into more standard names (e.g.  \code{metadata\@longitude} is a
-    copy of \code{metadata\@odfHeader\$EVENT\_HEADER\$INITIAL\_LATITUDE}).  As
+    information into more standard names (e.g.  \code{metadata@longitude} is a
+    copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As
     for the \code{DATA}, they are stored in the \code{data} slot, after
-    renaming from ODF to oce convention (e.g. \code{odfheader\$DATA\$PRES\_01}
-    becomes \code{data\$pressure}).
+    renaming from ODF to oce convention using \code{\link{ODFNames2oceNames}}.}
 
-    Note that this function may change as the \code{ODF} package changes. Since
-    \code{ODF} has not been released yet, this should not affect any users
-    except those involved in the development of \code{oce} and \code{ODF}.} 
+\section{Caution}{This function may change as the \code{ODF} package changes.
+    Since \code{ODF} has not been released yet, this should not affect any
+    users except those involved in the development of \code{oce} and
+    \code{ODF}.} 
 
 \value{An oce object, possibly coerced to a subtype.}
     
