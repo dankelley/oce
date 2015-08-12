@@ -25,7 +25,7 @@ at the end, etc.
     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
     \code{CRAT_*.*} \tab \code{conductivity}       \tab Used mainly in \code{ctd} objects                          \cr
-    \code{DEPH_*.*} \tab \code{depth}              \tab Not used by any plotting code                              \cr
+    \code{DEPH_*.*} \tab \code{pressure}           \tab Used in \code{ctd} (may just be pressure)                  \cr
     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
