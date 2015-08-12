@@ -3,9 +3,9 @@
 
 \alias{read.rsk}
 
-\title{Read a rsk file}
+\title{Read an RBR rsk or Ruskin export file}
 
-\description{Read an rsk file, e.g. as produced by an RBR logger, producing an
+\description{Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
   object of class \code{rsk}.}
 
 \usage{read.rsk(file, from=1, to, by=1, type,
@@ -25,11 +25,12 @@
     to the end of the file.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
-    profiles are skipped between each pair of profiles that is read.  If
+    samples are skipped between each pair of samples that is read.  If
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
-  \item{type}{optional file type, presently only permitted to be \code{rsk}. If
+  \item{type}{optional file type, presently can be \code{rsk} or
+  \code{txt} (for a text export of an RBR rsk or hex file). If
     this argument is not provided, an attempt will be made to infer the type
     from the file name and contents.}
   \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
@@ -44,15 +45,20 @@
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{This can read rsk files produced by several RBR instruments.  At the
-  moment, four styles are understood: (1) text file with columns for temperature
-  and pressure (with sampling times indicated in the header); (2) text file with
+\details{This can read files produced by several RBR instruments.  At the
+  moment, five styles are understood: (1) text file produced as an
+  export of an RBR \code{hex} or \code{rsk} file; (2) text file with columns for temperature
+  and pressure (with sampling times indicated in the header); (3) text file with
   four columns, in which the date the time of day are given in the first two
-  columns, followed by the temperature, and pressure; (3) text file with five
-  columns, in which depth in the water column is given after the pressure; (4)
-  an SQLite-based database format. The first three options are provided mainly
+  columns, followed by the temperature, and pressure; (4) text file with five
+  columns, in which depth in the water column is given after the pressure; (5)
+  an SQLite-based database format. The first four options are provided mainly
   for historical reasons, since RBR instruments at the date of writing commonly
-  use the SQLite format.
+  use the SQLite format, though the first option is common for all
+  instruments that produce a \code{hex} file that can be read using
+  Ruskin.
+
+  Options 2-4 are mostly obsolete, and will be removed from future versions.
 
   \emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and
   that it is this value that is stored in the object returned by
