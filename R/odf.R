@@ -8,6 +8,7 @@ setMethod(f="initialize",
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
+              .Object@metadata$deploymentType <- "HUHunknown" # see ctd
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'odf' object"
               return(.Object)
@@ -137,7 +138,7 @@ ODFNames2oceNames <- function(names)
     names[grep("TEMP_*.*", names)[1]] <- "temperature"
     names[grep("TE90_*.*", names)[1]] <- "temperature"
     names[grep("PRES_*.*", names)[1]] <- "pressure"
-    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
+    names[grep("DEPH_*.*", names)[1]] <- "depth"
     names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
     names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
     names[grep("FFFF_*.*", names)[1]] <- "flag"
@@ -163,10 +164,17 @@ ODF2oce <- function(ODF, coerce=TRUE)
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
+    isMCTD <- FALSE
     if (coerce) {
         if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
             isCTD <- TRUE
             rval <- new("ctd")
+            message("CTD")
+        } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
+            isMCTD <- TRUE
+            rval <- new("ctd")
+            rval@metadata$deploymentType <- "moored"
+            message("MCTD")
         } else {
             rval <- new("odf") # FIXME: other types
         }
@@ -278,6 +286,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     cruise <- findInHeader("CRUISE_NAME", lines)
     countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
     cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
+    DATA_TYPE <- findInHeader("DATA_TYPE", lines)
+    deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
@@ -315,6 +325,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      station=station,
                      countryInstituteCode=countryInstituteCode, # ODF only
                      cruiseNumber=cruiseNumber, # ODF only
+                     deploymentType=deploymentType, # used by CTD also
                      date=startTime,
                      startTime=startTime,
                      latitude=latitude,

@@ -14,6 +14,7 @@ setMethod(f="initialize",
               ##.Object@metadata$filename <- filename
               .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
+              .Object@metadata$deploymentType <- "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
               #.Object@metadata$waterDepth <- NA
@@ -238,6 +239,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         ## copy relevant metadata
+        if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
         if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber
         if ("ship" %in% mnames) res@metadata$ship <- o@metadata$ship
@@ -1001,7 +1003,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = c(1, 2, 3, 5),
+          definition=function(x, which,
                               col=par("fg"), fill=FALSE,
                               eos=getOption("oceEOS", default='gsw'),
                               ref.lat = NaN, ref.lon = NaN,
@@ -1029,8 +1031,28 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "gsw"))
-              oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
-                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+              if (missing(which)) {
+                  oceDebug(debug, "plot.ctd(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+                  dt <- x@metadata$deploymentType
+                  if (is.null(dt)) {
+                      which <- c(1, 2, 3, 5)
+                  } else {
+                      if ("profile" == dt) {
+                          which <- c(1, 2, 3, 5)
+                      } else if ("moored" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("thermosalinography" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("towyo" == dt) {
+                          which <- c(30, 3, 33, 5)
+                      } else {
+                          which <- c(1, 2, 3, 5)
+                      }
+                  }
+               } else {
+                  oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                           "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+              }
               lw <- length(which)
               dots <- list(...)
               dotsNames <- names(dots)
@@ -1124,7 +1146,11 @@ setMethod(f="plot",
                                        tritium=14,
                                        Rrho=15,
                                        RrhoSF=16,
-                                       "conductivity"=17))
+                                       "conductivity"=17,
+                                       "Sts"=30,
+                                       "Tts"=31,
+                                       "pts"=32,
+                                       "rhots"=33))
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
@@ -1511,6 +1537,14 @@ setMethod(f="plot",
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
                       oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
+                  } else if (which[w] ==30) { # S timeseries
+                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y"))
+                  } else if (which[w] ==31) { # T timeseries
+                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T", "y"))
+                  } else if (which[w] ==32) { # p timeseries
+                      oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y"))
+                  } else if (which[w] ==33) { # sigmaTheta timeseries
+                      oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
