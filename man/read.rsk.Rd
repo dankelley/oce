@@ -109,6 +109,6 @@ if (requireNamespace("R.utils")) {
     dealing with them. See \code{\link{as.ctd}} for the method of converting to
     a CTD object.}
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 \keyword{misc}
