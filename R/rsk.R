@@ -315,7 +315,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ## file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".rsk$", file, ignore.case=TRUE))) 
+        if (length(grep(".rsk$", file, ignore.case=TRUE, useBytes=TRUE))) 
             type <- "rsk"
         else if (length(grep(".txt$", file, ignore.case=TRUE))) 
             type <- "txt"
@@ -481,10 +481,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
         l <- readLines(file, n=1000)         # read first 1000 lines to get header
         pushBack(l, file)
-        model <- unlist(strsplit(l[grep('Model', l)], '='))[2]
-        serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l)], '='))[2])
-        sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l)], '='))[2]))
-        numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l)], '='))[2])
+        model <- unlist(strsplit(l[grep('Model', l, useBytes=TRUE)], '='))[2]
+        serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l, useBytes=TRUE)], '='))[2])
+        sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l, useBytes=TRUE)], '='))[2]))
+        numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l, useBytes=TRUE)], '='))[2])
         oceDebug(debug, "Model: ", model, "\n")
         oceDebug(debug, "serialNumber: ", serialNumber, "\n")
         oceDebug(debug, "sampleInterval: ", sampleInterval, "\n")
@@ -492,10 +492,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         channelNames <- NULL
         for (iChannel in 1:numberOfChannels) {
             channelNames <- c(channelNames,
-                              tolower(unlist(strsplit(l[grep(paste0('Channel[', iChannel,']'), l, fixed=TRUE)], '='))[2]))
+                              tolower(unlist(strsplit(l[grep(paste0('Channel\\[', iChannel,'\\]'), l, useBytes=TRUE)], '=', useBytes=TRUE))[2]))
         }
         oceDebug(debug, "Channel names are:", channelNames, "\n")
-        skip <- grep('Date & Time', l)      # Where should I start reading the data?
+        skip <- grep('Date & Time', l, useBytes=TRUE)      # Where should I start reading the data?
         oceDebug(debug, "Data starts on line", skip, "\n")
         d <- read.table(file, skip=skip, stringsAsFactors = FALSE)
         oceDebug(debug, "First time=", d$V1[1], d$V2[1], "\n")
