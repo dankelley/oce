@@ -11,7 +11,7 @@
     square of buoyancy frequency, (c) a TS diagram and (d) a coastline diagram
     indicating the station location.}
 
-\usage{\S4method{plot}{ctd}(x, which=c(1, 2, 3, 5),
+\usage{\S4method{plot}{ctd}(x, which,
      col=par("fg"), fill=FALSE,
      eos=getOption("oceEOS", default='gsw'),
      ref.lat=NaN, ref.lon=NaN, 
@@ -41,7 +41,14 @@
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
       list containing items named \code{salinity} and \code{temperature}.}
-  \item{which}{list of desired plot types.  
+  \item{which}{list of desired plot types, as given below. If \code{which}
+      is not supplied, a default will be used. This default will be
+      \code{c(1,2,3,5)} if the CTD is in profiling mode (i.e.
+      if \code{x@metadata$deploymentType=="profile"} or if that
+      item is non extant). If the deployment
+      type is \code{"moored"} or \code{"thermosalinograph"}, the default will be
+      \code{c(30, 3, 31, 5)}.  If it is \code{"towyo"}, \code{c(30, 31, 32, 3)}
+      will be used.
       \itemize{
       \item \code{which=1} or \code{which="salinity+temperature"} gives
       a combined profile of temperature and salinity
