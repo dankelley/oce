@@ -91,6 +91,7 @@ setMethod(f="subset",
  
 as.rsk <- function(time, columns,
                    filename="", instrumentType="rbr", serialNumber="", model="",
+                   sampleInterval,
                    debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
@@ -103,12 +104,16 @@ as.rsk <- function(time, columns,
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
     time <- as.POSIXct(time)
+    if (missing(sampleInterval) || is.na(sampleInterval))
+        sampleInterval <- median(diff(as.numeric(time)))
+        oceDebug(debug, "sampleInterval not provided (or NA), estimating as:", sampleInterval, "s \n")
     res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
     if (nchar(model)) 
         res@metadata$model <-model
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
+    res@metadata$sampleInterval <- sampleInterval
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res@data <- list(time=time)
@@ -542,6 +547,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         rval <- as.rsk(time, columns=channelsSub,
                        instrumentType="rbr",
                        serialNumber=serialNumber, model=model,
+                       sampleInterval=sampleInterval,
                        filename=filename,
                        debug=debug-1)
     } else { # to read the "old" TDR files
