@@ -473,6 +473,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         oceDebug('RBR txt format\n')
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
         l <- readLines(file, n=1000)         # read first 1000 lines to get header
+        pushBack(l, file)
         model <- unlist(strsplit(l[grep('Model', l)], '='))[2]
         serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l)], '='))[2])
         sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l)], '='))[2]))
@@ -490,15 +491,53 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         skip <- grep('Date & Time', l)      # Where should I start reading the data?
         oceDebug(debug, "Data starts on line", skip, "\n")
         d <- read.table(file, skip=skip, stringsAsFactors = FALSE)
+        oceDebug(debug, "First time=", d$V1[1], d$V2[1], "\n")
         ## Assume date and time are first two columns
         time <- as.POSIXct(paste(d$V1, d$V2), format='%d-%b-%Y %H:%M:%OS', tz=tz)
+        n <- length(time)
         channels <- list()
         for (iChannel in 1:numberOfChannels) {
             channels[[iChannel]] <- d[,iChannel+2]
         }
         names(channels) <- channelNames
-        ## FIXME: Add subsetting as in the other case
-        rval <- as.rsk(time, columns=channels,
+        ## Now do subsetting
+        if (inherits(from, "POSIXt") || inherits(from, "character")) {
+            if (!inherits(to, "POSIXt") && !inherits(to, "character"))
+                stop("if 'from' is POSIXt or character, then 'to' must be, also")
+            if (to <= from)
+                stop("cannot have 'to' <= 'from'")
+            from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurementStart, units="secs")) / measurementDeltat
+            oceDebug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurementStart, units="secs")) / measurementDeltat
+            oceDebug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+        } else {
+            if (from < 1)
+                stop("cannot have 'from' < 1")
+            if (!missing(to) && to < from)
+                stop("cannot have 'to' < 'from'")
+        }
+        oceDebug(debug, "from=", from, "\n")
+        oceDebug(debug, "to=", if(missing(to))"(not given)" else format(to), "\n")
+        oceDebug(debug, "by=", by, "\n")
+        if (inherits(by, "character")) by <- ctimeToSeconds(by)/sampleInterval # FIXME: Is this right?
+        oceDebug(debug, "inferred by=", by, "samples\n")
+        ## subset times
+        if (inherits(from, "POSIXt") || inherits(from, "character")) {
+            keep <- from <= time & time <= to # FIXME: from may be int or time
+        } else {
+            if (missing(to))
+                keep <- seq.int(from, n, by)
+            else
+                keep <- seq.int(from, to, by)
+        }
+        oceDebug(debug, "will be skipping time with seq(..., by=", by, ")\n")
+        time <- time[keep]
+        channelsSub <- list()
+        for (iChannel in 1:numberOfChannels) {
+            channelsSub[[iChannel]] <- channels[[iChannel]][keep]
+        }
+        names(channelsSub) <- channelNames
+        rval <- as.rsk(time, columns=channelsSub,
                        instrumentType="rbr",
                        serialNumber=serialNumber, model=model,
                        filename=filename,
