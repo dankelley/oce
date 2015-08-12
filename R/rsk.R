@@ -437,6 +437,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
         model <- instruments$model
+        schedules <- RSQLite::dbReadTable(con, "schedules")
+        sampleInterval <- schedules$samplingPeriod
         RSQLite::dbDisconnect(con)
         rval <- new("rsk", time=time, filename=filename)
         for (name in names)
@@ -470,7 +472,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## CR suggests to read "sampleInterval" but I cannot find it from the following
         ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
         ## so I just infer it from the data
-        rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+        ## rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+        rval@metadata$sampleInterval <- sampleInterval
         rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
         rval@metadata$pressureAtmospheric <- pressureAtmospheric
         rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
