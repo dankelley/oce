@@ -1041,7 +1041,9 @@ setMethod(f="plot",
                           which <- c(1, 2, 3, 5)
                       } else if ("moored" == dt) {
                           which <- c(30, 3, 31, 5)
-                      } else if ("thermosalinography" == dt) {
+                      } else if ("thermosalinograph" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("tsg" == dt) {
                           which <- c(30, 3, 31, 5)
                       } else if ("towyo" == dt) {
                           which <- c(30, 3, 33, 5)
