@@ -104,10 +104,12 @@ if (requireNamespace("R.utils")) {
 }
 }
 
-\seealso{The documentation for \code{\link{rsk-class}} explains the
-    structure of \code{rsk} objects, and also outlines other functions
-    dealing with them. See \code{\link{as.ctd}} for the method of converting to
-    a CTD object.}
+\seealso{The documentation for \code{\link{rsk-class}} explains the structure of
+  \code{rsk} objects, and also outlines other functions dealing with them.
+  Since RBR has a wide variety of instruments, \code{rsk} datasets can be quite
+  general, and it is common to coerce \code{rsk} objects to other forms for
+  specialized work, e.g. \code{\link{as.ctd}} can be used to create CTD object,
+  so that the generic plot obeys the CTD format.}
 
 \author{Dan Kelley and Clark Richards}
 
