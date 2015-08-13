@@ -264,6 +264,7 @@ setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
                               col=oce.colorsPalette,
+                              drawPalette=TRUE,
                               showBandName=TRUE,
                               alpha.f=1, red.f=2, green.f=2, blue.f=4,
                               offset=c(0, 0, 0, 0),
@@ -281,6 +282,7 @@ setMethod(f="plot",
               if (which == 1) {
                   if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
                       terralook <- TRUE
+                      if (missing(drawPalette)) drawPalette <- FALSE
                       if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames))
                           stop("band=\"terralook\" requires landsat object to contain \"red\", \"green\" and \"nir\"")
                       oceDebug(debug, "extracting red data\n")
@@ -376,14 +378,14 @@ setMethod(f="plot",
                       imagep(x=0.001*seq(x@metadata$llUTM$easting, x@metadata$urUTM$easting, length.out=dim[1]),
                              y=0.001*seq(x@metadata$llUTM$northing, x@metadata$urUTM$northing, length.out=dim[2]),
                              z=d, asp=1, zlim=zlim, col=col, decimate=FALSE, 
-                             drawPalette=!terralook, debug=debug-1, ...)
+                             drawPalette=drawPalette, debug=debug-1, ...)
                   } else {
                       if ("breaks" %in% names(list(...))) {
                           imagep(x=lon, y=lat, z=d, asp=asp, col=col, decimate=FALSE, 
-                                 drawPalette=!terralook, debug=debug-1, ...)
+                                 drawPalette=drawPalette, debug=debug-1, ...)
                       } else {
                           imagep(x=lon, y=lat, z=d, asp=asp, zlim=zlim, col=col, decimate=FALSE, 
-                                 drawPalette=!terralook, debug=debug-1, ...)
+                                 drawPalette=drawPalette, debug=debug-1, ...)
                       }
                   }
                   if (showBandName && !terralook)
