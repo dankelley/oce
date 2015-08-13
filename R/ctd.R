@@ -1037,13 +1037,20 @@ setMethod(f="plot",
                   if (is.null(dt)) {
                       which <- c(1, 2, 3, 5)
                   } else {
+                      types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
+                      itype <- pmatch(dt, types, nomatch=0)
+                      if (itype == 0) {
+                          warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
+                      } else {
+                          dt <- types[itype]
+                      }
                       if ("profile" == dt) {
                           which <- c(1, 2, 3, 5)
                       } else if ("moored" == dt) {
                           which <- c(30, 3, 31, 5)
                       } else if ("thermosalinograph" == dt) {
                           which <- c(30, 3, 31, 5)
-                      } else if ("tsg" == dt) {
+                      } else if ("tsg" == dt) { # @richardsc -- do you think we still need this?
                           which <- c(30, 3, 31, 5)
                       } else if ("towyo" == dt) {
                           which <- c(30, 3, 33, 5)
