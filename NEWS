@@ -1,11 +1,13 @@
 0.9-17
+- ODF2oce() added
+- read.odf() handles more data types
 - read.adp.rdi() reads more VmDas (navigational) data
-- use ITS-90 as default temperature unit
+- ITS-90 is now the default temperature unit
 - ctd objects can have vector longitude and latitude
-- rename logger class to rsk
-- add 'bremen' class
-- add coastlineCut()
-- use rgdal package instead of local PROJ.4 source code
+- logger class renamed to rsk
+- bremen class added
+- coastlineCut() added
+- rgdal package used instead of local PROJ.4 source code
 - mapproj-style map projections eliminated
 
 0.9-16

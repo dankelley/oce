@@ -30,19 +30,19 @@ setMethod(f="summary",
               cat("CTD Summary\n-----------\n\n")
               showMetadataItem(object, "type", "Instrument: ")
               showMetadataItem(object, "model", "Instrument model:  ")
-              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-              showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
-              showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
-              showMetadataItem(object, "filename", "File source:         ")
-              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-              showMetadataItem(object, "institute", "Institute:      ")
-              showMetadataItem(object, "scientist", "Chief scientist:     ")
-              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
+              showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
+              showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
+              showMetadataItem(object, "filename",     "File source:         ")
+              showMetadataItem(object, "hexfilename",  "Original file source (hex):  ")
+              showMetadataItem(object, "institute",    "Institute:           ")
+              showMetadataItem(object, "scientist",    "Chief scientist:     ")
+              showMetadataItem(object, "date",         "Date:                ", isdate=TRUE)
+              showMetadataItem(object, "startTime",    "Start time:          ", isdate=TRUE)
               showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",  "Cruise:              ")
-              showMetadataItem(object, "ship",    "Vessel:              ")
-              showMetadataItem(object, "station", "Station:             ")
+              showMetadataItem(object, "cruise",       "Cruise:              ")
+              showMetadataItem(object, "ship",         "Vessel:              ")
+              showMetadataItem(object, "station",      "Station:             ")
               if ("longitude" %in% names(object@data)) {
                   cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),
@@ -54,7 +54,7 @@ setMethod(f="summary",
               } else {
                   cat("* Mean location:      unknown\n")
               }
-              showMetadataItem(object, "waterDepth", "Water depth: ")
+              showMetadataItem(object, "waterDepth", "Water depth:        ?")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
               ndata <- length(names)
@@ -690,11 +690,13 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
+    oceDebug(debug, "read.ctd.odf() {")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file)
     res <- as.ctd(odf)
     if (!is.null(station))
         res@metadata$station <- station
+    oceDebug(debug, "} # read.ctd.odf()")
     res
 }
 
@@ -1040,7 +1042,8 @@ setMethod(f="plot",
                       types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
                       itype <- pmatch(dt, types, nomatch=0)
                       if (itype == 0) {
-                          warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
+                          ## warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
+                          dt <- "profile"
                       } else {
                           dt <- types[itype]
                       }

@@ -31,27 +31,27 @@ setMethod(f="plot",
 setMethod(f="summary",
           signature="odf",
           definition=function(object, ...) {
-              cat("CTD Summary\n-----------\n\n")
-              showMetadataItem(object, "type", "Instrument: ")
-              showMetadataItem(object, "model", "Instrument model:  ")
-              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-              showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
-              showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
-              showMetadataItem(object, "filename", "File source:         ")
-              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-              showMetadataItem(object, "institute", "Institute:      ")
-              showMetadataItem(object, "scientist", "Chief scientist:     ")
-              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",  "Cruise:              ")
-              showMetadataItem(object, "ship",    "Vessel:              ")
-              showMetadataItem(object, "station", "Station:             ")
+              cat("ODF Summary\n-----------\n\n")
+              showMetadataItem(object, "type",                     "Instrument:          ")
+              showMetadataItem(object, "model",                    "Instrument model:    ")
+              showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
+              showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
+              showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
+              showMetadataItem(object, "filename",                 "File source:         ")
+              showMetadataItem(object, "hexfilename",              "Orig. hex file:      ")
+              showMetadataItem(object, "institute",                "Institute:           ")
+              showMetadataItem(object, "scientist",                "Chief scientist:     ")
+              showMetadataItem(object, "date",                     "Date:                ", isdate=TRUE)
+              showMetadataItem(object, "startTime",                "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime",         "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",                   "Cruise:              ")
+              showMetadataItem(object, "ship",                     "Vessel:              ")
+              showMetadataItem(object, "station",                  "Station:             ")
               cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                                object@metadata$longitude,
                                                                digits=5), "\n")
-              showMetadataItem(object, "waterDepth", "Water depth: ")
-              showMetadataItem(object, "levels", "Number of levels: ")
+              showMetadataItem(object, "waterDepth",               "Water depth:         ")
+              showMetadataItem(object, "levels",                   "Number of levels:    ")
               names <- names(object@data)
               ndata <- length(names)
               isTime <- names == "time"
@@ -129,7 +129,9 @@ ODFNames2oceNames <- function(names)
     ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
     ## view of names.
     names[grep("CNTR_*.*", names)[1]] <- "scan"
-    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
+    names[grep("CRAT_*.*", names)[1]] <- "conductivity" # ratio
+    ## For COND, a sample file states: UNITS='mmHo'; is that a typo for mho/m=(1/ohm)/m=Seimens/m?
+    names[grep("COND_*.*", names)[1]] <- "conductivity_Spm"
     names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
     names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
     names[grep("PSAL_*.*", names)[1]] <- "salinity"
@@ -169,12 +171,10 @@ ODF2oce <- function(ODF, coerce=TRUE)
         if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
             isCTD <- TRUE
             rval <- new("ctd")
-            message("CTD")
         } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
             isMCTD <- TRUE
             rval <- new("ctd")
             rval@metadata$deploymentType <- "moored"
-            message("MCTD")
         } else {
             rval <- new("odf") # FIXME: other types
         }
@@ -212,10 +212,6 @@ ODF2oce <- function(ODF, coerce=TRUE)
     rval@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
     ## FIXME: be sure to record unit as conductivityRatio.
-    odfRegexp <- c("CNTR.*",       "CRAT.*", "FFFF.*",  "POTM.*",   "PRES.*",   "PSAL.*",     "SIGP.*",
-                   "SIGT.*", "SYTM.*", "TEMP.*")
-    oceNames <- c(   "scan", "conductivity",   "flag",   "theta", "pressure", "salinity", "sigmaTheta",
-                  "sigmat",    "time", "temperature")
     rvalNames <- ODFNames2oceNames(xnames)
     names(rval@data) <- rvalNames
     rval
@@ -339,7 +335,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-   names <- ODFNames2oceNames(names)
+    names <- ODFNames2oceNames(names)
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (!is.na(nullValue)) {
@@ -350,7 +346,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     metadata$names <- names
     metadata$labels <- names
     res <- new("odf")
-    res@data <- data
+    res@data <- as.list(data)
     res@metadata <- metadata
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
