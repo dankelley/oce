@@ -7,7 +7,7 @@
 
 \description{Trim a landsat image to a lat-lon box.}
 
-\usage{landsatTrim(x, ll, ur, debug=getOption("oceDebug"))}
+\usage{landsatTrim(x, ll, ur, box, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
@@ -17,6 +17,10 @@
 
   \item{ur}{A list containing \code{longitude} and \code{latitude}, for the
     upper-right corner of the portion of the image to retain.}
+
+  \item{box}{A list containing \code{x} and \code{y} (each of length 2),
+  corresponding to the values for \code{ll} and \code{ur}, such as would
+  be produced by a call to \code{locator(2)}.}
   
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
     amount of debugging information, or a higher value for more debugging.}
@@ -39,7 +43,7 @@
   structure of landsat objects, and also outlines the other functions dealing
   with them.}
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 \keyword{misc}
 
