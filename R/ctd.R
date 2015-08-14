@@ -14,6 +14,7 @@ setMethod(f="initialize",
               ##.Object@metadata$filename <- filename
               .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
+              .Object@metadata$deploymentType <- "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
               #.Object@metadata$waterDepth <- NA
@@ -29,19 +30,19 @@ setMethod(f="summary",
               cat("CTD Summary\n-----------\n\n")
               showMetadataItem(object, "type", "Instrument: ")
               showMetadataItem(object, "model", "Instrument model:  ")
-              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-              showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
-              showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
-              showMetadataItem(object, "filename", "File source:         ")
-              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-              showMetadataItem(object, "institute", "Institute:      ")
-              showMetadataItem(object, "scientist", "Chief scientist:      ")
-              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
+              showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
+              showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
+              showMetadataItem(object, "filename",     "File source:         ")
+              showMetadataItem(object, "hexfilename",  "Original file source (hex):  ")
+              showMetadataItem(object, "institute",    "Institute:           ")
+              showMetadataItem(object, "scientist",    "Chief scientist:     ")
+              showMetadataItem(object, "date",         "Date:                ", isdate=TRUE)
+              showMetadataItem(object, "startTime",    "Start time:          ", isdate=TRUE)
               showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",  "Cruise:              ")
-              showMetadataItem(object, "ship",    "Vessel:              ")
-              showMetadataItem(object, "station", "Station:             ")
+              showMetadataItem(object, "cruise",       "Cruise:              ")
+              showMetadataItem(object, "ship",         "Vessel:              ")
+              showMetadataItem(object, "station",      "Station:             ")
               if ("longitude" %in% names(object@data)) {
                   cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),
@@ -53,7 +54,7 @@ setMethod(f="summary",
               } else {
                   cat("* Mean location:      unknown\n")
               }
-              showMetadataItem(object, "waterDepth", "Water depth: ")
+              showMetadataItem(object, "waterDepth", "Water depth:        ?")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
               ndata <- length(names)
@@ -238,6 +239,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         ## copy relevant metadata
+        if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
         if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber
         if ("ship" %in% mnames) res@metadata$ship <- o@metadata$ship
@@ -688,11 +690,13 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
+    oceDebug(debug, "read.ctd.odf() {")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file)
     res <- as.ctd(odf)
     if (!is.null(station))
         res@metadata$station <- station
+    oceDebug(debug, "} # read.ctd.odf()")
     res
 }
 
@@ -1001,7 +1005,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = c(1, 2, 3, 5),
+          definition=function(x, which,
                               col=par("fg"), fill=FALSE,
                               eos=getOption("oceEOS", default='gsw'),
                               ref.lat = NaN, ref.lon = NaN,
@@ -1029,8 +1033,38 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "gsw"))
-              oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
-                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+              if (missing(which)) {
+                  oceDebug(debug, "plot.ctd(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+                  dt <- x@metadata$deploymentType
+                  if (is.null(dt)) {
+                      which <- c(1, 2, 3, 5)
+                  } else {
+                      types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
+                      itype <- pmatch(dt, types, nomatch=0)
+                      if (itype == 0) {
+                          ## warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
+                          dt <- "profile"
+                      } else {
+                          dt <- types[itype]
+                      }
+                      if ("profile" == dt) {
+                          which <- c(1, 2, 3, 5)
+                      } else if ("moored" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("thermosalinograph" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("tsg" == dt) { # @richardsc -- do you think we still need this?
+                          which <- c(30, 3, 31, 5)
+                      } else if ("towyo" == dt) {
+                          which <- c(30, 3, 33, 5)
+                      } else {
+                          which <- c(1, 2, 3, 5)
+                      }
+                  }
+               } else {
+                  oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                           "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+              }
               lw <- length(which)
               dots <- list(...)
               dotsNames <- names(dots)
@@ -1124,7 +1158,11 @@ setMethod(f="plot",
                                        tritium=14,
                                        Rrho=15,
                                        RrhoSF=16,
-                                       "conductivity"=17))
+                                       "conductivity"=17,
+                                       "Sts"=30,
+                                       "Tts"=31,
+                                       "pts"=32,
+                                       "rhots"=33))
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
@@ -1369,13 +1407,21 @@ setMethod(f="plot",
                               ## find nearest point on (coarse) globe
 
                               ## FIXME: maybe pick coastline based on water depth
-                              data("coastlineWorldMedium", package="ocedata", envir=environment())
-                              mcoastline <- get("coastlineWorldMedium")
-                              d <- geodDist(mcoastline[['longitude']],
-                                            mcoastline[['latitude']],
-                                            mean(x[['longitude']], na.rm=TRUE),
-                                            mean(x[['latitude']], na.rm=TRUE))
-                              rm(mcoastline)
+                              if (requireNamespace("ocedata", quietly=TRUE)) {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                  mcoastline <- get("coastlineWorldMedium")
+                                  d <- geodDist(mcoastline[['longitude']],
+                                                mcoastline[['latitude']],
+                                                mean(x[['longitude']], na.rm=TRUE),
+                                                mean(x[['latitude']], na.rm=TRUE))
+                                  rm(mcoastline)
+                              } else {
+                                  data("coastlineWorld", package="oce", envir=environment())
+                                  d <- geodDist(coastlineWorld[['longitude']],
+                                                coastlineWorld[['latitude']],
+                                                mean(x[['longitude']], na.rm=TRUE),
+                                                mean(x[['latitude']], na.rm=TRUE))
+                              }
                               ## FIXME: maybe demand say 10 coastline points in view
                               nearest <- mean(head(sort(d), 20), na.rm=TRUE) # in km
                               span <- 2 * nearest
@@ -1503,6 +1549,14 @@ setMethod(f="plot",
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
                       oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
+                  } else if (which[w] ==30) { # S timeseries
+                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y"))
+                  } else if (which[w] ==31) { # T timeseries
+                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T", "y"))
+                  } else if (which[w] ==32) { # p timeseries
+                      oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y"))
+                  } else if (which[w] ==33) { # sigmaTheta timeseries
+                      oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
@@ -2104,13 +2158,22 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     conductivityUnit = "ratio" # guess
     temperatureUnit = "ITS-90" # guess; other option is IPTS-68
-    while (TRUE) {
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+
+    lines <- readLines(file)
+    for (iline in seq_along(lines)) {
+        line <- lines[iline]
+        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) break;
+        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+            ## Sometimes SBE files have a header line after the *END* line.
+            iline <- iline + 1  
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
+                iline <- iline + 1
+            break
+        }
         lline <- tolower(aline)
         ## BUG: discovery of column names is brittle to format changes
         if (0 < (r <- regexpr("# name ", lline))) {
@@ -2357,13 +2420,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
+
+    ## Handle similar names by tacking numbers on the end, e.g. the first column that
+    ## is automatically inferred to hold temperature is called "temperature", while the
+    ## next one is called "temperature2", and a third would be called "temperature3".
     col.names.inferred <- tolower(col.names.inferred)
+    for (uname in unique(col.names.inferred)) {
+        w <- which(uname == col.names.inferred)
+        lw <- length(w)
+        ##message("uname:", uname, ", lw: ", lw)
+        if (1 != lw) {
+            col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
+        }
+    }
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        t <- try(data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric")), silent=TRUE)
-        if (class(t) == "try-error") {
-            stop("data-header conflict; check that #names matches #columns")
-        }
+        data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
+                                   header=FALSE, col.names=col.names.inferred))
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
@@ -2378,7 +2451,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
-        dataAll <- read.table(file, header=FALSE, colClasses="numeric")
+        dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
+                              header=FALSE, col.names=col.names.inferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
             names(data) <- names(columns)

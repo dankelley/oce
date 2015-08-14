@@ -8,6 +8,7 @@ setMethod(f="initialize",
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
+              .Object@metadata$deploymentType <- "HUHunknown" # see ctd
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'odf' object"
               return(.Object)
@@ -21,7 +22,8 @@ setMethod(f="plot",
               par(mfrow=c(n-1, 1))
               for (i in 1:n) {
                    if (names[i] != "time") {
-                       oce.plot.ts(x[["time"]], x[[names[i]]], ylab=names[i])
+                       oce.plot.ts(x[["time"]], x[[names[i]]],
+                                   ylab=names[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
                    }
               }
           })
@@ -29,27 +31,27 @@ setMethod(f="plot",
 setMethod(f="summary",
           signature="odf",
           definition=function(object, ...) {
-              cat("CTD Summary\n-----------\n\n")
-              showMetadataItem(object, "type", "Instrument: ")
-              showMetadataItem(object, "model", "Instrument model:  ")
-              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-              showMetadataItem(object, "serialNumberTemperature", "Temperature serial number:  ")
-              showMetadataItem(object, "serialNumberConductivity", "Conductivity serial number:  ")
-              showMetadataItem(object, "filename", "File source:         ")
-              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-              showMetadataItem(object, "institute", "Institute:      ")
-              showMetadataItem(object, "scientist", "Chief scientist:      ")
-              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",  "Cruise:              ")
-              showMetadataItem(object, "ship",    "Vessel:              ")
-              showMetadataItem(object, "station", "Station:             ")
+              cat("ODF Summary\n-----------\n\n")
+              showMetadataItem(object, "type",                     "Instrument:          ")
+              showMetadataItem(object, "model",                    "Instrument model:    ")
+              showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
+              showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
+              showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
+              showMetadataItem(object, "filename",                 "File source:         ")
+              showMetadataItem(object, "hexfilename",              "Orig. hex file:      ")
+              showMetadataItem(object, "institute",                "Institute:           ")
+              showMetadataItem(object, "scientist",                "Chief scientist:     ")
+              showMetadataItem(object, "date",                     "Date:                ", isdate=TRUE)
+              showMetadataItem(object, "startTime",                "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime",         "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",                   "Cruise:              ")
+              showMetadataItem(object, "ship",                     "Vessel:              ")
+              showMetadataItem(object, "station",                  "Station:             ")
               cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                                object@metadata$longitude,
                                                                digits=5), "\n")
-              showMetadataItem(object, "waterDepth", "Water depth: ")
-              showMetadataItem(object, "levels", "Number of levels: ")
+              showMetadataItem(object, "waterDepth",               "Water depth:         ")
+              showMetadataItem(object, "levels",                   "Number of levels:    ")
               names <- names(object@data)
               ndata <- length(names)
               isTime <- names == "time"
@@ -81,7 +83,142 @@ findInHeader <- function(key, lines)
         gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
 }
 
-#' Read an ODF file
+#' Translate from ODF names to oce names
+#'
+#' @details
+#' The following table gives the regular expressions that define recognized
+#' ODF names, along with the translated names as used in oce objects. Note
+#' that if an item is repeated, then the second one has a \code{2} appended
+#' at the end, etc.
+#' \tabular{lll}{
+#'     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
+#'     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
+#'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
+#'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{DEPH_*.*} \tab \code{pressure}           \tab Used in \code{ctd} (may just be pressure)                  \cr
+#'     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
+#'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
+#'     \code{FFFF_*.*} \tab \code{flag}               \tab Used in many objects                                       \cr
+#'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+#'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
+#'     \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
+#'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
+#'     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects (FIXME: check if IPTS68) \cr
+#'     \code{UNKN_*.*} \tab \code{g}                  \tab Used in ??                                                 \cr
+#'     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
+#' }
+#'
+#' @param names Data names in ODF format.
+#' @return A vector of string strings.
+
+ODFNames2oceNames <- function(names)
+{
+    ## Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
+    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
+    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
+    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
+    ## view of names.
+    names[grep("CNTR_*.*", names)[1]] <- "scan"
+    names[grep("CRAT_*.*", names)[1]] <- "conductivity" # ratio
+    ## For COND, a sample file states: UNITS='mmHo'; is that a typo for mho/m=(1/ohm)/m=Seimens/m?
+    names[grep("COND_*.*", names)[1]] <- "conductivity_Spm"
+    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
+    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
+    names[grep("PSAL_*.*", names)[1]] <- "salinity"
+    names[grep("PSAR_*.*", names)[1]] <- "par"
+    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
+    names[grep("TEMP_*.*", names)[1]] <- "temperature"
+    names[grep("TE90_*.*", names)[1]] <- "temperature"
+    names[grep("PRES_*.*", names)[1]] <- "pressure"
+    names[grep("DEPH_*.*", names)[1]] <- "depth"
+    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
+    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
+    names[grep("FFFF_*.*", names)[1]] <- "flag"
+    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
+    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
+    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
+    ## Below are some codes that seem to be useful for ADCP, inferred from a file from BIO
+    ## [1] "EWCT_01" "NSCT_01" "VCSP_01" "ERRV_01" "BEAM_01" "UNKN_01" "time"   
+    names[grep("EWCT_*.*", names)[1]] <- "u"
+    names[grep("NSCT_*.*", names)[1]] <- "v"
+    names[grep("VCSP_*.*", names)[1]] <- "w"
+    names[grep("ERRV_*.*", names)[1]] <- "error"
+    ## next is  NAME='Average Echo Intensity (AGC)'
+    names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
+    names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
+    ## Step 3: recognize something from moving-vessel CTDs
+    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+    names
+}
+
+ODF2oce <- function(ODF, coerce=TRUE) 
+{
+    ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
+    ## FIXME: add other types, starting with ADCP perhaps
+    isCTD <- FALSE
+    isMCTD <- FALSE
+    if (coerce) {
+        if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
+            isCTD <- TRUE
+            rval <- new("ctd")
+        } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
+            isMCTD <- TRUE
+            rval <- new("ctd")
+            rval@metadata$deploymentType <- "moored"
+        } else {
+            rval <- new("odf") # FIXME: other types
+        }
+    } else {
+        rval <- new("odf")
+    }
+    ## Save the whole header as read by BIO routine read_ODF()
+    rval@metadata <- list(odfHeader=list(ODF_HEADER=ODF$ODF_HEADER,
+                                         CRUISE_HEADER=ODF$CRUISE_HEADER,
+                                         EVENT_HEADER=ODF$EVENT_HEADER,
+                                         INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
+                                         HISTORY_HEADER=ODF$HISTORY_HEADER,
+                                         PARAMETER_HEADER=ODF$PARAMETER_HEADER,
+                                         RECORD_HEADER=ODF$RECORD_HEADER,
+                                         INPUT_FILE=ODF$INPUT_FILE)) 
+    ## Define some standard items that are used in plotting and summaries
+    if (isCTD) {
+        rval@metadata$type <- rval@metadata$odfHeader$INSTRUMENT_HEADER$INST_TYPE
+        rval@metadata$model <- rval@metadata$odfHeader$INSTRUMENT_HEADER$INST_MODEL
+        rval@metadata$serialNumber <- rval@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
+    }
+    rval@metadata$startTime <- strptime(rval@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
+                                        "%d-%B-%Y %H:%M:%S", tz="UTC")
+    rval@metadata$filename <- rval@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
+    rval@metadata$serialNumber <- rval@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
+    rval@metadata$ship <- rval@metadata$odfHeader$CRUISE_HEADER$PLATFORM
+    rval@metadata$cruise <- rval@metadata$odfHeader$CRUISE_HEADER$CRUISE_NUMBER
+    rval@metadata$station <- rval@metadata$odfHeader$EVENT_HEADER$EVENT_NUMBER # FIXME: is this right?
+    rval@metadata$scientist <- rval@metadata$odfHeader$CRUISE_HEADER$CHIEF_SCIENTIST
+    rval@metadata$latitude <- rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE
+    rval@metadata$longitude <- rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE
+
+    ## Stage 2. insert data (renamed to Oce convention)
+    xnames <- names(ODF$DATA)
+    rval@data <- as.list(ODF$DATA)
+    ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
+    ## FIXME: be sure to record unit as conductivityRatio.
+    rvalNames <- ODFNames2oceNames(xnames)
+    names(rval@data) <- rvalNames
+    rval
+}
+
+
+#' Read an ODF file, producing an oce object
 #'
 #' @details
 #' ODF (Ocean Data Format) is a 
@@ -145,6 +282,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     cruise <- findInHeader("CRUISE_NAME", lines)
     countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
     cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
+    DATA_TYPE <- findInHeader("DATA_TYPE", lines)
+    deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
@@ -182,6 +321,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      station=station,
                      countryInstituteCode=countryInstituteCode, # ODF only
                      cruiseNumber=cruiseNumber, # ODF only
+                     deploymentType=deploymentType, # used by CTD also
                      date=startTime,
                      startTime=startTime,
                      latitude=latitude,
@@ -195,42 +335,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
-    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
-    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
-    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
-    ## view of names.
-    ## Step 1: trim numbers at end (which occur for BIO files)
-    ## Step 2: recognize some official names
-    names[grep("CNTR_*.*", names)[1]] <- "scan"
-    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
-    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
-    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
-    names[grep("PSAL_*.*", names)[1]] <- "salinity"
-    names[grep("PSAR_*.*", names)[1]] <- "par"
-    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
-    names[grep("TEMP_*.*", names)[1]] <- "temperature"
-    names[grep("TE90_*.*", names)[1]] <- "temperature"
-    names[grep("PRES_*.*", names)[1]] <- "pressure"
-    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
-    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
-    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
-    names[grep("FFFF_*.*", names)[1]] <- "flag"
-    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
-    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
-    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
-    ## Below are some codes that seem to be useful for ADCP, inferred from a file from BIO
-    ## [1] "EWCT_01" "NSCT_01" "VCSP_01" "ERRV_01" "BEAM_01" "UNKN_01" "time"   
-    names[grep("EWCT_*.*", names)[1]] <- "u"
-    names[grep("NSCT_*.*", names)[1]] <- "v"
-    names[grep("VCSP_*.*", names)[1]] <- "w"
-    names[grep("ERRV_*.*", names)[1]] <- "error"
-    ## next is  NAME='Average Echo Intensity (AGC)'
-    names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
-    names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
-
-    ## Step 3: recognize something from moving-vessel CTDs
-    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+    names <- ODFNames2oceNames(names)
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (!is.na(nullValue)) {
@@ -241,7 +346,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     metadata$names <- names
     metadata$labels <- names
     res <- new("odf")
-    res@data <- data
+    res@data <- as.list(data)
     res@metadata <- metadata
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")

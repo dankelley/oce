@@ -1,6 +1,6 @@
 Package: oce
 Version: 0.9-18
-Date: 2015-07-20
+Date: 2015-08-13
 Title: Analysis of Oceanographic Data
 Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
  person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut")),
@@ -8,7 +8,7 @@ Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", rol
  person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field fortran subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, gsw
-Suggests: ocedata, foreign, mapproj, rgdal, ncdf4, tiff, akima, RSQLite, DBI, R.utils,
+Suggests: ocedata, foreign, mapproj, ncdf4, tiff, akima, RSQLite, DBI, rgdal, R.utils,
     testthat
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data, including ADCP

@@ -91,6 +91,7 @@ setMethod(f="subset",
  
 as.rsk <- function(time, columns,
                    filename="", instrumentType="rbr", serialNumber="", model="",
+                   sampleInterval,
                    debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
@@ -103,12 +104,16 @@ as.rsk <- function(time, columns,
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
     time <- as.POSIXct(time)
+    if (missing(sampleInterval) || is.na(sampleInterval))
+        sampleInterval <- median(diff(as.numeric(time)))
+        oceDebug(debug, "sampleInterval not provided (or NA), estimating as:", sampleInterval, "s \n")
     res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
     if (nchar(model)) 
         res@metadata$model <-model
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
+    res@metadata$sampleInterval <- sampleInterval
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res@data <- list(time=time)
@@ -310,8 +315,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ## file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".rsk$", file, ignore.case=TRUE))) 
+        if (length(grep(".rsk$", file, ignore.case=TRUE, useBytes=TRUE))) 
             type <- "rsk"
+        else if (length(grep(".txt$", file, ignore.case=TRUE))) 
+            type <- "txt"
         file <- file(file, "r")
         on.exit(close(file))
     }
@@ -430,6 +437,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
         model <- instruments$model
+        schedules <- RSQLite::dbReadTable(con, "schedules")
+        sampleInterval <- schedules$samplingPeriod
         RSQLite::dbDisconnect(con)
         rval <- new("rsk", time=time, filename=filename)
         for (name in names)
@@ -463,13 +472,88 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## CR suggests to read "sampleInterval" but I cannot find it from the following
         ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
         ## so I just infer it from the data
-        rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+        ## rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
+        rval@metadata$sampleInterval <- sampleInterval
         rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
         rval@metadata$pressureAtmospheric <- pressureAtmospheric
         rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
         return(rval)
-    } else {
+    } else if (!(missing(type)) && type=='txt') {
+        oceDebug('RBR txt format\n')
+        oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
+        l <- readLines(file, n=1000)         # read first 1000 lines to get header
+        pushBack(l, file)
+        model <- unlist(strsplit(l[grep('Model', l, useBytes=TRUE)], '='))[2]
+        serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l, useBytes=TRUE)], '='))[2])
+        sampleInterval <- 1/as.numeric(gsub('Hz', '', unlist(strsplit(l[grep('SamplingPeriod', l, useBytes=TRUE)], '='))[2]))
+        numberOfChannels <- as.numeric(unlist(strsplit(l[grep('NumberOfChannels', l, useBytes=TRUE)], '='))[2])
+        oceDebug(debug, "Model: ", model, "\n")
+        oceDebug(debug, "serialNumber: ", serialNumber, "\n")
+        oceDebug(debug, "sampleInterval: ", sampleInterval, "\n")
+        oceDebug(debug, "File has ", numberOfChannels, "channels", "\n")
+        channelNames <- NULL
+        for (iChannel in 1:numberOfChannels) {
+            channelNames <- c(channelNames,
+                              tolower(unlist(strsplit(l[grep(paste0('Channel\\[', iChannel,'\\]'), l, useBytes=TRUE)], '=', useBytes=TRUE))[2]))
+        }
+        oceDebug(debug, "Channel names are:", channelNames, "\n")
+        skip <- grep('Date & Time', l, useBytes=TRUE)      # Where should I start reading the data?
+        oceDebug(debug, "Data starts on line", skip, "\n")
+        d <- read.table(file, skip=skip, stringsAsFactors = FALSE)
+        oceDebug(debug, "First time=", d$V1[1], d$V2[1], "\n")
+        ## Assume date and time are first two columns
+        time <- as.POSIXct(paste(d$V1, d$V2), format='%d-%b-%Y %H:%M:%OS', tz=tz)
+        n <- length(time)
+        channels <- list()
+        for (iChannel in 1:numberOfChannels) {
+            channels[[iChannel]] <- d[,iChannel+2]
+        }
+        names(channels) <- channelNames
+        ## Now do subsetting
+        if (inherits(from, "POSIXt") || inherits(from, "character")) {
+            if (!inherits(to, "POSIXt") && !inherits(to, "character"))
+                stop("if 'from' is POSIXt or character, then 'to' must be, also")
+            if (to <= from)
+                stop("cannot have 'to' <= 'from'")
+            from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurementStart, units="secs")) / measurementDeltat
+            oceDebug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurementStart, units="secs")) / measurementDeltat
+            oceDebug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+        } else {
+            if (from < 1)
+                stop("cannot have 'from' < 1")
+            if (!missing(to) && to < from)
+                stop("cannot have 'to' < 'from'")
+        }
+        oceDebug(debug, "from=", from, "\n")
+        oceDebug(debug, "to=", if(missing(to))"(not given)" else format(to), "\n")
+        oceDebug(debug, "by=", by, "\n")
+        if (inherits(by, "character")) by <- ctimeToSeconds(by)/sampleInterval # FIXME: Is this right?
+        oceDebug(debug, "inferred by=", by, "samples\n")
+        ## subset times
+        if (inherits(from, "POSIXt") || inherits(from, "character")) {
+            keep <- from <= time & time <= to # FIXME: from may be int or time
+        } else {
+            if (missing(to))
+                keep <- seq.int(from, n, by)
+            else
+                keep <- seq.int(from, to, by)
+        }
+        oceDebug(debug, "will be skipping time with seq(..., by=", by, ")\n")
+        time <- time[keep]
+        channelsSub <- list()
+        for (iChannel in 1:numberOfChannels) {
+            channelsSub[[iChannel]] <- channels[[iChannel]][keep]
+        }
+        names(channelsSub) <- channelNames
+        rval <- as.rsk(time, columns=channelsSub,
+                       instrumentType="rbr",
+                       serialNumber=serialNumber, model=model,
+                       sampleInterval=sampleInterval,
+                       filename=filename,
+                       debug=debug-1)
+    } else { # to read the "old" TDR files
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
             if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) break
@@ -572,12 +656,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         temperature <- as.numeric(d[Tcol, look])
         pressure <- as.numeric(d[pcol, look])
         model <- ""
+        rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
+                       instrumentType="rbr",
+                       serialNumber=serialNumber, model=model,
+                       filename=filename,
+                       debug=debug-1)
     }
-    rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
-                   instrumentType="rbr",
-                   serialNumber=serialNumber, model=model,
-                   filename=filename,
-                   debug=debug-1)
     if (is.logical(patm)) {
         if (patm) {
             rval@data$pressureOriginal <- rval@data$pressure

@@ -9,9 +9,11 @@
 \alias{[[<-,rsk-method}
 \alias{show,rsk-method}
 
-\title{Class to store rsk data}
+\title{Class to store RBR rsk data}
 
-\description{Class for data stored in the ``Ruskin'' format used by RBR [1],
+\description{Class for data stored in the ``Ruskin'' format used by RBR
+  [1] (including both \code{rsk} SQLite files and the ASCII \code{txt}
+  exported files),
   with the standard \code{oce} slots, as follows.\itemize{
     \item{\code{data}}{: a list containing the \code{time}, plus other columns
       for data recorded by the device.}
@@ -35,7 +37,7 @@
   value; however, this last function is no equal to decent record-keeping at
   sea.}
 
-\author{Dan Kelley}
+\author{Dan Kelley and Clark Richards}
 
 \references{1. \href{http://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}}
 

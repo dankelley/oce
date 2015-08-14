@@ -9,7 +9,7 @@
 \description{Plot landsat data.}
 
 \usage{\S4method{plot}{landsat}(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
-    col=oce.colorsPalette, showBandName=TRUE,
+    col=oce.colorsPalette, drawPalette=TRUE, showBandName=TRUE,
     alpha.f=1, red.f=2, green.f=2, blue.f=4,
     offset=c(0, 0, 0, 0),
     transform=diag(c(red.f, green.f, blue.f, alpha.f)),
@@ -58,6 +58,9 @@
       \code{green} and \code{blue} bands and produces a natural-hue image.  In
       the latter case, the band designation is ignored, and the object must
       contain the three colour bands.}
+
+  \item{drawPalette}{indication of the type of palette to draw, if
+    any. See \code{\link{imagep}} for details.}
 
   \item{showBandName}{if \code{TRUE}, the band name is plotted in the top
       margin, near the right-hand side.}
