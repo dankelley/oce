@@ -764,7 +764,8 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     urE <- urTrimUTM$easting
     urN <- urTrimUTM$northing
     zone <- llTrimUTM$zone
-    hemisphere <- llTrimUTM$hemisphere
+    ## hemisphere <- llTrimUTM$hemisphere # this fails in S hemisphere.
+    hemisphere <- "N"
     ## Go around the rectangle (in UTM space) to calculate the polygon (in lon-lat space)
     t <- utm2lonlat(easting=llE, northing=llN, zone=zone, hemisphere=hemisphere)
     x@metadata$lllon <- t$longitude
