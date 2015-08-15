@@ -1141,6 +1141,7 @@ setMethod(f="plot",
               if (!missing(lonlim))
                   warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
 
+              whichOrig <- which
               which <- oce.pmatch(which,
                                   list("salinity+temperature"=1,
                                        "density+N2"=2,
@@ -1166,7 +1167,18 @@ setMethod(f="plot",
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
-                      warning("plot.ctd(): unknown plot type requested\n", call.=FALSE)
+                      if (whichOrig[w] %in% names(x@data)) {
+                          plotProfile(x, xtype=x[[whichOrig[w]]], xlab=whichOrig[w],
+                                      Slim=Slim, Tlim=Tlim, plim=plim,
+                                      eos=eos,
+                                      useSmoothScatter=useSmoothScatter,
+                                      grid=grid, col.grid="lightgray", lty.grid="dotted",
+                                      cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                      debug=debug-1,
+                                      ...)
+                      } else {
+                          warning("plot.ctd(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
+                      }
                       next
                   }
                   if (which[w] == 1) {
