@@ -616,8 +616,10 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))
         stop("method is only for landsat objects")
-    if (!missing(ll) && !missing (ur) && !missing(box))
-        stop("must provide either ll/ur *or* box")
+    if (missing(ll) != missing(ur))
+        stop("must provide both ll and ur, or neither")
+    if (!missing(ll) && !missing(box))
+        stop("cannot provide both box and (ll, ur)")
     if (!missing(box)) {
         ll <- list(longitude=box$x[1], latitude=box$y[1])
         ur <- list(longitude=box$x[2], latitude=box$y[2])
@@ -639,9 +641,19 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
         x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
     }
+    oceDebug(debug, "metadata$zoneUTM:", x@metadata$zoneUTM, "\n")
     llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
     urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
     oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting) 
+    print(oldEastingRange)
+    message("^ oldEastingRange")
+    if (TRUE) {
+        ulUTM <- lonlat2utm(data.frame(longitude=ll$longitude, latitude=ur$latitude),
+                            zone=x@metadata$zoneUTM)
+        oldEastingRangeAlternateForTest <- c(ulUTM$easting, x@metadata$urUTM$easting) 
+        print(oldEastingRangeAlternateForTest)
+        message("^ oldEastingRangeAlternateForTest)")
+    }
     trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)
     oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing) 
     trimmedNorthingRange <- c(llTrimUTM$northing, urTrimUTM$northing)
