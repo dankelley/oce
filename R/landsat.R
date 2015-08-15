@@ -642,20 +642,16 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
     }
     oceDebug(debug, "metadata$zoneUTM:", x@metadata$zoneUTM, "\n")
-    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
-    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
-    oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting) 
-    print(oldEastingRange)
-    message("^ oldEastingRange")
-    if (TRUE) {
-        ulUTM <- lonlat2utm(data.frame(longitude=ll$longitude, latitude=ur$latitude),
-                            zone=x@metadata$zoneUTM)
-        oldEastingRangeAlternateForTest <- c(ulUTM$easting, x@metadata$urUTM$easting) 
-        print(oldEastingRangeAlternateForTest)
-        message("^ oldEastingRangeAlternateForTest)")
+    if (FALSE) {
+        llTrimUTM <- lonlat2utm(ll, zone=x@metadata$llUTM$zone)
+        urTrimUTM <- lonlat2utm(ur, zone=x@metadata$llUTM$zone)
+    } else {
+        llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
+        urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
     }
-    trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)
+    oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting) 
     oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing) 
+    trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)
     trimmedNorthingRange <- c(llTrimUTM$northing, urTrimUTM$northing)
     eStart <- (trimmedEastingRange[1] - oldEastingRange[1])/(diff(oldEastingRange))
     eEnd <- (trimmedEastingRange[2] - oldEastingRange[1])/(diff(oldEastingRange))
@@ -699,18 +695,17 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         ilim[1] <- max(1, ilim[1])
         ilim[2] <- min(ilim[2], dim[1])
         oceDebug(debug, "ilim:", ilim[1], "to", ilim[2], "\n")
-        ##? ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
-        ##? ilim <- ilimUTM # FIXME: clean up this code
-        ##? oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
+        ilimUTM <- 1 + round((dim[1] - 1) * c(eStart, eEnd))
+        ilim <- ilimUTM # FIXME: clean up this code
+        oceDebug(debug, "ilimUTM:", ilimUTM[1], "to", ilimUTM[2], "\n")
         jlim <- round(c(1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ll$latitude-x@metadata$lllat),
                         1+(dim[2]-1)/(x@metadata$urlat-x@metadata$lllat)*(ur$latitude-x@metadata$lllat)))
         jlim[1] <- max(1, jlim[1])
         jlim[2] <- min(jlim[2], dim[2])
         oceDebug(debug, "jlim:", jlim[1], "to", jlim[2], "\n")
-
-        ##? jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
-        ##? jlim <- jlimUTM # FIXME: clean up this code
-        ##? oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
+        jlimUTM <- 1 + round((dim[2] - 1) * c(nStart, nEnd))
+        jlim <- jlimUTM # FIXME: clean up this code
+        oceDebug(debug, "jlimUTM:", jlimUTM[1], "to", jlimUTM[2], "\n")
         if (jlim[2] <= jlim[1] || ilim[2] <= ilim[1])
             stop("no intersection between landsat image and trimming box.")
         oceDebug(debug, "  trimming i to range ", ilim[1], ":", ilim[2], ", percent range ",
@@ -726,15 +721,14 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         }
     }
     ## FIXME: there is diminishing need for the ll and ur numbers in lon-lat space
-    ##? x@metadata$lllon <- ll$longitude
-    ##? x@metadata$ullon <- ll$longitude
-    ##? x@metadata$lrlon <- ur$longitude
-    ##? x@metadata$urlon <- ur$longitude
-    ##? x@metadata$lllat <- ll$latitude
-    ##? x@metadata$lrlat <- ll$latitude
-    ##? x@metadata$urlat <- ur$latitude
-    ##? x@metadata$ullat <- ur$latitude
-
+    x@metadata$lllon <- ll$longitude
+    x@metadata$ullon <- ll$longitude
+    x@metadata$lrlon <- ur$longitude
+    x@metadata$urlon <- ur$longitude
+    x@metadata$lllat <- ll$latitude
+    x@metadata$lrlat <- ll$latitude
+    x@metadata$urlat <- ur$latitude
+    x@metadata$ullat <- ur$latitude
     oceDebug(debug, "OLD:",
             "lllon=", x@metadata$lllon,
             "lrlon=", x@metadata$lrlon,
@@ -744,25 +738,47 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
             "lrlat=", x@metadata$lrlat,
             "ullat=", x@metadata$ullat,
             "urlat=", x@metadata$urlat, "\n")
-    ## a regression saves writing messy formulae that will be hard to debug
-    xx <- c(1, dim[1])
-    XX <- c(x@metadata$lllon, x@metadata$urlon)
-    mx <- lm(XX ~ xx)
-    ppx <- predict(mx, new=data.frame(xx=ilim))
-    newlllon <- newullon <- ppx[1]
-    newurlon <- newlrlon <- ppx[2]
-    yy <- c(1, dim[2])
-    YY <- c(x@metadata$lllat, x@metadata$urlat)
-    my <- lm(YY ~ yy)
-    ppy <- predict(my, new=data.frame(yy=jlim))
-    newlllat <- newullat <- ppy[1]
-    newurlat <- newlrlat <- ppy[2]
 
+    ##> ## a regression saves writing messy formulae that will be hard to debug
+    ##> xx <- c(1, dim[1])
+    ##> XX <- c(x@metadata$lllon, x@metadata$urlon)
+    ##> mx <- lm(XX ~ xx)
+    ##> ppx <- predict(mx, new=data.frame(xx=ilim))
+    ##> newlllon <- newullon <- ppx[1]
+    ##> newurlon <- newlrlon <- ppx[2]
+    ##> yy <- c(1, dim[2])
+    ##> YY <- c(x@metadata$lllat, x@metadata$urlat)
+    ##> my <- lm(YY ~ yy)
+    ##> ppy <- predict(my, new=data.frame(yy=jlim))
+    ##> newlllat <- newullat <- ppy[1]
+    ##> newurlat <- newlrlat <- ppy[2]
+    ##> x@metadata$lllon <- x@metadata$ullon <- ppx[1]
+    ##> x@metadata$lrlon <- x@metadata$urlon <- ppx[2]
+    ##> x@metadata$lllat <- x@metadata$lrlat <- ppy[1]
+    ##> x@metadata$ullat <- x@metadata$urlat <- ppy[2]
 
-    x@metadata$lllon <- x@metadata$ullon <- ppx[1]
-    x@metadata$lrlon <- x@metadata$urlon <- ppx[2]
-    x@metadata$lllat <- x@metadata$lrlat <- ppy[1]
-    x@metadata$ullat <- x@metadata$urlat <- ppy[2]
+    x@metadata$llUTM <- llTrimUTM
+    x@metadata$urUTM <- urTrimUTM
+    llE <- llTrimUTM$easting
+    llN <- llTrimUTM$northing
+    urE <- urTrimUTM$easting
+    urN <- urTrimUTM$northing
+    zone <- llTrimUTM$zone
+    hemisphere <- llTrimUTM$hemisphere
+    ## Go around the rectangle (in UTM space) to calculate the polygon (in lon-lat space)
+    t <- utm2lonlat(easting=llE, northing=llN, zone=zone, hemisphere=hemisphere)
+    x@metadata$lllon <- t$longitude
+    x@metadata$lllat <- t$latitude
+    t <- utm2lonlat(easting=llE, northing=urN, zone=zone, hemisphere=hemisphere)
+    x@metadata$ullon <- t$longitude
+    x@metadata$ullat <- t$latitude
+    t <- utm2lonlat(easting=urE, northing=llN, zone=zone, hemisphere=hemisphere)
+    x@metadata$lrlon <- t$longitude
+    x@metadata$lrlat <- t$latitude
+    t <- utm2lonlat(easting=urE, northing=urN, zone=zone, hemisphere=hemisphere)
+    x@metadata$urlon <- t$longitude
+    x@metadata$urlat <- t$latitude
+
 
     oceDebug(debug, "NEW:",
             "lllon=", x@metadata$lllon,
