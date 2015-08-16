@@ -1008,9 +1008,8 @@ setMethod(f="plot",
           definition=function(x, which,
                               col=par("fg"), fill=FALSE,
                               eos=getOption("oceEOS", default='gsw'),
-                              ref.lat = NaN, ref.lon = NaN,
-                              grid = TRUE,
-                              coastline="best",
+                              ref.lat=NaN, ref.lon=NaN,
+                              grid=TRUE, coastline="best",
                               Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
@@ -1399,26 +1398,8 @@ setMethod(f="plot",
                           is.finite(x[["latitude"]][1]) &&
                           is.finite(x[["longitude"]][1])) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
-                          ## FIXME: use waterdepth to guess a reasonable span, if not supplied
-                          if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
-                              waterDepth <- x[["waterDepth"]]
-                          else 
-                              waterDepth <- max(x[["pressure"]], na.rm=TRUE)
+                          ## Calculate span, if not given
                           if (missing(span)) {
-                              ## if (waterDepth < 50)
-                              ##     span <- 50
-                              ## else if (waterDepth < 100)
-                              ##     span <- 100
-                              ## else if (waterDepth < 200)
-                              ##     span <- 500
-                              ## else if (waterDepth < 2000)
-                              ##     span <- 1000
-                              ## else
-                              ##     span <- 5000
-                              ## oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
-                              ## find nearest point on (coarse) globe
-
-                              ## FIXME: maybe pick coastline based on water depth
                               if (requireNamespace("ocedata", quietly=TRUE)) {
                                   data("coastlineWorldMedium", package="ocedata", envir=environment())
                                   mcoastline <- get("coastlineWorldMedium")
@@ -1455,19 +1436,22 @@ setMethod(f="plot",
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (requireNamespace("ocedata", quietly=TRUE)) {
-                                  library(ocedata)
+                                  library(ocedata) # FIXME: is this needed?
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
                                       oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
                                       data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
+                                      oceDebug(debug, "using 'coastlineWorld'\n")
                                       data("coastlineWorld", package="oce", envir=environment())
                                       coastline <- get("coastlineWorld")
                                   } else if (coastline == "coastlineWorldFine") {
+                                      oceDebug(debug, "using 'coastlineWorldFine'\n")
                                       data("coastlineWorldFine", package="ocedata", envir=environment())
                                       coastline <- get("coastlineWorldFine")
                                   } else if (coastline == "coastlineWorldMedium") {
+                                      oceDebug(debug, "using 'coastlineWorldMedium'\n")
                                       data("coastlineWorldMedium", package="ocedata", envir=environment())
                                       coastline <- get("coastlineWorldMedium")
                                   }  else {
