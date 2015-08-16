@@ -49,11 +49,11 @@
       aspect ratio is computed based on the center latitude.  If
       \code{clongitude} and \code{clatitude} are provided, then \code{span}
       must also be provided.}
-  \item{span}{optional suggested span of plot, in kilometers.  The suggestion
-      is an upper limit on the scale; depending on the aspect ratio of the
-      plotting device, the radius may be smaller than \code{span}.  A value for
-      \code{span} must be supplied, if \code{clongitude} and \code{clatitude}
-      are supplied.}
+  \item{span}{optional suggested diagonal span of the plot, in kilometers.
+      The plotted span is usually close to the suggestion, although the details
+      depend on the plot aspect ratio and other factors, so some adjustment may
+      be required to fine-tune a plot.  A value for \code{span} must be
+      supplied, if \code{clongitude} and \code{clatitude} are supplied.}
   \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
       label on the indicated sides of plot, passed to
       \code{\link{plot.coastline}}.  Using these arguments permits reasonably
