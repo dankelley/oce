@@ -1410,8 +1410,9 @@ setMethod(f="plot",
                                   rm(mcoastline)
                               } else {
                                   data("coastlineWorld", package="oce", envir=environment())
-                                  d <- geodDist(coastlineWorld[['longitude']],
-                                                coastlineWorld[['latitude']],
+                                  mcoastline <- get("coastlineWorld")
+                                  d <- geodDist(mcoastline[['longitude']],
+                                                mcoastline[['latitude']],
                                                 mean(x[['longitude']], na.rm=TRUE),
                                                 mean(x[['latitude']], na.rm=TRUE))
                               }
