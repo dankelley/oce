@@ -149,11 +149,12 @@ setMethod(f="plot",
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
                       asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
-                      xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
-                      yr <- clatitude + span * c(-1/2, 1/2) / 111.11
+                      xr <- clongitude + sqrt(1/2) * span * c(-1/2, 1/2) / 111.11 / asp
+                      yr <- clatitude + sqrt(1/2) * span * c(-1/2, 1/2) / 111.11
                       xr0 <- xr
                       yr0 <- yr
-                      oceDebug(debug, "xr=", xr," yr=", yr, " asp=", asp, "\n")
+                      oceDebug(debug, "xr=", xr," yr=", yr, "span=", span, "\n")
+                      oceDebug(debug, "corner-to-corner span=", geodDist(xr[1], yr[1], xr[2], yr[2]), " km\n")
                   } else {
                       xr0 <- range(longitude, na.rm=TRUE)
                       yr0 <- range(latitude, na.rm=TRUE)
@@ -180,26 +181,29 @@ setMethod(f="plot",
                       oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
                   }
                   ## Trim lat or lon, to avoid empty margin space
-                  asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
-                  oceDebug(debug, "par('pin')=", par('pin'), "\n")
-                  oceDebug(debug, "par('fin')=", par('fin'), "\n")
-                  oceDebug(debug, "asp=", asp, "\n")
-                  oceDebug(debug, "asp.page=", asp.page, "\n")
-                  if (!is.finite(asp))
-                      asp <- 1 / cos(clatitude * atan2(1, 1) / 45)
-                  if (asp < asp.page) {
-                      oceDebug(debug, "type 1 (will narrow x range)\n")
-                      d <- asp.page / asp * diff(xr)
-                      oceDebug(debug, "  xr original:", xr, "\n")
-                      xr <- mean(xr) + d * c(-1/2, 1/2)
-                      oceDebug(debug, "  xr narrowed:", xr, "\n")
-                  } else {
-                      oceDebug(debug, "type 2 (will narrow y range)\n")
-                      d <- asp.page / asp * diff(yr)
-                      oceDebug(debug, "  yr original:", yr, ", yielding approx span", 111*diff(yr),
-                               "km\n")
-                      yr <- mean(yr) + d * c(-1/2, 1/2)
-                      oceDebug(debug, "  yr narrowed:", yr, "\n")
+                  if (FALSE) { # disable for issue 677 (as a test, or maybe permanently)
+                      asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
+                      oceDebug(debug, "par('pin')=", par('pin'), "\n")
+                      oceDebug(debug, "par('fin')=", par('fin'), "\n")
+                      oceDebug(debug, "asp=", asp, "\n")
+                      oceDebug(debug, "asp.page=", asp.page, "\n")
+                      if (!is.finite(asp))
+                          asp <- 1 / cos(clatitude * atan2(1, 1) / 45)
+                      if (asp < asp.page) {
+                          oceDebug(debug, "type 1 (will narrow x range)\n")
+                          d <- asp.page / asp * diff(xr)
+                          oceDebug(debug, "  xr original:", xr, "\n")
+                          xr <- mean(xr) + d * c(-1/2, 1/2)
+                          oceDebug(debug, "  xr narrowed:", xr, "\n")
+                      } else {
+                          oceDebug(debug, "type 2 (will narrow y range)\n")
+                          d <- asp.page / asp * diff(yr)
+                          oceDebug(debug, "  yr original:", yr, ", yielding approx span", 111*diff(yr),
+                                   "km\n")
+                          yr <- mean(yr) + d * c(-1/2, 1/2)
+                          oceDebug(debug, "  yr narrowed:", yr, "\n")
+                          oceDebug(debug, "corner-to-corner span=", geodDist(xr[1], yr[1], xr[2], yr[2]), " km\n")
+                      }
                   }
                   ## Avoid looking beyond the poles, or the dateline
                   if (xr[1] < (-180)) {
@@ -215,6 +219,7 @@ setMethod(f="plot",
                       yr[2] <- 90
                   }
                   oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
+                  oceDebug(debug, "corner-to-corner span=", geodDist(xr[1], yr[1], xr[2], yr[2]), " km\n")
                   ## Draw underlay, if desired
                   plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
                   if (!missing(bg)) {
