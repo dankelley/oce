@@ -219,13 +219,11 @@ test <- swThermalConductivity(31.5,10,1000) / joulePerCalorie / cmPerM
 expect_equal(test, 1478e-6, scale=1, tolerance=0.6e-6)
 
 # 13. electrical conductivity
-expect_equal(swCSTp(35,   15,   0, eos="unesco"), 1.000000)
-expect_equal(swCSTp(35,   15,   0, eos="gsw"),    1.000000)
-expect_equal(swSCTp(1.2, 20,2000, eos="unesco"), 37.245628, tolerance=1e-6)
-expect_equal(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, tolerance=1e-6)
-expect_equal(swSCTp(1,   15,   0, eos="unesco"), 35.000000, tolerance=1e-6)
-expect_equal(swSCTp(1.2, 20,2000, eos="unesco"), 37.245628, tolerance=1e-6)
-expect_equal(swSCTp(0.65, 5,1500, eos="unesco"), 27.995347, tolerance=1e-6)
+expect_equal(swCSTp(35, T90fromT68(15), 0, eos="unesco"),  1)
+expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="unesco"), 35)
+expect_equal(swCSTp(35,            15,  0, eos="gsw"),     1)
+expect_equal(swSCTp( 1,            15,  0, eos="gsw"),    35)
+
 data(ctd)
 ## This does not have conductivity, so add it
 salinity <- ctd[["salinity"]]

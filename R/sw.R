@@ -193,7 +193,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "unesco") {
         n <- length(salinity)
-        rval <- .C("sw_CSTp", as.integer(n), as.double(salinity), as.double(temperature), as.double(pressure), C=double(n))$C
+        rval <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n))$C
     } else {
         rval <- gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / gsw_C_from_SP(35, 15, 0)
     }
@@ -242,7 +242,7 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
         rval <- .C("sw_salinity",
                    as.integer(nC),
                    as.double(conductivity),
-                   as.double(temperature),
+                   as.double(T68fromT90(temperature)),
                    as.double(pressure),
                    value = double(nC),
                    NAOK=TRUE, PACKAGE = "oce")$value
@@ -386,9 +386,9 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     if (l$eos == "unesco") {
-        t <- swTheta(l$salinity, l$temperature, l$pressure)
+        theta <- swTheta(l$salinity, l$temperature, l$pressure)
         rval <- .C("sw_alpha_over_beta", as.integer(nS),
-                   as.double(l$salinity), as.double(t), as.double(l$pressure),
+                   as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (l$eos == "gsw") {
         ## not likely to be called since gsw has a direct function for alpha, but put this here anyway
@@ -441,9 +441,6 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
     S <- l$salinity
     T <- T68fromT90(l$temperature)
     p <- l$pressure / 1e3              # Caldwell formula is for kbar, not dbar
-    message("S: ", S)
-    message("T: ", T)
-    message("p: ", p)
     if (TRUE) {
         K <- 1.3507e-3 + 4.061e-6*T + (-1.412e-8)*T^2 # Caldwell eq 6
         f <- 0.0690 + (-8e-5)*T + (-0.0020)*p + (-0.00010)*S # Caldwell eq 8
