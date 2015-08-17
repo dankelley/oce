@@ -662,7 +662,7 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         ## Equation numbers are from Fisher & Simmons (1977); see help page for ref
         p <- 1 + pressure / 10  # add atmophere, then convert water part from dbar
         S <- salinity
-        T <- temperature
+        T <- T68fromT90(temperature)
         f <- frequency
         A1 <- 1.03e-8 + 2.36e-10*T - 5.22e-12*T^2                       # (5)
         f1 <- 1.32e3*(T + 273.1)*exp(-1700/(T + 273.1))                 # (6)
@@ -675,7 +675,7 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         alpha <- alpha * 8686 / 1000   # dB/m
     } else if (formulation == "francois-garrison") {
         S <- salinity
-        T <- temperature
+        T <- T68fromT90(temperature)
         D <- pressure # FIXME: approximation
         c <- 1412 + 3.21 * T + 1.19 * S + 0.0167 * D # sound speed m/s
         f <- frequency / 1000          # convert to kHz
