@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swConservativeTemperature}
 
 \alias{swConservativeTemperature}
@@ -14,7 +15,9 @@
   \item{salinity}{either practial salinity (in which case \code{temperature}
       and \code{pressure} must be provided) \strong{or} an \code{oce} object
       (in which case \code{salinity}, etc. are inferred from the object).}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+    on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
   \item{pressure}{pressure [dbar]}
   \item{longitude}{longitude of observation.}
   \item{latitude}{latitude of observation.}
