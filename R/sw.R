@@ -439,13 +439,18 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
     ## below is formula used prior to 2015-jan-9
     ## return(0.57057 * (1 + l$temperature * (0.003 - 1.025e-05 * l$temperature) + 0.000653 * l$pressure - 0.00029 * l$salinity))
     S <- l$salinity
-    T <- l$temperature
-    p <- l$pressure / 1e4              # Caldwell formula is for kbar, not dbar
-    ## f <- (0.0690) * (-8e-5)*T + (-0.0020)*p + (-0.00010)*S # Caldwell eq 8
-    ## K <- 0.001365*(1 + (0.003)*T - (1.025e-5)*T^2 + 0*(0.0653)*p - (0.00029)*S) # Caldwell eq 9
-    ## cond <- K * (1 + f)                # Caldwell eq 7 
-    ## 418.400 * cond                     # convert from cal/(cm*sec*degC) to J/(m*sec*degC)
-    cond <- 0.001365*(1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
+    T <- T68fromT90(l$temperature)
+    p <- l$pressure / 1e3              # Caldwell formula is for kbar, not dbar
+    message("S: ", S)
+    message("T: ", T)
+    message("p: ", p)
+    if (TRUE) {
+        K <- 1.3507e-3 + 4.061e-6*T + (-1.412e-8)*T^2 # Caldwell eq 6
+        f <- 0.0690 + (-8e-5)*T + (-0.0020)*p + (-0.00010)*S # Caldwell eq 8
+        cond <- K * (1 + f)                # Caldwell eq 7 
+    } else {
+        cond <- 0.001365*(1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
+    }
     418.400 * cond                     # convert from cal/(cm*sec*degC) to J/(m*sec*degC)
 }
 
