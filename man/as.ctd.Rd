@@ -14,6 +14,7 @@
        ship, scientist, institute, address, cruise, station, 
        date, startTime, recovery,
        longitude=NA, latitude=NA,
+       deploymentType="unknown",
        pressureAtmospheric, waterDepth,
        sampleInterval, src,
        debug=getOption("oceDebug"))}
@@ -80,6 +81,14 @@
   \item{latitude}{optional numerical value containing the latitude in decimal
     degrees, positive in the northern hemisphere. See the note on length, for
     the \code{longitude} argument.}
+  \item{deploymentType}{character string indicating the type of deployment. Use
+    \code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+    which the data were acquired during a downcast, while the device was lowered
+    into the water column, perhaps also including an upcast; \code{"moored"} if
+    the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
+    \code{"tsg"}) if the device is mounted on a moving vessel, to record
+    near-surface properties, or \code{"towyo"} if the device is repeatedly
+    lowered and raised.}
   \item{pressureAtmospheric}{if \code{NA} (the default), then pressure is copied
     from the \code{pressure} argument or from the contents of the first argument
     (as described above for \code{salinity}). Otherwise, if

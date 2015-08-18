@@ -27,22 +27,24 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
+              mnames <- names(object@metadata)
               cat("CTD Summary\n-----------\n\n")
               showMetadataItem(object, "type", "Instrument: ")
               showMetadataItem(object, "model", "Instrument model:  ")
               showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
               showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
               showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
-              showMetadataItem(object, "filename",     "File source:         ")
-              showMetadataItem(object, "hexfilename",  "Original file source (hex):  ")
-              showMetadataItem(object, "institute",    "Institute:           ")
-              showMetadataItem(object, "scientist",    "Chief scientist:     ")
-              showMetadataItem(object, "date",         "Date:                ", isdate=TRUE)
-              showMetadataItem(object, "startTime",    "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",       "Cruise:              ")
-              showMetadataItem(object, "ship",         "Vessel:              ")
-              showMetadataItem(object, "station",      "Station:             ")
+              showMetadataItem(object, "filename",                  "File source:         ")
+              showMetadataItem(object, "hexfilename",               "Original file source (hex):  ")
+              showMetadataItem(object, "institute",                 "Institute:           ")
+              showMetadataItem(object, "scientist",                 "Chief scientist:     ")
+              showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
+              showMetadataItem(object, "startTime",                 "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",                    "Cruise:              ")
+              showMetadataItem(object, "ship",                      "Vessel:              ")
+              showMetadataItem(object, "station",                   "Station:             ")
+              showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
                   cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),
@@ -54,7 +56,7 @@ setMethod(f="summary",
               } else {
                   cat("* Mean location:      unknown\n")
               }
-              showMetadataItem(object, "waterDepth", "Water depth:        ?")
+              showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
               ndata <- length(names)
@@ -166,8 +168,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    ship, scientist, institute, address, cruise, station,
                    date, startTime, recovery,
                    longitude=NA, latitude=NA,
+                   deploymentType="unknown",
                    pressureAtmospheric, waterDepth,
-                   sampleInterval, src,
+                   sampleInterval, 
+                   src,
                    debug=getOption("oceDebug"))
 {
     if (missing(salinity)) stop("must provide salinity")
@@ -270,6 +274,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             res@metadata$longitude <- m$longitude
             res@metadata$latitude <- m$latitude
         }
+        res@metadata$deploymentType <- deploymentType
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
@@ -1822,6 +1827,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          address=address,
                          cruise=NULL,
                          station=station,
+                         deploymentType="unknown",
                          date=date,
                          startTime=startTime,
                          latitude=latitude,
@@ -1997,6 +2003,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          address=address,
                          cruise=NULL,
                          station=station,
+                         deploymentType="unknown",
                          date=date,
                          startTime=startTime,
                          latitude=latitude,
@@ -2403,6 +2410,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      address=address,
                      cruise=cruise,
                      station=station,
+                     deploymentType="unknown",
                      date=date,
                      startTime=startTime,
                      latitude=latitude,
