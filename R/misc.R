@@ -802,14 +802,11 @@ vectorShow <- function(v, msg, digits=5)
 
 fullFilename <- function(filename)
 {
-    first.char <- substr(filename, 1, 1)
-    if (first.char == '/' || first.char == '~')
-        return(filename)
-    if (substr(filename, 1, 5) == "http:")
-        return(filename)
-    if (substr(filename, 1, 4) == "ftp:")
-        return(filename)
-    return(paste(getwd(), filename, sep="/"))
+    warn <- options('warn')$warn
+    options(warn=-1)
+    rval <- normalizePath(filename)
+    options(warn=warn)
+    rval
 }
 
 matrixSmooth <- function(m, passes=1)

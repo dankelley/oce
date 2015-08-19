@@ -312,7 +312,6 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
              ", by=", by,
              ", type=", if(missing(type)) "(missing)" else type,
              ", tz=\"", tz, "\", ...) {\n", sep="", unindent=1)
-    ## file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
         if (length(grep(".rsk$", file, ignore.case=TRUE, useBytes=TRUE))) 
