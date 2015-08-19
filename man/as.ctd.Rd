@@ -28,7 +28,7 @@
     temperature, etc., can be inferred. In that case, the relevant information
     is extracted and the other arguments to \code{as.ctd} are ignored, except
     for \code{pressureAtmospheric}; see \dQuote{Details}.}
-    
+
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
     the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
     \code{\link{swRho}}.}
