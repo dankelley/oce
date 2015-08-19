@@ -13,9 +13,9 @@
 \usage{swSTrho(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))}
 
 \arguments{
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C] in the
-    ITS-90 scale, if \code{eos="unesco"}, or Conservative Temperature, if 
-    \code{eos="gsw".}}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
+    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
   \item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
