@@ -29,7 +29,9 @@
     is extracted and the other arguments to \code{as.ctd} are ignored, except
     for \code{pressureAtmospheric}; see \dQuote{Details}.}
     
-  \item{temperature}{Temperature through the water column.}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
+    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
 
   \item{pressure}{pressure through the water column. If only one value is given,
     then it is repeated to match the length of the temperature vector.}

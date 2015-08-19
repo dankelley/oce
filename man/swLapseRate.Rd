@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swLapseRate}
 
 \alias{swLapseRate}
@@ -15,7 +16,9 @@
     a \code{ctd} object (in which case \code{salinity},
     \code{temperature} and \code{pressure} are determined from the
     object, and must not be provided in the argument list).}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
+    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
   \item{pressure}{pressure [dbar]}
   \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
       \sQuote{Details}).}

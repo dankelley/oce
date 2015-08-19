@@ -1,5 +1,5 @@
 library(oce)
-context("sw (seawater) tests")
+context("sw")
 # Table of contents.
 #  1. rho and sigma
 #  2. potential temperature
@@ -140,7 +140,7 @@ expect_equal(CGSW, C)
 SP <- 40
 t <- 40
 p <- 1e4
-l <- swLapseRate(salinity=SP, temperature=t, pressure=p, eos="unesco")
+l <- swLapseRate(salinity=SP, temperature=T90fromT68(t), pressure=p, eos="unesco")
 expect_equal(l, 3.255976e-4, tolerance=1e-7)
 # 7.2 GSW lapse rate
 SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)

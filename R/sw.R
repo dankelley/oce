@@ -88,7 +88,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 }
 
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df, 
-                   eos=getOption("oceEOS", default="gsw"), ...)
+                 eos=getOption("oceEOS", default="gsw"), ...)
 {
     ##cat("swN2(..., df=", df, ")\n",sep="")
     eos <- match.arg(eos, c("unesco", "gsw"))
@@ -542,7 +542,7 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     if (eos == "unesco") {
-        rval <- .C("sw_lapserate", as.integer(nS), as.double(l$salinity), as.double(l$temperature), as.double(l$pressure),
+        rval <- .C("sw_lapserate", as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
         SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)

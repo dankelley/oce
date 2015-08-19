@@ -1,7 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 data(ctd)
-context("CTD & sw")
+context("CTD")
 
 test_that("as.ctd() with specified arguments", {
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
