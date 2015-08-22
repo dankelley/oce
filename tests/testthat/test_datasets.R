@@ -45,6 +45,10 @@ test_that("sealevel", {
 })
 
 ##data("tidedata")
-##data("topoWorld")
+test_that("topoWorld", {
+          data("topoWorld")
+          expect_equal(range(topoWorld[["longitude"]]), c(-179.5, 180))
+          expect_equal(range(topoWorld[["latitude"]]), c(-89.5, 90))
+})
 ##data("wind")
 
