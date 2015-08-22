@@ -125,9 +125,9 @@ setMethod(f="plot",
 
               gave.span <- !missing(span)
               if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
-              if (clongitude > 180)
+              if (!missing(clongitude) && clongitude > 180)
                   clongitude <- clongitude - 360
-              if (clongitude < -180)
+              if (!missing(clongitude) && clongitude < -180)
                   clongitude <- clongitude + 360
               if (gave.center) {
                   if (!missing(asp))
