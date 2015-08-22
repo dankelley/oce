@@ -514,9 +514,9 @@ imagep <- function(x, y, z,
         y <- as.vector(y)
     dim <- dim(z)
     if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
-        stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
+        stop("nrow(image)=", nrow(z), " does not match length(x)=", length(x), sep="")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
-        stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
+        stop("ncol(image)=", ncol(z), " does not match length(y)=", length(y), sep="")
     
     ## Ensure that x and y increase
     ## FIXME: should check on equal values

@@ -35,9 +35,6 @@ swSigma4(salinity, temperature, pressure,
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
     the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
     \code{\link{swRho}}.}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
-    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-    \code{\link{swRho}}.}
   \item{pressure}{pressure [dbar]}
   \item{longitude}{longitude of observation (only used if \code{eos="gsw"}).}
   \item{latitude}{latitude of observation (only used if \code{eos="gsw"}).}
