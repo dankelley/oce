@@ -1,4 +1,5 @@
 0.9-17
+- data(topoWorld) now has longitude from -179.5 to 180
 - ODF2oce() added
 - read.odf() handles more data types
 - read.adp.rdi() reads more VmDas (navigational) data

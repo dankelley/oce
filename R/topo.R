@@ -125,6 +125,10 @@ setMethod(f="plot",
 
               gave.span <- !missing(span)
               if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
+              if (clongitude > 180)
+                  clongitude <- clongitude - 360
+              if (clongitude < -180)
+                  clongitude <- clongitude + 360
               if (gave.center) {
                   if (!missing(asp))
                       warning("argument 'asp' being ignored, because argument 'center' was given")
@@ -343,7 +347,7 @@ setMethod(f="plot",
                               drawlabels=FALSE, add=TRUE, ...)
                   }
               }
-              if (location != "none") {
+              if (!is.null(location) && location != "none") {
                   o <- rev(order(legend))
                   legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
               }
