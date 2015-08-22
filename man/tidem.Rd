@@ -7,25 +7,20 @@
 
 \description{Fit a tidal model to a timeseries.}
 
-\usage{tidem(x, t, constituents, latitude=NULL, rc=1, regress=lm,
+\usage{tidem(t, x, constituents, latitude=NULL, rc=1, regress=lm,
       debug =getOption("oceDebug"))}
 
 \arguments{
 
-  \item{x}{Either a \code{sealevel} object (e.g. produced by
-    \code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a list of
-    numbers.  In the former case, time is part of the object, so \code{t} may
-    not be given here.  In the latter case, \code{tidem} needs a way to
-    determine time, so \code{t} must be given.}
+  \item{t}{Either a \code{sealevel} object (e.g. produced by
+    \code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
+    times. In the former case, time is part of the object, so \code{t} may not
+    be given here.  In the latter case, \code{tidem} needs a way to determine
+    time, so \code{t} must be given.}
       
-  \item{t}{An indication of times, to be given only if \code{x} is numeric.
-    There are two styles: \code{t} may be a POSIXt vector of times at which the
-    \code{x} observations were made, or \code{t} may be a single number
-    indicating the number of seconds between those observations.  (In the latter
-    case, a sealevel object is created, starting at \code{as.POSIXct("2000-01-01
-      00:00:00", tz="UTC")}.  The starting time is irrelevant to the fitted
-    coefficients, but it \emph{does} matter if \code{\link{predict.tidem}} is to
-    be used.)}
+  \item{x}{an optional numerical vector holding something that varies with time.
+    This is ignored if \code{t} is a \code{\link{sealevel-class}} object, in
+    which case it is inferred as \code{t[["elevation"]]}.}
   
   \item{constituents}{an optional list of tidal constituents to which the fit is
     done (see \dQuote{Details}.)}

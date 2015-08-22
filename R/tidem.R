@@ -371,29 +371,34 @@ tidemAstron <- function(t)
     data.frame(astro=astro, ader=ader)
 }
 
-tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
+tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "tidem(x, t, constituents,",
+    oceDebug(debug, "tidem(t, x, constituents,",
              "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
-    if (missing(x))
-        stop("must supply 'x'")
-    if (inherits(x, "sealevel")) {
-        sl <- x
-        t <- x[["time"]]
+    if (missing(t))
+        stop("must supply 't', either a vector of times or a sealevel object")
+    if (inherits(t, "sealevel")) {
+        sl <- t
+        t <- sl[["time"]]
+        x <- sl[["elevation"]]
         if (is.null(latitude))
-            latitude <- x[["latitude"]]
+            latitude <- sl[["latitude"]]
     } else {
-        if (missing(t))
-            stop("must supply 't', since 'x' is not a sealevel object")
+        if (missing(x))
+            stop("must supply 'x', since the first argument is not a sealevel object")
+        if (inherits(x, "POSIXt")) {
+            warning("tidem() switching first 2 args to permit old-style usage\n")
+            tmp <- x
+            x <- t
+            t <- tmp
+        }
+        if (length(x) != length(t))
+            stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
         if (inherits(t, "POSIXt")) {
             t <- as.POSIXct(t)
-            if (length(x) != length(t))
-                stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
         } else {
-            if (1 != length(t))
-                stop("'t' must be of length 1, unless it is a vector of POSIXt times")
-            t <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") + t * seq(0, 1, length.out=length(x))
+            stop("t must be a vector of POSIXt times")
         }
         sl <- as.sealevel(x, t)
     }
