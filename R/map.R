@@ -1271,8 +1271,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[,1]
         latitudeGrid <- g[,2]
-        rx <- range(xy$x, na.rm=TRUE)
-        ry <- range(xy$y, na.rm=TRUE)
+        rx <- range(xy$x[is.finite(xy$x)], na.rm=TRUE)
+        ry <- range(xy$y[is.finite(xy$y)], na.rm=TRUE)
         f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
         xg <- seq(rx[1], rx[2], length.out=f*length(longitude))
         yg <- seq(ry[1], ry[2], length.out=f*length(latitude))
@@ -1286,9 +1286,37 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]
+        xtrim <- par('usr')[1:2]
+        ytrim <- par('usr')[3:4]
+        inFrame <- xtrim[1] <= xx & xx <= xtrim[2] & ytrim[1] <= yy & yy <= ytrim[2]
+        message("before trimming, length(xx): ", length(xx))
+        xx <- xx[inFrame]
+        yy <- yy[inFrame]
+        zz <- zz[inFrame]
+        xx <- xx[seq.int(10*360, 20*360)]
+        yy <- yy[seq.int(10*360, 20*360)]
+        zz <- zz[seq.int(10*360, 20*360)]
+        points(xx, yy, pch=20, cex=1/9)
+        message("after trimming, length(xx): ", length(xx))
+        ## chop to points within plot area
         if (requireNamespace("akima", quietly=TRUE)) {
+            message("about to call akima::interp()")
+            nn <- length(xx)
+            start <- 1
+            ##akima::interp(xx[233281:259001], yy[233281:259001], zz[233281:259001], xg, yg)
+            DAN <- seq.int(1, nn, length.out=20)
+            for (idan in seq_along(DAN)) {
+                if (idan == 1) next
+                lll <- seq.int(DAN[idan-1], DAN[idan])
+                message("idan: ", idan, ", range(lll): ", paste(range(lll), collapse=" "))
+                i <- akima::interp(xx[lll], yy[lll], zz[lll], xg, yg)
+                .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
+                start <- start + nn/10
+            }
+            message("ok?")
             i <- akima::interp(xx, yy, zz, xg, yg)
             #levels <- breaks # FIXME: probably wrong
+            browser()
             .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
         } else {
             warning("must install.packages(\"akima\") to plot filled contours on maps")
