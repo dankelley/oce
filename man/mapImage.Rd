@@ -8,8 +8,9 @@
 
 \usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE,
          breaks, col, colormap, border=NA,
-         lwd=par("lwd"), lty=par("lty"),
-         filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))}
+         lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+         filledContour=FALSE, gridder="binMean2D",
+         debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -48,14 +49,23 @@
     
     \item{lty}{line type, used if borders are drawn}
 
-    \item{filledContour}{either a boolean value indicating whether to use
-        filled contours to plot the image, or a numerical value indicating the
-        resampling rate to be used in interpolating from lon-lat coordinates to
-        x-y coordinates.  See \dQuote{Details}.}
-
     \item{missingColor}{a color to be used to indicate missing data, or
         \code{NA} to skip the drawing of such regions (which will retain
         whatever material has already been drawn at the regions).}
+
+    \item{filledContour}{either a boolean value indicating whether to use
+        filled contours to plot the image, or a numerical value indicating the
+        resampling rate to be used in interpolating from lon-lat coordinates to
+        x-y coordinates.  See \dQuote{Details} for how this interacts with
+        \code{gridder}.}
+
+    \item{gridder}{name of gridding function used if \code{filledContour} is
+        \code{TRUE}.  This can be either \code{"binMean2D"} to select
+        \code{\link{binMean2D}} or \code{"interp"} for
+        \code{\link[akima]{interp}}. If not provided, then a selection is made
+        automatically, with \code{\link{binMean2D}} being used if there are
+        more than 10,000 data points in the present graphical view. This
+        \code{"binMean2D"} method is much faster than \code{"interp"}.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.
@@ -73,28 +83,28 @@
     there are two approaches, depending on the value of \code{filledContour}.
 
     If \code{filledContour} is \code{FALSE}, the image ``pixels'' are with
-    \code{\link{polygon}}.  This can be slow for fine grids.  Also, the results
-    can seem ``washed out'' on some plotting devices, owing to an issue with
-    anti-aliasing in the drawing of the pixel polygons.  If a \code{\link{png}}
-    device is to be used, it is advised to supply arguments \code{type="cairo"}
-    and \code{antialias="none"}; see [1].
+    \code{\link{polygon}}, which can be prohibitively slow for fine grids. 
 
-    If \code{filledContour} is \code{TRUE} or a numerical value, then the the
+    If \code{filledContour} is \code{TRUE} or a numerical value, then the
     ``pixels'' are remapped into a regular grid and then displayed with
     \code{\link{.filled.contour}}.  The remapping starts by converting the
     regular lon-lat grid to an irregular x-y grid using
     \code{\link{lonlat2map}}.  This irregular grid is then interpolated onto a
-    regular x-y grid  with \code{\link[akima]{interp}} from the \code{akima}
-    package.   If \code{filledContour} is \code{TRUE}, the dimensions of the
-    regular x-y grid is the same as that of the original lon-lat grid;
-    otherwise, the number of rows and columns are multiplied by the numerical
-    value of \code{filledContour}, e.g. the value 2 means to make the grid
-    twice as fine.
+    regular x-y grid  with \code{\link{binMean2D}} or with
+    \code{\link[akima]{interp}} from the \code{akima} package, as determined by
+    the \code{gridder} argument.   If \code{filledContour} is \code{TRUE}, the
+    dimensions of the regular x-y grid is the same as that of the original
+    lon-lat grid; otherwise, the number of rows and columns are multiplied by
+    the numerical value of \code{filledContour}, e.g. the value 2 means to make
+    the grid twice as fine.
     
     Filling contours can produce aesthetically-pleasing results, but the method
     involves interpolation, so the data are not represented exactly and
     analysts are advised to compare the results from the two methods (and
     perhaps various grid refinement values) to guard against misinterpretation.
+
+    If a \code{\link{png}} device is to be used, it is advised to supply
+    arguments \code{type="cairo"} and \code{antialias="none"}; see [1].
 
 }
 

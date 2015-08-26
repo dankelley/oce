@@ -1108,8 +1108,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
-                     lwd=par("lwd"), lty=par("lty"),
-                     filledContour=FALSE, missingColor=NA,
+                     lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+                     filledContour=FALSE, gridder="binMean2D",
                      debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
@@ -1136,8 +1136,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             longitude <- longitude$x   # destroys container
         }
     }
-    #if (filledContour)
-    #    warning("mapImage() cannot yet handle filledContour\n")
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) { # takes precedence over breaks and col
         breaks <- colormap$breaks
@@ -1274,14 +1272,15 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         rx <- range(xy$x[is.finite(xy$x)], na.rm=TRUE)
         ry <- range(xy$y[is.finite(xy$y)], na.rm=TRUE)
         f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
-        xg <- seq(rx[1], rx[2], length.out=f*length(longitude))
-        yg <- seq(ry[1], ry[2], length.out=f*length(latitude))
-        message("trying a new xg,yg definition")
-        xg <- seq(par('usr')[1], par('usr')[2], length.out=f*length(longitude))
-        yg <- seq(par('usr')[3], par('usr')[4], length.out=f*length(latitude))
-        message("hang on, scratch that ... trying a newer one...")
-        xg <- seq(par('usr')[1], par('usr')[2], length.out=128)
-        yg <- seq(par('usr')[3], par('usr')[4], length.out=128)
+        ## FIXME: I'm not sure this will work well generally; I'm setting NN to 
+        ## FIXME: get about 5 points per grid cell.
+        ## N is number of points in view
+        N <- sum(par('usr')[1]<=xy$x & xy$x<=par('usr')[2] &
+                 par('usr')[3]<=xy$y & xy$y<=par('usr')[4], na.rm=TRUE)
+        message("N: ", N)
+        NN <- sqrt(N / 50)
+        xg <- seq(par('usr')[1], par('usr')[2], length.out=NN)
+        yg <- seq(par('usr')[3], par('usr')[4], length.out=NN)
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
         good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
         if (!zclip) {
@@ -1304,14 +1303,26 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## zz <- zz[seq.int(30*360, 40*360)]
         message("after trimming, length(xx): ", length(xx))
         ## chop to points within plot area
+        if (gridder== "akima") {
+            message("WANT TO use akima (ignored)")
+        } else {
+            message("WANT TO use binMean2D (ignored)")
+        }
         if (requireNamespace("akima", quietly=TRUE)) {
-            message("about to call akima::interp()")
-            i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
+            ## if (N < 10000L && !length(options("issue721")[[1]])) {
+            if (N < 10000L && !length(options("issue721")[[1]])) {
+                message("using akima::interp()")
+                i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
+            } else {
+                message("using binMean2D()")
+                binned <- binMean2D(xx, yy, zz, xg, yg)
+                i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
+            }
             #levels <- breaks # FIXME: probably wrong
             if (any(is.finite(i$z)))
                 .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
             else
-                message(" OVERALL no valid z")
+                warning("no valid z")
         } else {
             warning("must install.packages(\"akima\") to plot filled contours on maps")
         }

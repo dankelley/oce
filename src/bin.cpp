@@ -133,7 +133,7 @@ extern "C" {
     void bin_mean_2d(int *nx, double *x, double *y, double *f,
             int *nxbreaks, double *xbreaks,
             int *nybreaks, double *ybreaks,
-            int *number, double *mean)
+            int *fill, int *number, double *mean)
     {
 #ifdef DEBUG
         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
@@ -144,6 +144,7 @@ extern "C" {
         std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
         std::vector<double> by(ybreaks, ybreaks + *nybreaks);
         std::sort(by.begin(), by.end()); // STL wants breaks ordered
+        if (*fill) Rprintf("FILL=%d (IGNORED at the moment)\n", *fill);
         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
             number[bij] = 0;
             mean[bij] = 0.0;
