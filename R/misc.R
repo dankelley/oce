@@ -184,7 +184,7 @@ binMean1D <- function(x, f, xbreaks)
 ##}
 
 
-binCount2D <- function(x, y, xbreaks, ybreaks)
+binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -195,21 +195,29 @@ binCount2D <- function(x, y, xbreaks, ybreaks)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    rval <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
-               length(xbreaks), as.double(xbreaks),
-               length(ybreaks), as.double(ybreaks),
-               number=integer((nxbreaks-1)*(nybreaks-1)),
-               mean=double((nxbreaks-1)*(nybreaks-1)),
-               NAOK=TRUE, PACKAGE="oce")
-    list(xbreaks=xbreaks,
-         ybreaks=ybreaks,
-         xmids=xbreaks[-1]-0.5*diff(xbreaks),
-         ymids=ybreaks[-1]-0.5*diff(ybreaks),
-         number=matrix(rval$number, nrow=nxbreaks-1))
+    M <- .C("bin_count_2d", length(x), as.double(x), as.double(y),
+            length(xbreaks), as.double(xbreaks),
+            length(ybreaks), as.double(ybreaks),
+            number=integer((nxbreaks-1)*(nybreaks-1)),
+            mean=double((nxbreaks-1)*(nybreaks-1)),
+            NAOK=TRUE, PACKAGE="oce")
+    rval <- list(xbreaks=xbreaks,
+                 ybreaks=ybreaks,
+                 xmids=xbreaks[-1]-0.5*diff(xbreaks),
+                 ymids=ybreaks[-1]-0.5*diff(ybreaks),
+                 number=matrix(M$number, nrow=nxbreaks-1))
+    if (flatten) {
+        rval2 <- list()
+        rval2$x <- rep(rval$xmids, times=nybreaks-1)
+        rval2$y <- rep(rval$ymids, each=nxbreaks-1)
+        rval2$n <- as.vector(rval$number)
+        rval <- rval2
+    }
+    rval
 }
 
 
-binMean2D <- function(x, y, f, xbreaks, ybreaks)
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -224,18 +232,27 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks)
     if (nxbreaks < 2) stop("must have more than 1 xbreak")
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
-    rval <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
-               length(xbreaks), as.double(xbreaks),
-               length(ybreaks), as.double(ybreaks),
-               number=integer((nxbreaks-1)*(nybreaks-1)),
-               mean=double((nxbreaks-1)*(nybreaks-1)),
-               NAOK=TRUE, PACKAGE="oce")
-    list(xbreaks=xbreaks,
-         ybreaks=ybreaks,
-         xmids=xbreaks[-1]-0.5*diff(xbreaks),
-         ymids=ybreaks[-1]-0.5*diff(ybreaks),
-         number=matrix(rval$number, nrow=nxbreaks-1),
-         result=if (fGiven) matrix(rval$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
+    M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+            length(xbreaks), as.double(xbreaks),
+            length(ybreaks), as.double(ybreaks),
+            number=integer((nxbreaks-1)*(nybreaks-1)),
+            mean=double((nxbreaks-1)*(nybreaks-1)),
+            NAOK=TRUE, PACKAGE="oce")
+    rval <- list(xbreaks=xbreaks,
+                 ybreaks=ybreaks,
+                 xmids=xbreaks[-1]-0.5*diff(xbreaks),
+                 ymids=ybreaks[-1]-0.5*diff(ybreaks),
+                 number=matrix(M$number, nrow=nxbreaks-1),
+                 result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
+    if (flatten) {
+        rval2 <- list()
+        rval2$x <- rep(rval$xmids, times=nybreaks-1)
+        rval2$y <- rep(rval$ymids, each=nxbreaks-1)
+        rval2$f <- as.vector(rval$result)
+        rval2$n <- as.vector(rval$number)
+        rval <- rval2
+    }
+    rval
 }
 
 binAverage <- function(x, y, xmin, xmax, xinc)
@@ -1307,6 +1324,7 @@ geodDist <- function (lon1, lat1=NULL, lon2=NULL, lat2=NULL, alongPath=FALSE)
 interpBarnes <- function(x, y, z, w,
                          xg, yg, xgl, ygl,
                          xr, yr, gamma=0.5, iterations=2, trim=0,
+                         pregrid=FALSE,
                          debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
@@ -1351,6 +1369,35 @@ interpBarnes <- function(x, y, z, w,
         yr <- diff(range(y, na.rm=TRUE)) / sqrt(n)
         if (yr == 0)
             yr <- 1
+    }
+    ## Handle pre-gridding (code not DRY but short enough to be ok)
+    if (is.logical(pregrid)) {
+        if (pregrid) {
+            pregrid <- c(4, 4)
+            oceDebug(debug, "pregrid: ", paste(pregrid, collapse=" "))
+            pg <- binMean2D(x, y, z,
+                            xbreaks=seq(xg[1],tail(xg,1),(xg[2]-xg[1])/pregrid[1]),
+                            ybreaks=seq(yg[1],tail(yg,1),(yg[2]-yg[1])/pregrid[2]),
+                            flatten=TRUE)
+            x <- pg$x
+            y <- pg$y
+            z <- pg$f
+        }
+    } else {
+        if (!is.numeric(pregrid))
+            stop("pregrid must be logical or a numeric vector")
+        if (length(pregrid) < 0 || length(pregrid) > 2)
+            stop("length(pregrid) must be 1 or 2")
+        if (length(pregrid) == 1)
+            pregrid <- rep(pregrid, 2)
+        oceDebug(debug, "pregrid: ", paste(pregrid, collapse=" "))
+        pg <- binMean2D(x, y, z,
+                        xbreaks=seq(xg[1],tail(xg,1),(xg[2]-xg[1])/pregrid[1]),
+                        ybreaks=seq(yg[1],tail(yg,1),(yg[2]-yg[1])/pregrid[2]),
+                        flatten=TRUE)
+        x <- pg$x
+        y <- pg$y
+        z <- pg$f
     }
 
     oceDebug(debug, "xg:", xg, "\n")

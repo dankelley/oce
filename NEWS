@@ -1,4 +1,6 @@
 0.9-17
+- interpBarnes() has new argument 'pregrid'
+- binMean2D() has new argument 'flatten'
 - data(topoWorld) now has longitude from -179.5 to 180
 - ODF2oce() added
 - read.odf() handles more data types
