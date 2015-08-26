@@ -13,9 +13,9 @@
 
 \usage{
 binCount1D(x, xbreaks)
-binCount2D(x, y, xbreaks, ybreaks)
+binCount2D(x, y, xbreaks, ybreaks, flatten=FALSE)
 binMean1D(x, f, xbreaks)
-binMean2D(x, y, f, xbreaks, ybreaks)}
+binMean2D(x, y, f, xbreaks, ybreaks, flatten=FALSE)}
 
 \arguments{
   \item{x}{a vector of numerical values.}
@@ -31,6 +31,9 @@ binMean2D(x, y, f, xbreaks, ybreaks)}
 
   \item{ybreaks}{values of y at the boundaries between bins; calculated using
       \code{\link{pretty}} if not supplied.}
+  \item{flatten}{if \code{TRUE}, then the return value also contains equi-length vectors
+      \code{x}, \code{y}, \code{z} and \code{n}, a flattened representation of 
+      \code{xmids}, \code{ymids}, \code{result} and \code{number}.}
 
 }
 
@@ -41,10 +44,14 @@ binMean2D(x, y, f, xbreaks, ybreaks)}
     with \code{ybreaks} for the 2D case), the break mid-points (\code{xmids}
     along with \code{ymids} for the 2D case), the number of data points in each
     bin, \code{number}, and (for the ``mean'' case) the mean value of \code{f}
-    value in the bins, \code{value}.  For the 1D case, \code{number} and
-    \code{mean} are vectors, whereas they are matrices for the 2D case.  For
-    plotting, the midpoints are more useful than the breaks, as shown in the
-    examples.}
+    value in the bins, \code{value}.  If \code{flatten} is \code{TRUE}, then
+    the return value also contains \code{x} and \code{y} (mid-points) and
+    \code{z} (values) in a flattened grid, with \code{n} being the number in
+    each cell.
+    
+    For the 1D case, \code{number} and \code{mean} are vectors, whereas they
+    are matrices for the 2D case.  For plotting, the midpoints are more useful
+    than the breaks, as shown in the examples.}
 
 \examples{
 library(oce)
@@ -70,11 +77,15 @@ lines(m$xmids, m$result, type='o')
 ## D. 2D
 x <- runif(500)
 y <- runif(500)
-f <- x - y
-m <- binMean2D(x, y, f)
+f <- x + y
+xb <- seq(0, 1, 0.1)
+yb <- seq(0, 1, 0.2)
+m <- binMean2D(x, y, f, xb, yb)
 plot(x, y)
 grid()
-contour(m$xmids, m$ymids, m$result, add=TRUE)
+contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
+mf <- binMean2D(x, y, f, xb, yb, flatten=TRUE)
+text(mf$x, mf$y, round(mf$f, 1), col=2)
 }
 
 \author{Dan Kelley}
