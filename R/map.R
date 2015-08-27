@@ -1278,7 +1278,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         N <- sum(par('usr')[1]<=xy$x & xy$x<=par('usr')[2] &
                  par('usr')[3]<=xy$y & xy$y<=par('usr')[4], na.rm=TRUE)
         message("N: ", N)
-        NN <- sqrt(N / 50)
+        NN <- sqrt(N / 10)
         xg <- seq(par('usr')[1], par('usr')[2], length.out=NN)
         yg <- seq(par('usr')[3], par('usr')[4], length.out=NN)
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
@@ -1304,27 +1304,21 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         message("after trimming, length(xx): ", length(xx))
         ## chop to points within plot area
         if (gridder== "akima") {
-            message("WANT TO use akima (ignored)")
-        } else {
-            message("WANT TO use binMean2D (ignored)")
-        }
-        if (requireNamespace("akima", quietly=TRUE)) {
-            ## if (N < 10000L && !length(options("issue721")[[1]])) {
-            if (N < 10000L && !length(options("issue721")[[1]])) {
-                message("using akima::interp()")
+            message("using akima::interp()")
+            if (requireNamespace("akima", quietly=TRUE)) {
                 i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
             } else {
-                message("using binMean2D()")
-                binned <- binMean2D(xx, yy, zz, xg, yg)
-                i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
+                stop("must install.packages(\"akima\") for mapImage() with filledContour and gridder='akima'")
             }
-            #levels <- breaks # FIXME: probably wrong
-            if (any(is.finite(i$z)))
-                .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
-            else
-                warning("no valid z")
         } else {
-            warning("must install.packages(\"akima\") to plot filled contours on maps")
+            message("using binMean2D()")
+            binned <- binMean2D(xx, yy, zz, xg, yg, fill=TRUE)
+            i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
+        }
+        if (any(is.finite(i$z))) {
+            .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
+        } else {
+            warning("no valid z")
         }
     } else {
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
