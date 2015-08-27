@@ -144,7 +144,6 @@ extern "C" {
         std::sort(bx.begin(), bx.end()); // STL wants breaks ordered
         std::vector<double> by(ybreaks, ybreaks + *nybreaks);
         std::sort(by.begin(), by.end()); // STL wants breaks ordered
-        if (*fill) Rprintf("FILL=%d (IGNORED at the moment)\n", *fill);
         for (int bij = 0; bij < (*nxbreaks-1) * (*nybreaks-1); bij++) {
             number[bij] = 0;
             mean[bij] = 0.0;
@@ -168,6 +167,48 @@ extern "C" {
             } else {
                 mean[bij] = NA_REAL;
             }
+        }
+        if (*fill) {
+            int bad = 0;
+            for (int i = 0; i < (*nxbreaks-1); i++) {
+                for (int j = 0; j < (*nybreaks-1); j++) {
+                    if (ISNA(mean[ij(i,j)])) {
+                        int N=0;
+                        double MEAN=0.0;
+                        int i0 = i-1;
+                        // fix across i
+                        for (; i0 > -1; i0--) {
+                            if (!ISNA(mean[ij(i0, j)])) {
+                                break;
+                            }
+                        }
+                        int i1 = i+1;
+                        for (; i1 < (*nxbreaks-1); i1++) {
+                            if (!ISNA(mean[ij(i1, j)])) {
+                                break;
+                            }
+                        }
+                        int j0 = j-1;
+                        // fix across i
+                        for (; j0 > -1; j0--) {
+                            if (!ISNA(mean[ij(i, j0)])) {
+                                break;
+                            }
+                        }
+                        int j1 = j+1;
+                        for (; j1 < (*nybreaks-1); j1++) {
+                            if (!ISNA(mean[ij(i, j1)])) {
+                                break;
+                            }
+                        }
+                        if (bad < 100) {
+                            Rprintf("i:%d, j:%d, i0:%d, i1:%d, j0:%d, j1:%d, nxbreaks:%d\n", i,j,i0,i1,j0,j1,(*nxbreaks));
+                        }
+                        bad++;
+                    }
+                }
+            }
+            Rprintf("number of gaps to fill: %d\n", bad);
         }
     }
 }
