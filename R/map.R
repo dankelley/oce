@@ -1277,7 +1277,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## N is number of points in view
         N <- sum(par('usr')[1]<=xy$x & xy$x<=par('usr')[2] &
                  par('usr')[3]<=xy$y & xy$y<=par('usr')[4], na.rm=TRUE)
-        message("N: ", N)
         NN <- sqrt(N / 10)
         xg <- seq(par('usr')[1], par('usr')[2], length.out=NN)
         yg <- seq(par('usr')[3], par('usr')[4], length.out=NN)
@@ -1294,24 +1293,24 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xtrim <- par('usr')[1:2]
         ytrim <- par('usr')[3:4]
         inFrame <- xtrim[1] <= xx & xx <= xtrim[2] & ytrim[1] <= yy & yy <= ytrim[2]
-        message("before trimming, length(xx): ", length(xx))
+        oceDebug(debug, "before trimming, length(xx): ", length(xx), "\n")
         xx <- xx[inFrame]
         yy <- yy[inFrame]
         zz <- zz[inFrame]
         ## xx <- xx[seq.int(30*360, 40*360)]
         ## yy <- yy[seq.int(30*360, 40*360)]
         ## zz <- zz[seq.int(30*360, 40*360)]
-        message("after trimming, length(xx): ", length(xx))
+        oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
         ## chop to points within plot area
         if (gridder== "akima") {
-            message("using akima::interp()")
+            oceDebug(debug, "using akima::interp()\n")
             if (requireNamespace("akima", quietly=TRUE)) {
                 i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
             } else {
                 stop("must install.packages(\"akima\") for mapImage() with filledContour and gridder='akima'")
             }
         } else {
-            message("using binMean2D()")
+            oceDebug(debug, "using binMean2D()\n")
             binned <- binMean2D(xx, yy, zz, xg, yg, fill=TRUE)
             i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
         }
@@ -1324,12 +1323,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
-        if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-            message("breaksMin: ", breaksMin)
-            message("breaksMax: ", breaksMax)
-            message("Z:")
-            print(Z)
-        }
+        ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+        ##     message("breaksMin: ", breaksMin)
+        ##     message("breaksMax: ", breaksMax)
+        ##     message("Z:")
+        ##     print(Z)
+        ## }
         colorLookup <- function (ij) {
             zval <- Z[ij]
             if (is.na(zval)) {
