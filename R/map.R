@@ -1316,7 +1316,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
         }
         if (any(is.finite(i$z))) {
-            .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
+            .filled.contour(i$x, i$y, i$z, levels=breaks, col=col)
         } else {
             warning("no valid z")
         }

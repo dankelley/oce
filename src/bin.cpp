@@ -170,44 +170,42 @@ extern "C" {
         }
         if (*fill) {
             int bad = 0;
-            for (int i = 0; i < (*nxbreaks-1); i++) {
-                for (int j = 0; j < (*nybreaks-1); j++) {
+            int im, ip, jm, jp;
+            // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to x
+            // FIXME: is upper limit in the next loops correct?
+            for (int i = 0; i < *nxbreaks; i++) {
+                for (int j = 0; j < *nybreaks; j++) {
                     if (ISNA(mean[ij(i,j)])) {
+                        for (im=i-1; im > -1; im--) if (!ISNA(mean[ij(im, j)])) break;
+                        for (jm=j-1; jm > -1; jm--) if (!ISNA(mean[ij(i, jm)])) break;
+                        // FIXME: is the limit correct on next ... maybe nxbreaks-1 ???
+                        for (ip=i+1; ip < *nxbreaks; ip++) if (!ISNA(mean[ij(ip, j)])) break;
+                        for (jp=j+1; jp < *nybreaks; jp++) if (!ISNA(mean[ij(i, jp)])) break;
                         int N=0;
                         double MEAN=0.0;
-                        int i0 = i-1;
-                        // fix across i
-                        for (; i0 > -1; i0--) {
-                            if (!ISNA(mean[ij(i0, j)])) {
-                                break;
+                        if (0 <= im && ip < *(nxbreaks)) {
+                            MEAN = 0.0; // make it the interpolant
+                            N++;
+                            if (bad < 30 && bad < 40) {
+                                Rprintf("i:%d, j:%d, i neighbors: [%d,%d]=%.1f  [%d,%d]=%.1f\n",
+                                        i,j, im,j,mean[ij(im,j)], ip,j,mean[ij(ip,j)]);
                             }
                         }
-                        int i1 = i+1;
-                        for (; i1 < (*nxbreaks-1); i1++) {
-                            if (!ISNA(mean[ij(i1, j)])) {
-                                break;
+                        if (0 <= jm && jp < *(nybreaks)) {
+                            MEAN += 0.0; // make it the interpolant
+                            N++;
+                            if (bad < 30 && bad < 40) {
+                                Rprintf("i:%d, j:%d, j neighbors: [%d,%d]=%.1f  [%d,%d]=%.1f\n",
+                                        i,j,i,jm,mean[ij(i,jm)],i,jp,mean[ij(i,jp)]);
                             }
                         }
-                        int j0 = j-1;
-                        // fix across i
-                        for (; j0 > -1; j0--) {
-                            if (!ISNA(mean[ij(i, j0)])) {
-                                break;
-                            }
-                        }
-                        int j1 = j+1;
-                        for (; j1 < (*nybreaks-1); j1++) {
-                            if (!ISNA(mean[ij(i, j1)])) {
-                                break;
-                            }
-                        }
-                        if (bad < 100) {
-                            Rprintf("i:%d, j:%d, i0:%d, i1:%d, j0:%d, j1:%d, nxbreaks:%d\n", i,j,i0,i1,j0,j1,(*nxbreaks));
-                        }
+                        // mean[ij(i, j)] = -1000.0; // to test
+                        number[ij(i, j)] = 1; // to test
                         bad++;
                     }
                 }
             }
+            Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
             Rprintf("number of gaps to fill: %d\n", bad);
         }
     }
