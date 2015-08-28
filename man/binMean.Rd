@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{binMean}
 
 \alias{binMean}
@@ -15,43 +16,47 @@
 binCount1D(x, xbreaks)
 binCount2D(x, y, xbreaks, ybreaks, flatten=FALSE)
 binMean1D(x, f, xbreaks)
-binMean2D(x, y, f, xbreaks, ybreaks, flatten=FALSE)}
+binMean2D(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)}
 
 \arguments{
   \item{x}{a vector of numerical values.}
   
   \item{y}{a vector of numerical values.}
 
-  \item{f}{a vector of numerical values, f=f(x) for the 1D function and
-      f=f(x,y) for the 2D function.  If missing, the \code{value} component of
-      the return value will consist entirely of \code{NA} values.}
+  \item{f}{a vector of numerical values, f=f(x) for the 1D function and f=f(x,y)
+    for the 2D function.  If missing, the \code{value} component of the return
+    value will consist entirely of \code{NA} values.}
 
   \item{xbreaks}{values of x at the boundaries between bins; calculated using
-      \code{\link{pretty}} if not supplied.}
+    \code{\link{pretty}} if not supplied.}
 
   \item{ybreaks}{values of y at the boundaries between bins; calculated using
-      \code{\link{pretty}} if not supplied.}
-  \item{flatten}{if \code{TRUE}, then the return value also contains equi-length vectors
-      \code{x}, \code{y}, \code{z} and \code{n}, a flattened representation of 
-      \code{xmids}, \code{ymids}, \code{result} and \code{number}.}
+    \code{\link{pretty}} if not supplied.}
 
+  \item{flatten}{if \code{TRUE}, then the return value also contains equi-length
+    vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+    representation of \code{xmids}, \code{ymids}, \code{result} and
+    \code{number}.}
+
+  \item{fill}{logical value indicating whether to fill \code{NA}-value gaps in
+    the matrix. Gaps will be filled as the average of linear interpolations
+    across rows and columns.}
 }
 
 \details{The \code{f} vector is averaged in bins defined for \code{x}.  Missing
-    values in \code{f} are ignored.}
+  values in \code{f} are ignored.}
 
 \value{A list with the following elements: the breaks (\code{xbreaks}, along
-    with \code{ybreaks} for the 2D case), the break mid-points (\code{xmids}
-    along with \code{ymids} for the 2D case), the number of data points in each
-    bin, \code{number}, and (for the ``mean'' case) the mean value of \code{f}
-    value in the bins, \code{value}.  If \code{flatten} is \code{TRUE}, then
-    the return value also contains \code{x} and \code{y} (mid-points) and
-    \code{z} (values) in a flattened grid, with \code{n} being the number in
-    each cell.
+  with \code{ybreaks} for the 2D case), the break mid-points (\code{xmids} along
+  with \code{ymids} for the 2D case), the number of data points in each bin,
+  \code{number}, and (for the ``mean'' case) the mean value of \code{f} value in
+  the bins, \code{value}.  If \code{flatten} is \code{TRUE}, then the return
+  value also contains \code{x} and \code{y} (mid-points) and \code{z} (values)
+  in a flattened grid, with \code{n} being the number in each cell.
     
-    For the 1D case, \code{number} and \code{mean} are vectors, whereas they
-    are matrices for the 2D case.  For plotting, the midpoints are more useful
-    than the breaks, as shown in the examples.}
+  For the 1D case, \code{number} and \code{mean} are vectors, whereas they are
+  matrices for the 2D case.  For plotting, the midpoints are more useful than
+  the breaks, as shown in the examples.}
 
 \examples{
 library(oce)
