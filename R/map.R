@@ -1351,7 +1351,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
             ## issue522: this was w <- which(zval <= breaks)[1]
             ## issue655: this was w <- which(zval <= breaks)[1]
-            w <- which(zval < breaks + small)[1]
+            w <- which(zval < breaks + 0*small)[1]
             #if (zval == 0) browser()
             ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
             ##     message("zval:", zval, ", w:", w)
