@@ -22,12 +22,14 @@
     
     \item{zlim}{limit for z (colour)}
     
-    \item{zclip}{logical, indicating whether to clip the colours by using the
-        \code{missingColor} for out-of-range values.  If if \code{zlim} is
-        given then its min and max set the range.  If \code{zlim} is not given
-        but \code{breaks} is given, then the min and max of \code{breaks} sets
-        the range.  If neither \code{zlim} nor \code{breaks} is given, clipping
-        is not done, i.e. the action is as if \code{zclip} were \code{FALSE}.}
+    \item{zclip}{logical, with \code{TRUE} indicating that out-of-range z
+        values should be painted with \code{missingColor} and \code{FALSE}
+        indicating that these values should be painted with the nearest
+        in-range colour.  If \code{zlim} is given then its min and max set the
+        range.  If \code{zlim} is not given but \code{breaks} is given, then
+        the min and max of \code{breaks} sets the range used for z.  If neither
+        \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
+        action is as if \code{zclip} were \code{FALSE}.}
 
     \item{breaks}{the z values for breaks in the colour scheme.  If this is of
         length 1, the value indicates the desired number of breaks, which is

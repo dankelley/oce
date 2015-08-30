@@ -1226,7 +1226,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
             z[z >= zlimMax] <- zlimMax * (1 - sign(zlimMax) * small)
         } else if (breaksGiven) {
-            oceDebug(debug, "using min/max colours for out-of-range values\n")
+            oceDebug(debug, "extenging breaks range since no zlim given\n")
             breaksMin <- min(breaks, na.rm=TRUE)
             breaksMax <- max(breaks, na.rm=TRUE)
             z[z <= breaksMin] <- breaksMin * (1 + sign(breaksMin) * small)
@@ -1297,9 +1297,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xx[inFrame]
         yy <- yy[inFrame]
         zz <- zz[inFrame]
-        ## xx <- xx[seq.int(30*360, 40*360)]
-        ## yy <- yy[seq.int(30*360, 40*360)]
-        ## zz <- zz[seq.int(30*360, 40*360)]
         oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
         ## chop to points within plot area
         if (gridder== "akima") {
@@ -1349,9 +1346,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 }
                 return(if (zclip) missingColor else colLast)
             }
+            ## IMPORTANT: whether to write 'breaks' or 'breaks+small' below
+            ## IMPORTANT: is at the heart of several issues, including
+            ## IMPORTANT: issues 522, 655 and possibly 726.
             ## issue522: this was w <- which(zval <= breaks)[1]
             ## issue655: this was w <- which(zval <= breaks)[1]
-            w <- which(zval < breaks + 0*small)[1]
+            w <- which(zval <= breaks + 0*small)[1]
+#            w <- which(zval < breaks + 1*small)[1]
             #if (zval == 0) browser()
             ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
             ##     message("zval:", zval, ", w:", w)
