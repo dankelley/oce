@@ -1312,7 +1312,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
         }
         if (any(is.finite(i$z))) {
-            .filled.contour(i$x, i$y, i$z, levels=breaks, col=col)
+            ## issue726: add a tiny bit to breaks, to mimic filledContour=FALSE
+            small <- .Machine$double.eps
+            .filled.contour(i$x, i$y, i$z, levels=breaks+small, col=col)
         } else {
             warning("no valid z")
         }
@@ -1351,12 +1353,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             ## IMPORTANT: issues 522, 655 and possibly 726.
             ## issue522: this was w <- which(zval <= breaks)[1]
             ## issue655: this was w <- which(zval <= breaks)[1]
-            w <- which(zval <= breaks + 0*small)[1]
-#            w <- which(zval < breaks + 1*small)[1]
-            #if (zval == 0) browser()
-            ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-            ##     message("zval:", zval, ", w:", w)
-            ## }
+            ## sometime later: w <- which(zval < breaks + 1*small)[1]
+            w <- which(zval <= breaks)[1]
             if (!is.na(w) && w > 1) {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z: ", zval, ", w: ", w, ", using non-missing col: ", col[-1+w])
