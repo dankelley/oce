@@ -1108,8 +1108,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
-                     lwd=par("lwd"), lty=par("lty"),
-                     filledContour=FALSE, missingColor=NA,
+                     lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+                     filledContour=FALSE, gridder="binMean2D",
                      debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
@@ -1136,8 +1136,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             longitude <- longitude$x   # destroys container
         }
     }
-    #if (filledContour)
-    #    warning("mapImage() cannot yet handle filledContour\n")
     breaksGiven <- !missing(breaks)
     if (!missing(colormap)) { # takes precedence over breaks and col
         breaks <- colormap$breaks
@@ -1228,7 +1226,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
             z[z >= zlimMax] <- zlimMax * (1 - sign(zlimMax) * small)
         } else if (breaksGiven) {
-            oceDebug(debug, "using min/max colours for out-of-range values\n")
+            oceDebug(debug, "extenging breaks range since no zlim given\n")
             breaksMin <- min(breaks, na.rm=TRUE)
             breaksMax <- max(breaks, na.rm=TRUE)
             z[z <= breaksMin] <- breaksMin * (1 + sign(breaksMin) * small)
@@ -1271,11 +1269,17 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[,1]
         latitudeGrid <- g[,2]
-        rx <- range(xy$x, na.rm=TRUE)
-        ry <- range(xy$y, na.rm=TRUE)
+        rx <- range(xy$x[is.finite(xy$x)], na.rm=TRUE)
+        ry <- range(xy$y[is.finite(xy$y)], na.rm=TRUE)
         f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
-        xg <- seq(rx[1], rx[2], length.out=f*length(longitude))
-        yg <- seq(ry[1], ry[2], length.out=f*length(latitude))
+        ## FIXME: I'm not sure this will work well generally; I'm setting NN to 
+        ## FIXME: get about 5 points per grid cell.
+        ## N is number of points in view
+        N <- sum(par('usr')[1]<=xy$x & xy$x<=par('usr')[2] &
+                 par('usr')[3]<=xy$y & xy$y<=par('usr')[4], na.rm=TRUE)
+        NN <- sqrt(N / 10)
+        xg <- seq(par('usr')[1], par('usr')[2], length.out=NN)
+        yg <- seq(par('usr')[3], par('usr')[4], length.out=NN)
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
         good <- is.finite(zz) & is.finite(xy$x) & is.finite(xy$y)
         if (!zclip) {
@@ -1286,23 +1290,44 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         xx <- xy$x[good]
         yy <- xy$y[good]
         zz <- zz[good]
-        if (requireNamespace("akima", quietly=TRUE)) {
-            i <- akima::interp(xx, yy, zz, xg, yg)
-            #levels <- breaks # FIXME: probably wrong
-            .filled.contour(i$x, i$y, i$z, levels=breaks,col=col)
+        xtrim <- par('usr')[1:2]
+        ytrim <- par('usr')[3:4]
+        inFrame <- xtrim[1] <= xx & xx <= xtrim[2] & ytrim[1] <= yy & yy <= ytrim[2]
+        oceDebug(debug, "before trimming, length(xx): ", length(xx), "\n")
+        xx <- xx[inFrame]
+        yy <- yy[inFrame]
+        zz <- zz[inFrame]
+        oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
+        ## chop to points within plot area
+        if (gridder== "akima") {
+            oceDebug(debug, "using akima::interp()\n")
+            if (requireNamespace("akima", quietly=TRUE)) {
+                i <- akima::interp(x=xx, y=yy, z=zz, xo=xg, yo=yg)
+            } else {
+                stop("must install.packages(\"akima\") for mapImage() with filledContour and gridder='akima'")
+            }
         } else {
-            warning("must install.packages(\"akima\") to plot filled contours on maps")
+            oceDebug(debug, "using binMean2D()\n")
+            binned <- binMean2D(xx, yy, zz, xg, yg, fill=TRUE)
+            i <- list(x=binned$xmids, y=binned$ymids, z=binned$result)
+        }
+        if (any(is.finite(i$z))) {
+            ## issue726: add a tiny bit to breaks, to mimic filledContour=FALSE
+            small <- .Machine$double.eps
+            .filled.contour(i$x, i$y, i$z, levels=breaks+small, col=col)
+        } else {
+            warning("no valid z")
         }
     } else {
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
-        if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-            message("breaksMin: ", breaksMin)
-            message("breaksMax: ", breaksMax)
-            message("Z:")
-            print(Z)
-        }
+        ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+        ##     message("breaksMin: ", breaksMin)
+        ##     message("breaksMax: ", breaksMax)
+        ##     message("Z:")
+        ##     print(Z)
+        ## }
         colorLookup <- function (ij) {
             zval <- Z[ij]
             if (is.na(zval)) {
@@ -1323,13 +1348,13 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 }
                 return(if (zclip) missingColor else colLast)
             }
+            ## IMPORTANT: whether to write 'breaks' or 'breaks+small' below
+            ## IMPORTANT: is at the heart of several issues, including
+            ## IMPORTANT: issues 522, 655 and possibly 726.
             ## issue522: this was w <- which(zval <= breaks)[1]
             ## issue655: this was w <- which(zval <= breaks)[1]
-            w <- which(zval < breaks + small)[1]
-            #if (zval == 0) browser()
-            ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
-            ##     message("zval:", zval, ", w:", w)
-            ## }
+            ## sometime later: w <- which(zval < breaks + 1*small)[1]
+            w <- which(zval <= breaks)[1]
             if (!is.na(w) && w > 1) {
                 if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z: ", zval, ", w: ", w, ", using non-missing col: ", col[-1+w])

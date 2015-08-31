@@ -217,7 +217,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 }
 
 
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE)
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -235,6 +235,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE)
     M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
             length(xbreaks), as.double(xbreaks),
             length(ybreaks), as.double(ybreaks),
+            as.integer(fill), 
             number=integer((nxbreaks-1)*(nybreaks-1)),
             mean=double((nxbreaks-1)*(nybreaks-1)),
             NAOK=TRUE, PACKAGE="oce")

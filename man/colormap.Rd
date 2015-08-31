@@ -34,9 +34,10 @@
       specify both \code{zlim} and \code{breaks}, if the length of the latter
       does not equal 1.}
 
-  \item{zclip}{logical, indicating whether to clip the colors to those
-      corresponding to \code{zlim}, if the latter is provided.  Clipped regions
-      will be colored with \code{missingColor}.}
+  \item{zclip}{logical, with \code{TRUE} indicating that z values outside the
+      range of \code{zlim} or \code{breaks} should be painted with
+      \code{missingColor} and \code{FALSE} indicating that these values should
+      be painted with the nearest in-range colour.}
 
   \item{breaks}{an optional indication of break points between color levels
       (see \code{\link{image}}).  If this is provided, the arguments
