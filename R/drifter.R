@@ -29,7 +29,7 @@ setMethod(f="subset",
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
               } else if (length(grep("pressure", subsetString))) {
                   ## check that it is a "gridded" drifter
-                  gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0), TRUE, FALSE)
+                  gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
                   if (gridded) {
                       x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
                       keep <- eval(substitute(subset), x@data, parent.frame(2))
