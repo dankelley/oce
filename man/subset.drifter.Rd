@@ -25,7 +25,7 @@
     \code{latitude}, \code{longitude}, \code{profile}, or
     \code{pressure}. Note that to subset by \code{pressure}, the drifter
     must be gridded to regular pressure levels (e.g. using
-    \code{\link{drifterGrid}}}).
+    \code{\link{drifterGrid}}).}
 
 \value{A new \code{drifter} object.}
 
