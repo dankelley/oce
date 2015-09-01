@@ -35,10 +35,10 @@ setMethod(f="subset",
                       keep <- eval(substitute(subset), x@data, parent.frame(2))
                       x@data$pressure <- rval@data$pressure ## FIXME: convert back to original for subsetting below
                   } else {
-                      stop("Can only subset a gridded drifter by pressure -- use drifterGrid() first")
+                      stop("cannot subset ungridded drifter by pressure -- use drifterGrid() first", call.=FALSE)
                   }
               } else {
-                  stop("may only subset by time, longitude, latitude, pressure, and not by combinations")
+                  stop("can only subset by time, longitude, latitude, pressure, and not by combinations", call.=FALSE)
               }
               ## Now do the subset
               if (length(grep("pressure", subsetString))) {
