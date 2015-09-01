@@ -27,16 +27,34 @@ setMethod(f="subset",
                   ## add profile into the data, then do as usual
                   x@data$profile <- 1:length(x@data$time)
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
+              } else if (length(grep("pressure", subsetString))) {
+                  ## check that it is a "gridded" drifter
+                  gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0), TRUE, FALSE)
+                  if (gridded) {
+                      x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
+                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                      x@data$pressure <- rval@data$pressure ## FIXME: convert back to original for subsetting below
+                  } else {
+                      stop("Can only subset a gridded drifter by pressure -- use drifterGrid() first")
+                  }
               } else {
-                  stop("may only subset by time, longitude, or latitude, and not by combinations")
+                  stop("may only subset by time, longitude, latitude, pressure, and not by combinations")
               }
-              rval@data$time <- x@data$time[keep]
-              rval@data$longitude <- x@data$longitude[keep]
-              rval@data$latitude <- x@data$latitude[keep]
-              rval@data$salinity <- x@data$salinity[,keep]
-              rval@data$temperature <- x@data$temperature[,keep]
-              rval@data$pressure <- x@data$pressure[,keep]
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              ## Now do the subset
+              if (length(grep("pressure", subsetString))) {
+                  rval@data$salinity <- x@data$salinity[keep,]
+                  rval@data$temperature <- x@data$temperature[keep,]
+                  rval@data$pressure <- x@data$pressure[keep,]
+                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              } else {
+                  rval@data$time <- x@data$time[keep]
+                  rval@data$longitude <- x@data$longitude[keep]
+                  rval@data$latitude <- x@data$latitude[keep]
+                  rval@data$salinity <- x@data$salinity[,keep]
+                  rval@data$temperature <- x@data$temperature[,keep]
+                  rval@data$pressure <- x@data$pressure[,keep]
+                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              }
               rval
           })
 

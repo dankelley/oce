@@ -18,11 +18,14 @@
 }
 
 \details{This function is somewhat analogous to
-    \code{\link{subset.data.frame}}, but only one independent variable may be
-    used in \code{subset} in any call to the function, which means that
-    repeated calls will be necessary to, subset based on more than one
-    independent variable.  Subsetting may be by \code{time}, \code{latitude},
-    \code{longitude}, or \code{profile}.}
+    \code{\link{subset.data.frame}}, but only one independent variable
+    may be used in \code{subset} in any call to the function, which
+    means that repeated calls will be necessary to subset based on more
+    than one independent variable.  Subsetting may be by \code{time},
+    \code{latitude}, \code{longitude}, \code{profile}, or
+    \code{pressure}. Note that to subset by \code{pressure}, the drifter
+    must be gridded to regular pressure levels (e.g. using
+    \code{\link{drifterGrid}}}).
 
 \value{A new \code{drifter} object.}
 
@@ -33,8 +36,11 @@ par(mfrow=c(2,2))
 plot(drifter)
 plot(subset(drifter, time > mean(time)))
 plot(subset(drifter, longitude > mean(longitude)))
-plot(subset(drifter, latitude > mean(latitude)))
+plot(subset(drifterGrid(drifter), pressure > 500 & pressure < 1000), which=5)
 }
+
+\seealso{\code{\link{drifterGrid}} for gridding drifter objects to
+  regular pressure levels.}
 
 \author{Dan Kelley}
 
