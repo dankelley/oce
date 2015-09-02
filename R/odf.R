@@ -119,10 +119,24 @@ findInHeader <- function(key, lines)
 #' }
 #'
 #' @param names Data names in ODF format.
+#' @param PARAMETER_HEADER optional list containing information on the data variables
 #' @return A vector of string strings.
 
-ODFNames2oceNames <- function(names)
+ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
 {
+    n <- length(names)
+    ## Capture names for UNKN_* items, and key on them.  Possibly this should be done to
+    ## get all the names, but then we just transfer the problem of decoding keys
+    ## to decoding strings, and that might yield problems with encoding, etc.
+    if (!is.null(PARAMETER_HEADER)) {
+        for (i in 1:n) {
+            if (length(grep("^UNKN_.*", PARAMETER_HEADER[[i]]$CODE))) {
+                uname <- PARAMETER_HEADER[[i]]$NAME
+                ## message("i:", i, ", name:\"", uname)
+                names[i] <- if (length(grep("Percent Good Pings", uname ))) "g" else uname
+            }
+        }
+    }
     ## Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
@@ -155,13 +169,13 @@ ODFNames2oceNames <- function(names)
     names[grep("ERRV_*.*", names)[1]] <- "error"
     ## next is  NAME='Average Echo Intensity (AGC)'
     names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
-    names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
+    ## names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
     ## Step 3: recognize something from moving-vessel CTDs
     names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
     names
 }
 
-ODF2oce <- function(ODF, coerce=TRUE) 
+ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
@@ -212,7 +226,7 @@ ODF2oce <- function(ODF, coerce=TRUE)
     rval@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
     ## FIXME: be sure to record unit as conductivityRatio.
-    rvalNames <- ODFNames2oceNames(xnames)
+    rvalNames <- ODFNames2oceNames(xnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
     names(rval@data) <- rvalNames
     rval
 }
@@ -335,7 +349,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    names <- ODFNames2oceNames(names)
+    names <- ODFNames2oceNames(names, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (!is.na(nullValue)) {
