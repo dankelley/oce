@@ -4,10 +4,12 @@
 \alias{ODFNames2oceNames}
 \title{Translate from ODF names to oce names}
 \usage{
-ODFNames2oceNames(names)
+ODFNames2oceNames(names, PARAMETER_HEADER = NULL)
 }
 \arguments{
 \item{names}{Data names in ODF format.}
+
+\item{PARAMETER_HEADER}{optional list containing information on the data variables}
 }
 \value{
 A vector of string strings.
