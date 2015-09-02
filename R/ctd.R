@@ -2931,7 +2931,7 @@ plotProfile <- function (x,
     } else if (xtype == "density+time") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+time\"")
-        sw <- if (eos == "unesco") swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) else
+        st <- if (eos == "unesco") swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) else
             swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure,
                          longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
@@ -3448,8 +3448,8 @@ plotProfile <- function (x,
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
-             xlim=Tlim, ylim=ylim,
-             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             xlim=Tlim, ylim=ylim, col = col.temperature,
+             type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         if (is.null(getOption('plotProfileNoXLab'))) {
             if (eos == "gsw")
@@ -3459,12 +3459,12 @@ plotProfile <- function (x,
         }
         axis(2)
         box()
-        lines(temperature, y, col = col.temperature, lwd=lwd)
+        ## lines(temperature, y, col = col.temperature, lwd=lwd)
         par(new = TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(x@data$salinity) & !is.na(y)
         plot(salinity[look], y[look],
-             xlim=Slim, ylim=ylim,
-             type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             xlim=Slim, ylim=ylim, col = col.salinity,
+             type = type, xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
         if (is.null(getOption('plotProfileNoXLab'))) {
             if (eos == "gsw")
@@ -3477,7 +3477,7 @@ plotProfile <- function (x,
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        lines(salinity, y, col = col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
+        ## lines(salinity, y, col = col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
