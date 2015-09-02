@@ -100,7 +100,7 @@ oceSetData <- function(object, name, value, note="")
 {
     if (!inherits(object, "oce"))
         stop("oceGetData() only works for oce objects")
-    object@metadata[[name]] <- value
+    object@data[[name]] <- value
     object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (nchar(note) > 0)
         object@processingLog <- processingLogAppend(object@processingLog, note)
