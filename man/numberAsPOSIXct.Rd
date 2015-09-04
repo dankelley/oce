@@ -49,7 +49,7 @@
     of the year 1. (Note that, for reasons that are unknown at this time, a
     simple R expression of this definition is out by two days compared with the
     UDUNITS library, which is used by NCEP. Therefore, a two-day offset is
-    applied. See [3].
+    applied. See [2,3].)
   
     \item \code{"sas"} employs  SAS times, indicated by \code{type="sas"}, have
     origin at the start of 1960.
