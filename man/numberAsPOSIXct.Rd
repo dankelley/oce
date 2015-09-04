@@ -24,12 +24,15 @@
 
 \details{Unix times, indicated by \code{type="unix"}, are measured in seconds
   since the start of the year 1970.  Matlab times, indicated by
-  \code{type="matlab"}, are measured in years since the start of the year 1899.
-  Argo times, indicated by \code{type="argo"}, are measured in days since the
-  beginning of the year 1900.  NCEP times, indicated by \code{type="ncep"}, are
-  measured in hours since the beginning of year 1800. SAS times, indicated by
-  \code{type="sas"}, have origin at the start of 1960.  SPSS times, indicated by
-  \code{type="spss"}, have origin at 1582-10-14.
+  \code{type="matlab"}, are measured in days since what MathSoft [1] calls
+  ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0, 0, 0)} in R
+  notation).  Argo times, indicated by \code{type="argo"}, are measured in days
+  since the beginning of the year 1900.  NCEP times, indicated by
+  \code{type="ncep"}, are measured in hours since the beginning of year 1800.
+  (FIXME: there seem to be two different types of NCEP times, and the definition
+  in R terms is problematic; see oce issue 738 [3].)
+  SAS times, indicated by \code{type="sas"}, have origin at the start of 1960.
+  SPSS times, indicated by \code{type="spss"}, have origin at 1582-10-14.
     
   Note that in these cases, \code{t} is a vector.  In the yearday and GPS cases,
   however, \code{t} must be a two-column matrix.  For \code{type="gps"}, the
@@ -51,5 +54,13 @@ numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 \seealso{\code{\link{numberAsHMS}}}
 
 \author{Dan Kelley}
+
+\references{
+  [1] Matlab times: \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
+
+  [2] NCEP times: \url{http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+
+  [3] problem with NCEP times: \url{https://github.com/dankelley/oce/issues/738}
+}
 
 \keyword{misc}

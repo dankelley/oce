@@ -37,4 +37,13 @@ test_that("Gravity", {
           g <- gravity(45)
           expect_equal(g, 9.8, tolerance=1e-2)
 })
+
+test_that("numberAsPOSIXct", {
+          ## Matlab times
+          mt <- 7.362007209411687e5
+          expect_less_than(abs(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")) -
+                           as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC"))), 60)
+          expect_less_than(abs(as.numeric(numberAsPOSIXct(mt, "matlab")) -
+                           as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC"))), 60)
+})
  
