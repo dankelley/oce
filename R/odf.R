@@ -363,7 +363,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    names <- ODFNames2oceNames(names, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
+    names <- ODFNames2oceNames(names, PARAMETER_HEADER=NULL)
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (!is.na(nullValue)) {
