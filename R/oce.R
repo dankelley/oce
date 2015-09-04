@@ -1339,7 +1339,8 @@ numberAsHMS <- function(t, default=0)
 }
 
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
-                                      "ncep", "sas", "spss", "yearday"), tz="UTC")
+                                      "ncep1", "ncep2",
+                                      "sas", "spss", "yearday"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -1354,8 +1355,12 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         return(ISOdatetime(t[,1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[,2] * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
-    } else if (type == "ncep") {
+    } else if (type == "ncep1") { # hours since the start of 1800
         return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
+    } else if (type == "ncep2") {
+        ## days since 1-1-1 00:00:0.0 (supposedly, but offset to match a test case; see
+        rvalOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00",tz="UTC")
+        return(rvalOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
