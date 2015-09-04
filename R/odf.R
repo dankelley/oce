@@ -233,6 +233,15 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     ## FIXME: be sure to record unit as conductivityRatio.
     rvalNames <- ODFNames2oceNames(xnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
     names(rval@data) <- rvalNames
+    ## Obey missing values ... only for numerical things (which might be everything, for all I know)
+    nd <- length(rvalNames)
+    for (i in 1:nd) {
+        if (is.numeric(rval@data[[i]])) {
+            NAvalue <- as.numeric(ODF$PARAMETER_HEADER[[i]]$NULL_VALUE)
+            ## message("NAvalue: ", NAvalue)
+            rval@data[[i]][rval@data[[i]] == NAvalue] <- NA
+        }
+    }
     rval
 }
 
