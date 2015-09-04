@@ -42,8 +42,8 @@ test_that("numberAsPOSIXct", {
           ## Matlab times
           mt <- 7.362007209411687e5
           expect_less_than(abs(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")) -
-                           as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC"))), 60)
+                           as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC"))), 1)
           expect_less_than(abs(as.numeric(numberAsPOSIXct(mt, "matlab")) -
-                           as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC"))), 60)
+                           as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC"))), 1)
 })
  
