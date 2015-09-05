@@ -3094,8 +3094,23 @@ plotProfile <- function (x,
             axis(3)
             box()
             if (is.null(xlab)) {
-                ## FIXME: check conductivity unit here, if non-CTD object (CTDs store only ratio)
-                mtext(resizableLabel("C", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                ## Look up conductivity unit (issue 731)
+                unit <- x[["conductivityUnit"]]
+                if (is.null(unit)) {
+                    mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                } else {
+                    if (unit == "ratio") {
+                        mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else if (unit == "mS/cm") {
+                        message("mS/cm")
+                        mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else if (unit == "S/m") {
+                        message("S/m")
+                        mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else {
+                        stop("unknown conductivity unit ", unit, "; should be 'ratio', 'mS/cm' or 'S/m'")
+                    }
+                }
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
             }
@@ -3106,8 +3121,23 @@ plotProfile <- function (x,
                      xlim=Clim, ylim=ylim,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
-                    ## FIXME: check conductivity unit here, if non-CTD object (CTDs store only ratio)
-                    mtext(resizableLabel("C", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                    ## Look up conductivity unit (issue 731)
+                    unit <- x[["conductivityUnit"]]
+                    if (is.null(unit)) {
+                        mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else {
+                        if (unit == "ratio") {
+                            mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        } else if (unit == "mS/cm") {
+                            message("mS/cm")
+                            mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        } else if (unit == "S/m") {
+                            message("S/m")
+                            mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        } else {
+                            stop("unknown conductivity unit ", unit, "; should be 'ratio', 'mS/cm' or 'S/m'")
+                        }
+                    }
                 } else {
                     mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
                 }
