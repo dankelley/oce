@@ -31,7 +31,7 @@
     of the year 1970.
 
     \item \code{"matlab"} employs Matlab times, measured in days since what
-    MathSoft [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
+    MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
       0, 0)} in R notation).  
 
     \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
