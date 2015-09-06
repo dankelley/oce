@@ -42,9 +42,7 @@ setMethod(f="summary",
                           1 / object@metadata$subsampleDeltat), ...)
               cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                           object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
-              cat("* Statistics of subsample\n  ::\n\n", ...)
               print(threes)
-              cat("\n")
               processingLogShow(object)
           })
 
