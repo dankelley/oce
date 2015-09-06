@@ -989,7 +989,7 @@ resizableLabel <- function(item, axis, sep)
         var <- gettext("Roll", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*degree*.(R))
     } else if (item == "u" || item == "v" || item == "w") {
-        abbreviated <- full <- bquote(item*.(L)*m/s*.(R))
+        abbreviated <- full <- bquote(.(item)*.(L)*m/s*.(R))
     } else if (item == "eastward") {
         var <- gettext("Eastward", domain="R-oce")
         abbreviated <- full <- bquote(.(var)*.(L)*m/s*.(R))
