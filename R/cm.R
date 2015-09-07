@@ -5,13 +5,17 @@ setMethod(f="initialize",
           signature="cm",
           definition=function(.Object, filename="(unknown)", sample, time,
                               u, v, heading,
+                              conductivity, conductivityUnit="mS/cm",
                               salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
+              .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
+              .Object@metadata$conductivityUnit <- conductivityUnit
               .Object@data$sample <- if (missing(sample)) NULL else sample
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@data$u <- if (missing(u)) NULL else u
               .Object@data$v <- if (missing(v)) NULL else v
               .Object@data$heading <- if (missing(heading)) NULL else heading
+              .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
@@ -163,24 +167,21 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (length(col.depth) > 0)
             col.depth <- col.depth[1]
     }
-    u <- d[, col.east] / 100
-    v <- d[, col.north] / 100
-    heading <- d[, col.heading]
-    ## the 42.91754 value is electrical conductivity at SP=35, t=15, p=0
-    conductivity <- d[, col.conductivity] / 100 / 42.91754
-    temperature <- d[, col.temperature]
-    depth <- d[, col.depth]
-    pressure <- swPressure(depth, eos="gsw") # gsw is faster than unesco with essentially same results
-    calculate.salinity.from.conductivity <- TRUE # FIXME: why is "Sal" so wrong in the sample file?
-    if (calculate.salinity.from.conductivity)
-        salinity <- swSCTp(conductivity, temperature, pressure)
-    else
-        salinity <- d[, col.salinity]
-    ## The sample file has lines at the end that contain statistical summaries. Recognize these as non-numeric samples.
     trimLines <- grep("[ a-zA-Z]+", d[,1])
     oceDebug(debug, "Trimming the following lines, which seem not to be data lines: ",
              paste(trimLines, collapse=" "), "\n")
     d <- d[-trimLines,]
+    u <- d[, col.east] / 100
+    v <- d[, col.north] / 100
+    heading <- d[, col.heading]
+    ## the 42.91754 value is electrical conductivity at SP=35, t=15, p=0
+    conductivity <- d[, col.conductivity]
+    temperature <- d[, col.temperature]
+    depth <- d[, col.depth]
+    pressure <- swPressure(depth, eos="gsw") # gsw is faster than unesco with essentially same results
+    salinity <- d[, col.salinity]
+
+    ## The sample file has lines at the end that contain statistical summaries. Recognize these as non-numeric samples.
     sample <- as.numeric(d[, 1])
     n <- length(u)
     time <- seq(t0, by=deltat, length.out=n)
@@ -209,13 +210,23 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
+    str(conductivity)
+    str(keep)
+    str(conductivity[keep])
+    str(salinity)
+    str(keep)
+    str(salinity[keep])
+
     rval <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
                 u=u[keep], v=v[keep], heading=heading[keep],
+                conductivity=conductivity[keep],
                 salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
     rval@metadata$filename <- filename
     rval@metadata$serialNumber <- serialNumber
     rval@metadata$version <- version
     rval@metadata$type <- type
+    rval@metadata$longitude <- longitude
+    rval@metadata$latitude <- latitude
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     rval@processingLog <- processingLogAppend(rval@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
@@ -225,7 +236,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,
-                              which=c(1, 2, 7, 8, 9),
+                              which=c(1:2, 7:9),
                               type="l",
                               adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
@@ -264,7 +275,8 @@ setMethod(f="plot",
               which <- oce.pmatch(which,
                                   list(u=1, v=2, "progressive vector"=3,
                                        "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
-                                       pressure=7, salinity=8, temperature=9, heading=10, TS=11))
+                                       pressure=7, salinity=8, temperature=9, TS=10, conductivity=11,
+                                       heading=20))
               oceDebug(debug, "which:", which, "\n")
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
@@ -358,13 +370,24 @@ setMethod(f="plot",
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 10) {
+                      plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$pressure), main=main, ...) 
+                  } else if (which[w] == 11) {
+                      cu <- x[["conductivityUnit"]]
+                      oce.plot.ts(x@data$time, x@data$conductivity,
+                                  type=type,
+                                  xlab="",
+                                  ylab=if (cu == "ratio") resizableLabel("C", "y") else
+                                      if (cu == "mS/cm") resizableLabel("conductivity mS/cm", "y") else
+                                          if (cu == "S/m") resizableLabel("conductivity S/m", "y") else
+                                              "conductivity (unknown unit",
+                                              main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                      tformat=tformat)
+                  } else if (which[w] == 20) {
                       oce.plot.ts(x@data$time, x@data$heading,
                                   type=type,
                                   xlab="", ylab=resizableLabel("heading"),
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
-                  } else if (which[w] == 11) {
-                      plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$pressure), main=main, ...) 
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }

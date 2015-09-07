@@ -6,7 +6,24 @@ library(oce)
 
 ##data("adp")
 ##data("adv")
-##data("cm")
+
+test_that("cm", {
+          data("cm")
+          S <- cm[["salinity"]]
+          S1 <- swSCTp(cm)
+          S2 <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']],
+                       conductivityUnit=cm[['conductivityUnit']])
+          expect_equal(max(abs(S1-S2)), 0)
+          expect_less_than(mean(abs(S-S1)), 0.001)
+          expect_less_than(median(abs(S-S1)), 0.0011)
+          ## I am not sure why these differ by 0.003PSU. The data file lists S
+          ## to 0.001, T to 0.001, and depth to 0.001. I'm not terribly worried
+          ## about the 0.003 disagreement, however, because the actual values
+          ## appear to be wrong by a lot more than that ... I don't believe the
+          ## deep salinities in the St Lawrence Estuary are in excess of 40.
+          expect_less_than(max(abs(S-S1)), 0.003)
+})
+
 ##data("coastlineWorld")
 
 test_that("ctd", {
