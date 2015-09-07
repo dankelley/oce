@@ -9,7 +9,7 @@
 \description{Plot \code{cm} (current meter) data}
 
 \usage{\S4method{plot}{cm}(x,
-     which=c(1, 2, 7, 9),
+     which=c(1, 2, 7, 8, 9),
      type="l",
      adorn=NULL,
      drawTimeRange=getOption("oceDrawTimeRange"),
@@ -76,7 +76,7 @@
         \item \code{which=6} or \code{"uv+ellipse+arrow"} as the
         \code{"uv+ellipse"} case, but with an added arrow indicating the
         mean current.
-        \item \code{which=7} or \code{"depth"} for depth
+        \item \code{which=7} or \code{"pressure"} for pressure
         \item \code{which=8} or \code{"salinity"} for salinity
         \item \code{which=9} or \code{"temperature"} for temperature
         \item \code{which=10} or \code{"heading"} for heading
