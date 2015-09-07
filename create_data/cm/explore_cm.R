@@ -1,3 +1,4 @@
+rm(list=ls())
 ## This script requires a certain data file.
 library(oce)
 source("~/src/oce/R/cm.R")
@@ -8,6 +9,32 @@ lines <- readLines(file, n=20)
 headerEnd <- grep("Sample", lines)
 if (length(headerEnd) == 0) stop("Cannot find header in first 20 lines; no lines contain 'Sample'")
 if (length(headerEnd) > 1) stop("Cannot find header in first 20 lines; two lines contain 'Sample'")
+## Find serial-number line (typically first line)
+type <- "unknown"
+serialNumber <- "unknown"
+version <- "unknown"
+experiment <- "unknown"
+try({
+    if (1 == length(grep("Serial No.", lines))) {
+        i <- grep("Serial No.", lines)
+        items <- strsplit(lines[i], "\t")[[1]]
+        grab <- function(name, default)
+            if (length(w<-which(items==name))) items[w+1] else default
+        type <- grab("Type:", type)
+        serialNumber <- grab("Serial No.", serialNumber)
+        version <- grab("Version:", version)
+        experiment <- grab("Header:", experiment)
+    }
+})
+## serialNumber <- if (length(grep("Serial", lines)))
+##     metadata$serialNumber <- items[i+1]
+##     else if (length(grep("Version", items[i])))
+##         metadata$version <- items[i+1]
+##     else if (length(grep("Type", items[i])))
+##         metadata$type <- items[i+1]
+## }
+
+
 ## Get names of columns. I have NO idea whether these are fixed names.
 names <- strsplit(lines[headerEnd], "\t")[[1]]
 names <- gsub("^ *", "", gsub(" *$", "", names))
@@ -33,10 +60,14 @@ time <- seq(t0, by=dt, length.out=dim(d)[1])
 ## data). I am just going to grab what seems to be a minimal set of known
 ## quantities. I'm retaining the code above in case a user can decode other
 ## columns.
-rval <- new("cm", filename=filename, time=time,
+rval <- new("cm", filename=filename,
+            time=time,
             u=d$Veast/100, v=d$Vnorth/100,
-            salinity=d$Sal, temperature=d[["T-Temp"]], depth=d$Depth)
-rval
+            salinity=d$Sal, temperature=d[["T-Temp"]],
+            pressure=swPressure(d$Depth, eos="gsw"))
+rval@metadata$type <- type
+rval@metadata$serialNumber <- serialNumber
+rval@metadata$version <- version
 summary(rval)
 plot(rval)
 

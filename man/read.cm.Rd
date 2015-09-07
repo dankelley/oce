@@ -25,14 +25,13 @@
   \item{to}{indication of the last measurement to read, in a format matching
     that of \code{from}.}
 
-  \item{by}{an indication of the stride length to use while walking
-    through the file. If this is an integer, then \code{by-1}
-    measurements are skipped between each pair of profiles that is
-    read. This may not make much sense, if the data are not equi-spaced
-    in time.  If \code{by} is a string representing a time interval, in
-    colon-separated format, then this interval is divided by the
-    sampling interval, to get the stride length. \emph{BUG:} if the data
-    are not equi-spaced, then odd results will occur.}
+  \item{by}{an indication of the stride length to use while walking through the
+    file. If this is an integer, then \code{by-1} measurements are skipped
+    between each pair of profiles that is read. This may not make much sense, if
+    the data are not equi-spaced in time.  If \code{by} is a string representing
+    a time interval, in colon-separated format, then this interval is divided by
+    the sampling interval, to get the stride length. \emph{BUG:} if the data are
+    not equi-spaced, then odd results will occur.}
 
   \item{longitude}{optional signed number indicating the longitude in degrees
     East.}
@@ -57,24 +56,73 @@
 
 }
 
-\details{This function has been tested on only a single file, and the
+\details{There is function has been tested on only a single file, and the
   data-scanning algorithm was based on visual inspection of that file.  Whether
-  it will work generally is an open question.}
+  it will work generally is an open question. It should be noted that the sample
+  file had several odd characteristics, some of which are listed below.
+  \itemize{
+
+    \item  The file contained two columns named \code{"Cond"}, which was guessed
+    to stand for conductivity. Since only the first contained data, the second was
+    ignored, but this may not be the case for all files.  
+
+    \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
+    which makes no sense, so the unit was assumed to be mS/cm, and the value was
+    divided by the standard value 42.914mS/cm, to estimate the conductivity ratio.
+
+    \item The file contained a column named \code{"T-Temp"}, which is not
+    something the author has seen in his career. It was assumed to stand for
+    in-situ temperature.
+
+    \item The file contained a column named \code{"Depth"}, which is not something
+    an instrument can measure. Presumably it was calculated from pressure (with
+    what atmospheric offset, though?) and so pressure was inferred from it using
+    \code{\link{swPressure}}.
+
+    \item The file contained several columns that lacked names. These were
+    ignored.
+
+    \item The file contained several columns that seem to be derived from the
+    actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
+    etc. These are ignored.
+
+    \item The file contained several columns that were basically a mystery to the
+    author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
+
+  }
+
+  Based on such considerations, \code{read.cm.s4()} reads only the columns that
+  were reasonably well-understood based on the sample file. Users who need more
+  columns should contact the author.
+
+}
 
 \value{An object of \code{\link[base]{class}} \code{"cm"}, which contains
-  measurements made with a current-meter device.  For information on data stored
-  in the object, see \dQuote{Details}.}
+  measurements made with a current-meter device.  The \code{data} slot will
+  contain \code{time}, \code{u} (eastward velocity, converted from cm/s to m/s),
+  \code{v} (northward velocity, converted from cm/s to m/s) \code{salinity}
+  (salinity, with the caution that the values in the sample file seem about 6PSU
+  higher than they should be), \code{temperature} (temperature, assumed
+  in-situ), and \code{pressure} (pressure, calculated with
+  \code{\link{swPressure}} based on the \code{"Depth"} column in the file).
+
+  \code{Caution.} The value in the \code{"Hdg"} file is stored as \code{heading}
+  in the data, but this is just a guess.
+
+  See \dQuote{Details} for an explanation of why other columns are ignored.
+
+}
 
 \seealso{The documentation for \code{\link{cm-class}} explains the structure of
   \code{cm} objects, and also outlines the other functions dealing with them.}
 
 \examples{
-\dontrun{
-library(oce)
-cm <- read.oce("cm_interocean_0811786.s4a.tab")
-summary(cm)
-plot(cm)
-}
+  \dontrun{
+    library(oce)
+    cm <- read.oce("cm_interocean_0811786.s4a.tab")
+    summary(cm)
+    plot(cm)
+  }
 }
 
 \author{Dan Kelley}
