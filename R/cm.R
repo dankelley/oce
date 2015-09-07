@@ -316,7 +316,7 @@ setMethod(f="plot",
                       x.dist <- cumsum(u) * dt / m.per.km
                       y.dist <- cumsum(v) * dt / m.per.km
                       plot(x.dist, y.dist,
-                           xlab=resizableLabel("km"), ylab=resizableLabel("km"),
+                           xlab=resizableLabel("distance km"), ylab=resizableLabel("distance km"),
                            type='l', asp=1, ...)
                   } else if (which[w] %in% 4:6) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
                       oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
