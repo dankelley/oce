@@ -3,7 +3,18 @@
 
 setMethod(f="initialize",
           signature="cm",
-          definition=function(.Object) {
+          definition=function(.Object, filename="(unknown)", sample, time,
+                              u, v, heading,
+                              salinity, temperature, pressure) {
+              .Object@metadata$filename <- filename
+              .Object@data$sample <- if (missing(sample)) NULL else sample
+              .Object@data$time <- if (missing(time)) NULL else time
+              .Object@data$u <- if (missing(u)) NULL else u
+              .Object@data$v <- if (missing(v)) NULL else v
+              .Object@data$heading <- if (missing(heading)) NULL else heading
+              .Object@data$salinity <- if (missing(salinity)) NULL else salinity
+              .Object@data$temperature <- if (missing(temperature)) NULL else temperature
+              .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
@@ -25,24 +36,17 @@ setMethod(f="summary",
               colnames(threes) <- c("Min.", "Mean", "Max.")
               vDim <- dim(object@data$v)
 
-              cat("cm Summary\n----------\n\n", ...)
-              cat(paste("* Instrument:         ", object@metadata$instrumentType, ", serial number ``", paste(object@metadata$serialNumber, collapse=""), "``\n", sep=""), ...)
-              cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
-              if ("latitude" %in% names(object@metadata)) {
-                  cat(paste("* Location:           ", if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
-                            if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
-              }
+              cat("cm summary\n----------\n\n", ...)
+              showMetadataItem(object, "filename",      "File source:        ")
+              showMetadataItem(object, "type",          "Instrument type:    ")
+              showMetadataItem(object, "serialNumber",  "Serial Number:      ")
+              showMetadataItem(object, "version",       "Version:            ")
+              t <- object@data$time
               cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                          1 / object@metadata$measurementDeltat), ...)
-              cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                          1 / object@metadata$subsampleDeltat), ...)
-              cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                          object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
-              print(threes)
+                          format(t[1]), attr(t, "tzone"),
+                          format(tail(t, 1)), attr(t, "tzone"),
+                          1 / (as.numeric(t[2])-as.numeric(t[1]))), ...)
+              print(round(threes, 3))
               processingLogShow(object)
           })
 
@@ -51,10 +55,6 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     longitude=NA, latitude=NA,
                     debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
-    if (debug > 2)
-        debug <- 2
-    if (debug < 0)
-        debug  <- 0
     oceDebug(debug, "read.cm(file=\"",file,
               "\", from=", format(from),
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
@@ -92,46 +92,46 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Examine the first line of the file, to get serial number, etc.
     items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE) # slow, but just one line
     oceDebug(debug, "line 1 contains: ", paste(items, collapse=" "), "\n")
-    metadata$manufacturer <- "interocean"
-    metadata$instrumentType <- "s4"
+    serialNumber <- "unknown"
+    version <- "unknown"
+    type <- "unknown"
     for (i in 1:(-1 + length(items))) {
         if (length(grep("Serial", items[i])))
-            metadata$serialNumber <- items[i+1]
+            serialNumber <- items[i+1]
         else if (length(grep("Version", items[i])))
-            metadata$version <- items[i+1]
+            version <- items[i+1]
         else if (length(grep("Type", items[i])))
-            metadata$type <- items[i+1]
+            type <- items[i+1]
     }
     ## Skip through the rest of the header, and start paying attention when
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
     foundNames <- FALSE
-    for (skip in 2:20) {
-        items <- scan(file, "character",nlines=1,sep="\t", quiet=TRUE) # slow, but just 20 lines, max
-        oceDebug(debug, "line", skip, "contains: ", paste(items, collapse=" "), "\n")
+    headerStart <- 0
+    lines <- readLines(file, n=20)
+    for (i in 2:20) {
+        items <- strsplit(lines[i], "\t")[[1]]
+        oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "Sample #") {
             names <- sub('[ ]+$', '', sub('^[ ]+','', items))
             names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
             foundNames <- TRUE
+            headerStart <- i
         } else if (items[1] == "1") {
             start.day <- items[2]
         } else if (items[1] == "2") {
             start.hms <- items[3]
         } else if (items[1] == "3") {
-            t0 <- strptime(paste(start.day, start.hms), "%m/%d/%Y %H:%M:%s", tz=tz)
-            t1 <- strptime(paste(start.day, items[3]), "%m/%d/%Y %H:%M:%s", tz=tz)
+            t0 <- strptime(paste(start.day, start.hms), format="%m/%d/%Y %H:%M:%S", tz=tz)
+            t1 <- strptime(paste(start.day, items[3]), format="%m/%d/%Y %H:%M:%S", tz=tz)
             deltat <- as.numeric(t1) - as.numeric(t0)
             break
         }
     }
-    ## NOTE: we *skip* the first 3 lines of data.  This is mainly because those lines
-    ## had a different number of TAB-separated elements than the rows below, which
-    ## thwarted the use of read.table() to read the data.  Besides, those first
-    ## 3 lines are likely to just be in-air measurements, anyway ... there is likely
-    ## to be little harm in skipping quite a lot more than just 3 points!
-    metadata$measurementStart <- t0 + (2 + skip) * deltat
-    metadata$measurementDeltat <- deltat
-    d <- read.table(file, skip=skip, sep='\t', stringsAsFactors=FALSE)
+    pushBack(lines, file)
+    ## Now try to guess the meanings of column names. This really is guesswork, since I have no documentation that
+    ## explains these things. See the help page for this function for some more thoughts on the problem.
+    d <- read.table(file, skip=headerStart+1, sep='\t', stringsAsFactors=FALSE, fill=TRUE)
     col.north <- 5
     col.east <- 6
     col.conductivity <- 13
@@ -170,19 +170,25 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     conductivity <- d[, col.conductivity] / 100 / 42.91754
     temperature <- d[, col.temperature]
     depth <- d[, col.depth]
+    pressure <- swPressure(depth, eos="gsw") # gsw is faster than unesco with essentially same results
     calculate.salinity.from.conductivity <- TRUE # FIXME: why is "Sal" so wrong in the sample file?
     if (calculate.salinity.from.conductivity)
-        salinity <- swSCTp(conductivity, temperature, depth) # FIXME: should really be pressure
+        salinity <- swSCTp(conductivity, temperature, pressure)
     else
         salinity <- d[, col.salinity]
+    ## The sample file has lines at the end that contain statistical summaries. Recognize these as non-numeric samples.
+    trimLines <- grep("[ a-zA-Z]+", d[,1])
+    oceDebug(debug, "Trimming the following lines, which seem not to be data lines: ",
+             paste(trimLines, collapse=" "), "\n")
+    d <- d[-trimLines,]
     sample <- as.numeric(d[, 1])
     n <- length(u)
-    time <- metadata$measurementStart + seq(0,n-1)*metadata$measurementDeltat
+    time <- seq(t0, by=deltat, length.out=n)
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
         if (!is.numeric(by) || by != 1)
-            stop("sorry, 'by' must equal 1, in this (early) version of read.cm.s4()")
+            stop("sorry, 'by' must equal 1, in this version of read.cm.s4()")
         from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
         if (is.na(from.index))
@@ -203,23 +209,23 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    data <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
-    metadata$measurementEnd <- time[length(time)]
-    rval <- new('cm')
-    rval@metadata <- metadata
-    rval@data <- data
+    rval <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
+                u=u[keep], v=v[keep], heading=heading[keep],
+                salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
+    rval@metadata$filename <- filename
+    rval@metadata$serialNumber <- serialNumber
+    rval@metadata$version <- version
+    rval@metadata$type <- type
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     rval@processingLog <- processingLogAppend(rval@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
     rval
 }
 
-
-
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,
-                              which=c(1, 2, 7, 9),
+                              which=c(1, 2, 7, 8, 9),
                               type="l",
                               adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
@@ -258,7 +264,7 @@ setMethod(f="plot",
               which <- oce.pmatch(which,
                                   list(u=1, v=2, "progressive vector"=3,
                                        "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
-                                       depth=7, salinity=8, temperature=9, heading=10, TS=11))
+                                       pressure=7, salinity=8, temperature=9, heading=10, TS=11))
               oceDebug(debug, "which:", which, "\n")
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
@@ -334,9 +340,9 @@ setMethod(f="plot",
                           }
                       }
                   } else if (which[w] == 7) {
-                      oce.plot.ts(x@data$time, x@data$depth,
+                      oce.plot.ts(x@data$time, x@data$pressure,
                                   type=type,
-                                  xlab="", ylab=resizableLabel("depth"),
+                                  xlab="", ylab=resizableLabel("p", "y"),
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 8) {
@@ -358,7 +364,7 @@ setMethod(f="plot",
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 11) {
-                      plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$depth), main=main, ...) 
+                      plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$pressure), main=main, ...) 
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }

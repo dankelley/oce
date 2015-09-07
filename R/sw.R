@@ -168,12 +168,16 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
         latitude <- rep(latitude, ndepth)
     rval <- vector("numeric", ndepth)
     eos <- match.arg(eos, c("unesco", "gsw"))
+    ## Takes 3.55s for 15225 points
     if (eos == "unesco") {
         for (i in 1:ndepth) {          # FIXME: this loop is slow and should be done in C, like swCStp()
-            rval[i] <- uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval=depth[i]*c(0.8, 1.2))$root
+            rval[i] <- if (depth[i] == 0) 0 else
+                uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval=depth[i]*c(0.9, 1.1))$root
         }
     } else if (eos == "gsw") {
         rval <- gsw_p_from_z(-depth, latitude)
+    } else {
+        stop("eos must be 'unesco' or 'gsw'")
     }
     rval
 }
