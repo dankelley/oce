@@ -352,7 +352,10 @@ setMethod(f="plot",
                           }
                       }
                   } else if (which[w] == 7) {
-                      oce.plot.ts(x@data$time, x@data$pressure,
+                      ## an older version had depth stored
+                      p <- if ("pressure" %in% names(x@data)) x@data$pressure else
+                          swPressure(x@data$depth, eos="gsw")
+                      oce.plot.ts(x@data$time, p,
                                   type=type,
                                   xlab="", ylab=resizableLabel("p", "y"),
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
