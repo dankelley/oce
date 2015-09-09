@@ -1752,7 +1752,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         open(file, "r")
         on.exit(close(file))
     }
-    res <- new("ctd")
+    warning('assuming temperatureUnit="ITS-90", conductivityUnit="ratio" and pressureType="sea"')
+    res <- new("ctd", temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea")
     ## Header
     scientist <- ship <- institute <- address <- NULL
     filename.orig <- NULL
@@ -1827,6 +1828,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
                          systemUploadTime=systemUploadTime,
+                         temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
                          ship=ship,
                          scientist=scientist,
                          institute=institute,
@@ -2002,6 +2004,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
+                         temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
                          systemUploadTime=systemUploadTime,
                          ship=ship,
                          scientist=scientist,
@@ -2149,7 +2152,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         open(file, "r")
         on.exit(close(file))
     }
-    res <- new("ctd")
+    warning('assuming temperatureUnit="ITS-90", conductivityUnit="ratio" and pressureType="sea"')
+    res <- new("ctd", temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea")
     ## Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sampleInterval <- NA
@@ -2166,8 +2170,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-    conductivityUnit = "ratio" # guess
-    temperatureUnit = "ITS-90" # guess; other option is IPTS-68
+    conductivityUnit = "ratio"         # guess; other types are "mS/cm" and "S/m"
+    temperatureUnit = "ITS-90"         # guess; other option is IPTS-68
+    pressureType = "sea"               # guess; other option is "absolute"
 
     lines <- readLines(file)
     for (iline in seq_along(lines)) {
@@ -2408,6 +2413,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      serialNumberConductivity=serialNumberConductivity,
                      conductivityUnit=conductivityUnit,
                      temperatureUnit=temperatureUnit,
+                     pressureType=pressureType,
                      serialNumberTemperature=serialNumberTemperature,
                      systemUploadTime=systemUploadTime,
                      ship=ship,
