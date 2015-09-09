@@ -3102,10 +3102,8 @@ plotProfile <- function (x,
                     if (unit == "ratio") {
                         mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     } else if (unit == "mS/cm") {
-                        message("mS/cm")
                         mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     } else if (unit == "S/m") {
-                        message("S/m")
                         mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     } else {
                         stop("unknown conductivity unit ", unit, "; should be 'ratio', 'mS/cm' or 'S/m'")
