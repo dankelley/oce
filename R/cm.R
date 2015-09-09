@@ -210,13 +210,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    str(conductivity)
-    str(keep)
-    str(conductivity[keep])
-    str(salinity)
-    str(keep)
-    str(salinity[keep])
-
     rval <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
                 u=u[keep], v=v[keep], heading=heading[keep],
                 conductivity=conductivity[keep],
