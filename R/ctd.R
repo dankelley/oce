@@ -2,7 +2,8 @@
 
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,conductivity) {
+          definition=function(.Object,pressure,salinity,temperature,conductivity,
+                              temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
@@ -14,6 +15,7 @@ setMethod(f="initialize",
               ##.Object@metadata$filename <- filename
               .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
               .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
+              .Object@metadata$pressureType <- "sea" # guess on the unit
               .Object@metadata$deploymentType <- "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
@@ -162,8 +164,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
                    SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,
                    scan, time, other,
-                   missingValue,
-                   quality,
+                   temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
+                   missingValue, quality,
                    filename, type, model, serialNumber,
                    ship, scientist, institute, address, cruise, station,
                    date, startTime, recovery,
@@ -239,7 +241,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             salinity <- d$salinity
         }
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature,
-                   conductivity=conductivity)
+                   conductivity=conductivity,
+                   temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType)
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         ## copy relevant metadata
@@ -251,7 +254,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         if ("station" %in% mnames) res@metadata$station <- o@metadata$station
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
         if ("conductivityUnit" %in% mnames) res@metadata$conductivityUnit <- conductivityUnit
-
+        if ("temperatureUnit" %in% mnames) res@metadata$temperatureUnit <- temperatureUnit
+        if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
         if ("scan" %in% dnames) res@data$scan <- d$scan
         if ("time" %in% dnames) res@data$time <- d$time
         if ("quality" %in% dnames) res@data$quality <- d$quality
@@ -285,7 +289,9 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
         names <- names(x)
         if (3 != sum(c("salinity", "temperature", "pressure") %in% names))
             stop("the first argument must contain salinity, temperature, and pressure")
-        res <- new("ctd", pressure=x$pressure, salinity=x$salinity, temperature=x$temperature)
+        res <- new("ctd",
+                   pressure=x$pressure, salinity=x$salinity, temperature=x$temperature,
+                   temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType)
         if ("longitude" %in% names) {
             if (1 == length(longitude))
                 res@metadata$longitude <- x$longitude
@@ -312,7 +318,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
     ## 3. explicit mode
     if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
     if (missing(pressure)) stop("must give pressure")
-    res <- new('ctd')
+    res <- new('ctd', temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType)
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     pressure <- as.vector(pressure)
@@ -2525,7 +2531,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if ("IPTS-68" == metadata$temperatureUnit) {
         res@data$temperature68 <- res@data$temperature
         res@data$temperature <- T90fromT68(res@data$temperature68)
-        metadata$temperatureUnit <- "ITS-90"
+        res@metadata$temperatureUnit <- "ITS-90"
         warning("converted temperature from IPTS-69 to ITS-90")
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-69 to ITS-90")
     }
