@@ -8,6 +8,7 @@
        SA, CT,
        oxygen, nitrate, nitrite, phosphate, silicate,
        scan, time, other,
+       temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
        missingValue,
        quality, 
        filename, type, model, serialNumber,
@@ -57,6 +58,13 @@
     \code{1:length(salinity)}.}
   \item{time}{optional vector of times of observation}
   \item{other}{optional list of other data columns that are not in the standard list}
+  \item{temperatureUnit}{a character string indicating the unit for temperature;
+    may be \code{"ITS-90"} or \code{"IPTS-68"}}
+  \item{conductivityUnit}{a character string indicating the unit for
+    conductivity; may be \code{"ratio"}, \code{"S/m"} or \code{"mS/cm"}.}
+  \item{pressureType}{a character string indicating the type of pressure; may be
+    \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
+    and sea pressure, or \code{"sea"}.}
   \item{missingValue}{optional missing value, indicating data that should be
     taken as \code{NA}.}
   \item{quality}{quality flag, e.g. from the salinity quality flag in WOCE data.
