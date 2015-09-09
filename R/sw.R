@@ -199,7 +199,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
         n <- length(salinity)
         rval <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n))$C
     } else {
-        rval <- gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / gsw_C_from_SP(35, 15, 0)
+        rval <- gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / 42.914
     }
     dim(rval) <- dim
     rval
