@@ -3,7 +3,7 @@
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object,pressure,salinity,temperature,conductivity,
-                              temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType) {
+                              temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType, deploymentType=deploymentType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
@@ -13,10 +13,10 @@ setMethod(f="initialize",
               .Object@metadata$names <- names
               .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               ##.Object@metadata$filename <- filename
-              .Object@metadata$temperatureUnit <- "ITS-90" # guess on the unit
-              .Object@metadata$conductivityUnit <- "ratio" # guess on the unit
-              .Object@metadata$pressureType <- "sea" # guess on the unit
-              .Object@metadata$deploymentType <- "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
+              .Object@metadata$temperatureUnit <- if (!missing(temperatureUnit)) temperatureUnit else "ITS-90" # guess on the unit
+              .Object@metadata$conductivityUnit <- if (!missing(conductivityUnit)) conductivityUnit else "ratio" # guess on the unit
+              .Object@metadata$pressureType <- if (!missing(pressureType)) pressureType else "sea" # guess on the unit
+              .Object@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
               #.Object@metadata$waterDepth <- NA
