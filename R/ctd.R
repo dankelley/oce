@@ -3,7 +3,7 @@
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object,pressure,salinity,temperature,conductivity,
-                              temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType, deploymentType=deploymentType) {
+                              temperatureUnit, conductivityUnit, pressureType, deploymentType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
@@ -237,7 +237,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity,
             conductivityUnit <- "mS/cm"
             salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
         } else {
-            conductivityUnit <- "?" # FIXME: or ""? -- must check
+            conductivityUnit <- "ratio" # FIXME: possibly other values ... need to check
             salinity <- d$salinity
         }
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature,
