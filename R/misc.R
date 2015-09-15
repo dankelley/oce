@@ -77,7 +77,7 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
     }
 }
 
-binApply1D <- function(x, f, xbreaks, FUN)
+binApply1D <- function(x, f, xbreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(f)) stop("must supply 'f'")
@@ -91,12 +91,12 @@ binApply1D <- function(x, f, xbreaks, FUN)
     ##if (class(t) == "try-error")
     ##    stop("cannot coerce 'data' into a data.frame")
     fSplit <- split(f, cut(x, xbreaks))
-    rval <- sapply(fSplit, FUN)
+    rval <- sapply(fSplit, FUN, ...)
     names(rval) <- NULL
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=rval)
 }
 
-binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
+binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -117,7 +117,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN)
     for (i in 1:length(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks))
         ##rval[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        rval[,i] <- sapply(fSplit, FUN)
+        rval[,i] <- sapply(fSplit, FUN, ...)
     }
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),

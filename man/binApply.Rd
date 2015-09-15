@@ -8,8 +8,8 @@
 
 \description{Apply a function to binned matrix data}
 
-\usage{binApply1D(x, f, xbreaks, FUN)
-binApply2D(x, y, f, xbreaks, ybreaks, FUN)}
+\usage{binApply1D(x, f, xbreaks, FUN, ...)
+binApply2D(x, y, f, xbreaks, ybreaks, FUN, ...)}
 
 \arguments{
   \item{x}{a vector of numerical values.}
@@ -26,6 +26,8 @@ binApply2D(x, y, f, xbreaks, ybreaks, FUN)}
       \code{\link{pretty}} if not supplied.}
 
   \item{FUN}{function to apply to the data}
+   
+  \item{...}{arguments to pass to the function \code{FUN}}
 
 }
 
