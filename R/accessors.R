@@ -136,6 +136,19 @@ oceSetMetadata <- function(object, name, value, note="")
 }
 
 
+"conductivity<-" <- function(x, value)
+{
+    x@data$conductivity <- value
+    x@metadata$conductivityUnit <- "ratio"
+    x
+}
+
+conductivity <- function(x)
+{
+    if (!("conductivity" %in% names(x@data)))
+        stop("no item 'data$conductivity' in object; try using e.g. 'conductivity(x) <- swCSTp(x)' to add it")
+    x@data$conductivity
+}
 
 
 header <- function(x)
