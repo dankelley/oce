@@ -2,4 +2,3 @@ language: r
 sudo: required
 r_packages:
     - ncdf4
-    - rgdal
