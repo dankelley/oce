@@ -23,7 +23,7 @@
 \seealso{\code{\link{geodDist}} and \code{\link{geodXy}}}
 
 \examples{
-\dontrun
+\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
