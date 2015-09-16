@@ -2,5 +2,9 @@ language: r
 sudo: required
 env:
     global:
-        - _R_CHECK_FORCE_SUGGESTS_=false
+        - _R_CHECK_FORCE_SUGGESTS_=False
+        - _R_BUILD_ARGS="--no-build-vignettes --no-manual"
         - _R_CHECK_ARGS="--no-build-vignettes --no-manual"
+        - _R_CHECK_CRAN_INCOMING=False
+        - BOOTSTRAP_LATEX=""
+          
