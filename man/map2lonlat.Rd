@@ -46,11 +46,13 @@
   values indicating points that are off the globe as displayed.}
 
 \examples{
+\dontrun{
 library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
 cs <- list(longitude=-64.49657,latitude=45.33462)
 xy <- lonlat2map(cs, projection="+proj=merc")
 map2lonlat(xy)
+}
 }
 
 \seealso{\code{\link{lonlat2map}} does the inverse operation.}

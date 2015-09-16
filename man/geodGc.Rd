@@ -23,6 +23,7 @@
 \seealso{\code{\link{geodDist}} and \code{\link{geodXy}}}
 
 \examples{
+\dontrun
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
@@ -31,6 +32,7 @@ mapPlot(coastlineWorld, type='l',
 ## Great circle from New York to Paris (Lindberg's flight)
 l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
 mapLines(l$longitude, l$latitude, col='red', lwd=2)
+}
 }
 
 \author{Dan Kelley, based on code from Clark Richards, in turn based on

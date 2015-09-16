@@ -57,6 +57,7 @@ Note that if a grid line crosses the axis twice, only one label will be drawn.
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 3, 1))
@@ -67,6 +68,7 @@ mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         grid=FALSE)
 mapGrid(15, 15, polarCircle=1/2)
 mapAxis()
+}
 }
 
 \author{Dan Kelley}
