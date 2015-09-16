@@ -2,4 +2,5 @@ language: r
 sudo: required
 env:
     global:
+        - _R_CHECK_FORCE_SUGGESTS_=FALSE
         - R_CHECK_ARGS="--no-build-vignettes --no-manual"
