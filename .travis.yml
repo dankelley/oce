@@ -2,4 +2,4 @@ language: r
 sudo: required
 env:
     global:
-        - R_CHECK_ARGS="--no-build-vignettes --no-manual"
+        - _R_CHECK_ARGS="--no-build-vignettes --no-manual"
