@@ -54,6 +54,8 @@ polygon(c(q1$result, rev(q3$result)),
 c(q1$xmids, rev(q1$xmids)), col='gray')
 points(S, p, pch=20)
 
+\dontrun{
+## This requires the rgdal package to be installed
 ## (b) 2D: secchi depths in lat and lon bins
 if (require(ocedata)) {
     data(secchi, package="ocedata")
@@ -73,6 +75,7 @@ if (require(ocedata)) {
                      f=secchi$depth, FUN=mean)
     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
     mapPolygon(coastlineWorld, col='gray')
+}
 }
 }
 
