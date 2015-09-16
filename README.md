@@ -1,9 +1,9 @@
 # **oce**
 
-[![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
+TravisCI test: [![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
 
 
-![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/oce)
+CRAN: ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-day/oce)
 
