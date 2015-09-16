@@ -3,7 +3,6 @@
 \documentclass{article}
 
 % \VignetteIndexEntry{Introduction to oce}
-% \VignetteDepends{oce}
 % \VignetteKeyword{oceanography}
 
 \usepackage{url}
@@ -504,11 +503,14 @@ uses the \verb@rgdal@ package to calculate the details of map projections.  A
 suite of functions for plotting maps is provided.  The first step is to use
 ``\verb@mapPlot()@'' to construct the map, and after that, points can be added
 with \verb@mapPoints@, lines with \verb@mapLines@, etc. For example,
-<<fig=FALSE, eval=TRUE, echo=FALSE>>=
-jpeg("projection.png", width=800, height=450, pointsize=13)
-par(mar=rep(0, 4))
+<<eval=FALSE, echo=FALSE>>=
+## NOTE: travisCI doesn't have rgdal included and I don't want to make
+## oce *depend* on it, so I built up the png and included it in git.
+png("projection.png", width=800*0.5, height=450*0.5, pointsize=13*0.5)
+#pdf("projection.pdf", width=8, height=4.5, pointsize=13)
+#par(mar=rep(0, 4))
 @
-<<>>=
+<<eval=FALSE>>=
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
@@ -518,7 +520,7 @@ plots a world coastline in the Winkel Tripel projection, using light gray ink
 for the land (Figure~\ref{fig:projection}).
 Adding the cruise track for the \verb@oce@ dataset called
 \verb@section@ is a simple matter
-<<>>=
+<<eval=FALSE>>=
 data(section)
 lon <- section[["longitude", "byStation"]]
 lat <- section[["latitude", "byStation"]]
@@ -533,7 +535,7 @@ mapLines(lon, lat, col='red', lwd=2)
 % data(topoWorld)
 % plot(topoWorld, clatitude=30, clongitude=370, span=9000)
 % @
-<<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
+<<eval=FALSE, echo=FALSE, results=hide>>=
 dev.off()
 @
 \begin{figure}
