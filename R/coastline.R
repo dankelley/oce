@@ -677,7 +677,9 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' @examples
 #' library(oce)
 #' data(coastlineWorld)
+#' \dontrun{
 #' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", fill='gray')
+#' }
 #'
 #' @return a new coastline object
 coastlineCut <- function(coastline, lon_0=0)

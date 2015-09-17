@@ -29,9 +29,9 @@ This function is provisional, and both its behaviour and name may change
 through the summer and possibly autumn of 2015.
 }
 \examples{
-\dontrun{
 library(oce)
 data(coastlineWorld)
+\dontrun{
 mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", fill='gray')
 }
 }
