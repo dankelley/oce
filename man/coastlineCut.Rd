@@ -25,8 +25,8 @@ and ocedata packages are already "cut" at longitudes of -180 and 180, the presen
 function is not needed for default maps, which have \code{+lon_0=0}. However,
 may help with other values of \code{lon_0}.
 
-This function is provisional, and both its behaviour and name may change
-through the summer and possibly autumn of 2015.
+This function is provisional. Its behaviour, name and very existence
+may change through the summer and autumn of 2015.
 }
 \examples{
 library(oce)

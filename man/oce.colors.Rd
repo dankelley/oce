@@ -21,6 +21,9 @@
 \alias{oce.colors9B}
 \alias{oceColors9B}
 
+\alias{oce.colorsViridis}
+\alias{oceColorsViridis}
+
 \title{Create a palette of colours}
 
 \description{Create a palette of colours}
@@ -38,6 +41,8 @@ oce.colors9A(n)
 oce.colors9B(n)
 
 oce.colorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
+
+oce.colorsViridis(n)
 
 }
 
@@ -58,15 +63,14 @@ oce.colorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
 
   \code{oce.colorsPalette} provides a variety of pre-defined palettes.
   \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
-  \code{which}=2 yields the ColorBrewer diverging RYB scheme.  (Each is
-  interpolated from the 11-class schemes provided on this site.)
+  \code{which}=2 yields the ColorBrewer diverging RYB scheme [1].
 
   A family of nine-color schemes is as follows: \code{which="jet"} (or
   \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
   or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
-  somewhat desaturating the yellow and cyane.
+  somewhat desaturating the yellow and cyan.
 
-  \code{oce.colorsGebco} provides palettes that mimic the GEBCO altas colours,
+  \code{oce.colorsGebco} provides palettes that mimic the GEBCO atlas colours,
   with shades of blue for water and of brown for land.  The blue values go from
   dark to light, and the brown ones from light to dark; in this way,
   topographic images have light values near sea-level, and get darker in either
@@ -77,6 +81,12 @@ oce.colorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
 
   \code{oce.colorsTwo} provides a two-tone palette that fades to white
   at central values.
+
+  \code{oce.colorsViridis} provides a matplotlib (python) color scheme that
+  became the standard in 2015; see [2]. This is a blue-yellow transition that
+  is designed to reproduce well in black-and-white, and also to be
+  interpretable by those with certain forms of colour blindness.
+
 }
 
 \examples{
@@ -90,32 +100,38 @@ image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
 image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
 par(opar)
 
-# real-world example, with acoustic-doppler profiler data
+# Acoustic-Doppler profiler data; note that plot.adp() puts makes
+# zlim be symmetric about zero velocity.
 data(adp)
-par(mfrow=c(3,1))
 plot(adp, which='u1')
-plot(adp, which='u1', col=oce.colorsJet)
-plot(adp, which='u1', col=oce.colors9B)
+
+# Contrast Jet with Viridis, using standard Volcano dataset;
+# try printing the results in black and white.
+par(mfrow=c(2,1))
+imagep(volcano, col=oce.colorsJet)
+imagep(volcano, col=oce.colorsViridis)
 }
 
 \references{
-Color Brewer.
+[1] Color Brewer.
 \url{http://colorbrewer2.org/}
 
-Light, A., and P. J. Bartlein, 2004.
+[2] A blog item on the Viridis (and related) matplotlib colorscales is at
+\url{http://bids.github.io/colormap/}.
+
+[3] Light, A., and P. J. Bartlein, 2004.
 The End of the Rainbow? Color Schemes for Improved Data Graphics.
 \emph{Eos Trans. AGU}, 85(40), doi:10.1029/2004EO400002.
 
-Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
+[4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
 Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
 \url{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}
 
-Stephenson, David B., 2005.
+[5] Stephenson, David B., 2005.
 Comment on ``Color schemes for improved data graphics,''
 by A. Light and P. J. Bartlein.
 \emph{Eos Trans. AGU}, 86(20).
 (See also \url{http://geography.uoregon.edu/datagraphics/color_scales.htm})
-
 
 }
 

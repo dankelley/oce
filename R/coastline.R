@@ -668,8 +668,8 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' function is not needed for default maps, which have \code{+lon_0=0}. However,
 #' may help with other values of \code{lon_0}.
 #'
-#' This function is provisional, and both its behaviour and name may change
-#' through the summer and possibly autumn of 2015.
+#' This function is provisional. Its behaviour, name and very existence
+#' may change through the summer and autumn of 2015.
 #' 
 #' @param coastline original coastline object
 #' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a proj.4 string
