@@ -4,9 +4,9 @@
 \alias{subset,argo,missing-method}
 \alias{subset,argo-method}
 
-\title{Subset a argo object}
+\title{Subset an Argo object}
 
-\description{Subset a argo object}
+\description{Subset an Argo object}
 
 \usage{\S4method{subset}{argo}(x, subset, \dots)}
 

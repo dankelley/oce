@@ -2,9 +2,9 @@
 
 \alias{read.argo}
 
-\title{Read a argo data file}
+\title{Read an Argo data file}
 
-\description{Read a argo file, producing an object of type \code{argo}.}
+\description{Read an Argo file, producing an object of type \code{argo}.}
 
 \usage{
 read.argo(file, debug=getOption("oceDebug"), processingLog, \dots)

@@ -52,7 +52,7 @@
         integer, in which case it refers to an index of depth (1 being the top)
         or it may be the string "all" which means to plot all data.}
 
-    \item{coastline}{string giving the coastline to be used in a argo-location
+    \item{coastline}{string giving the coastline to be used in an Argo-location
         map, or \code{"best"} to pick the one with highest resolution, or
         \code{"none"} to avoid drawing the coastline.}
 
@@ -94,7 +94,7 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a summary plot for a argo dataset.}
+\details{Creates a summary plot for an Argo dataset.}
 
 \value{None.}
 

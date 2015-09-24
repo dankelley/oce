@@ -4,9 +4,9 @@
 \alias{summary,argo,missing-method}
 \alias{summary,argo-method}
 
-\title{Summarize a argo object}
+\title{Summarize an Argo object}
 
-\description{Summarizes some of the data in a \code{argo} object.}
+\description{Summarizes some of the data in an \code{argo} object.}
 
 \usage{\S4method{summary}{argo}(object, \dots)}
 
