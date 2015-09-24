@@ -1,9 +1,9 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
-\name{drifter}
+\name{argo}
 
 \docType{data}
 
-\alias{drifter}
+\alias{argo}
 
 \title{ARGO drifter dataset}
 
@@ -11,20 +11,20 @@
   downloaded in July 2011.  These data were collected and made freely available
   by the International Argo Program and the national programs that contribute to
   it.  Salinity, temperature and pressure are each matrices with first index
-  corresponding to depth, e.g.  \code{drifter[["temperature"]][1,]} is the
+  corresponding to depth, e.g.  \code{argo[["temperature"]][1,]} is the
   surface temperature.}
 
 \examples{
 \dontrun{
 library(oce)
-data(drifter)
-summary(drifter)
+data(argo)
+summary(argo)
 data(coastlineWorld)
-plot(drifter, which="trajectory", coastline=coastlineWorld)
+plot(argo, which="trajectory", coastline=coastlineWorld)
 }
 }
 
-\usage{data(drifter)}
+\usage{data(argo)}
 
 \source{This is the profile stored in the file \code{6900388_prof.nc}
   downloaded from the \code{usgodae.org} website in March 2012.}
@@ -32,8 +32,8 @@ plot(drifter, which="trajectory", coastline=coastlineWorld)
 % 20150702: removed the following because usgodae.org works only sporadically:
 % \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
 
-\seealso{See \code{\link{drifter-class}} for notes on the contents of
-  \code{drifter} objects, and for functions to work with them.}
+\seealso{See \code{\link{argo-class}} for notes on the contents of
+  \code{argo} objects, and for functions to work with them.}
 
 \author{Dan Kelley}
 

@@ -1,4 +1,5 @@
 0.9-17
+- rename 'drifter' class as 'argo' to recognize what it actually handles
 - add oceColorsViridis()
 - interpBarnes() has new argument 'pregrid'
 - binMean2D() has new argument 'flatten'

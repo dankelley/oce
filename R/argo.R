@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 setMethod(f="initialize",
-          signature="drifter",
+          signature="argo",
           definition=function(.Object,time,longitude,latitude,salinity,temperature,pressure,filename) {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(longitude)) .Object@data$longitude <- longitude
@@ -11,12 +11,12 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
-              .Object@processingLog$value <- "create 'drifter' object"
+              .Object@processingLog$value <- "create 'argo' object"
               return(.Object)
           })
 
 setMethod(f="subset",
-          signature="drifter",
+          signature="argo",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               rval <- x
@@ -28,14 +28,14 @@ setMethod(f="subset",
                   x@data$profile <- 1:length(x@data$time)
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
               } else if (length(grep("pressure", subsetString))) {
-                  ## check that it is a "gridded" drifter
+                  ## check that it is a "gridded" argo
                   gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
                   if (gridded) {
                       x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
                       keep <- eval(substitute(subset), x@data, parent.frame(2))
                       x@data$pressure <- rval@data$pressure ## FIXME: convert back to original for subsetting below
                   } else {
-                      stop("cannot subset ungridded drifter by pressure -- use drifterGrid() first", call.=FALSE)
+                      stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                   }
               } else {
                   stop("can only subset by time, longitude, latitude, pressure, and not by combinations", call.=FALSE)
@@ -61,7 +61,7 @@ setMethod(f="subset",
 
 
 setMethod(f="summary",
-          signature="drifter",
+          signature="argo",
           definition=function(object, ...) {
               cat("Drifter Summary\n---------------\n\n")
               cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
@@ -76,17 +76,17 @@ setMethod(f="summary",
               processingLogShow(object)
           })
 
-drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
+argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "drifterGrid() {\n", sep="", unindent=1)
-    dim <- dim(drifter@data$pressure)
+    oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
+    dim <- dim(argo@data$pressure)
     ndepth <- dim[1]
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
-    rval <- drifter
-    salinity <- drifter[["salinity"]]
-    temperature <- drifter[["temperature"]]
-    pressure <- drifter[["pressure"]]
+    rval <- argo
+    salinity <- argo[["salinity"]]
+    temperature <- argo[["temperature"]]
+    pressure <- argo[["pressure"]]
     if (missing(p)) {
         pt <- apply(pressure, 1, median, na.rm=TRUE)
     } else if (length(p) == 1 && p == "levitus") {
@@ -123,10 +123,10 @@ drifterGrid <- function(drifter, p, debug=getOption("oceDebug"), ...)
     rval
 }
 
-read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
+read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4") to read drifter data')
+        stop('must install.packages("ncdf4") to read argo data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ofile <- file
     filename <- ""
@@ -173,7 +173,7 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         dim(pressure) <- dim
     }
     metadata <- list(filename=filename, id=id)
-    res <- new("drifter", time=time,
+    res <- new("argo", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
@@ -181,7 +181,7 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res
 }
 
-as.drifter <- function(time, longitude, latitude,
+as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure, 
                        id, filename="",
                        missingValue)
@@ -203,7 +203,7 @@ as.drifter <- function(time, longitude, latitude,
         if (missing(salinity)) stop("must give salinity")
         if (missing(pressure)) stop("must give pressure")
     }
-    res <- new("drifter", time=time,
+    res <- new("argo", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
@@ -212,7 +212,7 @@ as.drifter <- function(time, longitude, latitude,
 }
 
 setMethod(f="plot",
-          signature=signature("drifter"),
+          signature=signature("argo"),
           definition=function (x, which = 1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
@@ -224,9 +224,9 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
-              if (!inherits(x, "drifter"))
-                  stop("method is only for objects of class '", "drifter", "'")
-              oceDebug(debug, "plot.drifter(x, which=c(", paste(which,collapse=","), "),",
+              if (!inherits(x, "argo"))
+                  stop("method is only for objects of class '", "argo", "'")
+              oceDebug(debug, "plot.argo(x, which=c(", paste(which,collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="", unindent=1)
@@ -402,7 +402,7 @@ setMethod(f="plot",
                       stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
-              oceDebug(debug, "} # plot.drifter()\n", unindent=1)
+              oceDebug(debug, "} # plot.argo()\n", unindent=1)
               invisible()
           })
 

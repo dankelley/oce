@@ -607,7 +607,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return(rval)
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
-        } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
+        } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
             if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
@@ -616,7 +616,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
                 if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE))
-                    return("drifter/argo")
+                    return("argo")
             } else {
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
@@ -864,8 +864,8 @@ read.oce <- function(file, ...)
         return(read.gps(file, type="gpx", processingLog=processingLog, ...))
     if (type == "coastline")
         return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
-    if (type == "drifter/argo")
-        return(read.drifter(file))
+    if (type == "argo")
+        return(read.argo(file))
     if (type == "lisst")
         return(read.lisst(file))
     if (type == "sealevel")

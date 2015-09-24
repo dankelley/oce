@@ -1,13 +1,13 @@
-\name{drifter-class}
+\name{argo-class}
 
 \docType{class}
 
-\alias{drifter-class}
-\alias{[[,drifter-method}
+\alias{argo-class}
+\alias{[[,argo-method}
 
-\title{Class for drifter data}
+\title{Class for argo data}
 
-\description{Class to store drifter data, with standard slots \code{metadata},
+\description{Class to store argo data, with standard slots \code{metadata},
     \code{data} and \code{processingLog}.}
 
 \section{Methods}{Data may be accessed as e.g. \code{pt[["time"]]}, where the
@@ -18,12 +18,12 @@
     must be specifield by full name, but those in \code{data} may be
     abbreviated, so long as the abbreviation is unique.  }
 
-\seealso{A \code{drifter} object may be read with \code{\link{read.drifter}} or
-    created with \code{\link{as.drifter}}.  Drifter data can be gridded to
-    constant pressures with \code{\link{drifterGrid}}.  Plots can be made with
-    \code{\link{plot.drifter}}, while \code{\link{summary.drifter}} produces
+\seealso{A \code{argo} object may be read with \code{\link{read.argo}} or
+    created with \code{\link{as.argo}}.  Drifter data can be gridded to
+    constant pressures with \code{\link{argoGrid}}.  Plots can be made with
+    \code{\link{plot.argo}}, while \code{\link{summary.argo}} produces
     statistical summaries and \code{show} produces overviews.  See
-    \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some drifter-related
+    \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some argo-related
     datasets that may be useful in a wider context.}
 
 \author{Dan Kelley}
