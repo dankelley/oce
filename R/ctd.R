@@ -1452,7 +1452,10 @@ setMethod(f="plot",
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
                                       oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                                      data(list=bestcoastline, package="ocedata", envir=environment())
+                                      if (bestcoastline == "coastlineWorld")
+                                          data(list=bestcoastline, package="oce", envir=environment())
+                                      else
+                                          data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
                                       oceDebug(debug, "using 'coastlineWorld'\n")
