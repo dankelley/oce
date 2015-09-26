@@ -1,4 +1,5 @@
 0.9-17
+- as.oce() added
 - rename 'drifter' class as 'argo' to recognize what it actually handles
 - add oceColorsViridis()
 - interpBarnes() has new argument 'pregrid'

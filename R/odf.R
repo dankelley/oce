@@ -223,8 +223,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     rval@metadata$cruise <- rval@metadata$odfHeader$CRUISE_HEADER$CRUISE_NUMBER
     rval@metadata$station <- rval@metadata$odfHeader$EVENT_HEADER$EVENT_NUMBER # FIXME: is this right?
     rval@metadata$scientist <- rval@metadata$odfHeader$CRUISE_HEADER$CHIEF_SCIENTIST
-    rval@metadata$latitude <- rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE
-    rval@metadata$longitude <- rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE
+    rval@metadata$latitude <- as.numeric(rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE)
+    rval@metadata$longitude <- as.numeric(rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE)
 
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
@@ -242,6 +242,16 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             rval@data[[i]][rval@data[[i]] == NAvalue] <- NA
         }
     }
+    ## Stage 3. rename QQQQ_* columns as flags on the previous column
+    names <- names(rval@data)
+    for (i in seq_along(names)) {
+        if (substr(names[i], 1, 4) == "QQQQ") {
+            if (i > 1) {
+                names[i] <- paste(names[i-1], "Flag", sep="")
+            }
+        }
+    }
+    names(rval@data) <- names
     rval
 }
 

@@ -1,4 +1,84 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' Coerce something into an object of \code{\link{oce-class}}.
+#'
+#' @details
+#' This function is limited and not intended for common use.
+#' In most circumstances, users should employ a function such
+#' as \code{\link{as.ctd}} to construct specialized oce sub-classes.
+#'
+#' \code{as.ctd} creates an oce object from data contained within its
+#' first argument, which may be a list, a data frame, or an object
+#' of \code{\link{oce-class}}.  (In the last case, \code{x} is 
+#' simply returned, without modification.)
+#'
+#' If \code{x} is a list created by \code{read_odf} from the (as
+#' yet unreleased) ODF package developed by the Bedford Institute of
+#' Oceanography, then \code{\link{ODF2oce}} is called (with
+#' no arguments other than the first) to calculate a return value.
+#" If the sub-class inference made by \code{\link{ODF2oce}} is 
+#' incorrect, users should call that function directly, specifying
+#' a value for its \code{coerce} argument.
+#'
+#' If \code{x} has not been created by \code{read_odf}, then the names
+#' of the items it contains are examined, and used to try to infer
+#' the proper return value.  There
+#' are only a few cases (although more may be added if there is 
+#' sufficient user demand). The cases are as follows.
+#' \itemize{
+#'
+#' \item If \code{x} contains items named \code{temperature}, 
+#' \code{pressure} and either \code{salinity} or \code{conductivity},
+#' then an object of type \code{\link{ctd-class}} will be returned.
+#' 
+#' \item If \code{x} contains columns named \code{longitude} and \code{latitude},
+#' but no other columns, then an object of class \code{\link{coastline-class}}
+#' is returned.
+#' }
+#'
+#' @param x an item containing data. This may be data frame, list, or an oce object.
+#'
+#' @return an object inherting from \code{\link{oce-class}}.
+#'
+#' @examples
+#' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
+#' as.oce(list(longitude=1:3,latitude=11:13))
+
+as.oce <- function(x)
+{
+    if (inherits(x, "oce"))
+        return(x)
+    if (!is.list(x) && !is.data.frame(x))
+        stop("x must be a list, a data frame, or an oce object")
+    names <- names(x)
+    if ("EVENT_HEADER" %in% names) {
+        rval <- ODF2oce(x)
+    } else {
+        if ("temperature" %in% names && "pressure" %in% names) {
+            ## Assume it's a CTD; if not, rely on users to understand their data
+            ## well enough to know the data type, and to use another function.
+            if ("salinity" %in% names) {
+                rval <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
+                ## Add any other columns
+                for (name in names) {
+                    if (name != "temperature" && name != "pressure" && name != "salinity")
+                        rval <- ctdAddColumn(rval, column=x[name], name=name, label=name)
+                }
+            } else if ("conductivity" %in% names) {
+                for (name in names) {
+                    if (name != "temperature" && name != "pressure" && name != "conductivity")
+                        rval <- ctdAddColumn(rval, column=x[name], name=name, label=name)
+                }
+            }
+        } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
+            rval <- as.coastline(longitude=x$longitude, latitude=x$latitude)
+        } else {
+            stop("unknown data type; as of now, as.oce() only handles CTD data")
+        }
+    }
+    rval
+}
+
 useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b@data))

@@ -1,8 +1,14 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+## To save storage, this new() function has arguments only for quantities that are present in almost all cases. For example, not
+## all data files will have oxygen, so that's not present here. Similarly, not all files have data-quality columns, so they are
+## not present either. Columnar data should be added after the object is created, using ctdAddColumn(), which updates metadata
+## as needed. As for adding metadata, do that directly. Examples of these things are seen throughout this file.  Note that
+## normal users should employ read.ctd() or as.ctd() to create ctd objects ... this function is intended for internal use, and
+## may be changed at any moment.
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,conductivity,
+          definition=function(.Object, pressure, salinity, temperature, conductivity, 
                               temperatureUnit, conductivityUnit, pressureType, deploymentType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
@@ -160,10 +166,10 @@ setMethod(f="[[",
               }
           })
 
-as.ctd <- function(salinity, temperature, pressure, conductivity,
-                   SA, CT,
-                   oxygen, nitrate, nitrite, phosphate, silicate,
+as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen, nitrate, nitrite, phosphate, silicate,
                    scan, time, other,
+                   salinityFlag, temperatureFlag, pressureFlag, conductivityFlag, SAFlag, CTFlag, oxygenFlag, nitrateFlag,
+                   nitriteFlag, phosphateFlag, silicateFlag,
                    temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
                    missingValue, quality,
                    filename, type, model, serialNumber,
