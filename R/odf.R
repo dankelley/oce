@@ -89,12 +89,16 @@ findInHeader <- function(key, lines)
 #' The following table gives the regular expressions that define recognized
 #' ODF names, along with the translated names as used in oce objects. Note
 #' that if an item is repeated, then the second one has a \code{2} appended
-#' at the end, etc.
+#' at the end, etc.  Note that quality-control columns (with names starting with
+#' \code{"QQQQ"}) are not handled with regular expressions. Instead, if such
+#' a flag is found in the i-th column, then a name is constructed by taking
+#' the name of the (i-1)-th column and appending \code{"Flag"}.
 #' \tabular{lll}{
 #'     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
 #'     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
 #'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
-#'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
+#'     \code{COND_*.*} \tab \code{conductivity_Spm}   \tab Conductivity in S/m                                        \cr
 #'     \code{DEPH_*.*} \tab \code{pressure}           \tab Used in \code{ctd} (may just be pressure)                  \cr
 #'     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -102,9 +106,12 @@ findInHeader <- function(key, lines)
 #'     \code{FFFF_*.*} \tab \code{flag}               \tab Used in many objects                                       \cr
 #'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+#'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
+#'     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
 #'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
 #'     \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OXYV_*.*} \tab \code{oxygen_voltage}     \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
@@ -113,14 +120,17 @@ findInHeader <- function(key, lines)
 #'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
 #'     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects (FIXME: check if IPTS68) \cr
-#'     \code{UNKN_*.*} \tab \code{g}                  \tab Used in ??                                                 \cr
+#'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
 #'     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 #' }
+#' Any code not shown in the list is transferred to the oce object without renaming, apart from 
+#' the adjustment of suffix numbers. The following code have been seen in data files from
+#' the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 #'
 #' @param names Data names in ODF format.
 #' @param PARAMETER_HEADER optional list containing information on the data variables
-#' @return A vector of string strings.
+#' @return A vector of strings.
 
 ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
 {
@@ -140,38 +150,45 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
     ## Infer standardized names for columns, partly based on documentation (e.g. PSAL for salinity), but
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
-    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
-    ## view of names.
-    names[grep("CNTR_*.*", names)[1]] <- "scan"
-    names[grep("CRAT_*.*", names)[1]] <- "conductivity" # ratio
-    ## For COND, a sample file states: UNITS='mmHo'; is that a typo for mho/m=(1/ohm)/m=Seimens/m?
-    names[grep("COND_*.*", names)[1]] <- "conductivity_Spm"
-    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
-    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
-    names[grep("PSAL_*.*", names)[1]] <- "salinity"
-    names[grep("PSAR_*.*", names)[1]] <- "par"
-    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
-    names[grep("TEMP_*.*", names)[1]] <- "temperature"
-    names[grep("TE90_*.*", names)[1]] <- "temperature"
-    names[grep("PRES_*.*", names)[1]] <- "pressure"
-    names[grep("DEPH_*.*", names)[1]] <- "depth"
-    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
-    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
-    names[grep("FFFF_*.*", names)[1]] <- "flag"
-    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
-    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
-    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
-    ## Below are some codes that seem to be useful for ADCP, inferred from a file from BIO
-    ## [1] "EWCT_01" "NSCT_01" "VCSP_01" "ERRV_01" "BEAM_01" "UNKN_01" "time"   
-    names[grep("EWCT_*.*", names)[1]] <- "u"
-    names[grep("NSCT_*.*", names)[1]] <- "v"
-    names[grep("VCSP_*.*", names)[1]] <- "w"
-    names[grep("ERRV_*.*", names)[1]] <- "error"
-    ## next is  NAME='Average Echo Intensity (AGC)'
-    names[grep("BEAM_*.*", names)[1]] <- "a" # FIXME: is this sensible?
-    ## names[grep("UNKN_*.*", names)[1]] <- "g" # percent good
+    ## or whatever), this is a place to look.
+    names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
+    names <- gsub("CNTR", "scan", names)
+    names <- gsub("CRAT", "conductivity", names)
+    names <- gsub("COND", "conductivity_Spm", names)
+    names <- gsub("DEPH", "depth", names)
+    names <- gsub("DOXY", "oxygen_by_volume", names)
+    names <- gsub("ERRV", "error", names)
+    names <- gsub("EWCT", "u", names)
+    names <- gsub("FFFF", "flag", names)
+    names <- gsub("FLOR", "fluorometer", names)
+    names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
+    names <- gsub("LATD", "latitude", names)
+    names <- gsub("LOND", "longitude", names)
+    names <- gsub("NSCT", "v", names)
+    names <- gsub("OCUR", "oxygen_by_mole", names)
+    names <- gsub("OTMP", "oxygen_temperature", names)
+    names <- gsub("OXYV", "oxygen_voltage", names)
+    names <- gsub("POTM", "theta", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("PRES", "pressure", names)
+    names <- gsub("PSAL", "salinity", names)
+    names <- gsub("PSAR", "par", names)
+    names <- gsub("SIGP", "sigmaTheta", names)
+    names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("TE90", "temperature", names)
+    names <- gsub("TEMP", "temperature", names)
+    names <- gsub("VCSP", "w", names)
     ## Step 3: recognize something from moving-vessel CTDs
-    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+    ## Step 4: some meanings inferred (guessed, really) from file CTD_HUD2014030_163_1_DN.ODF
+    ## Finally, fix up suffixes.
+    names <- gsub("_01", "", names)
+    names <- gsub("_02", "2", names)
+    names <- gsub("_03", "3", names)
+    names <- gsub("_04", "4", names)
+    for (i in 2:length(names)) {
+        if (substr(names[i], 1, 4)=="QQQQ")
+            names[i] <- paste(names[i-1], "Flag", sep="")
+    }
     names
 }
 
