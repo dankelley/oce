@@ -12,7 +12,7 @@ ODFNames2oceNames(names, PARAMETER_HEADER = NULL)
 \item{PARAMETER_HEADER}{optional list containing information on the data variables}
 }
 \value{
-A vector of string strings.
+A vector of strings.
 }
 \description{
 Translate from ODF names to oce names
@@ -21,12 +21,16 @@ Translate from ODF names to oce names
 The following table gives the regular expressions that define recognized
 ODF names, along with the translated names as used in oce objects. Note
 that if an item is repeated, then the second one has a \code{2} appended
-at the end, etc.
+at the end, etc.  Note that quality-control columns (with names starting with
+\code{"QQQQ"}) are not handled with regular expressions. Instead, if such
+a flag is found in the i-th column, then a name is constructed by taking
+the name of the (i-1)-th column and appending \code{"Flag"}.
 \tabular{lll}{
     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
-    \code{CRAT_*.*} \tab \code{conductivity}       \tab Used mainly in \code{ctd} objects                          \cr
+    \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
+    \code{COND_*.*} \tab \code{conductivity_Spm}   \tab Conductivity in S/m                                        \cr
     \code{DEPH_*.*} \tab \code{pressure}           \tab Used in \code{ctd} (may just be pressure)                  \cr
     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -34,9 +38,12 @@ at the end, etc.
     \code{FFFF_*.*} \tab \code{flag}               \tab Used in many objects                                       \cr
     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+    \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
+    \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
     \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
     \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OXYV_*.*} \tab \code{oxygen_voltage}     \tab Used mainly in \code{ctd} objects                          \cr
     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
@@ -45,9 +52,12 @@ at the end, etc.
     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
-    \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects (FIXME: check if IPTS68) \cr
-    \code{UNKN_*.*} \tab \code{g}                  \tab Used in ??                                                 \cr
+    \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
+    \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 }
+Any code not shown in the list is transferred to the oce object without renaming, apart from
+the adjustment of suffix numbers. The following code have been seen in data files from
+the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 }
 
