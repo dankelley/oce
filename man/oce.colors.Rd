@@ -98,7 +98,7 @@ image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
 image(x, col=oce.colorsJet(200), main="oce.colorsJet")
 image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
 image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
-image(x, col=oce.colorsPalette(200), main="oce.colorsViridis")
+image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
 par(opar)
 
 # Acoustic-Doppler profiler data; note that plot.adp() puts makes
