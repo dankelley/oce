@@ -93,11 +93,12 @@ oce.colorsViridis(n)
 library(oce)
 opar <- par(no.readonly = TRUE)
 x <- array(1:1000, dim=c(1,1000))
-par(mfrow=c(1,4))
+par(mfrow=c(1,5))
 image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
 image(x, col=oce.colorsJet(200), main="oce.colorsJet")
 image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
 image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
+image(x, col=oce.colorsPalette(200), main="oce.colorsViridis")
 par(opar)
 
 # Acoustic-Doppler profiler data; note that plot.adp() puts makes
