@@ -74,10 +74,10 @@ oce.colorsChlorophyll(n)
 oce.colorsDensity(n)
 oce.colorsFreesurface(n)
 oce.colorsOxygen(n)
-oce.colorsPAR(n),
+oce.colorsPAR(n)
 oce.colorsPhase(n)
 oce.colorsSalinity(n)
-oce.colorsTemperature(n),
+oce.colorsTemperature(n)
 oce.colorsTurbidity(n)
 oce.colorsVelocity(n)
 oce.colorsVorticity(n)
@@ -130,7 +130,7 @@ oce.colorsVorticity(n)
   \code{oce.colorsOxygen}, \code{oce.colorspAR}, \code{oce.colorsPhase},
   \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
   \code{oce.colorsTurbidity}, \code{oce.colorsVelocity} and
-  \code{oce.colorsVorticity} are based on RGB values set up by Kristen Thyng
+  \code{oce.colorsVorticity} are based on RGB values set up by Kristen M. Thyng
   for her Python package named \code{cmcolor} [6].
 
 }
@@ -147,7 +147,7 @@ image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
 image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
 image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
 
-# 4. Kristen Thyng's 'cmocean' colours, specialised for oceanography.
+# 4. Kristen M Thyng's 'cmocean' colours, specialised for oceanography.
 par(mfrow=c(3,4), mar=c(1, 3, 3, 1))
 image(x, col=oce.colorsCDOM(200), main="oce.colorsCDOM")
 image(x, col=oce.colorsChlorophyll(200), main="oce.colorsChlorophyll")
@@ -197,7 +197,7 @@ by A. Light and P. J. Bartlein.
 \emph{Eos Trans. AGU}, 86(20).
 (See also \url{http://geography.uoregon.edu/datagraphics/color_scales.htm})
 
-[6] The \code{cmocean} Python package, written by Kristen Thyng, is available
+[6] The \code{cmocean} Python package, written by Kristen M Thyng, is available
 at \url{https://github.com/kthyng/cmocean}.
 
 }
