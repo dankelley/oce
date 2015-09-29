@@ -24,6 +24,31 @@
 \alias{oce.colorsViridis}
 \alias{oceColorsViridis}
 
+\alias{oce.colorsCDOM}
+\alias{oce.colorsChlorophyll}
+\alias{oce.colorsDensity}
+\alias{oce.colorsFreesurface}
+\alias{oce.colorsOxygen}
+\alias{oce.colorsPAR}
+\alias{oce.colorsPhase}
+\alias{oce.colorsSalinity}
+\alias{oce.colorsTemperature}
+\alias{oce.colorsTurbidity}
+\alias{oce.colorsVelocity}
+\alias{oce.colorsVorticity}
+\alias{oceColorsCDOM}
+\alias{oceColorsChlorophyll}
+\alias{oceColorsDensity}
+\alias{oceColorsFreesurface}
+\alias{oceColorsOxygen}
+\alias{oceColorsPAR}
+\alias{oceColorsPhase}
+\alias{oceColorsSalinity}
+\alias{oceColorsTemperature}
+\alias{oceColorsTurbidity}
+\alias{oceColorsVelocity}
+\alias{oceColorsVorticity}
+
 \title{Create a palette of colours}
 
 \description{Create a palette of colours}
@@ -43,6 +68,19 @@ oce.colors9B(n)
 oce.colorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
 
 oce.colorsViridis(n)
+
+oce.colorsCDOM(n)
+oce.colorsChlorophyll(n)
+oce.colorsDensity(n)
+oce.colorsFreesurface(n)
+oce.colorsOxygen(n)
+oce.colorsPAR(n),
+oce.colorsPhase(n)
+oce.colorsSalinity(n)
+oce.colorsTemperature(n),
+oce.colorsTurbidity(n)
+oce.colorsVelocity(n)
+oce.colorsVorticity(n)
 
 }
 
@@ -87,30 +125,55 @@ oce.colorsViridis(n)
   is designed to reproduce well in black-and-white, and also to be
   interpretable by those with certain forms of colour blindness.
 
+  \code{oce.colorsCDOM}, \code{oce.colorsChlorophyll},
+  \code{oce.colorsDensity}, \code{oce.colorsFreesurface},
+  \code{oce.colorsOxygen}, \code{oce.colorspAR}, \code{oce.colorsPhase},
+  \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
+  \code{oce.colorsTurbidity}, \code{oce.colorsVelocity} and
+  \code{oce.colorsVorticity} are based on RGB values set up by Kristen Thyng
+  for her Python package named \code{cmcolor} [6].
+
 }
 
 \examples{
 library(oce)
 opar <- par(no.readonly = TRUE)
+# 1. Show a few palettes
 x <- array(1:1000, dim=c(1,1000))
-par(mfrow=c(1,5))
+par(mfrow=c(1,5), mar=c(1, 3, 3, 1))
 image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
 image(x, col=oce.colorsJet(200), main="oce.colorsJet")
 image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
 image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
 image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
-par(opar)
 
-# Acoustic-Doppler profiler data; note that plot.adp() puts makes
+# 4. Kristen Thyng's 'cmocean' colours, specialised for oceanography.
+par(mfrow=c(3,4), mar=c(1, 3, 3, 1))
+image(x, col=oce.colorsCDOM(200), main="oce.colorsCDOM")
+image(x, col=oce.colorsChlorophyll(200), main="oce.colorsChlorophyll")
+image(x, col=oce.colorsDensity(200), main="oce.colorsDensity")
+image(x, col=oce.colorsFreesurface(200), main="oce.colorsFreesurface")
+image(x, col=oce.colorsOxygen(200), main="oce.colorsOxygen")
+image(x, col=oce.colorsPAR(200), main="oce.colorsPAR")
+image(x, col=oce.colorsPhase(200), main="oce.colorsPhase")
+image(x, col=oce.colorsSalinity(200), main="oce.colorsSalinity")
+image(x, col=oce.colorsTemperature(200), main="oce.colorsTemperature")
+image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbudity")
+image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
+image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
+ 
+# 3. Acoustic-Doppler profiler data; note that plot.adp() puts makes
 # zlim be symmetric about zero velocity.
+par(mfrow=c(1,1))
 data(adp)
 plot(adp, which='u1')
 
-# Contrast Jet with Viridis, using standard Volcano dataset;
+# 4. Contrast Jet with Viridis, using standard Volcano dataset;
 # try printing the results in black and white.
 par(mfrow=c(2,1))
 imagep(volcano, col=oce.colorsJet)
 imagep(volcano, col=oce.colorsViridis)
+
 }
 
 \references{
@@ -133,6 +196,9 @@ Comment on ``Color schemes for improved data graphics,''
 by A. Light and P. J. Bartlein.
 \emph{Eos Trans. AGU}, 86(20).
 (See also \url{http://geography.uoregon.edu/datagraphics/color_scales.htm})
+
+[6] The \code{cmocean} Python package, written by Kristen Thyng, is available
+at \url{https://github.com/kthyng/cmocean}.
 
 }
 

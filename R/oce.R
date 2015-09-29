@@ -1039,6 +1039,107 @@ oce.colorsViridis <- function(n)
 }
 oceColorsViridis <- oce.colorsViridis
 
+## Now a long list of cmocean colour schemes. Arguably this is better done with a function closure
+## but editing a sequence of cut/paste is quite simple and straightforward for readers.
+oce.colorsCDOM <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$cdom
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsCDOM  <- oce.colorsCDOM
+
+oce.colorsChlorophyll <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$chlorophyll
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsChlorophyll <- oce.colorsChlorophyll
+
+oce.colorsDensity <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$density
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsDensity  <- oce.colorsDensity
+
+oce.colorsFreesurface <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$freesurface
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsFreesurface  <- oce.colorsFreesurface
+
+oce.colorsOxygen <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$oxygen
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsOxygen  <- oce.colorsOxygen
+
+oce.colorsPAR <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$par
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsPAR  <- oce.colorsPAR
+
+oce.colorsPhase <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$phase
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsPhase  <- oce.colorsPhase
+
+oce.colorsSalinity <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$salinity
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsSalinity  <- oce.colorsSalinity
+
+oce.colorsTemperature <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$temperature
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsTemperature  <- oce.colorsTemperature
+
+oce.colorsTurbidity <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$turbidity
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsTurbidity  <- oce.colorsTurbidity
+
+oce.colorsVelocity <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$velocity
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsVelocity  <- oce.colorsVelocity
+
+oce.colorsVorticity <- function(n)
+{
+    data("colors", package="oce", envir=environment())
+    col <- get("colors")$vorticity
+    if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+}
+oceColorsVorticity  <- oce.colorsVorticity
+
+
+
+## matlab-like scheme
 
 oce.colorsJet <- function(n)
 {

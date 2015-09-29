@@ -13,9 +13,26 @@
 ## do not go into the R package as stored on CRAN.
 
 ## Viridis
-viridis <- read.table("viridis.dat", header=TRUE)
+rgb <- read.table("viridis.dat")
+colors <- list(viridis=rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3))
+
+## cmocean colours
+
+cmoceanFiles <- c("CDOM-rgb.txt", "Chlorophyll-rgb.txt", "Density-rgb.txt",
+                  "Freesurface-rgb.txt", "Oxygen-rgb.txt", "PAR-rgb.txt",
+                  "Phase-rgb.txt", "Salinity-rgb.txt", "Temperature-rgb.txt",
+                  "Turbidity-rgb.txt", "Velocity-rgb.txt", "Vorticity-rgb.txt")
+for (cmoceanFile in cmoceanFiles) {
+    oceName <- tolower(gsub("-rgb.txt", "", cmoceanFile))
+    message(oceName)
+    rgb <- read.table(paste("cmocean", cmoceanFile, sep="/"), header=FALSE)
+    str(rgb)
+    colors[[oceName]] <- rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3)
+}
+
+str(colors)
+
 ## Put other colormaps above, and add to the list below.
-colors <- list(viridis=rgb(r=viridis$red, g=viridis$green, b=viridis$blue))
 
 save(colors, file="colors.rda")
 tools::resaveRdaFiles("colors.rda")
