@@ -95,11 +95,13 @@ findInHeader <- function(key, lines)
 #' the name of the (i-1)-th column and appending \code{"Flag"}.
 #' \tabular{lll}{
 #'     \strong{Regexp} \tab \strong{Result}           \tab \strong{Notes}                                             \cr
+#'     \code{ALTB_*.*} \tab \code{altimeter}          \tab                                                            \cr
+#'     \code{BATH_*.*} \tab \code{barometricDepth}    \tab Barometric depth (of sensor? of water column?)             \cr
 #'     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
 #'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
 #'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
 #'     \code{COND_*.*} \tab \code{conductivity_Spm}   \tab Conductivity in S/m                                        \cr
-#'     \code{DEPH_*.*} \tab \code{pressure}           \tab Used in \code{ctd} (may just be pressure)                  \cr
+#'     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
 #'     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
 #'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
@@ -112,10 +114,12 @@ findInHeader <- function(key, lines)
 #'     \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{OXYV_*.*} \tab \code{oxygen_voltage}     \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr
 #'     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
 #'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
 #'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
@@ -151,6 +155,8 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     ## or whatever), this is a place to look.
+    names <- gsub("ALTB", "altimeter", names)
+    names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
     names <- gsub("CNTR", "scan", names)
     names <- gsub("CRAT", "conductivity", names)
@@ -168,10 +174,12 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
     names <- gsub("OCUR", "oxygen_by_mole", names)
     names <- gsub("OTMP", "oxygen_temperature", names)
     names <- gsub("OXYV", "oxygen_voltage", names)
+    names <- gsub("PHPH", "pH", names)
     names <- gsub("POTM", "theta", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("PRES", "pressure", names)
     names <- gsub("PSAL", "salinity", names)
     names <- gsub("PSAR", "par", names)
+    names <- gsub("QCFF", "flag", names) # overall flag
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
