@@ -1,14 +1,14 @@
-\name{plot.drifter}
+\name{plot.argo}
 
-\alias{plot.drifter}
-\alias{plot,drifter,missing-method}
-\alias{plot,drifter-method}
+\alias{plot.argo}
+\alias{plot,argo,missing-method}
+\alias{plot,argo-method}
 
-\title{Plot drifter data}
+\title{Plot argo data}
 
-\description{Plot a summary diagram for drifter data.}
+\description{Plot a summary diagram for argo data.}
 
-\usage{\S4method{plot}{drifter}(x, which = 1, level,
+\usage{\S4method{plot}{argo}(x, which = 1, level,
      coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                  "coastlineWorldFine", "none"),
      cex=1, pch=1, type='p', col, fill=FALSE,
@@ -20,12 +20,12 @@
 }
 
 \arguments{
-    \item{x}{A \code{drifter} object, e.g. as read by \code{\link{read.drifter}}.}
+    \item{x}{A \code{argo} object, e.g. as read by \code{\link{read.argo}}.}
 
     \item{which}{list of desired plot types.
         \itemize{
             \item \code{which=1} or \code{which="trajectory"} gives a 
-            plot of the drifter trajectory, with the coastline, if one is provided.
+            plot of the argo trajectory, with the coastline, if one is provided.
 
             \item \code{which=2} or \code{"salinity ts"} gives a time series of
             salinity at the indicated level(s)
@@ -52,7 +52,7 @@
         integer, in which case it refers to an index of depth (1 being the top)
         or it may be the string "all" which means to plot all data.}
 
-    \item{coastline}{string giving the coastline to be used in a drifter-location
+    \item{coastline}{string giving the coastline to be used in an Argo-location
         map, or \code{"best"} to pick the one with highest resolution, or
         \code{"none"} to avoid drawing the coastline.}
 
@@ -94,18 +94,18 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a summary plot for a drifter dataset.}
+\details{Creates a summary plot for an Argo dataset.}
 
 \value{None.}
 
-\seealso{The documentation for \code{\link{drifter-class}} explains the
-    structure of drifter objects, and also outlines the other functions dealing
+\seealso{The documentation for \code{\link{argo-class}} explains the
+    structure of argo objects, and also outlines the other functions dealing
     with them.}
 
 \examples{
 library(oce)
-data(drifter)
-plot(drifter, which="trajectory")
+data(argo)
+plot(argo, which="trajectory")
 }
 
 \references{\url{http://www.argo.ucsd.edu/}}

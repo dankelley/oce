@@ -61,10 +61,10 @@
 Information on the classes that derive from this base class are found at the following links:
 \code{\link{adp-class}},
 \code{\link{adv-class}},
+\code{\link{argo-class}},
 \code{\link{cm-class}},
 \code{\link{coastline-class}},
 \code{\link{ctd-class}},
-\code{\link{drifter-class}},
 \code{\link{echosounder-class}},
 \code{\link{lisst-class}},
 \code{\link{lobo-class}},

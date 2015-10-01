@@ -1,13 +1,13 @@
-\name{read.drifter}
+\name{read.argo}
 
-\alias{read.drifter}
+\alias{read.argo}
 
-\title{Read a drifter data file}
+\title{Read an Argo data file}
 
-\description{Read a drifter file, producing an object of type \code{drifter}.}
+\description{Read an Argo file, producing an object of type \code{argo}.}
 
 \usage{
-read.drifter(file, debug=getOption("oceDebug"), processingLog, \dots)
+read.argo(file, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
 \arguments{
@@ -23,19 +23,19 @@ read.drifter(file, debug=getOption("oceDebug"), processingLog, \dots)
 
 \details{This reads netCDF formatted ARGO data.}
 
-\value{An object of \code{\link[base]{class}} \code{"drifter"}.}
+\value{An object of \code{\link[base]{class}} \code{"argo"}.}
 
 \examples{
 \dontrun{
 library(oce)
-d <- read.drifter("/data/OAR/6900388_prof.nc")
+d <- read.argo("/data/OAR/6900388_prof.nc")
 summary(d)
 plot(d)
 }
 }
 
-\seealso{The documentation for \code{\link{drifter-class}} explains the
-    structure of drifter objects, and also outlines the other functions dealing
+\seealso{The documentation for \code{\link{argo-class}} explains the
+    structure of argo objects, and also outlines the other functions dealing
     with them.}
 
 \references{\url{http://www.argo.ucsd.edu/}}

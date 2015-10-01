@@ -4,10 +4,11 @@
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{as.ctd(salinity, temperature, pressure, conductivity,
-       SA, CT,
-       oxygen, nitrate, nitrite, phosphate, silicate,
-       scan, time, other,
+\usage{as.ctd(salinity, temperature, pressure, conductivity, SA, CT, oxygen,
+       nitrate, nitrite, phosphate, silicate, scan, time, other,
+       salinityFlag, temperatureFlag, pressureFlag, conductivityFlag,
+       SAFlag, CTFlag, oxygenFlag, nitrateFlag, nitriteFlag, phosphateFlag,
+       silicateFlag,
        temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
        missingValue,
        quality, 
@@ -47,9 +48,7 @@
   \item{CT}{conservative temperature (as in TEOS-10).  If given, the supplied
     conservative temperature is converted internally to UNESCO-defined in-situ
     temperature.}
-
   \item{oxygen}{optional oxygen concentration}
-
   \item{nitrate}{optional nitrate concentration [micromole/kg]}
   \item{nitrite}{optional nitrite concentration [micromole/kg]}
   \item{phosphate}{optional phosphate concentration [micromole/kg]}
@@ -58,6 +57,17 @@
     \code{1:length(salinity)}.}
   \item{time}{optional vector of times of observation}
   \item{other}{optional list of other data columns that are not in the standard list}
+  \item{salinityFlag}{a quality flag, defined and interpreted by the user}
+  \item{temperatureFlag}{a quality flag, defined and interpreted by the user}
+  \item{pressureFlag}{a quality flag, defined and interpreted by the user}
+  \item{conductivityFlag}{a quality flag, defined and interpreted by the user}
+  \item{SAFlag}{a quality flag, defined and interpreted by the user}
+  \item{CTFlag}{a quality flag, defined and interpreted by the user}
+  \item{oxygenFlag}{a quality flag, defined and interpreted by the user}
+  \item{nitrateFlag}{a quality flag, defined and interpreted by the user}
+  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
+  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
+  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
   \item{temperatureUnit}{a character string indicating the unit for temperature;
     may be \code{"ITS-90"} or \code{"IPTS-68"}}
   \item{conductivityUnit}{a character string indicating the unit for

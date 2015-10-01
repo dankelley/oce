@@ -1,8 +1,14 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+## To save storage, this new() function has arguments only for quantities that are present in almost all cases. For example, not
+## all data files will have oxygen, so that's not present here. Similarly, not all files have data-quality columns, so they are
+## not present either. Columnar data should be added after the object is created, using ctdAddColumn(), which updates metadata
+## as needed. As for adding metadata, do that directly. Examples of these things are seen throughout this file.  Note that
+## normal users should employ read.ctd() or as.ctd() to create ctd objects ... this function is intended for internal use, and
+## may be changed at any moment.
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,conductivity,
+          definition=function(.Object, pressure, salinity, temperature, conductivity, 
                               temperatureUnit, conductivityUnit, pressureType, deploymentType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
@@ -160,10 +166,10 @@ setMethod(f="[[",
               }
           })
 
-as.ctd <- function(salinity, temperature, pressure, conductivity,
-                   SA, CT,
-                   oxygen, nitrate, nitrite, phosphate, silicate,
+as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen, nitrate, nitrite, phosphate, silicate,
                    scan, time, other,
+                   salinityFlag, temperatureFlag, pressureFlag, conductivityFlag, SAFlag, CTFlag, oxygenFlag, nitrateFlag,
+                   nitriteFlag, phosphateFlag, silicateFlag,
                    temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
                    missingValue, quality,
                    filename, type, model, serialNumber,
@@ -1452,7 +1458,10 @@ setMethod(f="plot",
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
                                       oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                                      data(list=bestcoastline, package="ocedata", envir=environment())
+                                      if (bestcoastline == "coastlineWorld")
+                                          data(list=bestcoastline, package="oce", envir=environment())
+                                      else
+                                          data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
                                       oceDebug(debug, "using 'coastlineWorld'\n")
@@ -2855,14 +2864,14 @@ plotProfile <- function (x,
           ylim <- plim
     if (missing(ylim))
         ylim <- switch(ytype,
-                       pressure = rev(range(x@data$pressure, na.rm=TRUE)),
-                       z = range(swZ(x), na.rm=TRUE),
-                       depth = rev(range(swDepth(x), na.rm=TRUE)),
-                       sigmaTheta = rev(range(x@data$sigmaTheta, na.rm=TRUE)))
+                       pressure=rev(range(x@data$pressure, na.rm=TRUE)),
+                       z=range(swZ(x@data$pressure), na.rm=TRUE),
+                       depth=rev(range(swDepth(x), na.rm=TRUE)),
+                       sigmaTheta=rev(range(x@data$sigmaTheta, na.rm=TRUE)))
     examineIndices <- switch(ytype,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
-                       z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
-                       depth = (min(ylim) <= swDepth(x) & swDepth(x) <= max(ylim)),
+                       z = (min(ylim) <= swZ(x@data$pressure) & swZ(x@data$pressure) <= max(ylim)),
+                       depth = (min(ylim) <= swDepth(x@data$pressure) & swDepth(x@data$pressure) <= max(ylim)),
                        sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
@@ -2890,9 +2899,9 @@ plotProfile <- function (x,
     if (ytype == "pressure")
         y <- x@data$pressure
     else if (ytype == "z")
-        y <- swZ(x)
+        y <- swZ(x@data$pressure)
     else if (ytype == "depth")
-        y <- swDepth(x)
+        y <- swDepth(x@data$pressure)
     else if (ytype == "sigmaTheta")
         y <- swSigmaTheta(x)
 

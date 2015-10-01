@@ -6,6 +6,7 @@ library(oce)
 
 ##data("adp")
 ##data("adv")
+##data("argo")
 
 test_that("cm", {
           data("cm")
@@ -34,7 +35,6 @@ test_that("ctd", {
 })
 
 ##data("ctdRaw")
-##data("drifter")
 ##data("echosounder")
 ##data("lisst")
 ##data("lobo")
