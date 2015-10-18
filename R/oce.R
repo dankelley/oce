@@ -7,15 +7,19 @@
 #' In most circumstances, users should employ a function such
 #' as \code{\link{as.ctd}} to construct specialized oce sub-classes.
 #'
-#' \code{as.ctd} creates an oce object from data contained within its
+#' \code{as.oce} creates an oce object from data contained within its
 #' first argument, which may be a list, a data frame, or an object
 #' of \code{\link{oce-class}}.  (In the last case, \code{x} is 
 #' simply returned, without modification.)
 #'
+#' If \code{x} is a list containing items named \code{longitude} and
+#' \code{latitude}, then \code{\link{as.coastline}} is called (with
+#' the specified \dots value) to create a coastline object.
+#'
 #' If \code{x} is a list created by \code{read_odf} from the (as
 #' yet unreleased) ODF package developed by the Bedford Institute of
 #' Oceanography, then \code{\link{ODF2oce}} is called (with
-#' no arguments other than the first) to calculate a return value.
+#' the \dots arguments passed) to calculate a return value.
 #" If the sub-class inference made by \code{\link{ODF2oce}} is 
 #' incorrect, users should call that function directly, specifying
 #' a value for its \code{coerce} argument.
@@ -37,14 +41,15 @@
 #' }
 #'
 #' @param x an item containing data. This may be data frame, list, or an oce object.
+#' @param \dots optional extra arguments, passed to conversion functions \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
 #'
-#' @return an object inherting from \code{\link{oce-class}}.
+#' @return \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
 #'
 #' @examples
 #' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
 #' as.oce(list(longitude=1:3,latitude=11:13))
 
-as.oce <- function(x)
+as.oce <- function(x, ...)
 {
     if (inherits(x, "oce"))
         return(x)
@@ -52,7 +57,7 @@ as.oce <- function(x)
         stop("x must be a list, a data frame, or an oce object")
     names <- names(x)
     if ("EVENT_HEADER" %in% names) {
-        rval <- ODF2oce(x)
+        rval <- ODF2oce(x, ...)
     } else {
         if ("temperature" %in% names && "pressure" %in% names) {
             ## Assume it's a CTD; if not, rely on users to understand their data
@@ -71,7 +76,7 @@ as.oce <- function(x)
                 }
             }
         } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
-            rval <- as.coastline(longitude=x$longitude, latitude=x$latitude)
+            rval <- as.coastline(longitude=x$longitude, latitude=x$latitude, ...)
         } else {
             stop("unknown data type; as of now, as.oce() only handles CTD data")
         }

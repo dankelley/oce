@@ -1950,6 +1950,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             if (is.na(Scol))
                 stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
         }
+        ## FIXME: use these flags ... they are ignored at present.
         Sflagcol <- pmatch("CTDSAL_FLAG_W", varNames)
         if (is.na(Sflagcol)) {
             Sflagcol <- pmatch("SALNTY_FLAG_W", varNames)
@@ -2262,7 +2263,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             ## Used to have oxygen.temperature and oxygen.current here (why??)
             if (0 < regexpr("oxygen", lline))
                 name <- "oxygen"
-            if (0 < regexpr("flag", lline)) name <- "flag"
+            if (0 < regexpr("flag", lline))
+                name <- "flag"
             if (0 < regexpr("sigma-theta", lline)) {
                 name <- "sigmaTheta"
                 foundSigmaTheta <- TRUE

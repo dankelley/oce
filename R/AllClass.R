@@ -101,7 +101,6 @@ setValidity("oce",
                     cat("should be 3 slots, but there are", nslots, "\n")
                     return(FALSE)
                 }
-                ## Do not check for the 'flags' slot.
                 for (name in c("metadata", "data", "processingLog")) {
                     if (!(name %in% slotNames)) {
                         cat("object should have a slot named \"", name, "\"\n", sep="")
