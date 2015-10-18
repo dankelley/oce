@@ -21,6 +21,10 @@
 
         \item{\code{data}}{List containing the actual data.}
 
+        \item{\code{flags}}{List (possibly empty) containing flags that
+            indicate data quality. The item names match those in the
+            \code{data} slot.}
+
         \item{\code{processingLog}}{List containing a time-stamped record of
             changes that have been made to the object, either automatically
             recorded by functions in the package, or added by the user with

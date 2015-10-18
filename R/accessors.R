@@ -275,6 +275,7 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "longitude<-" <- function(x, value)
 {
+    message("DAN")
     if ("longitude" %in% names(x@metadata)) {
         x@metadata$longitude <- value[1]
     } else if ("longitude" %in% names(x@data)) {
