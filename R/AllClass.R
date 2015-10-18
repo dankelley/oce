@@ -1,11 +1,9 @@
 setClass("oce",
          representation(metadata="list",
                         data="list",
-                        flags="list",
                         processingLog="list"),
          prototype=list(metadata=list(),
                         data=list(),
-                        flags=list(),
                         processingLog=list()))
 
 setClass("adv", contains="oce")
@@ -91,11 +89,7 @@ setMethod(f="[[<-",
                       warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
                   }
               }
-              ##2015-10-16 Comment out the next check, because it produces errors on the lack of
-              ##2015-10-16 a 'flags' slot, under some conditions (namely, if the argument 'x' 
-              ##2015-10-16 was an archived version of an object before I added the 'flags'
-              ##2015-10-16 slot, today.
-              ## validObject(x)
+              validObject(x)
               invisible(x)
           })
 
@@ -103,8 +97,8 @@ setValidity("oce",
             function(object) {
                 slotNames <- slotNames(object)
                 nslots <- length(slotNames)
-                if (nslots !=3 && nslots !=4) {
-                    cat("should be 3 or 4 slots, but there are", nslots, "\n")
+                if (nslots !=3) {
+                    cat("should be 3 slots, but there are", nslots, "\n")
                     return(FALSE)
                 }
                 ## Do not check for the 'flags' slot.
