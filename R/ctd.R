@@ -1800,6 +1800,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     oceDebug(debug, paste("examining header line '",line,"'\n", sep=""))
     header <- line
     waterDepthWarning <- FALSE
+
     ## Handle a format used in a 2003 survey of the Canada Basin
     if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
         oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
@@ -1833,7 +1834,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             } else if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
                 station <- sub("[ ]*$", "", sub("CASTNO[ ]*=[ ]*", "", header[i]))
             } else if (length(grep("^[ ]*Pressure,", header[i]))) {
-                names <- strsplit(tolower(header[i]), ",")[[1]]
+                names <- strsplit(gsub(" *$", "", tolower(header[i])), ",")[[1]]
             } else if (length(grep("LATITUDE", header[i]))) {
                 latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
                 if (length(grep(".*S.*", header[i], ignore.case=TRUE)))
@@ -1847,7 +1848,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             }
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
-        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
+        data <- read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names)
+        D <- data
+        isFlag <- rep(FALSE, dim(D)[2])
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
@@ -1984,10 +1987,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         varUnits <- strsplit(line, split=",")[[1]]
         lines <- readLines(file)
         nlines <- length(lines)
-        pressure <- vector("numeric", nlines)
-        temperature <- vector("numeric", nlines)
-        salinity <- vector("numeric", nlines)
-        oxygen <- vector("numeric", nlines)
+        ## pressure <- vector("numeric", nlines)
+        ## temperature <- vector("numeric", nlines)
+        ## salinity <- vector("numeric", nlines)
+        ## oxygen <- vector("numeric", nlines)
         b <- 0
         oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
         isFlag <- grepl("_FLAG_W$", varNames)
@@ -2064,14 +2067,14 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
 
     flags <- D[,isFlag]
     names(flags) <- woceNames2oceNames(names(flags))
-    metadata$flags <- flags
+    metadata$flags <- if (dim(flags)[2] == 0) list() else as.list(flags)
     res@metadata <- metadata
 
     ## FIXME: what about sigmaTheta? I guess we should check to see if it exists, and to insert if not?
     if (!"sigmaTheta" %in% names(data))
         data$sigmaTheta <- swSigmaTheta(data$salinity, data$temperature, data$pressure)
 
-    res@data <- data
+    res@data <- as.list(data)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
