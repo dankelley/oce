@@ -1728,6 +1728,21 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
     rval
 }
 
+woceNames2oceNames <- function(names)
+{
+    ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
+    ## FIXME: I've seen. But how are we to know, definitively? It would be great to find an official
+    ## FIXME: list, partly because the present function should be documented, and that documentation
+    ## FIXME: should list a source.
+    ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    names <- gsub("CTDOXY.*", "oxygen", names)
+    names <- gsub("CTDPRS.*", "pressure", names)
+    names <- gsub("CTDSAL.*", "salinity", names)
+    names <- gsub("CTDTMP.*", "temperature", names)
+    names <- gsub("OXYGEN.*", "oxygen", names)
+    names <- gsub("SALNTY.*", "temperature", names)
+    names
+}
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -1931,6 +1946,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
         ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
         varNames <- strsplit(line, split=",")[[1]]
+        oceDebug(debug, "varNames: ", paste(varNames, sep=" "), "\n")
+        oceDebug(debug, "oce names: ", paste(woceNames2oceNames(varNames), sep=" "), "\n")
+
         varNames <- gsub("^ *", "", gsub(" *$", "", varNames)) # trim whitespace
         ## catch some typos that have occured in files processed by oce
         oceDebug(debug, paste("before trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
@@ -1972,45 +1990,42 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         oxygen <- vector("numeric", nlines)
         b <- 0
         oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
-        for (iline in 1:nlines) {
-            if (0 < (length(grep("END_DATA", lines[iline]))))
-                break
-            items <- strsplit(lines[iline], ",")[[1]]
-            pressure[iline] <- as.numeric(items[pcol])
-            salinity[iline] <- as.numeric(items[Scol])
-            temperature[iline] <- as.numeric(items[Tcol])
-            oxygen[iline] <- as.numeric(items[Ocol])
-            if (monitor) {
-                cat(".")
-                if (!((b+1) %% 50))
-                    cat(b+1, "\n")
-            }
-            b <- b + 1
-        }
-        pressure <- pressure[1:b]
-        temperature <- temperature[1:b]
-        salinity <- salinity[1:b]
-        oxygen <- oxygen[1:b]
-        if (monitor)
-            cat("\nRead", b-1, "lines of data\n")
-        pressure[pressure == missing.value] <- NA
-        salinity[salinity == missing.value] <- NA
-        temperature[temperature == missing.value] <- NA
-        sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
-        data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
-        names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
-        labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
-        if (length(oxygen) > 0) {
-            oxygen[oxygen == missing.value] <- NA
-            data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
-        }
-        if (is.na(waterDepth)) {
-            waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-            waterDepthWarning <- TRUE 
-        }
-        ## catch e.g. -999 sometimes used for water depth's missing value
-        if (is.finite(waterDepth) && waterDepth <= 0)
-            waterDepth <- NA
+        isFlag <- grepl("_FLAG_W$", varNames)
+        D <- read.csv(text=lines[seq.int(1, nlines-1)], header=FALSE, col.names=varNames)
+        data <- D[, !isFlag]
+        #for (iline in 1:nlines) {
+        #    if (0 < (length(grep("END_DATA", lines[iline]))))
+        #        break
+        #    items <- strsplit(lines[iline], ",")[[1]]
+        #    pressure[iline] <- as.numeric(items[pcol])
+        #    salinity[iline] <- as.numeric(items[Scol])
+        #    temperature[iline] <- as.numeric(items[Tcol])
+        #    oxygen[iline] <- as.numeric(items[Ocol])
+        #    if (monitor) {
+        #        cat(".")
+        #        if (!((b+1) %% 50))
+        #            cat(b+1, "\n")
+        #    }
+        #    b <- b + 1
+        #}
+        # pressure <- pressure[1:b]
+        # temperature <- temperature[1:b]
+        # salinity <- salinity[1:b]
+        # oxygen <- oxygen[1:b]
+        # #if (monitor)
+        # #    cat("\nRead", b-1, "lines of data\n")
+        # pressure[pressure == missing.value] <- NA
+        # salinity[salinity == missing.value] <- NA
+        # temperature[temperature == missing.value] <- NA
+        # sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
+        # data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
+        # names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
+        # labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
+        # if (length(oxygen) > 0) {
+        #     oxygen[oxygen == missing.value] <- NA
+        #     data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
+        # }
+
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
@@ -2028,13 +2043,34 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          latitude=latitude,
                          longitude=longitude,
                          recovery=recovery,
-                         waterDepth=waterDepth,
+                         ## waterDepth=waterDepth,
                          sampleInterval=sampleInterval,
-                         names=names,
-                         labels=labels,
+                         ## names=names,
+                         ##labels=labels,
                          src=filename)
     }
+    data <- D[,!isFlag]
+    data[data == missing.value] <- NA
+    names(data) <- woceNames2oceNames(names(data))
+    metadata$names <- names(data)
+    metadata$labels <- metadata$names # the labels are not going to be pretty but at least they are in sync
+    if (is.na(waterDepth)) {
+        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+        waterDepthWarning <- TRUE 
+    }
+    ## catch e.g. -999 sometimes used for water depth's missing value
+    if (is.finite(waterDepth) && waterDepth <= 0)
+        metadata$waterDepth <- NA
+
+    flags <- D[,isFlag]
+    names(flags) <- woceNames2oceNames(names(flags))
+    metadata$flags <- flags
     res@metadata <- metadata
+
+    ## FIXME: what about sigmaTheta? I guess we should check to see if it exists, and to insert if not?
+    if (!"sigmaTheta" %in% names(data))
+        data$sigmaTheta <- swSigmaTheta(data$salinity, data$temperature, data$pressure)
+
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

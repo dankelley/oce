@@ -253,11 +253,11 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
-    flags <- grepl("^QQQQ", xnames)
+    isFlag <- grepl("^QQQQ", xnames)
     ## message("data--")
-    ## print(xnames[!flags])
-    ## message("flags--")
-    ## print(xnames[flags])
+    ## print(xnames[!isFlag])
+    ## message("isFlag--")
+    ## print(xnames[isFlag])
     ## rval@data <- as.list(ODF$DATA)
     rval@data <- list()
 
@@ -273,7 +273,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             NAvalue <- as.numeric(ODF$PARAMETER_HEADER[[i]]$NULL_VALUE)
             ## message("NAvalue: ", NAvalue)
             #rval@data[[rvalNames[i]]] <- ODF$DATA[i]
-            if (flags[i]) {
+            if (isFlag[i]) {
                 ## message("i: ", i, " FLAG: ", xnames[i], " is a flag for: ", xnames[i-1])
                 rval@metadata$flags[[rvalNames[i-1]]] <- ODF$DATA[[i]]
             } else {
@@ -285,8 +285,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
         }
     }
     ## Stage 3. rename QQQQ_* columns as flags on the previous column
-    flagnames <- names(rval@metadata$flags)
-#    names(rval@metadata$flags) <- ODFNames2oceNames(flagnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
+    ## flagnames <- names(rval@metadata$flags)
+    ## names(rval@metadata$flags) <- ODFNames2oceNames(flagnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
 
     ## message("below is names(rval@data):")
     ## print(names(rval@data))
