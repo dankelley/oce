@@ -303,12 +303,10 @@ makeSection <- function(item, ...)
                 station[[i]] <- thisItem
             }
         } else {
-            message("BB BB BB")
             ## demand that items contain @data$pressure
             if ("pressure" %in% names(item[[1]]) || "pressure" %in% names(item[[1]]@data)) {
                 stop("items must contain pressure")
             }
-            message("NOTE -- entering provisional code ... may not work ... contact author if not")
             for (thisItem in item) {
                 names <- names(thisItem)
                 if (!("longitude" %in% names)) stop("each item entry must contain longitude")
@@ -316,7 +314,6 @@ makeSection <- function(item, ...)
                 ## FIXME: maybe permits 'depth' here
                 if (!("pressure" %in% names)) stop("each item must entry contain pressure")
                 if (!("station" %in% names)) thisItem$station <- seq_along(thisItem$longitude)
-                message("FIXME: next: save things in 'names', except lon/lat/station")
                 len <- length(thisItem$pressure)
                 print(names)
                 names <- names[names!="longitude"]
@@ -325,9 +322,7 @@ makeSection <- function(item, ...)
                 print(names)
                 data <- list()
                 for (name in names) {
-                    message("check '", name, "'")
                     if (length(name) == len) {
-                        message(" ... should save '", name, "'")
                         data[[name]] <- thisItem[[name]]
                     }
                 }
@@ -512,8 +507,15 @@ setMethod(f="plot",
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
-                      lonr <- lonm + sqrt(2) * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
-                      latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
+                      if (missing(span)) {
+                          lonr <- lonm + sqrt(2) * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
+                          latr <- latm + sqrt(2) * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
+                      } else {
+                          ## FIXME: the sqrt(2) below helps in a test case ... not sure it make sense though --DK
+                          lonr <- lonm + span / 111.1 * c(-0.5, 0.5) / cos(2*pi/180*latm) / sqrt(2)
+                          latr <- latm + span / 111.1 * c(-0.5, 0.5) / sqrt(2)
+                          ##message("latr:");print(latr)
+                      }
 
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
                       haveCoastline <- FALSE
@@ -586,6 +588,8 @@ setMethod(f="plot",
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
                           } else {
+                              ## message("about to plot; lonr=");print(lonr)
+                              ## message("about to plot; latr=");print(latr)
                               plot(lonr, latr, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
