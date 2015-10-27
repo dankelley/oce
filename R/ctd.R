@@ -2547,8 +2547,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         res@data$temperature68 <- res@data$temperature
         res@data$temperature <- T90fromT68(res@data$temperature68)
         res@metadata$temperatureUnit <- "ITS-90"
-        warning("converted temperature from IPTS-69 to ITS-90")
-        res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-69 to ITS-90")
+        warning("converted temperature from IPTS-68 to ITS-90")
+        res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }
     oceDebug(debug, "} # read.ctd.sbe()\n")
     ## if (waterDepthWarning)
