@@ -343,6 +343,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         on.exit(close(file))
     }
     lines <- readLines(file, encoding="UTF-8")
+    pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
     dataStart <- grep("-- DATA --", lines)
     if (!length(dataStart))
         stop("cannot locate a line containing '-- DATA --'")
@@ -404,6 +405,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
+
     metadata <- list(header=NULL, # FIXME
                      type=type,        # only odt
                      model=model,      # only odt
@@ -426,9 +428,10 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
                      sampleInterval=NA,
                      filename=filename)
-    ## fix issue 768
-    lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
-    data <- read.table(text=lines, skip=dataStart)
+    ##> ## fix issue 768
+    ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
+    data <- read.table(file, skip=dataStart)
+##print(    system.time( data <- read.table(text=lines, skip=dataStart)) )
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
