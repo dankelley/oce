@@ -426,6 +426,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
                      sampleInterval=NA,
                      filename=filename)
+    ## fix issue 768
+    lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     data <- read.table(text=lines, skip=dataStart)
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
