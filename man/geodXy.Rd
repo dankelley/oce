@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{geodXy}
 \alias{geodXy}
 \title{Convert lon/lat to x/y on earth}
@@ -16,22 +17,76 @@
     with a coastline, a mean current, etc.}
 }
 
-\details{This is based on the same geodesic calculations used in
-  \code{\link{geodDist}}, the documentation of which explains the
-  method and provides literature citations.}
+\details{Be aware that the calculation is devised by the author and is without
+  known precedence in the literature, so users might have to explain it in their
+  publications, perhaps by referring to Kelley (2015).
 
-\value{Data frame of \code{x} and \code{y}, measured in metres.}
+  The method employs geodesic calculations of the distances along geodesic
+  curves, i.e. akin to great-circle curves that go along the surface of the
+  ellipsoidal earth; see \code{\link{geodDist}}. The results are minimally
+  sensitive to the ellipsoidal geometry assumed, but this is not a matter in
+  serious question today. Note that the results are quite unlike the values
+  returned from a map projection; in the latter case, the results vary greatly
+  across a range of popular projections. Use the present function for things
+  like gridding data or calculating drifter speeds.
+ 
+  Consider the \code{i}-th point in the \code{lon} and \code{lat} vectors.  The
+  value of \code{x[i]} is inferred from the distance along a geodesic curve from
+  from (\code{lon[i]}, \code{lat[i]}) to (\code{lon.ref[i]}, \code{lat[i]}),
+  i.e. the distance along a line of constant latitude.  Similarly, \code{y[i]}
+  is inferred the geodesic distance from (\code{lon[i]}, \code{lat[i]}) to
+    (\code{lon[i]}, \code{lat.ref}). Once the distances are inferred, signs are
+    calculated from determining the sign of \code{lon[i]-lon.ref} for
+    \code{x[i]} and similarly \code{lat[i]-lat.ref} for \code{y[i]}.
+
+    The example shows that the difference between these ellipse-based
+    calculations and sphere-based calculations tends to be rather small, e.g. a
+    thousandth of a percent. Thus, the purpose of the present function is less
+    to improve accuracy over the spherical calculation than it is to save the
+    user from remembering the spherical formulae.
+
+}
+
+\value{Data frame of \code{x} and \code{y}, geodesic distance components,
+  measured in metres. See \dQuote{Details} for the definitions.}
 
 \seealso{\code{\link{geodDist}}}
 
 \examples{
 library(oce)
-lat <- c(0, 1/60,    0, 1/60)
-lon <- c(0,    0, 1/60, 1/60)
-plot(geodXy(lat, lon, 0, 0, 0) / 1852)
-points(geodXy(lat, lon, 0, 0, 1) / 1852, col='red')
+
+rms <- function(x) sqrt(mean(x^2)) # convenience function
+
+data(section)
+lon <- section[["longitude", "byStation"]]
+lat<- section[["latitude", "byStation"]]
+lon <- lon
+lat <- lat
+lonR <- lon[1]
+latR <- lat[1]
+## 1. ellipse
+xy <- geodXy(lon, lat, lonR, latR)
+
+## 2. sphere
+mperdeg <- geodDist(0, mean(lat)-0.5, 0, mean(lat)+0.5) * 1e3 # mid-latitude estimate
+X <- (lon - lonR) * mperdeg * cos(lat * pi / 180)
+Y <- (lat - latR) * mperdeg
+XY <- list(x=X, y=Y)
+
+par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+plot(lon, lat, asp=1/cos(median(lat*pi/180)))
+plot(xy$x/1e3, xy$y/1e3, asp=1)
+mtext(sprintf("ellipse-sphere RMS deviation: x %.2f km, y %.2f km",
+              rms(xy$x-XY$x)/1e3, rms(xy$y-XY$y)/1e3),
+      side=3, line=0)
+mtext(sprintf("ellipse-sphere RMS deviation / span: x %.2g, y %.2g",
+              rms(xy$x-XY$x)/1e3/diff(range(xy$x)), rms(xy$y-XY$y)/1e3/diff(range(xy$y))),
+      side=3, line=-1)
 }
 
 \author{Dan Kelley}
+
+\references{Dan Kelley, 2015. Oceanographic Analysis with R. To be submitted to
+  Springer-Verlag.}
 
 \keyword{misc}
