@@ -1332,6 +1332,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 17) {
                       plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
+                                  col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
