@@ -39,11 +39,10 @@
     calculated from determining the sign of \code{lon[i]-lon.ref} for
     \code{x[i]} and similarly \code{lat[i]-lat.ref} for \code{y[i]}.
 
-    The example shows that the difference between these ellipse-based
-    calculations and sphere-based calculations tends to be rather small, e.g. a
-    thousandth of a percent. Thus, the purpose of the present function is less
-    to improve accuracy over the spherical calculation than it is to save the
-    user from remembering the spherical formulae.
+    The bottom panel of example shows that the difference between these
+    ellipse-based calculations and sphere-based calculations tends to be rather
+    small (although the stations are nearly along a line of latitude, so the
+    locally-sized sphere is expected to work well).
 
 }
 
@@ -55,8 +54,6 @@
 \examples{
 library(oce)
 
-rms <- function(x) sqrt(mean(x^2)) # convenience function
-
 data(section)
 lon <- section[["longitude", "byStation"]]
 lat<- section[["latitude", "byStation"]]
@@ -65,22 +62,23 @@ lat <- lat
 lonR <- lon[1]
 latR <- lat[1]
 ## 1. ellipse
-xy <- geodXy(lon, lat, lonR, latR)
-
-## 2. sphere
-mperdeg <- geodDist(0, mean(lat)-0.5, 0, mean(lat)+0.5) * 1e3 # mid-latitude estimate
-X <- (lon - lonR) * mperdeg * cos(lat * pi / 180)
-Y <- (lat - latR) * mperdeg
+km <- 1e3 # nicer for graphs
+xy <- geodXy(lon, lat, lonR, latR) / km
+## 2. sphere, with scale tailored to mean local latitude
+kmperdeg <- geodDist(0, mean(lat)-0.5, 0, mean(lat)+0.5) # mid-latitude estimate
+X <- (lon - lonR) * kmperdeg * cos(lat * pi / 180)
+Y <- (lat - latR) * kmperdeg
 XY <- list(x=X, y=Y)
-
+## plot, with labels for sphere-ellipse deviations
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(lon, lat, asp=1/cos(median(lat*pi/180)))
-plot(xy$x/1e3, xy$y/1e3, asp=1)
-mtext(sprintf("ellipse-sphere RMS deviation: x %.2f km, y %.2f km",
-              rms(xy$x-XY$x)/1e3, rms(xy$y-XY$y)/1e3),
-      side=3, line=0)
-mtext(sprintf("ellipse-sphere RMS deviation / span: x %.2g, y %.2g",
-              rms(xy$x-XY$x)/1e3/diff(range(xy$x)), rms(xy$y-XY$y)/1e3/diff(range(xy$y))),
+plot(xy$x, xy$y, asp=1, xlab="x [km]", ylab="y [km]")
+rms <- function(x) sqrt(mean(x^2))
+mtext(sprintf("RMS dev.: x \%.2f km, y \%.2f km",
+              rms(xy$x-XY$x), rms(xy$y-XY$y)), side=3, line=-1)
+mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
+              rms(xy$x-XY$x)/diff(range(xy$x)),
+              rms(xy$y-XY$y)/diff(range(xy$y))),
       side=3, line=-1)
 }
 
@@ -90,3 +88,4 @@ mtext(sprintf("ellipse-sphere RMS deviation / span: x %.2g, y %.2g",
   Springer-Verlag.}
 
 \keyword{misc}
+

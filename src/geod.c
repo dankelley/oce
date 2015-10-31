@@ -192,7 +192,7 @@ void geod_xy(int *n,
     double *f,    /* WGS84 flattening parameter 1/298.257223563 */
     double *x, double *y)
 {
-  double rpd = M_PI / 180.0;
+  // double rpd = M_PI / 180.0;
   double faz, baz, s;
   for (int i = 0; i < *n; i++) {
     geoddist_core(lat+i, lon+i, latr, lonr, a, f, &faz, &baz, &s);
