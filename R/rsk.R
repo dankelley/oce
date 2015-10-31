@@ -481,7 +481,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     } else if (!(missing(type)) && type=='txt') {
         oceDebug('RBR txt format\n')
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
-        l <- readLines(file, n=1000)         # read first 1000 lines to get header
+        l <- readLines(file, n=50000)         # FIXME: need to read a
+                                              # lot if there are lots
+                                              # of "Events". Is there
+                                              # a better way to do
+                                              # this?
         pushBack(l, file)
         model <- unlist(strsplit(l[grep('Model', l, useBytes=TRUE)], '='))[2]
         serialNumber <- as.numeric(unlist(strsplit(l[grep('Serial', l, useBytes=TRUE)], '='))[2])
