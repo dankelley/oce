@@ -79,7 +79,7 @@ mtext(sprintf("RMS dev.: x \%.2f km, y \%.2f km",
 mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
               rms(xy$x-XY$x)/diff(range(xy$x)),
               rms(xy$y-XY$y)/diff(range(xy$y))),
-      side=3, line=-1)
+      side=3, line=-2)
 }
 
 \author{Dan Kelley}
