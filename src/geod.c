@@ -192,19 +192,25 @@ void geod_xy(int *n,
     double *f,    /* WGS84 flattening parameter 1/298.257223563 */
     double *x, double *y)
 {
-  double rpd = M_PI / 180.;
+  double rpd = M_PI / 180.0;
   double faz, baz, s;
   for (int i = 0; i < *n; i++) {
-    geoddist_core(lat++,
-	lon++,
-	latr, 
-	lonr,
-	a,
-	f,
-	&faz,
-	&baz,
-	&s);
-    *x++ = s * sin(baz * rpd);
-    *y++ = s * cos(baz * rpd);
+    geoddist_core(lat+i, lon+i, latr, lonr, a, f, &faz, &baz, &s);
+    // Rprintf("i=%d, s=%f, baz=%f, x=%f, y=%f, ", i, s, baz, s*sin(baz*rpd), s*cos(baz*rpd));
+    // x[i] = s * sin(baz * rpd);
+    // y[i] = s * cos(baz * rpd);
+    geoddist_core(lat+i, lonr, latr, lonr, a, f, &faz, &baz, &s);
+    double Y = s;
+    geoddist_core(latr, lon+i, latr, lonr, a, f, &faz, &baz, &s);
+    double X = s;
+    //Rprintf("X=%f km, Y=%f km\n", X/1e3, Y/1e3);
+    if (*(lon+i)>(*lonr))
+      x[i] = X;
+    else
+      x[i] = -X;
+    if (*(lat+i)>(*latr))
+      y[i] = Y;
+    else
+      y[i] = -Y;
   }
 }

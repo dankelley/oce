@@ -14,6 +14,28 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="subset",
+          signature="odf",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval <- x
+              dots <- list(...)
+              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              if (missing(subset))
+                  stop("must give 'subset'")
+
+              if (missing(subset))
+                  stop("must specify a 'subset'")
+              keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
+              rval <- x
+              for (name in names(x@data)) {
+                  rval@data[[name]] <- x@data[[name]][keep]
+              }
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+
+
 setMethod(f="plot",
           signature=signature("odf"),
           definition=function(x) {
@@ -321,6 +343,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         on.exit(close(file))
     }
     lines <- readLines(file, encoding="UTF-8")
+    pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
     dataStart <- grep("-- DATA --", lines)
     if (!length(dataStart))
         stop("cannot locate a line containing '-- DATA --'")
@@ -329,7 +352,17 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
     namesWithin <- parameterStart[1]:dataStart[1]
     ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
-    nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1]) # FIXME: should do this for columns separately
+
+    ## The mess below hides warnings on non-numeric missing-value codes.
+    options <- options('warn')
+    options(warn=-1) 
+    t <- try({nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1])},
+        silent=TRUE)
+    if (class(t) == "try-error") {
+        nullValue <- findInHeader("NULL_VALUE", lines)[1]
+    }
+    options(warn=options$warn)
+
     names <- lines[grep("^\\s*CODE\\s*=", lines)]
     names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim start/end whitespace
     names <- gsub(",", "", names) # trim commas
@@ -372,6 +405,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
+
     metadata <- list(header=NULL, # FIXME
                      type=type,        # only odt
                      model=model,      # only odt
@@ -394,7 +428,10 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
                      sampleInterval=NA,
                      filename=filename)
-    data <- read.table(text=lines, skip=dataStart)
+    ##> ## fix issue 768
+    ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
+    data <- read.table(file, skip=dataStart)
+##print(    system.time( data <- read.table(text=lines, skip=dataStart)) )
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
@@ -405,7 +442,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         data[data==nullValue] <- NA
     }
     if ("time" %in% names)
-        data$time <- strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC")
+        data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
     metadata$names <- names
     metadata$labels <- names
     res <- new("odf")

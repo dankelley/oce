@@ -16,6 +16,18 @@
     function(new) if(!missing(new)) val <<- new else val
 })
 
+#' Shift longitude to range -180 to 180, if any element exceeds 180
+#'
+#' This is a utility function used by \code{\link{mapGrid}}. It works
+#' simply by subtracting 180 from each longitude, if any longitude
+#' in the vector exceeds 180.
+#'
+#' @param longitudes a numericl vector of longitudes
+#' @return vector of longitudes, shifted to the desired range. 
+shiftLongitude <- function(longitudes) {
+    if (any(longitudes > 180)) longitudes-360 else longitudes
+}
+
 fixneg <- function(v)
 {
     rval <- v
@@ -563,9 +575,20 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
+    if (!missing(longitudelim))
+        longitudelim <- shiftLongitude(longitudelim)
     oceDebug(debug, "mapGrid(dlongitude=", dlongitude, 
              ", datitude=", dlatitude, ", ..., polarCircle=", polarCircle,
+             ", longitudelim=", if (missing(longitudelim)) "(missing)" else
+                 paste("c(", paste(longitudelim, collapse=", "), ")"),
+             ", latitudelim=", if (missing(latitudelim)) "(missing)" else
+                 paste("c(", paste(latitudelim, collapse=", "), ")"),
              ", debug)\n", unindent=1, sep="")
+    if (!missing(longitudelim)) {
+        longitudelim <- shiftLongitude(longitudelim)
+        oceDebug(debug, "shifted longitudelim to c(",
+                 paste(longitudelim, collapse=","), ")\n")
+    }
     small <- 0
     if (missing(longitude))
         longitude <- seq(-180, 180, dlongitude)
@@ -574,6 +597,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     if (!missing(longitudelim)) {
         lonMin <- longitudelim[1] - diff(longitudelim) / 2
         lonMax <- longitudelim[2] + diff(longitudelim) / 2
+        oceDebug(debug, "lonMin=", lonMin, ", lonMax=", lonMax, "\n")
         oceDebug(debug, "before trimming to longitudelim+: lon range ", paste(range(longitude, na.rm=TRUE), collapse=" "), "\n")
         longitude <- longitude[lonMin <= longitude & longitude <= lonMax]
         oceDebug(debug, "after: lon range ", paste(range(longitude), collapse=" "), "\n")
