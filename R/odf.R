@@ -457,7 +457,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     res@metadata <- metadata
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
-    message(Sys.time()-t0, "s ready to return")
+    if (debug>=100) message(Sys.time()-t0, "s ready to return")
     res
 }
 
