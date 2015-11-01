@@ -329,6 +329,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 read.odf <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf() {\n", unindent=1)
+    if (debug>=100) t0 <- Sys.time()
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -342,8 +343,11 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding="UTF-8")
+    if (debug>=100) message(Sys.time()-t0, "s before reading lines to get header")
+    lines <- readLines(file, 1000, encoding="UTF-8")
+    if (debug>=100) message(Sys.time()-t0, "s after reading 1000 lines to get header")
     pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
+    if (debug>=100) message(Sys.time()-t0, "s after pushing-back those lines")
     dataStart <- grep("-- DATA --", lines)
     if (!length(dataStart))
         stop("cannot locate a line containing '-- DATA --'")
@@ -428,10 +432,11 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
                      sampleInterval=NA,
                      filename=filename)
+    if (debug>=100) message(Sys.time()-t0, "s after determining metadata")
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     data <- read.table(file, skip=dataStart)
-##print(    system.time( data <- read.table(text=lines, skip=dataStart)) )
+    if (debug>=100) message(Sys.time()-t0, "s after reading data table")
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
     if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
@@ -441,8 +446,10 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (!is.na(nullValue)) {
         data[data==nullValue] <- NA
     }
+    if (debug>=100) message(Sys.time()-t0, "s after converting ODF names to oce names")
     if ("time" %in% names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
+    if (debug>=100) message(Sys.time()-t0, "s after converting ODF time to R time")
     metadata$names <- names
     metadata$labels <- names
     res <- new("odf")
@@ -450,6 +457,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     res@metadata <- metadata
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
+    message(Sys.time()-t0, "s ready to return")
     res
 }
 
