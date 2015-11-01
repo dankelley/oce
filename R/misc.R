@@ -1234,48 +1234,54 @@ oce.filter <- function(x, a=1, b, zero.phase=FALSE)
 }
 oceFilter <- oce.filter
 
-## Calculation of geodetic distance on surface of earth,
-## based upon datum defined by
-##       a = radius of major axis of earth
-##       f = flattening factor.
-## The answer is returned in the same units as a; here in meters.
-##
-## Patterned after R code donated by Darren Gillis
-geodXy <- function(lon, lat, lon.ref, lat.ref, rotate=0)
+## This is possibly useful, possibly not. The method changed in Oct, 2015.
+## See the docs for methodology.
+geodXy <- function(lon, lat, lon.ref=0, lat.ref=0, rotate=0)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(lon)) stop("must provide lat")
-    if (missing(lat)) stop("must provide lat")
-    if (missing(lat.ref)) stop("must provide lat.ref")
-    if (missing(lon.ref)) stop("must provide lon.ref")
-    if (!is.finite(lat.ref)) stop("lat.ref must be finite")
-    if (!is.finite(lon.ref)) stop("lat.ref must be finite")
-    n <- length(lat)
-    if (length(lon) != n) stop("lat and lon must be vectors of the same length")
-    x <- y <- vector("numeric", n)
-    xy  <- .C("geod_xy",
-              as.integer(n),
-              as.double(lat),
-              as.double(lon),
-              as.double(lat.ref),
-              as.double(lon.ref),
-              as.double(a),
-              as.double(f),
-              x = double(n),
-              y = double(n),
-              PACKAGE = "oce")
-    x <- xy$x
-    y <- xy$y
+    if (missing(lon) || missing(lat)) stop("must provide lon and lat")
+    n <- length(lon)
+    if (length(lat) != n) stop("lon and lat vectors of unequal length")
+    xy  <- .C("geod_xy", as.integer(n), as.double(lat), as.double(lon),
+              as.double(lat.ref), as.double(lon.ref), as.double(a), as.double(f),
+              x = double(n), y = double(n), PACKAGE = "oce")
     if (rotate != 0) {
         S <- sin(rotate * pi / 180)
         C <- cos(rotate * pi / 180)
         r <- matrix(c(C,S,-S,C),nrow=2)
-        rxy <- r %*% rbind(x,y)
-        x <- rxy[1,]
-        y <- rxy[2,]
+        rxy <- r %*% rbind(xy$x, xy$y)
+        xy$x <- rxy[1,]
+        xy$y <- rxy[2,]
     }
-    data.frame(x, y)
+    data.frame(x=xy$x, y=xy$y)
+}
+
+#' inverse geodesic calculation
+#'
+#' @details The calculation is done by finding a minimum value of a cost
+#' function that is the vector difference between (\code{x},\code{y})
+#' and the corresponding values returned by \code{\link{geodXy}}. This
+#' minimum is calculated in C for speed, using the \code{nmmin} function
+#' that is the underpinning for the Nelder-Meade version of the R function
+#' \code{\link{optim}}.
+#'
+#' @param x value of x in metres, as given by \code{\link{geodXy}}
+#' @param y value of y in metres, as given by \code{\link{geodXy}}
+#' @param lon.ref reference longitude, as supplied to \code{\link{geodXy}}
+#' @param lat.ref reference latitude, as supplied to \code{\link{geodXy}}
+#' @return a data frame containing \code{longitude} and \code{latitude}
+geodXyInverse <- function(x, y, lon.ref=0, lat.ref=0)
+{
+    a <- 6378137.00          # WGS84 major axis
+    f <- 1/298.257223563     # WGS84 flattening parameter
+    if (missing(x) || missing(y)) stop("must provide x and y")
+    n <- length(x)
+    if (length(y) != n) stop("x and y vectors of unequal length")
+    ll <- .C("geod_xy_inverse", as.integer(n), as.double(x), as.double(y),
+             as.double(lat.ref), as.double(lon.ref), as.double(a), as.double(f),
+             longitude = double(n), latitude = double(n), PACKAGE = "oce")
+    data.frame(longitude=ll$longitude, latitude=ll$latitude)
 }
 
 geodDist <- function (lon1, lat1=NULL, lon2=NULL, lat2=NULL, alongPath=FALSE)
