@@ -1,10 +1,10 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{geodXy}
 \alias{geodXy}
-\title{Convert lon/lat to x/y on earth}
-\description{Convert lon/lat to x/y on earth}
+\title{Convert lon/lat to x/y on earth, or vice versa.}
+\description{Convert lon/lat to x/y on earth, or vice versa.}
 
-\usage{geodXy(lon, lat, lon.ref, lat.ref, rotate=0)}
+\usage{geodXy(lon, lat, lon.ref=0, lat.ref=0, rotate=0)}
 
 \arguments{
   \item{lon}{vector of longitudes}
@@ -83,6 +83,10 @@ mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
 }
 
 \author{Dan Kelley}
+
+\section{Change notification}{It is likely that \code{lon} will be renamed
+  \code{longitude}, \code{lon.ref} will be named \code{longitudeReference},
+  etc., to be more in keeping with names in the rest of oce.}
 
 \references{Dan Kelley, 2015. Oceanographic Analysis with R. To be submitted to
   Springer-Verlag.}
