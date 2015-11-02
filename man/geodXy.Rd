@@ -1,16 +1,18 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{geodXy}
 \alias{geodXy}
-\title{Convert lon/lat to x/y on earth, or vice versa.}
-\description{Convert lon/lat to x/y on earth, or vice versa.}
 
-\usage{geodXy(lon, lat, lon.ref=0, lat.ref=0, rotate=0)}
+\title{Convert from geographical to geodesic coordinates.}
+
+\description{Convert (longitude,latitude) to geodesic (x,y) coordinates.}
+
+\usage{geodXy(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)}
 
 \arguments{
-  \item{lon}{vector of longitudes}
-  \item{lat}{vector of latitudes}
-  \item{lon.ref}{numeric, reference longitude}
-  \item{lat.ref}{numeric, reference latitude}
+  \item{longitude}{vector of longitudes}
+  \item{latitude}{vector of latitudes}
+  \item{longitudeRef}{numeric, reference longitude}
+  \item{latitudeRef}{numeric, reference latitude}
   \item{rotate}{numeric, counterclockwise angle, in degrees, by which to
     rotate the (\code{x}, \code{y}) coordinates about the reference
     point.  This is useful in rotating the coordinate system to align
@@ -18,8 +20,8 @@
 }
 
 \details{Be aware that the calculation is devised by the author and is without
-  known precedence in the literature, so users might have to explain it in their
-  publications, perhaps by referring to Kelley (2015).
+  known precedent in the literature, so users might have to explain it in their
+  publications--hence the detailed discussion below.
 
   The method employs geodesic calculations of the distances along geodesic
   curves, i.e. akin to great-circle curves that go along the surface of the
@@ -30,19 +32,15 @@
   across a range of popular projections. Use the present function for things
   like gridding data or calculating drifter speeds.
  
-  Consider the \code{i}-th point in the \code{lon} and \code{lat} vectors.  The
-  value of \code{x[i]} is inferred from the distance along a geodesic curve from
-  from (\code{lon[i]}, \code{lat[i]}) to (\code{lon.ref[i]}, \code{lat[i]}),
-  i.e. the distance along a line of constant latitude.  Similarly, \code{y[i]}
-  is inferred the geodesic distance from (\code{lon[i]}, \code{lat[i]}) to
-    (\code{lon[i]}, \code{lat.ref}). Once the distances are inferred, signs are
-    calculated from determining the sign of \code{lon[i]-lon.ref} for
-    \code{x[i]} and similarly \code{lat[i]-lat.ref} for \code{y[i]}.
-
-    The bottom panel of example shows that the difference between these
-    ellipse-based calculations and sphere-based calculations tends to be rather
-    small (although the stations are nearly along a line of latitude, so the
-    locally-sized sphere is expected to work well).
+  Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
+  vectors.  The value of \code{x[i]} is inferred from the distance along a
+  geodesic curve from from (\code{longitude[i]}, \code{latitude[i]}) to
+  (\code{longitudeRef[i]}, \code{latitude[i]}), i.e. the distance along a line
+  of constant latitude.  Similarly, \code{y[i]} is inferred the geodesic
+  distance from (\code{longitude[i]}, \code{latitude[i]}) to
+  (\code{longitude[i]}, \code{latitudeRef}). Once the distances are inferred,
+  signs are calculated from determining the sign of
+  \code{longitude[i]-longitudeRef} for \code{x[i]} and similarly \code{y[i]}.
 
 }
 
@@ -84,12 +82,9 @@ mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
 
 \author{Dan Kelley}
 
-\section{Change notification}{It is likely that \code{lon} will be renamed
-  \code{longitude}, \code{lon.ref} will be named \code{longitudeReference},
-  etc., to be more in keeping with names in the rest of oce.}
-
-\references{Dan Kelley, 2015. Oceanographic Analysis with R. To be submitted to
-  Springer-Verlag.}
+\section{Change notification}{Until 2015-11-02, the names of the arguments were
+  \code{lon}, \code{lat}, \code{lon.ref} and \code{lat.ref}; these were changed
+  to be more in keeping with names in the rest of oce.}
 
 \keyword{misc}
 
