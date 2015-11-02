@@ -7,8 +7,7 @@
 
 \title{Scan a coastline data file}
 
-\description{Read a coastline file in mapgen, matlab, Splus, or shapefile
-    format.}
+\description{Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap format.}
 
 \usage{
 read.coastline(file, type=c("R","S","mapgen","shapefile","openstreetmap"),

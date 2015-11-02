@@ -44,7 +44,7 @@
 \section{Installing your own datasets}{Follow the procedure along the lines
   described in \dQuote{Details}, where of course your source file will differ.
   Also, you should change the name of the coastline object from
-  \code{coastlineWorld}, to avoid conflicts with the build-in dataset. Save the
+  \code{coastlineWorld}, to avoid conflicts with the built-in dataset. Save the
   \code{.rda} file to some directory of your choosing, e.g. perhaps
   \code{/data/coastlines} or \code{~/data/coastlines} on a unix-type machine.
   Then, whenever you need the file, use \code{\link{load}} to load it.  Most
