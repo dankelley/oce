@@ -49,14 +49,19 @@
     follows.
 
     \preformatted{
-      coastlineWorld <- oce::read.oce("mycoastline.shp")
-      save(coastlineWorld, file="/data/coastlines/mycoastline.rda")
+      mycoastline <- oce::read.oce("mycoastline.shp")
+      save(mycoastline, file="/data/coastlines/mycoastline.rda")
       tools::resaveRdaFiles("/data/coastlines/mycoastline.rda", compress="auto")
     }
-    after which accessing the coastline is as simple as writing
+    after which accessing the saved \code{mycoastline} dataset is as simple as
+    writing
     \preformatted{
         load("/data/coastlines/mycoastline.rda")
     }
+    Note: it is important to save the coastline with a new name, to avoid
+    conflicts with \code{\link{coastlineWorld}} in the present package, and
+    \code{coastlineWorldMedium} and \code{coastlineWorldFine} in the
+    \CRANpkg{ocedata} package.
 }
 
 \seealso{Use \code{\link{as.coastline}} to convert data to this form,
