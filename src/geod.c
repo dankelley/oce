@@ -190,21 +190,85 @@ void geod_xy(int *n,
     double *lonr,		/* single reference longitude */
     double *a,		/* WGS84 major axis 6378137.00 */
     double *f,    /* WGS84 flattening parameter 1/298.257223563 */
-    double *x, double *y)
+    double *x, double *y) /* output */
 {
-  double rpd = M_PI / 180.;
-  double faz, baz, s;
+  //Rprintf("%3s %10s %10s %10s %10s [geod_xy]\n", "i", "lon", "lat", "lon.ref", "lat.ref");
   for (int i = 0; i < *n; i++) {
-    geoddist_core(lat++,
-	lon++,
-	latr, 
-	lonr,
-	a,
-	f,
-	&faz,
-	&baz,
-	&s);
-    *x++ = s * sin(baz * rpd);
-    *y++ = s * cos(baz * rpd);
+    //Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
+    double faz, baz, s; /* only s used here */
+    geoddist_core(lat+i, lonr, latr, lonr, a, f, &faz, &baz, &s);
+    double Y = s;
+    geoddist_core(latr, lon+i, latr, lonr, a, f, &faz, &baz, &s);
+    double X = s;
+    if (*(lon+i)>(*lonr)) x[i] = X; else x[i] = -X;
+    if (*(lat+i)>(*latr)) y[i] = Y; else y[i] = -Y;
+  }
+}
+
+typedef double optimfn(int n, double *par, void *ex);
+
+double lonlat_misfit(int n, double *par, void *ex)
+{
+  double lon = par[0];
+  double lat = par[1];
+  double *exp = (double *)ex;
+  double X = exp[0];
+  double Y = exp[1];
+  double lonr = exp[2];
+  double latr = exp[3];
+  double a = 6378137.00;         // WGS84 major axis
+  double f = 1/298.257223563;    // WGS84 flattening parameter
+  double x, y;
+  int nn=1;
+  //Rprintf("lonlat_misfit(): about to call geod_xy() with lon=%.3f lat=%.3f nn=%d\n", lon, lat, nn);
+  geod_xy(&nn, &lat, &lon, &latr, &lonr, &a, &f, &x, &y);
+  double dist = sqrt(((x-X)*(x-X)+(y-Y)*(y-Y)));
+  //Rprintf("lonlat_misfit(): lon=%.3f lat=%.3f x=%.0f y=%.0f X=%.0f Y=%.0f -> dist=%.0f\n",
+  //    lon, lat, x, y, X, Y, dist);
+  return(dist);
+}
+
+void nmmin(int n, double *xin, double *x, double *Fmin, optimfn fn,
+           int *fail, double abstol, double intol, void *ex,
+           double alpha, double beta, double gamma, int trace,
+           int *fncount, int maxit);
+
+void geod_xy_inverse(int *n,
+    double *x, /* input vector of x values */
+    double *y, /* input vector of y values */
+    double *latr,		/* single reference latitude */
+    double *lonr,		/* single reference longitude */
+    double *a,		/* WGS84 major axis 6378137.00 */
+    double *f,    /* WGS84 flattening parameter 1/298.257223563 */
+    double *longitude, double *latitude)		/* output */
+{
+  //Rprintf("%3s %10s %10s %10s %10s %10s %10s [geod_xy_inverse]\n", "i", "x", "y", "lon.ref", "lat.ref", "xin[0]", "xin[1]");
+  for (int i = 0; i < *n; i++) {
+    double xin[2];
+    double ex[4]; // x, y, lonr, latr
+    ex[0] = x[i];
+    ex[1] = y[i];
+    ex[2] = *lonr;
+    ex[3] = *latr;
+    int fail=0;
+    // Re the two tolerances: 1e-5 in lat or lon is 1m in space
+    double abstol=1.0e-6;
+    double intol=1.0e-6;
+    xin[1] = y[i] / 111e3;
+    xin[0] = x[i] / 111e3 / cos(xin[1]*M_PI/180.0);
+    //Rprintf("%3d %10.0f %10.0f %10.2f %10.2f %10.2f %10.2f [geod_xy_inverse]\n", i, ex[0], ex[1], ex[2], ex[3], xin[0], xin[1]);
+    double alpha=1.0, beta=0.5, gamma=2.0;
+    double xout[2];
+    double Fmin=0.0;
+    int trace=0, fncount=0, maxit=500;
+    int nn=2;
+    nmmin(nn, xin, xout, &Fmin, 
+	lonlat_misfit,
+	&fail, abstol, intol, (void*)ex,
+	alpha, beta, gamma, trace,
+	&fncount, maxit);
+    longitude[i] = xout[0];
+    latitude[i] = xout[1];
+    //Rprintf("  ... fncount=%d Fmin=%f\n", fncount, Fmin);
   }
 }

@@ -353,7 +353,9 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 read.odf <- function(file, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "read.odf() {\n", unindent=1)
+    FILE<-file
+    oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
+    if (debug>=100) t0 <- Sys.time()
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
@@ -367,7 +369,11 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
         on.exit(close(file))
     }
-    lines <- readLines(file, encoding="UTF-8")
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: before reading lines to get header\n", Sys.time()-t0))
+    lines <- readLines(file, 1000, encoding="UTF-8")
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: after reading 1000 lines to get header\n", Sys.time()-t0))
+    pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: after pushing-back those lines\n", Sys.time()-t0))
     dataStart <- grep("-- DATA --", lines)
     if (!length(dataStart))
         stop("cannot locate a line containing '-- DATA --'")
@@ -429,6 +435,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
+
     metadata <- list(header=NULL, # FIXME
                      type=type,        # only odt
                      model=model,      # only odt
@@ -451,18 +458,25 @@ read.odf <- function(file, debug=getOption("oceDebug"))
                      depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
                      sampleInterval=NA,
                      filename=filename)
-    data <- read.table(text=lines, skip=dataStart)
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: after determining metadata\n", Sys.time()-t0))
+    ##> ## fix issue 768
+    ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
+    data <- read.table(file, skip=dataStart)
+    ## data <- fread(FILE, skip=dataStart, header=FALSE)
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: after reading data table\n", Sys.time()-t0))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
-    if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
+    oceDebug(debug, "Initially, column names are:", paste(names, collapse="|"), "\n")
     names <- ODFNames2oceNames(names, PARAMETER_HEADER=NULL)
-    if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
+    oceDebug(debug, "Finally, column names are:", paste(names, collapse="|"), "\n")
     names(data) <- names
     if (!is.na(nullValue)) {
         data[data==nullValue] <- NA
     }
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: after converting ODF names to oce names\n", Sys.time()-t0))
     if ("time" %in% names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
+    if (debug>=100) oceDebug(debug, sprintf("%.2fs: after converting ODF time to R time\n", Sys.time()-t0))
     metadata$names <- names
     metadata$labels <- names
     res <- new("odf")

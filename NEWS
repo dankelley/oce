@@ -1,4 +1,6 @@
 0.9-17
+- geodXyInverse() added; geod functions now spell out longitude etc
+- read.odf() speeded up by a factor of about 30
 - add colour palettes from Kristen Thyng's cmocean Python package
 - as.oce() added
 - rename 'drifter' class as 'argo' to recognize what it actually handles
