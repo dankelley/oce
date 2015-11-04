@@ -669,7 +669,9 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' may help with other values of \code{lon_0}.
 #'
 #' This function is provisional. Its behaviour, name and very existence
-#' may change through the summer and autumn of 2015.
+#' may change through the late months of 2015.  One part of the
+#' development plan is to see if there is common ground between this
+#' and the \code{clipPolys} function in the \CRANpkg{PBSmapping"} package.
 #' 
 #' @param coastline original coastline object
 #' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a proj.4 string
