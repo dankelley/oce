@@ -436,7 +436,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after determining metadata\n", Sys.time()-t0))
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
-    data <- read.table(file, skip=dataStart)
+    data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
     ## data <- fread(FILE, skip=dataStart, header=FALSE)
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after reading data table\n", Sys.time()-t0))
     if (length(data) != length(names))
