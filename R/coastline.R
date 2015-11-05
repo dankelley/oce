@@ -348,7 +348,7 @@ read.coastline <- function(file,
             open(file, "r")
             on.exit(close(file))
         }
-        data <- read.table(file, col.names=c("longitude", "latitude"))
+        data <- read.table(file, col.names=c("longitude", "latitude"), stringsAsFactors=FALSE)
         res <- new("coastline", longitude=data$longitude, latitude=data$latitude, fillable=FALSE, filename=filename)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
