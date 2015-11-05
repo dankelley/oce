@@ -233,9 +233,9 @@ drawPalette <- function(zlim, zlab="",
     oceDebug(debug, "plot:", plot, "\n")
     if (plot) {
         if (fullpage)
-            par(mai=pc$mai1f)
+            par(mai=ifelse(pc$mai1f>0, pc$mai1f, 0))
         else
-            par(mai=pc$mai1)
+            par(mai=ifelse(pc$mai1>0, pc$mai1, 0))
         if (!breaksGiven) {
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             if (pos == 1 || pos == 3) {
