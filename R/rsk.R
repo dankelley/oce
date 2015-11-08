@@ -430,7 +430,19 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        names <- names[1:dim(data)[2]] # sometimes there are more names than data channels
+        ## FIXME: some longnames have UTF-8 characters, and/or
+        ## spaces. Should coerce to ascii with no spaces, or at least
+        ## recognize fields and rename (e.g. `dissolved O2` should
+        ## just be `oxygen`)
+        isMeasured <- RSQLite::dbReadTable(con, "channels")$isMeasured == 1
+        names <- names[isMeasured] # only take names of things that are in the data table
+        dupNames <- duplicated(names)
+        names[dupNames] <- paste0(names[dupNames], 2) # FIXME this
+                                                      # will work for
+                                                      # two
+                                                      # temperature
+                                                      # channels but
+                                                      # not three
         names(data) <- names
         data <- as.list(data)
         instruments <- RSQLite::dbReadTable(con, "instruments")

@@ -244,7 +244,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
             salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
         } else {
             conductivityUnit <- "ratio" # FIXME: possibly other values ... need to check
-            salinity <- d$salinity
+            salinity <- d$salinity # FIXME: I though rsk obj don't have salinity
         }
         res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature,
                    conductivity=conductivity,
@@ -270,6 +270,12 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
         if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         if ("silicate" %in% dnames) res@data$silicate <- d$silicate
+        ## FIXME: need to add all columns from @data in the rsk object
+        for (field in names(d)) {
+            if (!(field %in% c('pressure', 'salinity', 'temperature', 'conductivity'))) {
+                res <- ctdAddColumn(res, d[[field]], field)
+            }
+        }
         ## FIXME: next in dnames or mnames??
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude
@@ -3149,10 +3155,10 @@ plotProfile <- function (x,
                         if (unit == "ratio") {
                             mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else if (unit == "mS/cm") {
-                            message("mS/cm")
+                            ## message("mS/cm") # FIXME: why the message?
                             mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else if (unit == "S/m") {
-                            message("S/m")
+                            ## message("S/m") # FIXME: why the message?
                             mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else {
                             stop("unknown conductivity unit ", unit, "; should be 'ratio', 'mS/cm' or 'S/m'")
