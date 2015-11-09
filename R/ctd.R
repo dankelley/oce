@@ -931,7 +931,9 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
         } else if (method == "range") {
             if (!("item" %in% names(parameters)))
                 stop("'parameters' must be a list containing 'item'")
-            oceDebug(debug, "method='range'; parameters= ", parameters, "\n")
+            oceDebug(debug, "method='range'; parameters are as follows:\n")
+            if (debug>0)
+                print(parameters)
             item <- parameters$item
             if (!(item %in% names(x@data)))
                 stop("x@data has no item named '", item, "'")
@@ -3546,7 +3548,7 @@ plotProfile <- function (x,
             axis(3)
             mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
             label <- x@metadata$labels[w]
-            if (is.null(label))
+            if (!is.finite(label))
                 label <- as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x")
