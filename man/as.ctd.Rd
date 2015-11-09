@@ -127,7 +127,7 @@
 }
 
 \details{If the first argument is an \code{\link{rsk-class}} object, the
-  pressure it contains may need to adjustment, because \code{rsk} objects may
+  pressure it contains may need to be adjusted, because \code{rsk} objects may
   contain either absolute pressure or sea pressure. This adjustment is handled
   automatically by \code{as.ctd}, by examination of the metadata item named
   \code{pressureType} (described in the documentation for
