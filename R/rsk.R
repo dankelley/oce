@@ -436,13 +436,15 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## just be `oxygen`)
         isMeasured <- RSQLite::dbReadTable(con, "channels")$isMeasured == 1
         names <- names[isMeasured] # only take names of things that are in the data table
-        dupNames <- duplicated(names)
-        names[dupNames] <- paste0(names[dupNames], 2) # FIXME this
-                                                      # will work for
-                                                      # two
-                                                      # temperature
-                                                      # channels but
-                                                      # not three
+        ## Check for duplicated names, and append digits to make unique
+        if (sum(duplicated(names)) > 0) {
+            for (n in names) {
+                dup <- grep(n, names)
+                if (dup > 1) { # more than one
+                    names[dup] <- paste0(n, c('', seq(2, length(dup))))
+                }
+            }
+        }
         names(data) <- names
         data <- as.list(data)
         instruments <- RSQLite::dbReadTable(con, "instruments")
