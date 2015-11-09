@@ -440,7 +440,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
                 dup <- grep(n, names)
-                if (dup > 1) { # more than one
+                if (length(dup) > 1) { # more than one
                     names[dup] <- paste0(n, c('', seq(2, length(dup))))
                 }
             }
