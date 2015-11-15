@@ -205,62 +205,64 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
                 1600 m/s.  Something went wrong in decoding the data.")
     oceDebug(debug, "about to create the list to be returned\n")
-    list(instrumentType="adcp",
-         instrumentSubtype=instrumentSubtype,
-         firmwareVersionMajor=firmwareVersionMajor,
-         firmwareVersionMinor=firmwareVersionMinor,
-         firmwareVersion=firmwareVersion,
-         ##firmwareVersionMajor=fv,
-         ##programVersionMinor=fr,
-         bytesPerEnsemble=bytesPerEnsemble,
-         systemConfiguration=systemConfiguration,
-         frequency=frequency,
-         beamAngle=beamAngle,
-         beamPattern=beamPattern,
-         beamConfig=beamConfig,
-         orientation=orientation,
-         numberOfDataTypes=numberOfDataTypes,
-         dataOffset=dataOffset,
-         numberOfBeams=numberOfBeams,
-         numberOfCells=numberOfCells,
-         pingsPerEnsemble=pingsPerEnsemble,
-         cellSize=cellSize,
-         transducerDepth=transducerDepth,
-         profilingMode=profilingMode,
-         dataOffset=dataOffset,
-         lowCorrThresh=lowCorrThresh,
-         numberOfCodeReps=numberOfCodeReps,
-         percentGdMinimum=percentGdMinimum,
-         errorVelocityMaximum=errorVelocityMaximum,
-         ##tpp.minutes=tpp.minutes,
-         ##tpp.seconds=tpp.seconds,
-         ##tpp.hundredths=tpp.hundredths,
-         originalCoordinate=originalCoordinate,
-         headingAlignment=headingAlignment,
-         headingBias=headingBias,
-         sensorSource=sensorSource,
-         sensorsAvailable=sensorsAvailable,
-         bin1Distance=bin1Distance,
-         xmitPulseLength=xmitPulseLength,
-         wpRefLayerAverage=wpRefLayerAverage,
-         falseTargetThresh=falseTargetThresh,
-         transmitLagDistance=transmitLagDistance,
-         cpuBoardSerialNumber=cpuBoardSerialNumber,
-         systemBandwidth=systemBandwidth,
-         ##systemPower=systemPower,
-         serialNumber=serialNumber,
-         ## beamAngle=beamAngle,  # wrong in my tests, anyway
-         ##ensemble.number=ensemble.number,
-         ##time=time,
-         ##ensembleNumberMSB=ensembleNumberMSB,
-         ##bitResult=bitResult,
-         ##heading=heading,
-         ##pitch=pitch,
-         ##roll=roll,
-         ##salinity=salinity
-         ##headingAlignment,
-         ##headingBias,
-         haveActualData=haveActualData)
+    rval <- list(instrumentType="adcp",
+                 instrumentSubtype=instrumentSubtype,
+                 firmwareVersionMajor=firmwareVersionMajor,
+                 firmwareVersionMinor=firmwareVersionMinor,
+                 firmwareVersion=firmwareVersion,
+                 ##firmwareVersionMajor=fv,
+                 ##programVersionMinor=fr,
+                 bytesPerEnsemble=bytesPerEnsemble,
+                 systemConfiguration=systemConfiguration,
+                 frequency=frequency,
+                 beamAngle=beamAngle,
+                 beamPattern=beamPattern,
+                 beamConfig=beamConfig,
+                 orientation=orientation,
+                 numberOfDataTypes=numberOfDataTypes,
+                 dataOffset=dataOffset,
+                 numberOfBeams=numberOfBeams,
+                 numberOfCells=numberOfCells,
+                 pingsPerEnsemble=pingsPerEnsemble,
+                 cellSize=cellSize,
+                 transducerDepth=transducerDepth,
+                 profilingMode=profilingMode,
+                 dataOffset=dataOffset,
+                 lowCorrThresh=lowCorrThresh,
+                 numberOfCodeReps=numberOfCodeReps,
+                 percentGdMinimum=percentGdMinimum,
+                 errorVelocityMaximum=errorVelocityMaximum,
+                 ##tpp.minutes=tpp.minutes,
+                 ##tpp.seconds=tpp.seconds,
+                 ##tpp.hundredths=tpp.hundredths,
+                 originalCoordinate=originalCoordinate,
+                 headingAlignment=headingAlignment,
+                 headingBias=headingBias,
+                 sensorSource=sensorSource,
+                 sensorsAvailable=sensorsAvailable,
+                 bin1Distance=bin1Distance,
+                 xmitPulseLength=xmitPulseLength,
+                 wpRefLayerAverage=wpRefLayerAverage,
+                 falseTargetThresh=falseTargetThresh,
+                 transmitLagDistance=transmitLagDistance,
+                 cpuBoardSerialNumber=cpuBoardSerialNumber,
+                 systemBandwidth=systemBandwidth,
+                 ##systemPower=systemPower,
+                 serialNumber=serialNumber,
+                 ## beamAngle=beamAngle,  # wrong in my tests, anyway
+                 ##ensemble.number=ensemble.number,
+                 ##time=time,
+                 ##ensembleNumberMSB=ensembleNumberMSB,
+                 ##bitResult=bitResult,
+                 ##heading=heading,
+                 ##pitch=pitch,
+                 ##roll=roll,
+                 ##salinity=salinity
+                 ##headingAlignment,
+                 ##headingBias,
+                 haveActualData=haveActualData)
+    oceDebug(debug, "} # decodeHeaderRDI()\n", unindent=1)
+    rval
 }                                       # decodeHeaderRDI
 
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -271,9 +273,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
+    oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...) {\n", unindent=1)
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
-        oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, "\n")
+        oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
         len <- length(profileStart)
         lower <- 1
         upper <- len
@@ -309,13 +312,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          as.integer(buf[profileStart[middle]+9])+0.01*as.integer(buf[profileStart[middle]+10]), # decimal second
                          tz=tz)
         oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", profileStart[middle], "\n")
+        oceDebug(debug, "} # bisectAdpRdi()\n", unindent=1)
         return(list(index=middle, time=t))
     }
     gaveFromTo <- !missing(from) && !missing(to)
-    if (gaveFromTo) {
-        oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...)\n")
-        oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
-    }
+    ## if (gaveFromTo) {
+    ##     oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
+    ## }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -391,18 +394,18 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 from <- fromIndex <- fromPair$index
                 toPair <- bisectAdpRdi(to, add=1, debug=debug-1)
                 to <- toIndex <- toPair$index
-                oceDebug(debug, "from=", format(fromPair$t), " yields profileStart[", fromIndex, "]\n",
-                          "  to  =", format(toPair$t), "yields profileStart[", toIndex, "]\n",
-                          "  by=", by, "(not yet decoded)\n",
-                          vectorShow(profileStart, "profileStart*:"),
-                                        #"  profileStart[1:10]=", profileStart[1:10],"\n",
-                          "  profileStart[",fromPair$index, "]=", profileStart[fromPair$index], "at time", format(fromPair$t), "\n",
-                          "  profileStart[",  toPair$index, "]=", profileStart[  toPair$index], "at time", format(  toPair$t), "\n")
+                oceDebug(debug, "from:", format(fromPair$t), " yields profileStart[", fromIndex, "]\n")
+                oceDebug(debug, "to:", format(toPair$t), "yields profileStart[", toIndex, "]\n")
+                oceDebug(debug, "by:", by, "(not yet decoded)\n")
+                oceDebug(debug, "head(profileStart):", paste(head(profileStart), collapse=" "), "\n")
+                oceDebug(debug, "tail(profileStart):", paste(tail(profileStart), collapse=" "), "\n")
+                oceDebug(debug, "'from' is profileStart[", fromPair$index, "]:", profileStart[fromPair$index], "at time", format(fromPair$t), "\n")
+                oceDebug(debug, "'to' is profileStart[", toPair$index, "]:", profileStart[toPair$index], "at time", format(toPair$t), "\n")
                 dt <- measurementDeltat
-                oceDebug(debug, "dt=", dt, "s; at this stage, by=", by,"\n")
+                oceDebug(debug, "dt:", dt, "s, by:", by,"\n")
                 if (is.character(by))
                     by <- floor(0.5 + ctimeToSeconds(by) / dt)
-                oceDebug(debug, "by=",by,"profiles (after decoding)\n")
+                oceDebug(debug, "by:",by,"profiles (after decoding)\n")
                 profileStart <- profileStart[profileStart[fromIndex] < profileStart & profileStart < profileStart[toIndex]]
                 ensembleStart <- ensembleStart[ensembleStart[fromIndex] < ensembleStart & ensembleStart < ensembleStart[toIndex]]
                 profileStart <- profileStart[seq(1, length(profileStart), by=by)]
@@ -421,10 +424,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             profileStart <- profileStart[!is.na(profileStart)]
             ensembleStart <- ensembleStart[!is.na(ensembleStart)]
             profilesToRead <- length(profileStart)
-            oceDebug(debug, "filename=",filename,"\n")
-            oceDebug(debug, "profilesToRead=",profilesToRead,"\n")
-            oceDebug(debug, "numberOfBeams=",numberOfBeams,"\n")
-            oceDebug(debug, "numberOfCells=",numberOfCells,"\n")
+            oceDebug(debug, "filename: \"",filename,"\"\n", sep="")
+            oceDebug(debug, "profilesToRead:",profilesToRead,"\n")
+            oceDebug(debug, "numberOfBeams:",numberOfBeams,"\n")
+            oceDebug(debug, "numberOfCells:",numberOfCells,"\n")
 
             if (testing) {
                 nensembles <- length(ensembleStart)
@@ -454,9 +457,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             q <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # correlation
             g <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # percent good
             badProfiles <- NULL
-            oceDebug(debug, "did allocation; dim(v)=", dim(v), "\n")
+            oceDebug(debug, "did allocation; dim(v):", dim(v), "\n")
             haveBottomTrack <- FALSE          # FIXME maybe we can determine this from the header
-            oceDebug(debug, "length(profileStart) = ", length(profileStart), "\n")
+            oceDebug(debug, "length(profileStart):", length(profileStart), "\n")
             if (profilesToRead < 1)
                 stop("no profilesToRead")
             velocityScale <- 1e-3
@@ -906,5 +909,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata <- metadata
     res@data <- data
     res@processingLog <- unclass(hitem)
+    oceDebug(debug, "} # read.adp.rdi()\n", unindent=1)
     res
 }
