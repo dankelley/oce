@@ -504,6 +504,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
                     ##** oceDebug(debug, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
                     if (buf[o+1] == 0x06 || buf[o+1] == 0x05) { # FIXME: the 0x05 is a test for issue 771
+                        if (buf[o+1]==0x05) warning("DEVELOPER TEST for issue 771: may give incorrect results (adp.rdi.R line 507)\n")
                         ##oceDebug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
                         ## It seems that spurious bottom-track records might occur sometimes,
                         ## and the following tries to prevent that by insisting that bottom

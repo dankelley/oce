@@ -1212,14 +1212,16 @@ setMethod(f="plot",
                           n <- prod(dim(x@data$v)[1:2])
                           if ("br" %in% names(x@data)) {
                               if (which[w] == 40) {
-                                  ats <- oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]",
+                                  ats <- oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE),
+                                                     ylab="Bottom range [m]",
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
                                                      ylim=if(ylimGiven) ylim[w,] else range(x@data$br, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               } else {
-                                  ats <- oce.plot.ts(x@data$time, x@data$br[,which[w]-40], ylab=c("Beam", which[w]-40, "range [m]"),
+                                  ats <- oce.plot.ts(x@data$time, x@data$br[,which[w]-40],
+                                                     ylab=paste("Beam", which[w]-40, "bottom range [m]"),
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
                                                      ylim=if(ylimGiven) ylim[w,] else range(x@data$br[,1], na.rm=TRUE),
@@ -1234,14 +1236,16 @@ setMethod(f="plot",
                           n <- prod(dim(x@data$v)[1:2])
                           if ("bv" %in% names(x@data)) {
                               if (which[w] == 50) {
-                                  ats <- oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]",
+                                  ats <- oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE),
+                                                     ylab="Bottom speed [m/s]",
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
                                                      ylim=if(ylimGiven) ylim[w,] else range(x@data$bv, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               } else {
-                                  ats <- oce.plot.ts(x@data$time, x@data$bv[,which[w] - 50], ylab=c("Beam",which[w]-50,"velocity [m/s]"),
+                                  ats <- oce.plot.ts(x@data$time, x@data$bv[,which[w] - 50],
+                                                     ylab=paste("Beam",which[w]-50,"bottom velocity [m/s]"),
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
                                                      ylim=if(ylimGiven) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE),
