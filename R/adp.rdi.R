@@ -511,16 +511,32 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE) # FIXME: not using this
                     ##cat(vectorShow(g[i,,], "g:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-                    ##** oceDebug(debug, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
-                    if (buf[o+1] == 0x06) { # byte code described at Table 38 (p155) of teledyne2010wcao
+                    ##oceDebug(debug, "buf[", o+1, "]=", buf[o+1], "; expect 01 for velo or 06 for bottom track\n")
+                    if (debug == 999) { ## DEVELOPER 
+                        buf1 <- c(buf[2:length(buf)],buf[1]) # crude way to shift 1 byte; wrong at end of course
+                        w <- which(buf==0x00&buf1==0x06)
+                        message("w:", paste(head(w), collapse=" "), " (this is where we see 0x00 0x06 pairs)")
+                        message("head(diff(w)):", paste(head(diff(w)), collapse=" "))
+                        message("profileStart:", paste(head(profileStart), collapse=" "))
+                        message("head(diff(profileStart)):", paste(head(diff(profileStart)), collapse=" "))
+                        message(" Above, notice the pattern; every second 'w' hit is spaced as profiles are spaced")
+                        message(" i.e. 2044+295==2339. This tells me that this file DOES contain bottom-track")
+                        message(" info, but that we are not catching it. Maybe we need to adjust our")
+                        message(" passage through the file. Put another way, 'o' is wrong at this spot")
+                        message("o:", o)
+                        message("buf[", o, "]=", buf[o])
+                        message("buf[", o+1, "]=", buf[o+1])
+                        message(" Above, proof that this 'o' is NOT at a bottom track block")
+                        browser()
+                    }
+                    if (buf[o+1] == 0x06) { # bottom-track byte code (teledyne2010wcao, Table 38 p155)
                         ## It seems that spurious bottom-track records might occur sometimes,
                         ## and the following tries to prevent that by insisting that bottom
                         ## track data occur in the first profile, if they occur later; otherwise
                         ## this flag will be ignored.
                         if (i == 1 && !haveBottomTrack) {
-                            if (numberOfBeams != 4) {
+                            if (numberOfBeams != 4)
                                 stop("expecting 4 beams, for this RDI adcp")
-                            }
                             br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             bc <- array(double(), dim=c(profilesToRead, numberOfBeams)) # correlation
