@@ -79,8 +79,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     else if (bits == "10") beamAngle <- 30
     else if (bits == "11") beamAngle <- NA # means 'other'
     oceDebug(debug, "bits=", bits, "so beamAngle=", beamAngle, "\n")
-    if (beamAngle < 19 || 21 < beamAngle)
-        warning("expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got ", beamAngle, "deg; using the latter in the transformationMatrix")
+    ## if (beamAngle < 19 || 21 < beamAngle)
+    ##     warning("expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got ", beamAngle, "deg; using the latter in the transformationMatrix")
     bits <- substr(systemConfiguration, 5, 5)
     if (bits == "0") beamPattern <- "concave"
     else beamPattern <- "convex"
