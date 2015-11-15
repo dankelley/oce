@@ -2,9 +2,18 @@
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
+## References
+##
+## teledyne2007wcao: Workhorse Commands and Output Data format. November 2009
+## Teledyne RD Instruments
+## ("WorkHorse Technical Manual_Nov07.pdf" in Dan Kelley's collection)
+##
+## teledyne2010wcao: Workhorse Commands and Output Data format. August 2010
+## Teledyne RD Instruments 
+## ("WorkHorse_commands_data_format_AUG10.PDF" in Dan Kelley's collection)
+
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
-    ## reference: WCODF = "WorkHorse Commands and Output Data Format_Nov07.pdf"
 
     ##
     ## header, of length 6 + 2 * numberOfDataTypes bytes
@@ -503,9 +512,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     ##cat(vectorShow(g[i,,], "g:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
                     ##** oceDebug(debug, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
-                    if (buf[o+1] == 0x06 || buf[o+1] == 0x05) { # FIXME: the 0x05 is a test for issue 771
-                        if (buf[o+1]==0x05) warning("DEVELOPER TEST for issue 771: may give incorrect results (adp.rdi.R line 507)\n")
-                        ##oceDebug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
+                    if (buf[o+1] == 0x06) { # byte code described at Table 38 (p155) of teledyne2010wcao
                         ## It seems that spurious bottom-track records might occur sometimes,
                         ## and the following tries to prevent that by insisting that bottom
                         ## track data occur in the first profile, if they occur later; otherwise
