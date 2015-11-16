@@ -298,6 +298,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
+    ## use old (FFFF) flag if there is no modern (QCFF) flag
     if ("flag_archaic" %in% names && !("flag" %in% names))
         names <- gsub("flag_archaic", "flag", names)
     names(rval@data) <- names
