@@ -127,7 +127,7 @@ findInHeader <- function(key, lines)
 #'     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
 #'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
-#'     \code{FFFF_*.*} \tab \code{flag}               \tab Used in many objects                                       \cr
+#'     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
 #'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
 #'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
@@ -187,7 +187,7 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
     names <- gsub("DOXY", "oxygen_by_volume", names)
     names <- gsub("ERRV", "error", names)
     names <- gsub("EWCT", "u", names)
-    names <- gsub("FFFF", "flag", names)
+    names <- gsub("FFFF", "flag_archaic", names)
     names <- gsub("FLOR", "fluorometer", names)
     names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
     names <- gsub("LATD", "latitude", names)
