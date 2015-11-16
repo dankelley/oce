@@ -298,6 +298,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
+    if ("flag_archaic" %in% names && !("flag" %in% names))
+        names <- gsub("flag_archaic", "flag", names)
     names(rval@data) <- names
     rval
 }
