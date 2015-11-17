@@ -4,13 +4,21 @@
 
 ## References
 ##
-## teledyne2007wcao: Workhorse Commands and Output Data format. November 2009
-## Teledyne RD Instruments
+## teledyne2005wcao: Workhorse Commands and Output Data format. March 2005
+## Teledyne RD Instruments, 2005.
+## ("WorkHorse Commands and Output Data Format_Mar05.pdf" in Dan Kelley's collection)
+##
+## teledyne2007wcao: Workhorse Commands and Output Data format. November 2007
+## Teledyne RD Instruments, 2007.
 ## ("WorkHorse Technical Manual_Nov07.pdf" in Dan Kelley's collection)
 ##
 ## teledyne2010wcao: Workhorse Commands and Output Data format. August 2010
-## Teledyne RD Instruments 
+## Teledyne RD Instruments, 2010. 
 ## ("WorkHorse_commands_data_format_AUG10.PDF" in Dan Kelley's collection)
+##
+## teledyne2014ostm: Ocean Surveyor / Ocean Observer technical manual
+## Teledyne RD Instruments, 2014.
+## ("OS_TM_Apr14.pdf" in Dan Kelley's collection)
 
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
@@ -157,29 +165,40 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## VLD (variable leader data)
     ##   The VLD length varies (see below) so infer its position from dataOffset[1].
     ##
-    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130):
+    ## teledyne2005wcao and teledyne2007wcao (Figure 9 on page 122):
     ##       HEADER (6+2*num.types bytes) bytes
     ##       FLD 59 bytes
     ##       VLD 65 bytes
     ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139):
-    ##       HEADER (6+2*num.types bytes) bytes
+    ##       HEADER (6+2*num.types) bytes
     ##       FLD 50 bytes
     ##       VLD 58 bytes
+    ## teledyne2014ostm figure 45 p144 with WP *or* NP command
+    ##       HEADER  (6+2*num.types) bytes
+    ##       FLD 50 bytes
+    ##       VLD 60 bytes
+    ## teledyne2014ostm figure 46 p145 with WP *and* NP command
+    ##       HEADER  (6+2*num.types) bytes
+    ##       FLD 50 bytes
+    ##       VLD 60 bytes
     ## dataOffset[1] = within-ensemble byte offset for FLD (e.g. Table D-1 of Surveyor manual)
     ## dataOffset[2] = within-ensemble byte offset for VLD (e.g. Table D-1 of Surveyor manual)
     ## thus, length of FLD is dataOffset[2]-dataOffset[1]
     FLDLength <- dataOffset[2] - dataOffset[1]
-    oceDebug(debug, "FLDLength", FLDLength, " (expect 59 for Workhorse, or 40 for Surveyor)\n")
+    oceDebug(debug, "FLDLength", FLDLength, " (expect 59 for Workhorse, or 50 for Surveyor/Observer)\n")
     ## There really seems to be nothing specific in the file to tell instrument type, so, in an act of
     ## desparation (or is that hope) I'm going to flag on the one thing that was clearly stated, and
     ## clearly different, in the two documentation entries.
     if (FLDLength == 59) {
         instrumentSubtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
     } else if (FLDLength == 50) {
-        instrumentSubtype <- "surveyor" # "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
+        instrumentSubtype <- "surveyor/observer"
+        ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
+        ## also teledyne2014ostm page 144 says could be Surveyor or Observer
     } else {
         instrumentSubtype <- "unknown"
-        warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for 'workhorse'.")
+        warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for
+                'surveyor/observor' or 59 for 'workhorse'.")
     }
     nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
     VLD <- buf[dataOffset[2]+1:nVLD]
