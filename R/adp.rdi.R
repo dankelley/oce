@@ -44,10 +44,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
     oceDebug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
-    if (FLD[1] != 0x00)
-        stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
+    if (FLD[1] != 0x00 && FLD[1] != 0x01)
+        stop("first byte of fixed leader header must be 0x00 or 0x01 but it is ", FLD[1])
     if (FLD[2] != 0x00)
-        stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
+        stop("second byte of fixed leader header must be a0x00 but it is ", FLD[2])
     firmwareVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
