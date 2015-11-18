@@ -48,6 +48,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         stop("first byte of fixed leader header must be 0x00 or 0x01 but it is ", FLD[1])
     if (FLD[2] != 0x00)
         stop("second byte of fixed leader header must be a0x00 but it is ", FLD[2])
+    message("FLD length: ", length(FLD))
     firmwareVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
@@ -238,8 +239,6 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                  firmwareVersionMajor=firmwareVersionMajor,
                  firmwareVersionMinor=firmwareVersionMinor,
                  firmwareVersion=firmwareVersion,
-                 ##firmwareVersionMajor=fv,
-                 ##programVersionMinor=fr,
                  bytesPerEnsemble=bytesPerEnsemble,
                  systemConfiguration=systemConfiguration,
                  frequency=frequency,
@@ -495,10 +494,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ## Next line sets up empty vectors for VMDAS
             isVMDAS <- FALSE # see below where we check bytes in first profile
             badVMDAS <- NULL           # erroneous VMDAS profiles
+            firmwareVersion <- header$firmwareVersionMajor + header$firmwareVersionMinor/100
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
+                    message("v starts at o: ", o)
                     ##cat(vectorShow(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
                     vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                     ##cat(vectorShow(vv, "vv:"))
@@ -510,6 +511,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         warning("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x02)
                         warning("second byte of correlation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                    message("q starts at o: ", o)
                     ##oceDebug(debug-1, "'q' (correlation) chunk at byte", o, "\n")
                     q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                     ##cat(vectorShow(q[i,,], "q:"))
@@ -519,6 +521,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     if (buf[o+1] != 0x03)
                         warning("second byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
                     ##oceDebug(debug-1, "'a' (amplitude) chunk at byte", o, "\n")
+                    message("a starts at o: ", o)
                     a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                     ##cat(vectorShow(a[i,,], "a:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -527,26 +530,28 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     if (buf[o+1] != 0x04)
                         warning("second byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
                     ##oceDebug(debug-1, "'g' (percent good) chunk at byte", o, "\n")
+                    message("g starts at o: ", o)
                     g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE) # FIXME: not using this
                     ##cat(vectorShow(g[i,,], "g:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
                     ##oceDebug(debug, "buf[", o+1, "]=", buf[o+1], "; expect 01 for velo or 06 for bottom track\n")
+                    message("after g, o: ", o)
+                    if (firmwareVersion >= 23.12) {
+                        warning("Firmware version (", firmwareVersion, ") exceeds 23.11, so assuming data format in Teledyne/RDI document OS_TM_Apr14.pdf\n", sep="")
+                        o <- o + 2 + 4 * numberOfCells
+                    }
                     if (debug == 999) { ## DEVELOPER 
                         buf1 <- c(buf[2:length(buf)],buf[1]) # crude way to shift 1 byte; wrong at end of course
                         w <- which(buf==0x00&buf1==0x06)
+                        message("TEMP DEBUGGING INFO: ask DEK to remove this!")
                         message("w:", paste(head(w), collapse=" "), " (this is where we see 0x00 0x06 pairs)")
                         message("head(diff(w)):", paste(head(diff(w)), collapse=" "))
                         message("profileStart:", paste(head(profileStart), collapse=" "))
                         message("head(diff(profileStart)):", paste(head(diff(profileStart)), collapse=" "))
                         message(" Above, notice the pattern; every second 'w' hit is spaced as profiles are spaced")
-                        message(" i.e. 2044+295==2339. This tells me that this file DOES contain bottom-track")
-                        message(" info, but that we are not catching it. Maybe we need to adjust our")
-                        message(" passage through the file. Put another way, 'o' is wrong at this spot")
-                        message("o:", o)
-                        message("buf[", o, "]=", buf[o])
-                        message("buf[", o+1, "]=", buf[o+1])
-                        message(" Above, proof that this 'o' is NOT at a bottom track block")
-                        browser()
+                        message(" i.e. 2044+295==2339.")
+                        message("buf[", o, "]=", buf[o], "(expect 0x00)")
+                        message("buf[", o+1, "]=", buf[o+1], "(expect 0x06)")
                     }
                     if (buf[o+1] == 0x06) { # bottom-track byte code (teledyne2010wcao, Table 38 p155)
                         ## It seems that spurious bottom-track records might occur sometimes,

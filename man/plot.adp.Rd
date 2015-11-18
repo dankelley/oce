@@ -250,17 +250,17 @@
       \code{"uv+ellipse"} case, but with an added arrow indicating the
       mean current.
 
-    \item \code{which=40} or \code{"bottom range"} for average bottom range
+    \item \code{which=40} or \code{"bottomRange"} for average bottom range
       from all beams of the instrument.
 
-    \item \code{which=41} to \code{44} (or \code{"bottom range1"} to
-      \code{"bottom range1"}) for bottom range from beams 1 to 4.
+    \item \code{which=41} to \code{44} (or \code{"bottomRange1"} to
+      \code{"bottomRange4"}) for bottom range from beams 1 to 4.
 
-    \item \code{which=50} or \code{"bottom velocity"} for average bottom velocity
+    \item \code{which=50} or \code{"bottomVelocity"} for average bottom velocity
       from all beams of the instrument.
 
-    \item \code{which=51} to \code{54} (or \code{"bottom velocity1"} to
-      \code{"bottom velocity4"}) for bottom velocity from beams 1 to 4.
+    \item \code{which=51} to \code{54} (or \code{"bottomVelocity1"} to
+      \code{"bottomVelocity4"}) for bottom velocity from beams 1 to 4.
 
     \item \code{which=55} (or \code{"heaving"}) for time-integrated,
     depth-averaged, vertical velocity, i.e. a time series of heaving.
