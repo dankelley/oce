@@ -495,9 +495,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             badVMDAS <- NULL           # erroneous VMDAS profiles
 
             ## We do some things differently based on the firmware.
-            firmwareVersion <- header$firmwareVersionMajor + header$firmwareVersionMinor/100
-            if (firmwareVersion >= 23.12) {
-                warning("Firmware version (", firmwareVersion, ") exceeds 23.11, so using format in Teledyne/RDI document OS_TM_Apr14.pdf, i.e. skipping 'STATUS' chunk\n", sep="")
+            if (header$firmwareVersionMajor == 23 && header$firmwareVersionMinor >= 12) {
+                warning("Firmware version (", header$firmwareVersionMajor, ".", header$firmwareVersionMinor, ") exceeds 23.11, so using format in Teledyne/RDI document OS_TM_Apr14.pdf, i.e. skipping 'STATUS' chunk\n", sep="")
                 skipStatus <- 2 + 4 * numberOfCells
             } else {
                 skipStatus <- 0
