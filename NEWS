@@ -1,4 +1,5 @@
 0.9-17
+- read.adp.rdi() handles Teledyne/RDI vsn 23.19 bottom-track data
 - geodXyInverse() added; geod functions now spell out longitude etc
 - read.odf() speeded up by a factor of about 30
 - add colour palettes from Kristen Thyng's cmocean Python package
