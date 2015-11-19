@@ -299,7 +299,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
-    oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...) {\n", unindent=1)
+    oceDebug(debug, "read.adp.rdi(...,from=",format(from),
+             ",to=",if(missing(to)) "missing" else format(to), "...) {\n", unindent=1)
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
@@ -504,8 +505,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
             ## FIXME: the docs say not to assume an order in data chunks but the following works in all
             ## FIXME: data seen to date.
+            oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
+                ## FIXME: code as below, more or less
+                ## for (dataType in 1:header$numberOfDataTypes) {
+                ##     if (buf[o] != 0x00)
+                ##        stop('error trying to read data type ', dataType, ' ## @ profile', i)
+                ##     ## data codes: table 33, page 146 of teledyne2014ostm
+                ##     if (buf[o] == 0x01) # handle velocity, increase o
+                ##     else if (buf[o] == 0x02) # handle ...
+                ## }
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
                     ##cat(vectorShow(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
@@ -602,6 +612,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             firstTime <- c(firstTime, tmpTime + clockOffset+readBin(buf[o+6:9],'integer',n=1,size=4,endian='little')/10000)
                             ##704 sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
                             cfac <- 180/2^31 # from rdradcp.m line 825
+                            ## FIXME: this c() operation is slow and inelegant
                             firstLatitude <- c(firstLatitude, readBin(buf[o+14:17], 'integer', n=1, size=4, endian='little')*cfac)
                             firstLongitude <- c(firstLongitude, readBin(buf[o+18:21], 'integer', n=1, size=4, endian='little')*cfac)
                             lastTime <- c(lastTime,   tmpTime + clockOffset+readBin(buf[o+22:25], 'integer', n=1, size=4, endian='little')/10000)
