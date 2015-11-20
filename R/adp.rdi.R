@@ -508,14 +508,27 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
-                ## FIXME: code as below, more or less
-                ## for (dataType in 1:header$numberOfDataTypes) {
-                ##     if (buf[o] != 0x00)
-                ##        stop('error trying to read data type ', dataType, ' ## @ profile', i)
-                ##     ## data codes: table 33, page 146 of teledyne2014ostm
-                ##     if (buf[o] == 0x01) # handle velocity, increase o
-                ##     else if (buf[o] == 0x02) # handle ...
-                ## }
+                ## Process data chunks, detecting each type by the second byte in the chunk; the
+                ## first byte must be 0x00. The second-byte codes are given in
+                ## teledyne2014ostm(Table 33, page 146)
+                for (dataType in 1:header$numberOfDataTypes) {
+                    if (buf[o] != 0x00)
+                        stop("Expecting byte 0x00 but got byte 0x", buf[o], " while trying to read a data chunk for profile ", i)
+                    if (buf[o+1] == 0x01) {
+                        message("velo at o=", o, "; profile=", i)
+                        vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
+                        ##cat(vectorShow(vv, "vv:"))
+                        vv[vv==(-32768)] <- NA       # blank out bad data
+                        v[i,,] <- matrix(velocityScale * vv, ncol=numberOfBeams, byrow=TRUE)
+                        o <- o + items * 2 + 2 # point to next chunk
+                        cat(vectorShow(v[i,,], "v:"))
+                        browser()
+                        stop('testing')
+                    } else if (buf[o+1] == 0x02) {
+                        message("buf[o+1]=0x", buf[o+1], " ... but quiting now")
+                        stop()
+                    }
+                }
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
                     ##cat(vectorShow(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
