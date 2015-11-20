@@ -522,10 +522,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         v[i,,] <- matrix(velocityScale * vv, ncol=numberOfBeams, byrow=TRUE)
                         o <- o + items * 2 + 2 # point to next chunk
                         cat(vectorShow(v[i,,], "v:"))
-                        browser()
-                        stop('testing')
                     } else if (buf[o+1] == 0x02) {
-                        message("buf[o+1]=0x", buf[o+1], " ... but quiting now")
+                        message("buf[o+1]=0x", buf[o+1], "code for correlation WILL PROCESS ... but quiting now (teaching)")
                         stop()
                     }
                 }
