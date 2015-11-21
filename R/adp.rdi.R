@@ -1300,9 +1300,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             attitude=attitude,
                             contaminationSensor=contaminationSensor)
            }
-           if (testing) {
-               data$upward=upward
-           }
+           ##>if (testing) {
+           ##>    data$upward=upward
+           ##>}
         } else {
             warning("There are no profiles in this file.")
             metadata <- header
