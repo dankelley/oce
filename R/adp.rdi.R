@@ -20,6 +20,45 @@
 ## Teledyne RD Instruments, 2014.
 ## ("OS_TM_Apr14.pdf" in Dan Kelley's collection)
 
+## The following information is from Table 33, p 146 teledyne2014ostm. Note that
+## 'i' refers to a byte number offset, with 'i+1' the subsequent byte; this avoid
+## the confusing LSB and MSB notation in teledyne2014ostm.
+## 
+## Standard byte flags
+## 
+##  i     i+1    DESCRIPTION
+## 7F      7F    Header                   
+## 00      00    Fixed Leader
+## 80      00    Variable Leader
+## 00      01    Velocity Profile
+## 00      02    Data Correlation Profile
+## 00      03    Data Echo Intensity Profile
+## 00      04    Data Percent Good Profile
+## 00      05    Data Status Profile Data
+## 00      06    Bottom Track Data
+## 00      20    Navigation
+## 00      30    Binary Fixed Attitude
+## 40-F0   30    Binary Variable Attitude
+## 
+## "Standard plus 1" byte flags (not handled)
+## 
+##  i     i+1    DESCRIPTION
+## 7F      7F    Header                    
+## 01      00    Fixed Leader
+## 81      00    Variable Leader
+## 01      01    Velocity Profile
+## 01      02    Data Correlation Profile
+## 01      03    Data Echo Intensity Profile
+## 01      04    Data Percent Good Profile
+## 01      05    Data Status Profile Data
+## 01      06    Bottom Track Data
+## 00      20    Navigation
+## 00      30    Binary Fixed Attitude
+## 40-F0   30    Binary Variable Attitude
+## 
+
+
+
 decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceTz"), ...)
 {
 
@@ -39,6 +78,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     haveActualData <- numberOfDataTypes > 2 # will be 2 if just have headers
     oceDebug(debug, "haveActualData=", haveActualData, "\n")
     dataOffset <- readBin(buf[7+0:(2*numberOfDataTypes)], "integer", n=numberOfDataTypes, size=2, endian="little", signed=FALSE)
+    if (dataOffset[1]!=6+2*numberOfDataTypes)
+        warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged\n")
     oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
@@ -379,6 +420,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
         oceDebug(debug, "successfully called ldc_rdi\n")
 
+        ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
+        ## re-interpreting the HEADER and the FIXED LEADER DATA over and over,
+        ## but we need the VLD to get times, etc. I *think* we can assume a fixed
+        ## location for these, based on the "Always Output" indication in Fig 46
+        ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
@@ -456,35 +502,69 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "numberOfBeams:",numberOfBeams,"\n")
             oceDebug(debug, "numberOfCells:",numberOfCells,"\n")
 
-            if (testing) {
-                nensembles <- length(ensembleStart)
-                numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n=1, size=1) # Note: just using first one
-                FLDStart <- ensembleStart + 6 + 2 * numberOfDataTypes
-                ## FIXME: decide whether the code below is cleaner than the spot where time is determined
-                ## VLDStart <- FLDStart + 59
-                ## RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
-                ## RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
-                ## RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
-                ## RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
-                ## RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
-                ## RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
-                ## RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
-                ## time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
+            ##20151121 if (testing) {
+            ##20151121     nensembles <- length(ensembleStart)
+            ##20151121     numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n=1, size=1) # Note: just using first one
+            ##20151121     FLDStart <- ensembleStart + 6 + 2 * numberOfDataTypes
+            ##20151121     ## FIXME: decide whether the code below is cleaner than the spot where time is determined
+            ##20151121     ## VLDStart <- FLDStart + 59
+            ##20151121     ## RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
+            ##20151121     ## RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
+            ##20151121     ## RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
+            ##20151121     ## RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
+            ##20151121     ## RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
+            ##20151121     ## RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
+            ##20151121     ## RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
+            ##20151121     ## time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
 
-                ## regarding the "4" below, see p 135 of WorkHorse_commands_data_format_AUG10.PDF,
-                ## noting that we subtract 1 because it's an offset; we are thus examining
-                ## the LSB of the "Sys Cfg" pair.
-                upward <- .Call("get_bit", buf[FLDStart+4], 7)
-                ##testingData <- list(time=time, upward=upward)
-            }
+            ##20151121     ## regarding the "4" below, see p 135 of WorkHorse_commands_data_format_AUG10.PDF,
+            ##20151121     ## noting that we subtract 1 because it's an offset; we are thus examining
+            ##20151121     ## the LSB of the "Sys Cfg" pair.
+            ##20151121     upward <- .Call("get_bit", buf[FLDStart+4], 7)
+            ##20151121     ##testingData <- list(time=time, upward=upward)
+            ##20151121 }
 
             items <- numberOfBeams * numberOfCells
-            v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
-            a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # echo amplitude
-            q <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # correlation
-            g <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # percent good
+
+            ## set up storage
+            codes <- cbind(buf[ensembleStart[1]+c(0,header$dataOffset)], buf[1+ensembleStart[1]+c(0,header$dataOffset)])
+            oceDebug(debug, "below are the data-chunk codes; see Table 33 p145 of Teledyne/RDI OS_TM_Apr14.pdf\n")
+            if (debug)
+                print(codes)
+            vFound <- sum(codes[,1]==0x00 & codes[,2]==0x01) # velo
+            qFound <- sum(codes[,1]==0x00 & codes[,2]==0x02) # corr
+            aFound <- sum(codes[,1]==0x00 & codes[,2]==0x03) # echo intensity
+            gFound <- sum(codes[,1]==0x00 & codes[,2]==0x04) # percent good
+            if (vFound) {
+                v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
+                oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
+                         numberOfCells, "cells, and", numberOfBeams, "beams\n")
+            } else v <- NULL
+            if (qFound) {
+                q <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
+                oceDebug(debug, "set up 'q' (correlation) storage for", profilesToRead, "profiles,",
+                         numberOfCells, "cells, and", numberOfBeams, "beams\n")
+            } else q <- NULL
+            if (aFound) {
+                a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
+                oceDebug(debug, "set up 'a' (echo intensity) storage for", profilesToRead, "profiles,",
+                         numberOfCells, "cells, and", numberOfBeams, "beams\n")
+            } else a <- NULL
+            if (gFound) {
+                g <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
+                oceDebug(debug, "set up 'g' (percent good) storage for", profilesToRead, "profiles,",
+                         numberOfCells, "cells, and", numberOfBeams, "beams\n")
+            } else g <- NULL
+            message("FIXME: should set up all storage outside the look (note to DK)")
+
+            browser()
+            stop()
+
+            ##a <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # echo amplitude
+            ##q <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # correlation
+            ##g <- array(raw(), dim=c(profilesToRead, numberOfCells, numberOfBeams)) # percent good
+
             badProfiles <- NULL
-            oceDebug(debug, "did allocation; dim(v):", dim(v), "\n")
             haveBottomTrack <- FALSE          # FIXME maybe we can determine this from the header
             oceDebug(debug, "length(profileStart):", length(profileStart), "\n")
             if (profilesToRead < 1)
@@ -496,6 +576,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             badVMDAS <- NULL           # erroneous VMDAS profiles
 
             ## We do some things differently based on the firmware.
+            ## FIXME: we won't need this, soon...
             if (header$firmwareVersionMajor == 23 && header$firmwareVersionMinor >= 12) {
                 warning("Firmware version (", header$firmwareVersionMajor, ".", header$firmwareVersionMinor, ") exceeds 23.11, so using format in Teledyne/RDI document OS_TM_Apr14.pdf, i.e. skipping 'STATUS' chunk\n", sep="")
                 skipStatus <- 2 + 4 * numberOfCells
@@ -668,7 +749,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else {
                         message("0x", buf[o+1], " flag... unknown. FIXME: handle 0x40-0xF0 0x30 (p146 teledynRDI 2014)")
                         message("also, how far should we skip forward???")
-                        ##browser()
+                        browser()
                         ##stop("unknown byte code 0x", buf[o+1], " encountered while trying to read profile ", i)
                     }
                 }
