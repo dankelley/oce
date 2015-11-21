@@ -536,7 +536,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             qFound <- sum(codes[,1]==0x00 & codes[,2]==0x02) # corr
             aFound <- sum(codes[,1]==0x00 & codes[,2]==0x03) # echo intensity
             gFound <- sum(codes[,1]==0x00 & codes[,2]==0x04) # percent good
-            bFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # bottom-track
+            sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
+            bFound <- sum(codes[,1]==0x00 & codes[,2]==0x06) # bottom-track
             nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
             if (vFound) {
                 v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
