@@ -1492,9 +1492,9 @@ setMethod(f="plot",
                               }
                           }
                           ## FIXME: span should be an arg
-                          if ("slatitude" %in% names(x@data)) {
-                              lat <- x[["slatitude"]]
-                              lon <- x[["slongitude"]]
+                          if ("firstLatitude" %in% names(x@data)) {
+                              lat <- x[["firstLatitude"]]
+                              lon <- x[["firstLongitude"]]
                               asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
                               plot(coastline, clatitude=mean(lat, na.rm=TRUE), clongitude=mean(lon, na.rm=TRUE), span=span)
                               points(lon, lat)
