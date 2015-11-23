@@ -461,7 +461,7 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste("ctdAddColumn(..., name=\"", name, "\", ...)", sep=""))
     oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
@@ -3157,10 +3157,8 @@ plotProfile <- function (x,
                         if (unit == "ratio") {
                             mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else if (unit == "mS/cm") {
-                            ## message("mS/cm") # FIXME: why the message?
                             mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else if (unit == "S/m") {
-                            ## message("S/m") # FIXME: why the message?
                             mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else {
                             stop("unknown conductivity unit ", unit, "; should be 'ratio', 'mS/cm' or 'S/m'")
