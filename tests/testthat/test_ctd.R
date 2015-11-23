@@ -192,25 +192,22 @@ test_that("Beaufort sea data II", {
           expect_equal(d3[['salinity']][1:3], c(25.1637,25.1964,25.3011))
 })
 
-## An ODF file
-##'  CHIEF_SCIENTIST='Glen Harrison','
-##'  PLATFORM='Launch  Sigma-T','
-##'  INITIAL_LATITUDE=44.266700,'
-##'  INITIAL_LONGITUDE=-63.316700,'
-##'  START_DATE='Jan 01/2010','
-##'  SOUNDING=161.000000,'
+## An ODF file measured aboard CCGS SIGMA T, with 
+## Catherine Johnson as chief scientist.
 test_that("ODF file", {
-          d4 <- read.oce(system.file("extdata", "CTD_BCD2010666_01_01_DN.ODF", package="oce"))
+          d4 <- read.oce(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
           expect_equal(d4[["temperatureUnit"]], "ITS-90")
           expect_equal(d4[["conductivityUnit"]], "ratio") # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")
-          expect_equal(d4[["ship"]], "Launch  Sigma-T")
+          expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d4[["cruise"]], "Scotian Shelf")
-          expect_equal(d4[["scientist"]], "Glen Harrison")
-          expect_null(d4[["waterDepth"]])
-          expect_equal(d4[["latitude"]], 44.2667)
-          expect_equal(d4[["longitude"]], -63.3167)
-          expect_equal(d4[['pressure']][1:3], c(1.0,1.5,2.0))
-          expect_equal(d4[['temperature']][1:3], c(3.1800,3.1798,3.1804))
-          expect_equal(d4[['salinity']][1:3], c(30.7845,30.7775,30.7735))
+          expect_equal(d4[["scientist"]], "Catherine Johnson")
+          #expect_null(d4[["waterDepth"]])
+          expect_equal(d4[["latitude"]], 44.267500)
+          expect_equal(d4[["longitude"]], -63.317500)
+          expect_equal(d4[['pressure']][1:3], c(0.5, 1.5, 2.0))
+          expect_equal(d4[['temperature']][1:3], c(5.885, 5.9124, 5.9188))
+          expect_equal(d4[['salinity']][1:3], c(30.8514,30.8593,30.8596))
+          ## there are some flagged data in this file
+          expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
