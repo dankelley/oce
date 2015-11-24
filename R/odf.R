@@ -328,10 +328,14 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @examples
 #' library(oce)
 #' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")) 
-#' # make a CTD, and plot (with span to show NS)
+#' # Figure 1. make a CTD, and plot (with span to show NS)
 #' plot(as.ctd(odf), span=500, fill='lightgray')
 #' # show levels with bad QC flags
 #' subset(odf, flag!=0)
+#' # Figure 2. highlight bad data on TS diagram
+#' plotTS(odf)
+#' bad <- odf[["flag"]]!=0
+#' points(odf[['salinity']],odf[['temperature']],col='red',pch=20)
 #'
 #' @param file the file containing the data.
 #' @param debug a debugging flag, 0 for none, 1 for some debugging
