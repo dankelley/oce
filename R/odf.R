@@ -333,7 +333,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' # show levels with bad QC flags
 #' subset(odf, flag!=0)
 #' # Figure 2. highlight bad data on TS diagram
-#' plotTS(odf, type='l') # use a line to show loops
+#' plotTS(odf, type='o') # use a line to show loops
 #' bad <- odf[["flag"]]!=0
 #' points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 #'
