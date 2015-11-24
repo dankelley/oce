@@ -335,7 +335,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' # Figure 2. highlight bad data on TS diagram
 #' plotTS(odf)
 #' bad <- odf[["flag"]]!=0
-#' points(odf[['salinity']],odf[['temperature']],col='red',pch=20)
+#' points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 #'
 #' @param file the file containing the data.
 #' @param debug a debugging flag, 0 for none, 1 for some debugging
