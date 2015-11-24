@@ -325,9 +325,18 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 #' the total water depth, is here identical to \code{sounding}.
 #'
+#' @examples
+#' library(oce)
+#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")) 
+#' # make a CTD, and plot (with span to show NS)
+#' plot(as.ctd(odf), span=500, fill='lightgray')
+#' # show levels with bad QC flags
+#' subset(odf, flag!=0)
+#'
 #' @param file the file containing the data.
 #' @param debug a debugging flag, 0 for none, 1 for some debugging
 #' @return an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+#' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF} package is released by the Canadian Department of Fisheries and Oceans.
 #' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 read.odf <- function(file, debug=getOption("oceDebug"))
 {

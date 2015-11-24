@@ -34,7 +34,18 @@ and \code{SOUNDING}, respectively. In addition, the more common metadata
 item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 the total water depth, is here identical to \code{sounding}.
 }
+\examples{
+library(oce)
+odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+# make a CTD, and plot (with span to show NS)
+plot(as.ctd(odf), span=500, fill='lightgray')
+# show levels with bad QC flags
+subset(odf, flag!=0)
+}
 \references{
 Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
+}
+\seealso{
+\code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF} package is released by the Canadian Department of Fisheries and Oceans.
 }
 
