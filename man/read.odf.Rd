@@ -42,9 +42,9 @@ plot(as.ctd(odf), span=500, fill='lightgray')
 # show levels with bad QC flags
 subset(odf, flag!=0)
 # Figure 2. highlight bad data on TS diagram
-plotTS(odf)
+plotTS(odf, type='l') # use a line to show loops
 bad <- odf[["flag"]]!=0
-points(odf[['salinity']],odf[['temperature']],col='red',pch=20)
+points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 }
 \references{
 Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
