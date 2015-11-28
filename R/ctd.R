@@ -195,6 +195,13 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         cruise <- m$cruise
         station <- m$station
         scientist <- m$station
+        if (is.na(latitude) && "latitude" %in% names(m))
+            latitude <- m$latitude
+        if (is.na(longitude) && "longitude" %in% names(m))
+            longitude <- m$longitude
+        if (missing(date) && "date" %in% names(m)) {
+            date <- m$date
+        }
         filename <- if ("filename" %in% mnames) m$filename else ""
         model <- m$model
         serialNumber <- m$serialNumber
@@ -252,6 +259,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
                             name="sigmaTheta", label="Sigma Theta", unit="kg/m^3")
         ## copy relevant metadata
+        if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
         if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber
