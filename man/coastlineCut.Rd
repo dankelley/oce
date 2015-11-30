@@ -28,7 +28,7 @@ may help with other values of \code{lon_0}.
 This function is provisional. Its behaviour, name and very existence
 may change through the late months of 2015.  One part of the
 development plan is to see if there is common ground between this
-and the \code{clipPolys} function in the \CRANpkg{PBSmapping"} package.
+and the \code{clipPolys} function in the \CRANpkg{PBSmapping} package.
 }
 \examples{
 library(oce)

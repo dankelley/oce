@@ -116,13 +116,22 @@ setMethod(f="show",
                   filename <- object[["filename"]]
               else
                   filename <- "(filename unknown)"
-              if (is.null(filename) || filename == "" || is.na(filename))
-                  cat(class(object)[1], " object has data as follows.\n", sep="")
-              else
-                  cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")
               names <- names(object@data)
               ncol <- length(names)
-              for (i in 1:ncol) {
+              if (is.null(filename) || filename == "" || is.na(filename) || filename=="(filename unknown)") {
+                  if (ncol > 0) {
+                      cat(class(object)[1], " object has data as follows.\n", sep="")
+                  } else {
+                      cat(class(object)[1], " object has nothing in its data slot.\n", sep="")
+                  }
+              } else {
+                  if (ncol > 0) {
+                      cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")
+                  } else {
+                      cat(class(object)[1], " object, from file '", filename, "', has nothing in its data slot.\n", sep="")
+                  }
+              }
+              for (i in seq_along(names)) {
                   d <- object@data[[i]]
                   if (0 == length(d)) {
                       cat("  ", names[i], ": empty\n")
