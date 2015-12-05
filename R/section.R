@@ -262,6 +262,7 @@ sectionSort <- function(section, by)
 
 makeSection <- function(item, ...)
 {
+    ## FIXME: maybe deprecate this in favour of as.section()
     if (inherits(item, "ctd")) {
 	extra.args <- list(...)
 	numStations <- 1 + length(extra.args)
@@ -275,6 +276,7 @@ makeSection <- function(item, ...)
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
+                message("DAN ", i)
                 thisStn <- extra.args[[i-1]]
 		stn[i] <- thisStn@metadata$station
 		lon[i] <- thisStn@metadata$longitude
@@ -282,6 +284,9 @@ makeSection <- function(item, ...)
 		station[[i]] <- thisStn
 	    }
 	}
+    } else if (inherits(item, "argo")) {
+        message("HANDLE ARGO HERE")
+        return(as.section(item))
     } else if (inherits(item, "list") && !inherits(item[[1]], "oce")) {
         stop("cannot yet handle a list of non-oce objects")
     } else if (inherits(item, "list") && inherits(item[[1]], "oce")) {
@@ -372,8 +377,9 @@ makeSection <- function(item, ...)
 #"+.section" <- function(section, station) # up until 2015-03-13
 sectionAddStation <- function(section, station)
 {
-    if (missing(station)) return(section) # not sure this can happen
+    if (missing(section)) stop("must provide a section to which the ctd is to be added")
     if (!inherits(section, "section")) stop("'section' is not a 'section' object")
+    if (missing(station)) return(section)
     if (!inherits(station, "ctd")) stop("'station' is not a 'ctd' object")
     res <- section
     n.orig <- length(section@data$station)
@@ -1538,17 +1544,36 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station)
 {
+    if (inherits(salinity, "argo")) {
+        tmp <- salinity
+        nstation <- length(tmp[['longitude']])
+        ndepth <- dim(tmp[["salinity"]])[1]
+        station <- rep(1:nstation, each=ndepth)
+        longitude <- rep(tmp[['longitude']], each=ndepth)
+        latitude <- rep(tmp[['latitude']], each=ndepth)
+        salinity <- as.vector(tmp[['salinity']])
+        temperature <- as.vector(tmp[['temperature']])
+        pressure <- as.vector(tmp[['pressure']])
+        ## str(station)
+        ## str(longitude)
+        ## str(latitude)
+        ## str(temperature)
+        ## str(salinity)
+        ## str(pressure)
+        ## message("FIXME: handle argo here")
+    }
     stationFactor <- factor(station)
     stationLevels <- levels(stationFactor)
-    for (l in seq_along(stationLevels)) {
-        look <- station==stationLevels[l]
-        ctd <- as.ctd(salinity[look], temperature[look], pressure[look],
-                      longitude=longitude[look][1], latitude=latitude[look][1])
-        if (l == 1)
-            rval <- makeSection(ctd)
-        else
-            rval <- rval + ctd
+    ## message("stationLevels:", paste(stationLevels, collapse=" "))
+    nstation <- length(stationLevels)
+    ctds <- vector("list", nstation)
+    for (i in 1:nstation) {
+        ## message("i: ", i)
+        look <- station==stationLevels[i]
+        ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
+                            longitude=longitude[look][1], latitude=latitude[look][1],
+                            station=i)
     }
-    rval 
+    makeSection(ctds) # FIXME: why have makeSection(), when as.section() is a better name?
 }
 
