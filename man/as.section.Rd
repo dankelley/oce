@@ -35,9 +35,9 @@
   more data and metadata in the CTD object.
 
   If the first argument is a list containing CTD objects, or a character vector
-  containing the names of such objects, then those objects are combined to form
-  the station, and all other arguments are ignored.  This is the best way to
-  call \code{as.section}.
+  containing the names of such objects that are defined in the calling
+  environment, then those objects are combined to form the station, and all
+  other arguments are ignored.  This is the best way to call \code{as.section}.
 
   If the first argument is a \code{\link{argo-class}} object, then the profiles
   it contains are turned into \code{\link{ctd-class}} object, and these are
