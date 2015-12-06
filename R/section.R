@@ -264,7 +264,8 @@ sectionSort <- function(section, by)
 
 makeSection <- function(item, ...)
 {
-    .Deprecated("as.section", msg="as.section() will replace makeSection() in the next CRAN release")
+    .Deprecated("as.section",
+                msg="as.section() will replace makeSection() in the next CRAN release; see ?'oce-deprecated'")
     if (inherits(item, "ctd")) {
 	extra.args <- list(...)
 	numStations <- 1 + length(extra.args)

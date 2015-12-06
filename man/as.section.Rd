@@ -5,8 +5,9 @@
 
 \title{Create a section}
 
-\description{Create a section based on columnar data, a group of
-  \code{\link{ctd-class}} objects, or an \code{\link{argo-class}} object.}
+\description{Create a section based on columnar data, or a set of
+  \code{\link{oce-class}} objects that can be coerced to CTD form with
+  \code{\link{as.ctd}}.}
 
 \usage{as.section(salinity, temperature, pressure, longitude, latitude, station,
   sectionId="")}
