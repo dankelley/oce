@@ -183,6 +183,8 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
                    debug=getOption("oceDebug"))
 {
     if (missing(salinity)) stop("must provide salinity")
+    if (inherits(salinity, "ctd"))
+        return(salinity) # a convenience that lets us coerce without altering
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     ## 1. coerce an oce object (with special tweaks for rsk)
     if (inherits(salinity, "oce")) {
