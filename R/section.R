@@ -1,6 +1,8 @@
 setMethod(f="initialize",
           signature="section",
-          definition=function(.Object) {
+          definition=function(.Object, filename="", sectionId="") {
+              .Object@metadata$filename <- filename
+              .Object@metadata$sectionId <- sectionId
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'section' object"
               return(.Object)
@@ -262,7 +264,7 @@ sectionSort <- function(section, by)
 
 makeSection <- function(item, ...)
 {
-    ## FIXME: maybe deprecate this in favour of as.section()
+    .Deprecated("as.section", msg="as.section() will replace makeSection() in the next CRAN release")
     if (inherits(item, "ctd")) {
 	extra.args <- list(...)
 	numStations <- 1 + length(extra.args)
@@ -276,7 +278,7 @@ makeSection <- function(item, ...)
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
-                message("DAN ", i)
+                ## message("DAN ", i)
                 thisStn <- extra.args[[i-1]]
 		stn[i] <- thisStn@metadata$station
 		lon[i] <- thisStn@metadata$longitude
@@ -284,9 +286,6 @@ makeSection <- function(item, ...)
 		station[[i]] <- thisStn
 	    }
 	}
-    } else if (inherits(item, "argo")) {
-        message("HANDLE ARGO HERE")
-        return(as.section(item))
     } else if (inherits(item, "list") && !inherits(item[[1]], "oce")) {
         stop("cannot yet handle a list of non-oce objects")
     } else if (inherits(item, "list") && inherits(item[[1]], "oce")) {
@@ -297,45 +296,46 @@ makeSection <- function(item, ...)
 	lat <- vector("numeric", numStations)
 	if (numStations < 1) 
             stop("need more than 1 item in the list, to create a section")
-        if (inherits(item[[1]], "oce")) {
-            for (i in 1:numStations) {
-                if (!inherits(item[[i]], "oce"))
-                    stop("list cannot be a mixture of oce and non-oce items")
-                thisItem <- item[[i]]
-                stn[i] <- if (is.null(thisItem@metadata$station)) i else thisItem@metadata$station
-                lon[i] <- thisItem@metadata$longitude
-                lat[i] <- thisItem@metadata$latitude
-                station[[i]] <- thisItem
-            }
-        } else {
-            ## demand that items contain @data$pressure
-            if ("pressure" %in% names(item[[1]]) || "pressure" %in% names(item[[1]]@data)) {
-                stop("items must contain pressure")
-            }
-            for (thisItem in item) {
-                names <- names(thisItem)
-                if (!("longitude" %in% names)) stop("each item entry must contain longitude")
-                if (!("latitude" %in% names)) stop("each item must entry contain latitude")
-                ## FIXME: maybe permits 'depth' here
-                if (!("pressure" %in% names)) stop("each item must entry contain pressure")
-                if (!("station" %in% names)) thisItem$station <- seq_along(thisItem$longitude)
-                len <- length(thisItem$pressure)
-                print(names)
-                names <- names[names!="longitude"]
-                names <- names[names!="latitude"]
-                names <- names[names!="station"]
-                print(names)
-                data <- list()
-                for (name in names) {
-                    if (length(name) == len) {
-                        data[[name]] <- thisItem[[name]]
-                    }
-                }
-                str(data)
-            }
+        ## 2015-12-06 if (inherits(item[[1]], "oce")) {
+        for (i in 1:numStations) {
+            if (!inherits(item[[i]], "oce"))
+                stop("list cannot be a mixture of oce and non-oce items")
+            thisItem <- item[[i]]
+            stn[i] <- if (is.null(thisItem@metadata$station)) i else thisItem@metadata$station
+            lon[i] <- thisItem@metadata$longitude
+            lat[i] <- thisItem@metadata$latitude
+            station[[i]] <- thisItem
         }
+        ## 2015-12-06 } else {
+        ## 2015-12-06: this code block could not be run 
+        ## 2015-12-06 ## demand that items contain @data$pressure
+        ## 2015-12-06 if ("pressure" %in% names(item[[1]]) || "pressure" %in% names(item[[1]]@data)) {
+        ## 2015-12-06     stop("items must contain pressure")
+        ## 2015-12-06 }
+        ## 2015-12-06 for (thisItem in item) {
+        ## 2015-12-06     names <- names(thisItem)
+        ## 2015-12-06     if (!("longitude" %in% names)) stop("each item entry must contain longitude")
+        ## 2015-12-06     if (!("latitude" %in% names)) stop("each item must entry contain latitude")
+        ## 2015-12-06     ## FIXME: maybe permits 'depth' here
+        ## 2015-12-06     if (!("pressure" %in% names)) stop("each item must entry contain pressure")
+        ## 2015-12-06     if (!("station" %in% names)) thisItem$station <- seq_along(thisItem$longitude)
+        ## 2015-12-06     len <- length(thisItem$pressure)
+        ## 2015-12-06     print(names)
+        ## 2015-12-06     names <- names[names!="longitude"]
+        ## 2015-12-06     names <- names[names!="latitude"]
+        ## 2015-12-06     names <- names[names!="station"]
+        ## 2015-12-06     print(names)
+        ## 2015-12-06     data <- list()
+        ## 2015-12-06     for (name in names) {
+        ## 2015-12-06         if (length(name) == len) {
+        ## 2015-12-06             data[[name]] <- thisItem[[name]]
+        ## 2015-12-06         }
+        ## 2015-12-06     }
+        ## 2015-12-06     str(data)
+        ## 2015-12-06 }
+        ## 2015-12-06 }
     } else if (class(item) == "character") {
-	numStations <- length(item)
+        numStations <- length(item)
 	station <- vector("list", numStations)
 	stn <- vector("character", numStations)
 	lon <- vector("numeric", numStations)
@@ -1164,7 +1164,7 @@ read.section <- function(file, directory, sectionId="", flags,
             name <- paste(directory, files[i], sep='/')
             stations[[i]] <- ctdTrim(read.oce(name))
         }
-        return(makeSection(stations))
+        return(as.section(stations))
     }
     if (is.character(file)) {
 	filename <- file
@@ -1542,9 +1542,22 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 }
 
 
-as.section <- function(salinity, temperature, pressure, longitude, latitude, station)
+as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
-    if (inherits(salinity, "argo")) {
+    res <- new("section", sectionId="")
+    if (is.numeric(salinity)) {
+        stationFactor <- factor(station)
+        stationLevels <- levels(stationFactor)
+        nstation <- length(stationLevels)
+        ctds <- vector("list", nstation)
+        for (i in 1:nstation) {
+            ## message("NUMERIC CASE. i: ", i, ", name:", stationLevels[i])
+            look <- station==stationLevels[i]
+            ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
+                                longitude=longitude[look][1], latitude=latitude[look][1],
+                                station=stationLevels[i])
+        }
+    } else if (inherits(salinity, "argo")) {
         tmp <- salinity
         nstation <- length(tmp[['longitude']])
         ndepth <- dim(tmp[["salinity"]])[1]
@@ -1554,26 +1567,40 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         salinity <- as.vector(tmp[['salinity']])
         temperature <- as.vector(tmp[['temperature']])
         pressure <- as.vector(tmp[['pressure']])
-        ## str(station)
-        ## str(longitude)
-        ## str(latitude)
-        ## str(temperature)
-        ## str(salinity)
-        ## str(pressure)
-        ## message("FIXME: handle argo here")
+        stationFactor <- factor(station)
+        stationLevels <- levels(stationFactor)
+        nstation <- length(stationLevels)
+        ctds <- vector("list", nstation)
+        for (i in 1:nstation) {
+            ##message("ARGO CASE. i: ", i, ", name:", stationLevels[i])
+            look <- station==stationLevels[i]
+            ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
+                                longitude=longitude[look][1], latitude=latitude[look][1],
+                                station=paste("profile", stationLevels[i]))
+        }
+    } else if (inherits(salinity, "list")) {
+        if (!inherits(salinity[[1]], "ctd"))
+            stop("list must contain ctd objects")
+        nstation <- length(salinity)
+        ctds <- vector("list", nstation)
+        for (i in 1:nstation) {
+            ## message("CTD-LIST CASE. i: ", i, ", name:", salinity[[i]][["station"]])
+            ctds[[i]] <- salinity[[i]]
+        }
+    } else if (is.character(salinity) && length(salinity) > 1) {
+        ## vector of names of CTD objects
+        nstation <- length(salinity)
+        ctds <- vector("list", nstation)
+        for (i in 1:nstation)
+            ctds[[i]] <- get(salinity[i], parent.frame())
     }
-    stationFactor <- factor(station)
-    stationLevels <- levels(stationFactor)
-    ## message("stationLevels:", paste(stationLevels, collapse=" "))
-    nstation <- length(stationLevels)
-    ctds <- vector("list", nstation)
-    for (i in 1:nstation) {
-        ## message("i: ", i)
-        look <- station==stationLevels[i]
-        ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
-                            longitude=longitude[look][1], latitude=latitude[look][1],
-                            station=i)
-    }
-    makeSection(ctds) # FIXME: why have makeSection(), when as.section() is a better name?
+    ## In each case, we now have a vector of CTD objects.
+    res@metadata <- list(sectionId="",
+                         stationId=unlist(lapply(ctds, function(x) x[["station"]])),
+                         longitude=unlist(lapply(ctds, function(x) x[["longitude"]])),
+                         latitude=unlist(lapply(ctds, function(x) x[["latitude"]])))
+    res@data <- list(station=ctds)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 

@@ -1,7 +1,7 @@
 \name{makeSection}
 \alias{makeSection}
 
-\title{Bind CTD profiles together into a cross section}
+\title{Bind CTD profiles together into a cross section (will be removed in next CRAN release)}
 
 \description{Combine a series of CTD profiles together to create a section.}
 

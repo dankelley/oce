@@ -1154,7 +1154,7 @@ setMethod(f="plot",
                   ##stop()
               }
               ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
-              ## as created by makeSection().
+              ## as created by as.section() or read.section().
               if (0 == length(x@data$salinity)) {
                   warning("no data to plot in this object")
                   return(invisible())

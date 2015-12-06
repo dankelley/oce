@@ -44,7 +44,7 @@
 
 \arguments{
     \item{x}{a \code{section} object, e.g. as created by
-        \code{\link{makeSection}}.}
+        \code{\link{as.section}} or \code{\link{read.section}}.}
 
     \item{which}{a list of desired plot types, as explained in
         \dQuote{Details}.  There may be up to four panels in total, and the
