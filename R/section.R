@@ -1579,13 +1579,12 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
                                 station=paste("profile", stationLevels[i]))
         }
     } else if (inherits(salinity, "list")) {
-        if (!inherits(salinity[[1]], "ctd"))
-            stop("list must contain ctd objects")
+        ##if (!inherits(salinity[[1]], "ctd")) stop("list must contain ctd objects")
         nstation <- length(salinity)
         ctds <- vector("list", nstation)
         for (i in 1:nstation) {
-            ## message("CTD-LIST CASE. i: ", i, ", name:", salinity[[i]][["station"]])
-            ctds[[i]] <- salinity[[i]]
+            ##message("CTD-LIST CASE. i: ", i, ", name:", salinity[[i]][["station"]])
+            ctds[[i]] <- as.ctd(salinity[[i]])
         }
     } else if (is.character(salinity) && length(salinity) > 1) {
         ## vector of names of CTD objects

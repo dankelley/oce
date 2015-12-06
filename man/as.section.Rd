@@ -34,10 +34,11 @@
   available, the next mode is preferred, because it permits the storage of much
   more data and metadata in the CTD object.
 
-  If the first argument is a list containing CTD objects, or a character vector
-  containing the names of such objects that are defined in the calling
-  environment, then those objects are combined to form the station, and all
-  other arguments are ignored.  This is the best way to call \code{as.section}.
+  If the first argument is a list containing oce objects that can be coerced
+  into CTD form with \code{\link{as.ctd}} -- or a character vector containing
+  the names of such objects that are defined in the calling environment -- then
+  those objects are combined to form the station, and all other arguments are
+  ignored.  This is the best way to call \code{as.section}.
 
   If the first argument is a \code{\link{argo-class}} object, then the profiles
   it contains are turned into \code{\link{ctd-class}} object, and these are

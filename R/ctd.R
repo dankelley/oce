@@ -279,9 +279,11 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         if ("silicate" %in% dnames) res@data$silicate <- d$silicate
         ## FIXME: need to add all columns from @data in the rsk object
+        nrow <- length(res@data$temperature)
         for (field in names(d)) {
             if (!(field %in% c('pressure', 'salinity', 'temperature', 'conductivity'))) {
-                res <- ctdAddColumn(res, d[[field]], field)
+                if (nrow == length(d[[field]]))
+                    res <- ctdAddColumn(res, d[[field]], field)
             }
         }
         ## FIXME: next in dnames or mnames??
