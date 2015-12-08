@@ -462,6 +462,8 @@ swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"
     ## FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
     if (missing(pressure)) stop("must provide pressure")
     l <- lookWithin(list(pressure=pressure, latitude=latitude, eos=eos))
+    if (any(is.na(l$latitude)))
+        l$latitude <- 45 # default to mid latitudes
     if (l$eos == "unesco") {
         l$latitude <- l$latitude * atan2(1, 1) / 45
         x <- sin(l$latitude)^2
