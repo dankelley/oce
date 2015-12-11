@@ -434,12 +434,17 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## spaces. Should coerce to ascii with no spaces, or at least
         ## recognize fields and rename (e.g. `dissolved O2` should
         ## just be `oxygen`)
+        names <- gsub(" ", "", names, fixed = TRUE) # remove spaces
+        Encoding(names) <- 'latin1'
+        names <- iconv(names, 'latin1', 'ASCII', sub='')
+        ## if dissolvedo is a name call it oxygen
+        names[which(match(names, 'dissolvedo') == 1)] <- 'oxygen'
         isMeasured <- RSQLite::dbReadTable(con, "channels")$isMeasured == 1
         names <- names[isMeasured] # only take names of things that are in the data table
         ## Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
-                dup <- grep(n, names)
+                dup <- match(n, names)
                 if (length(dup) > 1) { # more than one
                     names[dup] <- paste0(n, c('', seq(2, length(dup))))
                 }
