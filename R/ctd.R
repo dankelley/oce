@@ -209,6 +209,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         serialNumber <- m$serialNumber
         sampleInterval <- m$sampleInterval
         waterDepth <- m$waterDepth
+        ## Copy some WOCE things into oce-convention names (originals retained)
+        if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
+        if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
+        if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
         temperature <- d$temperature
         pressure <- d$pressure
         ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
@@ -245,7 +249,10 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
             pressure <- pressure - pressureAtmospheric
         }
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
-        conductivity <- d$conductivity
+        if ("COND" %in% names(d))
+            conductivity <- d$COND
+        else 
+            conductivity <- d$conductivity
         if (inherits(o, "rsk")) {
             if (is.null(conductivity))
                 stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
@@ -311,11 +318,17 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
     if (is.list(salinity) || is.data.frame(salinity)) {
         x <- salinity
         names <- names(x)
-        if (3 != sum(c("salinity", "temperature", "pressure") %in% names))
+        ## Permit oce-style names or WOCE-style names for the three key variables (FIXME: handle more)
+        if (3 == sum(c("salinity", "temperature", "pressure") %in% names))
+            res <- new("ctd",
+                       pressure=x$pressure, salinity=x$salinity, temperature=x$temperature,
+                       temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType)
+        else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names))
+            res <- new("ctd",
+                       pressure=x$PRES, salinity=x$PSAL, temperature=x$TEMP,
+                       temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType)
+        else
             stop("the first argument must contain salinity, temperature, and pressure")
-        res <- new("ctd",
-                   pressure=x$pressure, salinity=x$salinity, temperature=x$temperature,
-                   temperatureUnit=temperatureUnit, conductivityUnit=conductivityUnit, pressureType=pressureType)
         if ("longitude" %in% names) {
             if (1 == length(longitude))
                 res@metadata$longitude <- x$longitude
@@ -329,6 +342,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
                 res@data$latitude <- x$latitude
         }
         if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
+        if ("COND" %in% names) res@data$conductivity <- x$COND # FIXME accept other WOCE names
         if ("quality" %in% names)res@data$quality <- x$quality
         if ("oxygen" %in% names)res@data$oxygen <- x$oxygen
         if ("nitrate" %in% names)res@data$nitrate <- x$nitrate

@@ -850,11 +850,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is section\n")
         return("section")
     }
-    if (length(grep("^//SDN_parameter_mapping", line)) ||
-        length(grep("^//SDN_parameter_mapping", line2))) {
+    if (length(grep("^//SDN_parameter_mapping", line, useBytes=TRUE)) ||
+        length(grep("^//SDN_parameter_mapping", line2, useBytes=TRUE))) {
         oceDebug(debug, "this is ODV\n")
         return("ctd/odv")
     }
+    if (grep("*.nc$", filename))
+        return("netcdf")
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
@@ -967,7 +969,87 @@ read.oce <- function(file, ...)
     if (type == "landsat") {
         return(read.landsat(file, ...))
     }
+    if (type == "netcdf") {
+        return(read.netcdf(file, ...))
+    }
     stop("unknown file type \"", type, "\"")
+}
+
+#' Read a netcdf file.
+#'
+#' @details
+#' Read a netcdf file, trying to interpret its contents sensibly.
+#'
+#' It is important to note that this is a preliminary version of
+#' this function, and much about it may change without notice.
+#' Indeed, it may be removed entirely.
+#'
+#' Below are some features that may be changed.
+#'
+#' 1. The names of data items are not changed from those in the netcdf
+#' file on the assumption that this will offer the least surprise to
+#' the user.
+#'
+#' 2. An attempt is made to find some common metadata from global
+#' attributes in the netcdf file. These attributes include 
+#' \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
+#' Before they are stored in the metadata, they are converted to
+#' lower case, since that is the oce convention.
+#'
+#' @param file the name of a file
+#' @param ... unused
+#'
+#' @return
+#' An object of \code{\link{oce-class}}.
+read.netcdf <- function(file, ...) 
+{
+    if (!requireNamespace("ncdf4", quietly=TRUE))
+        stop('must install.packages("ncdf4") to read netcdf data')
+    f <- ncdf4::nc_open(file)
+    rval <- new("oce")
+    names <- names(f$var)
+    data <- list()
+
+    for (name in names) {
+        item <- ncdf4::ncvar_get(f, name)
+        if (1 == length(dim(item))) # matrix column converted to vector
+            item <- as.vector(item)
+        data[[name]] <- item
+        if (name=="TIME") {
+            u <- ncdf4::ncatt_get(f,name,"units")$value
+            if ("seconds since 1970-01-01 UTC" == u) {
+                data[[name]] <- numberAsPOSIXct(item)
+            } else {
+                warning("time unit is not understood, so it remains simply numeric\n")
+            }
+        }
+    }
+    rval@data <- data
+    ## Try to get some global attributes.
+    ## Inelegantly permit first letter lower-case or upper-case
+    if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
+        rval@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
+    if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt)
+        rval@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
+    if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt)
+        rval@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
+    if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt)
+        rval@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
+    if (ncdf4::ncatt_get(f, 0, "Station")$hasatt)
+        rval@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
+    if (ncdf4::ncatt_get(f, 0, "station")$hasatt)
+        rval@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
+    if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt)
+        rval@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
+    if (ncdf4::ncatt_get(f, 0, "ship")$hasatt)
+        rval@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
+    if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt)
+        rval@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
+    if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
+        rval@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
+    rval@processingLog <- processingLogAppend(rval@processingLog,
+                                              paste("read.netcdf(\"", file, "\")", sep=""))
+    rval
 }
 
 

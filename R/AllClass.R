@@ -6,6 +6,37 @@ setClass("oce",
                         data=list(),
                         processingLog=list()))
 
+setMethod(f="summary",
+          signature="oce",
+          definition=function(object, ...) {
+              mnames <- names(object@metadata)
+              cat("oce Summary\n-----------\n\n")
+              names <- names(object@data)
+              isTime <- names == "time" | names == "TIME"
+              if (any(isTime)) {
+                  time <- object@data[[which(isTime)[1]]]
+                  from <- min(time, na.rm=TRUE)
+                  to <- max(time, na.rm=TRUE)
+                  cat("* Time ranges from", format(from), "to", format(to), "\n")
+              }
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              threes <- matrix(nrow=sum(!isTime), ncol=3)
+              ii <- 1
+              ndata <- length(object@data)
+              for (i in 1:ndata) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[i]])
+                  ii <- ii + 1
+              }
+              rownames(threes) <- paste("   ", names[!isTime])
+              colnames(threes) <- c("Min.", "Mean", "Max.")
+              cat("* Statistics of data::\n")
+              print(threes, indent='  ')
+              processingLogShow(object)
+          })
+
+
 setClass("adv", contains="oce")
 setClass("adp", contains="oce")
 setClass("argo", contains="oce")
