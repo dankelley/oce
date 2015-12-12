@@ -869,7 +869,8 @@ resizableLabel <- function(item, axis, sep)
         stop("axis must be \"x\" or \"y\"")
     itemAllowed <- c("S", "C", "conductivity mS/cm", "conductivity S/m", "T",
                      "theta", "sigmaTheta", "conservative temperature",
-                     "absolute salinity", "nitrate", "nitrite", "oxygen",
+                     "absolute salinity", "nitrate", "nitrite",
+                     "oxygen", "oxygen saturation", "oxygen mL/L", "oxygen umol/L", "oxygen umol/kg",
                      "phosphate", "silicate", "tritium", "spice",
                      "fluorescence", "p", "z", "distance", "distance km",
                      "along-track distance km", "heading", "pitch", "roll", "u",
@@ -935,8 +936,25 @@ resizableLabel <- function(item, axis, sep)
         var <- gettext("Nitrite", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
         abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
+
     } else if (item ==  "oxygen") {
-        ## FIXME: allow other O2 units (and is this the best default?)
+        ## Until 2015-12-12 the default unit was umol/kg
+        var <- gettext("Oxygen", domain="R-oce")
+        full <- bquote(.(var))
+        abbreviated <- bquote(O[2])
+    } else if (item ==  "oxygen saturation") {
+        var <- gettext("Oxygen saturation", domain="R-oce")
+        full <- bquote(.(var))
+        abbreviated <- bquote(O[2]*.(L)*percent*saturation*.(R))
+    } else if (item ==  "oxygen mL/L") {
+        var <- gettext("Oxygen", domain="R-oce")
+        full <- bquote(.(var)*.(L)*mL/L*.(R))
+        abbreviated <- bquote(O[2]*.(L)*mL/L*.(R))
+    } else if (item ==  "oxygen umol/L") {
+        var <- gettext("Oxygen", domain="R-oce")
+        full <- bquote(.(var)*.(L)*mu*mol/L*.(R))
+        abbreviated <- bquote(O[2]*.(L)*mu*mol/L*.(R))
+    } else if (item ==  "oxygen umol/kg") {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/kg*.(R))

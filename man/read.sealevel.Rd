@@ -92,7 +92,7 @@ plot(m)
 }
 
 \references{The Hawaii archive site at
-    \url{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
+    \code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
     interface for downloading sealevel data in Type 1, with format as described
     at \url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.  The MEDS
     repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
