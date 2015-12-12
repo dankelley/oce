@@ -444,9 +444,9 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
-                dup <- match(n, names)
-                if (length(dup) > 1) { # more than one
-                    names[dup] <- paste0(n, c('', seq(2, length(dup))))
+                dup <- match(names, n, nomatch=0)
+                if (sum(dup) > 1) { # more than one
+                    names[which(dup==1)] <- paste0(n, c('', seq(2, sum(dup))))
                 }
             }
         }
