@@ -1,4 +1,5 @@
 0.9-17
+- as.adp() added
 - makeSection() deprecated; use as.section() instead
 - read.adp.rdi() handles Teledyne/RDI vsn 23.19 bottom-track data
 - geodXyInverse() added; geod functions now spell out longitude etc

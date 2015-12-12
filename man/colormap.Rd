@@ -233,10 +233,10 @@ points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 }
 
 \references{Information on GMT software is given at
-    \url{http://gmt.soest.hawaii.edu}.  Diagrams showing the GMT color schemes
+    \code{http://gmt.soest.hawaii.edu} (link worked for years but 
+    failed 2015-12-12).  Diagrams showing the GMT color schemes
     are at \code{http://www.geos.ed.ac.uk/it/howto/GMT/CPT/palettes.html} (link
-    worked 2015-12-04 but failed 2015-12-08, so URL flag removed from this
-    page), and numerical specifications for some color maps are at
+    worked for years but failed 2015-12-08), and numerical specifications for some color maps are at
     \url{http://www.beamreach.org/maps/gmt/share/cpt},
     \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.}
 

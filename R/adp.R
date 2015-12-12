@@ -1,12 +1,12 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 setMethod(f="initialize",
           signature="adp",
-          definition=function(.Object,time,u,a,q,filename) {
+          definition=function(.Object, time, distance, v, a, q) {
               if (!missing(time)) .Object@data$time <- time
-              if (!missing(u)) .Object@data$u <- u
+              if (!missing(distance)) .Object@data$distance <- distance
+              if (!missing(v)) .Object@data$v <- v
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
-              .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'adp' object"
               return(.Object)
@@ -15,12 +15,18 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="adp",
           definition=function(object, ...) {
+              mnames <- names(object@metadata)
               cat("ADP Summary\n-----------\n\n", ...)
-              cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
-              cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
-              cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
-              cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
-              cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
+              if ("instrumentType" %in% mnames)
+                  cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
+              if ("manufacturere" %in% mnames)
+                  cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
+              if ("serialNumber" %in% mnames)
+                  cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
+              if ("firmwareVersion" %in% mnames)
+                  cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
+              if ("filename" %in% mnames)
+                  cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
               if ("latitude" %in% names(object@metadata)) {
                   cat(paste("* Location:           ",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
@@ -68,7 +74,8 @@ setMethod(f="summary",
                                       slantAngle=object@metadata$slantAngle,
                                       orientation=object@metadata$orientation)
               } else {
-                  stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+                  resSpecific <- list(orientation=object@metadata$orientation)
+                  #stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
               }
               cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                           format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
@@ -89,9 +96,10 @@ setMethod(f="summary",
 
               cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
               cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
-              cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
-                                                                              object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
-                  "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
+              if ("oceBeamUnspreaded" %in% mnames)
+                  cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
+                                                                                  object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
+                      "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
               if (!is.null(object@metadata$transformationMatrix)) {
                   digits <- 4
                   cat("* Transformation matrix::\n\n")
@@ -330,6 +338,49 @@ setMethod(f="subset",
               rval
           })
 
+#' create an object of \code{\link{adp-class}}
+#'
+#' @details
+#' Construct an object of \code{\link{adp-class}}.  Only a basic
+#' subset of the typical \code{data} slot is represented in the arguments
+#' to this function, on the assumption that typical usage in reading data
+#' is to set up a nearly-blank \code{\link{adp-class}} object, the \code{data}
+#' slot of which is then inserted.  However, in some testing situations it
+#' can be useful to set up artificial \code{adp} objects, so the other
+#' arguments may be useful.
+#'
+#' A few defaults are set for some 
+#'
+#' @param time of observations in POSIXct format
+#' @param distance to centre of bins
+#' @param v array of velocities, with first index for time, second for bin number, and third for beam number
+#' @param a amplitude, a \code{\link{raw}} array with dimensions matching \code{u}
+#' @param q quality, a \code{\link{raw}} array with dimensions matching \code{u}
+#' @param orientation a string indicating sensor orientation, e.g. \code{"upward"} and \code{"downward"}
+#' @param coordinate a string indicating the coordinate system, \code{"enu"}, \code{"beam"}, \code{"xy"}, or \code{"other"}
+#' @return An object of \code{\link{adp-class}}.
+#'
+#' @examples
+#' data(adp)
+#' t <- adp[["time"]]
+#' d <- adp[["distance"]]
+#' v <- adp[["v"]]
+#' a <- as.adp(time=t, distance=d, v=v)
+#' \dontrun{
+#' plot(a)
+#' }
+as.adp <- function(time, distance, v, a, q, orientation="upward", coordinate="enu")
+{
+    rval <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
+    if (!missing(v)) {
+        rval@metadata$numberOfBeams <- dim(v)[3]
+        rval@metadata$numberOfCells <- dim(v)[2]
+    }
+    rval@metadata$oceCoordinate <- coordinate
+    rval@metadata$orientation <- orientation
+    rval@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
+    rval
+}
 
 
 head.adp <- function(x, n = 6L, ...)
