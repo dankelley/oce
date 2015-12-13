@@ -6,8 +6,9 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@metadata$model <- NA
-              .Object@metadata$conductivityUnit <- "mS/cm"
-              .Object@metadata$temperatureUnit <- "ITS-90"
+              .Object@metadata$units <- list()
+              .Object@metadata$units$conductivityUnit <- "mS/cm"
+              .Object@metadata$units$temperatureUnit <- "ITS-90"
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())

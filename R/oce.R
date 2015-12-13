@@ -537,6 +537,11 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     oceDebug(debug, "oce.edit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
+    if (missing(item) && missing(value) && missing(action)) {
+        x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        oceDebug(debug, "} # oce.edit()\n", unindent=1)
+        return(x)
+    }
     if (!missing(item)) {
         if (missing(value))
             stop("must supply a 'value' for this 'item'")

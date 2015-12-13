@@ -139,7 +139,9 @@ oceSetMetadata <- function(object, name, value, note="")
 "conductivity<-" <- function(x, value)
 {
     x@data$conductivity <- value
-    x@metadata$conductivityUnit <- "ratio"
+    if (!("units" %in% names(x@metadata)))
+        x@metadata$units <- list()
+    x@metadata$units$conductivityUnit <- "ratio" # FIXME: handle other units (hard for <- though)
     x
 }
 

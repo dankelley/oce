@@ -18,9 +18,10 @@ setMethod(f="initialize",
               names <- names(.Object@data)
               .Object@metadata$names <- names
               .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
+              .Object@metadata$units <- list()
               ##.Object@metadata$filename <- filename
-              .Object@metadata$temperatureUnit <- if (!missing(temperatureUnit)) temperatureUnit else "ITS-90" # guess on the unit
-              .Object@metadata$conductivityUnit <- if (!missing(conductivityUnit)) conductivityUnit else "ratio" # guess on the unit
+              .Object@metadata$units$temperatureUnit <- if (!missing(temperatureUnit)) temperatureUnit else "ITS-90" # guess on the unit
+              .Object@metadata$units$conductivityUnit <- if (!missing(conductivityUnit)) conductivityUnit else "ratio" # guess on the unit
               .Object@metadata$pressureType <- if (!missing(pressureType)) pressureType else "sea" # guess on the unit
               .Object@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
               #.Object@metadata$latitude <- NA
@@ -159,6 +160,11 @@ setMethod(f="[[",
               } else if (i == "depth") {
                   ## FIXME-gsw: permit gsw version here
                   swDepth(x)
+              } else if (length(grep("Unit$", i))) {
+                  if ("units" %in% names(x@metadata))
+                      x@metadata$units[[i]]
+                  else
+                      x@metadata[[i]]
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
                   ## rval <- as(x, "oce")[[i, j, drop]]
@@ -276,8 +282,17 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         if ("cruise" %in% mnames) res@metadata$cruise <- o@metadata$cruise
         if ("station" %in% mnames) res@metadata$station <- o@metadata$station
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
-        if ("conductivityUnit" %in% mnames) res@metadata$conductivityUnit <- conductivityUnit
-        if ("temperatureUnit" %in% mnames) res@metadata$temperatureUnit <- temperatureUnit
+        if ("units" %in% mnames) {
+            message("handling units method 1 FIXME: delete this")
+            res@metadata$units$conductivityUnit <- o@metadata$units$conductivityUnit
+            res@metadata$units$temperatureUnit <- o@metadata$units$temperatureUnit
+        } else {
+            message("handling units method 1 FIXME: delete this")
+            if ("conductivityUnit" %in% mnames)
+                res@metadata$units$conductivityUnit <- o@metadata$conductivityUnit
+            if ("temperatureUnit" %in% mnames)
+                res@metadata$units$temperatureUnit <- o@metadata$temperatureUnit
+        }
         if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
         if ("scan" %in% dnames) res@data$scan <- d$scan
         if ("time" %in% dnames) res@data$time <- d$time
@@ -1872,7 +1887,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
                          systemUploadTime=systemUploadTime,
-                         temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
+                         units=list(temperatureUnit="ITS-90", conductivityUnit="ratio"),
+                         pressureType="sea",
                          ship=ship,
                          scientist=scientist,
                          institute=institute,
@@ -2048,7 +2064,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
-                         temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
+                         units=list(temperatureUnit="ITS-90", conductivityUnit="ratio"),
+                         pressureType="sea",
                          systemUploadTime=systemUploadTime,
                          ship=ship,
                          scientist=scientist,
@@ -2455,10 +2472,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      hexfilename=hexfilename, # from instrument
                      serialNumber=serialNumber,
                      serialNumberConductivity=serialNumberConductivity,
-                     conductivityUnit=conductivityUnit,
-                     temperatureUnit=temperatureUnit,
                      pressureType=pressureType,
-                     serialNumberTemperature=serialNumberTemperature,
+                     units=list(conductivityUnit=conductivityUnit,
+                                temperatureUnit=temperatureUnit),
                      systemUploadTime=systemUploadTime,
                      ship=ship,
                      scientist=scientist,
@@ -2477,7 +2493,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      names=col.names.inferred,
                      labels=col.names.inferred,
                      filename=filename)
-
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
@@ -2578,10 +2593,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
-    if ("IPTS-68" == metadata$temperatureUnit) {
+    if ("IPTS-68" == metadata$units$temperatureUnit) {
         res@data$temperature68 <- res@data$temperature
         res@data$temperature <- T90fromT68(res@data$temperature68)
-        res@metadata$temperatureUnit <- "ITS-90"
+        res@metadata$units$temperatureUnit <- "ITS-90"
         warning("converted temperature from IPTS-68 to ITS-90")
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }

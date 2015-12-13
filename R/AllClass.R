@@ -81,6 +81,8 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "metadata") {
                   return(x@metadata)
+              } else if (length(grep("Unit$", i))) {
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[i]] else x@metadata[[i]])
               } else if (i == "data") {
                   return(x@data)
               } else if (i == "processingLog") {
@@ -109,6 +111,11 @@ setMethod(f="[[<-",
                   index <- pmatch(i, names(x@data))
                   if (!is.na(index[1])) {
                       x@data[[index]] <- value
+                  } else if (length(grep("Unit$", i))) {
+                      if ("units" %in% names(x@metadata))
+                          x@metadata$units[[i]] <- value
+                      else
+                          x@metadata[[i]] <- value
                   } else if (i == "processingLog") {
                       if (0 == length(x@processingLog)) {
                           x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
