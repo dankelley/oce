@@ -1,5 +1,10 @@
-all: force
-	R --no-save < create_cm.R > create_cm.out
-	echo "NEXT,       cp cm.rda ../../data"
-force:
+what=cm
+all: create_$(what).out
+%.out: %.R
+	R --no-save < $< > $@
+clean:
+	-rm *~ *.rda *.out
+install:
+	cp $(what).rda ../../data
 
+	
