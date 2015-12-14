@@ -2466,32 +2466,31 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (!found.pressure && !found.depth)
         stop("no column named 'pressure', 'depth' or 'depSM'")
 
-    metadata <- list(header=header,
-                     type="SBE",
-                     hexfilename=hexfilename, # from instrument
-                     serialNumber=serialNumber,
-                     serialNumberConductivity=serialNumberConductivity,
-                     pressureType=pressureType,
-                     units=list(conductivityUnit=conductivityUnit,
-                                temperatureUnit=temperatureUnit),
-                     systemUploadTime=systemUploadTime,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=address,
-                     cruise=cruise,
-                     station=station,
-                     deploymentType="unknown",
-                     date=date,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=recovery,
-                     waterDepth=waterDepth, # if NA, will update later
-                     sampleInterval=sampleInterval,
-                     names=col.names.inferred,
-                     labels=col.names.inferred,
-                     filename=filename)
+    res@metadata$header <- header
+    res@metadata$type <- "SBE"
+    res@metadata$hexfilename <- hexfilename # from instrument
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$serialNumberConductivity <- serialNumberConductivity
+    res@metadata$pressureType <- pressureType
+    res@metadata$units <- list(conductivityUnit=conductivityUnit, temperatureUnit=temperatureUnit)
+    res@metadata$systemUploadTime <- systemUploadTime
+    res@metadata$ship <- ship
+    res@metadata$scientist <- scientist
+    res@metadata$institute <- institute
+    res@metadata$address <- address
+    res@metadata$cruise <- cruise
+    res@metadata$station <- station
+    res@metadata$deploymentType <- "unknown"
+    res@metadata$date <- date
+    res@metadata$startTime <- startTime
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$recovery <- recovery
+    res@metadata$waterDepth <- waterDepth # if NA, will update later
+    res@metadata$sampleInterval <- sampleInterval
+    res@metadata$names <- col.names.inferred
+    res@metadata$labels <- col.names.inferred
+    res@metadata$filename <- filename
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
@@ -2542,7 +2541,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res@metadata <- metadata # FIXME(dankelley 20151214): this breaks metadata$units; will take 1h coding to fix though
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {
@@ -2592,7 +2590,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
-    if ("IPTS-68" == metadata$units$temperatureUnit) { # FIXME(dankelley, 20151214) see above
+    if ("IPTS-68" == res@metadata$units$temperatureUnit) {
         res@data$temperature68 <- res@data$temperature
         res@data$temperature <- T90fromT68(res@data$temperature68)
         res@metadata$units$temperatureUnit <- "ITS-90"
