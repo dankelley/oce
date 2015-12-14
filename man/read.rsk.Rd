@@ -60,12 +60,12 @@
 
   Options 2-4 are mostly obsolete, and will be removed from future versions.
 
-  \emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and
-  that it is this value that is stored in the object returned by
-  \code{read.rsk}. This can be converted to conductivity ratio (which is what
-  many other instruments report) by dividing by 42.914, which will be necessary
-  in any seawater-related function that takes conductivity ratio as an argument
-  (see \dQuote{Examples}).
+  \emph{A note on conductivity.} RBR devices record conductivity in
+  mS/cm, and it is this value that is stored in the object returned by
+  \code{read.rsk}. This can be converted to conductivity ratio (which is
+  what many other instruments report) by dividing by 42.914, which will
+  be necessary in any seawater-related function that takes conductivity
+  ratio as an argument (see \dQuote{Examples}).
     
   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
   sea pressure plus atmospheric pressure), unlike most oceanographic instruments

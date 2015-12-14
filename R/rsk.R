@@ -334,6 +334,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ##from.keep <- from
     if (!missing(to))
         to.keep <- to
+    if ((as.numeric(to)-as.numeric(from)) <= 0)
+        stop("'from' must be greater than 'to'")
     by.keep <- by
     host.time <- 0
     rsk.time <- 0
@@ -365,12 +367,14 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ## code based on test files and personal communication with RBR:
         ##   2011-10-11 RBR-DEK send test file and schema documentation [preliminary]
         ##   2011-10-12 DEK-RBR query on ordering of time in 'datasets'
-        if (from != 1)
-            warning("cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead")
-        if (by != 1)
-            warning("cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead")
-        if (!missing(to))
-            warning("cannot (yet) handle argument 'to' for a ruskin file; using the whole file")
+        ## if (!inherits(from, 'POSIXt') & from != 1) {
+        ##     warning("cannot (yet) handle numeric argument 'from' for a ruskin file; using from=1 instead (or use POSIXt)")
+        ##     from <- 1
+        ## }
+        ## if (by != 1)
+        ##     warning("cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead")
+        ## if (!missing(to))
+        ##     warning("cannot (yet) handle numeric argument 'to' for a ruskin file; using the whole file (or use POSIXt)")
 
         ## Some, but not all, RSK files have "datasets". However, I've commented this code
         ## out because the result, ndatasets, is not used anywhere else.
@@ -422,11 +426,21 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         t1000 <- DBI::dbFetch(res, n=-1)[[1]]
         RSQLite::dbClearResult(res)
         time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+        if (is.numeric(from) & is.numeric(to)) {
+            from <- t1000[from]
+            to <- t1000[to]
+        } else if (inherits(from, 'POSIXt') & inherits(to, 'POSIXt')) {
+            from <- as.character(as.numeric(from)*1000)
+            to <- as.character(as.numeric(to)*1000)
+        } else {
+            warning('from= and to= have to be of the same class (either index or POSIXt)')
+        }
 
-        ## Second, get the data; we drop the first column beause we have
-        ## time already.
-        res <- DBI::dbSendQuery(con, "select * from data order by tstamp;")
+        ## Second, get the data;
+        res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
         data <- DBI::dbFetch(res, n=-1)[,-1, drop=FALSE]
+        time <- numberAsPOSIXct(as.numeric(data[,1]), type='unix')
+        data <- data[,-1, drop=FALSE]
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
@@ -487,10 +501,6 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         }
         rval@metadata$model <- model
         rval@metadata$serialNumber <- serialNumber
-        ## CR suggests to read "sampleInterval" but I cannot find it from the following
-        ##   echo ".dump" | sqlite3 cast4.rsk | grep -i sample
-        ## so I just infer it from the data
-        ## rval@metadata$sampleInterval <- median(diff(as.numeric(rval@data$time))) 
         rval@metadata$sampleInterval <- sampleInterval
         rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
         rval@metadata$pressureAtmospheric <- pressureAtmospheric
@@ -702,6 +712,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     rval
 }
+
 
 
 rskPatm <- function(x, dp=0.5)
