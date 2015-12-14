@@ -424,6 +424,17 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         t1000 <- DBI::dbFetch(res, n=-1)[[1]]
         RSQLite::dbClearResult(res)
         time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+        if (missing(to)) {
+            if (inherits(from, 'POSIXt')) {
+                to <- tail(time, 1)
+            } else if (inherits(from, 'character')) {
+                to <- format(tail(time, 1))
+            } else if (is.numeric(from)) {
+                to <- length(time)
+            } else {
+                stop("Unknown format for to= argument")
+            }
+        }
         if (is.numeric(from) & is.numeric(to)) {
             from <- t1000[from]
             to <- t1000[to]
