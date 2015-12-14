@@ -139,9 +139,9 @@ read.met <- function(file, type=NULL, skip,
     ## poor user, and convince the powers-that-be to settle on a single format
     ## and even (gasp) to document it.
     j <- grep("^Temp.*C.*$", names(rawData))[1]
-    temperature <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
-    pressure <- if (1 == length(j)) 10 * as.numeric(rawData[,j]) else rep(NA, ntime)
+    pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
     wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     speed <- wind * 1000 / 3600        # convert from km/h to m/s

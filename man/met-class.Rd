@@ -16,7 +16,7 @@
 
     \emph{Accessing values.} For an object named \code{m}, temperature may be
     accessed as \code{m[["time"]]}, which yields a vector.  Similarly pressure
-    is \code{m[["pressure"]]}.  The components of wind are stored in
+    is \code{m[["pressure"]]} in kPa.  The components of wind are stored in
     \emph{oceanographic} convention, i.e. the eastward component is available
     as \code{m[["u"]]} and the northward component is \code{m[["v"]]}.
     \code{m[["u"]]}, and wind direction is \code{m[["direction"]]}.  The
