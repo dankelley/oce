@@ -282,6 +282,7 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         if ("cruise" %in% mnames) res@metadata$cruise <- o@metadata$cruise
         if ("station" %in% mnames) res@metadata$station <- o@metadata$station
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
+        ## The source object might have units in metadata instead of in metadata$units
         if ("units" %in% mnames) {
             res@metadata$units$conductivityUnit <- o@metadata$units$conductivityUnit
             res@metadata$units$temperatureUnit <- o@metadata$units$temperatureUnit
@@ -2541,7 +2542,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res@metadata <- metadata
+    res@metadata <- metadata # FIXME(dankelley 20151214): this breaks metadata$units; will take 1h coding to fix though
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {
@@ -2591,7 +2592,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
-    if ("IPTS-68" == metadata$units$temperatureUnit) {
+    if ("IPTS-68" == metadata$units$temperatureUnit) { # FIXME(dankelley, 20151214) see above
         res@data$temperature68 <- res@data$temperature
         res@data$temperature <- T90fromT68(res@data$temperature68)
         res@metadata$units$temperatureUnit <- "ITS-90"

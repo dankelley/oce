@@ -517,7 +517,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         rval@metadata$model <- model
         rval@metadata$serialNumber <- serialNumber
         rval@metadata$sampleInterval <- sampleInterval
-        rval@metadata[["conductivityUnit"]] <- "mS/cm" # FIXME: will this work for all RBR rsks?
+        ## There is actually no need to set the conductivityUnit since new()
+        ## sets it, but do it anyway, as a placeholder to show where to do
+        ## this, in case some RBR devices use different units
+        rval@metadata$units$conductivityUnit <- "mS/cm" # FIXME: will this work for all RBR rsks?
         rval@metadata$pressureAtmospheric <- pressureAtmospheric
         rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
