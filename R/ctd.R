@@ -283,11 +283,9 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         if ("station" %in% mnames) res@metadata$station <- o@metadata$station
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
         if ("units" %in% mnames) {
-            message("handling units method 1 FIXME: delete this")
             res@metadata$units$conductivityUnit <- o@metadata$units$conductivityUnit
             res@metadata$units$temperatureUnit <- o@metadata$units$temperatureUnit
         } else {
-            message("handling units method 1 FIXME: delete this")
             if ("conductivityUnit" %in% mnames)
                 res@metadata$units$conductivityUnit <- o@metadata$conductivityUnit
             if ("temperatureUnit" %in% mnames)
