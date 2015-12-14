@@ -334,8 +334,6 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ##from.keep <- from
     if (!missing(to))
         to.keep <- to
-    if ((as.numeric(to)-as.numeric(from)) <= 0)
-        stop("'from' must be greater than 'to'")
     by.keep <- by
     host.time <- 0
     rsk.time <- 0
@@ -432,9 +430,14 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         } else if (inherits(from, 'POSIXt') & inherits(to, 'POSIXt')) {
             from <- as.character(as.numeric(from)*1000)
             to <- as.character(as.numeric(to)*1000)
+        } else if (inherits(from, 'character') & inherits(to, 'character')) {
+            from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
+            to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
         } else {
-            warning('from= and to= have to be of the same class (either index or POSIXt)')
+            warning('from= and to= have to be of the same class (either index, POSIXt, or character)')
         }
+        if ((as.numeric(to)-as.numeric(from)) <= 0)
+            stop("'to' must be greater than 'from'")
 
         ## Second, get the data;
         res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
