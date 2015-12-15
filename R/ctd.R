@@ -2825,6 +2825,7 @@ plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "depth", "sigmaTheta"),
                          eos=getOption("oceEOS", default="gsw"),
+                         lty=1,
                          xlab=NULL, ylab=NULL,
                          col='black',
                          col.salinity = "darkgreen",
@@ -2856,7 +2857,7 @@ plotProfile <- function (x,
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
-    plotJustProfile <- function(x, y, col="black", type="l",
+    plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug"))
@@ -2872,21 +2873,21 @@ plotProfile <- function (x,
             }
         }
         if (type == 'l') {
-            lines(x, y, col = col, lwd=lwd, ...)
+            lines(x, y, col = col, lwd=lwd, lty=lty, ...)
         } else if (type == 's') {
-            lines(x, y, col = col, lwd=lwd, type='s')
+            lines(x, y, col = col, lwd=lwd, lty=lty, type='s')
         } else if (type == 'p') {
             points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'o') {
-            lines(x, y, col=col, lwd=lwd, ...)
+            lines(x, y, col=col, lwd=lwd, lty=lty, ...)
             points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'b') {
-            lines(x, y, col=col, lwd=lwd, ...)
+            lines(x, y, col=col, lwd=lwd, lty=lty, ...)
             points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'n') {
             ; # skip it
         } else {
-            lines(x, y, col = col, lwd=lwd)
+            lines(x, y, col = col, lwd=lwd, lty=lty)
         }
         oceDebug(debug, "} # plotJustProfile\n")
     }                                  # plotJustProfile
@@ -2957,7 +2958,7 @@ plotProfile <- function (x,
 
     if (length(xtype) == length(y)) {
         if ('axes' %in% names(list(...))) {
-            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, ...)
             if (list(...)$axes) {
                 axis(3)
                 mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2965,7 +2966,7 @@ plotProfile <- function (x,
             }
             box()
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
@@ -2975,9 +2976,9 @@ plotProfile <- function (x,
         if (length(xtype) != length(y))
             stop("length(xtype) must match number of levels in the CTD object")
         if (add) {
-            lines(xtype, y, type=type, ...)
+            lines(xtype, y, type=type, lty=lty, ...)
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, lty=lty, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
@@ -2991,7 +2992,7 @@ plotProfile <- function (x,
         }
     } else if (xtype == "index") {
         index <- 1:length(x@data$pressure)
-        plot(index, x@data$pressure, ylim=ylim, col=col, xlab = "index", ylab = yname, type=type, xaxs=xaxs, yaxs=yaxs)
+        plot(index, x@data$pressure, ylim=ylim, col=col, lty=lty, xlab = "index", ylab = yname, type=type, xaxs=xaxs, yaxs=yaxs)
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
@@ -3006,7 +3007,7 @@ plotProfile <- function (x,
             densitylim <- range(x@data$sigmaTheta, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look], xlim=densitylim, ylim=ylim,
-             type = type, col = col.rho, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type = type, col = col.rho, lty=lty, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         ## lines(st[look], y[look])
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         ## FIXME: do next with resizable label; also for the N2
@@ -3024,7 +3025,7 @@ plotProfile <- function (x,
         par(new = TRUE)                ## FIXME: this probably won't work if add=TRUE
         if (missing(timelim))
             timelim <- range(time, na.rm=TRUE)
-        plot(time, y, xlim=timelim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs)
+        plot(time, y, xlim=timelim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs, lty=lty)
         axis(1, col=col.time, col.axis=col.time, col.lab=col.time)
         ## lines(time, y, lwd=lwd, col=col.time)
         if (know.time.unit) {
@@ -3053,7 +3054,7 @@ plotProfile <- function (x,
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look],
-             xlim=densitylim, ylim=ylim, col=col.rho,
+             xlim=densitylim, ylim=ylim, col=col.rho, lty=lty,
              type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == '[') {
@@ -3072,7 +3073,7 @@ plotProfile <- function (x,
         if (missing(dpdtlim))
             dpdtlim <- range(dpdt.sm$y)
         plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt,
-             xaxs=xaxs, yaxs=yaxs, ...)
+             xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == '[') {
@@ -3117,7 +3118,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
-                     xlim=Slim, ylim=ylim,
+                     xlim=Slim, ylim=ylim, lty=lty,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     if (eos == "gsw") {
@@ -3139,7 +3140,7 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(salinity, y, type=type, lwd=lwd,
+            plotJustProfile(salinity, y, type=type, lwd=lwd, lty=lty,
                             cex=cex, pch=pch, col=col, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -3184,7 +3185,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
             if (!add) {
                 plot(conductivity[look], y[look],
-                     xlim=Clim, ylim=ylim,
+                     xlim=Clim, ylim=ylim, lty=lty,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     ## Look up conductivity unit (issue 731)
@@ -3216,7 +3217,7 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(conductivity, y, type=type, lwd=lwd,
+            plotJustProfile(conductivity, y, type=type, lwd=lwd, lty=lty,
                             cex=cex, pch=pch, col=col, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -3237,11 +3238,11 @@ plotProfile <- function (x,
             if (!add) {
                 if (ylimGiven) {
                     plot(x@data[[xtype]][look], y[look],
-                         ylim=ylim,
+                         ylim=ylim, lty=lty,
                          type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
                     plot(x@data[[xtype]][look], y[look],
-                         ylim=rev(range(y[look])),
+                         ylim=rev(range(y[look])), lty=lty,
                          type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -3256,7 +3257,7 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd,
+            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, lty=lty,
                             cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -3265,11 +3266,11 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(Rrho) & !is.na(y)
         if (!add) {
             if (ylimGiven) {
-                plot(Rrho, y[look],
+                plot(Rrho, y[look], lty=lty,
                      xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             } else {
-                plot(Rrho, y[look],
+                plot(Rrho, y[look], lty=lty,
                      xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])),
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
@@ -3285,7 +3286,7 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col here, since no second axis to worry about
-        plotJustProfile(Rrho, y[look], type=type, lwd=lwd,
+        plotJustProfile(Rrho, y[look], type=type, lwd=lwd, lty=lty,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
@@ -3309,7 +3310,7 @@ plotProfile <- function (x,
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(x@data$temperature) & !is.na(y)
             if (!add) {
-                plot(temperature[look], y[look],
+                plot(temperature[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim,
                      type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (eos == "gsw")
@@ -3327,7 +3328,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd,
+            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd, lty=lty,
                             cex=cex, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -3348,7 +3349,7 @@ plotProfile <- function (x,
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(theta) & !is.na(y)
             if (!add) {
-                plot(theta[look], y[look],
+                plot(theta[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim,
                      type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
@@ -3371,7 +3372,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex,
+            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex, lty=lty,
                             col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -3382,9 +3383,9 @@ plotProfile <- function (x,
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
             if (densitylimGiven) {
-                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
             } else {
-                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
@@ -3405,7 +3406,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col, type=type, lwd=lwd,
+        plotJustProfile(st, y, col = col, type=type, lwd=lwd, lty=lty,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
@@ -3419,7 +3420,7 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         if (missing(densitylim))
             densitylim <- range(st, na.rm=TRUE)
-        plot(st[look], y[look],
+        plot(st[look], y[look], lty=lty,
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -3436,12 +3437,12 @@ plotProfile <- function (x,
         axis(2)
         box()
         if (type == 'l') {
-            lines(st, y, col = col.rho, lwd=lwd) 
+            lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
         } else if (type == 'p') {
             points(st, y, col = col.rho, pch=pch)
         } else {
             points(st, y, col = col.rho, pch=pch)
-            lines(st, y, col = col.rho, lwd=lwd) 
+            lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
         }
         par(new = TRUE)
         N2 <- swN2(x, df=df, eos=eos)
@@ -3453,18 +3454,18 @@ plotProfile <- function (x,
             warning("no valid N2 data")
             return(invisible())
         }
-        plot(N2[look], y[look],
+        plot(N2[look], y[look], lty=lty,
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
 
         if (type == 'l') {
-            lines(N2, y, col = col.N2, lwd=lwd) 
+            lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
         } else if (type == 'p') {
             points(N2, y, col = col.N2, pch=pch)
         } else {
             points(N2, y, col = col.N2, pch=pch)
-            lines(N2, y, col = col.N2, lwd=lwd) 
+            lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
         }
         if (getOption("oceUnitBracket") == '[') {
             mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
@@ -3482,7 +3483,7 @@ plotProfile <- function (x,
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         if (!add) {
-            plot(N2[look], y[look],
+            plot(N2[look], y[look], lty=lty, 
                  xlim=N2lim, ylim=ylim,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
@@ -3501,14 +3502,14 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
-        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd,
+        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, lty=lty, 
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
         if (!add) {
-            plot(spice[look], y[look],
+            plot(spice[look], y[look], lty=lty, 
                  ylim=ylim,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             mtext(resizableLabel("spice", "x"), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
@@ -3522,7 +3523,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=spice, y=y, type=type, lwd=lwd,
+        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, lty=lty, 
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg, 
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
@@ -3542,7 +3543,7 @@ plotProfile <- function (x,
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
-             xlim=Tlim, ylim=ylim, col = col.temperature,
+             xlim=Tlim, ylim=ylim, col = col.temperature, lty=lty,
              type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         if (is.null(getOption('plotProfileNoXLab'))) {
@@ -3557,7 +3558,7 @@ plotProfile <- function (x,
         par(new = TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(x@data$salinity) & !is.na(y)
         plot(salinity[look], y[look],
-             xlim=Slim, ylim=ylim, col = col.salinity,
+             xlim=Slim, ylim=ylim, col = col.salinity, lty=lty,
              type = type, xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
         if (is.null(getOption('plotProfileNoXLab'))) {
@@ -3579,7 +3580,7 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         if (!add) {
             plot(x@data[[xtype]][look], y[look],
-                 ylim=ylim,
+                 ylim=ylim, lty=lty,
                  type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
             mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
@@ -3592,14 +3593,14 @@ plotProfile <- function (x,
             box()
         }
         if (type == "l") {
-            lines(x@data[[w]], y, lwd=lwd, col=col)
+            lines(x@data[[w]], y, lwd=lwd, col=col, lty=lty)
         } else if (type == "p") {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty)
         } else if (type == "b" || type == "o") {
             lines(x@data[[w]], y, lwd=lwd, col=col)
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty)
         } else {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty)
         }
     }
     oceDebug(debug, "} # plotProfile()\n", unindent=1)

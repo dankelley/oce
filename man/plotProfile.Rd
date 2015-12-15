@@ -15,6 +15,7 @@
     ytype=c("pressure", "z", "depth", "sigmaTheta"),
     eos=getOption("oceEOS", default="gsw"),
     xlab=NULL, ylab=NULL,
+    lty=1, 
     col="black",
     col.salinity="darkgreen",
     col.temperature="red",
@@ -85,6 +86,7 @@
   \item{xlab}{optional label for x axis (at top of plot).}
   \item{ylab}{optional label for y axis.  Set to \code{""} to prevent labelling
     the axis.}
+  \item{lty}{line type for the profile.}
   \item{col}{colour for a general profile.}
   \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
   \item{col.temperature}{color for temperature (see \dQuote{Details}).}
