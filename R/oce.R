@@ -860,7 +860,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ODV\n")
         return("ctd/odv")
     }
-    if (grep("*.nc$", filename))
+    if (length(grep("*.nc$", filename)))
         return("netcdf")
     oceDebug(debug, "this is unknown\n")
     return("unknown")
