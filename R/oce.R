@@ -700,8 +700,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 }
                 ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE))
-                    return("argo")
+                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo") else return("netcdf")
             } else {
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
@@ -711,6 +710,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return("openstreetmap")
         } else if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
             return("gpx")
+        } else if (length(grep(".csv$", filename, ignore.case=TRUE))) {
+            someLines <- readLines(filename, 30)
+            if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
+                return("met") # FIXME: may be other things too ... not soo sure I like this
+            } else {
+                return("unknown")
+            }
         }
         file <- file(file, "r")
     }
@@ -860,8 +866,6 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ODV\n")
         return("ctd/odv")
     }
-    if (length(grep("*.nc$", filename)))
-        return("netcdf")
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
