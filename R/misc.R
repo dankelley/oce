@@ -1992,19 +1992,42 @@ oceConvolve <- oce.convolve
 #' data-file headers name the temperature column in exactly that way, however,
 #' and this function is provided to try to guess the names.
 #'
-#' NOTE: this function is just a place-holder as of 2015-12-16.
+#' NOTE: this function is not much more than a place-holder as of 2015-12-16,
+#' in the sense that it does very little and is not used by other functions.
 #'
 #' @param names a vector of character strings with original names
-#' @param scheme an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}
+#' @param scheme an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}, and if that is given, then \code{\link{ODFNames2oceNames}} is used to determine the return value.
+#'
+#' @return
+#' Vector of strings for the decoded names. If an unknown scheme is provided,
+#' this will just be \code{names}.
 decodeDataNames <- function(names, scheme)
 {
     schemeGiven <- !missing(scheme)
-    if (schemeGiven)
-        warning("not using scheme yet")
     rval <- names
-    ## temperature
-    col <- grep("temp", names, ignore.case=TRUE, useBytes=TRUE)
-    if (1 == length(col))
-        rval[col] <- "temperature"
+    if (!missing(scheme)) {
+        if (scheme == "ODF") {
+            rval <- ODFNames2oceNames(names)
+        } else if (scheme == "met") {
+            ## FIXME: capture the flags also
+            if (1 == length(i <- grep("^Temp.*C.*$", rval))) rval[i] <- "temperature"
+            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", rval))) rval[i] <- "pressure"
+            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", rval))) rval[i] <- "wind"
+            if (1 == length(i <- grep("^Wind.*deg.*$", rval))) rval[i] <- "direction"
+            if (1 == length(i <- grep("^Visibility.*km.*$", rval))) rval[i] <- "visibility"
+            if (1 == length(i <- grep("^Rel\\.Hum\\.\\.\\.\\.$", rval))) rval[i] <- "humidity"
+            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", rval))) rval[i] <- "dewPoint"
+            if (1 == length(i <- grep("^Wind\\.Chill$", rval))) rval[i] <- "windChill"
+            if (1 == length(i <- grep("^Weather$", rval))) rval[i] <- "weather"
+            if (1 == length(i <- grep("^Hmdx$", rval))) rval[i] <- "humidex"
+        } else {
+            warning("unknown scheme ", scheme)
+        }
+    } else {
+        ## temperature
+        col <- grep("temp", names, ignore.case=TRUE, useBytes=TRUE)
+        if (1 == length(col))
+            rval[col] <- "temperature"
+    }
     rval
 }

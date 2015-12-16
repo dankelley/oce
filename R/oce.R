@@ -975,11 +975,12 @@ read.oce <- function(file, ...)
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     if (type == "observatory")
         return(read.observatory(file, processingLog=processingLog, ...))
-    if (type == "landsat") {
+    if (type == "landsat")
         return(read.landsat(file, ...))
-    }
-    if (type == "netcdf") {
+    if (type == "netcdf")
         return(read.netcdf(file, ...))
+    if (type == "met") {
+        return(read.met(file, ...))
     }
     stop("unknown file type \"", type, "\"")
 }

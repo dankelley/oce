@@ -9,7 +9,11 @@ decodeDataNames(names, scheme)
 \arguments{
 \item{names}{a vector of character strings with original names}
 
-\item{scheme}{an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}}
+\item{scheme}{an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}, and if that is given, then \code{\link{ODFNames2oceNames}} is used to determine the return value.}
+}
+\value{
+Vector of strings for the decoded names. If an unknown scheme is provided,
+this will just be \code{names}.
 }
 \description{
 Try to guess data names from hints found in file headers
@@ -20,6 +24,7 @@ be used, e.g. \code{"temperature"} for in-situ temperature. Very few
 data-file headers name the temperature column in exactly that way, however,
 and this function is provided to try to guess the names.
 
-NOTE: this function is just a place-holder as of 2015-12-16.
+NOTE: this function is not much more than a place-holder as of 2015-12-16,
+in the sense that it does very little and is not used by other functions.
 }
 

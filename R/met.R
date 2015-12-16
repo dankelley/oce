@@ -24,11 +24,17 @@ setMethod(f="summary",
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
               showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
               showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
-              cat("* Statistics of subsample::\n")
               ndata <- length(object@data)
               threes <- matrix(nrow=ndata-1, ncol=3)
+              isTime <- names(object@data) == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              ii <- 1
               for (i in 2:ndata) { # skip time
-                  threes[i-1,] <- threenum(object@data[[i]])
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- if (is.factor(object@data[[i]][1])) rep(NA, 3) else threenum(object@data[[i]])
+                  ii <- ii + 1
               }
               rownames(threes) <- paste("   ", names(object@data)[-1])
               colnames(threes) <- c("Min.", "Mean", "Max.")
@@ -148,16 +154,22 @@ read.met <- function(file, type=NULL, skip,
     j <- grep("^Wind.*deg.*$", names(rawData))[1]
     direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     rpd <- atan2(1, 1) / 45            # radian/degree
+
+    names(rawData) <- decodeDataNames(names, "met")
+    rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
+
+
     ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
-    theta <- (90 - 10 * direction) * rpd 
+    theta <- (90 - 10 * rawData[["direction"]]) * rpd 
     ## Note the (-) to get from "wind from" to "wind speed towards"
-    u <- -speed * sin(theta)
-    v <- -speed * cos(theta)
-    zero <- is.na(direction) & wind == 0
-    u[zero] <- 0
-    v[zero] <- 0
-    res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v,
-                     wind=wind, direction=direction)
+    rawData[["u"]] <- -rawData[["speed"]] * sin(theta)
+    rawData[["v"]] <- -rawData[["speed"]] * cos(theta)
+    zero <- is.na(rawData[["direction"]]) & rawData[["wind"]] == 0
+    rawData[["u"]][zero] <- 0
+    rawData[["v"]][zero] <- 0
+    rawData[["time"]] <- time
+    res@data <- rawData #list(time=time, temperature=temperature, pressure=pressure, u=u, v=v,
+                     #wind=wind, direction=direction)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
