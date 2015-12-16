@@ -1983,3 +1983,28 @@ oce.convolve <- function(x, f, end=2)
 }
 oceConvolve <- oce.convolve
 
+
+#' Try to guess data names from hints found in file headers
+#'
+#' @details
+#' Interoperability between oce functions requires that standardized data names
+#' be used, e.g. \code{"temperature"} for in-situ temperature. Very few
+#' data-file headers name the temperature column in exactly that way, however,
+#' and this function is provided to try to guess the names.
+#'
+#' NOTE: this function is just a place-holder as of 2015-12-16.
+#'
+#' @param names a vector of character strings with original names
+#' @param scheme an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}
+decodeDataNames <- function(names, scheme)
+{
+    schemeGiven <- !missing(scheme)
+    if (schemeGiven)
+        warning("not using scheme yet")
+    rval <- names
+    ## temperature
+    col <- grep("temp", names, ignore.case=TRUE, useBytes=TRUE)
+    if (1 == length(col))
+        rval[col] <- "temperature"
+    rval
+}
