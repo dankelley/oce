@@ -1992,9 +1992,6 @@ oceConvolve <- oce.convolve
 #' data-file headers name the temperature column in exactly that way, however,
 #' and this function is provided to try to guess the names.
 #'
-#' NOTE: this function is not much more than a place-holder as of 2015-12-16,
-#' in the sense that it does very little and is not used by other functions.
-#'
 #' @param names a vector of character strings with original names
 #' @param scheme an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}, and if that is given, then \code{\link{ODFNames2oceNames}} is used to determine the return value.
 #'
