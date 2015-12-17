@@ -1993,7 +1993,9 @@ oceConvolve <- oce.convolve
 #' and this function is provided to try to guess the names.
 #'
 #' @param names a vector of character strings with original names
-#' @param scheme an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}, and if that is given, then \code{\link{ODFNames2oceNames}} is used to determine the return value.
+#' @param scheme an optional indication of the scheme that is employed. This may
+#' be \code{"ODF"}, in which case \code{\link{ODFNames2oceNames}} is used,
+#' or \code{"met"}, in which case some tentative code for met files is used.
 #'
 #' @return
 #' Vector of strings for the decoded names. If an unknown scheme is provided,

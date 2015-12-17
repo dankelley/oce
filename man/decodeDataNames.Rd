@@ -9,7 +9,9 @@ decodeDataNames(names, scheme)
 \arguments{
 \item{names}{a vector of character strings with original names}
 
-\item{scheme}{an optional indication of the scheme that is employed. The only option at the moment is \code{"ODF"}, and if that is given, then \code{\link{ODFNames2oceNames}} is used to determine the return value.}
+\item{scheme}{an optional indication of the scheme that is employed. This may
+be \code{"ODF"}, in which case \code{\link{ODFNames2oceNames}} is used,
+or \code{"met"}, in which case some tentative code for met files is used.}
 }
 \value{
 Vector of strings for the decoded names. If an unknown scheme is provided,
@@ -23,8 +25,5 @@ Interoperability between oce functions requires that standardized data names
 be used, e.g. \code{"temperature"} for in-situ temperature. Very few
 data-file headers name the temperature column in exactly that way, however,
 and this function is provided to try to guess the names.
-
-NOTE: this function is not much more than a place-holder as of 2015-12-16,
-in the sense that it does very little and is not used by other functions.
 }
 
