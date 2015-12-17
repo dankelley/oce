@@ -451,11 +451,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if ((as.numeric(to)-as.numeric(from)) <= 0)
             stop("'to' must be greater than 'from'")
 
-        ## Second, get the data;
+        ## Now, get only the specified time range
         res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
-        data <- DBI::dbFetch(res, n=-1)[,-1, drop=FALSE]
-        time <- numberAsPOSIXct(as.numeric(data[,1]), type='unix')
-        data <- data[,-1, drop=FALSE]
+        data <- DBI::dbFetch(res, n=-1)
+        time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
+        data <- data[,c(-1, -2), drop=FALSE] # drop the corrupted time column
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
