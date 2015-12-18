@@ -487,26 +487,26 @@ imagep <- function(x, y, z,
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
     oceDebug(debug, "range(z):", range(z, na.rm=TRUE), "\n")
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
-    # Handle decimation
-    if (!missing(decimate) && !(is.logical(decimate) && !decimate)) {
-        dim <- dim(z)
+    # Handle TRUE/FALSE decimation
+    dim <- dim(z)
+    if (is.logical(decimate) && decimate) {
         if (is.logical(decimate)) { # find value from image
             maxdim <- max(dim)
-            decimate <- max(as.integer(round(maxdim / 800)), 1)
-            oceDebug(debug, "set auto decimation\n")
+            decimate <- max(as.integer(round(maxdim / 400)), 1)
+            oceDebug(debug, "set auto decimation=", decimate, "\n")
         }
-        if (decimate < 1)
-            stop("decimate must be a positive integer or a logical value")
-        oceDebug(debug, "decimate:", decimate, "\n")
-        if (decimate > 1) {
-            ilook <- seq.int(1, dim[1], by=decimate)
-            jlook <- seq.int(1, dim[2], by=decimate)
-            oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
-            oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
-            x <- x[ilook]
-            y <- y[jlook]
-            z <- z[ilook, jlook]
-        }
+    }
+    if (decimate < 1)
+        stop("decimate must be a positive integer or a logical value")
+    oceDebug(debug, "decimate:", decimate, "\n")
+    if (decimate > 1) {
+        ilook <- seq.int(1, dim[1], by=decimate)
+        jlook <- seq.int(1, dim[2], by=decimate)
+        oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+        oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
+        x <- x[ilook]
+        y <- y[jlook]
+        z <- z[ilook, jlook]
     }
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
@@ -650,8 +650,8 @@ imagep <- function(x, y, z,
         }
     }
     if (!missing(breaks))
-        oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
-    oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
+        oceDebug(debug, "head(breaks): ", paste(head(breaks), collapse=" "), "\n")
+    oceDebug(debug, "head(col): ", paste(head(col), collapse=" "), "\n")
 
     ## issue 542: move this out from the drawPalette part of the next block
     if (missing(zlim) || is.null(zlim)) {
