@@ -236,6 +236,8 @@ drawPalette <- function(zlim, zlab="",
             par(mai=ifelse(pc$mai1f>0, pc$mai1f, 0))
         else
             par(mai=ifelse(pc$mai1>0, pc$mai1, 0))
+        oceDebug(debug, "A. par(mai=c(", paste(round(par('mai'),1), collapse=","), "))\n")
+        oceDebug(debug, "A. par(mar=c(", paste(round(par('mar'),1), collapse=","), "))\n")
         if (!breaksGiven) {
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             if (pos == 1 || pos == 3) {
@@ -271,6 +273,8 @@ drawPalette <- function(zlim, zlab="",
                 ##message("in drawPalette(), breaks and col follow:");
                 ##str(breaksOrig)
                 ##str(col)
+                oceDebug(debug, "B. par(mai=c(", paste(round(par('mai'),1), collapse=","), "))\n")
+                oceDebug(debug, "B. par(mar=c(", paste(round(par('mar'),1), collapse=","), "))\n")
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
             } else {
