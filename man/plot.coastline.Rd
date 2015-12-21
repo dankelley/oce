@@ -22,6 +22,7 @@
      axes=TRUE, cex.axis=par('cex.axis'),
      add=FALSE, inset=FALSE,
      geographical=0,
+     longitudelim, latitudelim,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -48,7 +49,8 @@
       then any provided value of \code{asp} is ignored, and instead the plot
       aspect ratio is computed based on the center latitude.  If
       \code{clongitude} and \code{clatitude} are provided, then \code{span}
-      must also be provided.}
+      must also be provided, and in this case, it is not permitted
+      to also specify \code{longitudelim} and \code{latitudelim}.}
   \item{span}{optional suggested diagonal span of the plot, in kilometers.
       The plotted span is usually close to the suggestion, although the details
       depend on the plot aspect ratio and other factors, so some adjustment may
@@ -113,6 +115,10 @@
       values being in decreasing order within the southern and western
       hemispheres.  If \code{geographical=2}, the signs are dropped and the
       axes are labelled with degrees, minutes and seconds, as appropriate.}
+  \item{longitudelim}{this and \code{latitudelim} provide a second way to
+      suggest plot ranges. Note that these may not be supplied if
+      \code{clongitude}, \code{clatitude} and \code{span} are given.}
+  \item{latitudelim}{see \code{longitudelim}.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For

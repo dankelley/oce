@@ -78,6 +78,7 @@ setMethod(f="plot",
                                axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE, inset=FALSE,
                                geographical=0,
+                               longitudelim, latitudelim, # for old usage
                                debug=getOption("oceDebug"),
                                ...)
           {
@@ -90,6 +91,18 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="", unindent=1)
+              if (!missing(longitudelim) || !missing(latitudelim)) {
+                  if (missing(longitudelim) || missing(latitudelim))
+                      stop("if longitudelim or latitudelim are given, both must be given")
+                  if (!missing(clongitude) || !missing(clatitude) || !missing(span))
+                      stop("if longitudelim or latitudelim are given, must not supply clongitude, clatitude, or span")
+                  clongitude <- mean(longitudelim)
+                  clatitude <- mean(latitudelim)
+                  span <- geodDist(min(longitudelim), min(latitudelim), max(longitudelim), max(latitudelim))
+                  warning("plot.coastline() converting longitudelim and latitudelim to clongitude=",
+                          round(clongitude, 4),
+                          ", clatitude=", round(clatitude, 4), " and span=", round(span, 0), "\n")
+              }
               if (!is.null(projection)) {
                   if (missing(span))
                       span <- 1000
