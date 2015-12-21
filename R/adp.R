@@ -1,12 +1,21 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 setMethod(f="initialize",
           signature="adp",
-          definition=function(.Object, time, distance, v, a, q) {
+          definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {
               if (!missing(time)) .Object@data$time <- time
-              if (!missing(distance)) .Object@data$distance <- distance
-              if (!missing(v)) .Object@data$v <- v
+              if (!missing(distance)) {
+                  .Object@data$distance <- distance
+                  .Object@metadata$cellSize <- tail(diff(distance), 1) # first one has blanking, perhaps
+              }
+              if (!missing(v)) {
+                  .Object@data$v <- v
+                  .Object@metadata$numberOfBeams <- dim(v)[3]
+                  .Object@metadata$numberOfCells <- dim(v)[2]
+              }
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
+              .Object@metadata$oceCoordinate <- oceCoordinate # FIXME: should check that it is allowed
+              .Object@metadata$orientation  <- orientation # FIXME: should check that it is allowed
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'adp' object"
               return(.Object)
