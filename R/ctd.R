@@ -18,10 +18,9 @@ setMethod(f="initialize",
               names <- names(.Object@data)
               .Object@metadata$names <- names
               .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
-              .Object@metadata$units <- list()
               ##.Object@metadata$filename <- filename
-              .Object@metadata$units$temperatureUnit <- if (!missing(temperatureUnit)) temperatureUnit else "ITS-90" # guess on the unit
-              .Object@metadata$units$conductivityUnit <- if (!missing(conductivityUnit)) conductivityUnit else "ratio" # guess on the unit
+              .Object@metadata$units$temperature <- if (!missing(temperatureUnit)) temperatureUnit else "ITS-90" # guess on the unit
+              .Object@metadata$units$conductivity <- if (!missing(conductivityUnit)) conductivityUnit else "ratio" # guess on the unit
               .Object@metadata$pressureType <- if (!missing(pressureType)) pressureType else "sea" # guess on the unit
               .Object@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
               #.Object@metadata$latitude <- NA
@@ -284,13 +283,13 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
         ## The source object might have units in metadata instead of in metadata$units
         if ("units" %in% mnames) {
-            res@metadata$units$conductivityUnit <- o@metadata$units$conductivityUnit
-            res@metadata$units$temperatureUnit <- o@metadata$units$temperatureUnit
+            res@metadata$units$conductivity <- o@metadata$units$conductivity
+            res@metadata$units$temperature <- o@metadata$units$temperature
         } else {
-            if ("conductivityUnit" %in% mnames)
-                res@metadata$units$conductivityUnit <- o@metadata$conductivityUnit
+            if ("conductivity" %in% mnames)
+                res@metadata$units$conductivity <- o@metadata$conductivity
             if ("temperatureUnit" %in% mnames)
-                res@metadata$units$temperatureUnit <- o@metadata$temperatureUnit
+                res@metadata$units$temperature <- o@metadata$temperature
         }
         if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
         if ("scan" %in% dnames) res@data$scan <- d$scan

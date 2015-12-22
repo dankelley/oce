@@ -6,7 +6,6 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@metadata$model <- NA
-              .Object@metadata$units <- list()
               .Object@metadata$units$conductivityUnit <- "mS/cm"
               .Object@metadata$units$temperatureUnit <- "ITS-90"
               .Object@metadata$pressureType <- "absolute"

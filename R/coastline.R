@@ -38,11 +38,18 @@ setMethod(f="summary",
               cat("* Statistics of subsample::\n\n", ...)
               ndata <- length(object@data)
               threes <- matrix(nrow=ndata, ncol=3)
-              for (i in 1:ndata)
+              labels <- names(object@data)
+              units <- object@metadata$units[labels] # this hooks up units with values
+              unitsKnown <- length(units) > 0
+              for (i in 1:ndata) {
                   threes[i,] <- threenum(object@data[[i]])
-              rownames(threes) <- paste("   ", names(object@data))
+                  if (unitsKnown)
+                      labels[i] <- paste(labels[i], " [", units[[labels[i]]], "]", sep="")
+              }
+              rownames(threes) <- paste('  ', labels)
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
+              print(threes)
+              cat("\n",...)
               processingLogShow(object)
           })
 
