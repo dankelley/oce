@@ -161,7 +161,7 @@ setMethod(f="[[",
                   swDepth(x)
               } else if (length(grep("Unit$", i))) {
                   if ("units" %in% names(x@metadata))
-                      x@metadata$units[[i]]
+                      x@metadata$units[[gsub("Unit$", "", i)]]
                   else
                       x@metadata[[i]]
               } else {
@@ -1885,7 +1885,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
                          systemUploadTime=systemUploadTime,
-                         units=list(temperatureUnit="ITS-90", conductivityUnit="ratio"),
+                         units=list(temperature="ITS-90", conductivity="ratio"),
                          pressureType="sea",
                          ship=ship,
                          scientist=scientist,
@@ -2062,7 +2062,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         metadata <- list(header=header,
                          filename=filename, # provided to this routine
                          filename.orig=filename.orig, # from instrument
-                         units=list(temperatureUnit="ITS-90", conductivityUnit="ratio"),
+                         units=list(temperature="ITS-90", conductivity="ratio"),
                          pressureType="sea",
                          systemUploadTime=systemUploadTime,
                          ship=ship,
@@ -2471,7 +2471,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res@metadata$serialNumber <- serialNumber
     res@metadata$serialNumberConductivity <- serialNumberConductivity
     res@metadata$pressureType <- pressureType
-    res@metadata$units <- list(conductivityUnit=conductivityUnit, temperatureUnit=temperatureUnit)
+    res@metadata$units <- list(conductivity=conductivityUnit, temperature=temperatureUnit)
     res@metadata$systemUploadTime <- systemUploadTime
     res@metadata$ship <- ship
     res@metadata$scientist <- scientist
@@ -2589,10 +2589,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
-    if ("IPTS-68" == res@metadata$units$temperatureUnit) {
+    if ("IPTS-68" == res@metadata$units$temperature) {
         res@data$temperature68 <- res@data$temperature
         res@data$temperature <- T90fromT68(res@data$temperature68)
-        res@metadata$units$temperatureUnit <- "ITS-90"
+        res@metadata$units$temperature <- "ITS-90"
         warning("converted temperature from IPTS-68 to ITS-90")
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }

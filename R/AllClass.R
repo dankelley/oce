@@ -83,7 +83,7 @@ setMethod(f="[[",
                   return(x@metadata)
               } else if (length(grep("Unit$", i))) {
                   ## Permit two ways of storing units, the second archaic and kept to handle old objects
-                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[i]] else x@metadata[[i]])
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
               } else if (i == "data") {
                   return(x@data)
               } else if (i == "processingLog") {
@@ -114,7 +114,7 @@ setMethod(f="[[<-",
                       x@data[[index]] <- value
                   } else if (length(grep("Unit$", i))) {
                       if ("units" %in% names(x@metadata))
-                          x@metadata$units[[i]] <- value
+                          x@metadata$units[[gsub("Unit$", "", i)]] <- value
                       else
                           x@metadata[[i]] <- value
                   } else if (i == "processingLog") {
