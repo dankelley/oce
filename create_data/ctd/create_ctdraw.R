@@ -4,7 +4,7 @@ library(oce)
 ctdRaw <- read.oce("BED0302.CNV")
 ctdRaw <- oce.edit(ctdRaw, "startTime", ctdRaw[["systemUploadTime"]],
                    reason="startTime is not in file", person="Dan Kelley")
-ctdRaw <- oce.edit(ctdRaw, "temperature", T90fromT48(ctdRaw[["temperature"]]),
+ctdRaw <- oce.edit(ctdRaw, "temperature", T90fromT68(ctdRaw[["temperature"]]),
                    reason="File uses old IPTS-68 convention", person="Dan Kelley")
 ## oce.edit() will not let us edit within 'units'
 ctdRaw@metadata$units$temperatureUnit <- "ITS-90"

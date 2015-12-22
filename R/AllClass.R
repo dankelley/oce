@@ -2,7 +2,7 @@ setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(),
+         prototype=list(metadata=list(filename="", units=list()),
                         data=list(),
                         processingLog=list()))
 
@@ -82,6 +82,7 @@ setMethod(f="[[",
               if (i == "metadata") {
                   return(x@metadata)
               } else if (length(grep("Unit$", i))) {
+                  ## Permit two ways of storing units, the second archaic and kept to handle old objects
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[i]] else x@metadata[[i]])
               } else if (i == "data") {
                   return(x@data)
