@@ -121,13 +121,13 @@ read.met <- function(file, type=NULL, skip,
     if (missing(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
-    res@metadata <- list(latitude=latitude,
-                         longitude=longitude,
-                         elevation=elevation,
-                         climateIdentifier=climateIdentifier,
-                         WMOIdentifier=WMOIdentifier,
-                         TCIdentifier=TCIdentifier,
-                         filename=filename)
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$elevation <- elevation
+    res@metadata$climateIdentifier <- climateIdentifier
+    res@metadata$WMOIdentifier <- WMOIdentifier
+    res@metadata$TCIdentifier <- TCIdentifier
+    res@metadata$filename <- filename
     rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
     time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
     ntime <- length(time)

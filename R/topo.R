@@ -1,9 +1,10 @@
 setMethod(f="initialize",
           signature="topo",
-          definition=function(.Object,longitude,latitude,z,filename="") {
+          definition=function(.Object,longitude,latitude,z,filename="", units) {
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(z)) .Object@data$z <- z
+              if (!missing(units)) .Object@metadata$units <- units
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'topo' object"
@@ -409,20 +410,22 @@ read.topo <- function(file, ...)
         z <- t(zz[dim(zz)[1]:1,])
         if (!is.na(missingValue))
             z[z == missingValue] <- NA
-        rval <- as.topo(longitude, latitude, z, filename=file)
+        rval <- as.topo(longitude, latitude, z, filename=file) # FIXME: add units here
     }
     rval@processingLog <- processingLogAppend(rval@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
-as.topo <- function(longitude, latitude, z, filename="")
+as.topo <- function(longitude, latitude, z, units, filename="")
 {
     if (inherits(longitude, "bathy")) {
         bathy <- longitude
         longitude <- as.numeric(rownames(bathy))
         latitude <- as.numeric(colnames(bathy))
         z <- as.matrix(bathy)
+        if ("units" %in% names(bathy@metadata))
+            units <- bathy@metadata$units
     }
     ncols <- length(longitude)
     nrows <- length(latitude)
@@ -433,9 +436,9 @@ as.topo <- function(longitude, latitude, z, filename="")
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
-    rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename)
+    rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
     rval@processingLog <- processingLogAppend(rval@processingLog,
-                                        paste(deparse(match.call()), sep="", collapse=""))
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

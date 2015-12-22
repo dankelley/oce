@@ -76,6 +76,13 @@ setMethod(f="summary",
               processingLogShow(object)
           })
 
+ncdfFixMatrix <- function(x)
+{
+    if (length(dim(x)) == 1)
+        x <- as.vector(x)
+    x
+}
+
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
@@ -146,14 +153,14 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
-    t0s <- ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME")
+    t0s <- as.vector(ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME"))
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
-    julianDayTime <- ncdf4::ncvar_get(file, "JULD")
+    julianDayTime <- as.vector(ncdf4::ncvar_get(file, "JULD"))
     time <- t0 + julianDayTime * 86400
-    longitude <- ncdf4::ncvar_get(file, "LONGITUDE")
+    longitude <- ncdfFixMatrix(ncdf4::ncvar_get(file, "LONGITUDE"))
     longitudeNA <- ncdf4::ncatt_get(file, "LONGITUDE","_FillValue")$value
     longitude[longitude == longitudeNA] <- NA
-    latitude <- ncdf4::ncvar_get(file, "LATITUDE")
+    latitude <- ncdfFixMatrix(ncdf4::ncvar_get(file, "LATITUDE"))
     latitudeNA <- ncdf4::ncatt_get(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
     salinity <- ncdf4::ncvar_get(file, "PSAL")
@@ -162,6 +169,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     temperature <- ncdf4::ncvar_get(file, "TEMP")
     temperatureNA <- ncdf4::ncatt_get(file, "TEMP","_FillValue")$value
     temperature[temperature == temperatureNA] <- NA
+
+
     pressure <- ncdf4::ncvar_get(file, "PRES")
     pressureNA <- ncdf4::ncatt_get(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
@@ -176,6 +185,16 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res <- new("argo", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
+    if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
+        res@metadata$units$temperature <- "ITS-90"
+    if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))
+        res@metadata$units$salinity <- "PSU"
+    if (1 == length(grep("east", ncdf4::ncatt_get(file, "LONGITUDE", "units")$value, ignore.case=TRUE)))
+        res@metadata$units$longitude <- "degree east"
+    if (1 == length(grep("north", ncdf4::ncatt_get(file, "LATITUDE", "units")$value, ignore.case=TRUE)))
+        res@metadata$units$latitude <- "degree north"
+    if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES", "units")$value, ignore.case=TRUE)))
+        res@metadata$units$pressure <- "decibar"
     res@metadata$id <- if (!missing(id)) id else NA
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res

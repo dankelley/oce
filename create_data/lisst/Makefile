@@ -1,4 +1,4 @@
-what=argo
+what=lisst
 all: create_$(what).out
 %.out: %.R
 	R --no-save < $< > $@
