@@ -713,7 +713,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".csv$", filename, ignore.case=TRUE))) {
             someLines <- readLines(filename, 30)
             if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
-                return("met") # FIXME: may be other things too ... not soo sure I like this
+                return("met") # FIXME: may be other things too ...
+            } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
+                return("sealevel")
             } else {
                 return("unknown")
             }
