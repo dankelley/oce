@@ -16,7 +16,7 @@ for (name in names) {
                 cat(name, "@metadata$units: ", paste(names(x@metadata$units), collapse=" "), "\n", sep="") else
                     cat(name, "@metadata$units exists but has no contents\n", sep="")
         } else {
-            cat(name, "@metadata has no 'units' item. FIXME: UPDATE THIS FILE\n", sep="")
+            cat("**FIXME** ", name, "@metadata has no 'units' item. FIXME: UPDATE THIS FILE\n", sep="")
         }
     } else {
         cat(name, "has no metadata so nothing to check\n")
