@@ -163,11 +163,9 @@ setMethod(f="subset",
                       station[[i]] <- x@data$station[[ii]]
                   }
                   data <- list(station=station)
-                  metadata <- x@metadata
-                  metadata$stationId <- stn
-                  metadata$longitude <- lon
-                  metadata$latitude <- lat
-                  rval@metadata <- metadata
+                  rval@metadata$stationId <- stn
+                  rval@metadata$longitude <- lon
+                  rval@metadata$latitude <- lat
                   rval@data <- data
                   rval@processingLog <- x@processingLog
                   rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
@@ -214,14 +212,14 @@ setMethod(f="subset",
                               j <- j + 1
                           }
                       }
-                      data <- list(station=station)
-                      metadata <- list(header=x@metadata$header,
-                                       sectionId=x@metadata$sectionId,
-                                       stationId=stn,
-                                       longitude=lon, latitude=lat)
                       rval <- new('section')
+                      rval@metadata$station <- station
+                      rval@metadata$header <- x@metadata$header
+                      rval@metadata$sectionId <- x@metadata$sectionId
+                      rval@metadata$stationId <- stn
+                      rval@metadata$longitude <- lon
+                      rval@metadata$latitude <- lat
                       rval@data <- data
-                      rval@metadata <- metadata
                       rval@processingLog <- x@processingLog
                   } else {
                       n <- length(x@data$station)
@@ -1365,13 +1363,17 @@ read.section <- function(file, directory, sectionId="", flags,
             warning("station ", i, " has no data\n")
 	station[[i]] <- thisStation
     }
-    data <- list(station=station)
-    metadata <- list(header=header,sectionId=sectionId,stationId=stn,longitude=lon,latitude=lat,date=time+tref,filename=filename)
+    res@metadata$header <- header
+    res@metadata$sectionId <- sectionId
+    res@metadata$stationId <- stn
+    res@metadata$longitude <- lon
+    res@metadata$latitude <- lat
+    res@metadata$date <- time+tref
+    res@metadata$filename <- filename
+    res@data <- list(station=station)
     if (missing(processingLog))
 	processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res@metadata <- metadata
-    res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)

@@ -2059,31 +2059,30 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ## catch e.g. -999 sometimes used for water depth's missing value
         if (is.finite(waterDepth) && waterDepth <= 0)
             waterDepth <- NA
-        metadata <- list(header=header,
-                         filename=filename, # provided to this routine
-                         filename.orig=filename.orig, # from instrument
-                         units=list(temperature="ITS-90", conductivity="ratio"),
-                         pressureType="sea",
-                         systemUploadTime=systemUploadTime,
-                         ship=ship,
-                         scientist=scientist,
-                         institute=institute,
-                         address=address,
-                         cruise=NULL,
-                         station=station,
-                         deploymentType="unknown",
-                         date=date,
-                         startTime=startTime,
-                         latitude=latitude,
-                         longitude=longitude,
-                         recovery=recovery,
-                         waterDepth=waterDepth,
-                         sampleInterval=sampleInterval,
-                         names=names,
-                         labels=labels,
-                         src=filename)
+        res@metadata$header <- header
+        res@metadata$filename <- filename # provided to this routine
+        res@metadata$filename.orig <- filename.orig # from instrument
+        res@metadata$units <- list(temperature="ITS-90", conductivity="ratio")
+        res@metadata$pressureType <- "sea"
+        res@metadata$systemUploadTime <- systemUploadTime
+        res@metadata$ship <- ship
+        res@metadata$scientist <- scientist
+        res@metadata$institute <- institute
+        res@metadata$address <- address
+        res@metadata$cruise <- NULL
+        res@metadata$station <- station
+        res@metadata$deploymentType <- "unknown"
+        res@metadata$date <- date
+        res@metadata$startTime <- startTime
+        res@metadata$latitude <- latitude
+        res@metadata$longitude <- longitude
+        res@metadata$recovery <- recovery
+        res@metadata$waterDepth <- waterDepth
+        res@metadata$sampleInterval <- sampleInterval
+        res@metadata$names <- names
+        res@metadata$labels <- labels
+        res@metadata$src <- filename
     }
-    res@metadata <- metadata
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

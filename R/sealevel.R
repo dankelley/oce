@@ -119,26 +119,25 @@ as.sealevel <- function(elevation,
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
     if (is.na(deltat) | deltat <= 0)
         deltat <- 1
-    metadata <- list(filename="",
-                     header=header,
-                     year=year,
-                     stationNumber=stationNumber,
-                     stationVersion=stationVersion,
-                     stationName=stationName,
-                     region=region,
-                     latitude=latitude,
-                     longitude=longitude,
-                     GMTOffset=GMTOffset,
-                     decimationMethod=decimationMethod,
-                     referenceOffset=referenceOffset,
-                     referenceCode=referenceCode,
-                     units=units,
-                     n=length(t),
-                     deltat=deltat)
+    rval@metadata$filename <- ""
+    rval@metadata$header <- header
+    rval@metadata$year <- year
+    rval@metadata$stationNumber <- stationNumber
+    rval@metadata$stationVersion <- stationVersion
+    rval@metadata$stationName <- stationName
+    rval@metadata$region <- region
+    rval@metadata$latitude <- latitude
+    rval@metadata$longitude <- longitude
+    rval@metadata$GMTOffset <- GMTOffset
+    rval@metadata$decimationMethod <- decimationMethod
+    rval@metadata$referenceOffset <- referenceOffset
+    rval@metadata$referenceCode <- referenceCode
+    rval@metadata$units <- units
+    rval@metadata$n <- length(t)
+    rval@metadata$deltat <- deltat
     logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
     rval@data$elevation <- elevation
     rval@data$time <- time
-    rval@metadata <- metadata
     rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
     rval
 }
@@ -462,27 +461,26 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     num.missing <- sum(is.na(elevation))
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
     data <- data.frame(time=time, elevation=elevation)
-    metadata <- list(filename=filename,
-                     header=header,
-                     year=year,
-                     stationNumber=stationNumber,
-                     stationVersion=stationVersion,
-                     stationName=stationName,
-                     region=region,
-                     latitude=latitude,
-                     longitude=longitude,
-                     GMTOffset=GMTOffset,
-                     decimationMethod=decimationMethod,
-                     referenceOffset=referenceOffset,
-                     referenceCode=referenceCode,
-                     units=NA,
-                     n=length(time),
-                     deltat=as.numeric(difftime(time[2], time[1], units="hours")))
+    rval@metadata$filename <- filename
+    rval@metadata$header <- header
+    rval@metadata$year <- year
+    rval@metadata$stationNumber <- stationNumber
+    rval@metadata$stationVersion <- stationVersion
+    rval@metadata$stationName <- stationName
+    rval@metadata$region <- region
+    rval@metadata$latitude <- latitude
+    rval@metadata$longitude <- longitude
+    rval@metadata$GMTOffset <- GMTOffset
+    rval@metadata$decimationMethod <- decimationMethod
+    rval@metadata$referenceOffset <- referenceOffset
+    rval@metadata$referenceCode <- referenceCode
+    rval@metadata$units <- NA
+    rval@metadata$n <- length(time)
+    rval@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
     if (missing(processingLog))
         processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
     rval@data$elevation <- elevation
     rval@data$time <- time
-    rval@metadata <- metadata
     rval@processingLog <- processingLogAppend(rval@processingLog,
                                               paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     rval

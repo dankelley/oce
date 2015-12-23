@@ -8,7 +8,7 @@ setMethod(f="initialize",
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
-              .Object@metadata$deploymentType <- "HUHunknown" # see ctd
+              .Object@metadata$deploymentType <- "" # see ctd
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'odf' object"
               return(.Object)
@@ -426,29 +426,31 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
-
-    metadata <- list(header=NULL, # FIXME
-                     type=type,        # only odt
-                     model=model,      # only odt
-                     serialNumber=serialNumber,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=NULL,
-                     cruise=cruise,
-                     station=station,
-                     countryInstituteCode=countryInstituteCode, # ODF only
-                     cruiseNumber=cruiseNumber, # ODF only
-                     deploymentType=deploymentType, # used by CTD also
-                     date=startTime,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=NULL,
-                     waterDepth=waterDepth, # this is not the sensor depth
-                     depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
-                     sampleInterval=NA,
-                     filename=filename)
+    res <- new("odf")
+    res@metadata$header <- NULL
+    res@metadata$type <- type
+    res@metadata$model <- model
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$ship <- ship
+    res@metadata$scientist <- scientist
+    res@metadata$institute <- institute
+    res@metadata$address <- NULL
+    res@metadata$cruise <- cruise
+    res@metadata$station <- station
+    res@metadata$countryInstituteCode <- countryInstituteCode
+    res@metadata$cruiseNumber <- cruiseNumber
+    res@metadata$deploymentType <- deploymentType
+    res@metadata$date <- startTime
+    res@metadata$startTime <- startTime
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$recovery <- NULL
+    res@metadata$waterDepth <- waterDepth
+    res@metadata$depthMin <- depthMin
+    res@metadata$depthMax <- depthMax
+    res@metadata$sounding <- sounding
+    res@metadata$sampleInterval <- NA
+    res@metadata$filename <- filename
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after determining metadata\n", Sys.time()-t0))
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
@@ -468,11 +470,10 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if ("time" %in% names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after converting ODF time to R time\n", Sys.time()-t0))
-    metadata$names <- names
-    metadata$labels <- names
+    res@metadata$names <- names
+    res@metadata$labels <- names
     res <- new("odf")
     res@data <- as.list(data)
-    res@metadata <- metadata
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
     res

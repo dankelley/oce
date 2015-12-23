@@ -14,8 +14,9 @@ setMethod(f="show",
 
 setMethod(f="initialize",
           signature="landsat",
-          definition=function(.Object,filename="") {
-              .Object@metadata$filename <- filename
+          definition=function(.Object, filename) {
+              if (!missing(filename))
+                  .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'landsat' object"
               return(.Object)
@@ -38,7 +39,6 @@ setMethod(f="summary",
                       dim <- dim(d$lsb)
                       cat(sprintf("*     band %s has dim=c(%d,%d)\n",
                                   datanames[b], dim[1], dim[2]))
-                  } else {
                   }
               }
 
@@ -566,7 +566,8 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     }
     band <- band2
     oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
-    rval@metadata <- header
+    for (name in names(header))
+        rval@metadata[[name]] <- header[[name]]
     rval@metadata[["spacecraft"]] <- header$spacecraft
     rval@metadata[["id"]] <- header$id
     rval@metadata[["emissivity"]] <- emissivity

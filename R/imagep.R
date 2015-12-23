@@ -493,11 +493,13 @@ imagep <- function(x, y, z,
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
-    if (is.logical(decimate) && decimate) {
-        if (is.logical(decimate)) { # find value from image
+    if (is.logical(decimate)) {
+        if (decimate) {
             maxdim <- max(dim)
             decimate <- max(as.integer(round(maxdim / 400)), 1)
             oceDebug(debug, "set auto decimation=", decimate, "\n")
+        } else {
+            decimate <- 1
         }
     }
     if (decimate < 1)

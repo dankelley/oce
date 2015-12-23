@@ -1,0 +1,15 @@
+library(oce)
+try(source("~/src/oce/R/lobo.R"))
+if (!length(dir(".", "lobo.dat"))) {
+    cat("Downloading lobo.dat and creating lobo.rda\n")
+    download.file("http://lobo.satlantic.com/cgi-data/nph-data.cgi?min_date=20070101&max_date=20121024&y=salinity,temperature,weather_temp", "lobo.dat")
+}
+loboORIG <- read.lobo("lobo.dat")
+start <- as.POSIXct("2009-03-01 00:00:00", tz="UTC")
+end <- as.POSIXct("2009-04-01 23:00:00", tz="UTC")
+str(lobo)
+lobo <- subset(loboORIG, start <= time & time <= end)
+str(lobo)
+save(lobo, file="lobo.rda")
+library(tools)
+tools::resaveRdaFiles("lobo.rda")

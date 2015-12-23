@@ -504,7 +504,9 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ymin <- readBin(buf[45+0:7], "double", n=1, size=8, endian="little")
     xmax <- readBin(buf[53+0:7], "double", n=1, size=8, endian="little")
     ymax <- readBin(buf[61+0:7], "double", n=1, size=8, endian="little")
-    metadata <- list(filename=filename, fillable=TRUE)
+    res <- new("coastline", fillable=shapeTypeFile==5)
+    res@metadatafilename <- filename
+    res@metadata$fillable <- TRUE
     oceDebug(debug, sprintf("xmin: %.4f, xmax: %.4f, ymin: %.4f, ymax: %.4f\n", xmin, xmax, ymin, ymax))
     ##
     ## RECORD BY RECORD
@@ -514,7 +516,6 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     record <- 0
     latitude <- longitude <- NULL
     segment <- 0
-    res <- new("coastline", fillable=shapeTypeFile==5)
     while (TRUE) {
         record <- record + 1
         if ((o + 53) > fileSize) {      # FIXME could be more clever on eof
@@ -571,10 +572,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     res@data$latitude <- latitude
     res@data$longitude <- longitude
-    res@metadata <- metadata
-    if (shapeTypeFile == 3) {
+    if (shapeTypeFile == 3)
         res@metadata$depths <- depths
-    }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
