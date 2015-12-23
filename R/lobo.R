@@ -38,6 +38,23 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
+setMethod(f="subset",
+          signature="lobo",
+          definition=function(x, subset, ...) {
+              rval <- new("lobo") # start afresh in case x@data is a data.frame
+              rval@metadata <- x@metadata
+              rval@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- r & !is.na(r)
+                  rval@data[[i]] <- x@data[[i]][r]
+              }
+              names(rval@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.lobo(x, subset=", subsetString, ")", sep=""))
+              rval
+          })
+ 
 
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
@@ -147,7 +164,9 @@ setMethod(f="plot",
                   } else if (w == 2) {
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), ...)
                   } else if (w == 3) {
-                      plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), ...)
+                      if (any(!is.na(x[['pressure']])))
+                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), ...) else
+                              plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), ...)
                   } else if (w == 4) {
                       oce.plot.ts(x[["time"]], x[["u"]], ylab=resizableLabel("u"), ...)
                   } else if (w == 5) {
