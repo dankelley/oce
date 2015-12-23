@@ -50,41 +50,43 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat("\nheader is as follows:\n")
         str(header)
     }
-    metadata <- list(manufacturer="nortek",
-                     instrumentType="vector",
-                     filename=filename,
-                     longitude=longitude, latitude=latitude,
-                     numberOfSamples=NA, # filled in later
-                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
-                     measurementStart=NA, # FIXME
-                     measurementEnd=NA,   # FIXME
-                     samplingRate=512/header$user$averagingInterval, # FIXME: why 512?
-                     serialNumber=header$hardware$serialNumber,
-                     internalCodeVersion=header$hardware$picVersion,
-                     softwareVersion=header$user$swVersion,
-                     hardwareRevision=header$hardware$hwRevision,
-                     recSize=header$hardware$recSize,
-                     velocityRange=header$hardware$velocityRange,
-                     firmwareVersion=header$hardware$fwVersion,
-                     hardwareConfiguration=header$hardware$config,
-                     configPressureSensor=header$head$configPressureSensor,
-                     configMagnetometerSensor=header$head$configMagnetometerSensor,
-                     configTiltSensor=header$head$configTiltSensor,
-                     beamAngle=25,     # FIXME: should read from file
-                     tiltSensorOrientation=header$head$tiltSensorOrientation,
-                     frequency=header$head$frequency,
-                     headSerialNumber=header$head$headSerialNumber,
-                     bin1Distance=header$user$blankingDistance, # FIXME: is this right?
-                     blankingDistance=header$user$blankingDistance,
-                     measurementInterval=header$user$measurementInterval,
-                     transformationMatrix=header$head$transformationMatrix,
-                     deploymentName=header$user$deploymentName,
-                     cellSize=header$user$cellSize,
-                     velocityScale=header$user$velocityScale,
-                     originalCoordinate=header$user$originalCoordinate,
-                     oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnspreaded=FALSE,
-                     comments=header$user$comments)
+    res <- new("adv")
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$instrumentType <- "vector"
+    res@metadata$filename <- filename
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- NA # filled in later
+    res@metadata$numberOfBeams <- header$head$numberOfBeams # FIXME: check that this is correct
+    res@metadata$measurementStart <- NA # FIXME
+    res@metadata$measurementEnd <- NA   # FIXME
+    res@metadata$samplingRate <- 512/header$user$averagingInterval # FIXME: why 512?
+    res@metadata$serialNumber <- header$hardware$serialNumber
+    res@metadata$internalCodeVersion <- header$hardware$picVersion
+    res@metadata$softwareVersion <- header$user$swVersion
+    res@metadata$hardwareRevision <- header$hardware$hwRevision
+    res@metadata$recSize <- header$hardware$recSize
+    res@metadata$velocityRange <- header$hardware$velocityRange
+    res@metadata$firmwareVersion <- header$hardware$fwVersion
+    res@metadata$hardwareConfiguration <- header$hardware$config
+    res@metadata$configPressureSensor <- header$head$configPressureSensor
+    res@metadata$configMagnetometerSensor <- header$head$configMagnetometerSensor
+    res@metadata$configTiltSensor <- header$head$configTiltSensor
+    res@metadata$beamAngle <- 25     # FIXME: should read from file
+    res@metadata$tiltSensorOrientation <- header$head$tiltSensorOrientation
+    res@metadata$frequency <- header$head$frequency
+    res@metadata$headSerialNumber <- header$head$headSerialNumber
+    res@metadata$bin1Distance <- header$user$blankingDistance # FIXME: is this right?
+    res@metadata$blankingDistance <- header$user$blankingDistance
+    res@metadata$measurementInterval <- header$user$measurementInterval
+    res@metadata$transformationMatrix <- header$head$transformationMatrix
+    res@metadata$deploymentName <- header$user$deploymentName
+    res@metadata$cellSize <- header$user$cellSize
+    res@metadata$velocityScale <- header$user$velocityScale
+    res@metadata$originalCoordinate <- header$user$originalCoordinate
+    res@metadata$oceCoordinate <- header$user$originalCoordinate
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$comments <- header$user$comments
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -451,7 +453,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data$analog1 <- analog1
     if (haveAnalog2)
         data$analog2 <- analog2
-    res <- new("adv")
     res@data <- data
 
     metadata$velocityResolution <- metadata$velocityScale

@@ -70,6 +70,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         on.exit(close(file))
     }
     type <- match.arg(type)
+    res <- new("adp")
     seek(file, 0, "end")
     fileSize <- seek(file, 0, "start")
     oceDebug(debug, "file", filename, "has", fileSize, "bytes\n")
@@ -304,39 +305,39 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         roll <- approx(1:nheading, roll, seq(1,nheading,length.out=nv))$y
         oceDebug(debug, "AFTER:  length(heading)=", length(heading), "\n")
     }
-    data <- list(v=v, a=a, q=q,
-                 distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells),
-                 time=time,
-                 temperature=temperature,
-                 pressure=pressure,
-                 heading=heading, pitch=pitch, roll=roll)
+    res@data <- list(v=v, a=a, q=q,
+                     distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells),
+                     time=time,
+                     temperature=temperature,
+                     pressure=pressure,
+                     heading=heading, pitch=pitch, roll=roll)
     oceDebug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beamAngle <- if (slant.angle == "?") 25 else slant.angle
-    metadata <- list(manufacturer="sontek",
-                     type=type,
-                     filename=filename,
-                     serialNumber=if (exists('serialNumber')) serialNumber else "?",
-                     longitude=longitude,
-                     latitude=latitude,
-                     numberOfSamples=dim(v)[1],
-                     numberOfCells=dim(v)[2],
-                     numberOfBeams=dim(v)[3],
-                     velocityResolution=velocityScale,
-                     velocityMaximum=velocityScale * 2^15,
-                     measurementStart=measurementStart,
-                     measurementEnd=measurementEnd,
-                     measurementDeltat=measurementDeltat,
-                     frequency=frequency,
-                     cpuSoftwareVerNum=cpuSoftwareVerNum,
-                     dspSoftwareVerNum=dspSoftwareVerNum,
-                     boardRev=boardRev,
-                     originalCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
-                     oceCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
-                     beamAngle=beamAngle,
-                     oceBeamUnspreaded=FALSE,
-                     orientation=if(orientation==1) "upward" else "downward")
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$type <- type
+    res@metadata$filename <- filename
+    res@metadata$serialNumber <- if (exists('serialNumber')) serialNumber else "?"
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- dim(v)[1]
+    res@metadata$numberOfCells <- dim(v)[2]
+    res@metadata$numberOfBeams <- dim(v)[3]
+    res@metadata$velocityResolution <- velocityScale
+    res@metadata$velocityMaximum <- velocityScale * 2^15
+    res@metadata$measurementStart <- measurementStart
+    res@metadata$measurementEnd <- measurementEnd
+    res@metadata$measurementDeltat <- measurementDeltat
+    res@metadata$frequency <- frequency
+    res@metadata$cpuSoftwareVerNum <- cpuSoftwareVerNum
+    res@metadata$dspSoftwareVerNum <- dspSoftwareVerNum
+    res@metadata$boardRev <- boardRev
+    res@metadata$originalCoordinate <- c("beam", "xyz", "enu", "other")[originalCoordinate+1]
+    res@metadata$oceCoordinate <- c("beam", "xyz", "enu", "other")[originalCoordinate+1]
+    res@metadata$beamAngle <- beamAngle
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$orientation <- if(orientation <-  <- 1) "upward" else "downward")
     if (numberOfBeams == 3) {
-        if (metadata$orientation == "upward") {
+        if (res@metadata$orientation == "upward") {
             ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
             ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
             ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
@@ -344,7 +345,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
             ## FIXME: check up and down; also read it and check
-            metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
+            res@metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                       0  , -CS,  CS,
                                                       C  ,   C,   C),
                                                     nrow=3, byrow=TRUE)
@@ -353,7 +354,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
             warning("*****FIXME: check up and down; also read it and check*****")
-            metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
+            res@metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                       0  ,  CS, -CS,
                                                      -C  ,  -C,  -C),
                                                     nrow=3, byrow=TRUE)
@@ -365,9 +366,6 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beamAngle)
     } else
         stop("can only handle 3-beam devices")
-    res <- new("adp")
-    res@data <- data
-    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -615,36 +613,34 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                       c(     0,  1/sqrt(3)/S, -1/sqrt(3)/S),
                                       c(-1/3/C,       -1/3/C, -1/3/C))
     }
-    metadata <- list(manufacturer="sontek",
-                     instrumentType="adp",
-                     serialNumber=serialNumber,
-                     filename=filename,
-                     latitude=latitude, longitude=longitude,
-                     transformationMatrix=transformationMatrix,
-                     measurementStart=0, # FIXME: should fill in
-                     measurementEnd=np, # FIXME: should fill in
-                     measurementDeltat=mean(diff(as.numeric(time))),
-                     subsampleStart=0, # FIXME: should fill in
-                     subsampleEnd=np,
-                     subsampleDeltat=mean(diff(as.numeric(time))),
-                     frequency=NA, # FIXME
-                     numberOfSamples=np,
-                     numberOfBeams=numberOfBeams,
-                     originalCoordinate=originalCoordinate,
-                     oceCoordinate=originalCoordinate,
-                     beamAngle=beamAngle,
-                     oceBeamUnspreaded=FALSE,
-                     orientation=orientation)
-    data <- list(v=v, a=a, q=q,
-                 distance=distance,
-                 time=time,
-                 heading=heading, pitch=pitch, roll=roll,
-                 temperature=temperature,
-                 pressure=rep(0, length(temperature)),
-                 distance=distance)
     res <- new("adp")
-    res@data <- data
-    res@metadata <- metadata
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$instrumentType <- "adp"
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$filename <- filename
+    res@metadata$latitude <- latitude, longitude <- longitude
+    res@metadata$transformationMatrix <- transformationMatrix
+    res@metadata$measurementStart <- 0 # FIXME: should fill in
+    res@metadata$measurementEnd <- np # FIXME: should fill in
+    res@metadata$measurementDeltat <- mean(diff(as.numeric(time)))
+    res@metadata$subsampleStart <- 0 # FIXME: should fill in
+    res@metadata$subsampleEnd <- np
+    res@metadata$subsampleDeltat <- mean(diff(as.numeric(time)))
+    res@metadata$frequency <- NA # FIXME
+    res@metadata$numberOfSamples <- np
+    res@metadata$numberOfBeams <- numberOfBeams
+    res@metadata$originalCoordinate <- originalCoordinate
+    res@metadata$oceCoordinate <- originalCoordinate
+    res@metadata$beamAngle <- beamAngle
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$orientation <- orientation
+    res@data <- list(v=v, a=a, q=q,
+                     distance=distance,
+                     time=time,
+                     heading=heading, pitch=pitch, roll=roll,
+                     temperature=temperature,
+                     pressure=rep(0, length(temperature)),
+                     distance=distance)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
