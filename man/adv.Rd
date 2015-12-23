@@ -9,8 +9,7 @@
 \description{This is a sampling of measurements made with a Nortek Vector
     acoustic Doppler velocimeter deployed as part of the St Lawrence Internal
     Wave Experiment (SLEIWEX).  Various identifying features have been
-    redacted, and velocities have modified by adding random numbers chosen from
-    a normal distribution with standard deviation of 2 percent of signal.}
+    redacted.}
 
 \examples{
 \dontrun{
