@@ -4,7 +4,7 @@ PLEN <- 300 # palette has this many default levels
 
 prettyLocal <- function(x, n, digits=10)
 {
-    round(pretty(x, n), digits)
+    if (is.numeric(x)) round(pretty(x, n), digits) else pretty(x, n)
 }
 
 clipmin <- function(x, min=0)
