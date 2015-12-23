@@ -212,15 +212,14 @@ read.lobo <- function(file, cols=7, processingLog)
     vCol <- grep("current along", names)
     nitrateCol <- grep("nitrate", names)
     fluorescenceCol <- grep("fluorescence", names)
-    SCol <- grep("salinity", names)
-    TCol <- grep("^temperature", names, ignore.case=TRUE)
-    TaCol <- grep("^Air.*temperature", names, ignore.case=TRUE)
-    pressureCol <- grep("pressure", names)
+    SCol            <- grep("salinity", names)
+    TCol            <- grep("^temperature", names, ignore.case=TRUE)
+    TaCol           <- grep("^Air.*temperature", names, ignore.case=TRUE)
+    pressureCol     <- grep("pressure", names)
     if (!length(tCol))
         stop("no time column in data file.  The column names are: ", paste(names, collapse=" "))
-    ## issue 808: for unknown reasons, as.POSIXct() gives bad results in a test case
-    ##time <- as.POSIXct(d[,tCol])
-    time <- strptime(d[,1], "%Y-%m-%d %H:%M:%S", tz="UTC") # FIXME: the timezone is likely wrong
+    ## until issue 808, used as.POSIXct() here
+    time <- strptime(d[,tCol], "%Y-%m-%d %H:%M:%S", tz="UTC") # tz is likely wrong 
     n <- dim(d)[1]
     u <- if (length(uCol)) as.numeric(d[, uCol]) else rep(NA, n)
     v <- if (length(vCol)) as.numeric(d[, vCol]) else rep(NA, n)
