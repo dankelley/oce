@@ -158,34 +158,34 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "a") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$a
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$a
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$a
+                      res <- x@data$a
                   }
-                  rval
+                  res
               } else if (i == "q") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$q
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$q
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$q
+                      res <- x@data$q
                   }
-                  rval
+                  res
               } else if (i == "g") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$g
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$g
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$g
+                      res <- x@data$g
                   }
-                  rval
+                  res
               } else {
                   as(x, "oce")[[i]]
               }
@@ -247,7 +247,7 @@ setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
@@ -270,7 +270,7 @@ setMethod(f="subset",
                   oceDebug(debug, "number of kept bins:", sum(keep), "\n")
                   if (sum(keep) < 2)
                       stop("must keep at least 2 profiles")
-                  rval <- x
+                  res <- x
                   ## FIXME: are we handling slow timescale data?
                   for (name in names(x@data)) {
                       if (length(grep("Dia$", name))) {
@@ -278,26 +278,26 @@ setMethod(f="subset",
                               next
                           if (name == "timeDia" || is.vector(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepDia]
+                              res@data[[name]] <- x@data[[name]][keepDia]
                           } else if (is.matrix(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepDia,]
+                              res@data[[name]] <- x@data[[name]][keepDia,]
                           } else if (is.array(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
+                              res@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
                           }
                       } else {
                           if (name == "time" || is.vector(x@data[[name]])) {
                               if ("distance" == name)
                                   next
                               oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                              res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
                           } else if (is.matrix(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep,]
+                              res@data[[name]] <- x@data[[name]][keep,]
                           } else if (is.array(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                              res@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
                           }
                       }
                   }
@@ -309,42 +309,42 @@ setMethod(f="subset",
                   oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
                   if (sum(keep) < 2)
                       stop("must keep at least 2 bins")
-                  rval <- x
-                  rval@data$distance <- x@data$distance[keep]
+                  res <- x
+                  res@data$distance <- x@data$distance[keep]
                   for (name in names(x@data)) {
                       if (name == "time")
                           next
                       if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
                           oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
-                          oceDebug(debug, "before, dim(", name, ") =", dim(rval@data[[name]]), "\n")
-                          rval@data[[name]] <- x@data[[name]][,keep,, drop=FALSE]
-                          oceDebug(debug, "after, dim(", name, ") =", dim(rval@data[[name]]), "\n")
+                          oceDebug(debug, "before, dim(", name, ") =", dim(res@data[[name]]), "\n")
+                          res@data[[name]] <- x@data[[name]][,keep,, drop=FALSE]
+                          oceDebug(debug, "after, dim(", name, ") =", dim(res@data[[name]]), "\n")
                       }
                   }
               } else if (length(grep("pressure", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
-                  rval <- x
-                  rval@data$v <- rval@data$v[keep,,]
-                  rval@data$a <- rval@data$a[keep,,]
-                  rval@data$q <- rval@data$q[keep,,]
-                  rval@data$time <- rval@data$time[keep]
+                  res <- x
+                  res@data$v <- res@data$v[keep,,]
+                  res@data$a <- res@data$a[keep,,]
+                  res@data$q <- res@data$q[keep,,]
+                  res@data$time <- res@data$time[keep]
                   ## the items below may not be in the dataset
-                  names <- names(rval@data)
-                  if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
-                  if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
-                  if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
-                  if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
-                  if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
-                  if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
-                  if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
-                  if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
+                  names <- names(res@data)
+                  if ("bottomRange" %in% names) res@data$bottomRange <- res@data$bottomRange[keep,]
+                  if ("pressure" %in% names) res@data$pressure <- res@data$pressure[keep]
+                  if ("temperature" %in% names) res@data$temperature <- res@data$temperature[keep]
+                  if ("salinity" %in% names) res@data$salinity <- res@data$salinity[keep]
+                  if ("depth" %in% names) res@data$depth <- res@data$depth[keep]
+                  if ("heading" %in% names) res@data$heading <- res@data$heading[keep]
+                  if ("pitch" %in% names) res@data$pitch <- res@data$pitch[keep]
+                  if ("roll" %in% names) res@data$roll <- res@data$roll[keep]
               } else {
                   stop("should express the subset in terms of distance or time")
               }
-              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
-              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@metadata$numberOfSamples <- dim(res@data$v)[1]
+              res@metadata$numberOfCells <- dim(res@data$v)[2]
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 #' create an object of \code{\link{adp-class}}
@@ -380,15 +380,15 @@ setMethod(f="subset",
 #' }
 as.adp <- function(time, distance, v, a, q, orientation="upward", coordinate="enu")
 {
-    rval <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
+    res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
     if (!missing(v)) {
-        rval@metadata$numberOfBeams <- dim(v)[3]
-        rval@metadata$numberOfCells <- dim(v)[2]
+        res@metadata$numberOfBeams <- dim(v)[3]
+        res@metadata$numberOfCells <- dim(v)[2]
     }
-    rval@metadata$oceCoordinate <- coordinate
-    rval@metadata$orientation <- orientation
-    rval@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
-    rval
+    res@metadata$oceCoordinate <- coordinate
+    res@metadata$orientation <- orientation
+    res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
+    res
 }
 
 
@@ -399,22 +399,22 @@ head.adp <- function(x, n = 6L, ...)
         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
     else
         look <- seq.int(1, min(n, numberOfProfiles))
-    rval <- x
+    res <- x
     for (name in names(x@data)) {
         if ("distance" == name)
             next
         if (is.vector(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look]
+            res@data[[name]] <- x@data[[name]][look]
         } else if (is.matrix(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,]
+            res@data[[name]] <- x@data[[name]][look,]
         } else if (is.array(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,,]
+            res@data[[name]] <- x@data[[name]][look,,]
         } else {
-            rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 tail.adp <- function(x, n = 6L, ...)
@@ -424,20 +424,20 @@ tail.adp <- function(x, n = 6L, ...)
         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
     else
         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-    rval <- x
+    res <- x
     for (name in names(x@data)) {
         if (is.vector(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look]
+            res@data[[name]] <- x@data[[name]][look]
         } else if (is.matrix(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,]
+            res@data[[name]] <- x@data[[name]][look,]
         } else if (is.array(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,,]
+            res@data[[name]] <- x@data[[name]][look,,]
         } else {
-            rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval 
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res 
 }
 
 coordinate <- function(x)
@@ -562,7 +562,7 @@ setMethod(f="plot",
               zlimGiven <- !missing(zlim)
               if (breaksGiven && zlimGiven)
                   stop("cannot supply both zlim and breaks")
-              rval <- list(xat=NULL, yat=NULL)
+              res <- list(xat=NULL, yat=NULL)
               mode <- match.arg(mode)
               if (mode == "diagnostic") {
                   if (x@metadata$instrumentType != "aquadopp") {
@@ -908,8 +908,8 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  adorn=adorn[w],
                                                  debug=debug-1)
-                              rval$xat <- grid$xat
-                              rval$yat <- grid$yat
+                              res$xat <- grid$xat
+                              res$yat <- grid$yat
                           }
                       }
                       drawTimeRange <- FALSE
@@ -1497,9 +1497,9 @@ setMethod(f="plot",
                           col <- if (colGiven) col else "darkblue"
                           lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                           lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
-                          rval$ellipseMajor <- major
-                          rval$ellipseMinor <- minor
-                          rval$ellipseAngle <- theta
+                          res$ellipseMajor <- major
+                          res$ellipseMinor <- minor
+                          res$ellipseAngle <- theta
                           if (which[w] >= 30) {
                               if (!missing(control) && !is.null(control$bin)) {
                                   if (control$bin < 1)
@@ -1513,8 +1513,8 @@ setMethod(f="plot",
                                   umean <- mean(x@data$v[,,1], na.rm=TRUE)
                                   vmean <- mean(x@data$v[,,2], na.rm=TRUE)
                               }
-                              rval$meanU <- umean
-                              rval$meanV <- vmean
+                              res$meanU <- umean
+                              res$meanV <- vmean
                               arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
@@ -1587,10 +1587,10 @@ setMethod(f="plot",
               par(cex=opar$cex)
               oceDebug(debug, "} # plot.adp()\n", unindent=1)
               if (exists("ats")) {
-                  rval$xat <- ats$xat
-                  rval$yat <- ats$yat
+                  res$xat <- ats$xat
+                  res$yat <- ats$yat
               }
-              invisible(rval)
+              invisible(res)
           })
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -1980,15 +1980,15 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
         warning("there is no bottom velocity in this object")
         return(x)
     }
-    rval <- x
+    res <- x
     numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
         oceDebug(debug, "beam #", beam, "\n")
-        rval@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
+        res@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
     }
     oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 binmapAdp <- function(x, debug=getOption("oceDebug"))
@@ -2015,7 +2015,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     qbm <- array(raw(), dim=dim(v))
     gbm <- array(raw(), dim=dim(v))
     nprofile <- dim(v)[1]
-    rval <- x
+    res <- x
     for (profile in 1:nprofile) {
         r <- roll[profile]
         p <- pitch[profile]
@@ -2069,12 +2069,12 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         gbm[profile,,3] <- oce.as.raw(approx(z3, as.numeric(g[profile,,3], rule=rule), distance)$y)
         gbm[profile,,4] <- oce.as.raw(approx(z4, as.numeric(g[profile,,4], rule=rule), distance)$y)
     }
-    rval@data$v <- vbm
+    res@data$v <- vbm
     ##cat("R : v1      ", format(v[1,1:8,1], width=11, digits=7), '\n')
     ##cat("R : V1      ", format(vbm[1,1:8,1], width=11, digits=7), '\n')
-    rval@data$a <- abm
-    rval@data$q <- qbm
-    rval@data$g <- gbm
-    rval
+    res@data$a <- abm
+    res@data$q <- qbm
+    res@data$g <- gbm
+    res
 }
 

@@ -32,7 +32,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
     A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * declination) * cos(RPD * latitude))
     ## the atan2() form matches websites on azimuth at Halifax in April 2012
     h <- asin(sin(RPD * latitude) * sin(RPD * declination) + cos(RPD * latitude) * cos(RPD * declination) * cos(RPD * H))
-    rval <- data.frame(azimuth=A/RPD, altitude=h/RPD)
+    res <- data.frame(azimuth=A/RPD, altitude=h/RPD)
 }
 
 siderealTime <- function(t)
@@ -46,10 +46,10 @@ siderealTime <- function(t)
     jd0 <- julianDay(tt)
     T <- (jd0 - 2415020.0) / 36525      # [1] eq 7.1 (different in [2])
     hoursLeftOver <- 24 * (jd - jd0)
-    rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
-    rval <- rval + 1.002737908 * hoursLeftOver
-    rval <- rval %% 24
-    rval
+    res <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
+    res <- res + 1.002737908 * hoursLeftOver
+    res <- res %% 24
+    res
 }
 
 julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
@@ -282,7 +282,7 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 
     ## The 180 in azimuth converts from astron convention with azimuth=westward
     ## angle from South, to eastward from North.
-    rval <- list(time=t,
+    res <- list(time=t,
                  azimuth=lh$azimuth + 180,
                  altitude=lh$altitude,
                  rightAscension=ec$rightAscension, declination=ec$declination,
@@ -290,6 +290,6 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
                  diameter=pi, distance=6378.14 / sin(RPD * pi),
                  illuminatedFraction=illuminatedFraction,
                  phase=phase)
-    rval
+    res
 }
 

@@ -35,7 +35,7 @@ read.observatory.ctd <- function(file,
         open(file, "rb")
         on.exit(close(file))
     }
-    metadata <- list(filename=filename)
+    res@metadata$filename <- filename
     lines <- readLines(file)
     location <- lines[grep("Latitude", lines)]
     latitude <- as.numeric(gsub(" .*$", "", gsub("^.*Latitude\\(decdeg N\\): ", "", location)))
@@ -52,12 +52,10 @@ read.observatory.ctd <- function(file,
     salinity <- d[,Scol]
     temperature <- d[,Tcol]
     pressure  <- d[,pcol]
- 
-    rval <- as.ctd(salinity=salinity, temperature=temperature, pressure=pressure,
-                   latitude=latitude, longitude=longitude,
-                   other=list(time=time))
+    res <- as.ctd(salinity=salinity, temperature=temperature, pressure=pressure,
+                  latitude=latitude, longitude=longitude,
+                  other=list(time=time))
     oceDebug(debug, "} # read.observatory.ctd()\n", unindent=1)
-    rval
+    res
 }
-
 

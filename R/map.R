@@ -30,21 +30,21 @@ shiftLongitude <- function(longitudes) {
 
 fixneg <- function(v)
 {
-    rval <- v
+    res <- v
     for (i in seq_along(v)) {
-        if (rval[i] == "0N") {
-            rval[i] <- "0"
-        } else if (rval[i] == "0E") {
-            rval[i] <- "0"
+        if (res[i] == "0N") {
+            res[i] <- "0"
+        } else if (res[i] == "0E") {
+            res[i] <- "0"
         } else if ("-" == substr(v[i], 1, 1)) {
-            ##cat("rval[i]=", rval[i], "\n")
-            rval[i] <- gsub("^-", "", v[i])
-            rval[i] <- gsub("E", "W", rval[i])
-            rval[i] <- gsub("N", "S", rval[i])
-            ##cat(" -> rval[i]=", rval[i], "\n")
+            ##cat("res[i]=", res[i], "\n")
+            res[i] <- gsub("^-", "", v[i])
+            res[i] <- gsub("E", "W", res[i])
+            res[i] <- gsub("N", "S", res[i])
+            ##cat(" -> res[i]=", res[i], "\n")
         }
     }
-    rval
+    res
 }
 
 badFillFix1 <- function(x, y, latitude, projection="")
@@ -941,36 +941,36 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
     if (type == "list") {
         if (noMinutes)
-            rval <- list(degrees, hemispheres)
+            res <- list(degrees, hemispheres)
         else if (noSeconds)
-            rval <- list(degrees, minutes, hemispheres)
+            res <- list(degrees, minutes, hemispheres)
         else
-            rval <- list(degrees, minutes, seconds, hemispheres)
+            res <- list(degrees, minutes, seconds, hemispheres)
     } else if (type == "string") {
         if (noMinutes) {
-            rval <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
+            res <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
         } else if (noSeconds) {
-            rval <- sprintf("%02d %02d' %s", degrees, minutes, hemispheres)
+            res <- sprintf("%02d %02d' %s", degrees, minutes, hemispheres)
         } else {
-            rval <- sprintf("%02d %02d' %04.2f\" %s", degrees, minutes, seconds, hemispheres)
+            res <- sprintf("%02d %02d' %04.2f\" %s", degrees, minutes, seconds, hemispheres)
         }
-        Encoding(rval) <- "latin1"
+        Encoding(res) <- "latin1"
     } else if (type == "expression") {
         n <- length(degrees)
-        rval <- vector("expression", n)
+        res <- vector("expression", n)
         for (i in 1:n) {
             if (noMinutes) {
-                rval[i] <- as.expression(substitute(d*degree*hemi,
+                res[i] <- as.expression(substitute(d*degree*hemi,
                                                     list(d=degrees[i],
                                                          hemi=hemispheres[i])))
             } else if (noSeconds) {
-                ##rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
+                ##res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
+                res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
                                                     list(d=degrees[i],
                                                          m=sprintf("%02d", minutes[i]),
                                                          hemi=hemispheres[i])))
             } else {
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
+                res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
                                                     list(d=degrees[i],
                                                          m=sprintf("%02d", minutes[i]),
                                                          s=sprintf("%02f", seconds[i]),
@@ -978,7 +978,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
             }
         }
     }
-    rval
+    res
 }
 
 mapLocator <- function(n=512, type='n', ...)
@@ -986,12 +986,12 @@ mapLocator <- function(n=512, type='n', ...)
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     xy <- locator(n, type, ...)
-    rval <- map2lonlat(xy$x, xy$y)
+    res <- map2lonlat(xy$x, xy$y)
     if (type == 'l')
-        mapLines(rval$longitude, rval$latitude, ...)
+        mapLines(res$longitude, res$latitude, ...)
     else if (type == 'p')
-        mapPoints(rval$longitude, rval$latitude, ...)
-    rval
+        mapPoints(res$longitude, res$latitude, ...)
+    res
 }
 
 map2lonlat <- function(x, y, init=c(0,0))

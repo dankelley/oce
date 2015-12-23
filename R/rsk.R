@@ -57,9 +57,9 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="rsk",
           definition=function(x, subset, ...) {
-              rval <- new("rsk") # start afresh in case x@data is a data.frame
-              rval@metadata <- x@metadata
-              rval@processingLog <- x@processingLog
+              res <- new("rsk") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
               ## message("NOTE: debugging output coming up!")
               for (i in seq_along(x@data)) {
                   ####  message("i: ", i)
@@ -81,12 +81,12 @@ setMethod(f="subset",
                   r <- eval(substitute(subset), x@data, parent.frame(2))
                   ####  str(r)
                   r <- r & !is.na(r)
-                  rval@data[[i]] <- x@data[[i]][r]
+                  res@data[[i]] <- x@data[[i]][r]
               }
-              names(rval@data) <- names(x@data)
+              names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
+              res
           })
  
 as.rsk <- function(time, columns,
@@ -486,16 +486,16 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         schedules <- RSQLite::dbReadTable(con, "schedules")
         sampleInterval <- schedules$samplingPeriod
         RSQLite::dbDisconnect(con)
-        rval <- new("rsk", time=time, filename=filename)
+        res <- new("rsk", time=time, filename=filename)
         for (name in names)
-            rval@data[[name]] <- data[[name]]
+            res@data[[name]] <- data[[name]]
         if ("pressure" %in% names) { # possibly compute sea pressure
             if (is.logical(patm)) {
                 if (patm) {
-                    rval@data$pressureOriginal <- rval@data$pressure
-                    rval@data$pressure <- rval@data$pressure - 10.1325
+                    res@data$pressureOriginal <- res@data$pressure
+                    res@data$pressure <- res@data$pressure - 10.1325
                     ## No need to check patm=FALSE case because object default is "absolute"
-                    rval@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325 dbar"
+                    res@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325 dbar"
                     oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
             } else if (is.numeric(patm)) {
@@ -503,27 +503,27 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                 if (1 < npatm && npatm != length(pressure))
                     stop("if patm is numeric, its length must equal 1, or the length(pressure).")
                 oceDebug(debug, "patm is numeric, so removing std atmospheric pressure, 10.1325 dbar\n")
-                rval@data$pressureOriginal <- rval@data$pressure
-                rval@data$pressure <- rval@data$pressure - patm
+                res@data$pressureOriginal <- res@data$pressure
+                res@data$pressure <- res@data$pressure - patm
                 if (npatm == 1)
-                    rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm)
+                    res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm)
                 else 
-                    rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f, %f, ...", patm[1], patm[2])
+                    res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f, %f, ...", patm[1], patm[2])
             } else {
                 stop("patm must be logical or numeric")
             }
         }
-        rval@metadata$model <- model
-        rval@metadata$serialNumber <- serialNumber
-        rval@metadata$sampleInterval <- sampleInterval
+        res@metadata$model <- model
+        res@metadata$serialNumber <- serialNumber
+        res@metadata$sampleInterval <- sampleInterval
         ## There is actually no need to set the units$conductivity since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
         ## this, in case some RBR devices use different units
-        rval@metadata$units$conductivity <- "mS/cm" # FIXME: will this work for all RBR rsks?
-        rval@metadata$pressureAtmospheric <- pressureAtmospheric
-        rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        res@metadata$units$conductivity <- "mS/cm" # FIXME: will this work for all RBR rsks?
+        res@metadata$pressureAtmospheric <- pressureAtmospheric
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
-        return(rval)
+        return(res)
     } else if (!(missing(type)) && type=='txt') {
         oceDebug('RBR txt format\n')
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
@@ -596,7 +596,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             channelsSub[[iChannel]] <- channels[[iChannel]][keep]
         }
         names(channelsSub) <- channelNames
-        rval <- as.rsk(time, columns=channelsSub,
+        res <- as.rsk(time, columns=channelsSub,
                        instrumentType="rbr",
                        serialNumber=serialNumber, model=model,
                        sampleInterval=sampleInterval,
@@ -705,7 +705,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         temperature <- as.numeric(d[Tcol, look])
         pressure <- as.numeric(d[pcol, look])
         model <- ""
-        rval <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
+        res <- as.rsk(time, columns=list(temperature=temperature, pressure=pressure),
                        instrumentType="rbr",
                        serialNumber=serialNumber, model=model,
                        filename=filename,
@@ -713,21 +713,21 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     }
     if (is.logical(patm)) {
         if (patm) {
-            rval@data$pressureOriginal <- rval@data$pressure
-            rval@data$pressure <- rval@data$pressure - 10.1325
+            res@data$pressureOriginal <- res@data$pressure
+            res@data$pressure <- res@data$pressure - 10.1325
             ## No need to check patm=FALSE case because object default is "absolute"
-            rval@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325"
+            res@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325"
         }
     } else if (is.numeric(patm)) {
-        rval@data$pressureOriginal <- rval@data$pressure
-        rval@data$pressure <- rval@data$pressure - patm[1]
-        rval@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm[1])
+        res@data$pressureOriginal <- res@data$pressure
+        res@data$pressure <- res@data$pressure - patm[1]
+        res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm[1])
     } else {
         stop("patm must be logical or numeric")
     }
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
-    rval
+    res
 }
 
 

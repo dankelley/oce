@@ -335,7 +335,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$oceCoordinate <- c("beam", "xyz", "enu", "other")[originalCoordinate+1]
     res@metadata$beamAngle <- beamAngle
     res@metadata$oceBeamUnspreaded <- FALSE
-    res@metadata$orientation <- if(orientation <-  <- 1) "upward" else "downward")
+    res@metadata$orientation <- if (1==orientation) "upward" else "downward"
     if (numberOfBeams == 3) {
         if (res@metadata$orientation == "upward") {
             ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
@@ -618,7 +618,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata$instrumentType <- "adp"
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
-    res@metadata$latitude <- latitude, longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
     res@metadata$transformationMatrix <- transformationMatrix
     res@metadata$measurementStart <- 0 # FIXME: should fill in
     res@metadata$measurementEnd <- np # FIXME: should fill in

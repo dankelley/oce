@@ -21,11 +21,11 @@ setMethod(f="subset",
               ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
               ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
               keep <- eval(substitute(subset), x@data, parent.frame(2))
-              rval <- x
-              rval@data$latitude[!keep] <- NA
-              rval@data$longitude[!keep] <- NA
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-              rval
+              res <- x
+              res@data$latitude[!keep] <- NA
+              res@data$longitude[!keep] <- NA
+              res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              res
           })
 
 setMethod(f="summary",
@@ -66,9 +66,9 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
     n <- length(latitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
-    rval <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 setMethod(f="plot",
@@ -667,14 +667,14 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     C <- 2 * 3.14 * 6.4e3              # circumferance of earth
     oceDebug(debug, "span:", span, ", C:", C, "\n")
     if (span < 500) {
-        rval <- "coastlineWorldFine"
+        res <- "coastlineWorldFine"
     } else if (span < C / 4) {
-        rval <- "coastlineWorldMedium"
+        res <- "coastlineWorldMedium"
     } else {
-        rval <- "coastlineWorld"
+        res <- "coastlineWorld"
     }
     oceDebug(debug, "}\n", unindent=1)
-    return(rval)
+    res
 }
 
 #' Cut a coastline file at specified longitude

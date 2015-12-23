@@ -19,7 +19,7 @@ setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               if (length(grep("time", subsetString)) ||
                   length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
@@ -33,7 +33,7 @@ setMethod(f="subset",
                   if (gridded) {
                       x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
                       keep <- eval(substitute(subset), x@data, parent.frame(2))
-                      x@data$pressure <- rval@data$pressure ## FIXME: convert back to original for subsetting below
+                      x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
                   } else {
                       stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                   }
@@ -42,20 +42,20 @@ setMethod(f="subset",
               }
               ## Now do the subset
               if (length(grep("pressure", subsetString))) {
-                  rval@data$salinity <- x@data$salinity[keep,]
-                  rval@data$temperature <- x@data$temperature[keep,]
-                  rval@data$pressure <- x@data$pressure[keep,]
-                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  res@data$salinity <- x@data$salinity[keep,]
+                  res@data$temperature <- x@data$temperature[keep,]
+                  res@data$pressure <- x@data$pressure[keep,]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               } else {
-                  rval@data$time <- x@data$time[keep]
-                  rval@data$longitude <- x@data$longitude[keep]
-                  rval@data$latitude <- x@data$latitude[keep]
-                  rval@data$salinity <- x@data$salinity[,keep]
-                  rval@data$temperature <- x@data$temperature[,keep]
-                  rval@data$pressure <- x@data$pressure[,keep]
-                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  res@data$time <- x@data$time[keep]
+                  res@data$longitude <- x@data$longitude[keep]
+                  res@data$latitude <- x@data$latitude[keep]
+                  res@data$salinity <- x@data$salinity[,keep]
+                  res@data$temperature <- x@data$temperature[,keep]
+                  res@data$pressure <- x@data$pressure[,keep]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               }
-              rval
+              res
           })
 
 
@@ -90,7 +90,7 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     ndepth <- dim[1]
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
-    rval <- argo
+    res <- argo
     salinity <- argo[["salinity"]]
     temperature <- argo[["temperature"]]
     pressure <- argo[["pressure"]]
@@ -112,22 +112,22 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     }
     ##message("pt=c(", paste(round(pt), collapse=","), ")")
     npt <- length(pt)
-    rval@data$salinity <- matrix(0.0, ncol=nprofile, nrow=npt)
-    rval@data$temperature <- matrix(0.0, ncol=nprofile, nrow=npt)
-    rval@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$salinity <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$temperature <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
     for (profile in 1:nprofile) {
         ndata <- sum(!is.na(salinity[,profile]))
         if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
-            rval@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
-            rval@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
-            rval@data$pressure[,profile] <- pt
+            res@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
+            res@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
+            res@data$pressure[,profile] <- pt
         } else {
-            rval@data$salinity[,profile] <- rep(NA, npt)
-            rval@data$temperature[,profile] <- rep(NA, npt)
-            rval@data$pressure[,profile] <- pt
+            res@data$salinity[,profile] <- rep(NA, npt)
+            res@data$temperature[,profile] <- rep(NA, npt)
+            res@data$pressure[,profile] <- pt
         }
     }
-    rval
+    res
 }
 
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
@@ -181,10 +181,11 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         dim(temperature) <- dim
         dim(pressure) <- dim
     }
-    metadata <- list(filename=filename, id=id)
     res <- new("argo", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
+    res@metadata$filename <- filename
+    res@metadata$id <- id
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
         res@metadata$units$temperature <- "ITS-90"
     if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))

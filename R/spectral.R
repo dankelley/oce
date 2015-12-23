@@ -124,14 +124,14 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "resultant spectrum is average across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "} # pwelch()\n", unindent=1)
-    rval <- list(freq=freq, spec=apply(psd, 2, mean), 
+    res <- list(freq=freq, spec=apply(psd, 2, mean), 
                  method="Welch", series=deparse(substitute(x)),
                  df=s$df * (x.len / length(window)),
                  bandwidth=s$bandwidth, # FIXME: wrong formulae
                  demean=FALSE, detrend=TRUE)
-    class(rval) <- "spec"
+    class(res) <- "spec"
     if (plot) {
-        plot(rval, ...)
-        return(invisible(rval))
-    } else return(rval)
+        plot(res, ...)
+        return(invisible(res))
+    } else return(res)
 }

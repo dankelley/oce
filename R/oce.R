@@ -52,31 +52,31 @@ as.oce <- function(x)
         stop("x must be a list, a data frame, or an oce object")
     names <- names(x)
     if ("EVENT_HEADER" %in% names) {
-        rval <- ODF2oce(x)
+        res <- ODF2oce(x)
     } else {
         if ("temperature" %in% names && "pressure" %in% names) {
             ## Assume it's a CTD; if not, rely on users to understand their data
             ## well enough to know the data type, and to use another function.
             if ("salinity" %in% names) {
-                rval <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
+                res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
                 ## Add any other columns
                 for (name in names) {
                     if (name != "temperature" && name != "pressure" && name != "salinity")
-                        rval <- ctdAddColumn(rval, column=x[name], name=name, label=name)
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name)
                 }
             } else if ("conductivity" %in% names) {
                 for (name in names) {
                     if (name != "temperature" && name != "pressure" && name != "conductivity")
-                        rval <- ctdAddColumn(rval, column=x[name], name=name, label=name)
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name)
                 }
             }
         } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
-            rval <- as.coastline(longitude=x$longitude, latitude=x$latitude)
+            res <- as.coastline(longitude=x$longitude, latitude=x$latitude)
         } else {
             stop("unknown data type; as of now, as.oce() only handles CTD data")
         }
     }
-    rval
+    res
 }
 
 useHeading <- function(b, g, add=0)
@@ -687,9 +687,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
-            rval <- paste(subtype, "odf", sep="/")
-            oceDebug(debug, "file type:", rval, "\n")
-            return(rval)
+            res <- paste(subtype, "odf", sep="/")
+            oceDebug(debug, "file type:", res, "\n")
+            return(res)
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
@@ -1018,7 +1018,7 @@ read.netcdf <- function(file, ...)
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read netcdf data')
     f <- ncdf4::nc_open(file)
-    rval <- new("oce")
+    res <- new("oce")
     names <- names(f$var)
     data <- list()
 
@@ -1036,32 +1036,32 @@ read.netcdf <- function(file, ...)
             }
         }
     }
-    rval@data <- data
+    res@data <- data
     ## Try to get some global attributes.
     ## Inelegantly permit first letter lower-case or upper-case
     if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
-        rval@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
+        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
     if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt)
-        rval@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
+        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
     if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt)
-        rval@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
+        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
     if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt)
-        rval@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
+        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
     if (ncdf4::ncatt_get(f, 0, "Station")$hasatt)
-        rval@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
+        res@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
     if (ncdf4::ncatt_get(f, 0, "station")$hasatt)
-        rval@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
+        res@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
     if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt)
-        rval@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
+        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
     if (ncdf4::ncatt_get(f, 0, "ship")$hasatt)
-        rval@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
+        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
     if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt)
-        rval@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
+        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
     if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
-        rval@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
+    res@processingLog <- processingLogAppend(res@processingLog,
                                               paste("read.netcdf(\"", file, "\")", sep=""))
-    rval
+    res
 }
 
 
@@ -1559,8 +1559,8 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
     } else if (type == "ncep2") {
         ## days since 1-1-1 00:00:0.0 (supposedly, but offset to match a test case; see
-        rvalOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00",tz="UTC")
-        return(rvalOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
+        resOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00",tz="UTC")
+        return(resOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
@@ -1693,14 +1693,14 @@ decodeTime <- function(time, timeFormats, tz="UTC")
                          "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
                          "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
     ## FIXME: permit time to be a vector
-    rval <- NA
+    res <- NA
     for (format in timeFormats) {
         ##cat("TRYING FORMAT:", format, "\n")
-        if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
+        if (!is.na(res <-  as.POSIXct(time, format=format, tz=tz))) {
             break
         }
     }
-    rval
+    res
 }
 
 drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,

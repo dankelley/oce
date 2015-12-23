@@ -67,13 +67,13 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               keep <- eval(substitute(subset), x@data, parent.frame())
               ##message("percent keep ", round(sum(keep)/length(keep)*100, 2), "%")
-              rval <- x
+              res <- x
               for (i in seq_along(x@data))
-                  rval@data[[i]] <- rval@data[[i]][keep]
-              rval@processingLog <- processingLogAppend(rval@processingLog,
+                  res@data[[i]] <- res@data[[i]][keep]
+              res@processingLog <- processingLogAppend(res@processingLog,
                                                         paste(deparse(match.call(call=sys.call(sys.parent(1)))),
                                                               sep="", collapse=""))
-              rval
+              res
           })
 
 setMethod(f="[[",

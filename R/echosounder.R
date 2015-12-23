@@ -116,7 +116,7 @@ setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
               if (missing(subset))
@@ -125,14 +125,14 @@ setMethod(f="subset",
                   oceDebug(debug, "subsetting an echosounder object by time\n")
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
-                  rval <- x
+                  res <- x
                   ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
-                  dataNames <- names(rval@data)
-                  rval@data$a <- x@data$a[keep,]
+                  dataNames <- names(res@data)
+                  res@data$a <- x@data$a[keep,]
                   if ("b" %in% dataNames)
-                      rval@data$b <- x@data$b[keep,]
+                      res@data$b <- x@data$b[keep,]
                   if ("c" %in% dataNames)
-                      rval@data$c <- x@data$c[keep,]
+                      res@data$c <- x@data$c[keep,]
                   ## lots of debugging in here, in case other data types have other variable names
                   oceDebug(debug, "dataNames (orig):", dataNames, "\n")
                   if (length(grep('^a$', dataNames)))
@@ -150,8 +150,8 @@ setMethod(f="subset",
                   oceDebug(debug, "dataNames (final), i.e. fast dataNames to be trimmed by time:", dataNames, "\n")
                   for (dataName in dataNames) {
                       oceDebug(debug, "fast variable:", dataName, "orig length", length(x@data[[dataName]]), "\n")
-                      rval@data[[dataName]] <- x@data[[dataName]][keep]
-                      oceDebug(debug, "fast variable:", dataName, "new length", length(rval@data[[dataName]]), "\n")
+                      res@data[[dataName]] <- x@data[[dataName]][keep]
+                      oceDebug(debug, "fast variable:", dataName, "new length", length(res@data[[dataName]]), "\n")
                   }
                   ## trim slow variables
                   subsetStringSlow <- gsub("time", "timeSlow", subsetString)
@@ -160,25 +160,25 @@ setMethod(f="subset",
                   oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
                   for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
                       oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
-                      rval@data[[slowName]] <- x@data[[slowName]][keepSlow]
-                      oceDebug(debug, "slow variable:", slowName, "new length", length(rval@data[[slowName]]), "\n")
+                      res@data[[slowName]] <- x@data[[slowName]][keepSlow]
+                      oceDebug(debug, "slow variable:", slowName, "new length", length(res@data[[slowName]]), "\n")
                   }
               } else if (length(grep("depth", subsetString))) {
                   oceDebug(debug, "subsetting an echosounder object by depth\n")
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
-                  rval <- x
-                  rval[["depth"]] <- rval[["depth"]][keep]
-                  dataNames <- names(rval@data)
-                  rval[["a"]] <- rval[["a"]][,keep]
+                  res <- x
+                  res[["depth"]] <- res[["depth"]][keep]
+                  dataNames <- names(res@data)
+                  res[["a"]] <- res[["a"]][,keep]
                   if ("b" %in% dataNames)
-                      rval@data$b <- x@data$b[,keep]
+                      res@data$b <- x@data$b[,keep]
                   if ("c" %in% dataNames)
-                      rval@data$c <- x@data$c[,keep]
+                      res@data$c <- x@data$c[,keep]
               } else {
                   stop("can only subset an echosounder object by 'time' or 'depth'")
               }
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 
@@ -247,7 +247,7 @@ setMethod(f="plot",
                               ...)
           {
               dots <- list(...)
-              rval <- list(xat=NULL, yat=NULL)
+              res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
               oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
               opar <- par(no.readonly = TRUE)
@@ -338,8 +338,8 @@ setMethod(f="plot",
                                         zlab=beam[w],
                                         ...)
                       }
-                      rval$xat <- ats$xat
-                      rval$yat <- ats$yat
+                      res$xat <- ats$xat
+                      res$yat <- ats$yat
                       if (newxGiven) {
                           if (!missing(atTop)) {
                               at <- approx(as.numeric(x[["time"]]), newx, as.numeric(atTop))$y
@@ -401,8 +401,8 @@ setMethod(f="plot",
                           label <- paste(timeRange[1], timeRange[2], sep=" to ")
                           mtext(label, side=3, cex=0.9*par('cex'), adj=0)
                       }
-                      rval$xat <- ats$xat
-                      rval$yat <- ats$yat
+                      res$xat <- ats$xat
+                      res$yat <- ats$yat
                   } else if (which[w] == 3) {
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -446,7 +446,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
-              invisible(rval)
+              invisible(res)
           })
 
 read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),

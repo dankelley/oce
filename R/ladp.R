@@ -76,7 +76,7 @@ setMethod(f="[[",
                   x@data$salinity
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  ## rval <- as(x, "oce")[[i, j, drop]]
+                  ## res <- as(x, "oce")[[i, j, drop]]
                   as(x, "oce")[[i]]
               }
           })
@@ -154,9 +154,9 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
         salinity <- if (missing(salinity)) NULL else fixColumn(salinity)
         temperature <- if (missing(temperature)) NULL else fixColumn(temperature)
     }
-    rval <- new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
+    res <- new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
                 pressure=pressure, u=u, v=v, uz=uz, vz=vz, salinity=salinity, temperature=temperature, ...)  
-    rval@metadata$waterDepth <- max(pressure, na.rm=TRUE)
-    rval
+    res@metadata$waterDepth <- max(pressure, na.rm=TRUE)
+    res
 }
 

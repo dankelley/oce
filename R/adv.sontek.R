@@ -105,7 +105,8 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata$manufacturer <- "sontek"
     res@metadata$instrumentType <- "adv"
     res@metadata$filename <- filename
-    res@metadata$longitude <- longitude latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
     res@metadata$numberOfSamples <- len
     res@metadata$numberOfBeams <- 3
     res@metadata$serialNumber <- "?"
@@ -126,7 +127,6 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@data$heading <- rep(0, len)
     res@data$pitch <- rep(0, len)
     res@data$roll <- rep(0, len)
-    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
@@ -199,7 +199,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     res@metadata$manufacturer <- "sontek"
     res@metadata$instrumentType <- "adv" # FIXME or "adr"???
     res@metadata$filename <- filename
-    res@metadata$longitude <- longitude latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
     res@metadata$numberOfSamples <- NA # fill in later
     res@metadata$numberOfBeams <- NA # fill in later
     res@metadata$measurementDeltat <- 1
@@ -730,15 +731,15 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     res@metadata$numberOfBeams <- dim(v)[2]
     res@metadata$velocityResolution <- velocityScale/10 # FIXME: guessing on the resolution for text files
     res@metadata$velocityMaximum <- velocityScale/10 * 2^15 # FIXME: guessing on the max velocity for text files
-    res@metadata$cpuSoftwareVerNum <- metadata$cpuSoftwareVerNum
-    res@metadata$dspSoftwareVerNum <- metadata$dspSoftwareVerNum
+    res@metadata$cpuSoftwareVerNum <- res@metadata$cpuSoftwareVerNum
+    res@metadata$dspSoftwareVerNum <- res@metadata$dspSoftwareVerNum
     res@metadata$transformationMatrix <- if(!missing(transformationMatrix)) transformationMatrix else NULL
     res@metadata$orientation <- "upward" # FIXME: guessing on the orientation
     res@metadata$deltat <- as.numeric(difftime(tt[2], tt[1], units <- "secs"))
     res@metadata$subsampleStart <- data$t[1]
     res@metadata$oceCoordinate <- originalCoordinate
     res@metadata$originalCoordinate <- originalCoordinate
-    warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
+    warning("sensor orientation cannot be inferred without a header; \"", res@metadata$orientation, "\" was assumed.")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)

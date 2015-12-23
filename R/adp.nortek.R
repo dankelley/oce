@@ -368,6 +368,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (missing(to))
         to <- NA                       # will catch this later
     oceDebug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
+    res <- new("adp")
     fromKeep <- from
     toKeep <- to
     syncCode <- as.raw(0xa5)
@@ -570,26 +571,26 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         aDia[, , 3] <- buf[diaStart + 38]
     }
 
-    data <- list(v=v, a=a, q=q,
-                 distance=distance,
-                 time=time,
-                 pressure=pressure,
-                 error=error,
-                 temperature=temperature,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll)
+    res@data <- list(v=v, a=a, q=q,
+                     distance=distance,
+                     time=time,
+                     pressure=pressure,
+                     error=error,
+                     temperature=temperature,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll)
     if (type == "aquadopp" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
-        data$timeDia <- timeDia
-        data$errorDia <- errorDia
-        data$headingDia <- headingDia
-        data$pitchDia <- pitchDia
-        data$rollDia <- rollDia
-        data$pressureDia <- pressureDia
-        data$temperatureDia <- temperatureDia
-        data$vDia <- vDia
-        data$aDia <- aDia
+        res@data$timeDia <- timeDia
+        res@data$errorDia <- errorDia
+        res@data$headingDia <- headingDia
+        res@data$pitchDia <- pitchDia
+        res@data$rollDia <- rollDia
+        res@data$pressureDia <- pressureDia
+        res@data$temperatureDia <- temperatureDia
+        res@data$vDia <- vDia
+        res@data$aDia <- aDia
     }
 
     if (missing(orientation)) {
@@ -597,53 +598,50 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
-    metadata <- list(manufacturer="nortek",
-                     instrumentType=type, #"aquadopp-hr",
-                     filename=filename,
-                     manufacturer="nortek",
-                     latitude=latitude,
-                     longitude=longitude,
-                     numberOfSamples=dim(v)[1],
-                     numberOfCells=dim(v)[2],
-                     numberOfBeams=dim(v)[3],
-                     numberOfBeamSequencesPerBurst=header$user$numberOfBeamSequencesPerBurst,
-                     measurementStart=measurementStart,
-                     measurementEnd=measurementEnd,
-                     measurementDeltat=measurementDeltat,
-                     subsampleStart=time[1],
-                     subsampleEnd=time[length(time)],
-                     subsampleDeltat=as.numeric(time[2]) - as.numeric(time[1]),
-                     size=header$head$size,
-                     serialNumber=header$hardware$serialNumber,
-                     internalCodeVersion=header$hardware$picVersion,
-                     hardwareRevision=header$hardware$hwRevision,
-                     recSize=header$hardware$recSize,
-                     velocityRange=header$hardware$velocityRange, # FIXME: should check against velocityMaximum
-                     firmwareVersion=header$hardware$fwVersion,
-                     config=header$hardware$config,
-                     configPressureSensor=header$head$configPressureSensor,
-                     configMagnetometerSensor=header$head$configMagnetometerSensor,
-                     configTiltSensor=header$head$configTiltSensor,
-                     beamAngle=25,     # FIXME: may change with new devices
-                     tiltSensorOrientation=header$head$tiltSensorOrientation,
-                     orientation=orientation,
-                     frequency=header$head$frequency,
-                     headSerialNumber=header$head$headSerialNumber,
-                     bin1Distance=header$user$blankingDistance, # FIXME: is this right?
-                     blankingDistance=header$user$blankingDistance,
-                     measurementInterval=header$user$measurementInterval,
-                     transformationMatrix=header$head$transformationMatrix,
-                     deploymentName=header$user$deploymentName,
-                     cellSize=header$user$cellSize,
-                     velocityResolution=velocityScale,
-                     velocityMaximum=velocityScale * 2^15,
-                     originalCoordinate=header$user$originalCoordinate,
-                     oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnspreaded=FALSE
-                     )
-    res <- new("adp")
-    res@data <- data
-    res@metadata <- metadata
+    res@manufacturer <- "nortek"
+    res@instrumentType <- type #"aquadopp-hr"
+    res@filename <- filename
+    res@manufacturer <- "nortek"
+    res@latitude <- latitude
+    res@longitude <- longitude
+    res@numberOfSamples <- dim(v)[1]
+    res@numberOfCells <- dim(v)[2]
+    res@numberOfBeams <- dim(v)[3]
+    res@numberOfBeamSequencesPerBurst <- header$user$numberOfBeamSequencesPerBurst
+    res@measurementStart <- measurementStart
+    res@measurementEnd <- measurementEnd
+    res@measurementDeltat <- measurementDeltat
+    res@subsampleStart <- time[1]
+    res@subsampleEnd <- time[length(time)]
+    res@subsampleDeltat <- as.numeric(time[2]) - as.numeric(time[1])
+    res@size <- header$head$size
+    res@serialNumber <- header$hardware$serialNumber
+    res@internalCodeVersion <- header$hardware$picVersion
+    res@hardwareRevision <- header$hardware$hwRevision
+    res@recSize <- header$hardware$recSize
+    res@velocityRange <- header$hardware$velocityRange # FIXME: should check against velocityMaximum
+    res@firmwareVersion <- header$hardware$fwVersion
+    res@config <- header$hardware$config
+    res@configPressureSensor <- header$head$configPressureSensor
+    res@configMagnetometerSensor <- header$head$configMagnetometerSensor
+    res@configTiltSensor <- header$head$configTiltSensor
+    res@beamAngle <- 25     # FIXME: may change with new devices
+    res@tiltSensorOrientation <- header$head$tiltSensorOrientation
+    res@orientation <- orientation
+    res@frequency <- header$head$frequency
+    res@headSerialNumber <- header$head$headSerialNumber
+    res@bin1Distance <- header$user$blankingDistance # FIXME: is this right?
+    res@blankingDistance <- header$user$blankingDistance
+    res@measurementInteres <- header$user$measurementInteres
+    res@transformationMatrix <- header$head$transformationMatrix
+    res@deploymentName <- header$user$deploymentName
+    res@cellSize <- header$user$cellSize
+    res@velocityResolution <- velocityScale
+    res@velocityMaximum <- velocityScale * 2^15
+    res@originalCoordinate <- header$user$originalCoordinate
+    res@oceCoordinate <- header$user$originalCoordinate
+    res@oceBeamUnspreaded <- FALSE
+                     
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogItem(processingLog)

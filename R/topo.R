@@ -50,7 +50,7 @@ setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
@@ -61,19 +61,19 @@ setMethod(f="subset",
                   oceDebug(debug, "subsetting a topo object by longitude\n")
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
-                  rval[["longitude"]] <- x[["longitude"]][keep]
-                  rval[["z"]] <- x[["z"]][keep,]
+                  res[["longitude"]] <- x[["longitude"]][keep]
+                  res[["z"]] <- x[["z"]][keep,]
               } else if (length(grep("latitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by latitude\n")
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
                   oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
-                  rval[["latitude"]] <- x[["latitude"]][keep]
-                  rval[["z"]] <- x[["z"]][,keep]
+                  res[["latitude"]] <- x[["latitude"]][keep]
+                  res[["z"]] <- x[["z"]][,keep]
               } else {
                   stop("the subset must be based on longitude or latitude")
               }
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 
@@ -376,7 +376,7 @@ read.topo <- function(file, ...)
             dim <- ncdf4::ncvar_get(ncdf, "dimension")
             z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
             z <- z[,dim[2]:1]
-            rval <- as.topo(longitude, latitude, z, filename=file)
+            res <- as.topo(longitude, latitude, z, filename=file)
         }
     } else {
         ## ASCII
@@ -410,11 +410,11 @@ read.topo <- function(file, ...)
         z <- t(zz[dim(zz)[1]:1,])
         if (!is.na(missingValue))
             z[z == missingValue] <- NA
-        rval <- as.topo(longitude, latitude, z, filename=file) # FIXME: add units here
+        res <- as.topo(longitude, latitude, z, filename=file) # FIXME: add units here
     }
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+    res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res
 }
 
 as.topo <- function(longitude, latitude, z, units, filename="")
@@ -436,9 +436,9 @@ as.topo <- function(longitude, latitude, z, units, filename="")
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
-    rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+    res <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
+    res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res
 }
 

@@ -268,7 +268,7 @@ as.gps <- function(longitude, latitude, filename="")
         latitude <- longitude[["latitude"]]
         longitude <- longitude[["longitude"]]
     }
-    rval <- new('gps', longitude=longitude, latitude=latitude, filename=filename)
+    new('gps', longitude=longitude, latitude=latitude, filename=filename)
 }
 
 
@@ -303,8 +303,8 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)
-    rval <- new("gps", longitude=latlon[,2], latitude=latlon[,1], file=filename)
+    res <- new("gps", longitude=latlon[,2], latitude=latlon[,1], file=filename)
     oceDebug(debug, "} # read.gps()\n", sep="", unindent=1)
-    rval
+    res
 }
 

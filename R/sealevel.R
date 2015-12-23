@@ -41,18 +41,18 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="sealevel",
           definition=function(x, subset, ...) {
-              rval <- new("sealevel")
-              rval@metadata <- x@metadata
-              rval@processingLog <- x@processingLog
+              res <- new("sealevel")
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
                   r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
-                  rval@data[[i]] <- x@data[[i]][r]
+                  res@data[[i]] <- x@data[[i]][r]
               }
-              names(rval@data) <- names(x@data)
+              names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
+              res
           })
  
 
@@ -105,7 +105,7 @@ as.sealevel <- function(elevation,
 {
     if (missing(elevation))
         stop("must supply sealevel height, elevation, in metres")
-    rval <- new('sealevel')
+    res <- new('sealevel')
     n <- length(elevation)
     if (missing(time)) {              # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
@@ -119,27 +119,27 @@ as.sealevel <- function(elevation,
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
     if (is.na(deltat) | deltat <= 0)
         deltat <- 1
-    rval@metadata$filename <- ""
-    rval@metadata$header <- header
-    rval@metadata$year <- year
-    rval@metadata$stationNumber <- stationNumber
-    rval@metadata$stationVersion <- stationVersion
-    rval@metadata$stationName <- stationName
-    rval@metadata$region <- region
-    rval@metadata$latitude <- latitude
-    rval@metadata$longitude <- longitude
-    rval@metadata$GMTOffset <- GMTOffset
-    rval@metadata$decimationMethod <- decimationMethod
-    rval@metadata$referenceOffset <- referenceOffset
-    rval@metadata$referenceCode <- referenceCode
-    rval@metadata$units <- units
-    rval@metadata$n <- length(t)
-    rval@metadata$deltat <- deltat
+    res@metadata$filename <- ""
+    res@metadata$header <- header
+    res@metadata$year <- year
+    res@metadata$stationNumber <- stationNumber
+    res@metadata$stationVersion <- stationVersion
+    res@metadata$stationName <- stationName
+    res@metadata$region <- region
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$GMTOffset <- GMTOffset
+    res@metadata$decimationMethod <- decimationMethod
+    res@metadata$referenceOffset <- referenceOffset
+    res@metadata$referenceCode <- referenceCode
+    res@metadata$units <- units
+    res@metadata$n <- length(t)
+    res@metadata$deltat <- deltat
     logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval@data$elevation <- elevation
-    rval@data$time <- time
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
-    rval
+    res@data$elevation <- elevation
+    res@data$time <- time
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()),sep="",collapse=""))
+    res
 }
 
 setMethod(f="plot",
@@ -363,7 +363,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     decimationMethod <- NA
     referenceOffset <- NA
     referenceCode <- NA
-    rval <- new('sealevel')
+    res <- new('sealevel')
     if (substr(firstLine, 1, 12) == "Station_Name") { # type 2
         oceDebug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
         ## Station_Name,HALIFAX
@@ -461,29 +461,29 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     num.missing <- sum(is.na(elevation))
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
     data <- data.frame(time=time, elevation=elevation)
-    rval@metadata$filename <- filename
-    rval@metadata$header <- header
-    rval@metadata$year <- year
-    rval@metadata$stationNumber <- stationNumber
-    rval@metadata$stationVersion <- stationVersion
-    rval@metadata$stationName <- stationName
-    rval@metadata$region <- region
-    rval@metadata$latitude <- latitude
-    rval@metadata$longitude <- longitude
-    rval@metadata$GMTOffset <- GMTOffset
-    rval@metadata$decimationMethod <- decimationMethod
-    rval@metadata$referenceOffset <- referenceOffset
-    rval@metadata$referenceCode <- referenceCode
-    rval@metadata$units <- NA
-    rval@metadata$n <- length(time)
-    rval@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
+    res@metadata$filename <- filename
+    res@metadata$header <- header
+    res@metadata$year <- year
+    res@metadata$stationNumber <- stationNumber
+    res@metadata$stationVersion <- stationVersion
+    res@metadata$stationName <- stationName
+    res@metadata$region <- region
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$GMTOffset <- GMTOffset
+    res@metadata$decimationMethod <- decimationMethod
+    res@metadata$referenceOffset <- referenceOffset
+    res@metadata$referenceCode <- referenceCode
+    res@metadata$units <- NA
+    res@metadata$n <- length(time)
+    res@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
     if (missing(processingLog))
         processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
-    rval@data$elevation <- elevation
-    rval@data$time <- time
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+    res@data$elevation <- elevation
+    res@data$time <- time
+    res@processingLog <- processingLogAppend(res@processingLog,
                                               paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
-    rval
+    res
 }
 
 

@@ -86,7 +86,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
     res <- new('windrose')
     res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi,
                      count=count, mean=mean, fives=fives)
-    res@metadata <- list(dtheta=dtheta)
+    res@metadata$dtheta <- dtheta
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # as.windrose()\n", sep="", unindent=1)
     res

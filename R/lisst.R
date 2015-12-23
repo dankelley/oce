@@ -96,7 +96,7 @@ setMethod(f="plot",
 
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
-    rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
+    res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
     if (ncols < 42)
         stop("data file must hold at least 42 space-separated columns")
@@ -125,9 +125,9 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     decimalday <- day + hour / 24 + minute / 60 / 24 + second / 24 / 60 / 60
     t0 <- as.POSIXct(paste(year, "-01-01 00:00:00", sep=""), tz=tz)
     data$time <- t0 + 86400 * decimalday / 365.25
-    rval@data <- data
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@data <- data
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)

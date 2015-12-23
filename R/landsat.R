@@ -215,11 +215,11 @@ setMethod(f="[[",
                       jlook <- seq.int(1, dim[2], by=decimate)
                       if (isList) {
                           lsb <- lsb[ilook, jlook] # rewrite in place, possibly saving memory
-                          rval <- if (is.null(dim(msb))) as.integer(lsb) else
+                          res <- if (is.null(dim(msb))) as.integer(lsb) else
                               256L*as.integer(msb[ilook,jlook]) + as.integer(lsb)
-                          dim(rval) <- dim(lsb)
+                          dim(res) <- dim(lsb)
                           oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
-                          return(rval)
+                          return(res)
                       } else {
                           oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
                           return(d[ilook, jlook])
@@ -237,10 +237,10 @@ setMethod(f="[[",
                           if (!is.null(dim(msb)))
                               msb <- msb[ilook, jlook]
                           lsb <- lsb[ilook, jlook]
-                          rval <- 256L*as.integer(msb) + as.integer(lsb)
-                          dim(rval) <- dim(lsb)
+                          res <- 256L*as.integer(msb) + as.integer(lsb)
+                          dim(res) <- dim(lsb)
                           oceDebug(debug, "} # landsat [[\n", unindent=1)
-                          return(rval)
+                          return(res)
                       } else {
                           d <- d[ilook, jlook]
                           oceDebug(debug, "} # landsat [[\n", unindent=1)
@@ -250,10 +250,10 @@ setMethod(f="[[",
               }
               ## OK, no decimation is requested, so just return the desired value.
               if (isList) {
-                  rval <- 256L*as.integer(msb) + as.integer(lsb)
-                  dim(rval) <- dim(lsb)
+                  res <- 256L*as.integer(msb) + as.integer(lsb)
+                  dim(res) <- dim(lsb)
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
-                  return(rval)
+                  return(res)
               } else {
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
                   return(d)
@@ -437,15 +437,15 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
     getItem <- function(name, numeric=TRUE)
     {
         line <- grep(paste("^[ ]*", name, "[ ]*=[ ]*", sep=""), info)
-        rval <- NULL
+        res <- NULL
         if (length(line)) {
-            rval <- strsplit(info[line[1]], "=")[[1]][2]
-            rval <- gsub("^[ ]+", "", rval)
-            rval <- gsub("[ ]+$", "", rval)
+            res <- strsplit(info[line[1]], "=")[[1]][2]
+            res <- gsub("^[ ]+", "", res)
+            res <- gsub("[ ]+$", "", res)
         }
-        rval <- if (numeric) as.numeric(rval) else gsub("\"", "", rval)
+        res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
         ##oceDebug(debug, "read item", name, "\n")
-        rval
+        res
     }
     info <- readLines(file, warn=FALSE)
     date <- getItem("DATE_ACQUIRED", numeric=FALSE)
@@ -539,7 +539,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
                  ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
-    rval <- new("landsat")
+    res <- new("landsat")
     file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
     actualfilename <- gsub(".*/", "", actualfilename)
@@ -567,16 +567,16 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     band <- band2
     oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
     for (name in names(header))
-        rval@metadata[[name]] <- header[[name]]
-    rval@metadata[["spacecraft"]] <- header$spacecraft
-    rval@metadata[["id"]] <- header$id
-    rval@metadata[["emissivity"]] <- emissivity
-    rval@metadata[["filename"]] <- file
-    rval@metadata[["headerfilename"]] <- headerfilename
+        res@metadata[[name]] <- header[[name]]
+    res@metadata[["spacecraft"]] <- header$spacecraft
+    res@metadata[["id"]] <- header$id
+    res@metadata[["emissivity"]] <- emissivity
+    res@metadata[["filename"]] <- file
+    res@metadata[["headerfilename"]] <- headerfilename
     ## Bandnames differ by satellite.
-    rval@metadata[["bands"]] <- band # FIXME: still ok?
+    res@metadata[["bands"]] <- band # FIXME: still ok?
     actualfilename <- gsub(".*/", "", file)
-##    rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
+##    res@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1) 
     ## print(header$bandsuffices)
@@ -585,7 +585,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
         ##bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
         bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
         ## message(bandfilename)
-        ##rval@metadata[["filename"]] <- bandfilename 
+        ##res@metadata[["filename"]] <- bandfilename 
         oceDebug(debug, "reading \"", header$bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
         d <- tiff::readTIFF(bandfilename)
@@ -594,20 +594,20 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
         #if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_7") {
         if ("LANDSAT_8" == header$spacecraft) {
             d <- .Call("landsat_numeric_to_bytes", d, 16) # reuse 'd' to try to save storage
-            rval@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
+            res@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
                                                            lsb=.Call("landsat_transpose_flip", d$lsb))
         } else {
             ## FIXME: assume all others are 1-byte, like LANDSAT_7
             d <- .Call("landsat_numeric_to_bytes", d, 8) # reuse 'd' to try to save storage
-            rval@data[[header$bandnames[band[b]]]] <- list(msb=0,
+            res@data[[header$bandnames[band[b]]]] <- list(msb=0,
                                                            lsb=.Call("landsat_transpose_flip", d$lsb))
         }
     }
     options(warn=options$warn) 
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+    res@processingLog <- processingLogAppend(res@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.landsat()\n", unindent=1)
-    rval
+    res
 }
 
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
@@ -620,9 +620,9 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
     dimOld <- dim(x@data[[1]]$msb)
     if (any(dimNew != dimOld))
         stop("dim(data) = c(", dimNew[1], ",", dimNew[2], ") must match existing dimension c(", dimOld[1], ",", dimOld[2], ")")
-    rval <- x
-    rval@data[[name]] <- data
-    rval
+    res <- x
+    res@data[[name]] <- data
+    res
 }
 
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))

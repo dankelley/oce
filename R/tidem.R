@@ -577,20 +577,19 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     ##     ~/src/t_tide_v1.3beta/t_tide.m:468
     ##     ~/src/foreman/tide12_r2.f:422
 
-    data <- list(model=model,
-                 call=cl,
-                 tRef=tRef,
-                 const=c(1,   index),
-                 name=c("Z0", name),
-                 freq=c(0,    freq),
-                 amplitude=amplitude,
-                 phase=phase,
-                 p=p)
-    rval <- new('tidem')
-    rval@metadata <- list(rc=rc)
-    rval@data <- data
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res <- new('tidem')
+    res@data <- list(model=model,
+                      call=cl,
+                      tRef=tRef,
+                      const=c(1,   index),
+                      name=c("Z0", name),
+                      freq=c(0,    freq),
+                      amplitude=amplitude,
+                      phase=phase,
+                      p=p)
+    res@metadata$rc <- rc
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 
@@ -615,14 +614,14 @@ predict.tidem <- function(object, newdata, ...)
             name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
             dim(name2) <- c(2 * length(name), 1)
             colnames(x) <- name2
-            rval <- predict(object@data$model, newdata=list(x=x), ...)
+            res <- predict(object@data$model, newdata=list(x=x), ...)
         } else {
             stop("newdata must be of class POSIXt")
         }
     } else {
-        rval <- predict(object@data$model, ...)
+        res <- predict(object@data$model, ...)
     }
-    as.numeric(rval)
+    as.numeric(res)
 }
 
 webtide <- function(action=c("map", "predict"),

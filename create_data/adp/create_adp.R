@@ -1,4 +1,7 @@
 library(oce)
+## try(source("~/src/oce/R/oce.R"))
+## try(source("~/src/oce/R/adp.R"))
+## try(source("~/src/oce/R/adp.rdi.R"))
 beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
                  from=as.POSIXct("2008-06-26", tz="UTC"),
                  to=as.POSIXct("2008-06-27", tz="UTC"),

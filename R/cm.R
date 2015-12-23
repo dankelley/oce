@@ -92,7 +92,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         open(file, "rb")
         on.exit(close(file))
     }
-    metadata <- list(filename=filename)
     ## Examine the first line of the file, to get serial number, etc.
     items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE) # slow, but just one line
     oceDebug(debug, "line 1 contains: ", paste(items, collapse=" "), "\n")
@@ -210,20 +209,20 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    rval <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
-                u=u[keep], v=v[keep], heading=heading[keep],
-                conductivity=conductivity[keep],
-                salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
-    rval@metadata$filename <- filename
-    rval@metadata$serialNumber <- serialNumber
-    rval@metadata$version <- version
-    rval@metadata$type <- type
-    rval@metadata$longitude <- longitude
-    rval@metadata$latitude <- latitude
+    res <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
+               u=u[keep], v=v[keep], heading=heading[keep],
+               conductivity=conductivity[keep],
+               salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
+    res@metadata$filename <- filename
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$version <- version
+    res@metadata$type <- type
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    rval@processingLog <- processingLogAppend(rval@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
-    rval
+    res
 }
 
 setMethod(f="plot",

@@ -46,18 +46,18 @@ setMethod(f="summary",
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
-              rval <- new("met") # start afresh in case x@data is a data.frame
-              rval@metadata <- x@metadata
-              rval@processingLog <- x@processingLog
+              res <- new("met") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
                   r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
-                  rval@data[[i]] <- x@data[[i]][r]
+                  res@data[[i]] <- x@data[[i]][r]
               }
-              names(rval@data) <- names(x@data)
+              names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+              res
           })
  
 

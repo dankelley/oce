@@ -166,7 +166,7 @@ setMethod(f="[[",
                       x@metadata[[i]]
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
-                  ## rval <- as(x, "oce")[[i, j, drop]]
+                  ## res <- as(x, "oce")[[i, j, drop]]
                   as(x, "oce")[[i]]
               }
           })
@@ -447,7 +447,6 @@ as.ctd <- function(salinity, temperature, pressure, conductivity, SA, CT, oxygen
     if (1 < length(longitude) && length(longitude) != length(salinity))
         stop("lengths of salinity and longitude must match")
     ## FIXME: should sampleInterval be a default?
-    ##metadata <- list(sampleInterval=sampleInterval, names=names, labels=labels)
     res@metadata$names <- names
     res@metadata$labels <- labels
     if (!missing(filename)) res@metadata$filename <- filename
@@ -1040,7 +1039,7 @@ ctdUpdateHeader <- function (x, debug = FALSE)
     ## ... fill in ...
     ## adjust column ranges
     nquan <- length(x@data)
-    rval <- x
+    res <- x
     h <- x@metadata$header
     for (i in seq_along(x@data)) {
         r <- range(x@data[[i]])
@@ -1048,8 +1047,8 @@ ctdUpdateHeader <- function (x, debug = FALSE)
         span <- sprintf("# span %d = %g, %g", i, r[1], r[2])
         h <- replaceHeaderElement(h, prefix, span)
     }
-    rval@metadata$header <- h
-    rval
+    res@metadata$header <- h
+    res
 }
 
 write.ctd <- function(object, file=stop("'file' must be specified"))
@@ -1638,18 +1637,18 @@ setMethod(f="plot",
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              rval <- new("ctd") # start afresh in case x@data is a data.frame
-              rval@metadata <- x@metadata
-              rval@processingLog <- x@processingLog
+              res <- new("ctd") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
                   r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
-                  rval@data[[i]] <- x@data[[i]][r]
+                  res@data[[i]] <- x@data[[i]][r]
               }
-              names(rval@data) <- names(x@data)
+              names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              res
           })
  
 
@@ -1757,7 +1756,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
             stop("type must be SBE19, WOCE, ODF, ODV, or ITP, not ", type)
         }
     }                                   # FIXME: should just use oce.magic() here
-    rval <- switch(type,
+    res <- switch(type,
                    SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
                                         debug=debug, processingLog=processingLog, ...),
                    WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
@@ -1769,11 +1768,11 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
                    ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
     ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
-    #if (!"waterDepth" %in% names(rval@metadata)) # may be entirely missing
-    #    rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
-    #if (rval@metadata$waterDepth < 1)   # may be silly
-    #    rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
-    rval
+    #if (!"waterDepth" %in% names(res@metadata)) # may be entirely missing
+    #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
+    #if (res@metadata$waterDepth < 1)   # may be silly
+    #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
+    res
 }
 
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
@@ -1785,14 +1784,14 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         nfiles <- length(files)
         if (monitor)
             pb <- txtProgressBar(1, nfiles, style=3)
-        rval <- vector("list", nfiles)
+        res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            rval[[i]] <- read.ctd.woce(files[i], debug=debug-1)
+            res[[i]] <- read.ctd.woce(files[i], debug=debug-1)
             if (monitor)
                 setTxtProgressBar(pb, i)
         }
         oceDebug(debug, "} # read.ctd.woce() {\n")
-        return(rval)
+        return(res)
     }
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
     oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
@@ -1881,29 +1880,29 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
         data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
-        metadata <- list(header=header,
-                         filename=filename, # provided to this routine
-                         filename.orig=filename.orig, # from instrument
-                         systemUploadTime=systemUploadTime,
-                         units=list(temperature="ITS-90", conductivity="ratio"),
-                         pressureType="sea",
-                         ship=ship,
-                         scientist=scientist,
-                         institute=institute,
-                         address=address,
-                         cruise=NULL,
-                         station=station,
-                         deploymentType="unknown",
-                         date=date,
-                         startTime=startTime,
-                         latitude=latitude,
-                         longitude=longitude,
-                         recovery=recovery,
-                         waterDepth=max(abs(data$pressure), na.rm=TRUE), # not in header
-                         sampleInterval=sampleInterval,
-                         names=names,
-                         labels=labels,
-                         src=filename)
+        res@metadata$header <- header
+        res@metadata$filename <- filename # provided to this routine
+        res@metadata$filename.orig <- filename.orig # from instrument
+        res@metadata$systemUploadTime <- systemUploadTime
+        res@metadata$units <- list(temperature <- "ITS-90", conductivity <- "ratio")
+        res@metadata$pressureType <- "sea"
+        res@metadata$ship <- ship
+        res@metadata$scientist <- scientist
+        res@metadata$institute <- institute
+        res@metadata$address <- address
+        res@metadata$cruise <- NULL
+        res@metadata$station <- station
+        res@metadata$deploymentType <- "unknown"
+        res@metadata$date <- date
+        res@metadata$startTime <- startTime
+        res@metadata$latitude <- latitude
+        res@metadata$longitude <- longitude
+        res@metadata$recovery <- recovery
+        res@metadata$waterDepth <- max(abs(data$pressure), na.rm <- TRUE) # not in header
+        res@metadata$sampleInterval <- sampleInterval
+        res@metadata$names <- names
+        res@metadata$labels <- labels
+        res@metadata$src <- filename
     } else {                           # CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
@@ -2152,19 +2151,19 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     ## if single number, it's decimal degrees; if two numbers, degrees and then decimal minutes
     xx <- strsplit(x, '[ \\t]+')[[1]]
     if (1 == length(xx)) {
-        rval <- as.numeric(xx)
-        oceDebug(debug, "  step 4a. \"", rval, "\" (inferred from single #, decimal degrees)\n", sep="")
+        res <- as.numeric(xx)
+        oceDebug(debug, "  step 4a. \"", res, "\" (inferred from single #, decimal degrees)\n", sep="")
     } else if (2 == length(xx)) {
-        rval <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
-        oceDebug(debug, "  step 4b. \"", rval, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
+        res <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
+        oceDebug(debug, "  step 4b. \"", res, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
     } else {
         ## 2014-06-17 it's annoying to see this error msg
         ##warning("cannot decode latitude or longitude from \"", line, "\"")
-        rval <- NA
+        res <- NA
     }
-    rval <- rval * sign
+    res <- res * sign
     oceDebug(debug, "} # parseLatLon()\n", unindent=1)
-    rval
+    res
 }
 
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
@@ -2185,14 +2184,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         nfiles <- length(files)
         if (monitor)
             pb <- txtProgressBar(1, nfiles, style=3)
-        rval <- vector("list", nfiles)
+        res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            rval[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
+            res[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
             if (monitor)
                 setTxtProgressBar(pb, i)
         }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
-        return(rval)
+        return(res)
     }
     oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
 
@@ -3656,7 +3655,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         temperature <- d[, Tcol]
         salinity <- d[, Scol]
         oxygen <- d[, Ocol]
-        rval <- as.ctd(salinity, temperature, pressure,
+        res <- as.ctd(salinity, temperature, pressure,
                        longitude=longitude, latitude=latitude,
                        startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                        station=station)
@@ -3664,7 +3663,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
     oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
-    rval
+    res
 }
 
 
