@@ -178,6 +178,10 @@ drawPalette <- function(zlim, zlab="",
     oceDebug(debug, "breaksGiven =", breaksGiven, "\n")
     oceDebug(debug, "fullpage =", fullpage, "\n")
     haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
+    if (colormapGiven && !zlimGiven) {
+        zlim <- colormap$zlim
+        zlimGiven <- TRUE
+    }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
         zlimOrig <- zlim
