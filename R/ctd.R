@@ -160,10 +160,11 @@ setMethod(f="[[",
                   ## FIXME-gsw: permit gsw version here
                   swDepth(x)
               } else if (length(grep("Unit$", i))) {
-                  if ("units" %in% names(x@metadata))
+                  if ("units" %in% names(x@metadata)) {
                       x@metadata$units[[gsub("Unit$", "", i)]]
-                  else
+                  } else {
                       x@metadata[[i]]
+                  }
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
                   ## res <- as(x, "oce")[[i, j, drop]]
@@ -757,6 +758,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     res <- as.ctd(odf)
     if (!is.null(station))
         res@metadata$station <- station
+    res@metadata$units <- list(temperature="ITS-90", conductivity="ratio") # FIXME just a guess for ODV
     oceDebug(debug, "} # read.ctd.odf()")
     res
 }
@@ -1884,7 +1886,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$systemUploadTime <- systemUploadTime
-        res@metadata$units <- list(temperature <- "ITS-90", conductivity <- "ratio")
+        res@metadata$units <- list(temperature="ITS-90", conductivity="ratio")
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist

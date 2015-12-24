@@ -265,7 +265,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
         res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     }
     res@metadata$startTime <- strptime(res@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
-                                        "%d-%B-%Y %H:%M:%S", tz="UTC")
+                                       "%d-%B-%Y %H:%M:%S", tz="UTC")
     res@metadata$filename <- res@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
     res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     res@metadata$ship <- res@metadata$odfHeader$CRUISE_HEADER$PLATFORM
@@ -430,6 +430,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
     res@metadata$header <- NULL
+    res@metadata$units <- list(temperature="ITS-90", conductivity="ratio") # FIXME: this is just a guess on ODF units!
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -474,7 +475,6 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after converting ODF time to R time\n", Sys.time()-t0))
     res@metadata$names <- names
     res@metadata$labels <- names
-    res <- new("odf")
     res@data <- as.list(data)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
