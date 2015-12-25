@@ -1,7 +1,7 @@
 read.index <- function(file, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     if (is.character(file)) {
-        filename <- fullFilename(file)
+        ##filename <- fullFilename(file)
         file <- file(file, "r")
         on.exit(close(file))
     }

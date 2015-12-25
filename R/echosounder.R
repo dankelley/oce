@@ -454,7 +454,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                              processingLog)
 {
     oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="", unindent=1)
-    ofile <- file
+    ##ofile <- file
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -519,20 +519,20 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     offset <- 0
     timeSlow <- latitudeSlow <- longitudeSlow <- NULL # accumulate using c() because length unknown
     timeLast <- 0
-    first <- TRUE
+    ##first <- TRUE
     scan <- 1
-    intensity <- list()
+    ##intensity <- list()
     time <- list()
-    samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
+    ##samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
     channelNumber <- NULL
-    channelID <- NULL
+    ##channelID <- NULL
     channelDeltat <- NULL
     blankedSamples <- 0
     fileType <- "unknown" 
     range <- NULL
     beamType <- "unknown"
     while (offset < fileSize) {
-        print <- debug && tuple < 200
+        ##print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
@@ -730,7 +730,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ## interpolate to "fast" latitude and longitude, after extending to ensure spans
     ## enclose the ping times.
     n <- length(latitudeSlow)
-    t <- c(2*timeSlow[1]-timeSlow[2], timeSlow, 2*timeSlow[n] - timeSlow[n-1])
+    ##t <- c(2*timeSlow[1]-timeSlow[2], timeSlow, 2*timeSlow[n] - timeSlow[n-1])
     approx2 <- function(x, y, xout)
     {
         nx <- length(x)

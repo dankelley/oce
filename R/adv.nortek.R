@@ -384,8 +384,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat("q[", dim(q), "] begins...\n")
         print(matrix(as.numeric(q[1:min(3,vvdLen),]), ncol=3))
     }
-    sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
-    vds <- var(diff(sec))
+    ##sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
+    ##vds <- var(diff(sec))
     ##BAD: vvdSec <- .Call("stutter_time", sec, 8)
     #######vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
     #######oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
@@ -394,7 +394,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rm(buf)
     gc()
     ## subset using 'by'
-    by.orig <- by
+    ##by.orig <- by
     if (is.character(by)) {
         oceDebug(debug, "by='",by,"' given as argument to read.adv.nortek()\n",sep="")
         oceDebug(debug, " ... infer to be", ctimeToSeconds(by), "s\n")
@@ -404,7 +404,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     len <- length(vvdStart)
     look <- seq(1, len, by=by)
     oceDebug(debug, "length(vvdStart)=",length(vvdStart),"\n")
-    vvdStart.orig <- vvdStart
+    ##vvdStart.orig <- vvdStart
     vvdStart <- vvdStart[look]
     oceDebug(debug, "length(vvdStart)=",length(vvdStart),"(after 'look'ing) with by=", by, "\n")
     ######vvdSec <- vvdSec[look]

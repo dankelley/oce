@@ -10,11 +10,11 @@ fileSize <- seek(f, 0, origin="start", rw="read")
 nlon <- 360*12
 nlat <- 180*12
 n <- fileSize / 2
-expect_equal(n, nlon*nlat)
+testthat::expect_equal(n, nlon*nlat)
 z <- readBin(f, integer(), size=2, endian="big", n=n)
 z <- t(matrix(z, nrow=nlat, byrow=TRUE)) # the nlat vs nlon is confusing
-expect_equal(nlon, dim(z)[1])
-expect_equal(nlat, dim(z)[2])
+testthat::expect_equal(nlon, dim(z)[1])
+testthat::expect_equal(nlat, dim(z)[2])
 latitude <- seq(90, by=-1/12, length.out=nlat)
 longitude <- seq(0, by=1/12, length.out=nlon)
 zOrig <- z
@@ -41,10 +41,9 @@ z <- z[ilon2, ]
 longitude <- c(longitude[seq.int(cut+1, nlon)]-360, longitude[seq.int(1, cut)])
 topoWorld <- as.topo(longitude, latitude, z, filename="etopo5.dat",
                      units=list(longitude="degree east", latitude="degree north", z="m"))
-save(topoWorld, file="topoWorld.rda")
-library(tools)
-resaveRdaFiles("topoWorld.rda")
 close(f)
 
-load("topoWorld.rda")
-imagep(topoWorld)
+save(topoWorld, file="topoWorld.rda")
+library(tools)
+tools::resaveRdaFiles("topoWorld.rda")
+

@@ -6,7 +6,7 @@
 
 \description{Remove spikes from a time series}
 
-\usage{despike(x, reference=c("median","smooth", "trim"), n=4, k=7, min, max,
+\usage{despike(x, reference=c("median","smooth", "trim"), n=4, k=7, min=NA, max=NA,
         replace=c("reference", "NA"), skip)}
 
 \arguments{

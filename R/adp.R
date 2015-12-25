@@ -120,7 +120,7 @@ setMethod(f="summary",
               }
               cat("\n")
               ## start building res from the header information
-              haveData <- !is.null(object@data)
+              ## haveData <- !is.null(object@data)
               res <- resSpecific
               res$measurementStart <- object@metadata$measurementStart
               res$measurementEnd <- object@metadata$measurementEnd
@@ -378,7 +378,7 @@ setMethod(f="subset",
 #' \dontrun{
 #' plot(a)
 #' }
-as.adp <- function(time, distance, v, a, q, orientation="upward", coordinate="enu")
+as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
     if (!missing(v)) {
@@ -718,7 +718,7 @@ setMethod(f="plot",
               images <- c(1:12, 70:73)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
-              speed <- 28
+              #speed <- 28
 
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
@@ -727,7 +727,7 @@ setMethod(f="plot",
               }
 
               tt <- x@data$time
-              ttDia <- x@data$timeDia  # may be null
+              ##ttDia <- x@data$timeDia  # may be null
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][,,which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
@@ -1555,7 +1555,7 @@ setMethod(f="plot",
                           if ("firstLatitude" %in% names(x@data)) {
                               lat <- x[["firstLatitude"]]
                               lon <- x[["firstLongitude"]]
-                              asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
+                              ##asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
                               plot(coastline, clatitude=mean(lat, na.rm=TRUE), clongitude=mean(lon, na.rm=TRUE), span=span)
                               points(lon, lat)
                               #plot(lon, lat, asp=asp, xlab="Latitude", ylab="Longitude")

@@ -325,7 +325,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     ##degToRad <- atan2(1, 1) / 45
     profileStart <- NULL # prevents scope warning in rstudio; defined later anyway
-    bisectAdpNortek <- function(t.find, add=0, debug=0) {
+    bisectAdpNortek <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profileStart)
         lower <- 1
@@ -369,9 +369,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         to <- NA                       # will catch this later
     oceDebug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
     res <- new("adp")
-    fromKeep <- from
-    toKeep <- to
-    syncCode <- as.raw(0xa5)
+    ##fromKeep <- from
+    ##toKeep <- to
+    ##syncCode <- as.raw(0xa5)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -393,12 +393,12 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     header <- decodeHeaderNortek(buf, type=type, debug=debug-1)
-    averagingInterval <- header$user$averagingInterval
+    ##averagingInterval <- header$user$averagingInterval
     numberOfBeams <- header$numberOfBeams
     numberOfCells <- header$numberOfCells
-    bin1Distance <- header$bin1Distance
-    xmitPulseLength <- header$xmitPulseLength
-    cellSize <- header$cellSize
+    ##bin1Distance <- header$bin1Distance
+    ##xmitPulseLength <- header$xmitPulseLength
+    ##cellSize <- header$cellSize
     ##profilesInFile <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset+1], " 0x", buf[header$offset+2], '\n', sep="")
@@ -439,9 +439,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        fromPair <- bisectAdpNortek(from, -1, debug-1)
+        fromPair <- bisectAdpNortek(buf, from, -1, debug-1)
         from <- fromIndex <- fromPair$index
-        toPair <- bisectAdpNortek(to, 1, debug-1)
+        toPair <- bisectAdpNortek(buf, to, 1, debug-1)
         to <- toIndex <- toPair$index
         oceDebug(debug, "  from=", format(fromPair$t), " yields profileStart[", fromIndex, "]\n",
                   "  to  =", format(toPair$t),   " yields profileStart[", toIndex, "]\n",

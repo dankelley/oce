@@ -6,7 +6,7 @@
 
 \description{Coerces a dataset  into a topo (topographic) dataset.}
 
-\usage{as.topo(longitude, latitude, z, units, filename="")}
+\usage{as.topo(longitude, latitude, z, units=NULL, filename="")}
 
 \arguments{
   \item{longitude}{either a vector of longitudes, or a \code{bathy} object

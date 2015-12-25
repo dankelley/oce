@@ -57,7 +57,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
     dt2 <- dt / 2
     R <- sqrt(x^2 + y^2)
     angle <- atan2(y, x)
-    L <- max(R, na.rm=TRUE)
+    ## L <- max(R, na.rm=TRUE)
     nt <- round(2 * pi / dt)
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)

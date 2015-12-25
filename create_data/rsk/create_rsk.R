@@ -9,5 +9,5 @@ rsk[["filename"]] <- NA
 rsk[["serialNumber"]] <- NA
 save(rsk, file="rsk.rda")
 library(tools)
-resaveRdaFiles("rsk.rda", compress="auto")
+tools::resaveRdaFiles("rsk.rda", compress="auto")
 summary(rsk)

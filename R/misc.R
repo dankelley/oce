@@ -127,7 +127,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
-    nx <- length(x)
+    ##nx <- length(x)
     if (missing(xbreaks))
         xbreaks <- pretty(x)
     nxbreaks <- length(xbreaks)
@@ -494,7 +494,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
     finite <- is.finite(x)
-    r <- range(x, na.rm=TRUE)
+    ##r <- range(x, na.rm=TRUE)
     if (missing(xlow))
         xlow <- min(x, na.rm=TRUE)
     if (missing(xhigh))
@@ -572,7 +572,7 @@ detrend <- function(x, y)
     list(Y=y-(a+b*x), a=a, b=b)
 }
 
-despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
+despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
                     replace=c("reference","NA"), skip)
 {
     if (is.vector(x)) {
@@ -606,13 +606,13 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, m
     x
 }
 
-despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
+despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
                           replace=c("reference","NA"))
 {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
-    gave.min <- !missing(min)
-    gave.max <- !missing(max)
+    gave.min <- !is.na(min)
+    gave.max <- !is.na(max)
     nx <- length(x)
     ## degap
     na <- is.na(x)
@@ -848,7 +848,7 @@ matchBytes <- function(input, b1, ...)
         stop("must provide \"input\"")
     if (missing(b1))
         stop("must provide at least one byte to match")
-    n <- length(input)
+    ##n <- length(input)
     dots <- list(...)
     lb <- 1 + length(dots)
     if (lb == 2)
@@ -1232,7 +1232,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
         stop("m must be odd")
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
-    return(kernel(coef=coef, name=paste(type, "(", m, ")", sep="")))
+    return(kernel(coef=coef, name=paste(type, "(", m, ")", sep=""), r=0)) # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
 }
 
 oce.filter <- function(x, a=1, b, zero.phase=FALSE)
@@ -1455,7 +1455,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         oceDebug(debug, "decimate() on an ADP object\n")
         warning("decimate(adp) not working yet ... just returning the adp unchanged")
         return(res) # FIXME
-        nbeam <- dim(x@data$v)[3]
+        ##nbeam <- dim(x@data$v)[3]
         for (name in names(x@data)) {
             oceDebug(debug, "decimating item named '", name, "'\n")
             if ("distance" == name)
@@ -1566,7 +1566,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             x <- res # need for next step
         }
         if (byPing > 1) {
-            time <- x[["time"]]
+            ##time <- x[["time"]]
             a <- x[["a"]]
             ncol <- ncol(a)
             nrow <- nrow(a)
@@ -1846,9 +1846,9 @@ magneticField <- function(longitude, latitude, time)
         dim(latitude) <- n
         dim(time) <- n
     }
-    isv <- 0
-    itype <- 1                          # geodetic
-    alt <- 0.0                          # altitude in km
+    ##isv <- 0
+    ##itype <- 1                          # geodetic
+    ##alt <- 0.0                          # altitude in km
     elong <- ifelse(longitude < 0, 360 + longitude, longitude)
     colat <- 90 - latitude
     r <- .Fortran("md_driver",
@@ -2002,7 +2002,7 @@ oceConvolve <- oce.convolve
 #' this will just be \code{names}.
 decodeDataNames <- function(names, scheme)
 {
-    schemeGiven <- !missing(scheme)
+    ##schemeGiven <- !missing(scheme)
     res <- names
     if (!missing(scheme)) {
         if (scheme == "ODF") {

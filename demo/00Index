@@ -5,5 +5,4 @@ eos		demonstrate some EOS functions
 geoddist	geodesic calculation
 lobo		summarize and plot a lobo datafile
 sealevel    	summarize and plot a sealevel file         
-section     	plot a section along 36N
 tide	    	tidal analysis of Tuktoyaktuk sea level

@@ -184,7 +184,7 @@ drawPalette <- function(zlim, zlab="",
     }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
-        zlimOrig <- zlim
+        ##zlimOrig <- zlim
         zlim <- as.numeric(zlim)
     }
     oceDebug(debug, "zIsTime=", zIsTime, "\n")
@@ -199,7 +199,7 @@ drawPalette <- function(zlim, zlab="",
         col <- colormap$col
         ## Trick the code below, to avoid auto-creating breaks
         breaksGiven <- TRUE
-        colGiven <- TRUE
+        ##colGiven <- TRUE
         if (!zlimGiven)
             zlim <- range(breaks)
         zlimGiven <- TRUE
@@ -448,7 +448,7 @@ imagep <- function(x, y, z,
     if (inherits(x, "POSIXt"))
         x <- as.POSIXct(x)
 
-    haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
+    ##haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
         if (!missing(y))
@@ -556,7 +556,7 @@ imagep <- function(x, y, z,
         y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
     }
     attr(x,'tzone') <- tz
-    omai <- par("mai")
+    ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
         mar <- c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)

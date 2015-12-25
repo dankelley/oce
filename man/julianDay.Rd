@@ -6,7 +6,7 @@
 
 \description{Convert a POSIXt time to a Julian day}
 
-\usage{julianDay(t, year, month, day, hour, min, sec, tz="UTC")}
+\usage{julianDay(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")}
 
 \arguments{
 

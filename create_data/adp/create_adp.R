@@ -19,5 +19,5 @@ adp@processingLog$time <- adp@processingLog$time[1]
 adp@processingLog$value <- "(data processing redacted)"
 save(adp, file='adp.rda')
 library(tools)
-resaveRdaFiles("adp.rda", compress="auto")
+tools::resaveRdaFiles("adp.rda", compress="auto")
 

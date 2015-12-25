@@ -100,7 +100,6 @@ if (requireNamespace("R.utils")) {
   R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
   rsk <- read.rsk(tmp)
   ctd <- as.ctd(rsk)
-  plot(ctdTrim(ctd))
 }
 }
 

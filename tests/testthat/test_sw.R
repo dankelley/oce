@@ -1,5 +1,6 @@
 library(oce)
 library(testthat)
+library(gsw)
 context("sw")
 # Table of contents.
 #  1. rho and sigma
@@ -53,10 +54,10 @@ latitude <- 4
 SP <- 35
 t <- 10
 p <- 1000
-SA <- gsw_SA_from_SP(SP, p, longitude, latitude)
-CT <- gsw_CT_from_t(SA, t, p)
+SA <- gsw::gsw_SA_from_SP(SP, p, longitude, latitude)
+CT <- gsw::gsw_CT_from_t(SA, t, p)
 # Test density.
-rhoGSW <- gsw_rho(SA, CT, p)
+rhoGSW <- gsw::gsw_rho(SA, CT, p)
 rho <- swRho(SP, t, p, longitude, latitude, "gsw")
 expect_equal(rhoGSW, rho)
 # Now use density to test sigma (not provided by gsw).
@@ -87,15 +88,15 @@ p <- 1000
 lon <- 300
 lat <- 30
 ctd <- as.ctd(SP, t, p, longitude=lon, latitude=lat)
-SA <- gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
-thetaGSW <- gsw_pt_from_t(SA, t, p, p_ref=0)
+SA <- gsw::gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
+thetaGSW <- gsw::gsw_pt_from_t(SA, t, p, p_ref=0)
 theta <- swTheta(SP, t, p, eos="gsw")
 expect_equal(thetaGSW, theta)
 theta <- swTheta(ctd, eos="gsw")
 expect_equal(thetaGSW, theta)
 
 # 3.  Absolute Salinity and Conservative Temperature
-CT <- gsw_CT_from_t(SA=SA, t=t, p=p)
+CT <- gsw::gsw_CT_from_t(SA=SA, t=t, p=p)
 expect_equal(SA, swAbsoluteSalinity(salinity=SP, pressure=p, longitude=lon, latitude=lat))
 expect_equal(SA, swAbsoluteSalinity(ctd))
 expect_equal(CT, swConservativeTemperature(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat))
@@ -105,10 +106,10 @@ expect_equal(CT, swConservativeTemperature(ctd))
 # 4.1 UNESCO
 stopifnot(all.equal(1731.995,swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),scale=1,tolerance=0.001))
 stopifnot(all.equal(1731.995,swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),scale=1,tolerance=0.001))
-SA <- gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
-CT <- gsw_CT_from_t(SA, 40, 1e4)
+SA <- gsw::gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
+CT <- gsw::gsw_CT_from_t(SA, 40, 1e4)
 # 4.2 GSW sound speed
-speedGSW <- gsw_sound_speed(SA, CT, 1e4)
+speedGSW <- gsw::gsw_sound_speed(SA, CT, 1e4)
 speed <- swSoundSpeed(salinity=40, temperature=40, pressure=1e4, longitude=300, latitude=30, eos="gsw")
 expect_equal(speedGSW, speed)
 
@@ -117,8 +118,8 @@ expect_equal(speedGSW, speed)
 Tf <- swTFreeze(40, 500, eos="unesco")
 expect_equal(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6)
 # 5.2 GSW freezing temperature 
-SA <- gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
-TfGSW <- gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
+SA <- gsw::gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
+TfGSW <- gsw::gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
 Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
 expect_equal(TfGSW, Tf)
 
@@ -132,8 +133,8 @@ lat <- 30
 C <- swSpecificHeat(salinity=SP, temperature=T90fromT68(t), pressure=p, eos="unesco")
 expect_equal(C, 3849.499, scale=1, tolerance=1e-3)
 # 6.2 GSW specific heat
-SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
-CGSW <- gsw_cp_t_exact(SA=SA, t=t, p=p)
+SA <- gsw::gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
+CGSW <- gsw::gsw_cp_t_exact(SA=SA, t=t, p=p)
 C <- swSpecificHeat(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat, eos="gsw")
 expect_equal(CGSW, C)
 
@@ -145,9 +146,9 @@ p <- 1e4
 l <- swLapseRate(salinity=SP, temperature=T90fromT68(t), pressure=p, eos="unesco")
 expect_equal(l, 3.255976e-4, tolerance=1e-7)
 # 7.2 GSW lapse rate
-SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
-CT <- gsw_CT_from_t(SA=SA, t=t, p=p)
-lGSW <- 1e4*gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=p) # convert to deg/m
+SA <- gsw::gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
+CT <- gsw::gsw_CT_from_t(SA=SA, t=t, p=p)
+lGSW <- 1e4*gsw::gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=p) # convert to deg/m
 l <- swLapseRate(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat, eos="gsw")
 expect_equal(lGSW, l)
 
@@ -174,11 +175,11 @@ lon <- 300
 lat <- 30
 a <- swAlpha(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
 b <- swBeta(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
-SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
-CT <- gsw_CT_from_t(SA=SA, t=t, p=p)
-aGSW <- gsw_alpha(SA=SA, CT=CT, p=p)
+SA <- gsw::gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
+CT <- gsw::gsw_CT_from_t(SA=SA, t=t, p=p)
+aGSW <- gsw::gsw_alpha(SA=SA, CT=CT, p=p)
 expect_equal(a, aGSW)
-bGSW <- gsw_beta(SA=SA, CT=CT, p=p)
+bGSW <- gsw::gsw_beta(SA=SA, CT=CT, p=p)
 expect_equal(b, bGSW)
 
 # 9. swSTrho
@@ -191,9 +192,9 @@ Su <- swSTrho(T90fromT68(T), rho, p, eos="unesco")
 stopifnot(all.equal(Su, 28.65114808083))
 stopifnot(all.equal(rho, swRho(Su, T90fromT68(t), 0, eos="unesco")))
 # 9.2 GSW swSTrho
-CT <- gsw_CT_from_t(Su, T, p)
+CT <- gsw::gsw_CT_from_t(Su, T, p)
 Sg <- swSTrho(CT, rho, p, eos="gsw")
-expect_equal(gsw_rho(Sg,CT,p), rho)
+expect_equal(gsw::gsw_rho(Sg,CT,p), rho)
 # The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
 # stopifnot(all.equal(Sg, 28.7842812841013, scale=1, tolerance=1e-8))
 
@@ -252,9 +253,9 @@ expect_equal(cond1, cond2)
 ## the C=1 value can be tested directly in gsw, but others are tested against gsw.
 expect_equal(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6)
 SP <- swSCTp(1.2, 20, 2000, eos="gsw")
-expect_equal(1.2, gsw_C_from_SP(SP, 20, 2000) / gsw_C_from_SP(35, 15, 0))
+expect_equal(1.2, gsw::gsw_C_from_SP(SP, 20, 2000) / gsw::gsw_C_from_SP(35, 15, 0))
 SP <- swSCTp(0.65, 5, 1500, eos="gsw")
-expect_equal(0.65, gsw_C_from_SP(SP, 5, 1500) / gsw_C_from_SP(35, 15, 0))
+expect_equal(0.65, gsw::gsw_C_from_SP(SP, 5, 1500) / gsw::gsw_C_from_SP(35, 15, 0))
 if (FALSE) {
     ## As above, see https://github.com/dankelley/oce/issues/746 for why these
     ## tests of conductivity ratio are FALSEd out.
@@ -273,7 +274,7 @@ expect_equal(depth, 9713.735, scale=1, tolerance=0.001)
 pressure <- swPressure(9712.653, 30, eos="unesco")
 expect_equal(pressure, 10000., scale=1, tolerance=0.001)
 pressure <- swPressure(9712.653, 30, eos="gsw")
-expect_equal(pressure, gsw_p_from_z(-9712.653, 30), scale=1, tolerance=0.001)
+expect_equal(pressure, gsw::gsw_p_from_z(-9712.653, 30), scale=1, tolerance=0.001)
 
 # 15. spiciness
 sp <- swSpice(35, T90fromT68(10), 100)

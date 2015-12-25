@@ -35,12 +35,11 @@ read.observatory.ctd <- function(file,
         open(file, "rb")
         on.exit(close(file))
     }
-    res@metadata$filename <- filename
     lines <- readLines(file)
     location <- lines[grep("Latitude", lines)]
     latitude <- as.numeric(gsub(" .*$", "", gsub("^.*Latitude\\(decdeg N\\): ", "", location)))
     longitude <- -as.numeric(gsub(" .*$", "", gsub("^.*Longitude\\(decdeg W\\): ", "", location)))
-    depth <- as.numeric(gsub("^.*Depth\\(m\\): ", "", location))
+    waterDepth <- as.numeric(gsub("^.*Depth\\(m\\): ", "", location)) ## FIXME: is this actually on that line?
     check <- min(100, length(lines))
     headerStartEnd <- grep('^%', lines[1:check])
     d <- read.csv(text=lines[-(1:headerStartEnd[2])])
@@ -53,8 +52,9 @@ read.observatory.ctd <- function(file,
     temperature <- d[,Tcol]
     pressure  <- d[,pcol]
     res <- as.ctd(salinity=salinity, temperature=temperature, pressure=pressure,
-                  latitude=latitude, longitude=longitude,
+                  latitude=latitude, longitude=longitude, waterDepth=waterDepth,
                   other=list(time=time))
+    res@metadata$filename <- filename
     oceDebug(debug, "} # read.observatory.ctd()\n", unindent=1)
     res
 }

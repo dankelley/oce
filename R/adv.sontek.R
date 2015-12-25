@@ -139,7 +139,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                                 longitude=NA, latitude=NA,
                                 debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
-    bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {
+    bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
         len <- length(burstTime)
         lower <- 1
@@ -193,7 +193,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     probeConfigurationLength <- 164
     deploymentParametersLength <- 253
     burstHeaderLength <- 60
-    checksumLength <- 2
+    ##checksumLength <- 2
     dataLength <- 22                   # FIXME: this should be determined based on the headers
     res <- new("adv")
     res@metadata$manufacturer <- "sontek"
@@ -432,10 +432,10 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
         fromToPOSIX <- TRUE
-        fromPair <- bisectAdvSontekAdr(from, add=-1, debug=debug-1)
+        fromPair <- bisectAdvSontekAdr(burstTime, from, add=-1, debug=debug-1)
         fromBurst <- fromPair$index
         oceDebug(debug, "fromKeep=", format(fromKeep), " yields burstTime[", fromBurst, "]=", format(fromPair$t), "\n")
-        toPair <- bisectAdvSontekAdr(to, add=1, debug=debug-1)
+        toPair <- bisectAdvSontekAdr(burstTime, to, add=1, debug=debug-1)
         toBurst <- toPair$index
         oceDebug(debug, "toKeep=", format(toKeep), " yields burstTime[", toBurst, "]=", format(toPair$t), "\n")
         ## burst offsets  FIXME: do we need these?
@@ -646,8 +646,8 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     heading <- hdt[,24]
     pitch <- hdt[,25]
     roll <- hdt[,26]
-    spb <- hdt[1,9]                      # FIXME may this change over time?
-    sr <- spb / 3600
+    ##spb <- hdt[1,9]                      # FIXME may this change over time?
+    ##sr <- spb / 3600
 
     tsFile <- file(ts, "rb")
     on.exit(close(tsFile))
@@ -670,7 +670,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     seek(tsFile, where=newlines[1], origin="start")
     d <- scan(tsFile, what="character", nlines=1, quiet=TRUE)
     oceDebug(debug, "first line in \".", suffices[2], "\" file: ", paste(d, collapse=" "), "\n")
-    itemsPerLine <- length(d)
+    ##itemsPerLine <- length(d)
     if (itemsPerSample != length(d))
         stop("file \".", suffices[2], "\" should have ", itemsPerSample, " elemetns per line, but it has ", length(d))
     oceDebug(debug, "elements per line in \".", suffices[2], "\" file: ", length(d), "\n")
@@ -735,7 +735,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     res@metadata$dspSoftwareVerNum <- res@metadata$dspSoftwareVerNum
     res@metadata$transformationMatrix <- if(!missing(transformationMatrix)) transformationMatrix else NULL
     res@metadata$orientation <- "upward" # FIXME: guessing on the orientation
-    res@metadata$deltat <- as.numeric(difftime(tt[2], tt[1], units <- "secs"))
+    res@metadata$deltat <- as.numeric(difftime(tt[2], tt[1], units="secs"))
     res@metadata$subsampleStart <- data$t[1]
     res@metadata$oceCoordinate <- originalCoordinate
     res@metadata$originalCoordinate <- originalCoordinate

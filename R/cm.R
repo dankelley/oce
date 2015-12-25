@@ -38,7 +38,7 @@ setMethod(f="summary",
               }
               rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              vDim <- dim(object@data$v)
+              ##vDim <- dim(object@data$v)
 
               cat("cm summary\n----------\n\n", ...)
               showMetadataItem(object, "filename",      "File source:        ")
@@ -189,7 +189,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             stop("if 'from' is POSIXt, then 'to' must be, also")
         if (!is.numeric(by) || by != 1)
             stop("sorry, 'by' must equal 1, in this version of read.cm.s4()")
-        from.to.POSIX <- TRUE
+        ##from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
         if (is.na(from.index))
             from.index <- 1
@@ -257,8 +257,8 @@ setMethod(f="plot",
                   on.exit(par(opar))
               par(mgp=mgp, mar=mar)
               dots <- list(...)
-              gave.ylim <- "ylim" %in% names(dots)
-              ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+              ##gave.ylim <- "ylim" %in% names(dots)
+              ##ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
               oceDebug(debug, "later on in plot.adp:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")

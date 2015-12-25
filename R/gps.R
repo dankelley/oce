@@ -98,7 +98,7 @@ setMethod(f="plot",
               latitude <- x[["latitude"]]
               dots <- list(...)
               dotsNames <- names(dots)
-              gave.center <- !missing(clongitude) && !missing(clatitude)
+              ##gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
                   stop("use 'clongitude' and 'clatitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
@@ -109,7 +109,7 @@ setMethod(f="plot",
               if (add) {
                   lines(longitude, latitude, ...)
               } else {
-                  gaveSpan <- !missing(span)
+                  ##gaveSpan <- !missing(span)
                   if (!missing(clatitude) && !missing(clongitude)) {
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
@@ -245,7 +245,7 @@ setMethod(f="plot",
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
-                      yscale <- 180 / (yaxp[2] - yaxp[1])
+                      ##yscale <- 180 / (yaxp[2] - yaxp[1])
                       ## FIXME: should allow type as an arg
                       points(x[["longitude"]], x[["latitude"]], ...)
                   } else {

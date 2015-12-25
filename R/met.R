@@ -113,24 +113,25 @@ read.met <- function(file, type=NULL, skip,
     latitude <- textItem(text, "Latitude")
     longitude <- textItem(text, "Longitude")
     station <- textItem(text, "Station Name", FALSE)
-    province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
+    ##province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
     climateIdentifier <- textItem(text, "Climate Identifier", FALSE)
     WMOIdentifier <- textItem(text, "WMO Identifier", FALSE)
     TCIdentifier <- textItem(text, "TC Identifier", FALSE)
-    Identifier <- textItem(text, "Climate Identifier", FALSE)
+    ##Identifier <- textItem(text, "Climate Identifier", FALSE)
     if (missing(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$elevation <- elevation
+    res@metadata$station <- station
     res@metadata$climateIdentifier <- climateIdentifier
     res@metadata$WMOIdentifier <- WMOIdentifier
     res@metadata$TCIdentifier <- TCIdentifier
     res@metadata$filename <- filename
     rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
     time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
-    ntime <- length(time)
+    ##ntime <- length(time)
     names <- names(rawData)
     ## Must use grep to identify columns, because the names are not fixed.  In some
     ## test files, temperature was in a column named "..Temp...C.", but in others
@@ -144,15 +145,15 @@ read.met <- function(file, type=NULL, skip,
     ## It would be good if someone from Environment Canada would take pity on a
     ## poor user, and convince the powers-that-be to settle on a single format
     ## and even (gasp) to document it.
-    j <- grep("^Temp.*C.*$", names(rawData))[1]
-    temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
-    pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
-    wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    speed <- wind * 1000 / 3600        # convert from km/h to m/s
-    j <- grep("^Wind.*deg.*$", names(rawData))[1]
-    direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Temp.*C.*$", names(rawData))[1]
+    ##temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
+    ##pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
+    ##wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##speed <- wind * 1000 / 3600        # convert from km/h to m/s
+    ##j <- grep("^Wind.*deg.*$", names(rawData))[1]
+    ##direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     rpd <- atan2(1, 1) / 45            # radian/degree
 
     names(rawData) <- decodeDataNames(names, "met")

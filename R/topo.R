@@ -116,7 +116,7 @@ setMethod(f="plot",
                   stop("method is only for objects of class '", "topo", "'")
               oceDebug(debug, "plot.topo() {\n", unindent=1)
 
-              opar <- par(no.readonly = TRUE)
+              ##opar <- par(no.readonly = TRUE)
               ##on.exit(par(opar))
               par(mgp=mgp, mar=mar)
               dots <- list(...)
@@ -258,7 +258,7 @@ setMethod(f="plot",
               }
 
               oceDebug(debug, "xr=", xr, "yr=",yr,"\n")
-              yaxp <- par("yaxp")
+              ##yaxp <- par("yaxp")
               oceDebug(debug, "par(yaxp)",par("yaxp"),"\n")
               oceDebug(debug, "par(pin)",par("pin"),"\n")
 
@@ -368,7 +368,7 @@ read.topo <- function(file, ...)
             ncdf <- ncdf4::nc_open(file)
             xrange <- ncdf4::ncvar_get(ncdf, "x_range")
             yrange <- ncdf4::ncvar_get(ncdf, "y_range")
-            zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+            ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
             spacing <- ncdf4::ncvar_get(ncdf, "spacing")
             longitude <- seq(xrange[1], xrange[2], by=spacing[1])
             latitude <- seq(yrange[1], yrange[2], by=spacing[2])
@@ -417,7 +417,7 @@ read.topo <- function(file, ...)
     res
 }
 
-as.topo <- function(longitude, latitude, z, units, filename="")
+as.topo <- function(longitude, latitude, z, units=NULL, filename="")
 {
     if (inherits(longitude, "bathy")) {
         bathy <- longitude
@@ -429,8 +429,8 @@ as.topo <- function(longitude, latitude, z, units, filename="")
     }
     ncols <- length(longitude)
     nrows <- length(latitude)
-    longitudeLowerLeft <- min(longitude, na.rm=TRUE)
-    latitudeLowerLeft <- min(latitude, na.rm=TRUE)
+    ## longitudeLowerLeft <- min(longitude, na.rm=TRUE)
+    ## latitudeLowerLeft <- min(latitude, na.rm=TRUE)
     dim <- dim(z)
     if (dim[1] != ncols)
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])

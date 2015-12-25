@@ -144,8 +144,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     else orientation <- "downward"
     oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
 
-    real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
-    lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
+    ##real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
+    ##lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
     numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1, signed=FALSE)
     oceDebug(debug, "numberOfBeams", numberOfBeams, "\n")
     numberOfCells <- abs(readBin(FLD[10], "integer", n=1, size=1, signed=FALSE)) # WN
@@ -154,15 +154,15 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (cellSize < 0 || cellSize > 64)
         stop("cellSize of ", cellSize, "m is not in the allowed range of 0m to 64m")
-    blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
+    ##blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profilingMode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     lowCorrThresh <- readBin(FLD[18], "integer", n=1, size=1)
     numberOfCodeReps <- readBin(FLD[19], "integer", n=1, size=1)
     percentGdMinimum <- readBin(FLD[20], "integer", n=1, size=1)
     errorVelocityMaximum <- readBin(FLD[21:22], "integer", n=1, size=2, endian="little")
-    tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
-    tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
-    tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
+    ##tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
+    ##tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
+    ##tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
     bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
     originalCoordinate <- "???"
     if (bits == "00") originalCoordinate <- "beam"
@@ -192,7 +192,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                               readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
     oceDebug(debug, paste("CPU.BOARD.SERIAL.NUMBER = '", paste(cpuBoardSerialNumber, collapse=""), "'\n", sep=""))
     systemBandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
-    systemPower <- readBin(FLD[53], "integer", n=1, size=1)
+    ##systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
     ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serialNumber only for REMUS, else spare
     ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serialNumber
@@ -250,7 +250,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
     if (VLD[2] != 0x00)
         stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
-    ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
+    ##ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
 
     ## FIXME: probably would save time to read all elements at once.  Instrument to check
@@ -265,8 +265,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "profile time=", format(time), "(year=", RTC.year,
               "month=", RTC.month, "day-", RTC.day, "hour=", RTC.hour,
               "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
-    ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
-    bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
+    ##ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
+    ##bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     soundSpeed <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     oceDebug(debug, "soundSpeed= ", soundSpeed, "\n") # FIXME possibly wrong
     transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
@@ -344,7 +344,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "read.adp.rdi(...,from=",format(from),
              ",to=",if(missing(to)) "missing" else format(to), "...) {\n", unindent=1)
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectAdpRdi <- function(t.find, add=0, debug=0) {
+    bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
         len <- length(profileStart)
         lower <- 1
@@ -464,9 +464,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (inherits(from, "POSIXt")) {
                 if (!inherits(to, "POSIXt"))
                     stop("if 'from' is POSIXt, then 'to' must be, also")
-                fromPair <- bisectAdpRdi(from, add=-1, debug=debug-1)
+                fromPair <- bisectAdpRdi(buf, from, add=-1, debug=debug-1)
                 from <- fromIndex <- fromPair$index
-                toPair <- bisectAdpRdi(to, add=1, debug=debug-1)
+                toPair <- bisectAdpRdi(buf, to, add=1, debug=debug-1)
                 to <- toIndex <- toPair$index
                 oceDebug(debug, "from:", format(fromPair$t), " yields profileStart[", fromIndex, "]\n")
                 oceDebug(debug, "to:", format(toPair$t), "yields profileStart[", toIndex, "]\n")
@@ -536,9 +536,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             qFound <- sum(codes[,1]==0x00 & codes[,2]==0x02) # corr
             aFound <- sum(codes[,1]==0x00 & codes[,2]==0x03) # echo intensity
             gFound <- sum(codes[,1]==0x00 & codes[,2]==0x04) # percent good
-            sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
+            ##sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
             bFound <- sum(codes[,1]==0x00 & codes[,2]==0x06) # bottom-track
-            nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
+            ##nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
             if (vFound) {
                 v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
                 oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",

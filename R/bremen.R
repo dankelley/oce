@@ -14,7 +14,7 @@ setMethod(f="plot",
           signature=signature("bremen"),
           definition=function(x, type, ...) {
               names <- names(x@data)
-              n <- length(names)
+              ##n <- length(names)
               if (missing(type)) {
                   if ("salinity" %in% names) plot(as.ctd(x), ...)
                   else plot(as.ladp(x), ...)

@@ -9,7 +9,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectSontekAdp <- function(t.find, add=0, debug=0) {
+    bisectSontekAdp <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectSontekAdp(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         len <- length(profileStart)
         lower <- 1
@@ -19,7 +19,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             middle <- floor((upper + lower) / 2)
             oceDebug(debug-1, "pass=",pass,"middle=", middle, "\n")
             oceDebug(debug-1, "data=", buf[profileStart[middle]+seq(0,100,1)], "\n")
-            oceDebug(debug-1, "profileStart=", profileStart[1:5], "...; profileStart2=", profileStart2[1:5], "...\n")
+            ##oceDebug(debug-1, "profileStart=", profileStart[1:5], "...; profileStart2=", profileStart2[1:5], "...\n")
+            oceDebug(debug-1, "profileStart=", profileStart[1:5], "\n")
             ##year <- readBin(buf[profileStart2[middle]+18], "integer", size=2, signed=FALSE, endian="little")
             year <- readBin(buf[profileStart[middle]+18:19], "integer", size=2, signed=FALSE, endian="little")
             day <- as.integer(buf[profileStart[middle]+20])
@@ -31,7 +32,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             sec <- as.integer(buf[profileStart[middle]+25])
             t <- ISOdatetime(year, month, day, hour, min, sec+sec100/100, tz=tz)
             oceDebug(debug, "t=", format(t),
-                      " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", second, "sec100=", sec100, "]\n")
+                      " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", sec, "sec100=", sec100, "]\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -56,7 +57,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         return(list(index=middle, time=t)) # index is within vsd
     }
     oceDebug(debug, "read.adp.sontek(...,from=",from,",to=",if (missing.to) "(missing)" else to,",by=",by,"type=",type,"...)\n")
-    parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
+    ##parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -138,7 +139,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     soundSpeed <- readBin(buf[s+60:61], "integer", n=1, size=2, endian="little", signed=FALSE) / 10
     oceDebug(debug, "soundSpeed=", soundSpeed, "m/s\n")
     profilesInFile <- length(profileStart)
-    id <- buf[profileStart]
+    ##id <- buf[profileStart]
     bytesPerProfile <- diff(profileStart[1:2])
     oceDebug(debug, "bytesPerProfile=", bytesPerProfile, "\n")
 
@@ -174,9 +175,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        fromPair <- bisectSontekAdp(from, -1, debug-1)
+        fromPair <- bisectSontekAdp(buf, from, -1, debug-1)
         from <- fromIndex <- fromPair$index
-        toPair <- bisectSontekAdp(to, 1, debug-1)
+        toPair <- bisectSontekAdp(buf, to, 1, debug-1)
         to <- to.index <- toPair$index
         oceDebug(debug, "  from=", format(fromPair$t), " yields profileStart[", fromIndex, "]\n",
                   "  to  =", format(toPair$t),   " yields profileStart[", to.index, "]\n",
@@ -298,7 +299,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (nheading != nv) {
         warning("read.adp.sontek() interpolating ", nheading, " heading/pitch/roll values to the ", nv, " velocity profiles")
         oceDebug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
-        xout <- seq(1, nheading, length.out=nv)
+        ##xout <- seq(1, nheading, length.out=nv)
         heading <- approx(1:nheading, heading, seq(1,nheading,length.out=nv))$y
         ##print(data.frame(xout=xout, heading=heading))
         pitch <- approx(1:nheading, pitch, seq(1,nheading,length.out=nv))$y
@@ -397,7 +398,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     ##   SonTek/YSI
     ##   ADPManual_v710.pdf
     ## A3. Profile Header/CTD/GPS/Bottom Track,/SonWave/Profile Data Structures
-    bisect.adp.sontek.serial <- function(t.find, add=0, tz="UTC", debug=0) {
+    bisect.adp.sontek.serial <- function(buf, t.find, add=0, tz="UTC", debug=0) {
         oceDebug(debug, "bisect.adp.sontek.serial(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(p)
         lower <- 1
@@ -536,9 +537,9 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                     warning("'by' must be numeric")
                     by <- 1
                 }
-                fromPair <- bisect.adp.sontek.serial(from, add=-1, tz=tz, debug=debug-1)
+                fromPair <- bisect.adp.sontek.serial(buf, from, add=-1, tz=tz, debug=debug-1)
                 from <- fromIndex <- fromPair$index
-                toPair <- bisect.adp.sontek.serial(to, add=1, tz=tz, debug=debug-1)
+                toPair <- bisect.adp.sontek.serial(buf, to, add=1, tz=tz, debug=debug-1)
                 to <- to.index <- toPair$index
                 oceDebug(debug, "from=", format(fromPair$t), " yields p[", fromIndex, "]\n",
                           "  to  =", format(toPair$t), "yields p[", to.index, "]\n",
@@ -552,10 +553,10 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     }
     np <- length(p)
     pp <- sort(c(p, p+1)) # for 2-byte addressing ('int' in the Sontek docs)
-    pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
+    ##pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
 
     ## read profile-specific things profile by profile
-    profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4)
+    ##profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4)
     ## FIXME: should check that profile number is monotonic ... it may
     ## help us with daily blank-outs, also!
     year <- readBin(buf[pp+18],"integer",n=np,size=2,signed=FALSE)

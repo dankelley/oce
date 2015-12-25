@@ -52,12 +52,15 @@
   \code{pmin} parameter is not specified, an attempt is made to remove an initial equilibrium phase
   by a regression of pressure on scan number.  There are three variants to this, depending on the
   value of the second \code{method} element. If it is \code{"A"} (or not given), the procedure is to
-  call \code{\link{optim}} to minimize the mismatch between observed pressure and a linear model
-  with respect to \code{scan} that is set to \code{NA} above a fitted value of \code{scan}. The
-  value of pressure at the cutoff \code{scan} is taken as the top of the downcast. If the submethod
-  is \code{"B"}, a similar procedure is used in a model that retains the pressures in the upper
-  portion, but that takes the pressure to be (a fitted) constant there. Case \code{"C"} is the same,
-  except that the pressure in the surface region is taken to be zero.} 
+  call \code{\link{nls}} to fit a piecewise linear model of pressure as a function of scan,
+  in which pressure is 
+  constant for scan less than a critical value, and then linearly varying for with scan. This is
+  meant to handle the common situation in which the CTD is held at roughly constant depth (typically 
+  a metre or so) to equilibrate, before it is lowered through the water column.
+  Case \code{"B"} is the same,
+  except that the pressure in the surface region is taken to be zero (this does not make
+  much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
+  called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
   
   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
   value of \code{parameters}. If the latter is a logical vector of length matching data column

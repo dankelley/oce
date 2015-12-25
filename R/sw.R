@@ -77,7 +77,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
         SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
         CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
-        a <- gsw_Turner_Rsubrho(SA, CT, p)
+        a <- gsw::gsw_Turner_Rsubrho(SA, CT, p)
         Rrho <- a$Rsubrho
         Rrho[Rrho==9e15] <- NA
         Rrho <- approx(a$p_mid, Rrho, p, rule=2)$y
@@ -92,7 +92,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
 {
     ##cat("swN2(..., df=", df, ")\n",sep="")
     eos <- match.arg(eos, c("unesco", "gsw"))
-    useSmoothing <- !missing(df) && is.finite(df)
+    ##useSmoothing <- !missing(df) && is.finite(df)
     if (eos == "unesco") {
         if (inherits(pressure, "ctd")) {
             pref <- median(pressure[["pressure"]], na.rm=TRUE)
@@ -142,7 +142,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
         p <- ctd[["p"]]
-        np <- length(p)
+        ##np <- length(p)
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
         if (missing(df))
             df <- round(length(p[ok]) / 10)
@@ -153,7 +153,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         latitude <- ctd[["latitude"]]
         if (is.na(latitude))
             latitude <- 0
-        l <- gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude)
+        l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude)
         ## approx back to the given pressures
         res <- approx(l$p_mid, l$N2, p, rule=2)$y
     }
@@ -175,7 +175,7 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
                 uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval=depth[i]*c(0.9, 1.1))$root
         }
     } else if (eos == "gsw") {
-        res <- gsw_p_from_z(-depth, latitude)
+        res <- gsw::gsw_p_from_z(-depth, latitude)
     } else {
         stop("eos must be 'unesco' or 'gsw'")
     }
@@ -201,7 +201,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
     } else {
         ## for the use of a constant, as opposed to a function call with (35,15,0), see 
         ## https://github.com/dankelley/oce/issues/746
-        res <- gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / 42.9140
+        res <- gsw::gsw_C_from_SP(SP=salinity, t=temperature, p=pressure) / 42.9140
     }
     dim(res) <- dim
     res
@@ -253,8 +253,8 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
                    value = double(nC),
                    NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
-        C0 <- gsw_C_from_SP(35, 15, 0)
-        res <- gsw_SP_from_C(C0 * conductivity, temperature, pressure)
+        C0 <- gsw::gsw_C_from_SP(35, 15, 0)
+        res <- gsw::gsw_SP_from_C(C0 * conductivity, temperature, pressure)
     }
     dim(res) <- dim
     res
@@ -285,7 +285,7 @@ swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", defa
                    ##NAOK=TRUE)$S # permits dyn.load() on changing .so
     } else if (eos == "gsw") {
         density <- ifelse(density < 900, density + 1000, density)
-        res <- gsw_SA_from_rho(density, temperature, pressure) ## assumes temperature=CT
+        res <- gsw::gsw_SA_from_rho(density, temperature, pressure) ## assumes temperature=CT
     }
     dim(res) <- dim
     res
@@ -340,13 +340,13 @@ swTFreeze <- function(salinity, pressure=0,
                          longitude=longitude, latitude=latitude, eos=eos))
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
-    n <- length(l$salinity)
+    ##n <- length(l$salinity)
     if (eos == "unesco") {
         res <- (-.0575+1.710523e-3*sqrt(abs(l$salinity))-2.154996e-4*l$salinity)*l$salinity-7.53e-4*l$pressure
         res <- T90fromT68(res)
     } else if (eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=1)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        res <- gsw::gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=1)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -366,12 +366,13 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     if (l$eos == "unesco") {
-        swAlphaOverBeta(l$salinity, l$temperature, l$pressure, eos="unesco") * swBeta(l$salinity, l$temperature, l$pressure, eos="unesco")
+        res <- swAlphaOverBeta(l$salinity, l$temperature, l$pressure, eos="unesco") * swBeta(l$salinity, l$temperature, l$pressure, eos="unesco")
     } else if (l$eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw_alpha(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        res <- gsw::gsw_alpha(SA=SA, CT=CT, p=l$pressure)
     }
+    res
 }
 
 swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
@@ -398,10 +399,10 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (l$eos == "gsw") {
         ## not likely to be called since gsw has a direct function for alpha, but put this here anyway
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        alpha <- gsw_alpha(SA=SA, CT=CT, p=l$pressure)
-        beta <- gsw_beta(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        alpha <- gsw::gsw_alpha(SA=SA, CT=CT, p=l$pressure)
+        beta <- gsw::gsw_beta(SA=SA, CT=CT, p=l$pressure)
         res <- alpha / beta
     }
     if (Smatrix) dim(res) <- dim
@@ -428,9 +429,9 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
                    as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (l$eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw_beta(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        res <- gsw::gsw_beta(SA=SA, CT=CT, p=l$pressure)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -470,7 +471,7 @@ swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"
         gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
         res <- (((-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
     } else if (l$eos == "gsw") {
-        res <- -gsw_z_from_p(p=l$pressure, latitude=l$latitude)
+        res <- -gsw::gsw_z_from_p(p=l$pressure, latitude=l$latitude)
     }
     res
 }
@@ -492,7 +493,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
     height <- function(ctd, referencePressure, subdivisions, rel.tol, eos=getOption("oceEOS", default="gsw"))
     {
         if (sum(!is.na(ctd@data$pressure)) < 2) return(NA) # cannot integrate then
-        ## 2015-Jan-10: the C library does not have gsw_geo_strf_dyn_height() as of vsn 3.0.3
+        ## 2015-Jan-10: the C library does not have gsw::gsw_geo_strf_dyn_height() as of vsn 3.0.3
         #if (eos == "unesco") {
             g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
             np <- length(ctd@data$pressure)
@@ -510,7 +511,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
         #     SA <- ctd[["SA"]]
         #     CT <- ctd[["CT"]]
         #     p <- ctd[["p"]]
-        #     res <- gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=referencePressure)
+        #     res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=referencePressure)
         #}
         res
     }
@@ -553,10 +554,10 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
         res <- .C("sw_lapserate", as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         ## the 1e4 is to convert from 1/Pa to 1/dbar
-        res<- 1e4 * gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=l$pressure)
+        res<- 1e4 * gsw::gsw_adiabatic_lapse_rate_from_CT(SA=SA, CT=CT, p=l$pressure)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -585,9 +586,9 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
                    as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw_rho(SA, CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        res <- gsw::gsw_rho(SA, CT, p=l$pressure)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -714,7 +715,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
     if (is.null(l$pressure)) stop("must provide pressure")
     nS <- length(l$salinity)
     nt <- length(l$temperature)
-    np <- length(l$pressure)
+    ##np <- length(l$pressure)
     if (nS != nt)
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     l$pressure <- rep(l$pressure, length.out=nS)
@@ -722,9 +723,9 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
         res <- .C("sw_svel", as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        res <- gsw_sound_speed(SA=SA, CT=CT, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+        res <- gsw::gsw_sound_speed(SA=SA, CT=CT, p=l$pressure)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -751,8 +752,8 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
         res <- .Fortran("cp_driver", as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                          as.integer(nS), CP=double(nS))$CP
     } else {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw_cp_t_exact(SA=SA, t=l$temperature, p=l$pressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        res <- gsw::gsw_cp_t_exact(SA=SA, t=l$temperature, p=l$pressure)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -804,8 +805,8 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                    as.double(referencePressure),
                    value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
-        SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -837,9 +838,9 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     bad <- is.na(l$salinity) | is.na(l$temperature) | is.na(l$pressure)
-    SA <- gsw_SA_from_SP(SP=l$salinity[!bad], p=l$pressure[!bad], 
+    SA <- gsw::gsw_SA_from_SP(SP=l$salinity[!bad], p=l$pressure[!bad], 
                          longitude=l$longitude[!bad], latitude=l$latitude[!bad])
-    good <- gsw_CT_from_t(SA=SA, t=l$temperature[!bad], p=l$pressure[!bad])
+    good <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature[!bad], p=l$pressure[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
     if (Smatrix) dim(res) <- dim
@@ -856,7 +857,7 @@ swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=300, latitude=
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     bad <- is.na(l$salinity) | is.na(l$pressure) | is.na(l$longitude) | is.na(l$latitude)
-    good <- gsw_SA_from_SP(l$salinity[!bad], l$pressure[!bad], l$longitude[!bad], l$latitude[!bad])
+    good <- gsw::gsw_SA_from_SP(l$salinity[!bad], l$pressure[!bad], l$longitude[!bad], l$latitude[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good
     if (Smatrix) dim(res) <- dim

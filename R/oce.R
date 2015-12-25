@@ -211,7 +211,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     x <- r * cos(thetaRad)
     y <- r * sin(thetaRad)
     R <- 1.2 * max(r, na.rm=TRUE)
-    Rpretty <- pretty(c(0, R))
+    ##Rpretty <- pretty(c(0, R))
     plot.new()
     plot.window(c(-R, R), c(-R, R), asp=1)
     points(x, y, ...)
@@ -377,7 +377,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         xlab <- ""
     if (missing(ylab))
         ylab  <- deparse(substitute(y))
-    ocex <- par("cex")
+    ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
     oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
@@ -930,7 +930,7 @@ read.oce <- function(file, ...)
         headerEnd <- grep("-- DATA --", lines)
         if (1 != length(headerEnd))
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
-        header <- lines[1:headerEnd]
+        ##header <- lines[1:headerEnd]
         data <- lines[seq.int(headerEnd+1, nlines)]
         d <- read.table(text=data, header=FALSE, col.names=c("time","temperature","ptotal","psea","depth"))
         d$time <- strptime(d$time,"%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
@@ -1496,14 +1496,14 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
     oceDebug(debug, vectorShow(labels, "labels="))
-    ocex <- par('cex')
+    ##ocex <- par('cex')
     ocex.axis <- par('cex.axis')
     ocex.main <- par('cex.main')
     omgp <- par('mgp')
     par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
-    par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
+    par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
@@ -1592,9 +1592,13 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
-    omfg <- par('mfg')                 # original mfg
+    opar <- par(no.readonly=TRUE)
+    mai <- par('mai')                  # bottom left top right
+    ##omfg <- par('mfg')                 # original mfg
     xLog <- par('xlog')
     yLog <- par('ylog')
+    usr <- par('usr')                  # xmin xmax ymin ymax
+    fin <- par('fin') # figure width height
     x2in <- function(x) {
         if (xLog)
             mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
@@ -1608,7 +1612,6 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
             mai[1] + (y-usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
     }
  
-    usr <- par('usr')                  # xmin xmax ymin ymax
     if (is.character(xleft)) {
         if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
@@ -1633,11 +1636,8 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                  sep="", unindent=1)
     }
     oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
-    opar <- par(no.readonly=TRUE)
-    mai <- par('mai')                  # bottom left top right
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
-    fin <- par('fin') # figure width height
     oceDebug(debug, "par('fin')=", fin, "(figure width and height)\n")
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
@@ -1650,7 +1650,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     if (nmai[3] > fin[2] - 0.2) {nmai[3] <- fin[2] - 0.2}
     if (nmai[4] > fin[1] - 0.2) {nmai[4] <- fin[1] - 0.2}
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
-    mfg2 <- par('mfg')
+    ##mfg2 <- par('mfg')
     par(new=TRUE, mai=nmai)
     thismar <- par('mar')
     par(mar=thismar+mar)
@@ -1719,7 +1719,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
         stop("lengths of x and v must match")
     usr <- par('usr')
     pin <- par('pin')
-    mai <- par('mai')
+    ##mai <- par('mai')
     xPerInch <- diff(usr[1:2]) / pin[1]
     yPerInch <- diff(usr[3:4]) / pin[2]
     oceDebug(debug, 'pin=', pin, 'usr=', usr, 'xPerInch=', xPerInch, 'yPerInch=', yPerInch, '\n')
@@ -1754,8 +1754,8 @@ oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)
 {
-    dots <- list(...)
-    dotsNames <- names(dots)
+    ##dots <- list(...)
+    ##dotsNames <- names(dots)
     mustReverseX <- any(0 > diff(order(x)))
     mustReverseY <- any(0 > diff(order(y)))
     oceDebug(debug, "mustReverseX:", mustReverseX, '\n')

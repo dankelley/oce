@@ -224,7 +224,7 @@ latitude <- function(x, time, byDepth=TRUE)
             nstation <- length(x@data$station)
             res <- NULL
             for (i in 1:nstation) {
-                res <- c(res, rep(x@metadata$latitude[i], length.out=length(salinity(x@data$station[[i]]))))
+                res <- c(res, rep(x@metadata$latitude[i], length.out=length(x@data$station[[i]]@data$temperature)))
             }
         } else {
             res <- x@metadata$latitude
@@ -247,7 +247,7 @@ longitude <- function(x, time, byDepth=TRUE)
             nstation <- length(x@data$station)
             res <- NULL
             for (i in 1:nstation) {
-                res <- c(res, rep(x@metadata$longitude[i], length.out=length(salinity(x@data$station[[i]]))))
+                res <- c(res, rep(x@metadata$longitude[i], length.out=length(x@data$station[[i]]@data$temperature)))
             }
         } else {
             res <- x@metadata$longitude
@@ -453,12 +453,21 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
             if (missing(time)) {
                 res <- x@data[[item]]
             } else {
+                ## Note 20151225 this block seems to have been quite mixed up 
                 if (inherits(time, "oce")) {
-                    time <- time@data$time # FIXME: if broadening, consider timeSlow also ... FIXME: what if S4
-                } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
-                    stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+                    if ("time" %in% names(x@data)) {
+                        res <- approx(x@data[["time"]], x@data[[item]], time)$y
+                    } else {
+                        stop("cannot find @data$time in object")
+                    }
+                    ##stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+                    ##} else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
+                    ##stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+                    ##}
+                } else {
+                    stop("no time in object")
                 }
-                res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
+                ##res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
             }
         }
     } else {
@@ -468,9 +477,14 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
             res <- x@data[[item]]
         } else {
             if (inherits(time, "oce")) {
-                time <- time@data$time # FIXME: if broadening, consider timeSlow also
-            } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
-                stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+                if ("time" %in% names(x@data)) {
+                    res <- approx(x@data$time, x@data[[item]], time)$y
+                } else {
+                    stop("cannot find @data$time in object")
+                }
+                ##     time <- time@data$time # FIXME: if broadening, consider timeSlow also
+                ## } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
+                ##     stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
             }
             res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
         }

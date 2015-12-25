@@ -250,7 +250,7 @@ read.lobo <- function(file, cols=7, processingLog)
     pressure <- if (length(pressureCol)) as.numeric(d[, pressureCol]) else rep(NA, n)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
+    ##hitem <- processingLogItem(processingLog)
     res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature,
                airtemperature=airtemperature, pressure=pressure,
                nitrate=nitrate, fluorescence=fluorescence, filename=filename)

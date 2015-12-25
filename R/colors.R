@@ -1,45 +1,43 @@
-## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+## vim: tw=120 shiftwidth=4 softtabstop=4 wrap linebreak expandtab:
 
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
-colormap_colorize <- function(z,
+colormap_colorize <- function(z=NULL,
                               zlim, zclip=FALSE,
-                              breaks, col=oce.colorsJet, colormap, segments=1,
+                              breaks, col=oce.colorsJet, colormap=NULL, segments=1,
                               missingColor="gray",
                               debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap_colorize(z=",
-             if (missing(z)) "(missing)" else paste("c(", z[1], ",...)", sep=""), ",",
+             if (is.null(z)) "(missing)" else paste("c(", z[1], ",...)", sep=""), ",",
              "zlim=", if (missing(zlim)) "(missing)" else
                  paste("c(", zlim[1], ",", zlim[2], "),", sep=""),
              "zclip=", zclip, ",",
              "breaks=", if (missing(breaks)) "(missing)" else
                  paste("c(", breaks[1], ",...),", sep=""),
-             "col=", if (missing(col)) "(missing)" else
-                 if (is.function(col)) "(function)" else
-                     paste("c(", col[1], ",...)", sep=""), ",",
-             "colormap=", if (missing(colormap)) "(missing)" else colormap, ",",
+             "col=", if (is.function(col)) "(function)" else paste("c(", col[1], ",...)", sep=""), ",",
+             "colormap=", if (is.null(colormap)) "(missing)" else colormap, ",",
              "segments=", segments, ",", 
              "missingColor=", missingColor,
              ") { # an internal function\n", unindent=1)
-    if (missing(colormap)) {
+    if (is.null(colormap)) {
         if (is.function(col)) {
             oceDebug(debug, "col is a function\n")
             if (missing(breaks)) {
                 if (!missing(zlim)) {
                     breaks <- seq(zlim[1], zlim[2], length.out=200)
-                } else if (!missing(z)) {
+                } else if (!is.null(z)) {
                     breaks <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=200)
                 } else {
                     stop("must give z, zlim or breaks")
                 }
-            }
+            } 
             if (length(breaks) == 1) { # special case: 'breaks' means *number* of breaks
                 if (!missing(zlim) && !is.null(zlim)) {
                     breaks <- seq(zlim[1], zlim[2], length.out=breaks)
                     ##message("pretty(zlim)")
-                } else if (!missing(z)) {
+                } else if (!is.null(z)) {
                     breaks <- pretty(z, n=breaks) # note use of pretty(), which extends from data
                     ##message("pretty(z)")
                 } else {
@@ -51,7 +49,7 @@ colormap_colorize <- function(z,
             ## FIXME: should check that it is indeed a color, but how?
             col <- col
         }
-        if (missing(z)) {
+        if (is.null(z)) {
             if (missing(zlim) || is.null(zlim))
                 zlim <- range(breaks)
             zcol <- "black"
@@ -103,13 +101,13 @@ colormap_colorize <- function(z,
         breaks <- c(breaks, breaks[nbreaks] + delta)
         ## FIXME: next might miss top colour
         if (is.null(zlim)) {
-            if (missing(z)) {
+            if (is.null(z)) {
                 zlim <- range(breaks)
             } else {
                 zlim <- rangeExtended(z) # note the extended range
             }
         }
-        if (missing(z)) {
+        if (is.null(z)) {
             zcol <- "black"
         } else {
             zlim <- rangeExtended(z)
@@ -161,13 +159,9 @@ colormapGMT <- function(x0, x1, col0, col1, bpl=1)
 
 colormapFromGmt <- function(file)
 {
-    if (missing(file) && missing(text))
-        stop("must give either 'file' or 'text'\n")
-    if (missing(file)) {
-        text <- strsplit(text, '\\n')[[1]]
-    } else {
-        text <- readLines(file)
-    }
+    if (missing(file))
+        stop("must give 'file'\n")
+    text <- readLines(file)
     textData <- text[grep("^[ ]*[-0-9]", text)]
     textData <- gsub("/", " ", textData) # sometimes it is R/G/B
     d <- read.table(text=textData, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
@@ -357,7 +351,7 @@ colormapFromName <- function(name)
 }
 
 ## colormap uses helpers colormap_colorize and colormap_colormap
-colormap <- function(z,
+colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
                      breaks, col=oce.colorsJet,
                      name, x0, x1, col0, col1, blend=0,
@@ -365,7 +359,7 @@ colormap <- function(z,
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
-    zKnown <- !missing(z)
+    zKnown <- !is.null(z)
     zlimKnown <- !missing(zlim)
     breaksKnown <- !missing(breaks)
     nameKnown <- !missing(name)
@@ -501,11 +495,9 @@ colormap <- function(z,
             if (length(breaks) < 2)
                 stop('must supply "z" if length(breaks)==1')
             if (missing(missingColor)) {
-                res <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col,
-                                          debug=debug-1)
+                res <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col, debug=debug-1)
             } else {
-                res <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col,
-                                          missingColor=missingColor, debug=debug-1)
+                res <- colormap_colorize(zlim=zlim, zclip=zclip, breaks=breaks, col=col, missingColor=missingColor, debug=debug-1)
             }
             res$zcol <- "black"
         }
@@ -535,8 +527,8 @@ colormap <- function(z,
         ## FIXME: issue 435 work in next 5 to 10 lines below
         ##message("zlim: ", if (is.null(zlim)) "NULL" else paste(zlim, collapse=" to "))
         res$zlim <- if (is.null(zlim)) range(c(res$x0, res$x1)) else zlim
-        nx0 <- length(res$x0)
-        eps <- diff(res$x0[1:2]) / 100
+        ##nx0 <- length(res$x0)
+        ##eps <- diff(res$x0[1:2]) / 100
         nx <- length(res$x0)
         res$breaks <- c(res$x0, tail(res$x1, n))
         col <- c(head(res$col0, -1), tail(res$col1, n))
@@ -602,7 +594,7 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
         oceDebug(debug, "x1:", x1, "\n")
         oceDebug(debug, "col0:", col0, "\n")
         oceDebug(debug, "col1:", col1, "\n")
-        x0A <- c(x0, tail(x1, 1))
+        ##x0A <- c(x0, tail(x1, 1))
         for (i in 2:xlen) {
             dx0 <- (x0[i] - x0[i-1]) / n[i-1]
             x0r <- c(x0r, seq(x0[i-1], by=dx0, length.out=n[i-1]))

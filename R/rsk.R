@@ -91,7 +91,7 @@ setMethod(f="subset",
  
 as.rsk <- function(time, columns,
                    filename="", instrumentType="rbr", serialNumber="", model="",
-                   sampleInterval,
+                   sampleInterval=NA,
                    debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
@@ -104,16 +104,14 @@ as.rsk <- function(time, columns,
     if (!inherits(time, "POSIXt"))
         stop("'time' must be POSIXt")
     time <- as.POSIXct(time)
-    if (missing(sampleInterval) || is.na(sampleInterval))
-        sampleInterval <- median(diff(as.numeric(time)))
-        oceDebug(debug, "sampleInterval not provided (or NA), estimating as:", sampleInterval, "s \n")
     res <- new("rsk")
     res@metadata$instrumentType <- instrumentType
     if (nchar(model)) 
         res@metadata$model <-model
     res@metadata$serialNumber <- serialNumber
     res@metadata$filename <- filename
-    res@metadata$sampleInterval <- sampleInterval
+    res@metadata$sampleInterval <- if (is.na(sampleInterval))
+        median(diff(as.numeric(time)), na.rm=TRUE) else sampleInterval
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     res@data <- list(time=time)
@@ -230,10 +228,10 @@ setMethod(f="plot",
                               drawTimeRange <- FALSE
                           }
                       } else if (which[w] == 2) {
-                          text.item <- function(item, cex=4/5*par("cex")) {
-                              if (!is.null(item) && !is.na(item)) {
+                          textItem <- function(xloc, yloc, item, cex=4/5*par("cex"), d.yloc=0.8) {
+                              if (!is.null(item) && !is.na(item))
                                   text(xloc, yloc, item, adj = c(0, 0), cex=cex);
-                              }
+                              yloc - d.yloc
                           }
                           xfake <- seq(0:10)
                           yfake <- seq(0:10)
@@ -243,23 +241,17 @@ setMethod(f="plot",
                           plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
                           xloc <- 1
                           yloc <- 10
-                          d.yloc <- 0.7
                           cex <- par("cex")
-                          text.item(title, cex=1.25*cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, title, cex=1.25*cex)
                           ##if (!is.null(object@metadata$filename))
-                          ##    text.item(object@metadata$filename, cex=cex)
+                          ##    textItem(object@metadata$filename, cex=cex)
                           if (!is.null(x@metadata$serialNumber)) {
-                              text.item(paste(gettext("Serial Number", domain="R-oce"), x@metadata$serialNumber),cex=cex)
-                              yloc <- yloc - d.yloc
+                              yloc <- textItem(xloc, yloc, paste(gettext("Serial Number", domain="R-oce"), x@metadata$serialNumber),cex=cex)
                           }
                           if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
-                              text.item(paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
-                              yloc <- yloc - d.yloc
-                              text.item(paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
-                              yloc <- yloc - d.yloc
-                              text.item(paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
-                              yloc <- yloc - d.yloc
+                              yloc <- textItem(xloc, yloc, paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
+                              yloc <- textItem(xloc, yloc, paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
+                              yloc <- textItem(xloc, yloc, paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
                           }
                           par(mar=mar)
                       } else if (which[w] == 4) {     # "profile"
@@ -277,7 +269,7 @@ setMethod(f="plot",
                                   args <- c(args, cex=1/2)
                               if (!("axes" %in% a))
                                   args <- c(args, axes=FALSE)
-                              np <- length(x@data$pressure)
+                              ##np <- length(x@data$pressure)
                               if (nw == 1)
                                   par(mar=c(1, 3.5, 4, 1))
                               if (useSmoothScatter) {
@@ -328,19 +320,19 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         on.exit(close(file))
     }
     from.keep <- from
-    measurement.deltat <- 0
+    ##measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
     ##from.keep <- from
     if (!missing(to))
         to.keep <- to
-    by.keep <- by
-    host.time <- 0
-    rsk.time <- 0
-    subsampleStart <- 0
-    subsampleEnd <- 0
-    subsamplePeriod <- 0
-    number.channels <- 0
+    ##by.keep <- by
+    ##host.time <- 0
+    ##rsk.time <- 0
+    ##subsampleStart <- 0
+    ##subsampleEnd <- 0
+    ##subsamplePeriod <- 0
+    ##number.channels <- 0
     ## Q: what ends the header? a blank line?  Line 21?
     ## calibration 1
     ## calibration 2
@@ -516,6 +508,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$sampleInterval <- sampleInterval
+        res@metadata$ruskinVersion <- ruskinVersion
         ## There is actually no need to set the units$conductivity since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
         ## this, in case some RBR devices use different units
@@ -653,7 +646,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         oceDebug(debug, "by=", by, "in argument list\n")
         by <- ctimeToSeconds(by)
         oceDebug(debug, "inferred by=", by, "s\n")
-        col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
+        ##col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
         ## Read a line to determine if there is a pair of columns for time
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         pushBack(line, file)
@@ -725,7 +718,9 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     } else {
         stop("patm must be logical or numeric")
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)
     res
 }

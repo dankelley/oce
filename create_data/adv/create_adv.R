@@ -1,7 +1,5 @@
 library(oce)
-try(source("~/src/oce/R/adv.R"))
-try(source("~/src/oce/R/adv.sontek.R"))
-try(source("~/src/oce/R/adv.nortek.R"))
+m05VectorEnu <- NULL # prevent code-analysis warning; the load() actually defines this.
 load("/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/r/m05_vector_enu.rda")
 adv <- window(m05VectorEnu, as.POSIXct("2008-07-01 00:00:00", tz="UTC"), as.POSIXct("2008-07-01 00:01:00",tz="UTC"))
 adv@metadata$units <- list() # the original object didn't have units

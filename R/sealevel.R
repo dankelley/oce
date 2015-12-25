@@ -135,7 +135,6 @@ as.sealevel <- function(elevation,
     res@metadata$units <- units
     res@metadata$n <- length(t)
     res@metadata$deltat <- deltat
-    logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
     res@data$elevation <- elevation
     res@data$time <- time
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()),sep="",collapse=""))
@@ -296,7 +295,7 @@ setMethod(f="plot",
                           s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                           nCumSpec <- length(s$spec)
                           cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
-                          e <- x@data$elevation - mean(x@data$elevation)
+                          ##e <- x@data$elevation - mean(x@data$elevation)
                           par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
                           plot(s$freq, cumSpec,
                                xlab=resizableLabel("frequency cph"),
@@ -427,9 +426,10 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
         if (tolower(units) != "mm")
             stop("require units to be 'mm' or 'MM', not '", units, "'")
         elevation <- array(NA_real_, 12*(n-1))
-        first.twelve.hours  <- 3600 * (0:11)
-        second.twelve.hours <- 3600 * (12:23)
+        ## first.twelve.hours  <- 3600 * (0:11)
+        ## second.twelve.hours <- 3600 * (12:23)
         twelve <- seq(1, 12, 1)
+        last.day.portion <- -1 # ignored; prevents undefined warning in code analysis
         for (i in 2:n) {
             sp <- strsplit(d[i],"[ ]+")[[1]]
             target.index <- 12 * (i-2) + twelve
@@ -439,10 +439,10 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                 start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"), tz=tz)
             } else {
                 if (day.portion == 1) {
-                    if (last.day.portion != 2)
+                    if (i > 2 && last.day.portion != 2)
                         stop("non-alternating day portions on data line ", i)
                 } else if (day.portion == 2) {
-                    if (last.day.portion != 1)
+                    if (i > 2 && last.day.portion != 1)
                         stop("non-alternating day portions on data line ", i)
                 } else {
                     stop("day portion is ", day.portion, " but must be 1 or 2, on data line", i)
@@ -460,7 +460,6 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     }
     num.missing <- sum(is.na(elevation))
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
-    data <- data.frame(time=time, elevation=elevation)
     res@metadata$filename <- filename
     res@metadata$header <- header
     res@metadata$year <- year

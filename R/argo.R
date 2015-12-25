@@ -87,7 +87,7 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
     dim <- dim(argo@data$pressure)
-    ndepth <- dim[1]
+    ## ndepth <- dim[1]
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
@@ -135,7 +135,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read argo data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ofile <- file
+    ## ofile <- file
     filename <- ""
     ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {
@@ -262,7 +262,7 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
-              omar <- par('mar')
+              ## omar <- par('mar')
               nw  <- length(which)
               if (nw > 1) {
                   par(mfcol=c(1, nw), mgp=mgp, mar=mar)
@@ -271,7 +271,8 @@ setMethod(f="plot",
               }
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
-              ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
+              ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                            units=list(temperature="ITS-90", conductivity="ratio")) # guess on units
               which <- oce.pmatch(which,
                                   list(trajectory=1,
                                        "salinity ts"=2,
@@ -327,7 +328,7 @@ setMethod(f="plot",
                       if (!is.null(projection)) {
                           meanlat <- mean(x[['latitude']], na.rm=TRUE)
                           meanlon <- mean(x[['longitude']], na.rm=TRUE)
-                          id <- pmatch(projection, "automatic")
+                          ## id <- pmatch(projection, "automatic")
                           if (!is.na(pmatch(projection, "automatic"))) {
                               projection <- if (meanlat > 70)
                                   paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"

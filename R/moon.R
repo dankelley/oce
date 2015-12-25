@@ -32,7 +32,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
     A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * declination) * cos(RPD * latitude))
     ## the atan2() form matches websites on azimuth at Halifax in April 2012
     h <- asin(sin(RPD * latitude) * sin(RPD * declination) + cos(RPD * latitude) * cos(RPD * declination) * cos(RPD * H))
-    res <- data.frame(azimuth=A/RPD, altitude=h/RPD)
+    data.frame(azimuth=A/RPD, altitude=h/RPD)
 }
 
 siderealTime <- function(t)
@@ -52,13 +52,13 @@ siderealTime <- function(t)
     res
 }
 
-julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
+julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
     if (!inherits(t, "POSIXt"))  {
-        if (missing(month) || missing(day) || missing(hour)
-            || missing(min) || missing(sec) || missing(tz))
-            stop("must supply month, day, hour, min, sec, and tz")
-        tt <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
+        if (is.na(year) || is.na(month) || is.na(day) || is.na(hour)
+            || is.na(min) || is.na(sec))
+            stop("must supply year, month, day, hour, min, sec, and tz")
+        t <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
     }
     tt <- as.POSIXlt(t, tz=tz)
     year <- tt$year + 1900

@@ -19,8 +19,7 @@ setMethod(f="subset",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
               res <- x
-              dots <- list(...)
-              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              ##dots <- list(...)
               if (missing(subset))
                   stop("must give 'subset'")
 
@@ -346,7 +345,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 read.odf <- function(file, debug=getOption("oceDebug"))
 {
-    FILE<-file
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (debug>=100) t0 <- Sys.time()
     if (is.character(file)) {
@@ -373,7 +371,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     parameterStart <- grep("PARAMETER_HEADER", lines)
     if (!length(parameterStart))
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
-    namesWithin <- parameterStart[1]:dataStart[1]
+    ## namesWithin <- parameterStart[1]:dataStart[1]
     ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
 
     ## The mess below hides warnings on non-numeric missing-value codes.
@@ -403,9 +401,9 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
     DATA_TYPE <- findInHeader("DATA_TYPE", lines)
     deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
-    date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
+    ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
@@ -458,7 +456,6 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    ## data <- fread(FILE, skip=dataStart, header=FALSE)
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after reading data table\n", Sys.time()-t0))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")

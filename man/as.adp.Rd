@@ -4,7 +4,8 @@
 \alias{as.adp}
 \title{create an object of \code{\link{adp-class}}}
 \usage{
-as.adp(time, distance, v, a, q, orientation = "upward", coordinate = "enu")
+as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
+  coordinate = "enu")
 }
 \arguments{
 \item{time}{of observations in POSIXct format}

@@ -132,8 +132,6 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
-    processingLog <- paste(deparse(match.call()), sep="", collapse="")
-
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -147,7 +145,9 @@ read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
         on.exit(close(file))
     }
     data <- read.table(file, header=FALSE)
-    as.lisst(data, filename, year, tz, latitude, longitude)
+    res <- as.lisst(data, filename, year, tz, latitude, longitude)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 

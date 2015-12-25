@@ -18,19 +18,19 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         }
         c
     }
-    hanning.local <- function(n) # avoid having to pull in the signal library
-    {
-        if (!(length(n) == 1 && (n == round(n)) && (n > 0)))
-            stop("n must be a positive integer")
-        if (n == 1)
-            c <- 1
-        else {
-            pi <- 4 * atan2(1, 1)       # avoid problems if user redefined this
-            n <- n - 1
-            c <- 0.5 - 0.5 * cos(2 * pi * (0:n)/n)
-        }
-        c
-    }
+    ## hanning.local <- function(n) # avoid having to pull in the signal library
+    ## {
+    ##     if (!(length(n) == 1 && (n == round(n)) && (n > 0)))
+    ##         stop("n must be a positive integer")
+    ##     if (n == 1)
+    ##         c <- 1
+    ##     else {
+    ##         pi <- 4 * atan2(1, 1)       # avoid problems if user redefined this
+    ##         n <- n - 1
+    ##         c <- 0.5 - 0.5 * cos(2 * pi * (0:n)/n)
+    ##     }
+    ##     c
+    ## }
     gave.window <- !missing(window)
     gave.nfft <- !missing(nfft)
     gave.fs <- !missing(fs)
@@ -90,8 +90,8 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     oceDebug(debug, "window.len=",window.len,"  step=",step,"  noverlap=", noverlap, "  x.len=", x.len, "\n")
     if (step < 1)
         stop("overlap cannot exceed segment length")
-    i0 <- 1
-    nwindows <- floor(x.len / window.len)
+    ## i0 <- 1
+    ## nwindows <- floor(x.len / window.len)
     psd <- NULL
     nrow <- 0
     start <- 1

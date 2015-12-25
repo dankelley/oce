@@ -482,7 +482,8 @@ setMethod(f="plot",
               x@metadata$date <- x@metadata$date[haveData]
 
 
-              plotSubsection <- function(variable="temperature", vtitle="T",
+              plotSubsection <- function(xx, yy, zz, which.xtype, which.ytype,
+                                         variable="temperature", vtitle="T",
                                          eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
@@ -1010,7 +1011,7 @@ setMethod(f="plot",
                   stop("unknown ytype")
               }
 
-             par(mgp=mgp, mar=mar)
+              par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
                       layout(matrix(1:4, nrow=2, byrow=TRUE))
@@ -1027,117 +1028,143 @@ setMethod(f="plot",
                       if (missing(contourLabels))
                           contourLabels <- format(contourLevels)
                       if (which[w] == 1) {
-                          plotSubsection("temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
-                          plotSubsection("salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
-                          plotSubsection("sigmaTheta", expression(sigma[theta]),
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "sigmaTheta", expression(sigma[theta]),
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
-                          plotSubsection("nitrate", "nitrate",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "nitrate", "nitrate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
-                          plotSubsection("nitrite", "nitrite",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "nitrite", "nitrite",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
-                          plotSubsection("oxygen", "oxygen",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "oxygen", "oxygen",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
-                          plotSubsection("phosphate", "phosphate",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "phosphate", "phosphate",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
-                          plotSubsection("silicate", "silicate",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "silicate", "silicate",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 9) {
-                          plotSubsection("u", "u",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "u", "u",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 10) {
-                          plotSubsection("uz", "du/dz",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "uz", "du/dz",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 11) {
-                          plotSubsection("v", "v",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "v", "v",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 12) {
-                          plotSubsection("vz", "dv/dz",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "vz", "dv/dz",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       }
                   } else {
                       if (which[w] == 1) {
-                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 3) {
-                          plotSubsection("sigmaTheta", expression(sigma[theta]),
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "sigmaTheta", expression(sigma[theta]),
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 4) {
-                          plotSubsection("nitrate",     "nitrate",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "nitrate",     "nitrate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 5) {
-                          plotSubsection("nitrite",     "nitrite",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "nitrite",     "nitrite",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 6) {
-                          plotSubsection("oxygen",      "oxygen",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "oxygen",      "oxygen",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 7) {
-                          plotSubsection("phosphate",   "phosphate",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "phosphate",   "phosphate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 8) {
-                          plotSubsection("silicate",    "silicate",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "silicate",    "silicate",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 9) {
-                          plotSubsection("u", "u",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "u", "u",
                                          xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 10) {
-                          plotSubsection("uz", "du/dz",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "uz", "du/dz",
                                          xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 11) {
-                          plotSubsection("v", "v",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "v", "v",
                                          xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       } else if (which[w] == 12) {
-                          plotSubsection("vz", "dv/dz",
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "vz", "dv/dz",
                                          xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...) 
                       }
                   }
                   if (which[w] == 20)
-                      plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
+                      plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                     "data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
                   if (which[w] == 99) {
-                      plotSubsection("map", indicate.stations=FALSE,
+                      plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                     "map", indicate.stations=FALSE,
                                          clongitude=clongitude, clatitude=clatitude, span=span,
                                          projection=projection, parameters=parameters, orientation=orientation,
                                          debug=debug-1, ...)
@@ -1343,7 +1370,7 @@ read.section <- function(file, directory, sectionId="", flags,
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
 			       temperature=temperature[select[ok]],
 			       pressure=pressure[select[ok]],
-
+                               units=list(temperature="ITS-90", conductivity="ratio"), # FIXME: should infer from data
                                oxygen=if(!is.null(oxygen))oxygen[select[ok]],
                                nitrate=if(!is.null(nitrate))nitrate[select[ok]],
                                nitrite=if(!is.null(nitrite))nitrite[select[ok]],
@@ -1376,7 +1403,7 @@ read.section <- function(file, directory, sectionId="", flags,
     res@data <- list(station=station)
     if (missing(processingLog))
 	processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
+    ##hitem <- processingLogItem(processingLog)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
@@ -1475,7 +1502,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         for (p in 1:npressure) {
             ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
             nok <- sum(ok)
-            iok <- (1:nstn)[ok]
+            ##iok <- (1:nstn)[ok]
             if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
                 if (gaveDF) {
                     temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], ...), x)$y
@@ -1503,7 +1530,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         vars <- names(section[["station", 1]]@data)
         res <- section
         x <- geodDist(section)
-        X <- p <- S <- NULL
+        X <- p <- NULL
         stn1pressure <- section[["station", 1]][["pressure"]]
         npressure <- length(stn1pressure)
         for (istn in 1:nstn) {
@@ -1550,8 +1577,16 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
+    if (missing(salinity))
+        stop("argument 'salinity' is missing")
     res <- new("section", sectionId="")
     if (is.numeric(salinity)) {
+        if (missing(temperature)) stop("must provide temperature")
+        if (missing(temperature)) stop("must provide temperature")
+        if (missing(pressure)) stop("must provide pressure")
+        if (missing(longitude)) stop("must provide longitude")
+        if (missing(latitude)) stop("must provide latitude")
+        if (missing(station)) stop("must provide station")
         stationFactor <- factor(station)
         stationLevels <- levels(stationFactor)
         nstation <- length(stationLevels)

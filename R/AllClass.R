@@ -9,7 +9,7 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
-              mnames <- names(object@metadata)
+              ## mnames <- names(object@metadata)
               cat("oce Summary\n-----------\n\n")
               names <- names(object@data)
               isTime <- names == "time" | names == "TIME"

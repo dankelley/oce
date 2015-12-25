@@ -147,7 +147,7 @@ setMethod(f="plot",
               latitude <- x[["latitude"]]
               dots <- list(...)
               dotsNames <- names(dots)
-              gave.center <- !missing(clongitude) && !missing(clatitude)
+              ##gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
                   stop("use 'clongitude' and 'clatitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("do not specify 'xlim'; give 'clongitude' and 'span' instead")
@@ -164,7 +164,7 @@ setMethod(f="plot",
                       lines(longitude, latitude, ...)
                   }
               } else {
-                  gaveSpan <- !missing(span)
+                  ##gaveSpan <- !missing(span)
                   if (!missing(clatitude) && !missing(clongitude)) {
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
@@ -311,7 +311,7 @@ setMethod(f="plot",
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
-                      yscale <- 180 / (yaxp[2] - yaxp[1])
+                      ##yscale <- 180 / (yaxp[2] - yaxp[1])
                       if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                           polygon(x[["longitude"]], x[["latitude"]], col=fill, ...)
                       } else {
@@ -373,7 +373,7 @@ read.coastline <- function(file,
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
-        separator <- NULL
+        ##separator <- NULL
                                         # mapgen    # -b
                                         # matlab	nan nan
                                         # Splus     NA NA
@@ -524,7 +524,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         }
         ## each record has an 8-byte header followed by data [1 table 2] BIG endian
         recordNumber <- readBin(buf[o + 1:4], "integer", n=1, size=4, endian="big")
-        recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
+        ##recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
         ## first part of data is shape type [1 table 3 for null, etc] LITTLE endian
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
         if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
@@ -609,7 +609,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     nodeLons <- as.numeric(sub('".*$', '', sub('^.* lon="', '', nodeLines)))
     ## get all <way>
     wayStart <- grep("<way ", d)
-    wayEnd <- grep("</way ", d)
+    ##wayEnd <- grep("</way ", d)
     coastlineWayEnd <- grep('k="natural" v="coastline"', d)
     ncoastline <- length(coastlineWayEnd)
     coastlineWayStart <- vector("integer", ncoastline)
@@ -649,6 +649,8 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
              "), span=", if (missing(span)) "(missing)" else span,
              ", debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(span)) {
+        if (missing(lonRange) || missing(latRange))
+            return("coastlineWorld")
         if (any(lonRange > 180)) {
             lonRange <- lonRange - 360 # FIXME: does this always work?
             oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
