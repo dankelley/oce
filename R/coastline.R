@@ -722,6 +722,6 @@ coastlineCut <- function(coastline, lon_0=0)
               NAOK=TRUE)
     cut$xo <- cut$xo[1:cut$no]
     cut$yo <- cut$yo[1:cut$no]
-    warning("coastlineCut() may change name or behaviour through the summer of 2015")
+    warning("coastlineCut() may change name or behaviour during early 2016")
     as.coastline(longitude=cut$xo, latitude=cut$yo)
 }
