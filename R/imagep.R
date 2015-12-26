@@ -510,8 +510,9 @@ imagep <- function(x, y, z,
         stop("decimate must be a positive integer or a logical value")
     oceDebug(debug, "decimate:", decimate, "\n")
     if (decimate > 1) {
-        ilook <- seq.int(1, dim[1], by=decimate)
-        jlook <- seq.int(1, dim[2], by=decimate)
+        ## keep at least 100x100 pixels
+        ilook <- if (dim[1] > 100*decimate) seq.int(1,dim[1],by=decimate) else seq.int(1,dim[1])
+        jlook <- if (dim[2] > 100*decimate) seq.int(1,dim[2],by=decimate) else seq.int(1,dim[2])
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
         x <- x[ilook]
