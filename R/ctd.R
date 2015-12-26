@@ -23,11 +23,11 @@ setMethod(f="initialize",
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature="ITS-90", conductivity="ratio")
               } else {
-                  message("new(ctd) units GIVEN")
                   .Object@metadata$units <- units # FIXME: but what if spelled wrong etc
               }
               .Object@metadata$pressureType <- if (!missing(pressureType)) pressureType else "sea" # guess on the unit
               .Object@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
+              .Object@metadata$waterDepth <- NA
               #.Object@metadata$latitude <- NA
               #.Object@metadata$longitude <- NA
               #.Object@metadata$waterDepth <- NA
@@ -224,7 +224,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         model <- m$model
         serialNumber <- m$serialNumber
         sampleInterval <- m$sampleInterval
-        waterDepth <- m$waterDepth
+        if (!is.null(m$waterDepth))
+            waterDepth <- m$waterDepth
         ## Copy some WOCE things into oce-convention names (originals retained)
         if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
         if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
@@ -276,7 +277,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 units <- list(temperature="ITS-90", conductivity="mS/cm")
             salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
         } else {
-            salinity <- d$salinity # FIXME: I though rsk obj don't have salinity
+            salinity <- d$salinity # FIXME: ok for objects (e.g. rsk) that lack salinity?
         }
         if (inherits(o, "ctd") && missing(units)) {
             if (missing(units)) # this lets the user over-ride
@@ -504,6 +505,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@data <- data
     }
+    if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
+        res@metadata$waterDepth <- waterDepth
     oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     res
 }
