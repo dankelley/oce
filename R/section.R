@@ -213,13 +213,12 @@ setMethod(f="subset",
                           }
                       }
                       res <- new('section')
-                      res@metadata$station <- station
+                      res@data$station <- station
                       res@metadata$header <- x@metadata$header
                       res@metadata$sectionId <- x@metadata$sectionId
                       res@metadata$stationId <- stn
                       res@metadata$longitude <- lon
                       res@metadata$latitude <- lat
-                      res@data <- data
                       res@processingLog <- x@processingLog
                   } else {
                       n <- length(x@data$station)
