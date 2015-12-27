@@ -2273,6 +2273,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         lline <- tolower(aline)
         ## BUG: discovery of column names is brittle to format changes
+        found.depth <- FALSE
         if (0 < (r <- regexpr("# name ", lline))) {
             oceDebug(debug, "lline: '",lline,"'\n",sep="")
             tokens <- strsplit(line, split=" ", useBytes=TRUE)
