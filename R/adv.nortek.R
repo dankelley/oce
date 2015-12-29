@@ -455,6 +455,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         res@data$analog2 <- analog2
     res@metadata$velocityResolution <- res@metadata$velocityScale
     res@metadata$velocityMaximum <- res@metadata$velocityScale * 2^15
+    res@metadata$units <- list(v="m/s")
     res@processingLog <- unclass(hitem)
     oceDebug(debug, "} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="", unindent=1)
     res

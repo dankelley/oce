@@ -46,7 +46,7 @@ setMethod(f="summary",
                   if (unitsKnown)
                       labels[i] <- paste(labels[i], " [", units[[labels[i]]], "]", sep="")
               }
-              rownames(threes) <- paste('  ', labels)
+              rownames(threes) <- dataLabel(names(object@data), object@metadata$units)
               colnames(threes) <- c("Min.", "Mean", "Max.")
               print(threes)
               cat("\n",...)

@@ -37,6 +37,8 @@ setMethod(f="summary",
               names <- names(d)
               ndata <- length(names)
               isTime <- names == "time"
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
               threes <- matrix(nrow=sum(!isTime), ncol=3)
               ii <- 1
               for (i in 1:ndata) {
@@ -45,7 +47,7 @@ setMethod(f="summary",
                   threes[ii,] <- threenum(d[[i]])
                   ii <- ii + 1
               }
-              rownames(threes) <- paste("   ", names[!isTime])
+              rownames(threes) <- paste("    ", dataLabel(names(object@data)[!isTime], object@metadata$units))
               colnames(threes) <- c("Min.", "Mean", "Max.")
               cat("* Statistics of data:\n")
               print(threes, indent='  ')

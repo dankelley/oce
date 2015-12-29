@@ -84,7 +84,7 @@ setMethod(f="summary",
                   threes[ii,] <- threenum(object@data[[i]])
                   ii <- ii + 1
               }
-              rownames(threes) <- paste("   ", names[!isTime])
+              rownames(threes) <- paste("    ", dataLabel(names(object@data)[!isTime], object@metadata$units))
               colnames(threes) <- c("Min.", "Mean", "Max.")
               cat("* Statistics of data::\n")
               print(threes, indent='  ')

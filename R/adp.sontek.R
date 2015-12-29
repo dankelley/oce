@@ -367,6 +367,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beamAngle)
     } else
         stop("can only handle 3-beam devices")
+    res@metadata$units <- list(v="m/s", distance="m")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -636,6 +637,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@metadata$beamAngle <- beamAngle
     res@metadata$oceBeamUnspreaded <- FALSE
     res@metadata$orientation <- orientation
+    res@metadata$units <- list(v="m/s", distance="m")
     res@data <- list(v=v, a=a, q=q,
                      distance=distance,
                      time=time,

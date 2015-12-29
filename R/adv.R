@@ -5,6 +5,7 @@ setMethod(f="initialize",
               if (!missing(v)) .Object@data$v <- v
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
+              ## .Object@metadata$units$v <- "m/s"
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'adv' object"
@@ -46,17 +47,17 @@ setMethod(f="summary",
               nrow <- length(dataNames) - length(grep("^time", dataNames))
               threes <- matrix(nrow=nrow, ncol=3)
               ii <- 1
-              for (name in dataNames) {
-                  if (0 == length(grep("^time", name))) {
-                      if (0 == length(object@data[[name]])) {
-                          threes[ii,] <- c(NA, NA, NA)
-                      } else {
-                          threes[ii,] <- threenum(as.numeric(object@data[[name]]))
-                      }
-                      ii <- ii + 1
-                  }
+              isTime <- grepl("^time", dataNames)
+              if (any(isTime))
+                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
+              ii <- 1
+              for (i in seq_along(dataNames)) {
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(as.numeric(object@data[[i]]))
+                  ii <- ii + 1
               }
-              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+              rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
               colnames(threes) <- c("Min.", "Mean", "Max.")
               print(threes)
               processingLogShow(object)

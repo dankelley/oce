@@ -1,4 +1,4 @@
-## vim: tw=120 shiftwidth=4 softtabstop=4 wrap linebreak expandtab:
+# vim: tw=120 shiftwidth=4 softtabstop=4 wrap linebreak expandtab:
 
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 

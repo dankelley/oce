@@ -42,6 +42,30 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
     paste(name, res, sep="=")
 }
 
+#' Try to associate data names with units, for use by summary()
+#'
+#' Note that the whole object is not being given as an argument;
+#' possibly this will reduce copying and thus storage impact.
+#'
+#' @param names the names of data within an object
+#' @param units the units from metadata
+#' @return a vector of strings, with blank entries for data with unknown units
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' dataLabel(names(ctd@@data), ctd@@metadata$units)
+dataLabel <- function(names, units)
+{
+    res <- names
+    if (!is.null(units)) {
+        for (i in seq_along(names)) {
+            u <- units[[names[i]]]
+            if (!is.null(u))
+                res[i] <- paste(res[i], " [", u, "]", sep="")
+        }
+    }
+    res
+}
 
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {

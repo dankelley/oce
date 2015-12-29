@@ -14,6 +14,8 @@ setMethod(f="initialize",
               }
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
+              .Object@metadata$units$v <- "m/s"
+              .Object@metadata$units$distance <- "m"
               .Object@metadata$oceCoordinate <- oceCoordinate # FIXME: should check that it is allowed
               .Object@metadata$orientation  <- orientation # FIXME: should check that it is allowed
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -138,15 +140,17 @@ setMethod(f="summary",
               res$oceCoordinate <- object@metadata$oceCoordinate
               res$processingLog <- object@processingLog
               dataNames <- names(object@data)
-              threes <- matrix(nrow=(-2+length(dataNames)), ncol=3)
+              threes <- matrix(nrow=(-1+length(dataNames)), ncol=3) # do not do stats on time
+              isTime <- grepl("^time", dataNames)
               ii <- 1
-              for (i in 1:length(dataNames)) {
-                  if (dataNames[i] != "time" && dataNames[i] != "distance") {
-                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
-                      ii <- ii + 1
-                  }
+              for (i in seq_along(dataNames)) {
+                  ##message("i: ", i, ", ii: ", ii, ", dataNames:", dataNames[i])
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[dataNames[i]]])
+                  ii <- ii + 1
               }
-              rownames(threes) <- c(dataNames[dataNames != "time" & dataNames != "distance"])
+              rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
               colnames(threes) <- c("Min.", "Mean", "Max.")
               cat("* Statistics of subsample::\n\n")
               print(threes)
@@ -388,11 +392,12 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
     res@metadata$oceCoordinate <- coordinate
     res@metadata$orientation <- orientation
     res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
+    res@metadata$units <- list(v="m/s", distance="m")
     res
 }
 
 
-head.adp <- function(x, n = 6L, ...)
+head.adp <- function(x, n=6L, ...)
 {
     numberOfProfiles <- dim(x@data$v)[1]
     if (n < 0)

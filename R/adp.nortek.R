@@ -605,42 +605,43 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@latitude <- latitude
     res@longitude <- longitude
     res@numberOfSamples <- dim(v)[1]
-    res@numberOfCells <- dim(v)[2]
-    res@numberOfBeams <- dim(v)[3]
-    res@numberOfBeamSequencesPerBurst <- header$user$numberOfBeamSequencesPerBurst
-    res@measurementStart <- measurementStart
-    res@measurementEnd <- measurementEnd
-    res@measurementDeltat <- measurementDeltat
-    res@subsampleStart <- time[1]
-    res@subsampleEnd <- time[length(time)]
-    res@subsampleDeltat <- as.numeric(time[2]) - as.numeric(time[1])
-    res@size <- header$head$size
-    res@serialNumber <- header$hardware$serialNumber
-    res@internalCodeVersion <- header$hardware$picVersion
-    res@hardwareRevision <- header$hardware$hwRevision
-    res@recSize <- header$hardware$recSize
-    res@velocityRange <- header$hardware$velocityRange # FIXME: should check against velocityMaximum
-    res@firmwareVersion <- header$hardware$fwVersion
-    res@config <- header$hardware$config
-    res@configPressureSensor <- header$head$configPressureSensor
-    res@configMagnetometerSensor <- header$head$configMagnetometerSensor
-    res@configTiltSensor <- header$head$configTiltSensor
-    res@beamAngle <- 25     # FIXME: may change with new devices
-    res@tiltSensorOrientation <- header$head$tiltSensorOrientation
-    res@orientation <- orientation
-    res@frequency <- header$head$frequency
-    res@headSerialNumber <- header$head$headSerialNumber
-    res@bin1Distance <- header$user$blankingDistance # FIXME: is this right?
-    res@blankingDistance <- header$user$blankingDistance
-    res@measurementInteres <- header$user$measurementInteres
-    res@transformationMatrix <- header$head$transformationMatrix
-    res@deploymentName <- header$user$deploymentName
-    res@cellSize <- header$user$cellSize
-    res@velocityResolution <- velocityScale
-    res@velocityMaximum <- velocityScale * 2^15
-    res@originalCoordinate <- header$user$originalCoordinate
-    res@oceCoordinate <- header$user$originalCoordinate
-    res@oceBeamUnspreaded <- FALSE
+    res@metadata$numberOfCells <- dim(v)[2]
+    res@metadata$numberOfBeams <- dim(v)[3]
+    res@metadata$numberOfBeamSequencesPerBurst <- header$user$numberOfBeamSequencesPerBurst
+    res@metadata$measurementStart <- measurementStart
+    res@metadata$measurementEnd <- measurementEnd
+    res@metadata$measurementDeltat <- measurementDeltat
+    res@metadata$subsampleStart <- time[1]
+    res@metadata$subsampleEnd <- time[length(time)]
+    res@metadata$subsampleDeltat <- as.numeric(time[2]) - as.numeric(time[1])
+    res@metadata$size <- header$head$size
+    res@metadata$serialNumber <- header$hardware$serialNumber
+    res@metadata$internalCodeVersion <- header$hardware$picVersion
+    res@metadata$hardwareRevision <- header$hardware$hwRevision
+    res@metadata$recSize <- header$hardware$recSize
+    res@metadata$velocityRange <- header$hardware$velocityRange # FIXME: should check against velocityMaximum
+    res@metadata$firmwareVersion <- header$hardware$fwVersion
+    res@metadata$config <- header$hardware$config
+    res@metadata$configPressureSensor <- header$head$configPressureSensor
+    res@metadata$configMagnetometerSensor <- header$head$configMagnetometerSensor
+    res@metadata$configTiltSensor <- header$head$configTiltSensor
+    res@metadata$beamAngle <- 25     # FIXME: may change with new devices
+    res@metadata$tiltSensorOrientation <- header$head$tiltSensorOrientation
+    res@metadata$orientation <- orientation
+    res@metadata$frequency <- header$head$frequency
+    res@metadata$headSerialNumber <- header$head$headSerialNumber
+    res@metadata$bin1Distance <- header$user$blankingDistance # FIXME: is this right?
+    res@metadata$blankingDistance <- header$user$blankingDistance
+    res@metadata$measurementInteres <- header$user$measurementInteres
+    res@metadata$transformationMatrix <- header$head$transformationMatrix
+    res@metadata$deploymentName <- header$user$deploymentName
+    res@metadata$cellSize <- header$user$cellSize
+    res@metadata$velocityResolution <- velocityScale
+    res@metadata$velocityMaximum <- velocityScale * 2^15
+    res@metadata$originalCoordinate <- header$user$originalCoordinate
+    res@metadata$oceCoordinate <- header$user$originalCoordinate
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$units <- list(v="m/s", distance="m")
                      
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
