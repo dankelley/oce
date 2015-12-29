@@ -152,7 +152,7 @@ setMethod(f="summary",
               }
               rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of subsample::\n\n")
+              cat("* Statistics of data\n\n")
               print(threes)
               processingLogShow(object)
           })

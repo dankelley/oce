@@ -212,6 +212,7 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
 {
     ## FIXME-gsw add gsw version
     if (missing(conductivity)) stop("must supply conductivity (which may be S or a CTD object)")
+    conductivityUnit <- match.arg(conductivityUnit)
     if (inherits(conductivity, "oce")) {
         if (inherits(conductivity, "rsk")) {
             ctd <- as.ctd(conductivity)
@@ -220,13 +221,14 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
         }
         conductivity <- ctd[["conductivity"]]
         if (is.null(conductivity)) stop("this CTD object has no conductivity")
+        ## Use unit within the object, ignoring the argument supplied here (FIXME: is this best?)
         tmp <- ctd[["conductivityUnit"]]
-        if (!is.null(tmp))
+        if (!is.null(tmp)) {
             conductivityUnit <- tmp
+        }
         temperature <- ctd[["temperature"]]
         pressure <- ctd[["pressure"]]
     }
-    conductivityUnit <- match.arg(conductivityUnit)
     if (conductivityUnit == "mS/cm")
         conductivity <- conductivity / 42.914
     else if (conductivityUnit == "S/m")

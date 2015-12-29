@@ -5,11 +5,10 @@ setMethod(f="initialize",
           signature="cm",
           definition=function(.Object, filename="(unknown)", sample, time,
                               u, v, heading,
-                              conductivity, conductivityUnit="mS/cm",
-                              salinity, temperature, pressure) {
+                              conductivity, salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
               .Object@metadata$units$temperature <- "ITS-90" # guess on the unit
-              .Object@metadata$units$conductivity <- conductivityUnit
+              .Object@metadata$units$conductivity <- "mS/cm"
               .Object@data$sample <- if (missing(sample)) NULL else sample
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@data$u <- if (missing(u)) NULL else u
@@ -28,17 +27,17 @@ setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
               dataNames <- names(object@data)
-              threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
+              isTime <- grepl("^time", dataNames)
+              threes <- matrix(nrow=(length(dataNames) - sum(isTime)), ncol=3)
               ii <- 1
               for (i in 1:length(dataNames)) {
-                  if (names(object@data)[i] != "time") {
-                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
-                      ii <- ii + 1
-                  }
+                  if (isTime[i])
+                      next
+                  threes[ii,] <- threenum(object@data[[dataNames[i]]])
+                  ii <- ii + 1
               }
-              rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
+              rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
               colnames(threes) <- c("Min.", "Mean", "Max.")
-              ##vDim <- dim(object@data$v)
 
               cat("cm summary\n----------\n\n", ...)
               showMetadataItem(object, "filename",      "File source:        ")
@@ -53,6 +52,46 @@ setMethod(f="summary",
               print(round(threes, 3))
               processingLogShow(object)
           })
+
+
+setMethod(f="subset",
+          signature="cm",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res <- x
+              dots <- list(...)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (missing(subset))
+                  stop("must give 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting a cm by time\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  names <- names(x@data)
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  oceDebug(debug, "number of kept bins:", sum(keep), "\n")
+                  if (sum(keep) < 2)
+                      stop("must keep at least 2 profiles")
+                  res <- x
+                  ## FIXME: are we handling slow timescale data?
+                  for (name in names(x@data)) {
+                      if (name == "time" || is.vector(x@data[[name]])) {
+                          oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                          res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                      } else if (is.matrix(x@data[[name]])) {
+                          oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                          res@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(x@data[[name]])) {
+                          oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                          res@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                      }
+                  }
+              }
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res
+          })
+
 
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
@@ -201,7 +240,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         if (!is.numeric(from))
             stop("'from' must be either POSIXt or numeric")
-        if (missing(to))
+        
             to <- n
         if (!is.numeric(to))
             stop("'to' must be either POSIXt or numeric")
@@ -209,7 +248,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    res <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
+    res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
                u=u[keep], v=v[keep], heading=heading[keep],
                conductivity=conductivity[keep],
                salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
@@ -219,6 +258,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$type <- type
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
+    res@metadata$units <- list(u="m/s", v="m/s", pressure="dbar",
+                               temperature="ITS-90", conductivity="mS/cm") # not sure if true generally
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
