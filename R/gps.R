@@ -15,20 +15,8 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
-              threes <- matrix(nrow=2, ncol=3)
-              threes[1,] <- threenum(object@data$latitude)
-              threes[2,] <- threenum(object@data$longitude)
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- c("Latitude", "Longitude")
-              cat("GPX Summary\n-----------------\n\n")
-              cat("* Number of points:", length(object@data$latitude), ", of which", 
-                  sum(is.na(object@data$latitude)), "are NA.\n")
-              cat("\n",...)
-              cat("* Statistics of subsample::\n\n", ...)
-              print(threes)
-              cat("\n")
-              processingLogShow(object)
-              invisible(NULL)
+              cat("GPS Summary\n-----------------\n\n")
+              callNextMethod()
           })
 
 

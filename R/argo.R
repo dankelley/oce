@@ -66,19 +66,7 @@ setMethod(f="summary",
               cat("Drifter Summary\n---------------\n\n")
               cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
               cat("* id:         \"", object@metadata$id, "\"\n", sep="")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
-              names <- names(object@data)
-              isTime <- names == "time"
-              cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              cat("* Data summary\n")
-              for (i in 2:ndata)
-                  threes[i-1,] <- threenum(object@data[[i]])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              ##rownames(threes) <- names(object@data)[-1]
-              rownames(threes) <- paste("    ", dataLabel(names(object@data)[!isTime], object@metadata$units))
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
 
 ncdfFixMatrix <- function(x)

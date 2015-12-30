@@ -24,23 +24,7 @@ setMethod(f="summary",
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
               showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
               showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3)
-              isTime <- names(object@data) == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              ii <- 1
-              for (i in 2:ndata) { # skip time
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- if (is.factor(object@data[[i]][1])) rep(NA, 3) else threenum(object@data[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("   ", names(object@data)[-1])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 setMethod(f="subset",

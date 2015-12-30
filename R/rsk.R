@@ -29,30 +29,7 @@ setMethod(f="summary",
               if ("pressureType" %in% mnames)
                   cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
               cat(paste("* Source:             ``", m$filename, "``\n", sep=""))
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(m$tstart), attr(m$tstart, "tzone"),
-                          format(m$tend), attr(m$tend, "tzone"),
-                          1 / m$deltat))
-              d <- object@data
-              names <- names(d)
-              ndata <- length(names)
-              isTime <- names == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(d[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("    ", dataLabel(names(object@data)[!isTime], object@metadata$units))
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data:\n")
-              print(threes, indent='  ')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 

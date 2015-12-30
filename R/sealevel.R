@@ -14,7 +14,6 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="sealevel",
           definition=function(object, ...) {
-              threes <- matrix(nrow=1, ncol=3)
               cat("Sealevel Summary\n----------------\n\n")
               showMetadataItem(object, "stationNumber",  "number:              ")
               showMetadataItem(object, "version", "version:             ")
@@ -28,14 +27,7 @@ setMethod(f="summary",
               ndata <- length(object@data$elevation)
               cat("* number of observations:  ", ndata, "\n")
               cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              cat("* Statistics::\n")
-              threes <- matrix(nrow=1, ncol=3)
-              threes[1,] <- threenum(object@data$elevation)
-              rownames(threes) <- paste("   ", "elevation")
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='   ')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 setMethod(f="subset",
@@ -132,7 +124,7 @@ as.sealevel <- function(elevation,
     res@metadata$decimationMethod <- decimationMethod
     res@metadata$referenceOffset <- referenceOffset
     res@metadata$referenceCode <- referenceCode
-    res@metadata$units <- units
+    res@metadata$units <- list()
     res@metadata$n <- length(t)
     res@metadata$deltat <- deltat
     res@data$elevation <- elevation
@@ -473,7 +465,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     res@metadata$decimationMethod <- decimationMethod
     res@metadata$referenceOffset <- referenceOffset
     res@metadata$referenceCode <- referenceCode
-    res@metadata$units <- NA
+    res@metadata$units <- list()
     res@metadata$n <- length(time)
     res@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
     if (missing(processingLog))

@@ -71,24 +71,7 @@ setMethod(f="summary",
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
-              names <- names(object@data)
-              ndata <- length(names)
-              isTime <- names == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("    ", dataLabel(names(object@data)[!isTime], object@metadata$units))
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 setMethod(f="[[",

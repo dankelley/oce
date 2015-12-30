@@ -59,6 +59,7 @@ dataLabel <- function(names, units)
     res <- names
     if (!is.null(units)) {
         for (i in seq_along(names)) {
+            ##message("i: ", i, ", name: ", names[i])
             u <- units[[names[i]]]
             if (!is.null(u))
                 res[i] <- paste(res[i], " [", u, "]", sep="")
@@ -557,15 +558,26 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 
 threenum <- function(x)
 {
-    if (is.character(x) || is.null(x))
-        return(NA)
-    if (is.raw(x))
+    if (is.character(x) || is.null(x)) {
+        res <- rep(NA, 3)
+    } else if (is.list(x)) {
+        if (2 == (c("lsb", "msb") %in% names(x))) { # e.g. landsat data
+            x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
+            res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+        } else {
+            res <- rep(NA, 3)
+        }
+    } else if (is.raw(x)) {
         x <- as.numeric(x)
-    if (sum(!is.na(x))) {
-        c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+        res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+    } else if (is.factor(x)) {
+        res <- rep(NA, 3)
+    } else if (sum(!is.na(x))) {
+        res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
     } else {
-        c(NA, NA, NA)
+        res <- rep(NA, 3)
     }
+    res
 }
 
 normalize <- function(x)

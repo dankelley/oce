@@ -19,8 +19,7 @@
 \details{Pertinent summary information is presented, including the station
     name, sampling location, data ranges, etc.}
 
-\value{An object of class \code{"summary.bremen"}, which when printed shows
-  pertinent information about the CTD record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{bremen-class}} explains the
     structure of these objects, and outlines some functions that deal with

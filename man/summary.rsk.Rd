@@ -20,7 +20,7 @@
 \details{Pertinent summary information is presented, including the start and
   stop times, as well as statistics of temperature and pressure.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{rsk-class}} explains the structure of
   \code{rsk} objects, and also outlines the other functions dealing with them.}

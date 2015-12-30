@@ -26,31 +26,12 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
-              dataNames <- names(object@data)
-              isTime <- grepl("^time", dataNames)
-              threes <- matrix(nrow=(length(dataNames) - sum(isTime)), ncol=3)
-              ii <- 1
-              for (i in 1:length(dataNames)) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[dataNames[i]]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-
               cat("cm summary\n----------\n\n", ...)
-              showMetadataItem(object, "filename",      "File source:        ")
+              showMetadataItem(object, "filename",      "File source:        ", quote=TRUE)
               showMetadataItem(object, "type",          "Instrument type:    ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
-              t <- object@data$time
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(t[1]), attr(t, "tzone"),
-                          format(tail(t, 1)), attr(t, "tzone"),
-                          1 / (as.numeric(t[2])-as.numeric(t[1]))), ...)
-              print(round(threes, 3))
-              processingLogShow(object)
+              callNextMethod()
           })
 
 

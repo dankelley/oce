@@ -30,18 +30,6 @@ setMethod(f="summary",
               showMetadataItem(object, "time",       "Time:                ")
               showMetadataItem(object, "spacecraft", "Spacecraft:          ")
               cat(sprintf("* Header file:         %s\n", object@metadata$headerfilename))
-              ##datadim <- dim(object@data[[1]])
-              cat(sprintf("* Data:\n"))
-              datanames <- names(object@data)
-              for (b in seq_along(object@data)) {
-                  d <- object@data[[b]]
-                  if (is.list(d)) {
-                      dim <- dim(d$lsb)
-                      cat(sprintf("*     band %s has dim=c(%d,%d)\n",
-                                  datanames[b], dim[1], dim[2]))
-                  }
-              }
-
               cat(sprintf("* UTM zone:             %d (used for whole image)\n", object@metadata$zoneUTM))
               cat(sprintf("* UTM lower left:      %7.0f easting %7.0f northing (m)\n",
                           object@metadata$llUTM$easting,
@@ -53,8 +41,7 @@ setMethod(f="summary",
               cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat)) 
               cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat)) 
               cat(sprintf("* Upper left:          %fE %fN\n", object@metadata$ullon, object@metadata$ullat)) 
-              ## do not show the data stats: calculating them is very slow
-              processingLogShow(object)
+              callNextMethod()
           })
 
 

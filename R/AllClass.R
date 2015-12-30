@@ -9,31 +9,37 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
-              ## mnames <- names(object@metadata)
-              cat("oce Summary\n-----------\n\n")
               names <- names(object@data)
-              isTime <- names == "time" | names == "TIME"
+              isTime <- grepl("^time", names, ignore.case=TRUE)
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
-                  from <- min(time, na.rm=TRUE)
-                  to <- max(time, na.rm=TRUE)
-                  cat("* Time ranges from", format(from), "to", format(to), "\n")
+                  if (inherits(time, "POSIXt")) {
+                      from <- min(time, na.rm=TRUE)
+                      to <- max(time, na.rm=TRUE)
+                      deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
+                      cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                  }
               }
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
               ndata <- length(object@data)
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
+              if (ndata > 0) {
+                  threes <- matrix(nrow=sum(!isTime), ncol=3)
+                  ii <- 1
+                  for (i in 1:ndata) {
+                      ##message("i: ", i, ", name: ", names(object@data)[i])
+                      if (isTime[i])
+                          next
+                      threes[ii,] <- threenum(object@data[[i]])
+                      ii <- ii + 1
+                  }
+                  ##rownames(threes) <- paste("   ", names[!isTime])
+                  units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
+                  rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
+                  colnames(threes) <- c("Min.", "Mean", "Max.")
+                  cat("* Statistics of data\n")
+                  print(threes, indent='    ')
               }
-              rownames(threes) <- paste("   ", names[!isTime])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
               processingLogShow(object)
+              invisible(threes)
           })
 
 

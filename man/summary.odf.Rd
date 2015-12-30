@@ -19,8 +19,7 @@
 \details{Pertinent summary information is presented, including the station
     name, sampling location, data ranges, etc.}
 
-\value{An object of class \code{"summary.odf"}, which when printed shows
-    pertinent information about the ODF record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{odf-class}} explains the structure
     of ODF objects, and also outlines the other functions dealing with them.}

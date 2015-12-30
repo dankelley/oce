@@ -35,22 +35,7 @@ setMethod(f="summary",
               cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
               cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
               cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
-              cat("* Statistics::\n")
-              dataNames <- c(names(object@data), "Sv", "TS")
-              ndata <- length(dataNames)
-              threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (0 == length(grep("^time", dataNames[i]))) {
-                      threes[ii,] <- threenum(object[[dataNames[i]]])
-                      ii <- ii + 1
-                  }
-              }
-              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes)
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 

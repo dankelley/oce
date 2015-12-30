@@ -24,43 +24,7 @@ setMethod(f="summary",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
                             if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
               }
-              cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                          1 / object@metadata$measurementDeltat), ...)
-              cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                          1 / object@metadata$subsampleDeltat), ...)
-              if ("samplingMode" %in% names(object@metadata)) {
-                  if ("burst" == object@metadata$samplingMode) {
-                      cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-                  } else {
-                      cat("* Sampling in continuous mode\n")
-                  }
-              }
-              cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-              cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
-              cat("* Orientation:           ", object@metadata$orientation, "\n")
-              cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
-              dataNames <- names(object@data)
-              nrow <- length(dataNames) - length(grep("^time", dataNames))
-              threes <- matrix(nrow=nrow, ncol=3)
-              ii <- 1
-              isTime <- grepl("^time", dataNames)
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              ii <- 1
-              for (i in seq_along(dataNames)) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(as.numeric(object@data[[i]]))
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
 
 setMethod(f="[[",

@@ -34,23 +34,7 @@ setMethod(f="summary",
               cat("Coastline Summary\n-----------------\n\n")
               cat("* Number of points:", length(object@data$latitude), ", of which", 
                   sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-              cat("\n",...)
-              cat("* Statistics of subsample::\n\n", ...)
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata, ncol=3)
-              labels <- names(object@data)
-              units <- object@metadata$units[labels] # this hooks up units with values
-              unitsKnown <- length(units) > 0
-              for (i in 1:ndata) {
-                  threes[i,] <- threenum(object@data[[i]])
-                  if (unitsKnown)
-                      labels[i] <- paste(labels[i], " [", units[[labels[i]]], "]", sep="")
-              }
-              rownames(threes) <- dataLabel(names(object@data), object@metadata$units)
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes)
-              cat("\n",...)
-              processingLogShow(object)
+              callNextMethod()
           })
 
  

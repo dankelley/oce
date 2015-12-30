@@ -19,8 +19,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{An object of class \code{"summary.sealevel"}, which contains
-  pertinent information about the sealevel record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{sealevel-class}} explains the
     structure of sealevel objects, and also outlines the other functions

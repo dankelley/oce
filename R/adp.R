@@ -120,41 +120,7 @@ setMethod(f="summary",
                   if (object@metadata$numberOfBeams > 3)
                       cat("  ", format(object@metadata$transformationMatrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              cat("\n")
-              ## start building res from the header information
-              ## haveData <- !is.null(object@data)
-              res <- resSpecific
-              res$measurementStart <- object@metadata$measurementStart
-              res$measurementEnd <- object@metadata$measurementEnd
-              res$measurementDeltat <- object@metadata$measurementDeltat
-              res$frequency <- object@metadata$frequency
-              res$numberOfDataTypes <- object@metadata$numberOfDataType
-              res$bin1Distance <- object@metadata$bin1Distance
-              res$xmitPulseLength <- object@metadata$xmitPulseLength
-              res$oceBeamUnspreaded <- object@metadata$oceBeamUnspreaded
-              res$beamAngle <- object@metadata$beamAngle
-              res$beamConfig <- object@metadata$beamConfig
-              res$transformationMatrix <- object@metadata$transformationMatrix
-              res$orientation <- object@metadata$orientation
-              res$originalCoordinate <- object@metadata$originalCoordinate
-              res$oceCoordinate <- object@metadata$oceCoordinate
-              res$processingLog <- object@processingLog
-              dataNames <- names(object@data)
-              threes <- matrix(nrow=(-1+length(dataNames)), ncol=3) # do not do stats on time
-              isTime <- grepl("^time", dataNames)
-              ii <- 1
-              for (i in seq_along(dataNames)) {
-                  ##message("i: ", i, ", ii: ", ii, ", dataNames:", dataNames[i])
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[dataNames[i]]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("    ", dataLabel(dataNames[!isTime], object@metadata$units))
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data\n\n")
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
 
 setMethod(f="[[",

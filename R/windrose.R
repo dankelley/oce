@@ -14,16 +14,7 @@ setMethod(f="summary",
               n <- length(object@data$theta)
               dtheta <- abs(diff(object@data$theta[1:2]))
               cat("* Have n=", n, "angles, separated by dtheta=", dtheta,"\n\n")
-              ##cat("* Statistics by angle::\n\n", ...)
-              ##threes <- matrix(nrow=2, ncol=3)
-              ##threes[1,] <- threenum(object@data$theta)
-              ##threes[2,] <- threenum(object@data$count)
-              ##colnames(threes) <- c("Min.", "Mean", "Max.")
-              ##rownames(threes) <- c("theta", "count")
-              ##print(threes)
-              ##cat('\n')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 

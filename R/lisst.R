@@ -19,26 +19,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LISST Summary\n-------------\n\n")
               showMetadataItem(object, "filename", "File source:        ")
-              start <- object@data$time[1]
-              dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-              end <- object@data$time[length(object@data$time)]
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(start), attr(start, "tzone"),
-                          format(end), attr(end, "tzone"),
-                          1 / dt))
-              cat("* Statistics of subsample::\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3)
-              names <- names(object@data)
-              for (i in 1:ndata) {
-                  if (names[i] != "time") {
-                      threes[i,] <- threenum(object@data[[i]])
-                  }
-              }
-              rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 

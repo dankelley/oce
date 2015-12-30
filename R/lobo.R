@@ -22,20 +22,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Lobo Summary\n------------\n\n")
               cat("* source: \"", object@metadata$filename, "\"\n", sep="")
-              timeRange <- range(object@data$time, na.rm=TRUE)
-              cat("* time range:", format(timeRange[1], format="%Y-%m-%d %H:%M:%S %Z"),
-                  "to", format(timeRange[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
-              for (i in 2:ndata) 
-                  threes[i-1,] <- threenum(object@data[[i]])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- names(object@data)[-1] #skip time, the first column
-              cat("* Statistics::\n\n", ...)
-              print(threes)
-              cat("\n")
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 setMethod(f="subset",

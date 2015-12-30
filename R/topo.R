@@ -15,20 +15,9 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
-              digits <- 4
-              latRange <- range(object[["latitude"]], na.rm=TRUE)
-              lonRange <- range(object[["longitude"]], na.rm=TRUE)
-              zRange <- range(object[["z"]], na.rm=TRUE)
               cat("\nTopo dataset\n------------\n")
               cat("* Source:          ", object[["filename"]], "\n")
-              cat("* Latitude range:   ", format(latRange[1], digits),
-                  " to ", format(latRange[2], digits), ", in steps of ", format(diff(object[["latitude"]][1:2]), digits), " deg\n", sep="")
-              cat("* Longitude range:  ", format(lonRange[1], digits),
-                  " to ", format(lonRange[2], digits), ", in steps of ", format(diff(object[["longitude"]][1:2]), digits), " deg\n", sep="")
-              cat("* Elevation range:  ", format(zRange[1], digits=digits),
-                  " to ", format(zRange[2], digits), " m\n", sep="")
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 
