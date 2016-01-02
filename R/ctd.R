@@ -77,7 +77,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               ##dataNames <- names(x@data)
               if (i == "salinity" || i == "SP") {
                   x@data$salinity
@@ -147,16 +147,8 @@ setMethod(f="[[",
               } else if (i == "depth") {
                   ## FIXME-gsw: permit gsw version here
                   swDepth(x)
-              } else if (length(grep("Unit$", i))) {
-                  if ("units" %in% names(x@metadata)) {
-                      x@metadata$units[[gsub("Unit$", "", i)]]
-                  } else {
-                      x@metadata[[i]]
-                  }
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ## res <- as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 

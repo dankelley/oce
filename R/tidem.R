@@ -54,15 +54,13 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
               if (i == "coef") {
                   x@data$model$coef
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ##as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 

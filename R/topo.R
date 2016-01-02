@@ -23,15 +23,14 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
               i <- match.arg(i, c("longitude","latitude","z", "filename"))
               if (i == "longitude") return(x@data$longitude)
               else if (i == "latitude") return(x@data$latitude)
               else if (i == "z") return(x@data$z)
-              else if (i == "filename") return(x@metadata$filename)
-              else return(as(x, "oce")[[i]])
+              else callNextMethod()
           })
 
 
