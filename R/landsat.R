@@ -47,7 +47,7 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               debug <- getOption("oceDebug")
               oceDebug(debug, "landsat [[ {\n", unindent=1)
               if (missing(i))

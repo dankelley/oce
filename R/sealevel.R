@@ -50,10 +50,8 @@ setMethod(f="subset",
 
 setMethod(f="[[",
           signature(x="sealevel", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) return(x@metadata[[i]])
-              else if (i %in% names(x@data)) return(x@data[[i]])
-              else return(as(x, "oce")[[i]])
+          definition=function(x, i, j, ...) { # FIXME: use j for e.g. times
+              callNextMethod()
           })
 
 setMethod(f="[[<-",

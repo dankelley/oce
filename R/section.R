@@ -48,7 +48,7 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && "byStation" == j) {

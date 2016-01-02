@@ -38,7 +38,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               if (i == "pressure" || i == "p") {
                   x@data$pressure
               } else if (i == "u") {
@@ -54,9 +54,7 @@ setMethod(f="[[",
               } else if (i == "salinity" || i == "S") {
                   x@data$salinity
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ## res <- as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 

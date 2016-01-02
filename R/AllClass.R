@@ -84,9 +84,13 @@ setMethod(f="subset",
 
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
+              message("inside oce[[")
               if (i == "metadata") {
                   return(x@metadata)
+              } else if (length(grep(" unit$", i))) {
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]] else "")
+                  ## Permit two ways of storing units, the second archaic and kept to handle old objects
               } else if (length(grep("Unit$", i))) {
                   ## Permit two ways of storing units, the second archaic and kept to handle old objects
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])

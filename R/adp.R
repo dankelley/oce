@@ -125,7 +125,7 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               if (i == "a") {
                   if (!missing(j) && j == "numeric") {
                       res <- x@data$a
@@ -157,7 +157,7 @@ setMethod(f="[[",
                   }
                   res
               } else {
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 

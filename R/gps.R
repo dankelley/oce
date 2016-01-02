@@ -22,10 +22,8 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
-              ## I use 'as' because I could not figure out callNextMethod() etc
-              #as(x, "oce")[[i, j, drop]]
-              as(x, "oce")[[i]]
+          definition=function(x, i, j, ...) {
+              callNextMethod()
           })
 
 setMethod(f="plot",
