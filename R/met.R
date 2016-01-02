@@ -24,40 +24,24 @@ setMethod(f="summary",
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
               showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
               showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3)
-              isTime <- names(object@data) == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              ii <- 1
-              for (i in 2:ndata) { # skip time
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- if (is.factor(object@data[[i]][1])) rep(NA, 3) else threenum(object@data[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("   ", names(object@data)[-1])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
-              rval <- new("met") # start afresh in case x@data is a data.frame
-              rval@metadata <- x@metadata
-              rval@processingLog <- x@processingLog
+              res <- new("met") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
                   r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
-                  rval@data[[i]] <- x@data[[i]][r]
+                  res@data[[i]] <- x@data[[i]][r]
               }
-              names(rval@data) <- names(x@data)
+              names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+              res
           })
  
 
@@ -113,24 +97,25 @@ read.met <- function(file, type=NULL, skip,
     latitude <- textItem(text, "Latitude")
     longitude <- textItem(text, "Longitude")
     station <- textItem(text, "Station Name", FALSE)
-    province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
+    ##province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
     climateIdentifier <- textItem(text, "Climate Identifier", FALSE)
     WMOIdentifier <- textItem(text, "WMO Identifier", FALSE)
     TCIdentifier <- textItem(text, "TC Identifier", FALSE)
-    Identifier <- textItem(text, "Climate Identifier", FALSE)
+    ##Identifier <- textItem(text, "Climate Identifier", FALSE)
     if (missing(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
-    res@metadata <- list(latitude=latitude,
-                         longitude=longitude,
-                         elevation=elevation,
-                         climateIdentifier=climateIdentifier,
-                         WMOIdentifier=WMOIdentifier,
-                         TCIdentifier=TCIdentifier,
-                         filename=filename)
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$elevation <- elevation
+    res@metadata$station <- station
+    res@metadata$climateIdentifier <- climateIdentifier
+    res@metadata$WMOIdentifier <- WMOIdentifier
+    res@metadata$TCIdentifier <- TCIdentifier
+    res@metadata$filename <- filename
     rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
     time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
-    ntime <- length(time)
+    ##ntime <- length(time)
     names <- names(rawData)
     ## Must use grep to identify columns, because the names are not fixed.  In some
     ## test files, temperature was in a column named "..Temp...C.", but in others
@@ -144,15 +129,15 @@ read.met <- function(file, type=NULL, skip,
     ## It would be good if someone from Environment Canada would take pity on a
     ## poor user, and convince the powers-that-be to settle on a single format
     ## and even (gasp) to document it.
-    j <- grep("^Temp.*C.*$", names(rawData))[1]
-    temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
-    pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
-    wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    speed <- wind * 1000 / 3600        # convert from km/h to m/s
-    j <- grep("^Wind.*deg.*$", names(rawData))[1]
-    direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Temp.*C.*$", names(rawData))[1]
+    ##temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
+    ##pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
+    ##wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##speed <- wind * 1000 / 3600        # convert from km/h to m/s
+    ##j <- grep("^Wind.*deg.*$", names(rawData))[1]
+    ##direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     rpd <- atan2(1, 1) / 45            # radian/degree
 
     names(rawData) <- decodeDataNames(names, "met")

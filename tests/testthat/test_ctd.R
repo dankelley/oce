@@ -195,7 +195,7 @@ test_that("Beaufort sea data II", {
 ## An ODF file measured aboard CCGS SIGMA T, with 
 ## Catherine Johnson as chief scientist.
 test_that("ODF file", {
-          d4 <- read.oce(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+          d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
           expect_equal(d4[["temperatureUnit"]], "ITS-90")
           expect_equal(d4[["conductivityUnit"]], "ratio") # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")

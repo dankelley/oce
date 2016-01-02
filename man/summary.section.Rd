@@ -24,6 +24,8 @@
     structure of section objects, and also outlines the other functions dealing
     with them.}
 
+\value{\code{NULL}}
+
 \examples{
 library(oce)
 data(section)

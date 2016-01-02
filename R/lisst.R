@@ -19,26 +19,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LISST Summary\n-------------\n\n")
               showMetadataItem(object, "filename", "File source:        ")
-              start <- object@data$time[1]
-              dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-              end <- object@data$time[length(object@data$time)]
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(start), attr(start, "tzone"),
-                          format(end), attr(end, "tzone"),
-                          1 / dt))
-              cat("* Statistics of subsample::\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3)
-              names <- names(object@data)
-              for (i in 1:ndata) {
-                  if (names[i] != "time") {
-                      threes[i,] <- threenum(object@data[[i]])
-                  }
-              }
-              rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 
@@ -96,7 +77,7 @@ setMethod(f="plot",
 
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
-    rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
+    res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
     if (ncols < 42)
         stop("data file must hold at least 42 space-separated columns")
@@ -125,15 +106,13 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     decimalday <- day + hour / 24 + minute / 60 / 24 + second / 24 / 60 / 60
     t0 <- as.POSIXct(paste(year, "-01-01 00:00:00", sep=""), tz=tz)
     data$time <- t0 + 86400 * decimalday / 365.25
-    rval@data <- data
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@data <- data
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
-    processingLog <- paste(deparse(match.call()), sep="", collapse="")
-
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -147,7 +126,9 @@ read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
         on.exit(close(file))
     }
     data <- read.table(file, header=FALSE)
-    as.lisst(data, filename, year, tz, latitude, longitude)
+    res <- as.lisst(data, filename, year, tz, latitude, longitude)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 

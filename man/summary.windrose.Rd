@@ -18,7 +18,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{A \code{windrose} object may be created with
   \code{\link{as.windrose}} or plotted with

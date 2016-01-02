@@ -16,8 +16,7 @@
   \item{\dots}{further arguments passed to or from other methods.}
 }
 
-\value{An object of class \code{"summary.coastline"}, which contains
-  pertinent information about the Lobo record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{coastline-class}} explains the
     structure of coastline objects, and also outlines the other functions

@@ -14,8 +14,9 @@ setMethod(f="show",
 
 setMethod(f="initialize",
           signature="landsat",
-          definition=function(.Object,filename="") {
-              .Object@metadata$filename <- filename
+          definition=function(.Object, filename) {
+              if (!missing(filename))
+                  .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'landsat' object"
               return(.Object)
@@ -29,19 +30,6 @@ setMethod(f="summary",
               showMetadataItem(object, "time",       "Time:                ")
               showMetadataItem(object, "spacecraft", "Spacecraft:          ")
               cat(sprintf("* Header file:         %s\n", object@metadata$headerfilename))
-              datadim <- dim(object@data[[1]])
-              cat(sprintf("* Data:\n"))
-              datanames <- names(object@data)
-              for (b in seq_along(object@data)) {
-                  d <- object@data[[b]]
-                  if (is.list(d)) {
-                      dim <- dim(d$lsb)
-                      cat(sprintf("*     band %s has dim=c(%d,%d)\n",
-                                  datanames[b], dim[1], dim[2]))
-                  } else {
-                  }
-              }
-
               cat(sprintf("* UTM zone:             %d (used for whole image)\n", object@metadata$zoneUTM))
               cat(sprintf("* UTM lower left:      %7.0f easting %7.0f northing (m)\n",
                           object@metadata$llUTM$easting,
@@ -53,8 +41,7 @@ setMethod(f="summary",
               cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat)) 
               cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat)) 
               cat(sprintf("* Upper left:          %fE %fN\n", object@metadata$ullon, object@metadata$ullat)) 
-              ## do not show the data stats: calculating them is very slow
-              processingLogShow(object)
+              callNextMethod()
           })
 
 
@@ -215,11 +202,11 @@ setMethod(f="[[",
                       jlook <- seq.int(1, dim[2], by=decimate)
                       if (isList) {
                           lsb <- lsb[ilook, jlook] # rewrite in place, possibly saving memory
-                          rval <- if (is.null(dim(msb))) as.integer(lsb) else
+                          res <- if (is.null(dim(msb))) as.integer(lsb) else
                               256L*as.integer(msb[ilook,jlook]) + as.integer(lsb)
-                          dim(rval) <- dim(lsb)
+                          dim(res) <- dim(lsb)
                           oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
-                          return(rval)
+                          return(res)
                       } else {
                           oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent=1)
                           return(d[ilook, jlook])
@@ -237,10 +224,10 @@ setMethod(f="[[",
                           if (!is.null(dim(msb)))
                               msb <- msb[ilook, jlook]
                           lsb <- lsb[ilook, jlook]
-                          rval <- 256L*as.integer(msb) + as.integer(lsb)
-                          dim(rval) <- dim(lsb)
+                          res <- 256L*as.integer(msb) + as.integer(lsb)
+                          dim(res) <- dim(lsb)
                           oceDebug(debug, "} # landsat [[\n", unindent=1)
-                          return(rval)
+                          return(res)
                       } else {
                           d <- d[ilook, jlook]
                           oceDebug(debug, "} # landsat [[\n", unindent=1)
@@ -250,10 +237,10 @@ setMethod(f="[[",
               }
               ## OK, no decimation is requested, so just return the desired value.
               if (isList) {
-                  rval <- 256L*as.integer(msb) + as.integer(lsb)
-                  dim(rval) <- dim(lsb)
+                  res <- 256L*as.integer(msb) + as.integer(lsb)
+                  dim(res) <- dim(lsb)
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
-                  return(rval)
+                  return(res)
               } else {
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
                   return(d)
@@ -434,54 +421,54 @@ setMethod(f="plot",
 
 read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 {
-    getItem <- function(name, numeric=TRUE)
+    getItem <- function(info, name, numeric=TRUE)
     {
         line <- grep(paste("^[ ]*", name, "[ ]*=[ ]*", sep=""), info)
-        rval <- NULL
+        res <- NULL
         if (length(line)) {
-            rval <- strsplit(info[line[1]], "=")[[1]][2]
-            rval <- gsub("^[ ]+", "", rval)
-            rval <- gsub("[ ]+$", "", rval)
+            res <- strsplit(info[line[1]], "=")[[1]][2]
+            res <- gsub("^[ ]+", "", res)
+            res <- gsub("[ ]+$", "", res)
         }
-        rval <- if (numeric) as.numeric(rval) else gsub("\"", "", rval)
+        res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
         ##oceDebug(debug, "read item", name, "\n")
-        rval
+        res
     }
     info <- readLines(file, warn=FALSE)
-    date <- getItem("DATE_ACQUIRED", numeric=FALSE)
-    centerTime <- getItem("SCENE_CENTER_TIME", numeric=FALSE)
+    date <- getItem(info, "DATE_ACQUIRED", numeric=FALSE)
+    centerTime <- getItem(info, "SCENE_CENTER_TIME", numeric=FALSE)
     time <- as.POSIXct(paste(date, centerTime), tz="UTC")
-    spacecraft <- getItem("SPACECRAFT_ID", numeric=FALSE)
-    id <- getItem("LANDSAT_SCENE_ID", numeric=FALSE)
+    spacecraft <- getItem(info, "SPACECRAFT_ID", numeric=FALSE)
+    id <- getItem(info, "LANDSAT_SCENE_ID", numeric=FALSE)
     ## Bounding region (not a latlon box!)
-    ullat <- getItem("CORNER_UL_LAT_PRODUCT")
-    ullon <- getItem("CORNER_UL_LON_PRODUCT")
-    urlat <- getItem("CORNER_UR_LAT_PRODUCT")
-    urlon <- getItem("CORNER_UR_LON_PRODUCT")
-    lllat <- getItem("CORNER_LL_LAT_PRODUCT")
-    lllon <- getItem("CORNER_LL_LON_PRODUCT")
-    lrlat <- getItem("CORNER_LR_LAT_PRODUCT")
-    lrlon <- getItem("CORNER_LR_LON_PRODUCT")
-    zoneUTM <- getItem("UTM_ZONE")
-    llUTM <- list(easting=getItem("CORNER_LL_PROJECTION_X_PRODUCT"),
-                  northing=getItem("CORNER_LL_PROJECTION_Y_PRODUCT"),
+    ullat <- getItem(info, "CORNER_UL_LAT_PRODUCT")
+    ullon <- getItem(info, "CORNER_UL_LON_PRODUCT")
+    urlat <- getItem(info, "CORNER_UR_LAT_PRODUCT")
+    urlon <- getItem(info, "CORNER_UR_LON_PRODUCT")
+    lllat <- getItem(info, "CORNER_LL_LAT_PRODUCT")
+    lllon <- getItem(info, "CORNER_LL_LON_PRODUCT")
+    lrlat <- getItem(info, "CORNER_LR_LAT_PRODUCT")
+    lrlon <- getItem(info, "CORNER_LR_LON_PRODUCT")
+    zoneUTM <- getItem(info, "UTM_ZONE")
+    llUTM <- list(easting=getItem(info, "CORNER_LL_PROJECTION_X_PRODUCT"),
+                  northing=getItem(info, "CORNER_LL_PROJECTION_Y_PRODUCT"),
                   zone=zoneUTM)
-    urUTM <- list(easting=getItem("CORNER_UR_PROJECTION_X_PRODUCT"),
-                  northing=getItem("CORNER_UR_PROJECTION_Y_PRODUCT"),
+    urUTM <- list(easting=getItem(info, "CORNER_UR_PROJECTION_X_PRODUCT"),
+                  northing=getItem(info, "CORNER_UR_PROJECTION_Y_PRODUCT"),
                   zone=zoneUTM)
     ## Cell sizes
-    gridCellSizePanchromatic <- getItem("GRID_CELL_SIZE_PANCHROMATIC")
-    gridCellSizeReflective <- getItem("GRID_CELL_SIZE_REFLECTIVE")
-    gridCellSizeThermal <- getItem("GRID_CELL_SIZE_THERMAL")                            
+    gridCellSizePanchromatic <- getItem(info, "GRID_CELL_SIZE_PANCHROMATIC")
+    gridCellSizeReflective <- getItem(info, "GRID_CELL_SIZE_REFLECTIVE")
+    gridCellSizeThermal <- getItem(info, "GRID_CELL_SIZE_THERMAL")                            
     ## ## Image dimensions
-    ## l <- getItem("PANCHROMATIC_LINES")
-    ## s <- getItem("PANCHROMATIC_SAMPLES")
+    ## l <- getItem(info, "PANCHROMATIC_LINES")
+    ## s <- getItem(info, "PANCHROMATIC_SAMPLES")
     ## dimPanchromatic <- c(l, s)         # or reverse?
-    ## l <- getItem("REFLECTIVE_LINES")
-    ## s <- getItem("REFLECTIVE_SAMPLES")
+    ## l <- getItem(info, "REFLECTIVE_LINES")
+    ## s <- getItem(info, "REFLECTIVE_SAMPLES")
     ## dimReflective <- c(l, s)
-    ## l <- getItem("THERMAL_LINES")
-    ## s <- getItem("THERMAL_SAMPLES")
+    ## l <- getItem(info, "THERMAL_LINES")
+    ## s <- getItem(info, "THERMAL_SAMPLES")
     ## dimThermal <- c(l, s)
     ## Select just certain lines.  The header is short, so doing it by
     ## steps, just in case the data format changes later and adjustment
@@ -539,7 +526,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
                  ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
-    rval <- new("landsat")
+    res <- new("landsat")
     file <- gsub("/$", "", file)
     actualfilename <- gsub("/$", "", file) # permit e.g. "LE71910202005194ASN00/"
     actualfilename <- gsub(".*/", "", actualfilename)
@@ -547,7 +534,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     header <- read.landsatmeta(headerfilename, debug=debug-1)
     oceDebug(debug, "file type: ", header$spacecraft, "\n")
     ## convert to numerical bands (checks also that named bands are OK)
-    bandOrig <- band
+    ##bandOrig <- band
     if (band[1] == "all") {
         band <- header$bandnames
     }
@@ -566,16 +553,17 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     }
     band <- band2
     oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
-    rval@metadata <- header
-    rval@metadata[["spacecraft"]] <- header$spacecraft
-    rval@metadata[["id"]] <- header$id
-    rval@metadata[["emissivity"]] <- emissivity
-    rval@metadata[["filename"]] <- file
-    rval@metadata[["headerfilename"]] <- headerfilename
+    for (name in names(header))
+        res@metadata[[name]] <- header[[name]]
+    res@metadata[["spacecraft"]] <- header$spacecraft
+    res@metadata[["id"]] <- header$id
+    res@metadata[["emissivity"]] <- emissivity
+    res@metadata[["filename"]] <- file
+    res@metadata[["headerfilename"]] <- headerfilename
     ## Bandnames differ by satellite.
-    rval@metadata[["bands"]] <- band # FIXME: still ok?
+    res@metadata[["bands"]] <- band # FIXME: still ok?
     actualfilename <- gsub(".*/", "", file)
-##    rval@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
+##    res@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1) 
     ## print(header$bandsuffices)
@@ -584,29 +572,29 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
         ##bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
         bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
         ## message(bandfilename)
-        ##rval@metadata[["filename"]] <- bandfilename 
+        ##res@metadata[["filename"]] <- bandfilename 
         oceDebug(debug, "reading \"", header$bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
         d <- tiff::readTIFF(bandfilename)
         ## if (FALSE && !is.null(getOption("testLandsat1"))) { # FIXME: disable
-        bandname <- header$bandnames[band[b]] # FIXME: 1 more layer of indexing?
+        ##bandname <- header$bandnames[band[b]] # FIXME: 1 more layer of indexing?
         #if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_7") {
         if ("LANDSAT_8" == header$spacecraft) {
             d <- .Call("landsat_numeric_to_bytes", d, 16) # reuse 'd' to try to save storage
-            rval@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
+            res@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
                                                            lsb=.Call("landsat_transpose_flip", d$lsb))
         } else {
             ## FIXME: assume all others are 1-byte, like LANDSAT_7
             d <- .Call("landsat_numeric_to_bytes", d, 8) # reuse 'd' to try to save storage
-            rval@data[[header$bandnames[band[b]]]] <- list(msb=0,
+            res@data[[header$bandnames[band[b]]]] <- list(msb=0,
                                                            lsb=.Call("landsat_transpose_flip", d$lsb))
         }
     }
     options(warn=options$warn) 
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+    res@processingLog <- processingLogAppend(res@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.landsat()\n", unindent=1)
-    rval
+    res
 }
 
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
@@ -619,9 +607,9 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
     dimOld <- dim(x@data[[1]]$msb)
     if (any(dimNew != dimOld))
         stop("dim(data) = c(", dimNew[1], ",", dimNew[2], ") must match existing dimension c(", dimOld[1], ",", dimOld[2], ")")
-    rval <- x
-    rval@data[[name]] <- data
-    rval
+    res <- x
+    res@data[[name]] <- data
+    res
 }
 
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
@@ -647,20 +635,23 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
     ur$longitude <- min(ur$longitude, x@metadata$urlon)
     ll$latitude <- max(ll$latitude, x@metadata$lllat)
     ur$latitude <- min(ur$latitude, x@metadata$urlat)
-    utm <- TRUE                        # FIXME: make this an arg
+    ##utm <- TRUE                        # FIXME: make this an arg
     if (!("llUTM" %in% names(x@metadata))) {
         oceDebug(debug, "adding llUTM and urUTM to metadata\n")
         x@metadata$llUTM <- lonlat2utm(x@metadata$lllon, x@metadata$lllat, zone=x@metadata$zoneUTM)
         x@metadata$urUTM <- lonlat2utm(x@metadata$urlon, x@metadata$urlat, zone=x@metadata$zoneUTM)
     }
     oceDebug(debug, "metadata$zoneUTM:", x@metadata$zoneUTM, "\n")
-    if (FALSE) {
-        llTrimUTM <- lonlat2utm(ll, zone=x@metadata$llUTM$zone)
-        urTrimUTM <- lonlat2utm(ur, zone=x@metadata$llUTM$zone)
-    } else {
-        llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
-        urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
-    }
+    ##if (FALSE) {
+    ##    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$llUTM$zone)
+    ##    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$llUTM$zone)
+    ##} else {
+    ##    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
+    ##    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
+    ##}
+    llTrimUTM <- lonlat2utm(ll, zone=x@metadata$zoneUTM)
+    urTrimUTM <- lonlat2utm(ur, zone=x@metadata$zoneUTM)
+
     oldEastingRange <- c(x@metadata$llUTM$easting, x@metadata$urUTM$easting) 
     oldNorthingRange <- c(x@metadata$llUTM$northing, x@metadata$urUTM$northing) 
     trimmedEastingRange <- c(llTrimUTM$easting, urTrimUTM$easting)

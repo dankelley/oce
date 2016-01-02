@@ -7,4 +7,3 @@ clean:
 install:
 	cp $(what).rda ../../data
 
-	

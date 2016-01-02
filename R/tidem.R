@@ -86,7 +86,7 @@ setMethod(f="plot",
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              drawConstituents <- function(type="standard", labelIf=NULL, col="blue")
+              drawConstituents <- function(amplitude, type="standard", labelIf=NULL, col="blue")
               {
                   if (type == "standard") {
                       drawConstituent("SA", 0.0001140741, side=3)
@@ -119,10 +119,10 @@ setMethod(f="plot",
                   if (which[w] == 2) {
                       plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
                       segments(frequency, 0, frequency, amplitude)
-                      drawConstituents()
+                      drawConstituents(amplitude)
                   } else if (which[w] == 1) {
                       plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-                      drawConstituents()
+                      drawConstituents(amplitude)
                   } else {
                       stop("unknown value of which ", which, "; should be 1 or 2")
                   }
@@ -173,8 +173,8 @@ tidemVuf <- function(t, j, lat=NULL)
         oceDebug(debug, "uu[1:3]=",uu[1:3], "\n")
 
         nsat <- length(tidedata$sat$iconst)
-        nfreq <- length(tidedata$const$numsat)
-                                        # loop, rather than make a big matrix
+        ##nfreq <- length(tidedata$const$numsat)
+        ## loop, rather than make a big matrix
         oceDebug(debug,
                   "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
                   "length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
@@ -577,27 +577,26 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     ##     ~/src/t_tide_v1.3beta/t_tide.m:468
     ##     ~/src/foreman/tide12_r2.f:422
 
-    data <- list(model=model,
-                 call=cl,
-                 tRef=tRef,
-                 const=c(1,   index),
-                 name=c("Z0", name),
-                 freq=c(0,    freq),
-                 amplitude=amplitude,
-                 phase=phase,
-                 p=p)
-    rval <- new('tidem')
-    rval@metadata <- list(rc=rc)
-    rval@data <- data
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res <- new('tidem')
+    res@data <- list(model=model,
+                      call=cl,
+                      tRef=tRef,
+                      const=c(1,   index),
+                      name=c("Z0", name),
+                      freq=c(0,    freq),
+                      amplitude=amplitude,
+                      phase=phase,
+                      p=p)
+    res@metadata$rc <- rc
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 
 predict.tidem <- function(object, newdata, ...)
 {
     if (!missing(newdata) && !is.null(newdata)) {
-        newdata.class <- class(newdata)
+        ##newdata.class <- class(newdata)
         if (inherits(newdata, "POSIXt")) {
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
@@ -615,14 +614,14 @@ predict.tidem <- function(object, newdata, ...)
             name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
             dim(name2) <- c(2 * length(name), 1)
             colnames(x) <- name2
-            rval <- predict(object@data$model, newdata=list(x=x), ...)
+            res <- predict(object@data$model, newdata=list(x=x), ...)
         } else {
             stop("newdata must be of class POSIXt")
         }
     } else {
-        rval <- predict(object@data$model, ...)
+        res <- predict(object@data$model, ...)
     }
-    as.numeric(rval)
+    as.numeric(res)
 }
 
 webtide <- function(action=c("map", "predict"),
@@ -641,8 +640,8 @@ webtide <- function(action=c("map", "predict"),
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
                  asp=asp, xlab="", ylab="", ...)
-            usr <- par('usr')
-            best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            ##usr <- par('usr')
+            ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
             warning("tidem: using default coastline for testing")
             data("coastlineWorld", package="oce", envir=environment())
             coastlineWorld <- get("coastlineWorld")
@@ -699,7 +698,7 @@ webtide <- function(action=c("map", "predict"),
             ampv[i] <- conuv[[4]]
             phasev[i] <- conuv[[5]]
         }
-        df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
+        ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
         ## NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 

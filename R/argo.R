@@ -19,7 +19,7 @@ setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               if (length(grep("time", subsetString)) ||
                   length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
@@ -33,7 +33,7 @@ setMethod(f="subset",
                   if (gridded) {
                       x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
                       keep <- eval(substitute(subset), x@data, parent.frame(2))
-                      x@data$pressure <- rval@data$pressure ## FIXME: convert back to original for subsetting below
+                      x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
                   } else {
                       stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                   }
@@ -42,20 +42,20 @@ setMethod(f="subset",
               }
               ## Now do the subset
               if (length(grep("pressure", subsetString))) {
-                  rval@data$salinity <- x@data$salinity[keep,]
-                  rval@data$temperature <- x@data$temperature[keep,]
-                  rval@data$pressure <- x@data$pressure[keep,]
-                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  res@data$salinity <- x@data$salinity[keep,]
+                  res@data$temperature <- x@data$temperature[keep,]
+                  res@data$pressure <- x@data$pressure[keep,]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               } else {
-                  rval@data$time <- x@data$time[keep]
-                  rval@data$longitude <- x@data$longitude[keep]
-                  rval@data$latitude <- x@data$latitude[keep]
-                  rval@data$salinity <- x@data$salinity[,keep]
-                  rval@data$temperature <- x@data$temperature[,keep]
-                  rval@data$pressure <- x@data$pressure[,keep]
-                  rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  res@data$time <- x@data$time[keep]
+                  res@data$longitude <- x@data$longitude[keep]
+                  res@data$latitude <- x@data$latitude[keep]
+                  res@data$salinity <- x@data$salinity[,keep]
+                  res@data$temperature <- x@data$temperature[,keep]
+                  res@data$pressure <- x@data$pressure[,keep]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               }
-              rval
+              res
           })
 
 
@@ -66,24 +66,24 @@ setMethod(f="summary",
               cat("Drifter Summary\n---------------\n\n")
               cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
               cat("* id:         \"", object@metadata$id, "\"\n", sep="")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
-              for (i in 2:ndata)
-                  threes[i-1,] <- threenum(object@data[[i]])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- names(object@data)[-1]
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
+
+ncdfFixMatrix <- function(x)
+{
+    if (length(dim(x)) == 1)
+        x <- as.vector(x)
+    x
+}
 
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
     dim <- dim(argo@data$pressure)
-    ndepth <- dim[1]
+    ## ndepth <- dim[1]
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
-    rval <- argo
+    res <- argo
     salinity <- argo[["salinity"]]
     temperature <- argo[["temperature"]]
     pressure <- argo[["pressure"]]
@@ -105,22 +105,22 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     }
     ##message("pt=c(", paste(round(pt), collapse=","), ")")
     npt <- length(pt)
-    rval@data$salinity <- matrix(0.0, ncol=nprofile, nrow=npt)
-    rval@data$temperature <- matrix(0.0, ncol=nprofile, nrow=npt)
-    rval@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$salinity <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$temperature <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
     for (profile in 1:nprofile) {
         ndata <- sum(!is.na(salinity[,profile]))
         if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
-            rval@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
-            rval@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
-            rval@data$pressure[,profile] <- pt
+            res@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
+            res@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
+            res@data$pressure[,profile] <- pt
         } else {
-            rval@data$salinity[,profile] <- rep(NA, npt)
-            rval@data$temperature[,profile] <- rep(NA, npt)
-            rval@data$pressure[,profile] <- pt
+            res@data$salinity[,profile] <- rep(NA, npt)
+            res@data$temperature[,profile] <- rep(NA, npt)
+            res@data$pressure[,profile] <- pt
         }
     }
-    rval
+    res
 }
 
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
@@ -128,7 +128,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read argo data')
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ofile <- file
+    ## ofile <- file
     filename <- ""
     ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
     if (is.character(file)) {
@@ -146,14 +146,14 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
-    t0s <- ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME")
+    t0s <- as.vector(ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME"))
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
-    julianDayTime <- ncdf4::ncvar_get(file, "JULD")
+    julianDayTime <- as.vector(ncdf4::ncvar_get(file, "JULD"))
     time <- t0 + julianDayTime * 86400
-    longitude <- ncdf4::ncvar_get(file, "LONGITUDE")
+    longitude <- ncdfFixMatrix(ncdf4::ncvar_get(file, "LONGITUDE"))
     longitudeNA <- ncdf4::ncatt_get(file, "LONGITUDE","_FillValue")$value
     longitude[longitude == longitudeNA] <- NA
-    latitude <- ncdf4::ncvar_get(file, "LATITUDE")
+    latitude <- ncdfFixMatrix(ncdf4::ncvar_get(file, "LATITUDE"))
     latitudeNA <- ncdf4::ncatt_get(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
     salinity <- ncdf4::ncvar_get(file, "PSAL")
@@ -162,6 +162,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     temperature <- ncdf4::ncvar_get(file, "TEMP")
     temperatureNA <- ncdf4::ncatt_get(file, "TEMP","_FillValue")$value
     temperature[temperature == temperatureNA] <- NA
+
+
     pressure <- ncdf4::ncvar_get(file, "PRES")
     pressureNA <- ncdf4::ncatt_get(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
@@ -172,10 +174,21 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         dim(temperature) <- dim
         dim(pressure) <- dim
     }
-    metadata <- list(filename=filename, id=id)
     res <- new("argo", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
+    res@metadata$filename <- filename
+    res@metadata$id <- id
+    if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
+        res@metadata$units$temperature <- "ITS-90"
+    if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))
+        res@metadata$units$salinity <- "PSU"
+    if (1 == length(grep("east", ncdf4::ncatt_get(file, "LONGITUDE", "units")$value, ignore.case=TRUE)))
+        res@metadata$units$longitude <- "degree east"
+    if (1 == length(grep("north", ncdf4::ncatt_get(file, "LATITUDE", "units")$value, ignore.case=TRUE)))
+        res@metadata$units$latitude <- "degree north"
+    if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES", "units")$value, ignore.case=TRUE)))
+        res@metadata$units$pressure <- "decibar"
     res@metadata$id <- if (!missing(id)) id else NA
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -242,7 +255,7 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
-              omar <- par('mar')
+              ## omar <- par('mar')
               nw  <- length(which)
               if (nw > 1) {
                   par(mfcol=c(1, nw), mgp=mgp, mar=mar)
@@ -251,7 +264,8 @@ setMethod(f="plot",
               }
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
-              ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
+              ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                            units=list(temperature="ITS-90", conductivity="ratio")) # guess on units
               which <- oce.pmatch(which,
                                   list(trajectory=1,
                                        "salinity ts"=2,
@@ -307,7 +321,7 @@ setMethod(f="plot",
                       if (!is.null(projection)) {
                           meanlat <- mean(x[['latitude']], na.rm=TRUE)
                           meanlon <- mean(x[['longitude']], na.rm=TRUE)
-                          id <- pmatch(projection, "automatic")
+                          ## id <- pmatch(projection, "automatic")
                           if (!is.na(pmatch(projection, "automatic"))) {
                               projection <- if (meanlat > 70)
                                   paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"

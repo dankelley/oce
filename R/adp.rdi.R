@@ -144,8 +144,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     else orientation <- "downward"
     oceDebug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
 
-    real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
-    lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
+    ##real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
+    ##lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
     numberOfBeams <- readBin(FLD[9], "integer", n=1, size=1, signed=FALSE)
     oceDebug(debug, "numberOfBeams", numberOfBeams, "\n")
     numberOfCells <- abs(readBin(FLD[10], "integer", n=1, size=1, signed=FALSE)) # WN
@@ -154,15 +154,15 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     cellSize <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (cellSize < 0 || cellSize > 64)
         stop("cellSize of ", cellSize, "m is not in the allowed range of 0m to 64m")
-    blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
+    ##blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profilingMode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     lowCorrThresh <- readBin(FLD[18], "integer", n=1, size=1)
     numberOfCodeReps <- readBin(FLD[19], "integer", n=1, size=1)
     percentGdMinimum <- readBin(FLD[20], "integer", n=1, size=1)
     errorVelocityMaximum <- readBin(FLD[21:22], "integer", n=1, size=2, endian="little")
-    tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
-    tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
-    tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
+    ##tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
+    ##tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
+    ##tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
     bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
     originalCoordinate <- "???"
     if (bits == "00") originalCoordinate <- "beam"
@@ -192,7 +192,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                               readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
     oceDebug(debug, paste("CPU.BOARD.SERIAL.NUMBER = '", paste(cpuBoardSerialNumber, collapse=""), "'\n", sep=""))
     systemBandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
-    systemPower <- readBin(FLD[53], "integer", n=1, size=1)
+    ##systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
     ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serialNumber only for REMUS, else spare
     ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serialNumber
@@ -250,7 +250,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
     if (VLD[2] != 0x00)
         stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
-    ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
+    ##ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
 
     ## FIXME: probably would save time to read all elements at once.  Instrument to check
@@ -265,8 +265,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "profile time=", format(time), "(year=", RTC.year,
               "month=", RTC.month, "day-", RTC.day, "hour=", RTC.hour,
               "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
-    ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
-    bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
+    ##ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
+    ##bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     soundSpeed <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     oceDebug(debug, "soundSpeed= ", soundSpeed, "\n") # FIXME possibly wrong
     transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
@@ -275,62 +275,62 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
                 1600 m/s.  Something went wrong in decoding the data.")
     oceDebug(debug, "about to create the list to be returned\n")
-    rval <- list(instrumentType="adcp",
-                 instrumentSubtype=instrumentSubtype,
-                 firmwareVersionMajor=firmwareVersionMajor,
-                 firmwareVersionMinor=firmwareVersionMinor,
-                 firmwareVersion=firmwareVersion,
-                 bytesPerEnsemble=bytesPerEnsemble,
-                 systemConfiguration=systemConfiguration,
-                 frequency=frequency,
-                 beamAngle=beamAngle,
-                 beamPattern=beamPattern,
-                 beamConfig=beamConfig,
-                 orientation=orientation,
-                 numberOfDataTypes=numberOfDataTypes,
-                 dataOffset=dataOffset,
-                 numberOfBeams=numberOfBeams,
-                 numberOfCells=numberOfCells,
-                 pingsPerEnsemble=pingsPerEnsemble,
-                 cellSize=cellSize,
-                 transducerDepth=transducerDepth,
-                 profilingMode=profilingMode,
-                 dataOffset=dataOffset,
-                 lowCorrThresh=lowCorrThresh,
-                 numberOfCodeReps=numberOfCodeReps,
-                 percentGdMinimum=percentGdMinimum,
-                 errorVelocityMaximum=errorVelocityMaximum,
-                 ##tpp.minutes=tpp.minutes,
-                 ##tpp.seconds=tpp.seconds,
-                 ##tpp.hundredths=tpp.hundredths,
-                 originalCoordinate=originalCoordinate,
-                 headingAlignment=headingAlignment,
-                 headingBias=headingBias,
-                 sensorSource=sensorSource,
-                 sensorsAvailable=sensorsAvailable,
-                 bin1Distance=bin1Distance,
-                 xmitPulseLength=xmitPulseLength,
-                 wpRefLayerAverage=wpRefLayerAverage,
-                 falseTargetThresh=falseTargetThresh,
-                 transmitLagDistance=transmitLagDistance,
-                 cpuBoardSerialNumber=cpuBoardSerialNumber,
-                 systemBandwidth=systemBandwidth,
-                 ##systemPower=systemPower,
-                 serialNumber=serialNumber,
-                 ## beamAngle=beamAngle,  # wrong in my tests, anyway
-                 ##ensemble.number=ensemble.number,
-                 ##time=time,
-                 ##ensembleNumberMSB=ensembleNumberMSB,
-                 ##bitResult=bitResult,
-                 ##heading=heading,
-                 ##pitch=pitch,
-                 ##roll=roll,
-                 ##salinity=salinity
-                 ##headingAlignment,
-                 ##headingBias,
-                 haveActualData=haveActualData)
+    res <- list(instrumentType="adcp",
+                instrumentSubtype=instrumentSubtype,
+                firmwareVersionMajor=firmwareVersionMajor,
+                firmwareVersionMinor=firmwareVersionMinor,
+                firmwareVersion=firmwareVersion,
+                bytesPerEnsemble=bytesPerEnsemble,
+                systemConfiguration=systemConfiguration,
+                frequency=frequency,
+                beamAngle=beamAngle,
+                beamPattern=beamPattern,
+                beamConfig=beamConfig,
+                orientation=orientation,
+                numberOfDataTypes=numberOfDataTypes,
+                dataOffset=dataOffset,
+                numberOfBeams=numberOfBeams,
+                numberOfCells=numberOfCells,
+                pingsPerEnsemble=pingsPerEnsemble,
+                cellSize=cellSize,
+                transducerDepth=transducerDepth,
+                profilingMode=profilingMode,
+                dataOffset=dataOffset,
+                lowCorrThresh=lowCorrThresh,
+                numberOfCodeReps=numberOfCodeReps,
+                percentGdMinimum=percentGdMinimum,
+                errorVelocityMaximum=errorVelocityMaximum,
+                ##tpp.minutes=tpp.minutes,
+                ##tpp.seconds=tpp.seconds,
+                ##tpp.hundredths=tpp.hundredths,
+                originalCoordinate=originalCoordinate,
+                headingAlignment=headingAlignment,
+                headingBias=headingBias,
+                sensorSource=sensorSource,
+                sensorsAvailable=sensorsAvailable,
+                bin1Distance=bin1Distance,
+                xmitPulseLength=xmitPulseLength,
+                wpRefLayerAverage=wpRefLayerAverage,
+                falseTargetThresh=falseTargetThresh,
+                transmitLagDistance=transmitLagDistance,
+                cpuBoardSerialNumber=cpuBoardSerialNumber,
+                systemBandwidth=systemBandwidth,
+                ##systemPower=systemPower,
+                serialNumber=serialNumber,
+                ## beamAngle=beamAngle,  # wrong in my tests, anyway
+                ##ensemble.number=ensemble.number,
+                ##time=time,
+                ##ensembleNumberMSB=ensembleNumberMSB,
+                ##bitResult=bitResult,
+                ##heading=heading,
+                ##pitch=pitch,
+                ##roll=roll,
+                ##salinity=salinity
+                ##headingAlignment,
+                ##headingBias,
+                haveActualData=haveActualData)
     oceDebug(debug, "} # decodeHeaderRDI()\n", unindent=1)
-    rval
+    res
 }                                       # decodeHeaderRDI
 
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -344,7 +344,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "read.adp.rdi(...,from=",format(from),
              ",to=",if(missing(to)) "missing" else format(to), "...) {\n", unindent=1)
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectAdpRdi <- function(t.find, add=0, debug=0) {
+    bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
         len <- length(profileStart)
         lower <- 1
@@ -464,9 +464,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (inherits(from, "POSIXt")) {
                 if (!inherits(to, "POSIXt"))
                     stop("if 'from' is POSIXt, then 'to' must be, also")
-                fromPair <- bisectAdpRdi(from, add=-1, debug=debug-1)
+                fromPair <- bisectAdpRdi(buf, from, add=-1, debug=debug-1)
                 from <- fromIndex <- fromPair$index
-                toPair <- bisectAdpRdi(to, add=1, debug=debug-1)
+                toPair <- bisectAdpRdi(buf, to, add=1, debug=debug-1)
                 to <- toIndex <- toPair$index
                 oceDebug(debug, "from:", format(fromPair$t), " yields profileStart[", fromIndex, "]\n")
                 oceDebug(debug, "to:", format(toPair$t), "yields profileStart[", toIndex, "]\n")
@@ -536,9 +536,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             qFound <- sum(codes[,1]==0x00 & codes[,2]==0x02) # corr
             aFound <- sum(codes[,1]==0x00 & codes[,2]==0x03) # echo intensity
             gFound <- sum(codes[,1]==0x00 & codes[,2]==0x04) # percent good
-            sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
+            ##sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
             bFound <- sum(codes[,1]==0x00 & codes[,2]==0x06) # bottom-track
-            nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
+            ##nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
             if (vFound) {
                 v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
                 oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
@@ -1118,25 +1118,27 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             pressureStd <- readBin(buf[profileStart4 + 52], "integer", n=profilesToRead, size=4, endian="little")
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
-            metadata <- header
-            metadata$manufacturer <- "rdi"
-            metadata$instrumentType <- "adcp"
-            metadata$filename <- filename
-            metadata$longitude <- longitude
-            metadata$latitude <- latitude
-            metadata$velocityResolution <- velocityScale
-            metadata$velocityMaximum <- velocityScale * 2^15
-            metadata$numberOfSamples <- dim(v)[1]
-            metadata$numberOfCells <- dim(v)[2]
-            metadata$numberOfBeams <- dim(v)[3]
-            metadata$measurementStart <- measurementStart
-            metadata$measurementEnd <- measurementEnd
-            metadata$measurementDeltat <- measurementDeltat
-            metadata$bin1Distance <- bin1Distance
-            metadata$xmitPulseLength <- xmitPulseLength
-            metadata$oceBeamUnspreaded <- FALSE
-            metadata$oceCoordinate <- header$originalCoordinate
-            metadata$depthMean <- mean(depth, na.rm=TRUE)
+            res <- new('adp')
+            for (name in names(header))
+                res@metadata[[name]] <- header[[name]]
+            res@metadata$manufacturer <- "rdi"
+            res@metadata$instrumentType <- "adcp"
+            res@metadata$filename <- filename
+            res@metadata$longitude <- longitude
+            res@metadata$latitude <- latitude
+            res@metadata$velocityResolution <- velocityScale
+            res@metadata$velocityMaximum <- velocityScale * 2^15
+            res@metadata$numberOfSamples <- dim(v)[1]
+            res@metadata$numberOfCells <- dim(v)[2]
+            res@metadata$numberOfBeams <- dim(v)[3]
+            res@metadata$measurementStart <- measurementStart
+            res@metadata$measurementEnd <- measurementEnd
+            res@metadata$measurementDeltat <- measurementDeltat
+            res@metadata$bin1Distance <- bin1Distance
+            res@metadata$xmitPulseLength <- xmitPulseLength
+            res@metadata$oceBeamUnspreaded <- FALSE
+            res@metadata$oceCoordinate <- header$originalCoordinate
+            res@metadata$depthMean <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
@@ -1168,15 +1170,15 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ##
             ## As a check on coding, see the python software at
             ##   http://currents.soest.hawaii.edu/hg/pycurrents/file/3175207488bb/adcp/transform.py
-            tm.c <- if (metadata$beamPattern == "convex") 1 else -1; # control sign of first 2 rows of transformationMatrix
-            tm.a <- 1 / (2 * sin(metadata$beamAngle * pi / 180))
-            tm.b <- 1 / (4 * cos(metadata$beamAngle * pi / 180))
+            tm.c <- if (res@metadata$beamPattern == "convex") 1 else -1; # control sign of first 2 rows of transformationMatrix
+            tm.a <- 1 / (2 * sin(res@metadata$beamAngle * pi / 180))
+            tm.b <- 1 / (4 * cos(res@metadata$beamAngle * pi / 180))
             tm.d <- tm.a / sqrt(2)
-            metadata$transformationMatrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
-                                                      0        ,          0, -tm.c*tm.a, tm.c*tm.a,
-                                                      tm.b     ,       tm.b,       tm.b,      tm.b,
-                                                      tm.d     ,       tm.d,      -tm.d,     -tm.d),
-                                                    nrow=4, byrow=TRUE)
+            res@metadata$transformationMatrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
+                                                          0        ,          0, -tm.c*tm.a, tm.c*tm.a,
+                                                          tm.b     ,       tm.b,       tm.b,      tm.b,
+                                                          tm.d     ,       tm.d,      -tm.d,     -tm.d),
+                                                        nrow=4, byrow=TRUE)
            if (monitor)
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
 
@@ -1198,130 +1200,129 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
            attr(time, "tzone") <- getOption("oceTz")
            if (bFound && !isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
-               data <- list(v=v, q=q, a=a, g=g,
-                            br=br, bv=bv, bc=bc, ba=ba, bg=bg,
-                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                            time=time,
-                            pressure=pressure,
-                            temperature=temperature,
-                            salinity=salinity,
-                            depth=depth,
-                            soundSpeed=soundSpeed,
-                            heading=heading,
-                            pitch=pitch,
-                            roll=roll,
-                            headingStd=headingStd,
-                            pitchStd=pitchStd,
-                            rollStd=rollStd,
-                            pressureStd=pressureStd,
-                            xmitCurrent=xmitCurrent,
-                            xmitVoltage=xmitVoltage,
-                            ambientTemp=ambientTemp,
-                            pressurePlus=pressurePlus,
-                            pressureMinus=pressureMinus,
-                            attitudeTemp=attitudeTemp,
-                            attitude=attitude,
-                            contaminationSensor=contaminationSensor)
+               res@data <- list(v=v, q=q, a=a, g=g,
+                                br=br, bv=bv, bc=bc, ba=ba, bg=bg,
+                                distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                                time=time,
+                                pressure=pressure,
+                                temperature=temperature,
+                                salinity=salinity,
+                                depth=depth,
+                                soundSpeed=soundSpeed,
+                                heading=heading,
+                                pitch=pitch,
+                                roll=roll,
+                                headingStd=headingStd,
+                                pitchStd=pitchStd,
+                                rollStd=rollStd,
+                                pressureStd=pressureStd,
+                                xmitCurrent=xmitCurrent,
+                                xmitVoltage=xmitVoltage,
+                                ambientTemp=ambientTemp,
+                                pressurePlus=pressurePlus,
+                                pressureMinus=pressureMinus,
+                                attitudeTemp=attitudeTemp,
+                                attitude=attitude,
+                                contaminationSensor=contaminationSensor)
            } else if (bFound && isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
-               data <- list(v=v, q=q, a=a, g=g,
-                            br=br, bv=bv,
-                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                            time=time,
-                            pressure=pressure,
-                            temperature=temperature,
-                            salinity=salinity,
-                            depth=depth,
-                            soundSpeed=soundSpeed,
-                            heading=heading,
-                            pitch=pitch,
-                            roll=roll,
-                            headingStd=headingStd,
-                            pitchStd=pitchStd,
-                            rollStd=rollStd,
-                            pressureStd=pressureStd,
-                            xmitCurrent=xmitCurrent,
-                            xmitVoltage=xmitVoltage,
-                            ambientTemp=ambientTemp,
-                            pressurePlus=pressurePlus,
-                            pressureMinus=pressureMinus,
-                            attitudeTemp=attitudeTemp,
-                            attitude=attitude,
-                            contaminationSensor=contaminationSensor,
-                            ## Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
-                            avgSpeed=avgSpeed,
-                            avgMagnitudeVelocityEast=avgMagnitudeVelocityEast,
-                            avgMagnitudeVelocityNorth=avgMagnitudeVelocityNorth,
-                            avgTrackMagnetic=avgTrackMagnetic,
-                            avgTrackTrue=avgTrackTrue,
-                            avgTrueVelocityEast=avgTrueVelocityEast,
-                            avgTrueVelocityNorth=avgTrueVelocityNorth,
-                            directionMadeGood=directionMadeGood,
-                            firstLatitude=firstLatitude,
-                            firstLongitude=firstLongitude,
-                            firstTime=firstTime,
-                            lastLatitude=lastLatitude,
-                            lastLongitude=lastLongitude,
-                            lastTime=lastTime,
-                            numberOfHeadingSamplesAveraged=numberOfHeadingSamplesAveraged,
-                            numberOfMagneticTrackSamplesAveraged=numberOfMagneticTrackSamplesAveraged,
-                            numberOfPitchRollSamplesAveraged=numberOfPitchRollSamplesAveraged,
-                            numberOfSpeedSamplesAveraged=numberOfSpeedSamplesAveraged,
-                            numberOfTrueTrackSamplesAveraged=numberOfTrueTrackSamplesAveraged,
-                            primaryFlags=primaryFlags,
-                            shipHeading=shipHeading,
-                            shipPitch=shipPitch,
-                            shipRoll=shipRoll,
-                            speedMadeGood=speedMadeGood,
-                            speedMadeGoodEast=speedMadeGoodEast,
-                            speedMadeGoodNorth=speedMadeGoodNorth)
+               res$data <- list(v=v, q=q, a=a, g=g,
+                                br=br, bv=bv,
+                                distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                                time=time,
+                                pressure=pressure,
+                                temperature=temperature,
+                                salinity=salinity,
+                                depth=depth,
+                                soundSpeed=soundSpeed,
+                                heading=heading,
+                                pitch=pitch,
+                                roll=roll,
+                                headingStd=headingStd,
+                                pitchStd=pitchStd,
+                                rollStd=rollStd,
+                                pressureStd=pressureStd,
+                                xmitCurrent=xmitCurrent,
+                                xmitVoltage=xmitVoltage,
+                                ambientTemp=ambientTemp,
+                                pressurePlus=pressurePlus,
+                                pressureMinus=pressureMinus,
+                                attitudeTemp=attitudeTemp,
+                                attitude=attitude,
+                                contaminationSensor=contaminationSensor,
+                                ## Next are as described starting on p77 of VmDas_Users_Guide_May12.pdf
+                                avgSpeed=avgSpeed,
+                                avgMagnitudeVelocityEast=avgMagnitudeVelocityEast,
+                                avgMagnitudeVelocityNorth=avgMagnitudeVelocityNorth,
+                                avgTrackMagnetic=avgTrackMagnetic,
+                                avgTrackTrue=avgTrackTrue,
+                                avgTrueVelocityEast=avgTrueVelocityEast,
+                                avgTrueVelocityNorth=avgTrueVelocityNorth,
+                                directionMadeGood=directionMadeGood,
+                                firstLatitude=firstLatitude,
+                                firstLongitude=firstLongitude,
+                                firstTime=firstTime,
+                                lastLatitude=lastLatitude,
+                                lastLongitude=lastLongitude,
+                                lastTime=lastTime,
+                                numberOfHeadingSamplesAveraged=numberOfHeadingSamplesAveraged,
+                                numberOfMagneticTrackSamplesAveraged=numberOfMagneticTrackSamplesAveraged,
+                                numberOfPitchRollSamplesAveraged=numberOfPitchRollSamplesAveraged,
+                                numberOfSpeedSamplesAveraged=numberOfSpeedSamplesAveraged,
+                                numberOfTrueTrackSamplesAveraged=numberOfTrueTrackSamplesAveraged,
+                                primaryFlags=primaryFlags,
+                                shipHeading=shipHeading,
+                                shipPitch=shipPitch,
+                                shipRoll=shipRoll,
+                                speedMadeGood=speedMadeGood,
+                                speedMadeGoodEast=speedMadeGoodEast,
+                                speedMadeGoodNorth=speedMadeGoodNorth)
            } else {
-               data <- list(v=v, q=q, a=a, g=g,
-                            distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
-                            time=time,
-                            pressure=pressure,
-                            temperature=temperature,
-                            salinity=salinity,
-                            depth=depth,
-                            soundSpeed=soundSpeed,
-                            heading=heading,
-                            pitch=pitch,
-                            roll=roll,
-                            headingStd=headingStd,
-                            pitchStd=pitchStd,
-                            rollStd=rollStd,
-                            pressureStd=pressureStd,
-                            xmitCurrent=xmitCurrent,
-                            xmitVoltage=xmitVoltage,
-                            ambientTemp=ambientTemp,
-                            pressurePlus=pressurePlus,
-                            pressureMinus=pressureMinus,
-                            attitudeTemp=attitudeTemp,
-                            attitude=attitude,
-                            contaminationSensor=contaminationSensor)
+               res@data <- list(v=v, q=q, a=a, g=g,
+                                distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                                time=time,
+                                pressure=pressure,
+                                temperature=temperature,
+                                salinity=salinity,
+                                depth=depth,
+                                soundSpeed=soundSpeed,
+                                heading=heading,
+                                pitch=pitch,
+                                roll=roll,
+                                headingStd=headingStd,
+                                pitchStd=pitchStd,
+                                rollStd=rollStd,
+                                pressureStd=pressureStd,
+                                xmitCurrent=xmitCurrent,
+                                xmitVoltage=xmitVoltage,
+                                ambientTemp=ambientTemp,
+                                pressurePlus=pressurePlus,
+                                pressureMinus=pressureMinus,
+                                attitudeTemp=attitudeTemp,
+                                attitude=attitude,
+                                contaminationSensor=contaminationSensor)
            }
            ##>if (testing) {
            ##>    data$upward=upward
            ##>}
         } else {
             warning("There are no profiles in this file.")
-            metadata <- header
-            metadata$filename <- filename
-            data <- NULL
+            for (name in names(header))
+                res@metadata[[name]] <- header[[name]]
+            res@metadata$filename <- filename
+            res@data <- NULL
         }
     } else {
         warning("The header indicates that there are no profiles in this file.")
-        metadata <- header
-        metadata$filename <- filename
-        data <- NULL
+        for (name in names(header))
+            res@metadata[[name]] <- header[[name]]
+        res@metadata$filename <- filename
+        res@data <- NULL
     }
-    metadata$manufacturer <- "teledyne rdi"
+    res@metadata$manufacturer <- "teledyne rdi"
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- new('adp')
-    res@metadata <- metadata
-    res@data <- data
     res@processingLog <- unclass(hitem)
     oceDebug(debug, "} # read.adp.rdi()\n", unindent=1)
     res

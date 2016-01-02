@@ -184,7 +184,7 @@ drawPalette <- function(zlim, zlab="",
     }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {
-        zlimOrig <- zlim
+        ##zlimOrig <- zlim
         zlim <- as.numeric(zlim)
     }
     oceDebug(debug, "zIsTime=", zIsTime, "\n")
@@ -199,7 +199,7 @@ drawPalette <- function(zlim, zlab="",
         col <- colormap$col
         ## Trick the code below, to avoid auto-creating breaks
         breaksGiven <- TRUE
-        colGiven <- TRUE
+        ##colGiven <- TRUE
         if (!zlimGiven)
             zlim <- range(breaks)
         zlimGiven <- TRUE
@@ -448,7 +448,7 @@ imagep <- function(x, y, z,
     if (inherits(x, "POSIXt"))
         x <- as.POSIXct(x)
 
-    haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
+    ##haveZlab <- !is.null(zlab) && sum(nchar(zlab)) > 0
     if (!missing(x) && is.list(x)) {
         names <- names(x)
         if (!missing(y))
@@ -497,19 +497,22 @@ imagep <- function(x, y, z,
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
-    if (is.logical(decimate) && decimate) {
-        if (is.logical(decimate)) { # find value from image
+    if (is.logical(decimate)) {
+        if (decimate) {
             maxdim <- max(dim)
             decimate <- max(as.integer(round(maxdim / 400)), 1)
             oceDebug(debug, "set auto decimation=", decimate, "\n")
+        } else {
+            decimate <- 1
         }
     }
     if (decimate < 1)
         stop("decimate must be a positive integer or a logical value")
     oceDebug(debug, "decimate:", decimate, "\n")
     if (decimate > 1) {
-        ilook <- seq.int(1, dim[1], by=decimate)
-        jlook <- seq.int(1, dim[2], by=decimate)
+        ## keep at least 100x100 pixels
+        ilook <- if (dim[1] > 100*decimate) seq.int(1,dim[1],by=decimate) else seq.int(1,dim[1])
+        jlook <- if (dim[2] > 100*decimate) seq.int(1,dim[2],by=decimate) else seq.int(1,dim[2])
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
         x <- x[ilook]
@@ -554,7 +557,7 @@ imagep <- function(x, y, z,
         y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
     }
     attr(x,'tzone') <- tz
-    omai <- par("mai")
+    ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
         mar <- c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)

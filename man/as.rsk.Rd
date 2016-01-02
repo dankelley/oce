@@ -9,7 +9,7 @@
 
 \usage{as.rsk(time, columns,
        filename="", instrumentType="rbr", serialNumber="", model="",
-       sampleInterval,
+       sampleInterval=NA,
        debug=getOption("oceDebug"))}
 
 \arguments{
@@ -20,8 +20,8 @@
   \item{instrumentType}{type of instrument}
   \item{serialNumber}{serial number for instrument}
   \item{model}{instrument model type, e.g. \code{"RBRduo"}}
-  \item{sampleInterval}{sampling interval. If not given is estimated as
-  the median difference in times}
+  \item{sampleInterval}{sampling interval. If given as \code{NA}, then this 
+    is estimated as the median difference in times.}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 

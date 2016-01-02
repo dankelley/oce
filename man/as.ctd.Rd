@@ -1,24 +1,25 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+%salinityFlag, temperatureFlag, pressureFlag, conductivityFlag,
+%SAFlag, CTFlag, oxygenFlag, nitrateFlag, nitriteFlag, phosphateFlag, silicateFlag,
+
 \name{as.ctd}
 \alias{as.ctd}
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{as.ctd(salinity, temperature, pressure, conductivity, SA, CT, oxygen,
-       nitrate, nitrite, phosphate, silicate, scan, time, other,
-       salinityFlag, temperatureFlag, pressureFlag, conductivityFlag,
-       SAFlag, CTFlag, oxygenFlag, nitrateFlag, nitriteFlag, phosphateFlag,
-       silicateFlag,
-       temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
-       missingValue,
-       quality, 
-       filename, type, model, serialNumber,
-       ship, scientist, institute, address, cruise, station, 
-       date, startTime, recovery,
+\usage{as.ctd(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
+       SA=NULL, CT=NULL, oxygen=NULL,
+       nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
+       scan=NULL, time=NULL, other=NULL,
+       units=NULL, pressureType="sea",
+       missingValue=NA, quality=NULL, 
+       filename="", type="", model="", serialNumber="",
+       ship="", scientist="", institute="", address="", cruise="", station="", 
+       date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
        deploymentType="unknown",
-       pressureAtmospheric, waterDepth,
-       sampleInterval, src,
+       pressureAtmospheric=0, waterDepth=NA,
+       sampleInterval=NA, src="",
        debug=getOption("oceDebug"))}
 
 \arguments{
@@ -57,21 +58,21 @@
     \code{1:length(salinity)}.}
   \item{time}{optional vector of times of observation}
   \item{other}{optional list of other data columns that are not in the standard list}
-  \item{salinityFlag}{a quality flag, defined and interpreted by the user}
-  \item{temperatureFlag}{a quality flag, defined and interpreted by the user}
-  \item{pressureFlag}{a quality flag, defined and interpreted by the user}
-  \item{conductivityFlag}{a quality flag, defined and interpreted by the user}
-  \item{SAFlag}{a quality flag, defined and interpreted by the user}
-  \item{CTFlag}{a quality flag, defined and interpreted by the user}
-  \item{oxygenFlag}{a quality flag, defined and interpreted by the user}
-  \item{nitrateFlag}{a quality flag, defined and interpreted by the user}
-  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
-  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
-  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
-  \item{temperatureUnit}{a character string indicating the unit for temperature;
-    may be \code{"ITS-90"} or \code{"IPTS-68"}}
-  \item{conductivityUnit}{a character string indicating the unit for
-    conductivity; may be \code{"ratio"}, \code{"S/m"} or \code{"mS/cm"}.}
+%  \item{salinityFlag}{a quality flag, defined and interpreted by the user}
+%  \item{temperatureFlag}{a quality flag, defined and interpreted by the user}
+%  \item{pressureFlag}{a quality flag, defined and interpreted by the user}
+%  \item{conductivityFlag}{a quality flag, defined and interpreted by the user}
+%  \item{SAFlag}{a quality flag, defined and interpreted by the user}
+%  \item{CTFlag}{a quality flag, defined and interpreted by the user}
+%  \item{oxygenFlag}{a quality flag, defined and interpreted by the user}
+%  \item{nitrateFlag}{a quality flag, defined and interpreted by the user}
+%  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
+%  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
+%  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
+  \item{units}{an optional list containing units.  For modern instruments, the
+    value \code{list(temperature="ITS-90", conductivity="ratio")} is usually
+    appropriate if conductivity ratio is being stored; othewise, switch the
+    second argument value to \code{"uS/cm"} or \code{"S/m"}.}
   \item{pressureType}{a character string indicating the type of pressure; may be
     \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
     and sea pressure, or \code{"sea"}.}

@@ -5,6 +5,7 @@ setMethod(f="initialize",
               if (!missing(v)) .Object@data$v <- v
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
+              ## .Object@metadata$units$v <- "m/s"
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'adv' object"
@@ -23,43 +24,7 @@ setMethod(f="summary",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
                             if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
               }
-              cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                          1 / object@metadata$measurementDeltat), ...)
-              cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                          1 / object@metadata$subsampleDeltat), ...)
-              if ("samplingMode" %in% names(object@metadata)) {
-                  if ("burst" == object@metadata$samplingMode) {
-                      cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-                  } else {
-                      cat("* Sampling in continuous mode\n")
-                  }
-              }
-              cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-              cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
-              cat("* Orientation:           ", object@metadata$orientation, "\n")
-              cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
-              dataNames <- names(object@data)
-              nrow <- length(dataNames) - length(grep("^time", dataNames))
-              threes <- matrix(nrow=nrow, ncol=3)
-              ii <- 1
-              for (name in dataNames) {
-                  if (0 == length(grep("^time", name))) {
-                      if (0 == length(object@data[[name]])) {
-                          threes[ii,] <- c(NA, NA, NA)
-                      } else {
-                          threes[ii,] <- threenum(as.numeric(object@data[[name]]))
-                      }
-                      ii <- ii + 1
-                  }
-              }
-              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
 
 setMethod(f="[[",
@@ -101,29 +66,29 @@ setMethod(f="[[",
               #    return(x@data$temperature)
               } else if (i == "a") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$a
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$a
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$a
+                      res <- x@data$a
                   }
-                  return(rval)
+                  return(res)
               } else if (i == "q") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$q
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$q
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$q
+                      res <- x@data$q
                   }
-                  return(rval)
+                  return(res)
               } else {
-                  rval <- as(x, "oce")[[i]]
+                  res <- as(x, "oce")[[i]]
                   ## if (missing(j) || j != "nowarn")
                   ##     warning("adv[[\"", i, "\"]]: there is no item of that name\n", call.=FALSE)
-                  rval
+                  res
               }
           })
 
@@ -153,7 +118,7 @@ setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
               if (missing(subset))
@@ -169,7 +134,7 @@ setMethod(f="subset",
                       stop("must keep at least 2 profiles")
                   oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
                   oceDebug(debug, vectorShow(keep, "keeping bins:"))
-                  rval <- x
+                  res <- x
                   names <- names(x@data)
                   haveSlow <- "timeSlow" %in% names
                   keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
@@ -185,30 +150,30 @@ setMethod(f="subset",
                       if ("distance" == name)
                           next
                       if (length(grep("Burst$", name))) {
-                          rval@data[[name]] = x@data[[name]][keepBurst]
-                      } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
+                          res@data[[name]] = x@data[[name]][keepBurst]
+                      } else if (length(grep("^time", name)) || is.vector(res@data[[name]])) {
                           if (1 == length(agrep("Slow$", name))) {
                               oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepSlow]
+                              res@data[[name]] <- x@data[[name]][keepSlow]
                           } else {
                               oceDebug(debug, "subsetting data$", name, "\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep]
+                              res@data[[name]] <- x@data[[name]][keep]
                           }
-                      } else if (is.matrix(rval@data[[name]])) {
+                      } else if (is.matrix(res@data[[name]])) {
                           oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
-                          rval@data[[name]] <- x@data[[name]][keep,]
-                      } else if (is.array(rval@data[[name]])) {
+                          res@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(res@data[[name]])) {
                           oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
-                          rval@data[[name]] <- x@data[[name]][keep,,]
+                          res@data[[name]] <- x@data[[name]][keep,,]
                       }
                   }
               } else {
                   stop("only 'time' is permitted for subsetting")
               }
-              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
-              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@metadata$numberOfSamples <- dim(res@data$v)[1]
+              res@metadata$numberOfCells <- dim(res@data$v)[2]
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 

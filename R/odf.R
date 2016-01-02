@@ -8,7 +8,7 @@ setMethod(f="initialize",
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
-              .Object@metadata$deploymentType <- "HUHunknown" # see ctd
+              .Object@metadata$deploymentType <- "" # see ctd
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'odf' object"
               return(.Object)
@@ -18,21 +18,20 @@ setMethod(f="subset",
           signature="odf",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
-              dots <- list(...)
-              debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
+              res <- x
+              ##dots <- list(...)
               if (missing(subset))
                   stop("must give 'subset'")
 
               if (missing(subset))
                   stop("must specify a 'subset'")
               keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
-              rval <- x
+              res <- x
               for (name in names(x@data)) {
-                  rval@data[[name]] <- x@data[[name]][keep]
+                  res@data[[name]] <- x@data[[name]][keep]
               }
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 
@@ -69,29 +68,7 @@ setMethod(f="summary",
               showMetadataItem(object, "cruise",                   "Cruise:              ")
               showMetadataItem(object, "ship",                     "Vessel:              ")
               showMetadataItem(object, "station",                  "Station:             ")
-              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                               object@metadata$longitude,
-                                                               digits=5), "\n")
-              showMetadataItem(object, "waterDepth",               "Water depth:         ")
-              showMetadataItem(object, "levels",                   "Number of levels:    ")
-              names <- names(object@data)
-              ndata <- length(names)
-              isTime <- names == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("   ", names[!isTime])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 
@@ -231,66 +208,68 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     if (coerce) {
         if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
             isCTD <- TRUE
-            rval <- new("ctd")
+            res <- new("ctd")
         } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
             isMCTD <- TRUE
-            rval <- new("ctd")
-            rval@metadata$deploymentType <- "moored"
+            res <- new("ctd")
+            res@metadata$deploymentType <- "moored"
         } else {
-            rval <- new("odf") # FIXME: other types
+            res <- new("odf") # FIXME: other types
         }
     } else {
-        rval <- new("odf")
+        res <- new("odf")
     }
     ## Save the whole header as read by BIO routine read_ODF()
-    rval@metadata <- list(odfHeader=list(ODF_HEADER=ODF$ODF_HEADER,
-                                         CRUISE_HEADER=ODF$CRUISE_HEADER,
-                                         EVENT_HEADER=ODF$EVENT_HEADER,
-                                         METEO_HEADER=ODF$METEO_HEADER,
-                                         INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
-                                         QUALITY_HEADER=ODF$QUALITY_HEADER,
-                                         GENERAL_CAL_HEADER=ODF$GENERAL_CAL_HEADER,
-                                         POLYNOMIAL_CAL_HEADER=ODF$POLYNOMIAL_CAL_HEADER,
-                                         COMPASS_CAL_HEADER=ODF$COMPASS_CAL_HEADER,
-                                         HISTORY_HEADER=ODF$HISTORY_HEADER,
-                                         PARAMETER_HEADER=ODF$PARAMETER_HEADER,
-                                         RECORD_HEADER=ODF$RECORD_HEADER,
-                                         INPUT_FILE=ODF$INPUT_FILE)) 
+
+    res@metadata$odfHeader <- list(ODF_HEADER=ODF$ODF_HEADER,
+                                    CRUISE_HEADER=ODF$CRUISE_HEADER,
+                                    EVENT_HEADER=ODF$EVENT_HEADER,
+                                    METEO_HEADER=ODF$METEO_HEADER,
+                                    INSTRUMENT_HEADER=ODF$INSTRUMENT_HEADER,
+                                    QUALITY_HEADER=ODF$QUALITY_HEADER,
+                                    GENERAL_CAL_HEADER=ODF$GENERAL_CAL_HEADER,
+                                    POLYNOMIAL_CAL_HEADER=ODF$POLYNOMIAL_CAL_HEADER,
+                                    COMPASS_CAL_HEADER=ODF$COMPASS_CAL_HEADER,
+                                    HISTORY_HEADER=ODF$HISTORY_HEADER,
+                                    PARAMETER_HEADER=ODF$PARAMETER_HEADER,
+                                    RECORD_HEADER=ODF$RECORD_HEADER,
+                                    INPUT_FILE=ODF$INPUT_FILE)
+
     ## Define some standard items that are used in plotting and summaries
     if (isCTD) {
-        rval@metadata$type <- rval@metadata$odfHeader$INSTRUMENT_HEADER$INST_TYPE
-        rval@metadata$model <- rval@metadata$odfHeader$INSTRUMENT_HEADER$INST_MODEL
-        rval@metadata$serialNumber <- rval@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
+        res@metadata$type <- res@metadata$odfHeader$INSTRUMENT_HEADER$INST_TYPE
+        res@metadata$model <- res@metadata$odfHeader$INSTRUMENT_HEADER$INST_MODEL
+        res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
     }
-    rval@metadata$startTime <- strptime(rval@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
-                                        "%d-%B-%Y %H:%M:%S", tz="UTC")
-    rval@metadata$filename <- rval@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
-    rval@metadata$serialNumber <- rval@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
-    rval@metadata$ship <- rval@metadata$odfHeader$CRUISE_HEADER$PLATFORM
-    rval@metadata$cruise <- rval@metadata$odfHeader$CRUISE_HEADER$CRUISE_NUMBER
-    rval@metadata$station <- rval@metadata$odfHeader$EVENT_HEADER$EVENT_NUMBER # FIXME: is this right?
-    rval@metadata$scientist <- rval@metadata$odfHeader$CRUISE_HEADER$CHIEF_SCIENTIST
-    rval@metadata$latitude <- as.numeric(rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE)
-    rval@metadata$longitude <- as.numeric(rval@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE)
+    res@metadata$startTime <- strptime(res@metadata$odfHeader$EVENT_HEADER$START_DATE_TIME,
+                                       "%d-%B-%Y %H:%M:%S", tz="UTC")
+    res@metadata$filename <- res@metadata$odfHeader$ODF_HEADER$FILE_SPECIFICATION
+    res@metadata$serialNumber <- res@metadata$odfHeader$INSTRUMENT_HEADER$SERIAL_NUMBER
+    res@metadata$ship <- res@metadata$odfHeader$CRUISE_HEADER$PLATFORM
+    res@metadata$cruise <- res@metadata$odfHeader$CRUISE_HEADER$CRUISE_NUMBER
+    res@metadata$station <- res@metadata$odfHeader$EVENT_HEADER$EVENT_NUMBER # FIXME: is this right?
+    res@metadata$scientist <- res@metadata$odfHeader$CRUISE_HEADER$CHIEF_SCIENTIST
+    res@metadata$latitude <- as.numeric(res@metadata$odfHeader$EVENT_HEADER$INITIAL_LATITUDE)
+    res@metadata$longitude <- as.numeric(res@metadata$odfHeader$EVENT_HEADER$INITIAL_LONGITUDE)
 
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
-    rval@data <- as.list(ODF$DATA)
+    res@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
     ## FIXME: be sure to record unit as conductivityRatio.
-    rvalNames <- ODFNames2oceNames(xnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
-    names(rval@data) <- rvalNames
+    resNames <- ODFNames2oceNames(xnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
+    names(res@data) <- resNames
     ## Obey missing values ... only for numerical things (which might be everything, for all I know)
-    nd <- length(rvalNames)
+    nd <- length(resNames)
     for (i in 1:nd) {
-        if (is.numeric(rval@data[[i]])) {
+        if (is.numeric(res@data[[i]])) {
             NAvalue <- as.numeric(ODF$PARAMETER_HEADER[[i]]$NULL_VALUE)
             ## message("NAvalue: ", NAvalue)
-            rval@data[[i]][rval@data[[i]] == NAvalue] <- NA
+            res@data[[i]][res@data[[i]] == NAvalue] <- NA
         }
     }
     ## Stage 3. rename QQQQ_* columns as flags on the previous column
-    names <- names(rval@data)
+    names <- names(res@data)
     for (i in seq_along(names)) {
         if (substr(names[i], 1, 4) == "QQQQ") {
             if (i > 1) {
@@ -301,8 +280,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     ## use old (FFFF) flag if there is no modern (QCFF) flag
     if ("flag_archaic" %in% names && !("flag" %in% names))
         names <- gsub("flag_archaic", "flag", names)
-    names(rval@data) <- names
-    rval
+    names(res@data) <- names
+    res
 }
 
 
@@ -344,7 +323,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 read.odf <- function(file, debug=getOption("oceDebug"))
 {
-    FILE<-file
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (debug>=100) t0 <- Sys.time()
     if (is.character(file)) {
@@ -371,7 +349,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     parameterStart <- grep("PARAMETER_HEADER", lines)
     if (!length(parameterStart))
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
-    namesWithin <- parameterStart[1]:dataStart[1]
+    ## namesWithin <- parameterStart[1]:dataStart[1]
     ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
 
     ## The mess below hides warnings on non-numeric missing-value codes.
@@ -401,9 +379,9 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
     DATA_TYPE <- findInHeader("DATA_TYPE", lines)
     deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
-    date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
+    ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
@@ -426,34 +404,36 @@ read.odf <- function(file, debug=getOption("oceDebug"))
         type <- "SBE"
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
-
-    metadata <- list(header=NULL, # FIXME
-                     type=type,        # only odt
-                     model=model,      # only odt
-                     serialNumber=serialNumber,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=NULL,
-                     cruise=cruise,
-                     station=station,
-                     countryInstituteCode=countryInstituteCode, # ODF only
-                     cruiseNumber=cruiseNumber, # ODF only
-                     deploymentType=deploymentType, # used by CTD also
-                     date=startTime,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=NULL,
-                     waterDepth=waterDepth, # this is not the sensor depth
-                     depthMin=depthMin, depthMax=depthMax, sounding=sounding, # specific to ODF
-                     sampleInterval=NA,
-                     filename=filename)
+    res <- new("odf")
+    res@metadata$header <- NULL
+    res@metadata$units <- list(temperature="ITS-90", conductivity="ratio") # FIXME: this is just a guess on ODF units!
+    res@metadata$type <- type
+    res@metadata$model <- model
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$ship <- ship
+    res@metadata$scientist <- scientist
+    res@metadata$institute <- institute
+    res@metadata$address <- NULL
+    res@metadata$cruise <- cruise
+    res@metadata$station <- station
+    res@metadata$countryInstituteCode <- countryInstituteCode
+    res@metadata$cruiseNumber <- cruiseNumber
+    res@metadata$deploymentType <- deploymentType
+    res@metadata$date <- startTime
+    res@metadata$startTime <- startTime
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$recovery <- NULL
+    res@metadata$waterDepth <- waterDepth
+    res@metadata$depthMin <- depthMin
+    res@metadata$depthMax <- depthMax
+    res@metadata$sounding <- sounding
+    res@metadata$sampleInterval <- NA
+    res@metadata$filename <- filename
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after determining metadata\n", Sys.time()-t0))
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    ## data <- fread(FILE, skip=dataStart, header=FALSE)
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after reading data table\n", Sys.time()-t0))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
@@ -468,11 +448,9 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if ("time" %in% names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after converting ODF time to R time\n", Sys.time()-t0))
-    metadata$names <- names
-    metadata$labels <- names
-    res <- new("odf")
+    res@metadata$names <- names
+    res@metadata$labels <- names
     res@data <- as.list(data)
-    res@metadata <- metadata
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
     res

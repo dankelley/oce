@@ -52,31 +52,31 @@ as.oce <- function(x)
         stop("x must be a list, a data frame, or an oce object")
     names <- names(x)
     if ("EVENT_HEADER" %in% names) {
-        rval <- ODF2oce(x)
+        res <- ODF2oce(x)
     } else {
         if ("temperature" %in% names && "pressure" %in% names) {
             ## Assume it's a CTD; if not, rely on users to understand their data
             ## well enough to know the data type, and to use another function.
             if ("salinity" %in% names) {
-                rval <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
+                res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
                 ## Add any other columns
                 for (name in names) {
                     if (name != "temperature" && name != "pressure" && name != "salinity")
-                        rval <- ctdAddColumn(rval, column=x[name], name=name, label=name)
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name)
                 }
             } else if ("conductivity" %in% names) {
                 for (name in names) {
                     if (name != "temperature" && name != "pressure" && name != "conductivity")
-                        rval <- ctdAddColumn(rval, column=x[name], name=name, label=name)
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name)
                 }
             }
         } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
-            rval <- as.coastline(longitude=x$longitude, latitude=x$latitude)
+            res <- as.coastline(longitude=x$longitude, latitude=x$latitude)
         } else {
             stop("unknown data type; as of now, as.oce() only handles CTD data")
         }
     }
-    rval
+    res
 }
 
 useHeading <- function(b, g, add=0)
@@ -211,7 +211,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     x <- r * cos(thetaRad)
     y <- r * sin(thetaRad)
     R <- 1.2 * max(r, na.rm=TRUE)
-    Rpretty <- pretty(c(0, R))
+    ##Rpretty <- pretty(c(0, R))
     plot.new()
     plot.window(c(-R, R), c(-R, R), asp=1)
     points(x, y, ...)
@@ -377,7 +377,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         xlab <- ""
     if (missing(ylab))
         ylab  <- deparse(substitute(y))
-    ocex <- par("cex")
+    ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
     oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
@@ -687,9 +687,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
-            rval <- paste(subtype, "odf", sep="/")
-            oceDebug(debug, "file type:", rval, "\n")
-            return(rval)
+            res <- paste(subtype, "odf", sep="/")
+            oceDebug(debug, "file type:", res, "\n")
+            return(res)
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
@@ -713,7 +713,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".csv$", filename, ignore.case=TRUE))) {
             someLines <- readLines(filename, 30)
             if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
-                return("met") # FIXME: may be other things too ... not soo sure I like this
+                return("met") # FIXME: may be other things too ...
+            } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
+                return("sealevel")
             } else {
                 return("unknown")
             }
@@ -928,7 +930,7 @@ read.oce <- function(file, ...)
         headerEnd <- grep("-- DATA --", lines)
         if (1 != length(headerEnd))
             stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
-        header <- lines[1:headerEnd]
+        ##header <- lines[1:headerEnd]
         data <- lines[seq.int(headerEnd+1, nlines)]
         d <- read.table(text=data, header=FALSE, col.names=c("time","temperature","ptotal","psea","depth"))
         d$time <- strptime(d$time,"%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
@@ -1016,7 +1018,7 @@ read.netcdf <- function(file, ...)
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read netcdf data')
     f <- ncdf4::nc_open(file)
-    rval <- new("oce")
+    res <- new("oce")
     names <- names(f$var)
     data <- list()
 
@@ -1034,32 +1036,32 @@ read.netcdf <- function(file, ...)
             }
         }
     }
-    rval@data <- data
+    res@data <- data
     ## Try to get some global attributes.
     ## Inelegantly permit first letter lower-case or upper-case
     if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
-        rval@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
+        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
     if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt)
-        rval@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
+        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
     if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt)
-        rval@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
+        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
     if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt)
-        rval@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
+        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
     if (ncdf4::ncatt_get(f, 0, "Station")$hasatt)
-        rval@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
+        res@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
     if (ncdf4::ncatt_get(f, 0, "station")$hasatt)
-        rval@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
+        res@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
     if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt)
-        rval@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
+        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
     if (ncdf4::ncatt_get(f, 0, "ship")$hasatt)
-        rval@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
+        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
     if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt)
-        rval@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
+        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
     if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
-        rval@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
-    rval@processingLog <- processingLogAppend(rval@processingLog,
+        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
+    res@processingLog <- processingLogAppend(res@processingLog,
                                               paste("read.netcdf(\"", file, "\")", sep=""))
-    rval
+    res
 }
 
 
@@ -1494,14 +1496,14 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
     oceDebug(debug, vectorShow(labels, "labels="))
-    ocex <- par('cex')
+    ##ocex <- par('cex')
     ocex.axis <- par('cex.axis')
     ocex.main <- par('cex.main')
     omgp <- par('mgp')
     par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
-    par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
+    par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
@@ -1557,8 +1559,8 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
     } else if (type == "ncep2") {
         ## days since 1-1-1 00:00:0.0 (supposedly, but offset to match a test case; see
-        rvalOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00",tz="UTC")
-        return(rvalOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
+        resOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00",tz="UTC")
+        return(resOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
@@ -1590,9 +1592,13 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
-    omfg <- par('mfg')                 # original mfg
+    opar <- par(no.readonly=TRUE)
+    mai <- par('mai')                  # bottom left top right
+    ##omfg <- par('mfg')                 # original mfg
     xLog <- par('xlog')
     yLog <- par('ylog')
+    usr <- par('usr')                  # xmin xmax ymin ymax
+    fin <- par('fin') # figure width height
     x2in <- function(x) {
         if (xLog)
             mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
@@ -1606,7 +1612,6 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
             mai[1] + (y-usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
     }
  
-    usr <- par('usr')                  # xmin xmax ymin ymax
     if (is.character(xleft)) {
         if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
@@ -1631,11 +1636,8 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                  sep="", unindent=1)
     }
     oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
-    opar <- par(no.readonly=TRUE)
-    mai <- par('mai')                  # bottom left top right
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
-    fin <- par('fin') # figure width height
     oceDebug(debug, "par('fin')=", fin, "(figure width and height)\n")
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
@@ -1648,7 +1650,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     if (nmai[3] > fin[2] - 0.2) {nmai[3] <- fin[2] - 0.2}
     if (nmai[4] > fin[1] - 0.2) {nmai[4] <- fin[1] - 0.2}
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
-    mfg2 <- par('mfg')
+    ##mfg2 <- par('mfg')
     par(new=TRUE, mai=nmai)
     thismar <- par('mar')
     par(mar=thismar+mar)
@@ -1691,14 +1693,14 @@ decodeTime <- function(time, timeFormats, tz="UTC")
                          "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
                          "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
     ## FIXME: permit time to be a vector
-    rval <- NA
+    res <- NA
     for (format in timeFormats) {
         ##cat("TRYING FORMAT:", format, "\n")
-        if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
+        if (!is.na(res <-  as.POSIXct(time, format=format, tz=tz))) {
             break
         }
     }
-    rval
+    res
 }
 
 drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
@@ -1717,7 +1719,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
         stop("lengths of x and v must match")
     usr <- par('usr')
     pin <- par('pin')
-    mai <- par('mai')
+    ##mai <- par('mai')
     xPerInch <- diff(usr[1:2]) / pin[1]
     yPerInch <- diff(usr[3:4]) / pin[2]
     oceDebug(debug, 'pin=', pin, 'usr=', usr, 'xPerInch=', xPerInch, 'yPerInch=', yPerInch, '\n')
@@ -1752,8 +1754,8 @@ oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)
 {
-    dots <- list(...)
-    dotsNames <- names(dots)
+    ##dots <- list(...)
+    ##dotsNames <- names(dots)
     mustReverseX <- any(0 > diff(order(x)))
     mustReverseY <- any(0 > diff(order(y)))
     oceDebug(debug, "mustReverseX:", mustReverseX, '\n')

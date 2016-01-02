@@ -9,31 +9,37 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
-              mnames <- names(object@metadata)
-              cat("oce Summary\n-----------\n\n")
               names <- names(object@data)
-              isTime <- names == "time" | names == "TIME"
+              isTime <- grepl("^time", names, ignore.case=TRUE)
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
-                  from <- min(time, na.rm=TRUE)
-                  to <- max(time, na.rm=TRUE)
-                  cat("* Time ranges from", format(from), "to", format(to), "\n")
+                  if (inherits(time, "POSIXt")) {
+                      from <- min(time, na.rm=TRUE)
+                      to <- max(time, na.rm=TRUE)
+                      deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
+                      cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                  }
               }
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
               ndata <- length(object@data)
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
+              if (ndata > 0) {
+                  threes <- matrix(nrow=sum(!isTime), ncol=3)
+                  ii <- 1
+                  for (i in 1:ndata) {
+                      ##message("i: ", i, ", name: ", names(object@data)[i])
+                      if (isTime[i])
+                          next
+                      threes[ii,] <- threenum(object@data[[i]])
+                      ii <- ii + 1
+                  }
+                  ##rownames(threes) <- paste("   ", names[!isTime])
+                  units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
+                  rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
+                  colnames(threes) <- c("Min.", "Mean", "Max.")
+                  cat("* Statistics of data\n")
+                  print(threes, indent='    ')
               }
-              rownames(threes) <- paste("   ", names[!isTime])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
               processingLogShow(object)
+              invisible(threes)
           })
 
 
@@ -67,13 +73,13 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               keep <- eval(substitute(subset), x@data, parent.frame())
               ##message("percent keep ", round(sum(keep)/length(keep)*100, 2), "%")
-              rval <- x
+              res <- x
               for (i in seq_along(x@data))
-                  rval@data[[i]] <- rval@data[[i]][keep]
-              rval@processingLog <- processingLogAppend(rval@processingLog,
+                  res@data[[i]] <- res@data[[i]][keep]
+              res@processingLog <- processingLogAppend(res@processingLog,
                                                         paste(deparse(match.call(call=sys.call(sys.parent(1)))),
                                                               sep="", collapse=""))
-              rval
+              res
           })
 
 setMethod(f="[[",
@@ -83,7 +89,7 @@ setMethod(f="[[",
                   return(x@metadata)
               } else if (length(grep("Unit$", i))) {
                   ## Permit two ways of storing units, the second archaic and kept to handle old objects
-                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[i]] else x@metadata[[i]])
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
               } else if (i == "data") {
                   return(x@data)
               } else if (i == "processingLog") {
@@ -114,7 +120,7 @@ setMethod(f="[[<-",
                       x@data[[index]] <- value
                   } else if (length(grep("Unit$", i))) {
                       if ("units" %in% names(x@metadata))
-                          x@metadata$units[[i]] <- value
+                          x@metadata$units[[gsub("Unit$", "", i)]] <- value
                       else
                           x@metadata[[i]] <- value
                   } else if (i == "processingLog") {

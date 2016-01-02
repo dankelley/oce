@@ -9,7 +9,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectSontekAdp <- function(t.find, add=0, debug=0) {
+    bisectSontekAdp <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectSontekAdp(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         len <- length(profileStart)
         lower <- 1
@@ -19,7 +19,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             middle <- floor((upper + lower) / 2)
             oceDebug(debug-1, "pass=",pass,"middle=", middle, "\n")
             oceDebug(debug-1, "data=", buf[profileStart[middle]+seq(0,100,1)], "\n")
-            oceDebug(debug-1, "profileStart=", profileStart[1:5], "...; profileStart2=", profileStart2[1:5], "...\n")
+            ##oceDebug(debug-1, "profileStart=", profileStart[1:5], "...; profileStart2=", profileStart2[1:5], "...\n")
+            oceDebug(debug-1, "profileStart=", profileStart[1:5], "\n")
             ##year <- readBin(buf[profileStart2[middle]+18], "integer", size=2, signed=FALSE, endian="little")
             year <- readBin(buf[profileStart[middle]+18:19], "integer", size=2, signed=FALSE, endian="little")
             day <- as.integer(buf[profileStart[middle]+20])
@@ -31,7 +32,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             sec <- as.integer(buf[profileStart[middle]+25])
             t <- ISOdatetime(year, month, day, hour, min, sec+sec100/100, tz=tz)
             oceDebug(debug, "t=", format(t),
-                      " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", second, "sec100=", sec100, "]\n")
+                      " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", sec, "sec100=", sec100, "]\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -56,7 +57,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         return(list(index=middle, time=t)) # index is within vsd
     }
     oceDebug(debug, "read.adp.sontek(...,from=",from,",to=",if (missing.to) "(missing)" else to,",by=",by,"type=",type,"...)\n")
-    parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
+    ##parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.headerLength=80)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -70,6 +71,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         on.exit(close(file))
     }
     type <- match.arg(type)
+    res <- new("adp")
     seek(file, 0, "end")
     fileSize <- seek(file, 0, "start")
     oceDebug(debug, "file", filename, "has", fileSize, "bytes\n")
@@ -137,7 +139,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     soundSpeed <- readBin(buf[s+60:61], "integer", n=1, size=2, endian="little", signed=FALSE) / 10
     oceDebug(debug, "soundSpeed=", soundSpeed, "m/s\n")
     profilesInFile <- length(profileStart)
-    id <- buf[profileStart]
+    ##id <- buf[profileStart]
     bytesPerProfile <- diff(profileStart[1:2])
     oceDebug(debug, "bytesPerProfile=", bytesPerProfile, "\n")
 
@@ -173,9 +175,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        fromPair <- bisectSontekAdp(from, -1, debug-1)
+        fromPair <- bisectSontekAdp(buf, from, -1, debug-1)
         from <- fromIndex <- fromPair$index
-        toPair <- bisectSontekAdp(to, 1, debug-1)
+        toPair <- bisectSontekAdp(buf, to, 1, debug-1)
         to <- to.index <- toPair$index
         oceDebug(debug, "  from=", format(fromPair$t), " yields profileStart[", fromIndex, "]\n",
                   "  to  =", format(toPair$t),   " yields profileStart[", to.index, "]\n",
@@ -297,46 +299,46 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (nheading != nv) {
         warning("read.adp.sontek() interpolating ", nheading, " heading/pitch/roll values to the ", nv, " velocity profiles")
         oceDebug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
-        xout <- seq(1, nheading, length.out=nv)
+        ##xout <- seq(1, nheading, length.out=nv)
         heading <- approx(1:nheading, heading, seq(1,nheading,length.out=nv))$y
         ##print(data.frame(xout=xout, heading=heading))
         pitch <- approx(1:nheading, pitch, seq(1,nheading,length.out=nv))$y
         roll <- approx(1:nheading, roll, seq(1,nheading,length.out=nv))$y
         oceDebug(debug, "AFTER:  length(heading)=", length(heading), "\n")
     }
-    data <- list(v=v, a=a, q=q,
-                 distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells),
-                 time=time,
-                 temperature=temperature,
-                 pressure=pressure,
-                 heading=heading, pitch=pitch, roll=roll)
+    res@data <- list(v=v, a=a, q=q,
+                     distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells),
+                     time=time,
+                     temperature=temperature,
+                     pressure=pressure,
+                     heading=heading, pitch=pitch, roll=roll)
     oceDebug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beamAngle <- if (slant.angle == "?") 25 else slant.angle
-    metadata <- list(manufacturer="sontek",
-                     type=type,
-                     filename=filename,
-                     serialNumber=if (exists('serialNumber')) serialNumber else "?",
-                     longitude=longitude,
-                     latitude=latitude,
-                     numberOfSamples=dim(v)[1],
-                     numberOfCells=dim(v)[2],
-                     numberOfBeams=dim(v)[3],
-                     velocityResolution=velocityScale,
-                     velocityMaximum=velocityScale * 2^15,
-                     measurementStart=measurementStart,
-                     measurementEnd=measurementEnd,
-                     measurementDeltat=measurementDeltat,
-                     frequency=frequency,
-                     cpuSoftwareVerNum=cpuSoftwareVerNum,
-                     dspSoftwareVerNum=dspSoftwareVerNum,
-                     boardRev=boardRev,
-                     originalCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
-                     oceCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
-                     beamAngle=beamAngle,
-                     oceBeamUnspreaded=FALSE,
-                     orientation=if(orientation==1) "upward" else "downward")
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$type <- type
+    res@metadata$filename <- filename
+    res@metadata$serialNumber <- if (exists('serialNumber')) serialNumber else "?"
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- dim(v)[1]
+    res@metadata$numberOfCells <- dim(v)[2]
+    res@metadata$numberOfBeams <- dim(v)[3]
+    res@metadata$velocityResolution <- velocityScale
+    res@metadata$velocityMaximum <- velocityScale * 2^15
+    res@metadata$measurementStart <- measurementStart
+    res@metadata$measurementEnd <- measurementEnd
+    res@metadata$measurementDeltat <- measurementDeltat
+    res@metadata$frequency <- frequency
+    res@metadata$cpuSoftwareVerNum <- cpuSoftwareVerNum
+    res@metadata$dspSoftwareVerNum <- dspSoftwareVerNum
+    res@metadata$boardRev <- boardRev
+    res@metadata$originalCoordinate <- c("beam", "xyz", "enu", "other")[originalCoordinate+1]
+    res@metadata$oceCoordinate <- c("beam", "xyz", "enu", "other")[originalCoordinate+1]
+    res@metadata$beamAngle <- beamAngle
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$orientation <- if (1==orientation) "upward" else "downward"
     if (numberOfBeams == 3) {
-        if (metadata$orientation == "upward") {
+        if (res@metadata$orientation == "upward") {
             ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
             ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
             ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
@@ -344,7 +346,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
             ## FIXME: check up and down; also read it and check
-            metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
+            res@metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                       0  , -CS,  CS,
                                                       C  ,   C,   C),
                                                     nrow=3, byrow=TRUE)
@@ -353,7 +355,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
             warning("*****FIXME: check up and down; also read it and check*****")
-            metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
+            res@metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                       0  ,  CS, -CS,
                                                      -C  ,  -C,  -C),
                                                     nrow=3, byrow=TRUE)
@@ -365,9 +367,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beamAngle)
     } else
         stop("can only handle 3-beam devices")
-    res <- new("adp")
-    res@data <- data
-    res@metadata <- metadata
+    res@metadata$units <- list(v="m/s", distance="m")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -399,7 +399,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     ##   SonTek/YSI
     ##   ADPManual_v710.pdf
     ## A3. Profile Header/CTD/GPS/Bottom Track,/SonWave/Profile Data Structures
-    bisect.adp.sontek.serial <- function(t.find, add=0, tz="UTC", debug=0) {
+    bisect.adp.sontek.serial <- function(buf, t.find, add=0, tz="UTC", debug=0) {
         oceDebug(debug, "bisect.adp.sontek.serial(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(p)
         lower <- 1
@@ -538,9 +538,9 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                     warning("'by' must be numeric")
                     by <- 1
                 }
-                fromPair <- bisect.adp.sontek.serial(from, add=-1, tz=tz, debug=debug-1)
+                fromPair <- bisect.adp.sontek.serial(buf, from, add=-1, tz=tz, debug=debug-1)
                 from <- fromIndex <- fromPair$index
-                toPair <- bisect.adp.sontek.serial(to, add=1, tz=tz, debug=debug-1)
+                toPair <- bisect.adp.sontek.serial(buf, to, add=1, tz=tz, debug=debug-1)
                 to <- to.index <- toPair$index
                 oceDebug(debug, "from=", format(fromPair$t), " yields p[", fromIndex, "]\n",
                           "  to  =", format(toPair$t), "yields p[", to.index, "]\n",
@@ -554,10 +554,10 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     }
     np <- length(p)
     pp <- sort(c(p, p+1)) # for 2-byte addressing ('int' in the Sontek docs)
-    pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
+    ##pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
 
     ## read profile-specific things profile by profile
-    profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4)
+    ##profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4)
     ## FIXME: should check that profile number is monotonic ... it may
     ## help us with daily blank-outs, also!
     year <- readBin(buf[pp+18],"integer",n=np,size=2,signed=FALSE)
@@ -615,36 +615,36 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                       c(     0,  1/sqrt(3)/S, -1/sqrt(3)/S),
                                       c(-1/3/C,       -1/3/C, -1/3/C))
     }
-    metadata <- list(manufacturer="sontek",
-                     instrumentType="adp",
-                     serialNumber=serialNumber,
-                     filename=filename,
-                     latitude=latitude, longitude=longitude,
-                     transformationMatrix=transformationMatrix,
-                     measurementStart=0, # FIXME: should fill in
-                     measurementEnd=np, # FIXME: should fill in
-                     measurementDeltat=mean(diff(as.numeric(time))),
-                     subsampleStart=0, # FIXME: should fill in
-                     subsampleEnd=np,
-                     subsampleDeltat=mean(diff(as.numeric(time))),
-                     frequency=NA, # FIXME
-                     numberOfSamples=np,
-                     numberOfBeams=numberOfBeams,
-                     originalCoordinate=originalCoordinate,
-                     oceCoordinate=originalCoordinate,
-                     beamAngle=beamAngle,
-                     oceBeamUnspreaded=FALSE,
-                     orientation=orientation)
-    data <- list(v=v, a=a, q=q,
-                 distance=distance,
-                 time=time,
-                 heading=heading, pitch=pitch, roll=roll,
-                 temperature=temperature,
-                 pressure=rep(0, length(temperature)),
-                 distance=distance)
     res <- new("adp")
-    res@data <- data
-    res@metadata <- metadata
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$instrumentType <- "adp"
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$filename <- filename
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$transformationMatrix <- transformationMatrix
+    res@metadata$measurementStart <- 0 # FIXME: should fill in
+    res@metadata$measurementEnd <- np # FIXME: should fill in
+    res@metadata$measurementDeltat <- mean(diff(as.numeric(time)))
+    res@metadata$subsampleStart <- 0 # FIXME: should fill in
+    res@metadata$subsampleEnd <- np
+    res@metadata$subsampleDeltat <- mean(diff(as.numeric(time)))
+    res@metadata$frequency <- NA # FIXME
+    res@metadata$numberOfSamples <- np
+    res@metadata$numberOfBeams <- numberOfBeams
+    res@metadata$originalCoordinate <- originalCoordinate
+    res@metadata$oceCoordinate <- originalCoordinate
+    res@metadata$beamAngle <- beamAngle
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$orientation <- orientation
+    res@metadata$units <- list(v="m/s", distance="m")
+    res@data <- list(v=v, a=a, q=q,
+                     distance=distance,
+                     time=time,
+                     heading=heading, pitch=pitch, roll=roll,
+                     temperature=temperature,
+                     pressure=rep(0, length(temperature)),
+                     distance=distance)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)

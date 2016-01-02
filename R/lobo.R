@@ -22,22 +22,26 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Lobo Summary\n------------\n\n")
               cat("* source: \"", object@metadata$filename, "\"\n", sep="")
-              timeRange <- range(object@data$time, na.rm=TRUE)
-              cat("* time range:", format(timeRange[1], format="%Y-%m-%d %H:%M:%S %Z"),
-                  "to", format(timeRange[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
-              for (i in 2:ndata) 
-                  threes[i-1,] <- threenum(object@data[[i]])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- names(object@data)[-1] #skip time, the first column
-              cat("* Statistics::\n\n", ...)
-              print(threes)
-              cat("\n")
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
+setMethod(f="subset",
+          signature="lobo",
+          definition=function(x, subset, ...) {
+              res <- new("lobo") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- r & !is.na(r)
+                  res@data[[i]] <- x@data[[i]][r]
+              }
+              names(res@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.lobo(x, subset=", subsetString, ")", sep=""))
+              res
+          })
+ 
 
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
@@ -147,7 +151,9 @@ setMethod(f="plot",
                   } else if (w == 2) {
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), ...)
                   } else if (w == 3) {
-                      plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), ...)
+                      if (any(!is.na(x[['pressure']])))
+                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), ...) else
+                              plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), ...)
                   } else if (w == 4) {
                       oce.plot.ts(x[["time"]], x[["u"]], ylab=resizableLabel("u"), ...)
                   } else if (w == 5) {
@@ -205,12 +211,12 @@ read.lobo <- function(file, cols=7, processingLog)
             on.exit(close(file))
         }
     }
-    d <- read.table(file, sep='\t', header=TRUE)
+    d <- read.table(file, sep='\t', header=TRUE, stringsAsFactors=FALSE)
     names <- names(d)
-    tCol            <- grep("date", names)
-    uCol            <- grep("current across", names)
-    vCol            <- grep("current along", names)
-    nitrateCol      <- grep("nitrate", names)
+    tCol <- grep("date", names)
+    uCol <- grep("current across", names)
+    vCol <- grep("current along", names)
+    nitrateCol <- grep("nitrate", names)
     fluorescenceCol <- grep("fluorescence", names)
     SCol            <- grep("salinity", names)
     TCol            <- grep("^temperature", names, ignore.case=TRUE)
@@ -229,10 +235,9 @@ read.lobo <- function(file, cols=7, processingLog)
     nitrate <- if (length(nitrateCol)) as.numeric(d[, nitrateCol]) else rep(NA, n)
     fluorescence <- if (length(fluorescenceCol)) as.numeric(d[, fluorescenceCol]) else rep(NA, n)
     pressure <- if (length(pressureCol)) as.numeric(d[, pressureCol]) else rep(NA, n)
-    metadata <- list(filename=file)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
+    ##hitem <- processingLogItem(processingLog)
     res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature,
                airtemperature=airtemperature, pressure=pressure,
                nitrate=nitrate, fluorescence=fluorescence, filename=filename)

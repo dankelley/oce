@@ -21,11 +21,11 @@ setMethod(f="subset",
               ###   if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
               ###       stop("can only subset a coastline by 'latitude' or 'longitude'")
               keep <- eval(substitute(subset), x@data, parent.frame(2))
-              rval <- x
-              rval@data$latitude[!keep] <- NA
-              rval@data$longitude[!keep] <- NA
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-              rval
+              res <- x
+              res@data$latitude[!keep] <- NA
+              res@data$longitude[!keep] <- NA
+              res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+              res
           })
 
 setMethod(f="summary",
@@ -34,16 +34,7 @@ setMethod(f="summary",
               cat("Coastline Summary\n-----------------\n\n")
               cat("* Number of points:", length(object@data$latitude), ", of which", 
                   sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-              cat("\n",...)
-              cat("* Statistics of subsample::\n\n", ...)
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata, ncol=3)
-              for (i in 1:ndata)
-                  threes[i,] <- threenum(object@data[[i]])
-              rownames(threes) <- paste("   ", names(object@data))
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
  
@@ -59,9 +50,9 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
     n <- length(latitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
-    rval <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res <- new("coastline", longitude=longitude, latitude=latitude, fillable=fillable)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 setMethod(f="plot",
@@ -140,7 +131,7 @@ setMethod(f="plot",
               latitude <- x[["latitude"]]
               dots <- list(...)
               dotsNames <- names(dots)
-              gave.center <- !missing(clongitude) && !missing(clatitude)
+              ##gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
                   stop("use 'clongitude' and 'clatitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("do not specify 'xlim'; give 'clongitude' and 'span' instead")
@@ -157,7 +148,7 @@ setMethod(f="plot",
                       lines(longitude, latitude, ...)
                   }
               } else {
-                  gaveSpan <- !missing(span)
+                  ##gaveSpan <- !missing(span)
                   if (!missing(clatitude) && !missing(clongitude)) {
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
@@ -304,7 +295,7 @@ setMethod(f="plot",
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
-                      yscale <- 180 / (yaxp[2] - yaxp[1])
+                      ##yscale <- 180 / (yaxp[2] - yaxp[1])
                       if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                           polygon(x[["longitude"]], x[["latitude"]], col=fill, ...)
                       } else {
@@ -366,7 +357,7 @@ read.coastline <- function(file,
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
-        separator <- NULL
+        ##separator <- NULL
                                         # mapgen    # -b
                                         # matlab	nan nan
                                         # Splus     NA NA
@@ -497,7 +488,9 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ymin <- readBin(buf[45+0:7], "double", n=1, size=8, endian="little")
     xmax <- readBin(buf[53+0:7], "double", n=1, size=8, endian="little")
     ymax <- readBin(buf[61+0:7], "double", n=1, size=8, endian="little")
-    metadata <- list(filename=filename, fillable=TRUE)
+    res <- new("coastline", fillable=shapeTypeFile==5)
+    res@metadatafilename <- filename
+    res@metadata$fillable <- TRUE
     oceDebug(debug, sprintf("xmin: %.4f, xmax: %.4f, ymin: %.4f, ymax: %.4f\n", xmin, xmax, ymin, ymax))
     ##
     ## RECORD BY RECORD
@@ -507,7 +500,6 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     record <- 0
     latitude <- longitude <- NULL
     segment <- 0
-    res <- new("coastline", fillable=shapeTypeFile==5)
     while (TRUE) {
         record <- record + 1
         if ((o + 53) > fileSize) {      # FIXME could be more clever on eof
@@ -516,7 +508,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         }
         ## each record has an 8-byte header followed by data [1 table 2] BIG endian
         recordNumber <- readBin(buf[o + 1:4], "integer", n=1, size=4, endian="big")
-        recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
+        ##recordLength <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
         ## first part of data is shape type [1 table 3 for null, etc] LITTLE endian
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
         if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
@@ -564,10 +556,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     res@data$latitude <- latitude
     res@data$longitude <- longitude
-    res@metadata <- metadata
-    if (shapeTypeFile == 3) {
+    if (shapeTypeFile == 3)
         res@metadata$depths <- depths
-    }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
@@ -603,7 +593,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     nodeLons <- as.numeric(sub('".*$', '', sub('^.* lon="', '', nodeLines)))
     ## get all <way>
     wayStart <- grep("<way ", d)
-    wayEnd <- grep("</way ", d)
+    ##wayEnd <- grep("</way ", d)
     coastlineWayEnd <- grep('k="natural" v="coastline"', d)
     ncoastline <- length(coastlineWayEnd)
     coastlineWayStart <- vector("integer", ncoastline)
@@ -643,6 +633,8 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
              "), span=", if (missing(span)) "(missing)" else span,
              ", debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(span)) {
+        if (missing(lonRange) || missing(latRange))
+            return("coastlineWorld")
         if (any(lonRange > 180)) {
             lonRange <- lonRange - 360 # FIXME: does this always work?
             oceDebug(debug, "adjusted lonRange:", lonRange, "\n")
@@ -661,14 +653,14 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     C <- 2 * 3.14 * 6.4e3              # circumferance of earth
     oceDebug(debug, "span:", span, ", C:", C, "\n")
     if (span < 500) {
-        rval <- "coastlineWorldFine"
+        res <- "coastlineWorldFine"
     } else if (span < C / 4) {
-        rval <- "coastlineWorldMedium"
+        res <- "coastlineWorldMedium"
     } else {
-        rval <- "coastlineWorld"
+        res <- "coastlineWorld"
     }
     oceDebug(debug, "}\n", unindent=1)
-    return(rval)
+    res
 }
 
 #' Cut a coastline file at specified longitude
@@ -714,6 +706,6 @@ coastlineCut <- function(coastline, lon_0=0)
               NAOK=TRUE)
     cut$xo <- cut$xo[1:cut$no]
     cut$yo <- cut$yo[1:cut$no]
-    warning("coastlineCut() may change name or behaviour through the summer of 2015")
+    warning("coastlineCut() may change name or behaviour during early 2016")
     as.coastline(longitude=cut$xo, latitude=cut$yo)
 }

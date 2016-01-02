@@ -17,7 +17,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{gps-class}} explains the structure
     of GPS objects, and also outlines the other functions dealing with them.}

@@ -30,27 +30,27 @@ shiftLongitude <- function(longitudes) {
 
 fixneg <- function(v)
 {
-    rval <- v
+    res <- v
     for (i in seq_along(v)) {
-        if (rval[i] == "0N") {
-            rval[i] <- "0"
-        } else if (rval[i] == "0E") {
-            rval[i] <- "0"
+        if (res[i] == "0N") {
+            res[i] <- "0"
+        } else if (res[i] == "0E") {
+            res[i] <- "0"
         } else if ("-" == substr(v[i], 1, 1)) {
-            ##cat("rval[i]=", rval[i], "\n")
-            rval[i] <- gsub("^-", "", v[i])
-            rval[i] <- gsub("E", "W", rval[i])
-            rval[i] <- gsub("N", "S", rval[i])
-            ##cat(" -> rval[i]=", rval[i], "\n")
+            ##cat("res[i]=", res[i], "\n")
+            res[i] <- gsub("^-", "", v[i])
+            res[i] <- gsub("E", "W", res[i])
+            res[i] <- gsub("N", "S", res[i])
+            ##cat(" -> res[i]=", res[i], "\n")
         }
     }
-    rval
+    res
 }
 
 badFillFix1 <- function(x, y, latitude, projection="")
 {
-    xrange <- range(x, na.rm=TRUE)
-    yrange <- range(y, na.rm=TRUE)
+    ##xrange <- range(x, na.rm=TRUE)
+    ##yrange <- range(y, na.rm=TRUE)
     if (TRUE) {
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they 
@@ -491,10 +491,10 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         ## world map in mollweide projection, the bounding points will be "in
         ## space", so we must check for this when we calculate the span.
         usr <- par('usr')
-        xll <- usr[1]
-        yll <- usr[3]
-        xur <- usr[2]
-        yur <- usr[4]
+        ##xll <- usr[1]
+        ##yll <- usr[3]
+        ##xur <- usr[2]
+        ##yur <- usr[4]
 
         options <- options('warn') # turn off warnings temporarily
         options(warn=-1) 
@@ -611,7 +611,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "after: lat range ", paste(range(latitude), collapse=" "), "\n")
     }
     n <- 360                           # number of points on line
-    xspan <- diff(par('usr')[1:2])
+    ##xspan <- diff(par('usr')[1:2])
     ## Update the global axis information
     axisOLD <- .axis()
     .axis(list(longitude=if (!missing(longitude) && length(longitude)) longitude else axisOLD$longitude,
@@ -671,7 +671,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
             return()
         latitude <- seq(-90+small, 90-small, length.out=13)
     }
-    usr <- par('usr')
+    ##usr <- par('usr')
     n <- 360                           # number of points on line
     for (l in latitude) {
         ## FIXME: maybe we should use mapLines here
@@ -808,7 +808,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
     }
     if (polarCircle < 0 || polarCircle > 90)
         polarCircle <- 0
-    usr <- par('usr')
+    ##usr <- par('usr')
     n <- 360                           # number of points on line
     for (l in longitude) {
         ## FIXME: should use mapLines here
@@ -841,10 +841,10 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
     if (greatCircle)
         warning("mapLines() does not yet handle argument 'greatCircle'")
     xy <- lonlat2map(longitude, latitude)
-    n <- length(longitude)
+    ##n <- length(longitude)
     ok <- !is.na(xy$x) & !is.na(xy$y)
     usr <- par('usr')
-    DX <- usr[2] - usr[1]
+    ##DX <- usr[2] - usr[1]
     if (any(usr[1] <= xy$x[ok] & xy$x[ok] <= usr[2] & usr[3] <= xy$y[ok] & xy$y[ok] <= usr[4])) {
         ## 20150421 # Remove code that attempted to delete extraneous lines ... the problem
         ## 20150421 # is that there's no good way to know which are extraneous, and length
@@ -941,36 +941,36 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
     if (type == "list") {
         if (noMinutes)
-            rval <- list(degrees, hemispheres)
+            res <- list(degrees, hemispheres)
         else if (noSeconds)
-            rval <- list(degrees, minutes, hemispheres)
+            res <- list(degrees, minutes, hemispheres)
         else
-            rval <- list(degrees, minutes, seconds, hemispheres)
+            res <- list(degrees, minutes, seconds, hemispheres)
     } else if (type == "string") {
         if (noMinutes) {
-            rval <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
+            res <- sprintf("%2d%s", degrees, hemispheres) # no space, so more labels
         } else if (noSeconds) {
-            rval <- sprintf("%02d %02d' %s", degrees, minutes, hemispheres)
+            res <- sprintf("%02d %02d' %s", degrees, minutes, hemispheres)
         } else {
-            rval <- sprintf("%02d %02d' %04.2f\" %s", degrees, minutes, seconds, hemispheres)
+            res <- sprintf("%02d %02d' %04.2f\" %s", degrees, minutes, seconds, hemispheres)
         }
-        Encoding(rval) <- "latin1"
+        Encoding(res) <- "latin1"
     } else if (type == "expression") {
         n <- length(degrees)
-        rval <- vector("expression", n)
+        res <- vector("expression", n)
         for (i in 1:n) {
             if (noMinutes) {
-                rval[i] <- as.expression(substitute(d*degree*hemi,
+                res[i] <- as.expression(substitute(d*degree*hemi,
                                                     list(d=degrees[i],
                                                          hemi=hemispheres[i])))
             } else if (noSeconds) {
-                ##rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
+                ##res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
+                res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*hemi,
                                                     list(d=degrees[i],
                                                          m=sprintf("%02d", minutes[i]),
                                                          hemi=hemispheres[i])))
             } else {
-                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
+                res[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second*hemi,
                                                     list(d=degrees[i],
                                                          m=sprintf("%02d", minutes[i]),
                                                          s=sprintf("%02f", seconds[i]),
@@ -978,7 +978,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
             }
         }
     }
-    rval
+    res
 }
 
 mapLocator <- function(n=512, type='n', ...)
@@ -986,12 +986,12 @@ mapLocator <- function(n=512, type='n', ...)
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     xy <- locator(n, type, ...)
-    rval <- map2lonlat(xy$x, xy$y)
+    res <- map2lonlat(xy$x, xy$y)
     if (type == 'l')
-        mapLines(rval$longitude, rval$latitude, ...)
+        mapLines(res$longitude, res$latitude, ...)
     else if (type == 'p')
-        mapPoints(rval$longitude, rval$latitude, ...)
-    rval
+        mapPoints(res$longitude, res$latitude, ...)
+    res
 }
 
 map2lonlat <- function(x, y, init=c(0,0))
@@ -1225,17 +1225,17 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ## 20140816 END
     ni <- dim(z)[1]
     nj <- dim(z)[2]
-    dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
-    dlatitude <- latitude[2] - latitude[1]
+    ##dlongitude <- longitude[2] - longitude[1] # FIXME: incorrect for irregular grids
+    ##dlatitude <- latitude[2] - latitude[1]
     zmin <- min(z, na.rm=TRUE)
     zmax <- max(z, na.rm=TRUE)
     zrange <- zmax - zmin
-    usr <- par('usr')
-    xmin <- usr[1]
-    xmax <- usr[2]
-    ymin <- usr[3]
-    ymax <- usr[4]
-    allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
+    ##usr <- par('usr')
+    ##xmin <- usr[1]
+    ##xmax <- usr[2]
+    ##ymin <- usr[3]
+    ##ymax <- usr[4]
+    ##allowedSpan <- (xmax - xmin) / 5   # KLUDGE: avoid lines crossing whole domain
     small <- .Machine$double.eps
     ## 20140802/issue516: next if block (clipping) rewritten
     if (zclip) {
@@ -1295,9 +1295,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[,1]
         latitudeGrid <- g[,2]
-        rx <- range(xy$x[is.finite(xy$x)], na.rm=TRUE)
-        ry <- range(xy$y[is.finite(xy$y)], na.rm=TRUE)
-        f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
+        ##rx <- range(xy$x[is.finite(xy$x)], na.rm=TRUE)
+        ##ry <- range(xy$y[is.finite(xy$y)], na.rm=TRUE)
+        ##f <- if (is.logical(filledContour)) 1 else as.integer(round(filledContour))
         ## FIXME: I'm not sure this will work well generally; I'm setting NN to 
         ## FIXME: get about 5 points per grid cell.
         ## N is number of points in view
@@ -1452,6 +1452,8 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
             longitude <- longitude$longitude
         }
     }
+    if (missing(latitude))
+        stop("latitude is missing")
     ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
     longitude <- ifelse(longitude < 0, longitude+360, longitude)
     rpd <- atan2(1, 1) / 45
@@ -1595,6 +1597,8 @@ lonlat2map <- function(longitude, latitude, projection="")
         latitude <- longitude$latitude
         longitude <- longitude$longitude
     }
+    if (missing(latitude))
+        stop("latitude is missing")
     n <- length(longitude)
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))

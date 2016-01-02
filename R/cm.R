@@ -5,12 +5,10 @@ setMethod(f="initialize",
           signature="cm",
           definition=function(.Object, filename="(unknown)", sample, time,
                               u, v, heading,
-                              conductivity, conductivityUnit="mS/cm",
-                              salinity, temperature, pressure) {
+                              conductivity, salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
-              .Object@metadata$units <- list()
-              .Object@metadata$units$temperatureUnit <- "ITS-90" # guess on the unit
-              .Object@metadata$units$conductivityUnit <- conductivityUnit
+              .Object@metadata$units$temperature <- "ITS-90" # guess on the unit
+              .Object@metadata$units$conductivity <- "mS/cm"
               .Object@data$sample <- if (missing(sample)) NULL else sample
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@data$u <- if (missing(u)) NULL else u
@@ -28,32 +26,53 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
-              dataNames <- names(object@data)
-              threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
-              ii <- 1
-              for (i in 1:length(dataNames)) {
-                  if (names(object@data)[i] != "time") {
-                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
-                      ii <- ii + 1
-                  }
-              }
-              rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              vDim <- dim(object@data$v)
-
               cat("cm summary\n----------\n\n", ...)
-              showMetadataItem(object, "filename",      "File source:        ")
+              showMetadataItem(object, "filename",      "File source:        ", quote=TRUE)
               showMetadataItem(object, "type",          "Instrument type:    ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
-              t <- object@data$time
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(t[1]), attr(t, "tzone"),
-                          format(tail(t, 1)), attr(t, "tzone"),
-                          1 / (as.numeric(t[2])-as.numeric(t[1]))), ...)
-              print(round(threes, 3))
-              processingLogShow(object)
+              callNextMethod()
           })
+
+
+setMethod(f="subset",
+          signature="cm",
+          definition=function(x, subset, ...) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res <- x
+              dots <- list(...)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (missing(subset))
+                  stop("must give 'subset'")
+              if (length(grep("time", subsetString))) {
+                  oceDebug(debug, "subsetting a cm by time\n")
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  names <- names(x@data)
+                  oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                  oceDebug(debug, "number of kept bins:", sum(keep), "\n")
+                  if (sum(keep) < 2)
+                      stop("must keep at least 2 profiles")
+                  res <- x
+                  ## FIXME: are we handling slow timescale data?
+                  for (name in names(x@data)) {
+                      if (name == "time" || is.vector(x@data[[name]])) {
+                          oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
+                          res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                      } else if (is.matrix(x@data[[name]])) {
+                          oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
+                          res@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(x@data[[name]])) {
+                          oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
+                          res@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                      }
+                  }
+              }
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res
+          })
+
 
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
@@ -93,7 +112,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         open(file, "rb")
         on.exit(close(file))
     }
-    metadata <- list(filename=filename)
     ## Examine the first line of the file, to get serial number, etc.
     items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE) # slow, but just one line
     oceDebug(debug, "line 1 contains: ", paste(items, collapse=" "), "\n")
@@ -191,7 +209,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             stop("if 'from' is POSIXt, then 'to' must be, also")
         if (!is.numeric(by) || by != 1)
             stop("sorry, 'by' must equal 1, in this version of read.cm.s4()")
-        from.to.POSIX <- TRUE
+        ##from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
         if (is.na(from.index))
             from.index <- 1
@@ -203,7 +221,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         if (!is.numeric(from))
             stop("'from' must be either POSIXt or numeric")
-        if (missing(to))
+        
             to <- n
         if (!is.numeric(to))
             stop("'to' must be either POSIXt or numeric")
@@ -211,20 +229,22 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    rval <- new('cm', sample=as.numeric(sample[keep]), time=time[keep],
-                u=u[keep], v=v[keep], heading=heading[keep],
-                conductivity=conductivity[keep],
-                salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
-    rval@metadata$filename <- filename
-    rval@metadata$serialNumber <- serialNumber
-    rval@metadata$version <- version
-    rval@metadata$type <- type
-    rval@metadata$longitude <- longitude
-    rval@metadata$latitude <- latitude
+    res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
+               u=u[keep], v=v[keep], heading=heading[keep],
+               conductivity=conductivity[keep],
+               salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
+    res@metadata$filename <- filename
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$version <- version
+    res@metadata$type <- type
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$units <- list(u="m/s", v="m/s", pressure="dbar",
+                               temperature="ITS-90", conductivity="mS/cm") # not sure if true generally
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    rval@processingLog <- processingLogAppend(rval@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
-    rval
+    res
 }
 
 setMethod(f="plot",
@@ -259,8 +279,8 @@ setMethod(f="plot",
                   on.exit(par(opar))
               par(mgp=mgp, mar=mar)
               dots <- list(...)
-              gave.ylim <- "ylim" %in% names(dots)
-              ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+              ##gave.ylim <- "ylim" %in% names(dots)
+              ##ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
               oceDebug(debug, "later on in plot.adp:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")

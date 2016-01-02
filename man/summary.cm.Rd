@@ -19,9 +19,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{\code{summary.cm} returns an object of class \code{"summary.cm"},
-  containing pertinent information about the \code{cm} object and its
-  processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{cm-class}} explains the structure of
     CM objects, and also outlines the other functions dealing with them.}

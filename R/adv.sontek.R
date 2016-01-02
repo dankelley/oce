@@ -102,35 +102,36 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     ##                              c(  291,  9716, -10002),
     ##                              c( 1409,  1409,   1409)) / 4096
     transformationMatrix <- NULL
-    metadata <- list(manufacturer="sontek",
-                     instrumentType="adv",
-                     filename=filename,
-                     longitude=longitude, latitude=latitude,
-                     numberOfSamples=len,
-                     numberOfBeams=3,
-                     serialNumber="?",
-                     transformationMatrix=transformationMatrix,
-                     measurementStart=time[1],
-                     measurementEnd=time[length(time)],
-                     measurementDeltat=deltat,
-                     subsampleStart=time[1], # FIXME: this seems wrong
-                     subsampleEnd=time[length(time)], # FIXME: this seems wrong
-                     subsampleDeltat=deltat,
-                     ##velocityScale=velocityScale,
-                     originalCoordinate="xyz", # guess
-                     velocityResolution=velocityScale,
-                     velocityMaximum=velocityScale * 2^15,
-                     oceCoordinate="xyz",    # guess
-                     orientation="upward") # guess
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$instrumentType <- "adv"
+    res@metadata$filename <- filename
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- len
+    res@metadata$numberOfBeams <- 3
+    res@metadata$serialNumber <- "?"
+    res@metadata$transformationMatrix <- transformationMatrix
+    res@metadata$measurementStart <- time[1]
+    res@metadata$measurementEnd <- time[length(time)]
+    res@metadata$measurementDeltat <- deltat
+    res@metadata$subsampleStart <- time[1] # FIXME: this seems wrong
+    res@metadata$subsampleEnd <- time[length(time)] # FIXME: this seems wrong
+    res@metadata$subsampleDeltat <- deltat
+    res@metadata$##velocityScale <- velocityScale
+    res@metadata$originalCoordinate <- "xyz" # guess
+    res@metadata$velocityResolution <- velocityScale
+    res@metadata$velocityMaximum <- velocityScale * 2^15
+    res@metadata$oceCoordinate <- "xyz"    # guess
+    res@metadata$orientation <- "upward" # guess
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
     res@data$heading <- rep(0, len)
     res@data$pitch <- rep(0, len)
     res@data$roll <- rep(0, len)
-    res@metadata <- metadata
+    res@metadata$units <- list(v="m/s")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    gc()
+    ##gc()
     res
 }
 
@@ -139,7 +140,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                                 longitude=NA, latitude=NA,
                                 debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
-    bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {
+    bisectAdvSontekAdr <- function(burstTime, tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
         len <- length(burstTime)
         lower <- 1
@@ -193,16 +194,18 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     probeConfigurationLength <- 164
     deploymentParametersLength <- 253
     burstHeaderLength <- 60
-    checksumLength <- 2
+    ##checksumLength <- 2
     dataLength <- 22                   # FIXME: this should be determined based on the headers
-    metadata <- list(manufacturer="sontek",
-                     instrumentType="adv", # FIXME or "adr"???
-                     filename=filename,
-                     longitude=longitude, latitude=latitude,
-                     numberOfSamples=NA, # fill in later
-                     numberOfBeams=NA, # fill in later
-                     measurementDeltat=1,
-                     velocityScale=1e-4)
+    res <- new("adv")
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$instrumentType <- "adv" # FIXME or "adr"???
+    res@metadata$filename <- filename
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- NA # fill in later
+    res@metadata$numberOfBeams <- NA # fill in later
+    res@metadata$measurementDeltat <- 1
+    res@metadata$velocityScale <- 1e-4
     if (header) {
         ##
         ## Slice out three headers
@@ -214,56 +217,56 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         ##
         ## Analyze "hardwareConfiguration" header
         ##
-        metadata$cpuSoftwareVerNum <- 0.1 * as.numeric(hardwareConfiguration[1])
-        oceDebug(debug, "cpuSoftwareVerNum=", metadata$cpuSoftwareVerNum, "\n")
+        res@metadata$cpuSoftwareVerNum <- 0.1 * as.numeric(hardwareConfiguration[1])
+        oceDebug(debug, "cpuSoftwareVerNum=", res@metadata$cpuSoftwareVerNum, "\n")
 
-        metadata$dspSoftwareVerNum <- 0.1 * as.numeric(hardwareConfiguration[2])
-        oceDebug(debug, "dspSoftwareVerNum=", metadata$dspSoftwareVerNum, "\n")
+        res@metadata$dspSoftwareVerNum <- 0.1 * as.numeric(hardwareConfiguration[2])
+        oceDebug(debug, "dspSoftwareVerNum=", res@metadata$dspSoftwareVerNum, "\n")
 
-        metadata$orientation <- c("downward", "upward", "sideways")[1 + as.numeric(hardwareConfiguration[4])]
-        oceDebug(debug, "orientation=", metadata$orientation, "\n")
+        res@metadata$orientation <- c("downward", "upward", "sideways")[1 + as.numeric(hardwareConfiguration[4])]
+        oceDebug(debug, "orientation=", res@metadata$orientation, "\n")
 
-        metadata$compassInstalled <- as.integer(hardwareConfiguration[5]) == 1
-        oceDebug(debug, "compassInstalled=", metadata$compassInstalled, "\n")
-        if (!metadata$compassInstalled)
+        res@metadata$compassInstalled <- as.integer(hardwareConfiguration[5]) == 1
+        oceDebug(debug, "compassInstalled=", res@metadata$compassInstalled, "\n")
+        if (!res@metadata$compassInstalled)
             stop("cannot handle data files for ADV files that lack compass data")
 
-        metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE;
-        oceDebug(debug, "recorderInstalled=", metadata$recorderInstalled, "\n")
+        res@metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE;
+        oceDebug(debug, "recorderInstalled=", res@metadata$recorderInstalled, "\n")
 
-        metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
-        oceDebug(debug, "thermometerInstalled=", metadata$thermometerInstalled, "\n")
-        if (!metadata$thermometerInstalled)
+        res@metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
+        oceDebug(debug, "thermometerInstalled=", res@metadata$thermometerInstalled, "\n")
+        if (!res@metadata$thermometerInstalled)
             stop("cannot handle data files for ADV files that lack thermometer data")
 
-        metadata$pressureInstalled <- as.integer(hardwareConfiguration[8]) == 1
-        oceDebug(debug, "pressureInstalled=", metadata$pressureInstalled, "\n")
-        if (!metadata$pressureInstalled)
+        res@metadata$pressureInstalled <- as.integer(hardwareConfiguration[8]) == 1
+        oceDebug(debug, "pressureInstalled=", res@metadata$pressureInstalled, "\n")
+        if (!res@metadata$pressureInstalled)
             stop("cannot handle data files for ADV files that lack pressure data")
 
         ## we report pressure in dbar, so use the fact that 1 nanobar/count = 1e-8 dbar/count
-        metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little")
-        oceDebug(debug, "pressureScale=", metadata$pressureScale,"dbar/count (header gives in nanobar/count)\n")
+        res@metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little")
+        oceDebug(debug, "pressureScale=", res@metadata$pressureScale,"dbar/count (header gives in nanobar/count)\n")
 
         ## we report pressure in dbar, so use the fact that 1 microbar = 1e-5 dbar
-        metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little")
-        oceDebug(debug, "pressureOffset=", metadata$pressureOffset,"dbar (header gives in microbar)\n")
+        res@metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little")
+        oceDebug(debug, "pressureOffset=", res@metadata$pressureOffset,"dbar (header gives in microbar)\n")
 
-        metadata$compassOffset <- readBin(hardwareConfiguration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)
-        oceDebug(debug, "compassOffset=", metadata$compassOffset,"(degrees to East of North)\n")
+        res@metadata$compassOffset <- readBin(hardwareConfiguration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)
+        oceDebug(debug, "compassOffset=", res@metadata$compassOffset,"(degrees to East of North)\n")
 
-        metadata$pressFreqOffset <- as.integer(hardwareConfiguration[25])
-        oceDebug(debug, "pressFreqOffset=", metadata$pressFreqOffset,"(\"Frequency Pres Sensor Offset\" in docs)\n")
+        res@metadata$pressFreqOffset <- as.integer(hardwareConfiguration[25])
+        oceDebug(debug, "pressFreqOffset=", res@metadata$pressFreqOffset,"(\"Frequency Pres Sensor Offset\" in docs)\n")
 
-        metadata$extSensorInstalled <- as.integer(hardwareConfiguration[26])
-        oceDebug(debug, "extSensorInstalled=", metadata$extSensorInstalled,"(\"0=None, 1=Standard (ch 1/3)\" in docs)\n")
+        res@metadata$extSensorInstalled <- as.integer(hardwareConfiguration[26])
+        oceDebug(debug, "extSensorInstalled=", res@metadata$extSensorInstalled,"(\"0=None, 1=Standard (ch 1/3)\" in docs)\n")
 
-        metadata$extPressInstalled <- as.integer(hardwareConfiguration[27])
-        oceDebug(debug, "extPressInstalled=", metadata$extPressInstalled,"(1=Paros 2=Druck 3=ParosFreq)\n")
+        res@metadata$extPressInstalled <- as.integer(hardwareConfiguration[27])
+        oceDebug(debug, "extPressInstalled=", res@metadata$extPressInstalled,"(1=Paros 2=Druck 3=ParosFreq)\n")
 
         ## we report pressure in dbar, so use the fact that 1 pbar = 1e-11 dbar
-        metadata$pressureScale2 <- 1e-11 * readBin(hardwareConfiguration[28:29], "integer", size=2, n=1, endian="little", signed=TRUE)
-        oceDebug(debug, "pressureScale2=", metadata$pressureScale2,"dbar/count^2 (file gives in picobar/count^2)\n")
+        res@metadata$pressureScale2 <- 1e-11 * readBin(hardwareConfiguration[28:29], "integer", size=2, n=1, endian="little", signed=TRUE)
+        oceDebug(debug, "pressureScale2=", res@metadata$pressureScale2,"dbar/count^2 (file gives in picobar/count^2)\n")
 
 
         ##
@@ -279,50 +282,50 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         ## [18:19] int ProbeNBeams
         ## ...
 
-        metadata$serialNumber <- paste(readBin(probeConfiguration[11:16],"character",n=5,size=1), collapse="")  # "B373H"
-        oceDebug(debug, "serialNumber=",metadata$serialNumber,"\n")
+        res@metadata$serialNumber <- paste(readBin(probeConfiguration[11:16],"character",n=5,size=1), collapse="")  # "B373H"
+        oceDebug(debug, "serialNumber=",res@metadata$serialNumber,"\n")
 
-        metadata$probeType <- readBin(probeConfiguration[17], "integer", n=1, size=1)
-        oceDebug(debug, "probeType=", metadata$probeType, "(\"3/2-d orientation\", according to the docs)\n")
+        res@metadata$probeType <- readBin(probeConfiguration[17], "integer", n=1, size=1)
+        oceDebug(debug, "probeType=", res@metadata$probeType, "(\"3/2-d orientation\", according to the docs)\n")
 
-        metadata$probeSize <- readBin(probeConfiguration[18], "integer", n=1, size=1)
-        oceDebug(debug, "probeSize=", metadata$probeSize, "(0 means 5cm; 1 means 10cm probe, according to docs)\n")
+        res@metadata$probeSize <- readBin(probeConfiguration[18], "integer", n=1, size=1)
+        oceDebug(debug, "probeSize=", res@metadata$probeSize, "(0 means 5cm; 1 means 10cm probe, according to docs)\n")
 
-        metadata$numberOfBeams <- readBin(probeConfiguration[19:20], "integer", n=1, size=2, endian="little")
-        oceDebug(debug, "numberOfBeams=", metadata$numberOfBeams, "(should be 3)\n")
-        if (metadata$numberOfBeams != 3)
-            warning("number of beams should be 3, but it is ", metadata$numberOfBeams, " ... reseting to 3")
+        res@metadata$numberOfBeams <- readBin(probeConfiguration[19:20], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "numberOfBeams=", res@metadata$numberOfBeams, "(should be 3)\n")
+        if (res@metadata$numberOfBeams != 3)
+            warning("number of beams should be 3, but it is ", res@metadata$numberOfBeams, " ... reseting to 3")
 
-        metadata$probeNomPeakPos <- readBin(probeConfiguration[21:22], "integer", n=1, size=2, endian="little")
-        oceDebug(debug, "probeNomPeakPos=", metadata$probeNomPeakPos, "(not used here)\n")
+        res@metadata$probeNomPeakPos <- readBin(probeConfiguration[21:22], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeNomPeakPos=", res@metadata$probeNomPeakPos, "(not used here)\n")
 
-        metadata$probeNsamp <- readBin(probeConfiguration[23:24], "integer", n=1, size=2, endian="little")
-        oceDebug(debug, "probeNsamp=", metadata$probeNsamp, "(not used here)\n")
+        res@metadata$probeNsamp <- readBin(probeConfiguration[23:24], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeNsamp=", res@metadata$probeNsamp, "(not used here)\n")
 
-        metadata$probeSampInterval <- readBin(probeConfiguration[25:26], "integer", n=1, size=2, endian="little")
-        oceDebug(debug, "probeSampInterval=", metadata$probeSampInterval, "(not used here)\n")
+        res@metadata$probeSampInterval <- readBin(probeConfiguration[25:26], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeSampInterval=", res@metadata$probeSampInterval, "(not used here)\n")
 
-        metadata$probePulseLag <- readBin(probeConfiguration[27:56], "integer", n=15, size=2, endian="little")
-        oceDebug(debug, "probePulseLag=", metadata$probePulseLag, "([5][3], not used here)\n")
+        res@metadata$probePulseLag <- readBin(probeConfiguration[27:56], "integer", n=15, size=2, endian="little")
+        oceDebug(debug, "probePulseLag=", res@metadata$probePulseLag, "([5][3], not used here)\n")
 
-        metadata$probeNxmit <- readBin(probeConfiguration[57:86], "integer", n=15, size=2, endian="little")
-        oceDebug(debug, "probeNxmit=", metadata$probeNxmit, "([5][3], not used here)\n")
+        res@metadata$probeNxmit <- readBin(probeConfiguration[57:86], "integer", n=15, size=2, endian="little")
+        oceDebug(debug, "probeNxmit=", res@metadata$probeNxmit, "([5][3], not used here)\n")
 
-        metadata$probeLagDelay <- readBin(probeConfiguration[87:116], "integer", n=15, size=2, endian="little")
-        oceDebug(debug, "probeLagDelay=", metadata$probeLagDelay, "([5][3], not used here)\n")
+        res@metadata$probeLagDelay <- readBin(probeConfiguration[87:116], "integer", n=15, size=2, endian="little")
+        oceDebug(debug, "probeLagDelay=", res@metadata$probeLagDelay, "([5][3], not used here)\n")
 
-        metadata$probeBeamDelay <- readBin(probeConfiguration[117:118], "integer", n=1, size=2, endian="little")
-        oceDebug(debug, "probeBeamDelay=", metadata$probeBeamDelay, "(not used here)\n")
+        res@metadata$probeBeamDelay <- readBin(probeConfiguration[117:118], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeBeamDelay=", res@metadata$probeBeamDelay, "(not used here)\n")
 
-        metadata$probePingDelay <- readBin(probeConfiguration[119:120], "integer", n=1, size=2, endian="little")
-        oceDebug(debug, "probePingDelay=", metadata$probePingDelay, "(not used here)\n")
+        res@metadata$probePingDelay <- readBin(probeConfiguration[119:120], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probePingDelay=", res@metadata$probePingDelay, "(not used here)\n")
 
-        metadata$transformationMatrix <- matrix(readBin(probeConfiguration[121:157], "numeric", n=9, size=4, endian="little"),
+        res@metadata$transformationMatrix <- matrix(readBin(probeConfiguration[121:157], "numeric", n=9, size=4, endian="little"),
                                                  nrow=3, byrow=TRUE)
         oceDebug(debug, "transformation matrix:\n")
-        oceDebug(debug, "  ", format(metadata$transformationMatrix[1,], width=10, digits=5, justify="right"), "\n")
-        oceDebug(debug, "  ", format(metadata$transformationMatrix[2,], width=10, digits=5, justify="right"), "\n")
-        oceDebug(debug, "  ", format(metadata$transformationMatrix[3,], width=10, digits=5, justify="right"), "\n")
+        oceDebug(debug, "  ", format(res@metadata$transformationMatrix[1,], width=10, digits=5, justify="right"), "\n")
+        oceDebug(debug, "  ", format(res@metadata$transformationMatrix[2,], width=10, digits=5, justify="right"), "\n")
+        oceDebug(debug, "  ", format(res@metadata$transformationMatrix[3,], width=10, digits=5, justify="right"), "\n")
 
         ## [158:161] float XmitRecDist
         ## [162:165] float CalCw
@@ -337,17 +340,17 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         if (deploymentParameters[2]!=0x01)
             stop("first byte of deploymentParameters header should be 0x01 but it is 0x", deploymentParameters[2])
 
-        metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
-        oceDebug(debug, "velocityRangeIndex=", metadata$velocityRangeIndex, "\n")
-        if (metadata$velocityRangeIndex == 4) {
-            metadata$velocityScale <- 2 * metadata$velocityScale # range 4 differs from ranges 1:3
+        res@metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
+        oceDebug(debug, "velocityRangeIndex=", res@metadata$velocityRangeIndex, "\n")
+        if (res@metadata$velocityRangeIndex == 4) {
+            res@metadata$velocityScale <- 2 * res@metadata$velocityScale # range 4 differs from ranges 1:3
         }
 
         originalCoordinateCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
-        metadata$originalCoordinate <- c("beam", "xyz", "enu")[1+originalCoordinateCode]
-        metadata$oceCoordinate <- metadata$originalCoordinate
-        oceDebug(debug, "originalCoordinate=", metadata$originalCoordinate, "\n")
-        if (metadata$originalCoordinate == "beam")
+        res@metadata$originalCoordinate <- c("beam", "xyz", "enu")[1+originalCoordinateCode]
+        res@metadata$oceCoordinate <- res@metadata$originalCoordinate
+        oceDebug(debug, "originalCoordinate=", res@metadata$originalCoordinate, "\n")
+        if (res@metadata$originalCoordinate == "beam")
             stop("cannot handle beam coordinates")
 
         ## FIXME: bug: docs say samplingRate in units of 0.1Hz, but the SLEIWEX-2008-m3 data file is in 0.01Hz
@@ -355,24 +358,24 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         samplingRate <- 0.01*readBin(deploymentParameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE)
         if (samplingRate[2] != 0 || samplingRate[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 of samplingRate vector")
-        metadata$samplingRate <- samplingRate[1]
-        if (metadata$samplingRate < 0)
-            stop("samplingRate must be a positive integer, but got ", metadata$samplingRate)
-        metadata$measurementDeltat <- 1 / metadata$samplingRate
-        metadata$burstInterval <- readBin(deploymentParameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (metadata$burstInterval[2] !=0 || metadata$burstInterval[3] != 0)
+        res@metadata$samplingRate <- samplingRate[1]
+        if (res@metadata$samplingRate < 0)
+            stop("samplingRate must be a positive integer, but got ", res@metadata$samplingRate)
+        res@metadata$measurementDeltat <- 1 / res@metadata$samplingRate
+        res@metadata$burstInterval <- readBin(deploymentParameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (res@metadata$burstInterval[2] !=0 || res@metadata$burstInterval[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 in burstInterval vector")
-        metadata$burstInterval <- metadata$burstInterval[1]
-        metadata$samplesPerBurst <- readBin(deploymentParameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (metadata$samplesPerBurst[2] !=0 || metadata$samplesPerBurst[3] != 0)
+        res@metadata$burstInterval <- res@metadata$burstInterval[1]
+        res@metadata$samplesPerBurst <- readBin(deploymentParameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (res@metadata$samplesPerBurst[2] !=0 || res@metadata$samplesPerBurst[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 in samplesPerBurst vector")
-        metadata$samplesPerBurst <- metadata$samplesPerBurst[1]
-        if (metadata$samplesPerBurst < 0)
-            stop("samplesPerBurst must be a positive integer, but got ", metadata$samplesPerBurst)
-        metadata$deploymentName <- paste(integerToAscii(as.integer(deploymentParameters[49:57])), collapse="")
-        metadata$comments1 <- paste(integerToAscii(as.integer(deploymentParameters[66:125])), collapse="")
-        metadata$comments2 <- paste(integerToAscii(as.integer(deploymentParameters[126:185])), collapse="")
-        metadata$comments3 <- paste(integerToAscii(as.integer(deploymentParameters[126:185])), collapse="")
+        res@metadata$samplesPerBurst <- res@metadata$samplesPerBurst[1]
+        if (res@metadata$samplesPerBurst < 0)
+            stop("samplesPerBurst must be a positive integer, but got ", res@metadata$samplesPerBurst)
+        res@metadata$deploymentName <- paste(integerToAscii(as.integer(deploymentParameters[49:57])), collapse="")
+        res@metadata$comments1 <- paste(integerToAscii(as.integer(deploymentParameters[66:125])), collapse="")
+        res@metadata$comments2 <- paste(integerToAscii(as.integer(deploymentParameters[126:185])), collapse="")
+        res@metadata$comments3 <- paste(integerToAscii(as.integer(deploymentParameters[126:185])), collapse="")
     }                                  # if (header)
 
     ## Use 3-byte flag to find bursts in buf.  Then find their times, and # samples in each.
@@ -382,7 +385,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     oceDebug(debug, "burstBufindex[1:10]=", paste(burstBufindex[1:10], collapse=" "), "\n")
 
     nbursts <- length(burstBufindex)
-    metadata$numberOfBursts <- nbursts
+    res@metadata$numberOfBursts <- nbursts
 
     burstBufindex2 <- sort(c(burstBufindex, 1 + burstBufindex))
     year <- readBin(buf[burstBufindex2 + 18], "integer", n=nbursts, size=2, endian="little", signed=FALSE)
@@ -400,12 +403,12 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
     ## ".extended" refers to a burst sequence to which a final item has been appended,
     ## to allow the use of approx() for various things.
-    burstTimeExtended <- c(burstTime, burstTime[nbursts] + samplesPerBurst[nbursts] / metadata$samplingRate)
+    burstTimeExtended <- c(burstTime, burstTime[nbursts] + samplesPerBurst[nbursts] / res@metadata$samplingRate)
     attr(burstTimeExtended, "tzone") <- attr(burstTime, "tzone")
 
-    metadata$measurementStart <- min(burstTimeExtended)
-    metadata$measurementEnd <- max(burstTimeExtended)
-    metadata$measurementDeltat <- (as.numeric(burstTime[length(burstTime)]) - as.numeric(burstTime[1])) / sum(samplesPerBurst)
+    res@metadata$measurementStart <- min(burstTimeExtended)
+    res@metadata$measurementEnd <- max(burstTimeExtended)
+    res@metadata$measurementDeltat <- (as.numeric(burstTime[length(burstTime)]) - as.numeric(burstTime[1])) / sum(samplesPerBurst)
 
     oceDebug(debug, "burstTimeExtended ranges", paste(range(burstTimeExtended), collapse=" to "), "\n")
 
@@ -430,15 +433,15 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
         fromToPOSIX <- TRUE
-        fromPair <- bisectAdvSontekAdr(from, add=-1, debug=debug-1)
+        fromPair <- bisectAdvSontekAdr(burstTime, from, add=-1, debug=debug-1)
         fromBurst <- fromPair$index
         oceDebug(debug, "fromKeep=", format(fromKeep), " yields burstTime[", fromBurst, "]=", format(fromPair$t), "\n")
-        toPair <- bisectAdvSontekAdr(to, add=1, debug=debug-1)
+        toPair <- bisectAdvSontekAdr(burstTime, to, add=1, debug=debug-1)
         toBurst <- toPair$index
         oceDebug(debug, "toKeep=", format(toKeep), " yields burstTime[", toBurst, "]=", format(toPair$t), "\n")
         ## burst offsets  FIXME: do we need these?
-        fromBurstOffset <- floor(0.5 + (as.numeric(from) - as.numeric(burstTime[fromBurst])) * metadata$samplingRate)
-        toBurstOffset <- floor(0.5 + (as.numeric(to) - as.numeric(burstTime[toBurst-1])) * metadata$samplingRate)
+        fromBurstOffset <- floor(0.5 + (as.numeric(from) - as.numeric(burstTime[fromBurst])) * res@metadata$samplingRate)
+        toBurstOffset <- floor(0.5 + (as.numeric(to) - as.numeric(burstTime[toBurst-1])) * res@metadata$samplingRate)
         oceDebug(debug, "fromBurstOffset=", fromBurstOffset, "toBurstOffset=",toBurstOffset,"\n")
         fromIndex <- 1
         toIndex <- sum(samplesPerBurst[fromBurst:toBurst])
@@ -475,7 +478,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         print(data.frame(burstFocus, burstTimeFocus, burstBufindexFocus, samplesPerBurstFocus))
 
     ## set up to read everything in every relevant burst (trim later)
-    oceDebug(debug, "sum(samplers.burstFocus)", sum(samplesPerBurstFocus), "vs", nbursts * as.numeric(burstTime[2]-burstTime[1])*metadata$samplingRate,"\n")
+    oceDebug(debug, "sum(samplers.burstFocus)", sum(samplesPerBurstFocus), "vs", nbursts * as.numeric(burstTime[2]-burstTime[1])*res@metadata$samplingRate,"\n")
 
     ntotal <- sum(samplesPerBurstFocus)
     oceDebug(debug, "ntotal=", ntotal, "\n")
@@ -494,7 +497,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     oceDebug(debug, "burstHeaderLength=",burstHeaderLength,"\n")
     oceDebug(debug, "burstBufindexFocus:", paste(burstBufindexFocus, collapse=" "), "\n")
 
-    velocityScale <- metadata$velocityScale
+    velocityScale <- res@metadata$velocityScale
 
     for (b in 1:nburstsFocus) {
         n <- samplesPerBurstFocus[b]
@@ -513,7 +516,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         q[r,1] <- m[,10]
         q[r,2] <- m[,11]
         q[r,3] <- m[,12]
-        time[r] <- as.numeric(burstTimeFocus[b]) + seq(0, n-1) / metadata$samplingRate
+        time[r] <- as.numeric(burstTimeFocus[b]) + seq(0, n-1) / res@metadata$samplingRate
         ##cat(sprintf("%.2f %.2f %.2f\n", time[r[1]], time[r[2]], time[r[3]]))
         ##cat("time=", format(time[r[1]]), ";", format(burstTimeFocus[b]), "\n")
         ##print(range(time[r]))
@@ -524,7 +527,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
         ## Pressure, using quadratic conversion from counts
         p.count <- readBin(as.raw(t(m[,21:22])), "integer", n=n, size=2, signed=FALSE, endian="little")
-        pressure[r] <- metadata$pressureOffset + p.count * (metadata$pressureScale + p.count * metadata$pressureScale2)
+        pressure[r] <- res@metadata$pressureOffset + p.count * (res@metadata$pressureScale + p.count * res@metadata$pressureScale2)
 
         rowOffset <- rowOffset + n
         if (monitor) {
@@ -543,13 +546,13 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     if (fromToPOSIX) {
         iii <- from <= time & time <= to
         if (is.character(by)) {
-            subsamplingRate <- floor(0.5 + ctimeToSeconds(by) * metadata$samplingRate)
+            subsamplingRate <- floor(0.5 + ctimeToSeconds(by) * res@metadata$samplingRate)
             oceDebug(debug, paste(" by = '", by, "' yields subsamplingRate=", subsamplingRate, "\n"), sep="")
             samples <- 1:length(iii)
             oceDebug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
             iii <- iii & !(samples %% subsamplingRate)
             oceDebug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
-            oceDebug(debug, "'by' is character, so subsampling by", floor(0.5 + ctimeToSeconds(by) * metadata$samplingRate), "\n")
+            oceDebug(debug, "'by' is character, so subsampling by", floor(0.5 + ctimeToSeconds(by) * res@metadata$samplingRate), "\n")
         }
     } else {
         indices <- seq(fromIndex, toIndex) # FIXME: ignoring 'by'
@@ -575,23 +578,18 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     pitch <- pitch[iii]
     heading <- heading[iii]
     roll <- roll[iii]
-    metadata$numberOfSamples=dim(v)[1]
-    metadata$numberOfBeams=dim(v)[2]
-
-    metadata$velocityResolution <- velocityScale
-    metadata$velocityMaximum <- velocityScale * 2^15
-
-    data <- list(v=v, a=a, q=q,
-                 time=time,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll,
-                 temperature=temperature,
-                 pressure=pressure)
-    res <- new("adv")
-    res@data <- data
-
-    res@metadata <- metadata
+    res@metadata$numberOfSamples=dim(v)[1]
+    res@metadata$numberOfBeams=dim(v)[2]
+    res@metadata$velocityResolution <- velocityScale
+    res@metadata$velocityMaximum <- velocityScale * 2^15
+    res@data <- list(v=v, a=a, q=q,
+                     time=time,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll,
+                     temperature=temperature,
+                     pressure=pressure)
+    res@metadata$units <- list(v="m/s")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -650,8 +648,8 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     heading <- hdt[,24]
     pitch <- hdt[,25]
     roll <- hdt[,26]
-    spb <- hdt[1,9]                      # FIXME may this change over time?
-    sr <- spb / 3600
+    ##spb <- hdt[1,9]                      # FIXME may this change over time?
+    ##sr <- spb / 3600
 
     tsFile <- file(ts, "rb")
     on.exit(close(tsFile))
@@ -674,7 +672,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     seek(tsFile, where=newlines[1], origin="start")
     d <- scan(tsFile, what="character", nlines=1, quiet=TRUE)
     oceDebug(debug, "first line in \".", suffices[2], "\" file: ", paste(d, collapse=" "), "\n")
-    itemsPerLine <- length(d)
+    ##itemsPerLine <- length(d)
     if (itemsPerSample != length(d))
         stop("file \".", suffices[2], "\" should have ", itemsPerSample, " elemetns per line, but it has ", length(d))
     oceDebug(debug, "elements per line in \".", suffices[2], "\" file: ", length(d), "\n")
@@ -718,33 +716,33 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     heading <- approx(t, heading, xout=tt, rule=2)$y
     pitch <- approx(t, pitch, xout=tt, rule=2)$y
     roll <- approx(t, roll, xout=tt, rule=2)$y
-    data <- list(v=v, a=a, q=q,
-                 time=tt,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll,
-                 temperature=temperature,
-                 pressure=pressure)
-    metadata <- list(manufacturer="sontek",
-                     instrumentType="adv", # FIXME or "adr"?
-                     filename=basefile,
-                     longitude=longitude, latitude=latitude,
-                     numberOfSamples=dim(v)[1],
-                     numberOfBeams=dim(v)[2],
-                     velocityResolution=velocityScale/10, # FIXME: guessing on the resolution for text files
-                     velocityMaximum=velocityScale/10 * 2^15, # FIXME: guessing on the max velocity for text files
-                     cpuSoftwareVerNum=metadata$cpuSoftwareVerNum,
-                     dspSoftwareVerNum=metadata$dspSoftwareVerNum,
-                     transformationMatrix=if(!missing(transformationMatrix)) transformationMatrix else NULL,
-                     orientation="upward", # FIXME: guessing on the orientation
-                     deltat=as.numeric(difftime(tt[2], tt[1], units="secs")),
-                     subsampleStart=data$t[1],
-                     oceCoordinate=originalCoordinate,
-                     originalCoordinate=originalCoordinate)
-    warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
     res <- new("adv")
-    res@data <- data
-    res@metadata <- metadata
+    res@data <- list(v=v, a=a, q=q,
+                     time=tt,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll,
+                     temperature=temperature,
+                     pressure <- pressure)
+    res@metadata$manufacturer <- "sontek"
+    res@metadata$instrumentType <- "adv" # FIXME or "adr"?
+    res@metadata$filename <- basefile
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- dim(v)[1]
+    res@metadata$numberOfBeams <- dim(v)[2]
+    res@metadata$velocityResolution <- velocityScale/10 # FIXME: guessing on the resolution for text files
+    res@metadata$velocityMaximum <- velocityScale/10 * 2^15 # FIXME: guessing on the max velocity for text files
+    res@metadata$cpuSoftwareVerNum <- res@metadata$cpuSoftwareVerNum
+    res@metadata$dspSoftwareVerNum <- res@metadata$dspSoftwareVerNum
+    res@metadata$transformationMatrix <- if(!missing(transformationMatrix)) transformationMatrix else NULL
+    res@metadata$orientation <- "upward" # FIXME: guessing on the orientation
+    res@metadata$deltat <- as.numeric(difftime(tt[2], tt[1], units="secs"))
+    res@metadata$subsampleStart <- data$t[1]
+    res@metadata$units <- list(v="m/s")
+    res@metadata$oceCoordinate <- originalCoordinate
+    res@metadata$originalCoordinate <- originalCoordinate
+    warning("sensor orientation cannot be inferred without a header; \"", res@metadata$orientation, "\" was assumed.")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
