@@ -2,7 +2,7 @@ setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(filename="", units=list()),
+         prototype=list(metadata=list(filename="", units=list(), flags=list()),
                         data=list(),
                         processingLog=list()))
 
@@ -85,7 +85,6 @@ setMethod(f="subset",
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              message("inside oce[[")
               if (i == "metadata") {
                   return(x@metadata)
               } else if (length(grep(" unit$", i))) {

@@ -489,7 +489,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     xmax <- readBin(buf[53+0:7], "double", n=1, size=8, endian="little")
     ymax <- readBin(buf[61+0:7], "double", n=1, size=8, endian="little")
     res <- new("coastline", fillable=shapeTypeFile==5)
-    res@metadatafilename <- filename
+    res@metadata$filename <- filename
     res@metadata$fillable <- TRUE
     oceDebug(debug, sprintf("xmin: %.4f, xmax: %.4f, ymin: %.4f, ymax: %.4f\n", xmin, xmax, ymin, ymax))
     ##
