@@ -67,8 +67,8 @@ sl <- as.sealevel(elevation, time)
 summary(sl)
 }
 
-\references{\url{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}, downloaded
-    March 12, 2015.}
+\references{\code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt}, downloaded
+    March 12, 2015; this link failed when tested January 4, 2016.}
 
 \author{Dan Kelley}
 
