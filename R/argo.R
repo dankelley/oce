@@ -199,7 +199,7 @@ as.argo <- function(time, longitude, latitude,
                        id, filename="",
                        missingValue)
 {
-    if (class(time) == "data.frame") {
+    if (inherits(class, "data.frame")) {
         df <- time 
         names <- names(df)
         time <- if ("time" %in% names) df$time else NULL
