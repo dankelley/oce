@@ -14,7 +14,7 @@
 \usage{
 oceGetData(object, name, default=NA)
 oceDeleteData(object, name)
-oceSetData(object, name, value, note="")
+oceSetData(object, name, value, units, note="")
 oceGetMetadata(object, name, default=NA)
 oceDeleteMetadata(object, name)
 oceSetMetadata(object, name, value, note="")
@@ -26,6 +26,12 @@ oceSetMetadata(object, name, value, note="")
   \item{name}{Name of the desired item.}
 
   \item{value}{Value for the named item.}
+
+  \item{units}{Optional character string giving the units of the added item.  If
+    present, and if the object \code{metdata} slot contains an item named
+    \code{units}, then the indicated unit is added. Note that this argument is
+    only available in \code{oceSetData}, since units may only be supplied for
+    data, not for metadata.}
 
   \item{default}{A default value to be returned if \code{name} is not found.}
 

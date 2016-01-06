@@ -96,7 +96,7 @@ oceDeleteData <- function(object, name)
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
     object
 }
-oceSetData <- function(object, name, value, note="")
+oceSetData <- function(object, name, value, units, note="")
 {
     if (!inherits(object, "oce"))
         stop("oceGetData() only works for oce objects")
@@ -104,6 +104,9 @@ oceSetData <- function(object, name, value, note="")
     object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (nchar(note) > 0)
         object@processingLog <- processingLogAppend(object@processingLog, note)
+    if (!missing(units) && "units" %in% names(object@metadata)) {
+        object@metadata$units[[name]] <- units
+    }
     object
 }
 
