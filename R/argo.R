@@ -182,7 +182,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
         res@metadata$units$temperature <- c("˚C", "ITS-90")
     if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))
-        res@metadata$units$salinity <- c("unitless", "PSS-78")
+        res@metadata$units$salinity <- c("", "PSS-78")
     if (1 == length(grep("east", ncdf4::ncatt_get(file, "LONGITUDE", "units")$value, ignore.case=TRUE)))
         res@metadata$units$longitude <- "˚E"
     if (1 == length(grep("north", ncdf4::ncatt_get(file, "LATITUDE", "units")$value, ignore.case=TRUE)))
@@ -223,7 +223,7 @@ as.argo <- function(time, longitude, latitude,
     res@metadata$id <- if (!missing(id)) id else NA
     res@metadata$units <- if (!is.null(units)) units else
         list(longitude="˚E", latitude="˚N",
-             salinity=c("unitless", "PSS-78"), # assuming a particular scale
+             salinity=c("", "PSS-78"), # assuming a particular scale
              temperature=c("˚C", "ITS-90"), # assuming a particular scale
              pressure="dbar") # assuming a particular unit
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
