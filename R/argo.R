@@ -196,6 +196,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure, 
+                       units=NULL,
                        id, filename="",
                        missingValue)
 {
@@ -220,6 +221,8 @@ as.argo <- function(time, longitude, latitude,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
+    res@metadata$units <- if (!is.null(units)) units else
+        list(longitude="degree east", latitude="degree north", salinity="", temperature="ITS-90", pressure="dbar")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
