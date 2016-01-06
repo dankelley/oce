@@ -17,7 +17,14 @@ setMethod(f="summary",
                       from <- min(time, na.rm=TRUE)
                       to <- max(time, na.rm=TRUE)
                       deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
-                      cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                      if (deltat < 60)
+                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                      else if (deltat < 3600)
+                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
+                      else if (deltat < 24*3600)
+                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
+                      else
+                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
                   }
               }
               ndata <- length(object@data)
@@ -33,6 +40,12 @@ setMethod(f="summary",
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
                   units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
+                  ## paste the scale after the unit
+                  unitsNames <- names(object@metadata$units)
+                  units <- lapply(seq_along(object@metadata$units),
+                                         function(i) paste(object@metadata$units[[i]], collapse=", "))
+                  names(units) <- unitsNames
+                  message("units:");print(units)
                   rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                   colnames(threes) <- c("Min.", "Mean", "Max.")
                   cat("* Statistics of data\n")
