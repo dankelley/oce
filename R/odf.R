@@ -406,7 +406,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
     res@metadata$header <- NULL
-    res@metadata$units <- list(temperature=c("\u00B01C", "ITS-90"), conductivity="ratio") # FIXME: guess on units
+    res@metadata$units <- list(temperature=c("\u00B0C", "ITS-90"), conductivity="ratio") # FIXME: guess on units
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber

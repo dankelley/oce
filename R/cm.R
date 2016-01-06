@@ -7,7 +7,7 @@ setMethod(f="initialize",
                               u, v, heading,
                               conductivity, salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
-              .Object@metadata$units$temperature <- c("\u00B01C", "ITS-90") # guess on the unit
+              .Object@metadata$units$temperature <- c("\u00B0C", "ITS-90") # guess on the unit
               .Object@metadata$units$conductivity <- "mS/cm"
               .Object@data$sample <- if (missing(sample)) NULL else sample
               .Object@data$time <- if (missing(time)) NULL else time
@@ -240,7 +240,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
     res@metadata$units <- list(u="m/s", v="m/s", pressure="dbar",
-                               temperature=c("\u00B01C", "ITS-90"), conductivity="mS/cm") # not sure if true generally
+                               temperature=c("\u00B0C", "ITS-90"), conductivity="mS/cm") # not sure if true generally
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
