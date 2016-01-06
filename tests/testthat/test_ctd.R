@@ -5,7 +5,7 @@ data(ctd)
 context("CTD")
 
 test_that("data(ctd) has proper units", {
-          expect_equal(ctd[["temperatureUnit"]], c("\u00B01C", "ITS-90"))
+          expect_equal(ctd[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
           expect_equal(ctd[["conductivityUnit"]], "ratio")
           expect_equal(ctd[["pressureUnit"]], "dbar")
           expect_equal(ctd[["pressureType"]], "sea")
@@ -17,7 +17,7 @@ test_that("as.ctd() with specified arguments", {
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
-          expect_equal(ctd_ctd[["temperatureUnit"]], c("\u00B01C", "ITS-90"))
+          expect_equal(ctd_ctd[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
           expect_equal(ctd_ctd[["conductivityUnit"]], "ratio")
           expect_equal(ctd_ctd[["pressureType"]], "sea")
 })
@@ -124,7 +124,7 @@ context("Reading ctd files")
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
           d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
-          expect_equal(d1[["temperatureUnit"]], c("\u00B01C", "ITS-90"))
+          expect_equal(d1[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
           expect_equal(d1[["conductivityUnit"]], "ratio")
           expect_equal(d1[["pressureUnit"]], "dbar")
           expect_equal(d1[["pressureType"]], "sea")
@@ -153,7 +153,7 @@ test_that("Dalhousie-produced cnv file", {
 ##'LONGITUDE (W)= 134.001 '
 test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
           d2 <- read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
-          expect_equal(d2[["temperatureUnit"]], c("\u00B01C", "ITS-90"))
+          expect_equal(d2[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
           expect_equal(d2[["conductivityUnit"]], "ratio")
           expect_equal(d2[["pressureUnit"]], "dbar")
           expect_equal(d2[["pressureType"]], "sea")
@@ -181,7 +181,7 @@ test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
 ##'* NMEA UTC (Time) = Aug 09 2012 06:34:34'
 test_that("Beaufort sea data II", {
           d3 <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
-          expect_equal(d3[["temperatureUnit"]], c("\u00B01C", "ITS-90"))
+          expect_equal(d3[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
           expect_equal(d3[["conductivityUnit"]], "mS/cm")
           expect_equal(d3[["pressureType"]], "sea")
           expect_equal(d3[["ship"]], "CCGS Louis St-Laurent")
@@ -199,7 +199,7 @@ test_that("Beaufort sea data II", {
 ## Catherine Johnson as chief scientist.
 test_that("ODF file", {
           d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
-          expect_equal(d4[["temperatureUnit"]], c("\u00B01C", "ITS-90"))
+          expect_equal(d4[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
           expect_equal(d4[["conductivityUnit"]], "ratio") # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")
           expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
