@@ -180,13 +180,13 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@metadata$filename <- filename
     res@metadata$id <- id
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
-        res@metadata$units$temperature <- c("˚C", "ITS-90")
+        res@metadata$units$temperature <- c("\u00B01C", "ITS-90")
     if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))
         res@metadata$units$salinity <- c("", "PSS-78")
     if (1 == length(grep("east", ncdf4::ncatt_get(file, "LONGITUDE", "units")$value, ignore.case=TRUE)))
-        res@metadata$units$longitude <- "˚E"
+        res@metadata$units$longitude <- "\u00B01E"
     if (1 == length(grep("north", ncdf4::ncatt_get(file, "LATITUDE", "units")$value, ignore.case=TRUE)))
-        res@metadata$units$latitude <- "˚N"
+        res@metadata$units$latitude <- "\u00B01N"
     if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES", "units")$value, ignore.case=TRUE)))
         res@metadata$units$pressure <- "decibar"
     res@metadata$id <- if (!missing(id)) id else NA
@@ -222,9 +222,9 @@ as.argo <- function(time, longitude, latitude,
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
     res@metadata$units <- if (!is.null(units)) units else
-        list(longitude="˚E", latitude="˚N",
+        list(longitude="\u00B01E", latitude="\u00B01N",
              salinity=c("", "PSS-78"), # assuming a particular scale
-             temperature=c("˚C", "ITS-90"), # assuming a particular scale
+             temperature=c("\u00B01C", "ITS-90"), # assuming a particular scale
              pressure="dbar") # assuming a particular unit
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -271,7 +271,7 @@ setMethod(f="plot",
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
-                            units=list(temperature="ITS-90", conductivity="ratio")) # guess on units
+                            units=list(temperature=c("\u00B01C", "ITS-90"), conductivity="ratio")) # guess on units
               which <- oce.pmatch(which,
                                   list(trajectory=1,
                                        "salinity ts"=2,

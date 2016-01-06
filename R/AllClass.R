@@ -45,7 +45,7 @@ setMethod(f="summary",
                   units <- lapply(seq_along(object@metadata$units),
                                          function(i) paste(object@metadata$units[[i]], collapse=", "))
                   names(units) <- unitsNames
-                  message("units:");print(units)
+                  ##message("units:");print(units)
                   rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                   colnames(threes) <- c("Min.", "Mean", "Max.")
                   cat("* Statistics of data\n")

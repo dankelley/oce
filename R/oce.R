@@ -62,12 +62,12 @@ as.oce <- function(x)
                 ## Add any other columns
                 for (name in names) {
                     if (name != "temperature" && name != "pressure" && name != "salinity")
-                        res <- ctdAddColumn(res, column=x[name], name=name, label=name)
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
                 }
             } else if ("conductivity" %in% names) {
                 for (name in names) {
                     if (name != "temperature" && name != "pressure" && name != "conductivity")
-                        res <- ctdAddColumn(res, column=x[name], name=name, label=name)
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
                 }
             }
         } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {

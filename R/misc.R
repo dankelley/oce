@@ -1476,7 +1476,7 @@ addColumn <- function (x, data, name)
     if (n != length(data))
         stop("data length is ", n, " but it must be ", nd, " to match existing data")
     if (inherits(x, "ctd")) {
-        res <- ctdAddColumn(x, data, name)
+        res <- ctdAddColumn(x, data, name) # FIXME: supply units
     } else {
         res <- x
         res@data[[name]] <- data
