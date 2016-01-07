@@ -1,4 +1,4 @@
-0.9-17
+0.9-18
 - ctdTrim() method renamed: old A and B are new A; old C is new B
 - support more channels and features of rsk files
 - as.adp() added
@@ -24,6 +24,9 @@
 - coastlineCut() added
 - rgdal package used instead of local PROJ.4 source code
 - mapproj-style map projections eliminated
+
+0.9-17
+- remove an exit() call in a C function
 
 0.9-16
 - cite PROJ.4 contributors in DESCRIPTION
