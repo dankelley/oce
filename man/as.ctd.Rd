@@ -69,10 +69,15 @@
 %  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
 %  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
 %  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
-  \item{units}{an optional list containing units.  For modern instruments, the
-    value \code{list(temperature="ITS-90", conductivity="ratio")} is usually
-    appropriate if conductivity ratio is being stored; othewise, switch the
-    second argument value to \code{"uS/cm"} or \code{"S/m"}.}
+
+  \item{units}{an optional list containing units.  If not supplied, a default of
+    \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+      salinity=list(unit=expression(ratio), scale="",
+      pressure=list(unit=expression(dbar), scale="")} is used. This is quite
+    typical of archived datasets, but for some instrumental files it will make
+    sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
+    \code{salinity=list(unit=expression(S/m), scale="")}.}
+  
   \item{pressureType}{a character string indicating the type of pressure; may be
     \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
     and sea pressure, or \code{"sea"}.}

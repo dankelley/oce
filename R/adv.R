@@ -5,7 +5,6 @@ setMethod(f="initialize",
               if (!missing(v)) .Object@data$v <- v
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
-              ## .Object@metadata$units$v <- "m/s"
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'adv' object"

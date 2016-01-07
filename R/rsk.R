@@ -6,8 +6,8 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@metadata$model <- NA
-              .Object@metadata$units$conductivity <- "mS/cm"
-              .Object@metadata$units$temperature <- c("\u00B0C", "ITS-90")
+              .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+              .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -488,10 +488,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res@metadata$serialNumber <- serialNumber
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$ruskinVersion <- ruskinVersion
-        ## There is actually no need to set the units$conductivity since new()
+        ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
         ## this, in case some RBR devices use different units
-        res@metadata$units$conductivity <- "mS/cm" # FIXME: will this work for all RBR rsks?
+        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="") # FIXME: will this work for all RBR rsks?
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # read.rsk()\n", sep="", unindent=1)

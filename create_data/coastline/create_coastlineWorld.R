@@ -12,7 +12,7 @@ message(" 3. run this R file")
 
 coastlineWorld <- read.oce("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
 ## We happen to know the units; read.oce() does not try to infer them
-coastlineWorld@metadata$units$latitude <- "degree north"
-coastlineWorld@metadata$units$longitude <- "degree east"
+coastlineWorld@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
+coastlineWorld@metadata$units$longitude <- list(unit=expression(degree*E), scale="")
 save(coastlineWorld, file="coastlineWorld.rda")
 tools::resaveRdaFiles("coastlineWorld.rda", compress="auto")

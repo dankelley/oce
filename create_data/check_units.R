@@ -6,19 +6,50 @@ names <- c("adp", "adv", "argo", "cm", "coastlineWorld", "colors", "ctd",
            "sealevel", "sealevelTuktoyaktuk", "section", "tidedata",
            "topoWorld", "wind")
 for (name in names) {
-    if (name == "section")
-        next # this is a list of CTD objects
+    cat(name, "\n")
     data(list=name)
-    x <- get(name)
+    if (name == "section") {
+        x <- get(name)
+        x <- x[["station", 1]]
+    } else {
+        x <- get(name)
+    }
     if ("metadata" %in% slotNames(x)) {
         if ("units" %in% names(x@metadata)) {
-            if (length(x@metadata$units))
-                cat(name, "@metadata$units: ", paste(names(x@metadata$units), collapse=" "), "\n", sep="") else
-                    cat(name, "@metadata$units exists but has no contents\n", sep="")
-        } else {
-            cat("**FIXME** ", name, "@metadata has no 'units' item. FIXME: UPDATE THIS FILE\n", sep="")
+            units <- x@metadata$units
+            if (length(units) > 0) {
+                unitsNames <- names(units)
+                for (i in seq_along(units)) {
+                    cat(sprintf("    %-15s ", unitsNames[i]))
+                    this <- units[[i]]
+                    if (length(this) != 2) {
+                        cat("length:ERROR (should be 2, is ", length(this), ")\n", sep="")
+                    } else {
+                        cat("length:OK ")
+                        if (2 == sum(c("unit", "scale") %in% names(this))) {
+                            cat("names:OK ")
+                        } else {
+                            cat("names:ERROR (should be 'unit' and 'scale' but are ", 
+                                paste(names(this), collapse=","), ")\n")
+                        }
+                        if (is.expression(this$unit)) {
+                            cat("unit:OK ")
+                        } else {
+                            cat("unit:ERROR (not an expression) ")
+                        }
+                        if (is.character(this$scale)) {
+                            cat("scale:OK ")
+                        } else {
+                            cat("scale:ERROR (not not an expression) ")
+                        }
+                        cat("\n")
+                    }
+                }
+            } else {
+                cat("    OK; empty units\n", sep="")
+            }
         }
     } else {
-        cat(name, "has no metadata so nothing to check\n")
+        cat("    OK; no metadata\n")
     }
 }

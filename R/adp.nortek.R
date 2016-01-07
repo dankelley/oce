@@ -641,8 +641,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$originalCoordinate <- header$user$originalCoordinate
     res@metadata$oceCoordinate <- header$user$originalCoordinate
     res@metadata$oceBeamUnspreaded <- FALSE
-    res@metadata$units <- list(v="m/s", distance="m")
-                     
+    res@metadata$units <- list(v=list(unit=expression(m/s), scale=""), distance=list(unit=expression(m), scale=""))
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogItem(processingLog)

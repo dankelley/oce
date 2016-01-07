@@ -14,8 +14,8 @@ setMethod(f="initialize",
               }
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
-              .Object@metadata$units$v <- "m/s"
-              .Object@metadata$units$distance <- "m"
+              .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
+              .Object@metadata$units$distance <- list(unit=expression(m), scale="")
               .Object@metadata$oceCoordinate <- oceCoordinate # FIXME: should check that it is allowed
               .Object@metadata$orientation  <- orientation # FIXME: should check that it is allowed
               .Object@processingLog$time <- as.POSIXct(Sys.time())

@@ -424,6 +424,10 @@ as.topo <- function(longitude, latitude, z, units=NULL, filename="")
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
+    if (missing(units))
+        units <- list(latitude=list(unit=expression(degree*E), scale=""),
+                      longitude=list(unit=expression(degree*N), scale=""),
+                      z=list(unit=expression(m), scale=""))
     res <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
     res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))

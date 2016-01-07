@@ -10,7 +10,7 @@
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity, 
-                              units,# =list(), #=list(temperature=c("\u00B0C","ITS-90"), conductivity="ratio"),
+                              units,
                               pressureType, deploymentType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$pressure <- if (missing(pressure)) NULL else pressure
@@ -23,10 +23,10 @@ setMethod(f="initialize",
               ##.Object@metadata$filename <- filename
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                                 salinity=list(unit="", scale="PSS-78"),
-                                                 conductivity=list(unit="ratio", scale=""),
-                                                 pressure=list(unit="dbar", scale=""),
-                                                 depth=list(unit="m", scale=""))
+                                                 salinity=list(unit=expression(), scale="PSS-78"),
+                                                 conductivity=list(unit=expression(ratio), scale=""),
+                                                 pressure=list(unit=expression(dbar), scale=""),
+                                                 depth=list(unit=expression(m), scale=""))
               } else {
                   .Object@metadata$units <- units # FIXME: but what if spelled wrong etc
               }
@@ -375,9 +375,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## 3. explicit mode
         if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
         if (missing(pressure)) stop("must give pressure")
-        ## res <- new('ctd',
-        ##            units=units, #if (!length(units)) list(temperature=c("\u00B0C","ITS-90"), conductivity="ratio") else units,
-        ##            pressureType=pressureType)
         if (!missing(units))
             res@metadata$units <- units
         res@metadata$pressureType <- pressureType
@@ -781,7 +778,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!is.null(station))
         res@metadata$station <- station
     res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit="ratio", scale="")) # FIXME just a guess for ODV
+                               conductivity=list(unit=expression(ratio), scale="")) # FIXME just a guess for ODV
     oceDebug(debug, "} # read.ctd.odf()")
     res
 }
@@ -1031,7 +1028,6 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     }
     ## waterDepthWarning <- FALSE
     ## if (inferWaterDepth) {
-    ##     message("DANNY")
     ##     res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
     ##     waterDepthWarning <- TRUE
     ## }
@@ -1905,7 +1901,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit="ratio", scale=""))
+                                   conductivity=list(unit=expression(ratio), scale=""))
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -2083,7 +2079,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit="ratio", scale=""))
+                                   conductivity=list(unit=expression(ratio), scale=""))
         res@metadata$pressureType <- "sea"
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$ship <- ship
@@ -2111,7 +2107,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     if (waterDepthWarning)
         res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # read.ctd.woce()\n" , unindent=1) # FIXME: use S4 for ctd / woce
-    res@metadata$units$pressure <- list(unit="dbar", scale="")
+    res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     res
 }
 
@@ -2245,7 +2241,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ##conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-    conductivityUnit = list(unit="ratio", scale="") # guess; other types are "mS/cm" and "S/m"
+    conductivityUnit = list(unit=expression(ratio), scale="") # guess; other types are "mS/cm" and "S/m"
     temperatureUnit = list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
     pressureType = "sea"               # guess; other option is "absolute"
 
@@ -2309,7 +2305,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                 if (0 < regexpr("ratio", lline)) {
                     found.conductivity.ratio <- TRUE;
                     name <- "conductivityratio"
-                    conductivityUnit = list(unit="ratio", scale="")
+                    conductivityUnit = list(unit=expression(ratio), scale="")
                 } else {
                     found.conductivity <- TRUE;
                     name <- "conductivity"
@@ -2608,17 +2604,18 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
-    if ("IPTS-68" == res@metadata$units$temperature[2]) {
+    if (2 == length(res@metadata$unit$temperature) &&
+        "IPTS-68" == as.character(res@metadata$units$temperature$scale)) {
         res@data$temperature68 <- res@data$temperature
-        res@metadata$units$temperature68 <- c("", "IPTS-68")
+        res@metadata$units$temperature68 <- list(unit=expression(degree*C), scale="IPTS-68")
         res@data$temperature <- T90fromT68(res@data$temperature68)
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
         warning("converted temperature from IPTS-68 to ITS-90")
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }
-    if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit="", scale="PSS-78")
-    if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit="dbar", scale="")
-    if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit="m", scale="")
+    if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.ctd.sbe()\n")
     ## if (waterDepthWarning)
     ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
@@ -3215,11 +3212,11 @@ plotProfile <- function (x,
                     if (is.null(unit)) {
                         mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                     } else {
-                        if (unit[[1]] == "ratio") {
+                        if (as.character(unit[[1]]) == "ratio") {
                             mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
-                        } else if (unit[[1]] == "mS/cm") {
+                        } else if (as.character(unit[[1]]) == "mS/cm") {
                             mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
-                        } else if (unit[[1]] == "S/m") {
+                        } else if (as.character(unit[[1]]) == "S/m") {
                             mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
                         } else {
                             stop("unknown conductivity unit ", unit[[1]], "; should be 'ratio', 'mS/cm' or 'S/m'")

@@ -1369,8 +1369,8 @@ read.section <- function(file, directory, sectionId="", flags,
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
 			       temperature=temperature[select[ok]],
 			       pressure=pressure[select[ok]],
-                               units=list(temperature=c("\u00B0C", "ITS-90"),
-                                          conductivity="ratio"), # FIXME: should infer from data
+                               units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                                          conductivity=list(unit=expression(ratio), scale="")), # FIXME: should infer from data
                                oxygen=if(!is.null(oxygen))oxygen[select[ok]],
                                nitrate=if(!is.null(nitrate))nitrate[select[ok]],
                                nitrite=if(!is.null(nitrite))nitrite[select[ok]],
@@ -1387,7 +1387,6 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
-        thisStation@metadata$units$temperature <- c("\u00B0C", "ITS-90") # FIXME: an assumption; this info is not in files
 	if (debug) cat(length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
         if (sum(ok) == 0)
             warning("station ", i, " has no data\n")

@@ -122,7 +122,7 @@ as.sealevel <- function(elevation,
     res@metadata$decimationMethod <- decimationMethod
     res@metadata$referenceOffset <- referenceOffset
     res@metadata$referenceCode <- referenceCode
-    res@metadata$units <- list()
+    res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
     res@metadata$n <- length(t)
     res@metadata$deltat <- deltat
     res@data$elevation <- elevation
@@ -463,7 +463,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     res@metadata$decimationMethod <- decimationMethod
     res@metadata$referenceOffset <- referenceOffset
     res@metadata$referenceCode <- referenceCode
-    res@metadata$units <- list()
+    res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
     res@metadata$n <- length(time)
     res@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
     if (missing(processingLog))

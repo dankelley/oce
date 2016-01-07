@@ -39,8 +39,7 @@ cut <- which(longitude==180)
 ilon2 <- c(seq(cut+1, nlon), seq.int(1,cut))
 z <- z[ilon2, ]
 longitude <- c(longitude[seq.int(cut+1, nlon)]-360, longitude[seq.int(1, cut)])
-topoWorld <- as.topo(longitude, latitude, z, filename="etopo5.dat",
-                     units=list(longitude="degree east", latitude="degree north", z="m"))
+topoWorld <- as.topo(longitude, latitude, z, filename="etopo5.dat")
 close(f)
 
 save(topoWorld, file="topoWorld.rda")

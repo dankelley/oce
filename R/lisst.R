@@ -108,6 +108,9 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     data$time <- t0 + 86400 * decimalday / 365.25
     res@data <- data
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    names <- names(data)
+    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
     res
 }
 
@@ -126,8 +129,11 @@ read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
         on.exit(close(file))
     }
     data <- read.table(file, header=FALSE)
-    res <- as.lisst(data, filename, year, tz, latitude, longitude)
+    res <- as.lisst(data, filename=filename, year=year, tz=tz, longitude=longitude, latitude=latitude)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    names <- names(data)
+    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
     res
 }
 

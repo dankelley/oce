@@ -158,6 +158,12 @@ read.met <- function(file, type=NULL, skip,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
+    names <- names(res@data)
+    if ("speed" %in% names) res@metadata$units$speed <- list(unit=expression(m/s), scale="")
+    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
+    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    if ("dewPoint" %in% names) res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
+    if ("visibility" %in% names) res@metadata$units$visibility <- list(unit=expression(km), scale="")
     res
 }
 

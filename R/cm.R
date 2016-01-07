@@ -8,7 +8,7 @@ setMethod(f="initialize",
                               conductivity, salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
               .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess on the unit
-              .Object@metadata$units$conductivity <- list(unit="mS/cm", scale="")
+              .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
               .Object@data$sample <- if (missing(sample)) NULL else sample
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@data$u <- if (missing(u)) NULL else u

@@ -9,3 +9,4 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
 save(sealevelTuktoyaktuk, file='sealevelTuktoyaktuk.rda')
 library(tools)
 tools::resaveRdaFiles("sealevelTuktoyaktuk.rda", compress="auto")
+str(sealevelTuktoyaktuk@metadata$units)
