@@ -13,7 +13,7 @@ test_that("cm", {
           S <- cm[["salinity"]]
           S1 <- swSCTp(cm)
           S2 <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']],
-                       conductivityUnit=cm[['conductivityUnit']])
+                       conductivityUnit=cm[['conductivity unit']]$unit)
           expect_equal(max(abs(S1-S2)), 0)
           expect_less_than(mean(abs(S-S1)), 0.001)
           expect_less_than(median(abs(S-S1)), 0.0011)
@@ -32,6 +32,12 @@ test_that("ctd", {
           expect_equal(ctd[["latitude"]],   44.6842666666667)
           expect_equal(ctd[["longitude"]], -63.6438833333333)
           expect_equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
+          expect_equal(ctd[["temperature unit"]][[1]], expression(degree*C))
+          expect_equal(ctd[["temperature unit"]][[2]], "ITS-90")
+          expect_equal(ctd[["conductivity unit"]][[1]], "ratio")
+          expect_equal(ctd[["conductivity unit"]][[2]], "")
+          expect_equal(ctd[["pressure unit"]], list(unit="dbar", scale=""))
+          expect_equal(ctd[["pressureType"]], "sea")
 })
 
 ##data("ctdRaw")

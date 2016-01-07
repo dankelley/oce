@@ -43,7 +43,8 @@ setMethod(f="summary",
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
                   units <- lapply(seq_along(object@metadata$units),
-                                         function(i) paste(object@metadata$units[[i]], collapse=", "))
+                                  function(i) paste(object@metadata$units[[i]], collapse=", "))
+                  warning("AllClass.R:47 this is likely wrong on units\n")
                   names(units) <- unitsNames
                   ##message("units:");print(units)
                   rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))

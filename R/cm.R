@@ -7,8 +7,8 @@ setMethod(f="initialize",
                               u, v, heading,
                               conductivity, salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
-              .Object@metadata$units$temperature <- c("\u00B0C", "ITS-90") # guess on the unit
-              .Object@metadata$units$conductivity <- "mS/cm"
+              .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess on the unit
+              .Object@metadata$units$conductivity <- list(unit="mS/cm", scale="")
               .Object@data$sample <- if (missing(sample)) NULL else sample
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@data$u <- if (missing(u)) NULL else u
@@ -239,8 +239,11 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$type <- type
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
-    res@metadata$units <- list(u="m/s", v="m/s", pressure="dbar",
-                               temperature=c("\u00B0C", "ITS-90"), conductivity="mS/cm") # not sure if true generally
+    res@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
+                               v=list(unit=expression(m/s), scale=""),
+                               pressure=list(unit=expression(dbar), scale=""),
+                               temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                               conductivity=list(unit=expression(mS/cm), scale="")) # not sure if true generally
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
@@ -390,6 +393,8 @@ setMethod(f="plot",
                       plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$pressure), main=main, ...) 
                   } else if (which[w] == 11) {
                       cu <- x[["conductivityUnit"]]
+                      if (is.list(cu))
+                          cu <- as.character(cu$unit)
                       oce.plot.ts(x@data$time, x@data$conductivity,
                                   type=type,
                                   xlab="",

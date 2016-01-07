@@ -224,10 +224,13 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
         ## Use unit within the object, ignoring the argument supplied here (FIXME: is this best?)
         tmp <- ctd[["conductivityUnit"]]
         if (!is.null(tmp)) {
-            conductivityUnit <- tmp
+            conductivityUnit <- if (is.list(tmp) && "unit" %in% names(tmp)) as.character(tmp$unit) else unit
         }
         temperature <- ctd[["temperature"]]
         pressure <- ctd[["pressure"]]
+    }
+    if (is.list(conductivityUnit)) {
+        conductivityUnit <- as.character(conductivityUnit$unit)
     }
     if (conductivityUnit == "mS/cm")
         conductivity <- conductivity / 42.914

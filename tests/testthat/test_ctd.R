@@ -1,24 +1,16 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-data(ctd)
+data("ctd")
 
 context("CTD")
-
-test_that("data(ctd) has proper units", {
-          expect_equal(ctd[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
-          expect_equal(ctd[["conductivityUnit"]], "ratio")
-          expect_equal(ctd[["pressureUnit"]], "dbar")
-          expect_equal(ctd[["pressureType"]], "sea")
-})
-
 
 test_that("as.ctd() with specified arguments", {
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
-          expect_equal(ctd_ctd[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
-          expect_equal(ctd_ctd[["conductivityUnit"]], "ratio")
+          expect_equal(ctd_ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
+          expect_equal(ctd_ctd[["conductivityUnit"]], list(unit="ratio", scale=""))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
 })
 
@@ -40,7 +32,6 @@ test_that("ctd subsetting and trimming", {
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
           ## transition to use ITS-90 based temperature.
-          data(ctd)
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
@@ -49,7 +40,6 @@ test_that("ctd subsetting and trimming", {
           expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
           expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.734383747900503536,11.630308725905782907,11.4245581060545475790))
           ## next is form a test for issue 669
-          data(ctd)
           n <- length(ctd[["salinity"]])
           set.seed(669)
           lon <- ctd[["longitude"]] + rnorm(n, sd=0.05)
@@ -83,33 +73,32 @@ test_that("gsw calcuations on ctd data", {
           p <- 1000
           lon <- 300
           lat <- 30
-          ctd <- as.ctd(SP, t, p, longitude=lon, latitude=lat)
-          expect_equal(ctd[["SP"]], SP)
-          expect_equal(ctd[["t"]], t)
-          expect_equal(ctd[["p"]], p)
-          expect_equal(ctd[["SP"]], ctd[["salinity"]])
-          expect_equal(ctd[["t"]], ctd[["temperature"]])
-          expect_equal(ctd[["p"]], ctd[["pressure"]])
+          nctd <- as.ctd(SP, t, p, longitude=lon, latitude=lat)
+          expect_equal(nctd[["SP"]], SP)
+          expect_equal(nctd[["t"]], t)
+          expect_equal(nctd[["p"]], p)
+          expect_equal(nctd[["SP"]], nctd[["salinity"]])
+          expect_equal(nctd[["t"]], nctd[["temperature"]])
+          expect_equal(nctd[["p"]], nctd[["pressure"]])
           Sstar <- gsw_Sstar_from_SP(SP, p=p, longitude=lon, latitude=lat)
-          expect_equal(Sstar, ctd[["Sstar"]])
-          SR <- gsw_SR_from_SP(SP=ctd[["SP"]])
-          expect_equal(SR, ctd[["SR"]])
+          expect_equal(Sstar, nctd[["Sstar"]])
+          SR <- gsw_SR_from_SP(SP=nctd[["SP"]])
+          expect_equal(SR, nctd[["SR"]])
           SA <- gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat)
-          expect_equal(SA, ctd[["SA"]])
+          expect_equal(SA, nctd[["SA"]])
           Sstar <- gsw_Sstar_from_SA(SA=SA, p=p, longitude=lon, latitude=lat)
-          expect_equal(Sstar, ctd[["Sstar"]])
+          expect_equal(Sstar, nctd[["Sstar"]])
 })
 
-test_that("ability to change conductivity unit", {
+test_that("ability to change conductivityUnit", {
           ## These came from issue 731
-          data(ctd)
           ctd2 <- ctd
           ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
-          ctd2[['conductivityUnit']] <- 'mS/cm'
+          ctd2[['conductivityUnit']] <- list(unit=expression(mS/cm), scale="")
           expect_equal(swSCTp(ctd2), ctd2[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
           ctd3 <- ctd
           ctd3@data$conductivity <- swCSTp(ctd3) * 4.2914
-          ctd3[['conductivityUnit']] <- 'S/m'
+          ctd3[['conductivityUnit']] <- list(unit=expression(S/m), scale="")
           expect_equal(swSCTp(ctd3), ctd3[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
 })
 
@@ -124,9 +113,10 @@ context("Reading ctd files")
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
           d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
-          expect_equal(d1[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
-          expect_equal(d1[["conductivityUnit"]], "ratio")
-          expect_equal(d1[["pressureUnit"]], "dbar")
+          expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
+          expect_equal(d1[["temperatureUnit"]]$scale, "ITS-90")
+          expect_equal(d1[["conductivityUnit"]]$unit, "ratio")
+          expect_equal(d1[["pressureUnit"]]$unit, "dbar")
           expect_equal(d1[["pressureType"]], "sea")
           expect_equal(d1[["ship"]], "Divcom3")
           expect_equal(d1[["cruise"]], "Halifax Harbour")
@@ -153,9 +143,9 @@ test_that("Dalhousie-produced cnv file", {
 ##'LONGITUDE (W)= 134.001 '
 test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
           d2 <- read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
-          expect_equal(d2[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
-          expect_equal(d2[["conductivityUnit"]], "ratio")
-          expect_equal(d2[["pressureUnit"]], "dbar")
+          expect_equal(d2[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
+          expect_equal(d2[["conductivityUnit"]], list(unit="ratio", scale=""))
+          expect_equal(d2[["pressureUnit"]], list(unit="dbar", scale=""))
           expect_equal(d2[["pressureType"]], "sea")
           expect_equal(d2[["ship"]], "CCGS Louis S St.Laurent")
           expect_equal(d2[["station"]], "1")
@@ -181,8 +171,9 @@ test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
 ##'* NMEA UTC (Time) = Aug 09 2012 06:34:34'
 test_that("Beaufort sea data II", {
           d3 <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
-          expect_equal(d3[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
-          expect_equal(d3[["conductivityUnit"]], "mS/cm")
+          expect_equal(d3[["temperatureUnit"]]$unit, expression(degree*C))
+          expect_equal(d3[["temperatureUnit"]]$scale, "ITS-90")
+          expect_equal(d3[["conductivityUnit"]]$unit, "mS/cm")
           expect_equal(d3[["pressureType"]], "sea")
           expect_equal(d3[["ship"]], "CCGS Louis St-Laurent")
           expect_equal(d3[["station"]], "BL1")
@@ -199,8 +190,9 @@ test_that("Beaufort sea data II", {
 ## Catherine Johnson as chief scientist.
 test_that("ODF file", {
           d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
-          expect_equal(d4[["temperatureUnit"]], c("\u00B0C", "ITS-90"))
-          expect_equal(d4[["conductivityUnit"]], "ratio") # was S/m in the .cnv but ratio in ODF
+          expect_equal(d4[["temperatureUnit"]]$unit, expression(degree*C))
+          expect_equal(d4[["temperatureUnit"]]$scale, "ITS-90")
+          expect_equal(d4[["conductivityUnit"]]$unit, "ratio") # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")
           expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d4[["cruise"]], "Scotian Shelf")
