@@ -57,14 +57,27 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 dataLabel <- function(names, units)
 {
     res <- names
-    if (!is.null(units)) {
+    ##message("in dataLabel()")
+    if (!missing(units)) {
+        ## message("  dataLabel(); next line is names")
+        ## print(names)
+        ## message("  dataLabel(); next line is units")
+        ## print(units)
+        unitsNames <- names(units)
         for (i in seq_along(names)) {
-            ##message("i: ", i, ", name: ", names[i])
-            u <- units[[names[i]]]
-            if (!is.null(u))
-                res[i] <- paste(res[i], " [", u, "]", sep="")
+            ##message("  i: ", i, ", name: ", names[i])
+            w <- which(unitsNames == names[i])
+            if (length(w)) {
+                ## message("  we match a unit at index w=",  w)
+                u <- units[w]
+                if (!is.null(u)) {
+                    res[i] <- paste(res[i], " [", u, "]", sep="")
+                }
+            }
         }
     }
+    ##message("dataLabel() returning:")
+    ##print(res)
     res
 }
 
@@ -1463,7 +1476,7 @@ addColumn <- function (x, data, name)
     if (n != length(data))
         stop("data length is ", n, " but it must be ", nd, " to match existing data")
     if (inherits(x, "ctd")) {
-        res <- ctdAddColumn(x, data, name)
+        res <- ctdAddColumn(x, data, name) # FIXME: supply units
     } else {
         res <- x
         res@data[[name]] <- data

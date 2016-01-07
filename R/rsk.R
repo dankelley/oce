@@ -7,7 +7,7 @@ setMethod(f="initialize",
               .Object@metadata$filename <- filename
               .Object@metadata$model <- NA
               .Object@metadata$units$conductivity <- "mS/cm"
-              .Object@metadata$units$temperature <- "ITS-90"
+              .Object@metadata$units$temperature <- c("\u00B0C", "ITS-90")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())
