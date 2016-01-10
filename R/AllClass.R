@@ -42,10 +42,49 @@ setMethod(f="summary",
                   units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
-                  units <- lapply(seq_along(object@metadata$units),
-                                  function(i) paste(object@metadata$units[[i]], collapse=", "))
+                  units <- unlist(lapply(seq_along(object@metadata$units),
+                                         function(i) {
+                                             u <- object@metadata$units[[i]]
+                                             ##> message("AllClass.R:48  u: '", u, "'")
+                                             ##> message("AllClass.R:48  name: '", names(object@metadata$units)[i], "'")
+                                             ##> message("length(u[1][[1]]): ", length(u[1][[1]]))
+                                             if (0 == length(u[1][[1]])) {
+                                                 if (2 == length(u)) return(u[2]) else return("")
+                                             }
+                                             if (length(u) == 1) {
+                                                 res <- if (is.expression(u)) as.character(u) else u
+                                             } else if (length(u) == 2) {
+                                                 res <- if (nchar(u[2])) paste(u[[1]], u[[2]], sep=", ") else u[[1]]
+                                             } else {
+                                                 res <- ""
+                                             }
+                                             res <- as.character(res)
+                                             ##> message("1. res: '", res, "'")
+                                             ## Clean up notation
+                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
+                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+E", "\u00B0E", res)
+                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
+                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
+                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
+                                             ##> message("res: '", res, "'")
+                                             if (nchar(res)) res <- gsub("degree", "\u00B0", res)
+                                             ##> message("res: '", res, "'")
+                                             ##> message("2. res: '", res, "'")
+                                             if (nchar(res)) res <- gsub("^,[ ]*", "", res)
+                                             ##> message("3. res: '", res, "'")
+                                             if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
+                                             ##> message("4. res: '", res, "'")
+                                             if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
+                                             ##> message("5. res: '", res, "'")
+                                             if (nchar(res)) res <- gsub("\\^2", "\u00B3", res)
+                                             ##> message("6. res: '", res, "'")
+                                             if (nchar(res)) res <- gsub("\\^3", "\u00B3", res)
+                                             ##> message("7. res: '", res, "'")
+                                             ##> message("res: '", res, "'")
+                                             res
+                                         }))
                   names(units) <- unitsNames
-                  ##message("units:");print(units)
+                  ##> message("units:");str(units)
                   rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                   colnames(threes) <- c("Min.", "Mean", "Max.")
                   cat("* Statistics of data\n")
@@ -100,12 +139,12 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "metadata") {
                   return(x@metadata)
-              } else if (length(grep(" unit$", i))) {
-                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]] else "")
-                  ## Permit two ways of storing units, the second archaic and kept to handle old objects
-              } else if (length(grep("Unit$", i))) {
-                  ## Permit two ways of storing units, the second archaic and kept to handle old objects
+              } else if (length(grep("Unit$", i))) { # returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
+              } else if (length(grep(" unit$", i))) { # returns just the unit, an expression
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]][[1]] else "")
+              } else if (length(grep(" scale$", i))) { # returns just the scale, a character string
+                  return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$","",i)]][[2]]) else "")
               } else if (i == "data") {
                   return(x@data)
               } else if (i == "processingLog") {

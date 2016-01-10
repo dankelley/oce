@@ -457,6 +457,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$velocityMaximum <- res@metadata$velocityScale * 2^15
     res@metadata$units <- list(v="m/s")
     res@processingLog <- unclass(hitem)
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$headingSlow=list(unit=expression(degree), scale="")
+    res@metadata$units$pitchSlow=list(unit=expression(degree), scale="")
+    res@metadata$units$rollSlow=list(unit=expression(degree), scale="")
+    res@metadata$units$temperatureSlow=list(unit=expression(degree*C), scale="")
     oceDebug(debug, "} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="", unindent=1)
     res
 }

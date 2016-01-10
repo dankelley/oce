@@ -63,7 +63,7 @@ setMethod(f="subset",
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
-              cat("Drifter Summary\n---------------\n\n")
+              cat("Argo Summary\n------------\n\n")
               cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
               cat("* id:         \"", object@metadata$id, "\"\n", sep="")
               callNextMethod()

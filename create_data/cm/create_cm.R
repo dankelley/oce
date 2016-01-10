@@ -1,15 +1,15 @@
 library(oce)
 library(testthat)
-try(source("~/src/oce/R/oce.R"))
-try(source("~/src/oce/R/cm.R"))
-try(source("~/src/oce/R/sw.R"))
+##> try(source("~/src/oce/R/oce.R"))
+##> try(source("~/src/oce/R/cm.R"))
+##> try(source("~/src/oce/R/sw.R"))
 
 ## One day of in-water data.
 cm <- read.oce("/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab",
                from=840, to=840+24*60)
-message("original max cm time: ", max(cm[['time']]))
+##> message("original max cm time: ", max(cm[['time']]))
 cm <- subset(cm, time < as.POSIXct("2008-06-27 00:00:00", tz="UTC"), debug=3)
-message("subsetted max cm time: ", max(cm[['time']]))
+##> message("subsetted max cm time: ", max(cm[['time']]))
 save(cm, file="cm.rda")
 tools::resaveRdaFiles("cm.rda")
 

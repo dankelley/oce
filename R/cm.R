@@ -26,7 +26,7 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
-              cat("cm summary\n----------\n\n", ...)
+              cat("Cm summary\n----------\n\n", ...)
               showMetadataItem(object, "filename",      "File source:        ", quote=TRUE)
               showMetadataItem(object, "type",          "Instrument type:    ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
@@ -239,11 +239,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$type <- type
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
-    res@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
-                               v=list(unit=expression(m/s), scale=""),
-                               pressure=list(unit=expression(dbar), scale=""),
-                               temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(mS/cm), scale="")) # not sure if true generally
+    res@metadata$units$u <- list(unit=expression(m/s), scale="")
+    res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    res@metadata$units$heading <- list(unit=expression(degree), scale="")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)

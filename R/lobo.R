@@ -2,14 +2,38 @@ setMethod(f="initialize",
           signature="lobo",
           definition=function(.Object,time,u,v,salinity,temperature,airtemperature,pressure,nitrate,fluorescence,filename) {
               if (!missing(time)) .Object@data$time <- time
-              if (!missing(u)) .Object@data$u <- u
-              if (!missing(v)) .Object@data$v <- v
-              if (!missing(salinity)) .Object@data$salinity <- salinity
-              if (!missing(temperature)) .Object@data$temperature <- temperature
-              if (!missing(airtemperature)) .Object@data$airtemperature <- airtemperature
-              if (!missing(pressure)) .Object@data$pressure <- pressure
-              if (!missing(nitrate)) .Object@data$nitrate <- nitrate
-              if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
+              if (!missing(u)) {
+                  .Object@data$u <- u
+                  .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
+              }
+              if (!missing(v)) {
+                  .Object@data$v <- v
+                  .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
+              }
+              if (!missing(salinity)) {
+                  .Object@data$salinity <- salinity
+                  .Object@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+              }
+              if (!missing(temperature)) {
+                  .Object@data$temperature <- temperature
+                  .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+              }
+              if (!missing(airtemperature)) {
+                  .Object@data$airtemperature <- airtemperature
+                  .Object@metadata$units$airtemperature <- list(unit=expression(degree*C), scale="ITS-90")
+              }
+              if (!missing(pressure)) {
+                  .Object@data$pressure <- pressure
+                  .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+              }
+              if (!missing(nitrate)) {
+                  .Object@data$nitrate <- nitrate
+                  .Object@metadata$units$nitrate <- list(unit=expression(mu * M), scale="")
+              }
+              if (!missing(fluorescence)) {
+                  .Object@data$fluorescence <- fluorescence
+                  .Object@metadata$units$fluorescence <- list(unit=expression(mu * g / l), scale="")
+              }
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'lobo' object"
@@ -249,12 +273,8 @@ as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluore
 {
     if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))
         stop("must give u, v, salinity, temperature, and pressure")
-    res <- new("lobo", u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure, filename=filename)
-    if (!missing(nitrate))
-        res@data$nitrate <- nitrate
-    if (!missing(fluorescence))
-        res@data$fluorescence <- fluorescence
-    res
+    new("lobo", u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure,
+        nitrate=nitrate, fluorescence=fluorescence, filename=filename)
 }
 
 

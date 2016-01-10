@@ -47,13 +47,13 @@ setMethod(f="summary",
           definition=function(object, ...) {
               ##mnames <- names(object@metadata)
               cat("CTD Summary\n-----------\n\n")
-              showMetadataItem(object, "type", "Instrument: ")
-              showMetadataItem(object, "model", "Instrument model:  ")
-              showMetadataItem(object, "serialNumber",             "Instr. serial no.:   ")
-              showMetadataItem(object, "serialNumberTemperature",  "Temp. serial no.:    ")
-              showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
-              showMetadataItem(object, "filename",                  "File source:         ")
-              showMetadataItem(object, "hexfilename",               "Original file source (hex):  ")
+              showMetadataItem(object, "type",                      "Instrument:          ")
+              showMetadataItem(object, "model",                     "Instrument model:    ")
+              showMetadataItem(object, "serialNumber",              "Instr. serial no.:   ")
+              showMetadataItem(object, "serialNumberTemperature",   "Temp. serial no.:    ")
+              showMetadataItem(object, "serialNumberConductivity",  "Cond. serial no.:    ")
+              showMetadataItem(object, "filename",                  "File:                ")
+              showMetadataItem(object, "hexfilename",               "Original file:       ")
               showMetadataItem(object, "institute",                 "Institute:           ")
               showMetadataItem(object, "scientist",                 "Chief scientist:     ")
               showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
@@ -177,6 +177,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 {
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
+    unitsGiven <- !is.null(units)
     if (missing(salinity)) {
         stop("must provide salinity")
         ##if (inherits(salinity, "ctd"))
@@ -253,10 +254,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (inherits(o, "rsk")) {
             if (is.null(conductivity))
                 stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
-            if (missing(units)) # this lets the user over-ride
-                units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                              conductivity=list(unit="mS/cm", scale=""))
             salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
+            if (is.null(units)) # this lets the user over-ride
+                units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                              salinity=list(unit=expression(), scale="PSS-78"),
+                              conductivity=list(unit=expression(mS/cm), scale=""),
+                              pressure=list(unit=expression(dbar), scale=""))
         } else {
             salinity <- d$salinity # FIXME: ok for objects (e.g. rsk) that lack salinity?
         }
@@ -264,9 +267,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (missing(units)) # this lets the user over-ride
                 units <- o@metadata$units
         }
-        ##res <- new("ctd", pressure=pressure, salinity=salinity, temperature=temperature,
-        ##           conductivity=conductivity,
-        ##           units=units, pressureType=pressureType)
         res@metadata$units <- units
         res@metadata$pressureType <- pressureType
         res@data$pressure <- pressure
@@ -336,18 +336,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         names <- names(x)
         ## Permit oce-style names or WOCE-style names for the three key variables (FIXME: handle more)
         if (3 == sum(c("salinity", "temperature", "pressure") %in% names)) {
-            ## res <- new("ctd",
-            ##            pressure=x$pressure, salinity=x$salinity, temperature=x$temperature,
-            ##            units=units, pressureType=pressureType)
             res@data$pressure <- x$pressure
             res@data$salinity <- x$salinity
             res@data$temperature <- x$temperature
             res@metadata$units <- units
             res@metadata$pressureType <- pressureType
         } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
-            ## res <- new("ctd",
-            ##            pressure=x$PRES, salinity=x$PSAL, temperature=x$TEMP,
-            ##            units=units, pressureType=pressureType)
             res@data$pressure <- x$PRES
             res@data$salinity <- x$PSAL
             res@data$temperature <- x$TEMP
@@ -420,6 +414,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                      temperature=temperature,
                      pressure=pressure,
                      sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
+        res@metadata$units$sigmaTheta <- list(unit=expression(kg/m^3), scale="")
         if (!missing(scan)) data$scan <- as.vector(scan)
         if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
         if (!missing(quality)) data$quality <- quality
@@ -483,6 +478,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         res@data <- data
     }
+    if (!unitsGiven) { # guess on units
+        names <- names(res@data)
+        if ("salinity" %in% names) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    }
+    ## the 'units' argument takes precedence over guesses
+    dataNames <- names(res@data)
+    unitsNames <- names(units)
+    if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
+        res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
+        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
         res@metadata$waterDepth <- waterDepth
     oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
@@ -510,9 +518,14 @@ ctdAddColumn <- function (x, column, name, label, unit="", debug = getOption("oc
         res@metadata$labels <- c(res@metadata$labels, label)
     }
     if (!missing(unit)) {
-        if (1 == length(unit)) {
-            if (is.expression(unit)) res@metadata$units[[name]] <- list(unit=unit, scale="")
-            else res@metadata$units[[name]] <- list(unit=as.expression(unit), scale="")
+        if (0 == length(unit)) {
+            ##> message("NULL unit; name:", name)
+            ##> message("unit:")
+            ##> print(unit)
+            res@metadata$units[[name]] <- list(unit=expression(), scale="")
+        } else if (1 == length(unit)) {
+            res@metadata$units[[name]] <- if (is.expression(unit)) list(unit=unit, scale="") else
+                list(unit=as.expression(unit), scale="")
         } else if (2 == length(unit)) {
             res@metadata$units[[name]] <- unit
         } else {
@@ -2927,8 +2940,8 @@ plotProfile <- function (x,
     }
     ## if plim given on a pressure plot, then it takes precedence over ylim
     if (ytype == "pressure")
-       if (!missing(plim))
-          ylim <- plim
+        if (!missing(plim))
+            ylim <- plim
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure=rev(range(x@data$pressure, na.rm=TRUE)),
@@ -2974,7 +2987,6 @@ plotProfile <- function (x,
 
     if (!add)
         par(mar=mar, mgp=mgp)
-
     if (length(xtype) == length(y)) {
         if ('axes' %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, ...)
@@ -3332,10 +3344,13 @@ plotProfile <- function (x,
                 plot(temperature[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim,
                      type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "gsw")
-                    mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                else
-                    mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                if (eos == "gsw") {
+                    mtext(resizableLabel("conservative temperature", "x"),
+                          side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(resizableLabel("T", "x"),
+                          side = 3, line = axis.name.loc, cex=par("cex"))
+                }
                 mtext(yname, side = 2, line = axis.name.loc, cex=par("cex"))
                 axis(2)
                 axis(3)

@@ -1,4 +1,5 @@
 0.9-18
+- all objects now have metadata items for units and flags
 - ctdTrim() method renamed: old A and B are new A; old C is new B
 - support more channels and features of rsk files
 - as.adp() added

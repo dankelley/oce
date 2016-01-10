@@ -197,7 +197,13 @@ as.echosounder <- function(time, depth, a, src="",
     res@data$time <- time
     res@data$depth <- depth
     res@data$a<- a
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    names <- names(res@data)
+    if ("latitude" %in% names) res@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
+    if ("longitude" %in% names) res@metadata$units$longitude <- list(unit=expression(degree*E), scale="")
+    if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
+    if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
+    if ("depth" %in% names) res@metadata$units$depth <- list(unit=expression(m), scale="")
+     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -782,6 +788,12 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         res@data$b <- NULL
         res@data$c <- NULL
     }
+    names <- names(res@data)
+    if ("latitude" %in% names) res@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
+    if ("longitude" %in% names) res@metadata$units$longitude <- list(unit=expression(degree*E), scale="")
+    if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
+    if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
+    if ("depth" %in% names) res@metadata$units$depth <- list(unit=expression(m), scale="")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res

@@ -65,17 +65,25 @@ dataLabel <- function(names, units)
         ## print(units)
         unitsNames <- names(units)
         for (i in seq_along(names)) {
-            ##message("  i: ", i, ", name: ", names[i])
+            ##> message("  i: ", i, ", name: ", names[i])
             w <- which(unitsNames == names[i])
             if (length(w)) {
                 ## message("  we match a unit at index w=",  w)
                 u <- units[w]
                 if (!is.null(u)) {
-                    res[i] <- paste(res[i], " [", u, "]", sep="")
+                    if (is.character(u)) {
+                        res[i] <- paste(res[i], " [", u, "]", sep="")
+                    } else if (is.list(u)) {
+                        res[i] <- paste(res[i], " [", u$unit[[1]], u$scale, "]", sep="")
+                    }
                 }
             }
         }
     }
+    ##> message("names:", paste(names, collapse=" | "))
+    ##> message("units:", paste(units, collapse=" | "))
+    ##> message("res:", paste(res, collapse=" | "))
+    res <- gsub(" *\\[\\]", "", res)
     ##message("dataLabel() returning:")
     ##print(res)
     res
@@ -574,7 +582,7 @@ threenum <- function(x)
     if (is.character(x) || is.null(x)) {
         res <- rep(NA, 3)
     } else if (is.list(x)) {
-        if (2 == (c("lsb", "msb") %in% names(x))) { # e.g. landsat data
+        if (2 == sum(c("lsb", "msb") %in% names(x))) { # e.g. landsat data
             x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
             res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
         } else {
@@ -908,7 +916,7 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item, axis, sep)
+resizableLabel <- function(item, axis, sep, unit=NULL)
 {
     if (missing(item))
         stop("must provide 'item'")
@@ -926,6 +934,9 @@ resizableLabel <- function(item, axis, sep)
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
                      "spectral density m2/cph")
+    if (!missing(unit)) {
+        unit <- unit[[1]] # removes the expression() from the bquote
+    }
     iitem <- pmatch(item, itemAllowed)
     if (is.na(iitem))
         stop("item=\"", item, "\" is not allowed; try one of: \"",
@@ -952,7 +963,7 @@ resizableLabel <- function(item, axis, sep)
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*mS/cm*.(R))
         abbreviated <- bquote("C"*.(L)*mS/cm*.(R))
-     } else if (item == "conductivity S/m") {
+    } else if (item == "conductivity S/m") {
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*S/m*.(R))
         abbreviated <- bquote("C"*.(L)*S/m*.(R))
@@ -985,7 +996,6 @@ resizableLabel <- function(item, axis, sep)
         var <- gettext("Nitrite", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
         abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
-
     } else if (item ==  "oxygen") {
         ## Until 2015-12-12 the default unit was umol/kg
         var <- gettext("Oxygen", domain="R-oce")
@@ -1031,9 +1041,8 @@ resizableLabel <- function(item, axis, sep)
         abbreviated <- bquote(S[A]*.(L)*g/kg*.(R))
     } else if (item == "p") {
         var <- gettext("Pressure", domain="R-oce")
-        unit <- gettext("dbar", domain="R-oce")
-        full <- bquote(.(var)*.(L)*.(unit)*.(R))
-        abbreviated <- bquote("p"*.(L)*.(unit)*.(R))
+        full <- bquote(.(var)*.(L)*dbar*.(R))
+        abbreviated <- bquote("p"*.(L)*dbar*.(R))
     } else if (item == "z") {
         var <- "z"
         abbreviated <- full <- bquote("z"*.(L)*m*.(R))

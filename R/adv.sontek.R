@@ -127,7 +127,12 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@data$heading <- rep(0, len)
     res@data$pitch <- rep(0, len)
     res@data$roll <- rep(0, len)
-    res@metadata$units <- list(v="m/s")
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$heading=list(unit=expression(degree), scale="")
+    res@metadata$units$pitch=list(unit=expression(degree), scale="")
+    res@metadata$units$roll=list(unit=expression(degree), scale="")
+    res@metadata$units$temperature=list(unit=expression(degree*C), scale="")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
@@ -589,7 +594,12 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                      roll=roll,
                      temperature=temperature,
                      pressure=pressure)
-    res@metadata$units <- list(v="m/s")
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$heading=list(unit=expression(degree), scale="")
+    res@metadata$units$pitch=list(unit=expression(degree), scale="")
+    res@metadata$units$roll=list(unit=expression(degree), scale="")
+    res@metadata$units$temperature=list(unit=expression(degree*C), scale="")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
@@ -739,7 +749,12 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     res@metadata$orientation <- "upward" # FIXME: guessing on the orientation
     res@metadata$deltat <- as.numeric(difftime(tt[2], tt[1], units="secs"))
     res@metadata$subsampleStart <- data$t[1]
-    res@metadata$units <- list(v="m/s")
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$heading=list(unit=expression(degree), scale="")
+    res@metadata$units$pitch=list(unit=expression(degree), scale="")
+    res@metadata$units$roll=list(unit=expression(degree), scale="")
+    res@metadata$units$temperature=list(unit=expression(degree*C), scale="")
     res@metadata$oceCoordinate <- originalCoordinate
     res@metadata$originalCoordinate <- originalCoordinate
     warning("sensor orientation cannot be inferred without a header; \"", res@metadata$orientation, "\" was assumed.")

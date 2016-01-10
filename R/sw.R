@@ -212,12 +212,10 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0, conductivityUnit=
 {
     ## FIXME-gsw add gsw version
     if (missing(conductivity)) stop("must supply conductivity (which may be S or a CTD object)")
-    if (!missing(conductivityUnit)) {
-        if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
-            conductivityUnit <- conductivityUnit$unit
-        if (is.expression(conductivityUnit))
-            conductivityUnit <- as.character(conductivityUnit)
-    }
+    if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
+        conductivityUnit <- conductivityUnit$unit
+    if (is.expression(conductivityUnit))
+        conductivityUnit <- as.character(conductivityUnit)
     conductivityUnit <- match.arg(conductivityUnit)
     if (inherits(conductivity, "oce")) {
         if (inherits(conductivity, "rsk")) {

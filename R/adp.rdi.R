@@ -877,8 +877,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else {
                         message("0x", buf[o+1], " flag... unknown. FIXME: handle 0x40-0xF0 0x30 (p146 teledynRDI 2014)")
                         message("also, how far should we skip forward???")
-                        browser()
-                        ##stop("unknown byte code 0x", buf[o+1], " encountered while trying to read profile ", i)
+                        stop("unknown byte code 0x", buf[o+1], " encountered while trying to read profile ", i)
                     }
                 }
                 } ## FIXME
@@ -1324,6 +1323,20 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res@processingLog <- unclass(hitem)
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$distance=list(unit=expression(m), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$salinity=list(unit=expression(), scale="PSS-78")
+    res@metadata$units$temperature=list(unit=expression(degree*C), scale="ITS-90")
+    res@metadata$units$soundSpeed=list(unit=expression(m/s), scale="")
+    res@metadata$units$heading=list(unit=expression(degree), scale="")
+    res@metadata$units$pitch=list(unit=expression(degree), scale="")
+    res@metadata$units$roll=list(unit=expression(degree), scale="")
+    res@metadata$units$headingStd=list(unit=expression(degree), scale="")
+    res@metadata$units$pitchStd=list(unit=expression(degree), scale="")
+    res@metadata$units$rollStd=list(unit=expression(degree), scale="")
+    res@metadata$units$attitude=list(unit=expression(degree), scale="")
+    res@metadata$units$depth=list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.adp.rdi()\n", unindent=1)
     res
 }

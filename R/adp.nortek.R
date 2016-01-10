@@ -641,7 +641,20 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$originalCoordinate <- header$user$originalCoordinate
     res@metadata$oceCoordinate <- header$user$originalCoordinate
     res@metadata$oceBeamUnspreaded <- FALSE
-    res@metadata$units <- list(v=list(unit=expression(m/s), scale=""), distance=list(unit=expression(m), scale=""))
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$distance=list(unit=expression(m), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$salinity=list(unit=expression(), scale="PSS-78")
+    res@metadata$units$temperature=list(unit=expression(degree*C), scale="ITS-90")
+    res@metadata$units$soundSpeed=list(unit=expression(m/s), scale="")
+    res@metadata$units$heading=list(unit=expression(degree), scale="")
+    res@metadata$units$pitch=list(unit=expression(degree), scale="")
+    res@metadata$units$roll=list(unit=expression(degree), scale="")
+    res@metadata$units$headingStd=list(unit=expression(degree), scale="")
+    res@metadata$units$pitchStd=list(unit=expression(degree), scale="")
+    res@metadata$units$rollStd=list(unit=expression(degree), scale="")
+    res@metadata$units$attitude=list(unit=expression(degree), scale="")
+
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogItem(processingLog)

@@ -9,7 +9,7 @@
   Temperature, and including units as appropriate.}
 
 \usage{
-resizableLabel(item, axis, sep)}
+resizableLabel(item, axis, sep, unit=NULL)}
 
 \arguments{
 
@@ -37,6 +37,8 @@ resizableLabel(item, axis, sep)}
     parentheses or brackets that enclose it. If not provided, then
     \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
     used as the separator; if not, no separator is used.}
+
+  \item{unit}{optional unit to use, an expression (ignored at present)}
 
 }
 

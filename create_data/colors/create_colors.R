@@ -24,13 +24,9 @@ cmoceanFiles <- c("CDOM-rgb.txt", "Chlorophyll-rgb.txt", "Density-rgb.txt",
                   "Turbidity-rgb.txt", "Velocity-rgb.txt", "Vorticity-rgb.txt")
 for (cmoceanFile in cmoceanFiles) {
     oceName <- tolower(gsub("-rgb.txt", "", cmoceanFile))
-    message(oceName)
     rgb <- read.table(paste("cmocean", cmoceanFile, sep="/"), header=FALSE)
-    str(rgb)
     colors[[oceName]] <- rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3)
 }
-
-str(colors)
 
 ## Put other colormaps above, and add to the list below.
 
