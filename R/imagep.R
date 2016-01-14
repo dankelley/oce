@@ -425,8 +425,6 @@ imagep <- function(x, y, z,
                    ...)
 {
     zlabPosition <- match.arg(zlabPosition)
-    xlimGiven <- !missing(xlim)
-    ylimGiven <- !missing(ylim)
     oceDebug(debug, "imagep(x, y, z, ",
              argShow(cex),
              argShow(flipy),
@@ -444,6 +442,8 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+    xlimGiven <- !missing(xlim)
+    ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot.adp
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
@@ -506,23 +506,31 @@ imagep <- function(x, y, z,
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
     if (is.logical(decimate)) {
+        cdim <- dim                    # (possibly) clipped dim
         ## message("decimate is logical; decimate:", decimate)
         if (decimate) {
             ## issue 827: decide whether to decimate based on just the data 
             ## within the plot window.
-            nx <- 1
-            if (length(x) > 1) {
-                nx <- if (x[2] > x[1]) sum(xlim[1] <= x & x <= xlim[2])
-                    else sum(xlim[2] <= x & x <= xlim[1])
+            if (xlimGiven) {
+                nx <- cdim[1]
+                if (length(x) > 1) {
+                    nx <- if (x[2] > x[1]) sum(xlim[1] <= x & x <= xlim[2])
+                        else sum(xlim[2] <= x & x <= xlim[1])
+                }
+                if (nx < cdim[1])
+                    cdim[1] <- nx
             }
-            ny <- 1
-            if (length(y) > 1) {
-                ny <- if (y[2] > y[1]) sum(ylim[1] <= y & y <= ylim[2])
-                    else sum(ylim[2] <= y & y <= ylim[1])
+            if (ylimGiven) {
+                ny <- cdim[2]
+                if (length(y) > 1) {
+                    ny <- if (y[2] > y[1]) sum(ylim[1] <= y & y <= ylim[2])
+                        else sum(ylim[2] <= y & y <= ylim[1])
+                }
+                if (ny < cdim[2])
+                    cdim[2] <- ny
             }
             ## message("nx: ", nx, ", ny: ", ny)
-            maxdim <- max(c(nx, ny))
-            decimate <- max(as.integer(round(maxdim / 400)), 1)
+            decimate <- max(as.integer(round(max(cdim) / 400)), 1)
             oceDebug(debug, "set auto decimation=", decimate, "\n")
         } else {
             decimate <- 1
