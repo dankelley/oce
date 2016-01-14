@@ -83,6 +83,8 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     ## } 2014-04-02
 
     lineHeight <- par("cin")[2]  # character height in inches
+    oceDebug(debug, "lineHeight: ", lineHeight, " from cin\n")
+    oceDebug(debug, "par('csi'):: ", par('csi'), "\n")
     tickSpace <- abs(par("tcl")) * lineHeight # inches (not sure on this)
     textSpace <- 1.25 * (lineHeight + if (haveZlab) lineHeight else 0)
     figureWidth <- par("fin")[1]
@@ -137,6 +139,8 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     ## Adjust palette margins (mai1); FIXME: should this also alter mai2?
     pc$mai1 <- pc$mai1 + maidiff
     pc$mai1f <- pc$mai1f + maidiff
+    oceDebug(debug, "pc$mail1: ", paste(round(pc$mai1, 2), sep=" "), "\n")
+    oceDebug(debug, "pc$mailf: ", paste(round(pc$mai1f, 2), sep=" "), "\n")
     oceDebug(debug, "} # paletteCalculations\n", unindent=1)
     pc 
 }
@@ -234,7 +238,7 @@ drawPalette <- function(zlim, zlab="",
                 col <- col(n=length(breaks)-1)
         }
     }
-    oceDebug(debug, "plot:", plot, "\n")
+    oceDebug(debug, "plot:", plot, "; fullpage:", fullpage, "\n")
     if (plot) {
         if (fullpage)
             par(mai=ifelse(pc$mai1f>0, pc$mai1f, 0))
@@ -278,6 +282,8 @@ drawPalette <- function(zlim, zlab="",
                 ##str(breaksOrig)
                 ##str(col)
                 oceDebug(debug, "B. par(mai=c(", paste(round(par('mai'),1), collapse=","), "))\n")
+                oceDebug(debug, "B. x non-margin width: ", par('fin')[1] - par('mai')[2] - par('mai')[4], "\n")
+                oceDebug(debug, "B. y non-margin height: ", par('fin')[2] - par('mai')[1] - par('mai')[3], "\n")
                 oceDebug(debug, "B. par(mar=c(", paste(round(par('mar'),1), collapse=","), "))\n")
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
