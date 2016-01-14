@@ -61,10 +61,12 @@
     \item{decimate}{value indicating whether to decimate the image.  If
         \code{decimate=FALSE}, no decimation is done, i.e. all data are shown.
         If \code{decimate=TRUE}, then the image is decimated to display at most
-        800 pixels in width or height.  If \code{decimate} is an integer, then
-        its value sets the decimation interval, e.g. \code{decimate=20} plots
-        every twentith point (suitable, for example, for landsat images that
-        typicaly have 16000 pixels on a side).}
+        400 pixels in width or height (this ignores pixels that would be
+        clipped because of \code{xlim} and \code{ylim} settings).  If
+        \code{decimate} is an integer, then its value sets the decimation
+        interval, e.g. \code{decimate=20} plots every twentith point (suitable,
+        for example, for landsat images that typicaly have 16000 pixels on a
+        side).}
 
     \item{zclip}{logical, indicating whether to clip the colors to those
         corresponding to \code{zlim}. This only works if \code{zlim} is

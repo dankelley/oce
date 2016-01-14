@@ -506,11 +506,22 @@ imagep <- function(x, y, z,
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
     if (is.logical(decimate)) {
+        ## message("decimate is logical; decimate:", decimate)
         if (decimate) {
             ## issue 827: decide whether to decimate based on just the data 
             ## within the plot window.
-            browser()
-            maxdim <- max(dim)
+            nx <- 1
+            if (length(x) > 1) {
+                nx <- if (x[2] > x[1]) sum(xlim[1] <= x & x <= xlim[2])
+                    else sum(xlim[2] <= x & x <= xlim[1])
+            }
+            ny <- 1
+            if (length(y) > 1) {
+                ny <- if (y[2] > y[1]) sum(ylim[1] <= y & y <= ylim[2])
+                    else sum(ylim[2] <= y & y <= ylim[1])
+            }
+            ## message("nx: ", nx, ", ny: ", ny)
+            maxdim <- max(c(nx, ny))
             decimate <- max(as.integer(round(maxdim / 400)), 1)
             oceDebug(debug, "set auto decimation=", decimate, "\n")
         } else {
