@@ -105,6 +105,10 @@ oceSetData <- function(object, name, value, units, note="")
     if (nchar(note) > 0)
         object@processingLog <- processingLogAppend(object@processingLog, note)
     if (!missing(units) && "units" %in% names(object@metadata)) {
+        if (!is.list(units)||2!=length(units)) stop("'units' must be a list of length 2")
+        if (2 != sum(c("unit", "scale") %in% names(units))) stop("'units' must contain 'unit' and 'scale'")
+        if (!is.expression(units$unit)) stop("'units$unit' must be an expression")
+        if (!is.character(units$scale)) stop("'units$scale' must be a character string")
         object@metadata$units[[name]] <- units
     }
     object

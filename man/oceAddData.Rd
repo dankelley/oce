@@ -27,11 +27,12 @@ oceSetMetadata(object, name, value, note="")
 
   \item{value}{Value for the named item.}
 
-  \item{units}{Optional character string giving the units of the added item.  If
-    present, and if the object \code{metdata} slot contains an item named
-    \code{units}, then the indicated unit is added. Note that this argument is
-    only available in \code{oceSetData}, since units may only be supplied for
-    data, not for metadata.}
+  \item{units}{Optional \code{\link{list}} containing \code{unit}, an
+    \code{\link{expression}} specifying the unit and \code{scale}, a character
+    string specifying the scale. The \code{scale} may be an empty string in many
+    cases, e.g. for pressure.  For example, for a temperature measured on the
+    modern scale, \code{units} could be \code{list(unit=expression(degree*C),
+      scale="ITS-90")}.}
 
   \item{default}{A default value to be returned if \code{name} is not found.}
 
