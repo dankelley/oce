@@ -425,6 +425,8 @@ imagep <- function(x, y, z,
                    ...)
 {
     zlabPosition <- match.arg(zlabPosition)
+    xlimGiven <- !missing(xlim)
+    ylimGiven <- !missing(ylim)
     oceDebug(debug, "imagep(x, y, z, ",
              argShow(cex),
              argShow(flipy),
@@ -505,6 +507,9 @@ imagep <- function(x, y, z,
     dim <- dim(z)
     if (is.logical(decimate)) {
         if (decimate) {
+            ## issue 827: decide whether to decimate based on just the data 
+            ## within the plot window.
+            browser()
             maxdim <- max(dim)
             decimate <- max(as.integer(round(maxdim / 400)), 1)
             oceDebug(debug, "set auto decimation=", decimate, "\n")
@@ -682,8 +687,8 @@ imagep <- function(x, y, z,
             oceDebug(debug, "infer zlim=c(", zlim[1], ",", zlim[2], ") from range(breaks)\n", sep="")
         }
     }
-    xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
-    ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
+    xlim <- if (!xlimGiven) range(x,na.rm=TRUE) else xlim
+    ylim <- if (!ylimGiven) range(y,na.rm=TRUE) else ylim
     ## oceDebug(debug, "zlimGiven: ", zlimGiven, "\n")
     ## zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
     ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
