@@ -66,7 +66,8 @@
         \code{decimate} is an integer, then its value sets the decimation
         interval, e.g. \code{decimate=20} plots every twentith point (suitable,
         for example, for landsat images that typicaly have 16000 pixels on a
-        side).}
+        side). A warning is issues if decimation will reduce the image width
+        or height to under 100 cells.}
 
     \item{zclip}{logical, indicating whether to clip the colors to those
         corresponding to \code{zlim}. This only works if \code{zlim} is
