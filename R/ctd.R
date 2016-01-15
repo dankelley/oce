@@ -1516,9 +1516,9 @@ setMethod(f="plot",
                               }
                               ## FIXME: maybe demand say 10 coastline points in view
                               nearest <- mean(head(sort(d), 20), na.rm=TRUE) # in km
-                              span <- 2 * nearest
-                              oceDebug(debug, "span not given, and nearest point is", nearest,
-                                       "km away, so set span=", span, "\n")
+                              span <- 3 * nearest
+                              oceDebug(debug, "span not given; nearest land ", round(nearest,0),
+                                       "km, so set span=", round(span,0), "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
                           if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {

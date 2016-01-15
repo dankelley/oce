@@ -62,7 +62,8 @@
       the station location.  Notes near the top boundary of the map give the
       station number, the sampling date, and the name of the chief scientist,
       if these are known. Note that the longitude will be converted to a value
-      between -180 and 180 before plotting.
+      between -180 and 180 before plotting.  (See also notes
+      about \code{span}.)
       \item \code{which=5.1} as for \code{which=5}, except that the file name
       is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
@@ -121,8 +122,8 @@
     map plotted) DEPRECATED 2014-01-07} 
   \item{clongitude}{center longitude}
   \item{clatitude}{center latitude}
-  \item{span}{optional span of map, in km.  If not given, the map scale is
-      chosen to include some points on the nearby coastline.}
+  \item{span}{optional span of map, in km.  If not given, the map scale will be
+      set to try to include some points on the nearby coastline.}
   \item{showHemi}{logical indicating whether to show hemisphere in axis tick
       labels.}
   \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
