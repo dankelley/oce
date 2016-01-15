@@ -4,6 +4,28 @@ T68fromT90 <- function(temperature) temperature * 1.00024
 T90fromT68 <- function(temperature) temperature / 1.00024
 T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
 
+#' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
+#'
+#' @param x a single positive number
+#' @return for positive x, a value exceeding x that has mantissa 1, 2, or 5; otherwise, x
+bound125 <- function(x)
+{
+    x <- x[1] # ignore all but first element
+    if (x <= 0) {
+        res <- x
+    } else {
+        exp10 <- 10^floor(log10(x))
+        xx <- x / exp10
+        m <- if (xx <= 1) 1 else if (xx <=2) 2 else if (xx <= 5) 5 else 10
+        res <- m * exp10
+        ##> r <- 10^rnorm(1e4)
+        ##> R <- unlist(lapply(1:1e4, function(i) bound125(r[i]))
+        ##> range(r/R)
+        ##> message("x: ", x, ", exp10: ", exp10, ", m: ", m, ", xx: ", xx, ", res: ", res)
+    }
+    res
+}
+
 #' Put longitude in the range from -180 to 180
 #'
 #' @param longitude in degrees East, possibly exceeding 180

@@ -122,11 +122,9 @@
     map plotted) DEPRECATED 2014-01-07} 
   \item{clongitude}{center longitude}
   \item{clatitude}{center latitude}
-  \item{span}{optional span of map, in km.  If not given, the map scale will be
-      set to try to include some points on the nearby coastline. Since this
-      involves computing and then ordering the distance from the CTD to every
-      point on the coastline, it can be a slow operation, and most users set
-      \code{span} directly.}
+  \item{span}{optional span of map, in km.  If not given, this will be
+      determined as a small multiple of the distance to the nearest point of
+      land, in an attempt to show some coastline in the plot.}
   \item{showHemi}{logical indicating whether to show hemisphere in axis tick
       labels.}
   \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to

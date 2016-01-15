@@ -1114,7 +1114,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
-                              col=par("fg"), fill=FALSE,
+                              col=par("fg"), fill=NULL,
                               eos=getOption("oceEOS", default='gsw'),
                               ref.lat=NaN, ref.lon=NaN,
                               grid=TRUE, coastline="best",
@@ -1514,9 +1514,13 @@ setMethod(f="plot",
                                                 mean(x[['longitude']], na.rm=TRUE),
                                                 mean(x[['latitude']], na.rm=TRUE))
                               }
-                              ## FIXME: maybe demand say 10 coastline points in view
-                              nearest <- mean(head(sort(d), 20), na.rm=TRUE) # in km
-                              span <- 3 * nearest
+                              ## Previously, used nearest 20 points, but that requires sorting a 
+                              ## possibly very long vector. Note the check on the result
+                              ## of bound125(), which is a new function
+                              nearest <- min(d, na.rm=TRUE)
+                              span <- bound125(5 * nearest)
+                              if (span < 5 * nearest)
+                                  span <- 5 * nearest # safety check
                               oceDebug(debug, "span not given; nearest land ", round(nearest,0),
                                        "km, so set span=", round(span,0), "\n")
                           }
