@@ -123,7 +123,10 @@
   \item{clongitude}{center longitude}
   \item{clatitude}{center latitude}
   \item{span}{optional span of map, in km.  If not given, the map scale will be
-      set to try to include some points on the nearby coastline.}
+      set to try to include some points on the nearby coastline. Since this
+      involves computing and then ordering the distance from the CTD to every
+      point on the coastline, it can be a slow operation, and most users set
+      \code{span} directly.}
   \item{showHemi}{logical indicating whether to show hemisphere in axis tick
       labels.}
   \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
