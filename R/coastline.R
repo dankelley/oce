@@ -82,6 +82,8 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="", unindent=1)
+              if (!missing(clongitude))
+                  if (clongitude > 180) clongitude <- clongitude - 360
               if (!missing(longitudelim) || !missing(latitudelim)) {
                   if (missing(longitudelim) || missing(latitudelim))
                       stop("if longitudelim or latitudelim are given, both must be given")

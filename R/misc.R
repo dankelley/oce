@@ -4,6 +4,12 @@ T68fromT90 <- function(temperature) temperature * 1.00024
 T90fromT68 <- function(temperature) temperature / 1.00024
 T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
 
+#' Put longitude in the range from -180 to 180
+#'
+#' @param longitude in degrees East, possibly exceeding 180
+#' @return longitude in signed degrees East
+standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
+
 #' Show an argument to a function, e.g. for debugging
 #'
 #' @param x the argument

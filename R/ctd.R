@@ -1585,7 +1585,7 @@ setMethod(f="plot",
                                   oceDebug(debug, "fill=", fill, "\n")
                                   oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
-                                       clatitude=mean(latlim.c), clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        fill=fill,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
@@ -1596,7 +1596,7 @@ setMethod(f="plot",
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        fill=fill,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
@@ -1613,7 +1613,7 @@ setMethod(f="plot",
                                   latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   clat <- mean(latlim.c)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        fill=fill,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
@@ -1623,7 +1623,7 @@ setMethod(f="plot",
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        fill=fill,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
@@ -1632,7 +1632,7 @@ setMethod(f="plot",
                               }
                           }
                           if (is.null(projection)) {
-                              points(x[["longitude"]], x[["latitude"]],
+                              points(standardizeLongitude(x[["longitude"]]), x[["latitude"]],
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
                               mapScalebar()

@@ -57,10 +57,12 @@
       \item \code{which=3} or \code{which="TS"} gives a TS plot
       \item \code{which=4} or \code{which="text"} gives a textual
       summary of some aspects of the data
-      \item \code{which=5} or \code{which="map"} gives a map, with a dot for
+      \item \code{which=5} or \code{which="map"} gives a map plotted
+      with \code{\link{plot.coastline}}, with a dot for
       the station location.  Notes near the top boundary of the map give the
       station number, the sampling date, and the name of the chief scientist,
-      if these are known.
+      if these are known. Note that the longitude will be converted to a value
+      between -180 and 180 before plotting.
       \item \code{which=5.1} as for \code{which=5}, except that the file name
       is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
