@@ -28,6 +28,17 @@ test_that("as.ctd() with a list", {
           expect_equal(ctd[["pressure"]], ctd_l[["pressure"]])
 })
 
+test_that("as.ctd() with an argo object", {
+          data(argo)
+          S2 <- argo[['salinity']] / 2
+          argo <- oceSetData(argo, "S2", S2, unit=list(unit=expression(), scale="PSS-78"))
+          s <- as.section(argo)
+          station1 <- s[["station", 1]]
+          expect_true("S2" %in% names(station1@data))
+          expect_equal(list(unit=expression(),scale="PSS-78"), station1[["S2Unit"]])
+})
+
+
 test_that("ctd subsetting and trimming", {
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
