@@ -1647,12 +1647,24 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         stationLevels <- levels(stationFactor)
         nstation <- length(stationLevels)
         ctds <- vector("list", nstation)
+        ## N will hold the names of extra data for the CTDs
+        N <- names(tmp@data)
+        if ("time" %in% N) N <- N[-which(N=="time")]
+        if ("longitude" %in% N) N <- N[-which(N=="longitude")]
+        if ("latitude" %in% N) N <- N[-which(N=="latitude")]
+        if ("salinity" %in% N) N <- N[-which(N=="salinity")]
+        if ("temperature" %in% N) N <- N[-which(N=="temperature")]
+        if ("pressure" %in% N) N <- N[-which(N=="pressure")]
         for (i in 1:nstation) {
             ##message("ARGO CASE. i: ", i, ", name:", stationLevels[i])
             look <- station==stationLevels[i]
             ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
                                 longitude=longitude[look][1], latitude=latitude[look][1],
                                 station=paste("profile", stationLevels[i]))
+            for (Ni in seq_along(N)) {
+                ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
+                                          unit=tmp[['units']][[N[Ni]]])
+            }
         }
     } else if (inherits(salinity, "list")) {
         ##if (!inherits(salinity[[1]], "ctd")) stop("list must contain ctd objects")

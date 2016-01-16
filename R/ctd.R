@@ -497,7 +497,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     res
 }
 
-ctdAddColumn <- function (x, column, name, label, unit="", debug = getOption("oceDebug"))
+ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
@@ -517,7 +517,7 @@ ctdAddColumn <- function (x, column, name, label, unit="", debug = getOption("oc
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
     }
-    if (!missing(unit)) {
+    if (!is.null(unit)) {
         if (0 == length(unit)) {
             ##> message("NULL unit; name:", name)
             ##> message("unit:")
@@ -527,7 +527,11 @@ ctdAddColumn <- function (x, column, name, label, unit="", debug = getOption("oc
             res@metadata$units[[name]] <- if (is.expression(unit)) list(unit=unit, scale="") else
                 list(unit=as.expression(unit), scale="")
         } else if (2 == length(unit)) {
-            res@metadata$units[[name]] <- unit
+            if (is.list(unit)) {
+                res@metadata$units[[name]] <- unit
+            } else {
+                stop("unit should be a list containing two items")
+            }
         } else {
             warning("ignoring unit since it not of length 1 or 2")
         }
@@ -1114,7 +1118,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
-                              col=par("fg"), fill=NULL,
+                              col=par("fg"), fill=FALSE,
                               eos=getOption("oceEOS", default='gsw'),
                               ref.lat=NaN, ref.lon=NaN,
                               grid=TRUE, coastline="best",
