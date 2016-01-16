@@ -123,6 +123,13 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     res
 }
 
+argoDecodeFlags <- function(f, dim) # local function
+{
+    res <- unlist(lapply(seq_along(f), function(i) strsplit(f[i], split="")))
+    dim(res) <- dim
+    res
+}
+
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -143,6 +150,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             on.exit(ncdf4::nc_close(file))
         }
     }
+    flags <- list()
     id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
@@ -163,9 +171,14 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     temperatureNA <- ncdf4::ncatt_get(file, "TEMP","_FillValue")$value
     temperature[temperature == temperatureNA] <- NA
 
+    dim <- dim(salinity)
 
     pressure <- ncdf4::ncvar_get(file, "PRES")
     pressureNA <- ncdf4::ncatt_get(file, "PRES","_FillValue")$value
+    flags$salinity <- argoDecodeFlags(ncdf4::ncvar_get(file, "PSAL_QC"), dim)
+    flags$temperature <- argoDecodeFlags(ncdf4::ncvar_get(file, "TEMP_QC"), dim)
+    flags$pressure <- argoDecodeFlags(ncdf4::ncvar_get(file, "PRES_QC"), dim)
+
     pressure[pressure == pressureNA] <- NA
     ## make things into matrices, even for a single profile
     if (1 == length(dim(salinity))) {
@@ -179,6 +192,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$filename <- filename
     res@metadata$id <- id
+    res@metadata$flags <- flags
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
         res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
     if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))

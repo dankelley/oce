@@ -4,6 +4,44 @@ T68fromT90 <- function(temperature) temperature * 1.00024
 T90fromT68 <- function(temperature) temperature / 1.00024
 T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
 
+#' Set any flagged data to NA
+#'
+#' If this is applied to a non-oce object, then that object is returned
+#' unchanged. If it is applied to an object that lacks \code{metadata$flags},
+#' then \code{x} is again returned unchanged, but a warning is issued.
+#'
+#' If \code{action} is \code{"NA"}, then any flagged data are set to \code{NA}.
+#' Any other \code{action} yields an error.
+#'
+#' @param x an oce object
+#' @param action the action to be undertaken.
+#' @return an oce object
+handleFlags <- function(x, action="NA")
+{
+    if (!inherits(x, "oce"))
+        return(x)
+    if (!("flags" %in% names(x@metadata))) {
+        warning("x does not contain an item named 'flags' in its metadata slot")
+        return(x)
+    }
+    if ("NA" != action) stop("the only permitted action is \"NA\"")
+    fnames <- names(x@metadata$flags)
+    dnames <- names(x@data)
+    for (name in fnames) {
+        if (name %in% dnames) {
+            if (inherits(x, "argo")) {
+                bad <- x@metadata$flags[[name]] != "1"
+                x@data[[name]][bad] <- NA
+            } else {
+                warning("cannot handle flags for an object of class \"", class(x)[1], "\"")
+            }
+        } else {
+            warning("no item named \"", name, "\" in data")
+        }
+    }
+    x
+}
+
 #' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
 #'
 #' @param x a single positive number

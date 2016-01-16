@@ -591,11 +591,13 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
         dataNew[["pressure"]] <- pt
     } else {
         if (method == "approx") {
-            tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
+            numGoodPressures <- sum(!is.na(x@data$pressure))
+            if (numGoodPressures > 0)
+                tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
             for (datumName in dataNames) {
                 oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
-                if (!length(x[[datumName]])) {
-                    dataNew[[datumName]] <- NULL
+                if (numGoodPressures < 2 || !length(x[[datumName]])) {
+                    dataNew[[datumName]] <- rep(NA, length(pt))
                 } else {
                     if (datumName != "pressure") {
                         good <- sum(!is.na(x@data[[datumName]]))
