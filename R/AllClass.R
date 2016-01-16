@@ -62,6 +62,7 @@ setMethod(f="summary",
                                              ##> message("1. res: '", res, "'")
                                              ## Clean up notation
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
+                                             if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+F", "\u00B0F", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+E", "\u00B0E", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)

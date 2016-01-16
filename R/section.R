@@ -440,21 +440,20 @@ setMethod(f="plot",
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
+              whichOriginal <- which
               which <- oce.pmatch(which,
                                   list(temperature=1, salinity=2, 
                                        sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
                                        phosphate=7, silicate=8, 
                                        u=9, uz=10, v=11, vz=12, # lowered adcp
                                        data=20, map=99))
-              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
-
-
+              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               oceDebug(debug, "plot.section(, ..., which=c(",
                        paste(which, collapse=","), "), eos=\"", eos,
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
 
-             ## Ensure data on levels, for plot types requiring that
-              if (which != "data" && which != 'map') {
+              ## Ensure data on levels, for plots requiring pressure (e.g. sections)
+              if (!is.na(which[1]) && which != "data" && which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   np1 <- length(p1)
                   numStations <- length(x@data$station)
@@ -464,7 +463,7 @@ setMethod(f="plot",
                       if ("points" != ztype && 
                           np1 != length(thisPressure) ||
                           any(p1 != x[["station", ix]][["pressure"]])) {
-                          x <- sectionGrid(x)
+                          x <- sectionGrid(x, debug=debug-1)
                           ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
@@ -758,20 +757,23 @@ setMethod(f="plot",
                               ##oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
                           } else {
                               wd <- NA
-                              if (is.na(temp[len])) {
-                                  wdi <- len - which(!is.na(rev(temp)))[1] + 1
-                                  wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
-                                  ##oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
-                              } else {
-                                  ##oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
-                              }
+                              ## 20160116 if (is.na(temp[len])) {
+                              ## 20160116     wdi <- len - which(!is.na(rev(temp)))[1] + 1
+                              ## 20160116     wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
+                              ## 20160116     message("FAKE waterDepth:", wd, ", station:", i)
+                              ## 20160116     ##oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
+                              ## 20160116 } else {
+                              ## 20160116     ##oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
+                              ## 20160116 }
                           }
                           in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
-                          if (!is.na(wd)) {
-                              waterDepth <- c(waterDepth, wd)
-                          } else {
-                              waterDepth <- c(waterDepth, max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
-                          }
+                          waterDepth <- c(waterDepth, wd)
+                          ## 20160116: it's a bad idea guessing on the water depth (e.g. argo)
+                          ## if (!is.na(wd)) {
+                          ##     waterDepth <- c(waterDepth, wd)
+                          ## } else {
+                          ##     waterDepth <- c(waterDepth, max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
+                          ## }
                       }
 
                       ##oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
@@ -994,14 +996,15 @@ setMethod(f="plot",
               }
 
               ## Grid is regular (so need only first station) unless which=="data"
+              ## FIXME: why checking just first which[] value?
               if (which.ytype == 1) {
-                  if (which[1] == "data" || ztype == "points") { # FIXME: why checking just first which[] value?
+                  if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
                       yy <- c(0, -max(x[["pressure"]]))
                   } else {
                       yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
                   }
               } else if (which.ytype == 2) {
-                  if (which[1] == "data" || ztype == "points") { # FIXME: why checking just first which[] value?
+                  if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
                       yy <- c(-max(x[["pressure"]]), 0)
                   } else {
                       yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
@@ -1024,9 +1027,13 @@ setMethod(f="plot",
               }
               for (w in 1:lw) {
                   if (!missing(contourLevels)) {
-                      if (missing(contourLabels))
-                          contourLabels <- format(contourLevels)
-                      if (which[w] == 1) {
+                      contourLabels <- format(contourLevels)
+                      if (is.na(which[w])) {
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         whichOriginal[w], whichOriginal[w], eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
+                                         axes=axes, col=col, debug=debug-1, ...)
+                      } else if (which[w] == 1) {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
@@ -1088,7 +1095,13 @@ setMethod(f="plot",
                                          axes=axes, col=col, debug=debug-1, ...) 
                       }
                   } else {
-                      if (which[w] == 1) {
+                      if (is.na(which[w])) {
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         whichOriginal[w], whichOriginal[w], eos=eos,
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         axes=axes, col=col, debug=debug-1, ...)
+                      } else if (which[w] == 1) {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
@@ -1158,10 +1171,10 @@ setMethod(f="plot",
                                          axes=axes, col=col, debug=debug-1, ...) 
                       }
                   }
-                  if (which[w] == 20)
+                  if (!is.na(which[w]) && which[w] == 20)
                       plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                      "data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
-                  if (which[w] == 99) {
+                  if (!is.na(which[w]) && which[w] == 99) {
                       plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                      "map", indicate.stations=FALSE,
                                          clongitude=clongitude, clatitude=clatitude, span=span,
@@ -1459,6 +1472,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 	    p <- section@data$station[[i]]@data$pressure
 	    dp.list <- c(dp.list, mean(diff(p)), na.rm=TRUE)
 	    p.max <- max(c(p.max, p), na.rm=TRUE)
+            ## message("i: ", i, ", p.max: ", p.max)
 	}
 	dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
 	pt <- pretty(c(0, p.max), n=min(200, floor(p.max / dp)))
