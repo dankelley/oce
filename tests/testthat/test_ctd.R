@@ -1,6 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 data("ctd")
+data("argo")
 
 context("CTD")
 
@@ -29,11 +30,10 @@ test_that("as.ctd() with a list", {
 })
 
 test_that("as.ctd() with an argo object", {
-          data(argo)
           S2 <- argo[['salinity']] / 2
-          argo <- oceSetData(argo, "S2", S2, unit=list(unit=expression(), scale="PSS-78"))
-          s <- as.section(argo)
-          station1 <- s[["station", 1]]
+          argo2 <- oceSetData(argo, "S2", S2, units=list(unit=expression(), scale="PSS-78"))
+          sec <- as.section(argo2)
+          station1 <- sec[["station", 1]]
           expect_true("S2" %in% names(station1@data))
           expect_equal(list(unit=expression(),scale="PSS-78"), station1[["S2Unit"]])
 })
