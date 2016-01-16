@@ -12,7 +12,7 @@ handleFlags(x, action = "NA")
 \item{action}{the action to be undertaken.}
 }
 \value{
-an oce object
+Either a non-oce object returned as-is, or an oce object that may have been modified to account for flags.
 }
 \description{
 If this is applied to a non-oce object, then that object is returned
@@ -22,5 +22,15 @@ then \code{x} is again returned unchanged, but a warning is issued.
 \details{
 If \code{action} is \code{"NA"}, then any flagged data are set to \code{NA}.
 Any other \code{action} yields an error.
+
+Note that this only works for objects of \code{\link{argo-class}}, so far.
+}
+\examples{
+data(argo)
+par(mfcol=c(2, 2))
+plot(argo, which=2)
+plot(handleFlags(argo), which=2)
+plot(argo, which=3)
+plot(handleFlags(argo), which=3)
 }
 

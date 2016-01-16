@@ -13,9 +13,18 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-tempera
 #' If \code{action} is \code{"NA"}, then any flagged data are set to \code{NA}.
 #' Any other \code{action} yields an error.
 #'
+#' Note that this only works for objects of \code{\link{argo-class}}, so far.
+#'
 #' @param x an oce object
 #' @param action the action to be undertaken.
-#' @return an oce object
+#' @return Either a non-oce object returned as-is, or an oce object that may have been modified to account for flags.
+#' @examples
+#' data(argo)
+#' par(mfcol=c(2, 2))
+#' plot(argo, which=2)
+#' plot(handleFlags(argo), which=2)
+#' plot(argo, which=3)
+#' plot(handleFlags(argo), which=3)
 handleFlags <- function(x, action="NA")
 {
     if (!inherits(x, "oce"))
