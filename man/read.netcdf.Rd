@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{read.netcdf}
 \alias{read.netcdf}
-\title{Read a netcdf file.}
+\title{Read a netcdf file}
 \usage{
 read.netcdf(file, ...)
 }
@@ -15,7 +15,7 @@ read.netcdf(file, ...)
 An object of \code{\link{oce-class}}.
 }
 \description{
-Read a netcdf file.
+Read a netcdf file
 }
 \details{
 Read a netcdf file, trying to interpret its contents sensibly.

@@ -1678,6 +1678,25 @@ setMethod(f="plot",
               invisible()
           })
 
+#' Subset a CTD object
+#'
+#' This function is somewhat analogous to
+#' \code{\link{subset.data.frame}}, but only one independent variable may be
+#' used in \code{subset} in any call to the function, which means that
+#' repeated calls will be necessary to subset based on more than one
+#' independent variable (e.g. time and distance).
+#'
+#' @param x A ctd object.
+#' @param subset An expression indicating how to subset \code{x}.
+#' @param ... Ignored.
+#' @return A ctd object.
+#' 
+#' @aliases subset.ctd
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' plot(ctd)
+#' plot(subset(ctd, pressure<10))
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {

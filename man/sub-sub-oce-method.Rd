@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,oce-method}
 \alias{[[,oce-method}
-\title{Extract something from an oce object.}
+\title{Extract something from an oce object}
 \usage{
 \S4method{[[}{oce}(x, i, j, ...)
 }

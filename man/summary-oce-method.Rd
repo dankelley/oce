@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,oce-method}
 \alias{summary,oce-method}
-\title{Summarize an oce object.}
+\title{Summarize an oce object}
 \usage{
 \S4method{summary}{oce}(object, ...)
 }

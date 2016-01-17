@@ -1044,7 +1044,7 @@ read.oce <- function(file, ...)
     stop("unknown file type \"", type, "\"")
 }
 
-#' Read a netcdf file.
+#' Read a netcdf file
 #'
 #' @details
 #' Read a netcdf file, trying to interpret its contents sensibly.

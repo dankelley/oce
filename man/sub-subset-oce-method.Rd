@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,oce-method}
 \alias{[[<-,oce-method}
-\title{Change something within an oce object.}
+\title{Change something within an oce object}
 \usage{
 \S4method{[[}{oce}(x, i, j, ...) <- value
 }

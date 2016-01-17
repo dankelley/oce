@@ -4,7 +4,7 @@
 \name{subset,oce-method}
 \alias{subset,oce-method}
 \alias{subset.oce}
-\title{Subset an oce object.}
+\title{Subset an oce object}
 \usage{
 \S4method{subset}{oce}(x, subset, ...)
 }
