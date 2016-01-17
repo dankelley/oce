@@ -9,7 +9,7 @@
 \S4method{subset}{ctd}(x, subset, ...)
 }
 \arguments{
-\item{x}{An object inheriting from \code{\link{argo-class}}.}
+\item{x}{An object inheriting from \code{\link{ctd-class}}.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
