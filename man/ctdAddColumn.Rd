@@ -26,7 +26,7 @@ items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 
-\item{A}{debugging flag; set this to a positive value to get debugging
+\item{debug}{A debugging flag; set this to a positive value to get debugging
 information during processing.}
 }
 \value{

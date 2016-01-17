@@ -517,7 +517,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
-#' @param A debugging flag; set this to a positive value to get debugging
+#' @param debug A debugging flag; set this to a positive value to get debugging
 #'     information during processing.
 #' @return A ctd object.
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
