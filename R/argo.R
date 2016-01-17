@@ -125,6 +125,7 @@ setMethod(f="subset",
                   res@data$salinity <- x@data$salinity[keep,]
                   res@data$temperature <- x@data$temperature[keep,]
                   res@data$pressure <- x@data$pressure[keep,]
+                  res@metadata$dataMode <- x@metadata$dataMode[keep]
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               } else {
                   res@data$time <- x@data$time[keep]
