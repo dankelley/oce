@@ -213,7 +213,7 @@ setMethod(f="subset",
 #'
 #' To get information on the specialized variants of this function, 
 #' type e.g. \code{?"[[,adv-method"} for information on extracting
-#' data.
+#' data from an object of \code{\link{adv-class}}.
 #'
 #' @param x An oce object
 #' @param i The item to extract.
