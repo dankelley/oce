@@ -11,7 +11,7 @@ Oceanographic data, for calculations that are specific
 to Oceanography, and for producing graphics that
 match the conventions of the field.
 }
-\section{Oce functions}{
+\section{Specialized functions}{
 
 A key function is \code{\link{read.oce}}, which will attempt
 to read Oceanographic data in raw format. This uses
@@ -20,16 +20,39 @@ based on the file name and contents. If it proves impossible
 to detect the type, users should next try a more specialized
 function, e.g. \code{\link{read.ctd}} for CTD files, or
 \code{\link{read.ctd.sbe}} for Teledyne-Seabird files.
-Over a dozen specialized data types are handled by oce,
-and in each case, an object inheriting from the base
-oce class is returned.
+}
 
-The contents of an oce object object may be summarized with
-the generic function \code{summary}. Another important
-generic function is \code{plot}. Data within oce object
-may be read with the \code{[[} function or modified
-with the \code{[[<-} function. Other generic functions are
-provided, along with dozens of type-specific functions.
+\section{Generic methods}{
+
+A list of the generic methods in oce is provided by
+`methods(class="oce")`; a few that are used frequently
+are as follows.
+\describe{
+\item{[[}{Find the value of an item in the object's
+    \code{metadata} or \code{data} slot.
+    See \link{[[,oce-method} or type \code{?"[[,oce-method"}
+    to learn more.}
+\item{[[<-}{Alters the named item in the object's \code{metadata} or
+    \code{data} slot.
+    See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
+    to learn more.}
+\item{summary}{Displays some information about the object named as an
+    argument, including a few elements from its \code{metadata} slot
+    and some statistics of the contents of its \code{data} slot.
+    See \link{summary,oce-method} or type \code{?"summary,oce-method"}
+    to learn more.}
+\item{subset}{Takes a subset of an oce object.
+    See \link{subset,oce-method} or type \code{?"subset,oce-method"}
+    to learn more.}
+}
+}
+
+\section{Oceanographic data types handled}{
+
+Over a dozen specialized data types are handled by oce,
+with generic plots and summaries for each, along with
+the specialized functions needed for typical Oceanographic
+analysis.
 }
 
 \section{Oce object structure}{

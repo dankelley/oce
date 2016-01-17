@@ -5,7 +5,7 @@
 \alias{oce-class}
 \title{Base class for objects in the oce package.}
 \description{
-This is mainly used withing oce to create sub-classes, although
+This is mainly used within oce to create sub-classes, although
 users can use \code{new("oce")} to create a blank \code{oce}
 object, if desired.
 }
@@ -18,27 +18,9 @@ object has information about beam patterns, which obviously would}
 
 \item{\code{data}}{A list containing the data.}
 
-\item{\code{metadata}}{A list containing time-stamped processing steps,
+\item{\code{processingLog}}{A list containing time-stamped processing steps,
 typically stored in the object by oce functions.}
 }}
-\section{Some useful methods}{
-
-\describe{
-\item{[[}{Provides read-only access to an item in the object's
-    \code{metadata} or \code{data} slot.  The named item is sought first in
-    \code{metadata}, where an exact match to the name is required. If
-    it is not present in \code{metadata}, then a partial-name match is
-    sought in \code{data}.}
-\item{[[<-}{Alters the named item in the object's \code{metadata} or
-    \code{data}, the former being examined before the latter.   For
-    example, to add 0.005 to the salinity of a CTD object
-    named \code{ctd}, one might write
-    \code{ctd[["salinity"]] <- 0.005 + ctd[["salinity"]]}.}
-\item{show}{Displays brief information about the object named as an
-    argument.  For example, \code{show(ctd)} would provide such an
-    overview for a CTD object as discussed above.}
-}
-}
 \examples{
 str(new("oce"))
 }

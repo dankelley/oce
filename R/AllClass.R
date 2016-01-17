@@ -1,6 +1,6 @@
 #' Base class for objects in the oce package.
 #'
-#' This is mainly used withing oce to create sub-classes, although
+#' This is mainly used within oce to create sub-classes, although
 #' users can use \code{new("oce")} to create a blank \code{oce}
 #' object, if desired.
 #'
@@ -9,25 +9,8 @@
 #' object has information about beam patterns, which obviously would
 #" not make sense for a \code{\link{ctd-class}} object.
 #' @slot data A list containing the data.
-#' @slot metadata A list containing time-stamped processing steps,
+#' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
-#'
-#' @section Some useful methods:
-#' \describe{
-#' \item{[[}{Provides read-only access to an item in the object's
-#'     \code{metadata} or \code{data} slot.  The named item is sought first in
-#'     \code{metadata}, where an exact match to the name is required. If
-#'     it is not present in \code{metadata}, then a partial-name match is
-#'     sought in \code{data}.}
-#' \item{[[<-}{Alters the named item in the object's \code{metadata} or
-#'     \code{data}, the former being examined before the latter.   For
-#'     example, to add 0.005 to the salinity of a CTD object
-#'     named \code{ctd}, one might write
-#'     \code{ctd[["salinity"]] <- 0.005 + ctd[["salinity"]]}.}
-#' \item{show}{Displays brief information about the object named as an
-#'     argument.  For example, \code{show(ctd)} would provide such an
-#'     overview for a CTD object as discussed above.}
-#' }
 #'
 #' @seealso
 #' Information on the classes that derive from this base class are found
@@ -185,6 +168,26 @@ setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
 
+#' Subset an oce object.
+#'
+#' This is a basic class for general oce objects.  It has specialised
+#' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
+#' be used if \code{subset} is called for an object that inherits from
+#' \code{ctd}.
+#'
+#' @aliases subset.oce
+#' @param x An oce object.
+#' @param subset A logical expression indicating how to take the subset (depends on the sub-class).
+#' @param ... Ignored.
+#' @return An oce object.
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' # Select just the top 10 metres (pressure less than 10 dbar)
+#' top10 <- subset(ctd, pressure < 10)
+#' par(mfrow=c(1, 2))
+#' plotProfile(ctd)
+#' plotProfile(top10)
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {
@@ -211,6 +214,7 @@ setMethod(f="subset",
 #' @param x An oce object
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
 #'
 #' @examples
 #' data(ctd)
@@ -247,6 +251,35 @@ setMethod(f="[[",
               }
           })
 
+#' Change something within an oce object.
+#'
+#' @description
+#' This is a base function that can be used to change items
+#' in the \code{metadata} or \code{data} slot of an
+#' object of the \code{\link{oce-class}}. See 
+#' \dQuote{Details} for the case in which both slots
+#' contain an item of the given name.
+#'
+#' The first step is to an item of the indicated name. First,
+#' it is sought in the \code{metadata} slot, and if it is found
+#' there, then that value is altered. If it is not found there,
+#' it is sought in the \code{data} slot and modified there.
+#'
+#'
+#' @param x An oce object.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value to be inserted into \code{x}.
+#'
+#' @examples
+#' data(ctd)
+#' summary(ctd)
+#' # Move the CTD profile a nautical mile north,
+#' ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # in metadata
+#' # Increase the salinity by 0.01.
+#' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # in data
+#' summary(ctd)
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times

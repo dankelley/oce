@@ -13,6 +13,8 @@
 \item{i}{The item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}
+
+\item{...}{Optional additional information (ignored).}
 }
 \description{
 The named item is sought first in
