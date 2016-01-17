@@ -67,6 +67,10 @@ setMethod(f="summary",
               cat("Argo Summary\n------------\n\n")
               cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
               cat("* id:         \"", object@metadata$id, "\"\n", sep="")
+              nD <- sum(object@metadata$dataMode == "D")
+              nA <- sum(object@metadata$dataMode == "A")
+              nR <- sum(object@metadata$dataMode == "R")
+              cat("* Profiles:   \"", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\"\n", sep="")
               callNextMethod()
           })
 
