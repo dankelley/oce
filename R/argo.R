@@ -2,7 +2,7 @@
 
 setMethod(f="initialize",
           signature="argo",
-          definition=function(.Object,time,longitude,latitude,salinity,temperature,pressure,filename) {
+          definition=function(.Object,time,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
@@ -10,6 +10,7 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <-temperature 
               if (!missing(pressure)) .Object@data$pressure <- pressure
               .Object@metadata$filename <- if (missing(filename)) "" else filename
+              .Object@metadata$dataMode <- if (missing(dataMode)) "" else dataMode
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'argo' object"
               return(.Object)
@@ -158,6 +159,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
     julianDayTime <- as.vector(ncdf4::ncvar_get(file, "JULD"))
     time <- t0 + julianDayTime * 86400
+    dataMode <- strsplit(ncdf4::ncvar_get(file, "DATA_MODE"), "")[[1]]
     longitude <- ncdfFixMatrix(ncdf4::ncvar_get(file, "LONGITUDE"))
     longitudeNA <- ncdf4::ncatt_get(file, "LONGITUDE","_FillValue")$value
     longitude[longitude == longitudeNA] <- NA
@@ -189,8 +191,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     }
     res <- new("argo", time=time,
                longitude=longitude, latitude=latitude, salinity=salinity, 
-               temperature=temperature, pressure=pressure, filename=filename)
+               temperature=temperature, pressure=pressure, filename=filename,
+               dataMode=dataMode)
     res@metadata$filename <- filename
+    res@metadata$dataMode <- dataMode
     res@metadata$id <- id
     res@metadata$flags <- flags
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
