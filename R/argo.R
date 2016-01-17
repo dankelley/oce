@@ -22,7 +22,9 @@ setMethod(f="initialize",
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
 #' used in \code{subset} in any call to the function, which means that
 #' repeated calls will be necessary to subset based on more than one
-#' independent variable.
+#' independent variable.  Subsetting may be by \code{time},
+#' \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
+#' or \code{pressure}.
 #'
 #' @param x An object inheriting from \code{\link{argo-class}}.
 #' @param subset An expression indicating how to subset \code{x}.

@@ -23,7 +23,9 @@ This function is somewhat analogous to
 \code{\link{subset.data.frame}}, but only one independent variable may be
 used in \code{subset} in any call to the function, which means that
 repeated calls will be necessary to subset based on more than one
-independent variable.
+independent variable.  Subsetting may be by \code{time},
+\code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
+or \code{pressure}.
 }
 \examples{
 library(oce)
