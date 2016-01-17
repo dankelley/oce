@@ -1686,7 +1686,7 @@ setMethod(f="plot",
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable (e.g. time and distance).
 #'
-#' @param x A ctd object.
+#' @param x An object inheriting from \code{\link{argo-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
 #' @return A ctd object.

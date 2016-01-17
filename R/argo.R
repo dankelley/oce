@@ -16,6 +16,35 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+#' Subset an argo object
+#'
+#' This function is somewhat analogous to
+#' \code{\link{subset.data.frame}}, but only one independent variable may be
+#' used in \code{subset} in any call to the function, which means that
+#' repeated calls will be necessary to subset based on more than one
+#' independent variable.
+#'
+#' @param x An object inheriting from \code{\link{argo-class}}.
+#' @param subset An expression indicating how to subset \code{x}.
+#' @param ... Ignored.
+#' @return An argo object.
+#' 
+#' @aliases subset.argo
+#' @seealso
+#' \code{\link{argoGrid}} for gridding argo objects.
+#'
+#' @examples
+#' library(oce)
+#' data(argo)
+#' par(mfrow=c(2,2))
+#' plot(argo)
+#' plot(subset(argo, time > mean(time)))
+#' plot(subset(argo, longitude > mean(longitude)))
+#' plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
+#' 
+#' # Plot only delayed-mode profiles.
+#' par(mfrow=c(1,1))
+#' plot(subset(argo, dataMode == "D"))
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
