@@ -22,8 +22,8 @@
     may be used in \code{subset} in any call to the function, which
     means that repeated calls will be necessary to subset based on more
     than one independent variable.  Subsetting may be by \code{time},
-    \code{latitude}, \code{longitude}, \code{profile}, or
-    \code{pressure}. Note that to subset by \code{pressure}, the argo
+    \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
+    or \code{pressure}. Note that to subset by \code{pressure}, the argo
     must be gridded to regular pressure levels (e.g. using
     \code{\link{argoGrid}}).}
 
@@ -37,6 +37,9 @@ plot(argo)
 plot(subset(argo, time > mean(time)))
 plot(subset(argo, longitude > mean(longitude)))
 plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
+
+## Use only delayed-mode profiles
+plot(subset(argo, dataMode == "D"))
 }
 
 \seealso{\code{\link{argoGrid}} for gridding argo objects to

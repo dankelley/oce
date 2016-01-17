@@ -38,8 +38,10 @@ setMethod(f="subset",
                   } else {
                       stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                   }
+              } else if (length(grep("dataMode", subsetString))) {
+                  keep <- eval(substitute(subset), x@metadata, parent.frame(2))
               } else {
-                  stop("can only subset by time, longitude, latitude, pressure, and not by combinations", call.=FALSE)
+                  stop("can only subset by time, longitude, latitude, pressure, dataMode, and not by combinations", call.=FALSE)
               }
               ## Now do the subset
               if (length(grep("pressure", subsetString))) {
@@ -54,6 +56,7 @@ setMethod(f="subset",
                   res@data$salinity <- x@data$salinity[,keep]
                   res@data$temperature <- x@data$temperature[,keep]
                   res@data$pressure <- x@data$pressure[,keep]
+                  res@metadata$dataMode <- x@metadata$dataMode[keep]
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               }
               res
