@@ -8,7 +8,7 @@
 \S4method{[[}{adv}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An oce object}
+\item{x}{An adv object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{i}{The item to extract.}
 

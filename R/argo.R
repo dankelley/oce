@@ -1,5 +1,51 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' Class to hold argo data
+#'
+#' This class stores data from argo drifters. It will be in fairly
+#' active development in the early months of 2016.
+#'
+#' An \code{argo} object may be read with \code{\link{read.argo}} or
+#' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
+#' pressures with \code{\link{argoGrid}}.  Plots can be made with
+#' \code{\link{plot.argo}}, while \code{\link{summary.argo}} produces statistical
+#' summaries and \code{show} produces overviews. The usual oce generic
+#' functions are available, e.g. \code{\link{[[,argo-method}} may 
+#' be used to extract data, and \code{\link{[[<-,argo-method}} may
+#' be used to insert data.
+#'
+#' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
+#' argo-related datasets that may be useful in a wider context.
+setClass("argo", contains="oce")
+
+#' Extract something from an argo object
+#'
+#' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+setMethod(f="[[",
+          signature(x="argo", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
+          })
+
+#' Change something within an argo object
+#'
+#' In addition to the usual insertion of elements by name, note
+#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' 
+#' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
+#' @param i The item to insert
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value recoverd from \code{x}.
+setMethod(f="[[<-",
+          signature(x="argo", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod()
+          })
+
 setMethod(f="initialize",
           signature="argo",
           definition=function(.Object,time,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {

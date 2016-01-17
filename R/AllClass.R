@@ -145,7 +145,6 @@ setMethod(f="summary",
           })
 
 setClass("adp", contains="oce")
-setClass("argo", contains="oce")
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 setClass("cm", contains="oce")
 setClass("coastline", contains="oce")

@@ -85,7 +85,7 @@ setMethod(f="summary",
 #' data can be retrived in \code{\link{raw}} form or numeric
 #' form; see examples.
 #' 
-#' @param x An oce object
+#' @param x An adv object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
@@ -137,7 +137,7 @@ setMethod(f="[[",
 #' @param i The item to insert
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
+#' @param value The value recoverd from \code{x}.
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
