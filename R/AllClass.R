@@ -1,3 +1,57 @@
+#' Base class for objects in the oce package.
+#'
+#' This is mainly used withing oce to create sub-classes, although
+#' users can use \code{new("oce")} to create a blank \code{oce}
+#' object, if desired.
+#'
+#' @slot metadata A list containing information about the data. The 
+#' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
+#' object has information about beam patterns, which obviously would
+#" not make sense for a \code{\link{ctd-class}} object.
+#' @slot data A list containing the data.
+#' @slot metadata A list containing time-stamped processing steps,
+#' typically stored in the object by oce functions.
+#'
+#' @section Some useful methods:
+#' \describe{
+#' \item{[[}{Provides read-only access to an item in the object's
+#'     \code{metadata} or \code{data} slot.  The named item is sought first in
+#'     \code{metadata}, where an exact match to the name is required. If
+#'     it is not present in \code{metadata}, then a partial-name match is
+#'     sought in \code{data}.}
+#' \item{[[<-}{Alters the named item in the object's \code{metadata} or
+#'     \code{data}, the former being examined before the latter.   For
+#'     example, to add 0.005 to the salinity of a CTD object
+#'     named \code{ctd}, one might write
+#'     \code{ctd[["salinity"]] <- 0.005 + ctd[["salinity"]]}.}
+#' \item{show}{Displays brief information about the object named as an
+#'     argument.  For example, \code{show(ctd)} would provide such an
+#'     overview for a CTD object as discussed above.}
+#' }
+#'
+#' @seealso
+#' Information on the classes that derive from this base class are found
+#' at the following links:
+#' \code{\link{adp-class}},
+#' \code{\link{adv-class}},
+#' \code{\link{argo-class}},
+#' \code{\link{cm-class}},
+#' \code{\link{coastline-class}},
+#' \code{\link{ctd-class}},
+#' \code{\link{echosounder-class}},
+#' \code{\link{lisst-class}},
+#' \code{\link{lobo-class}},
+#' \code{\link{met-class}},
+#' \code{\link{rsk-class}},
+#' \code{\link{sealevel-class}},
+#' \code{\link{section-class}},
+#' \code{\link{tidem-class}},
+#' \code{\link{topo-class}}, and
+#' \code{\link{windrose-class}}.
+#'
+#' @examples
+#' str(new("oce"))
+#' @keywords classes oce
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -6,6 +60,18 @@ setClass("oce",
                         data=list(),
                         processingLog=list()))
 
+#' Summarize an oce object.
+#'
+#' Provide a summary of some pertinent aspects of the object, including
+#' important elements of its \code{metadata} slot and \code{data} slot,
+#' and a listing of the contents of its \code{processingLog} slot.
+#'
+#' The output is tailored to the object. This is not the way to learn
+#' everything about the object; programmers, for example, will often
+#' use \code{\link{str}} to get more details of the object structure.
+#'
+#' @param object The object to be summarized.
+#' @param ... Extra arguments (ignored)
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
@@ -135,6 +201,23 @@ setMethod(f="subset",
               res
           })
 
+#' Extract something from an oce object.
+#'
+#' The named item is sought first in
+#' \code{metadata}, where an exact match to the name is required. If
+#' it is not present in the \code{metadata} slot, then a partial-name
+#" match is sought in the \code{data} slot. 
+#'
+#' @param x An oce object
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#'
+#' @examples
+#' data(ctd)
+#' ctd[["longitude"]] # in metadata
+#' head(ctd[["salinity"]]) # in data
+#' data(section)
+#' summary(section[["station", 1]])
 setMethod(f="[[",
           signature(x="oce", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {

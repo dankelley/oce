@@ -7,9 +7,9 @@
 handleFlags(x, action = "NA")
 }
 \arguments{
-\item{x}{an oce object}
+\item{x}{An oce object.}
 
-\item{action}{the action to be undertaken.}
+\item{action}{The action to be undertaken.}
 }
 \value{
 Either a non-oce object returned as-is, or an oce object that may have been modified to account for flags.

@@ -15,8 +15,8 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-tempera
 #'
 #' Note that this only works for objects of \code{\link{argo-class}}, so far.
 #'
-#' @param x an oce object
-#' @param action the action to be undertaken.
+#' @param x An oce object.
+#' @param action The action to be undertaken.
 #' @return Either a non-oce object returned as-is, or an oce object that may have been modified to account for flags.
 #' @examples
 #' data(argo)

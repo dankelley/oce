@@ -1,5 +1,42 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' oce: A package for Oceanographic analysis.
+#'
+#' The oce package provides functions for working with
+#' Oceanographic data, for calculations that are specific
+#' to Oceanography, and for producing graphics that
+#' match the conventions of the field.
+#'
+#' @section Oce functions:
+#' A key function is \code{\link{read.oce}}, which will attempt
+#' to read Oceanographic data in raw format. This uses
+#' \code{\link{oceMagic}} to try to detect the file type,
+#' based on the file name and contents. If it proves impossible
+#' to detect the type, users should next try a more specialized
+#' function, e.g. \code{\link{read.ctd}} for CTD files, or 
+#' \code{\link{read.ctd.sbe}} for Teledyne-Seabird files.
+#' Over a dozen specialized data types are handled by oce,
+#' and in each case, an object inheriting from the base
+#' oce class is returned.
+#' 
+#' The contents of an oce object object may be summarized with
+#' the generic function \code{summary}. Another important
+#' generic function is \code{plot}. Data within oce object
+#' may be read with the \code{[[} function or modified
+#' with the \code{[[<-} function. Other generic functions are
+#' provided, along with dozens of type-specific functions.
+#'
+#' @section Oce object structure:
+#' See \code{\link{oce-class}} for a summary of the class structure
+#' and links to documentation for the many subclasses of
+#' oce objects, each aligned with a class of instrument or
+#' or type of dataset.
+#'
+#' @docType package
+#' @name oce
+NULL
+#> NULL
+
 #' Coerce something into an object of \code{\link{oce-class}}.
 #'
 #' @details
