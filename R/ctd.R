@@ -497,6 +497,38 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     res
 }
 
+
+#' Add a column to the data slot of a ctd object
+#'
+#' Add a column to the \code{data} slot of an object of
+#' \code{\link{ctd-class}}, also updating the \code{metadata}
+#' slot as appropriate.
+#'
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param column A column of data to be inserted, in the form of a
+#'     numeric vector, whose length matches that of columns in the
+#'     objecct.
+#' @param name Character string indicating the name this column is to
+#'     have in the \code{data} slot of \code{x}.
+#' @param label Optional character string or expression indicating the
+#'     name of the column, as it will appear in plot labels.  (If not
+#'     given, \code{name} will be used.)
+#' @param unit Optional indication of the unit, in the form of a list containing
+#'     items \code{unit}, which is an expression, and \code{scale}, which is a
+#'     character string. For example, modern measurements of temperature have
+#'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
+#' @param A debugging flag; set this to a positive value to get debugging
+#'     information during processing.
+#' @return A ctd object.
+#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#'    of CTD objects, and also outlines the other functions dealing with them.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd) 
+#' F <- 32 + (9/5)*ctd[["temperature"]] 
+#' ctdNew <- ctdAddColumn(ctd, F, "temperatureF", 
+#'     unit=list(unit=expression(degree*F), scale="ITS-90"))
 ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the units
