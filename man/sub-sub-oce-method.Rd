@@ -20,6 +20,12 @@
 The named item is sought first in
 \code{metadata}, where an exact match to the name is required. If
 it is not present in the \code{metadata} slot, then a partial-name
+match is sought in the \code{data} slot.
+}
+\details{
+To get information on the specialized variants of this function,
+type e.g. \code{?"[[,adv-method"} for information on extracting
+data.
 }
 \examples{
 data(ctd)

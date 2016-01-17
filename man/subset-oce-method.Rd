@@ -22,7 +22,7 @@ An oce object.
 This is a basic class for general oce objects.  It has specialised
 versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
 be used if \code{subset} is called for an object that inherits from
-\code{ctd}; type `showMethods('subset')` to see a list of objects
+\code{ctd}; type \code{showMethods('subset')} to see a list of objects
 that have specialized methods, and then e.g. type \code{?subset.ctd}
 to get help on the method for objects inheriting from the
 \code{\link{ctd-class}}.

@@ -1,3 +1,54 @@
+#' Class to hold adv data
+#'
+#' This class holds data from acoustic-Dopper velocimeters.
+#'
+#' The \code{metadata} slot
+#'     contains various items relating to the dataset, including source file name,
+#'     sampling rate, velocity resolution and scale, etc.  The
+#'     \code{processingLog} is in standard form and needs little comment.  The
+#'     \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
+#'     the first index indicating time and the second indicating beam number.  The
+#'     meanings of the beams depends on whether the object is in beam
+#'     coordinates, frame coordinates, or earth coordinates.  The \code{data} slot
+#'     also contains identically-dimensioned raw matrices \code{a} and \code{q},
+#'     holding measures of signal strength and data quality quality, respectively.
+#'     It also contains a series of vectors, e.g. \code{time}, \code{temperature}
+#'     and \code{pressure}, etc., depending on what sensors are included in the
+#'     package.  For all of these quantities, the details can be different for
+#'     different instrument types, and it is assumed that the user will be
+#'     familiar with the details.
+#' 
+#' Data may be extracted with \code{\link{[[,adv-method}} and inserted
+#' with \code{\link{[[<-,adv-method}}. Type \code{?"[[,adv-method"}
+#' or \code{?"[[<-,adv-method"} to learn more.
+#'
+#' @seealso
+#' A file containing ADV data is usually recognized by Oce, and so
+#'     \code{\link{read.oce}} will usually read the data.  If not, one may use the
+#'     general ADV function \code{\link{read.adv}} or specialized variants
+#'     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
+#'     \code{\link{read.adv.sontek.text}}.
+#' 
+#'     ADV data may be plotted with \code{\link{plot.adv}} function, which is a
+#'     generic function so it may be called simply as \code{plot(x)}, where
+#'     \code{x} is an object inheriting from \code{\link{adv-class}}.
+#' 
+#'     Statistical summaries of ADV data are provided by the generic function
+#'     \code{\link{summary.adv}}.
+#' 
+#'     Conversion from beam to xyz coordinates may be done with
+#'     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
+#'     with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+#'     transfer either beam or xyz to enu.  Enu may be converted to other
+#'     coordinates (e.g. aligned with a coastline) with
+#'     \code{\link{enuToOtherAdv}}.
+#'
+#' @examples
+#' data(adv)
+#' adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
+#' @aliases adv-class
+setClass("adv", contains="oce")
+
 setMethod(f="initialize",
           signature="adv",
           definition=function(.Object,time,v,a,q,filename) {
@@ -26,6 +77,23 @@ setMethod(f="summary",
               callNextMethod()
           })
 
+#' Extract something from an adv object
+#'
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrived in \code{\link{raw}} form or numeric
+#' form; see examples.
+#' 
+#' @param x An oce object
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
+#' @examples
+#' data(adv)
+#' head(adv[["q"]])            # in raw form
+#' head(adv[["q", "numeric"]]) # in numeric form
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -60,6 +128,16 @@ setMethod(f="[[",
               }
           })
 
+#' Change something within an adv object
+#'
+#' In addition to the usual insertion of elements by name, note
+#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' 
+#' @param x An adv object
+#' @param i The item to insert
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value to be inserted into \code{x}.
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

@@ -144,8 +144,6 @@ setMethod(f="summary",
               invisible(threes)
           })
 
-
-setClass("adv", contains="oce")
 setClass("adp", contains="oce")
 setClass("argo", contains="oce")
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
@@ -173,7 +171,7 @@ setClass("windrose", contains="oce")
 #' This is a basic class for general oce objects.  It has specialised
 #' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
 #' be used if \code{subset} is called for an object that inherits from
-#' \code{ctd}; type `showMethods('subset')` to see a list of objects
+#' \code{ctd}; type \code{showMethods('subset')} to see a list of objects
 #' that have specialized methods, and then e.g. type \code{?subset.ctd}
 #' to get help on the method for objects inheriting from the
 #' \code{\link{ctd-class}}.
@@ -212,7 +210,11 @@ setMethod(f="subset",
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name
-#" match is sought in the \code{data} slot. 
+#' match is sought in the \code{data} slot. 
+#'
+#' To get information on the specialized variants of this function, 
+#' type e.g. \code{?"[[,adv-method"} for information on extracting
+#' data.
 #'
 #' @param x An oce object
 #' @param i The item to extract.
