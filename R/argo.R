@@ -122,20 +122,43 @@ setMethod(f="subset",
               }
               ## Now do the subset
               if (length(grep("pressure", subsetString))) {
-                  res@data$salinity <- x@data$salinity[keep,]
-                  res@data$temperature <- x@data$temperature[keep,]
-                  res@data$pressure <- x@data$pressure[keep,]
-                  res@metadata$dataMode <- x@metadata$dataMode[keep]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  fieldname <- names(x@data)
+                  for (field in fieldname) {
+                      if (field != 'time' & field != 'longitude' & field != 'latitude') {
+                          ifield <- which(field == fieldname)
+                          res@data[[ifield]] <- res@data[[ifield]][keep,]
+                      }
+                  }
+                  fieldname <- names(x@metadata$flags)
+                  for (field in fieldname) {
+                      ifield <- which(field == fieldname)
+                      res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][keep,]
+                  }
+                  ## res@data$salinity <- x@data$salinity[keep,]
+                  ## res@data$temperature <- x@data$temperature[keep,]
+                  ## res@data$pressure <- x@data$pressure[keep,]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
               } else {
                   res@data$time <- x@data$time[keep]
                   res@data$longitude <- x@data$longitude[keep]
                   res@data$latitude <- x@data$latitude[keep]
-                  res@data$salinity <- x@data$salinity[,keep]
-                  res@data$temperature <- x@data$temperature[,keep]
-                  res@data$pressure <- x@data$pressure[,keep]
                   res@metadata$dataMode <- x@metadata$dataMode[keep]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  fieldname <- names(x@data)
+                  for (field in fieldname) {
+                      if (field != 'time' & field != 'longitude' & field != 'latitude') {
+                          ifield <- which(field == fieldname)
+                          res@data[[ifield]] <- res@data[[ifield]][,keep]
+                      }
+                  }
+                  fieldname <- names(x@metadata$flags)
+                  for (field in fieldname) {
+                      ifield <- which(field == fieldname)
+                      res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][,keep]
+                  }
+                  ## res@data$salinity <- x@data$salinity[,keep]
+                  ## res@data$temperature <- x@data$temperature[,keep]
+                  ## res@data$pressure <- x@data$pressure[,keep]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
               }
               res
           })
