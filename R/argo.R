@@ -126,7 +126,7 @@ setMethod(f="subset",
                   for (field in fieldname) {
                       if (field != 'time' & field != 'longitude' & field != 'latitude') {
                           ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- res@data[[ifield]][,keep]
+                          res@data[[ifield]] <- res@data[[ifield]][keep,]
                       }
                   }
                   ## res@data$salinity <- x@data$salinity[keep,]
