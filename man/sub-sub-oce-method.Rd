@@ -25,7 +25,7 @@ match is sought in the \code{data} slot.
 \details{
 To get information on the specialized variants of this function,
 type e.g. \code{?"[[,adv-method"} for information on extracting
-data.
+data from an object of \code{\link{adv-class}}.
 }
 \examples{
 data(ctd)

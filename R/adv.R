@@ -137,7 +137,7 @@ setMethod(f="[[",
 #' @param i The item to insert
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
-#' @param value The value recoverd from \code{x}.
+#' @param value The value to be inserted into \code{x}.
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

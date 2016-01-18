@@ -1,4 +1,200 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
+#' Class to hold adp (adcp) data
+#'
+#' This class stores data from acoustic Doppler profilers. Some manufacturers
+#' call these ADCPs, while others call them ADPs; here the shorter form is
+#' used by analogy to ADVs.
+#'
+#' The \code{metadata} slot contains various
+#' items relating to the dataset, including source file name, sampling rate,
+#' velocity resolution, velocity maximum value, and so on.  Some of these are
+#' particular to particular instrument types, and prudent researchers will take
+#' a moment to examine the whole contents of the metadata, either in summary
+#' form (with \code{str(adp[["metadata"]])}) or in detail (with
+#' \code{adp[["metadata"]]}).  Perhaps the most useful general properties are
+#' \code{adp[["bin1Distance"]]} (the distance, in metres, from the sensor to
+#' the bottom of the first bin), \code{adp[["cellSize"]]} (the cell height, in
+#' metres, in the vertical direction, \emph{not} along the beam), and
+#' \code{adp[["beamAngle"]]} (the angle, in degrees, between beams and an
+#' imaginary centre line that bisects all beam pairs).
+#' 
+#' The diagram provided below indicates the coordinate-axis and beam-numbering
+#' conventions for three- and four-beam ADP devices, viewed as though the
+#' reader were looking towards the beams being emitted from the transducers.
+#' 
+#' \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
+#'     
+#' The bin geometry of a four-beam profiler is illustrated below, for
+#' \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
+#' equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   In the diagram, the
+#' viewer is in the plane containing two beams that are not shown, so the two
+#' visible beams are separated by 40 degrees.  Circles indicate the centres of
+#' the range-gated bins within the beams.  The lines enclosing those circles
+#' indicate the coverage of beams that spread plus and minus 2.5 degrees from
+#' their centreline.
+#'     
+#' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
+#' 
+#' Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
+#' of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+#' \code{"enu"}.  (This should not be confused with
+#' \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
+#' in the original data file.)
+#' 
+#' The \code{data} slot holds some standardized items, and
+#' many that vary from instrument to instrument.  One standard item is
+#' \code{adp[["v"]]}, a three-dimensional numeric matrix of velocities in
+#' m/s.  In this matrix, the first index indicates time, the second bin
+#' number, and the third beam number.  The meanings of the beams depends on
+#' whether the object is in beam coordinates, frame coordinates, or earth
+#' coordinates.  
+#'     
+#' Corresponding to the velocity matrix are two matrices of type raw, and
+#' identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
+#' holding measures of signal strength and data quality quality,
+#' respectively.  (The exact meanings of these depend on the particular type
+#' of instrument, and it is assumed that users will be familiar enough with
+#' instruments to know both the meanings and their practical consequences in
+#' terms of data-quality assessment, etc.)
+#' 
+#' In addition to the matrices, there are time-based vectors.  The vector
+#' \code{adp[["time"]]} (of length equal to the first index of
+#' \code{adp[["v"]]}, etc.) holds times of observation.  Depending on type of
+#' instrument and its configuration, there may also be corresponding vectors
+#' for sound speed (\code{adp[["soundSpeed"]]}), pressure
+#' (\code{adp[["pressure"]]}), temperature (\code{adp[["temperature"]]}),
+#' heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
+#' (\code{adp[["roll"]]}), depending on the setup of the instrument.
+#' 
+#' The precise meanings of the data items depend on the instrument type.  All
+#' instruments have \code{v} (for velocity), \code{q} (for a measure of data
+#' quality) and \code{a} (for a measure of backscatter amplitude, also called
+#' echo intensity).  
+#'       
+#' Teledyne-RDI profilers have an additional item \code{g} (for
+#' percent-good). 
+#'       
+#' VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+#' details listed in the table below; note that the RDI documentation [2] and
+#' the RDI gui use inconsistent names for most items.
+#' 
+#' \tabular{lll}{
+#'   \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
+#'   \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
+#'   \code{avgMagnitudeVelocityEast}\tab Avg Mag Vel East\tab ?\cr
+#'   \code{avgMagnitudeVelocityNorth}\tab Avg Mag Vel North\tab ?\cr
+#'   \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
+#'   \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+#'   \code{avgTrueVelocityEast}\tab Avg True Vel East\tab ?\cr
+#'   \code{avgTrueVelocityNorth}\tab Avg True Vel North\tab ?\cr
+#'   \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
+#'   \code{firstLatitude}\tab First latitude\tab Start Lat\cr
+#'   \code{firstLongitude}\tab First longitude\tab Start Lon\cr
+#'   \code{firstTime}\tab UTC Time of last fix\tab End Time\cr
+#'   \code{lastLatitude}\tab Last latitude\tab End Lat\cr
+#'   \code{lastLongitude}\tab Last longitude\tab End Lon\cr
+#'   \code{lastTime}\tab UTC Time of last fix\tab End Time\cr
+#'   \code{numberOfHeadingSamplesAveraged}\tab Number heading samples averaged\tab ?\cr
+#'   \code{numberOfMagneticTrackSamplesAveraged}\tab Number of magnetic track samples averaged\tab ? \cr
+#'   \code{numberOfPitchRollSamplesAvg}\tab Number of magnetic track samples averaged\tab ? \cr
+#'   \code{numberOfSpeedSamplesAveraged}\tab Number of speed samples averaged\tab ? \cr
+#'   \code{numberOfTrueTrackSamplesAvg}\tab Number of true track samples averaged\tab ? \cr
+#'   \code{primaryFlags}\tab Primary Flags\tab ?\cr
+#'   \code{shipHeading}\tab Heading\tab ?\cr
+#'   \code{shipPitch}\tab Pitch\tab ?\cr
+#'   \code{shipRoll}\tab Roll\tab ?\cr
+#'   \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+#'   \code{speedMadeGoodEast}\tab Speed MG East\tab ?\cr
+#'   \code{speedMadeGoodNorth}\tab Speed MG North\tab ?\cr
+#' }
+#' 
+#' For Teledyne-RDI profilers, there are four three-dimensional arrays
+#' holding beamwise data.  In these, the first index indicates time, the
+#' second bin number, and the third beam number (or coordinate number, for
+#' data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+#' the list below, the quoted phrases are quantities as defined in Figure 9
+#' of reference 1.
+#' 
+#' \itemize{
+#' 
+#'   \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+#'   integer values (multiplied by the scale factor that is stored in
+#'   \code{velocityScale} in the metadata).
+#' 
+#'   \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
+#'   as type \code{raw} in the object. The values may range from 0 to 255.
+#' 
+#'   \item \code{a} is ``backscatter amplitude``, also known as ``echo
+#'   intensity'' a one-byte quantity stored as type \code{raw} in the object.
+#'   The values may range from 0 to 255.
+#' 
+#'   \item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
+#'   in the object.  The values may range from 0 to 100.
+#' 
+#' }
+#' 
+#' Finally, there is a vector \code{adp[["distance"]]} that indicates the bin
+#' distances from the sensor, measured in metres along an imaginary centre
+#' line bisecting beam pairs.  The length of this vector equals
+#' \code{dim(adp[["v"]])[2]}.
+#' 
+#' The \code{processingLog} slot is in standard form and needs little comment.
+#' 
+#' @section methods:
+#' \emph{Extracting values} Matrix data may be accessed as illustrated
+#' above, e.g.  or an adp object named \code{adv}, the data are provided by
+#' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
+#' convenience, the last two of these can be accessed as numeric (as opposed to
+#' raw) values by e.g.  \code{adp[["a", "numeric"]]}.  The vectors are accessed
+#' in a similar way, e.g. \code{adp[["heading"]]}, etc.  Quantities in the
+#' \code{metadata} slot are also available by name, e.g.
+#' \code{adp[["velocityResolution"]]}, etc.
+#' 
+#' \emph{Assigning values.} This follows the standard form, e.g. to increase
+#' all velocity data by 1 cm/s, use \code{adp[["v"]] <- 0.01 + adp[["v"]]}.
+#' 
+#' \emph{Overview of contents} The \code{show} method (e.g.
+#' \code{show(d)}) displays information about an ADP object named \code{d}. 
+#' 
+#' @section Dealing with suspect data:
+#" There are many possibilities for confusion
+#' with \code{adp} devices, owing partly to the flexibility that manufacturers
+#' provide in the setup.  Prudent users will undertake many tests before trusting
+#' the details of the data.  Are mean currents in the expected direction, and of
+#' the expected magnitude, based on other observations or physical constraints?
+#' Is the phasing of currents as expected?  If the signals are suspect, could an
+#' incorrect scale account for it?  Could the transformation matrix be incorrect?
+#' Might the data have exceeded the maximum value, and then ``wrapped around'' to
+#' smaller values?  Time spent on building confidence in data quality is seldom
+#' time wasted.
+#' 
+#' @section References:
+#' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+#' format.} P/N 957-6156-00 (November 2007).  
+#' 
+#' 2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
+#' 
+#' @seealso 
+#' A file containing ADP data is usually recognized by Oce, and so
+#' \code{\link{read.oce}} will usually read the data.  If not, one may use the
+#' general ADP function \code{\link{read.adp}} or specialized variants
+#' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
+#' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
+#' 
+#' ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+#' generic function so it may be called simply as \code{plot}.
+#' 
+#' Statistical summaries of ADP data are provided by the generic function
+#' \code{summary}, while briefer overviews are provided with \code{show}.
+#' 
+#' Conversion from beam to xyz coordinates may be done with
+#' \code{\link{beamToXyzAdp}}, and from xyz to enu (east north up) may be done
+#' with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
+#' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
+#' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+setClass("adp", contains="oce")
+
 setMethod(f="initialize",
           signature="adp",
           definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {
@@ -123,6 +319,23 @@ setMethod(f="summary",
               callNextMethod()
           })
 
+
+#' Extract something from an adp object
+#'
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrived in \code{\link{raw}} form or numeric
+#' form; see examples.
+#' 
+#' @param x An adp object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
+#' @examples
+#' data(adp)
+#' head(adp[["v"]][,,1])
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -161,6 +374,16 @@ setMethod(f="[[",
               }
           })
 
+#' Change something within an adp object
+#'
+#' In addition to the usual insertion of elements by name, note
+#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' 
+#' @param x An adp object
+#' @param i The item to insert
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value to be inserted into \code{x}.
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
