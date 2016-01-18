@@ -142,10 +142,11 @@ setMethod(f="subset",
                   res@data$time <- x@data$time[keep]
                   res@data$longitude <- x@data$longitude[keep]
                   res@data$latitude <- x@data$latitude[keep]
+                  res@data$profile <- x@data$profile[keep]
                   res@metadata$dataMode <- x@metadata$dataMode[keep]
                   fieldname <- names(x@data)
                   for (field in fieldname) {
-                      if (field != 'time' & field != 'longitude' & field != 'latitude') {
+                      if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
                           ifield <- which(field == fieldname)
                           res@data[[ifield]] <- res@data[[ifield]][,keep]
                       }
