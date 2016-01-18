@@ -261,6 +261,15 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         }
     }
     flags <- list()
+    if (debug > 0) {
+        message("This netcdf file contains the following variables: ", paste(names(f$var), collapse=" "))
+        columnNames <- gsub(" *$", "", unique(as.vector(ncvar_get(f, "STATION_PARAMETERS"))))
+        message("columnNames: ", paste(columnNames, collapse=" "), " (from STATION_PARAMETERS)")
+        QCNames <- paste(columnNames, "_QC", sep="")
+        message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
+        physicalNames <- ODFNames2oceNames(columnNames)
+        message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
+    }
     id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
