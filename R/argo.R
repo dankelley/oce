@@ -262,7 +262,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     }
     flags <- list()
     if (debug > 0) {
-        message("This netcdf file contains the following variables: ", paste(names(f$var), collapse=" "))
+        message("This netcdf file contains the following variables: ", paste(names(file$var), collapse=" "))
         columnNames <- gsub(" *$", "",
                             unique(as.vector(ncdf4::ncvar_get(file, "STATION_PARAMETERS"))))
         message("columnNames: ", paste(columnNames, collapse=" "), " (from STATION_PARAMETERS)")
