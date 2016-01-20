@@ -3050,7 +3050,7 @@ plotProfile <- function (x,
         par(mar=mar, mgp=mgp)
     if (length(xtype) == length(y)) {
         if ('axes' %in% names(list(...))) {
-            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
                 axis(3)
                 mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
@@ -3058,7 +3058,7 @@ plotProfile <- function (x,
             }
             box()
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
@@ -3070,7 +3070,7 @@ plotProfile <- function (x,
         if (add) {
             lines(xtype, y, type=type, lty=lty, ...)
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, lty=lty, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
@@ -3084,7 +3084,7 @@ plotProfile <- function (x,
         }
     } else if (xtype == "index") {
         index <- 1:length(x@data$pressure)
-        plot(index, x@data$pressure, ylim=ylim, col=col, lty=lty, xlab = "index", ylab = yname, type=type, xaxs=xaxs, yaxs=yaxs)
+        plot(index, x@data$pressure, ylim=ylim, col=col, lty=lty, xlab = "index", ylab = yname, type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch)
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
@@ -3098,7 +3098,7 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(x@data$sigmaTheta, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
-        plot(st[look], y[look], xlim=densitylim, ylim=ylim,
+        plot(st[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch, 
              type = type, col = col.rho, lty=lty, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         ## lines(st[look], y[look])
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -3117,7 +3117,7 @@ plotProfile <- function (x,
         par(new = TRUE)                ## FIXME: this probably won't work if add=TRUE
         if (missing(timelim))
             timelim <- range(time, na.rm=TRUE)
-        plot(time, y, xlim=timelim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs, lty=lty)
+        plot(time, y, xlim=timelim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch)
         axis(1, col=col.time, col.axis=col.time, col.lab=col.time)
         ## lines(time, y, lwd=lwd, col=col.time)
         if (know.time.unit) {
@@ -3146,7 +3146,7 @@ plotProfile <- function (x,
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look],
-             xlim=densitylim, ylim=ylim, col=col.rho, lty=lty,
+             xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch, 
              type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == '[') {
@@ -3164,7 +3164,7 @@ plotProfile <- function (x,
         dpdt.sm <- smooth.spline(x@data$pressure, dpdt, df=df)
         if (missing(dpdtlim))
             dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt,
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
              xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
@@ -3210,7 +3210,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
-                     xlim=Slim, ylim=ylim, lty=lty,
+                     xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     if (eos == "gsw") {
@@ -3277,7 +3277,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
             if (!add) {
                 plot(conductivity[look], y[look],
-                     xlim=Clim, ylim=ylim, lty=lty,
+                     xlim=Clim, ylim=ylim, lty=lty, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     ## Look up conductivity unit (issue 731)
@@ -3359,11 +3359,11 @@ plotProfile <- function (x,
         if (!add) {
             if (ylimGiven) {
                 plot(Rrho, y[look], lty=lty,
-                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim,
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             } else {
                 plot(Rrho, y[look], lty=lty,
-                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])),
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])), cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
             mtext(expression(R[rho]), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -3403,7 +3403,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(x@data$temperature) & !is.na(y)
             if (!add) {
                 plot(temperature[look], y[look], lty=lty,
-                     xlim=Tlim, ylim=ylim,
+                     xlim=Tlim, ylim=ylim, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (eos == "gsw") {
                     mtext(resizableLabel("conservative temperature", "x"),
@@ -3445,7 +3445,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(theta) & !is.na(y)
             if (!add) {
                 plot(theta[look], y[look], lty=lty,
-                     xlim=Tlim, ylim=ylim,
+                     xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
                      type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     if (eos == "gsw") {
@@ -3478,9 +3478,9 @@ plotProfile <- function (x,
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
             if (densitylimGiven) {
-                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
+                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             } else {
-                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
+                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
@@ -3516,7 +3516,7 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(st, na.rm=TRUE)
         plot(st[look], y[look], lty=lty,
-             xlim=densitylim, ylim=ylim,
+             xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         tmpsep <- getOption("oceUnitSep")
@@ -3534,9 +3534,9 @@ plotProfile <- function (x,
         if (type == 'l') {
             lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
         } else if (type == 'p') {
-            points(st, y, col = col.rho, pch=pch)
+            points(st, y, col = col.rho, pch=pch, cex=cex)
         } else {
-            points(st, y, col = col.rho, pch=pch)
+            points(st, y, col = col.rho, pch=pch, cex=cex)
             lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
         }
         par(new = TRUE)
@@ -3550,16 +3550,16 @@ plotProfile <- function (x,
             return(invisible())
         }
         plot(N2[look], y[look], lty=lty,
-             xlim=N2lim, ylim=ylim,
+             xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
 
         if (type == 'l') {
             lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
         } else if (type == 'p') {
-            points(N2, y, col = col.N2, pch=pch)
+            points(N2, y, col = col.N2, pch=pch, cex=cex)
         } else {
-            points(N2, y, col = col.N2, pch=pch)
+            points(N2, y, col = col.N2, pch=pch, cex=cex)
             lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
         }
         if (getOption("oceUnitBracket") == '[') {
@@ -3579,7 +3579,7 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         if (!add) {
             plot(N2[look], y[look], lty=lty, 
-                 xlim=N2lim, ylim=ylim,
+                 xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
                 mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
@@ -3605,7 +3605,7 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
         if (!add) {
             plot(spice[look], y[look], lty=lty, 
-                 ylim=ylim,
+                 ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             mtext(resizableLabel("spice", "x"), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             axis(2)
@@ -3638,7 +3638,7 @@ plotProfile <- function (x,
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
-             xlim=Tlim, ylim=ylim, col = col.temperature, lty=lty,
+             xlim=Tlim, ylim=ylim, col = col.temperature, lty=lty, cex=cex, pch=pch,
              type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         if (is.null(getOption('plotProfileNoXLab'))) {
@@ -3653,7 +3653,7 @@ plotProfile <- function (x,
         par(new = TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(x@data$salinity) & !is.na(y)
         plot(salinity[look], y[look],
-             xlim=Slim, ylim=ylim, col = col.salinity, lty=lty,
+             xlim=Slim, ylim=ylim, col = col.salinity, lty=lty, cex=cex, pch=pch,
              type = type, xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
         if (is.null(getOption('plotProfileNoXLab'))) {
@@ -3675,7 +3675,7 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         if (!add) {
             plot(x@data[[xtype]][look], y[look],
-                 ylim=ylim, lty=lty,
+                 ylim=ylim, lty=lty, cex=cex, pch=pch,
                  type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
             mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
@@ -3690,12 +3690,12 @@ plotProfile <- function (x,
         if (type == "l") {
             lines(x@data[[w]], y, lwd=lwd, col=col, lty=lty)
         } else if (type == "p") {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         } else if (type == "b" || type == "o") {
             lines(x@data[[w]], y, lwd=lwd, col=col)
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         } else {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         }
     }
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
