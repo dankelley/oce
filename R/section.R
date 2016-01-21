@@ -414,7 +414,7 @@ setMethod(f="plot",
                               map.xlim=NULL, map.ylim=NULL,
                               clongitude, clatitude, span,
                               projection=NULL, parameters=NULL, orientation=NULL,
-                              xtype=c("distance", "track", "longitude", "latitude"),
+                              xtype=c("distance", "track", "longitude", "latitude", "time"),
                               ytype=c("depth", "pressure"),
                               ztype=c("contour", "image", "points"),
                               zbreaks=NULL, zcol=NULL,
@@ -501,6 +501,7 @@ setMethod(f="plot",
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
+                  xIsTime <- inherits(xx, "POSIXt")
 
                   if (variable == "map") {
                       lat <- array(NA_real_, numStations)
@@ -685,7 +686,8 @@ setMethod(f="plot",
                                              resizableLabel("distance km"),
                                              resizableLabel("along-track distance km"),
                                              gettext("Longitude", domain="R-oce"),
-                                             gettext("Latitude", domain="R-oce"))
+                                             gettext("Latitude", domain="R-oce"),
+                                             gettext("Time", domain="R-oce"))
                           }
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -700,7 +702,7 @@ setMethod(f="plot",
                               axis(4, labels=FALSE)
                               ytics <- axis(2, labels=FALSE)
                               axis(2, at=ytics, labels=-ytics)
-                              axis(1)
+                              if (xIsTime) axis(1, at=pretty(xx), labels=pretty(xx)) else axis(1)
                           }
                           box()
                       } else {
@@ -915,8 +917,9 @@ setMethod(f="plot",
                           box()
                       }
                       ##axis(1, pretty(xxOrig))
-                      if (axes)
-                          axis(1)
+                      if (axes) {
+                          if (xIsTime) axis(1, at=pretty(xx), labels=pretty(xx)) else axis(1)
+                      }
                       if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
@@ -932,9 +935,9 @@ setMethod(f="plot",
                   stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
-              which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude"), nomatch=0)
+              which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude", "time"), nomatch=0)
               if (0 == which.xtype)
-                  stop('xtype must be one of: "distance", "track", "longitude", or "latitude"')
+                  stop('xtype must be one of: "distance", "track", "longitude", "latitude" or "time"')
               xtype <- c("distance", "track", "longitude", "latitude")[which.xtype]
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
@@ -987,14 +990,17 @@ setMethod(f="plot",
                           xx[ix] <- x@data$station[[j]]@metadata$longitude
                       } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$latitude
+                      } else if (which.xtype == 5) {
+                          xx[ix] <- x@data$station[[j]]@metadata$startTime
                       } else {
-                          stop('unknown xtype; it must be one of: "distance", "track", "longitude", or "latitude"')
+                          stop('unknown xtype; it must be one of: "distance", "track", "longitude", "latitude", or "time"')
                       }
                   }
               } else {
                   xx <- at
               }
-
+              if (which.xtype==5)
+                  xx <- numberAsPOSIXct(xx)
               ## Grid is regular (so need only first station) unless which=="data"
               ## FIXME: why checking just first which[] value?
               if (which.ytype == 1) {
@@ -1669,12 +1675,13 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         if ("salinity" %in% N) N <- N[-which(N=="salinity")]
         if ("temperature" %in% N) N <- N[-which(N=="temperature")]
         if ("pressure" %in% N) N <- N[-which(N=="pressure")]
+        time <- tmp[['time']]
         for (i in 1:nstation) {
             ##message("ARGO CASE. i: ", i, ", name:", stationLevels[i])
             look <- station==stationLevels[i]
             ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
                                 longitude=longitude[look][1], latitude=latitude[look][1],
-                                station=paste("profile", stationLevels[i]))
+                                startTime=time[i], station=paste("profile", stationLevels[i]))
             for (Ni in seq_along(N)) {
                 ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
                                           unit=tmp[['units']][[N[Ni]]])
