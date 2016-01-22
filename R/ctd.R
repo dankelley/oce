@@ -729,6 +729,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     for (i in 1:length(dataNew)) {
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
+    ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
     res@data <- dataNew
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # ctdDecimate()\n", unindent=1)

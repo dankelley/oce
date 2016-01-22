@@ -431,6 +431,8 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
+              ##> message("section.R:434, station 1 pressure: ",
+              ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
               xtype <- match.arg(xtype)
               ytype <- match.arg(ytype)
               ztype <- match.arg(ztype)
@@ -451,19 +453,26 @@ setMethod(f="plot",
               oceDebug(debug, "plot.section(, ..., which=c(",
                        paste(which, collapse=","), "), eos=\"", eos,
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
-
+              ##> message("section.R:456, station 1 pressure: ",
+              ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
+              ##> message("!is.na(which[1]): ", !is.na(which[1]))
+              ##> message("which!='data'", which!='data')
+              ##> message("which!='map'", which!='map')
               ## Ensure data on levels, for plots requiring pressure (e.g. sections)
-              if (!is.na(which[1]) && which != "data" && which != 'map') {
+              if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   np1 <- length(p1)
                   numStations <- length(x@data$station)
                   for (ix in 2:numStations) {
+                      ##> message("ix: ", ix)
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
                       if ("points" != ztype && 
                           np1 != length(thisPressure) ||
                           any(p1 != x[["station", ix]][["pressure"]])) {
+                          ##> message("before gridding: p: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
                           x <- sectionGrid(x, debug=debug-1)
+                          ##> message("after gridding: p: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
                           ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
@@ -478,8 +487,8 @@ setMethod(f="plot",
               x@metadata$latitude <- x@metadata$latitude[haveData]
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$date <- x@metadata$date[haveData]
-
-
+              ##> message("section.R:487, station 1 pressure: ",
+              ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
               plotSubsection <- function(xx, yy, zz, which.xtype, which.ytype,
                                          variable="temperature", vtitle="T",
                                          eos=getOption("oceEOS", default="gsw"),
@@ -862,6 +871,7 @@ setMethod(f="plot",
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
+                                      ##> message("yy: ", paste(round(yy), collapse=" "), " (section.R near line 865); length=", length(yy))
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               labcex=0.8, add=TRUE, col=col, ...)
                                   } else if (ztype == "image") {
@@ -930,7 +940,7 @@ setMethod(f="plot",
                   }
                   par(mar=omar)
                   oceDebug(debug, "} # plotSubsection()\n", unindent=1)
-              }
+              }                        # plotSubsection()
               if (!inherits(x, "section"))
                   stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
@@ -999,6 +1009,7 @@ setMethod(f="plot",
               } else {
                   xx <- at
               }
+              ##> message("which.xtype: ", which.xtype)
               if (which.xtype==5)
                   xx <- numberAsPOSIXct(xx)
               ## Grid is regular (so need only first station) unless which=="data"
@@ -1013,12 +1024,17 @@ setMethod(f="plot",
                   if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
                       yy <- c(-max(x[["pressure"]]), 0)
                   } else {
+                      ##> message("stationIndices[1]: ", stationIndices[1])
+                      ##> message("station 1 pressure before setting yy: ",
+                      ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
                       yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+                      ##> message("CHECK(section.R:1028) p: ", paste(x@data$station[[1]]@data$pressure, " "), " (should be independent of variable plotted)")
                   }
               } else {
                   stop("unknown ytype")
               }
-
+              ##> message("CHECK(section.R:1034) yy: ", paste(round(yy), " "))
+              ##> message("station 1 pressure: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
               par(mgp=mgp, mar=mar)
               if (lw > 1) {
                   if (lw > 2)
@@ -1101,19 +1117,23 @@ setMethod(f="plot",
                                          axes=axes, col=col, debug=debug-1, ...) 
                       }
                   } else {
+                      ##> message("**CHECK(section.R:1107)**")
                       if (is.na(which[w])) {
+                          ##> message("*** ", whichOriginal[w], " ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          whichOriginal[w], whichOriginal[w], eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 1) {
+                          ##> message("*** temperature ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == 2) {
+                          ##> message("*** salinity ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
@@ -1502,7 +1522,9 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     for (i in 1:n) {
+        ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
+        ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # sectionGrid\n", unindent=1)

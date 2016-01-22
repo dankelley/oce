@@ -19,8 +19,8 @@ Translate from ODF names to oce names
 }
 \details{
 The following table gives the regular expressions that define recognized
-ODF names, along with the translated names as used in oce objects. Note
-that if an item is repeated, then the second one has a \code{2} appended
+ODF names, along with the translated names as used in oce objects.
+If an item is repeated, then the second one has a \code{2} appended
 at the end, etc.  Note that quality-control columns (with names starting with
 \code{"QQQQ"}) are not handled with regular expressions. Instead, if such
 a flag is found in the i-th column, then a name is constructed by taking
@@ -63,5 +63,16 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
 Any code not shown in the list is transferred to the oce object without renaming, apart from
 the adjustment of suffix numbers. The following code have been seen in data files from
 the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
+}
+\section{Consistency warning}{
+
+There are disagreements on variable names. For example, the ``DFO
+Common Data Dictionary''
+(\url{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
+indicates that \code{DOXY} has unit millmole/m^3 for NODC and MEDS, but
+has unit mL/L for BIO and IML.
+}
+\author{
+Dan Kelley
 }
 
