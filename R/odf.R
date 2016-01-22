@@ -131,7 +131,7 @@ findInHeader <- function(key, lines)
 #' the adjustment of suffix numbers. The following code have been seen in data files from
 #' the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 #'
-#' @section: Consistency warning
+#' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
 #' Common Data Dictionary''
 #' (\url{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
