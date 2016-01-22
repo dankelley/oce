@@ -262,7 +262,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     }
     flags <- list()
     if (debug > 0) {
-        message("This netcdf file contains the following variables: ", paste(names(file$var), collapse=" "))
+        if (debug > 10)
+            message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
         columnNames <- gsub(" *$", "",
                             unique(as.vector(ncdf4::ncvar_get(file, "STATION_PARAMETERS"))))
         message("columnNames: ", paste(columnNames, collapse=" "), " (from STATION_PARAMETERS)")
@@ -274,6 +275,9 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
+
+    itemNames <- names(file$var)
+
     t0s <- as.vector(ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME"))
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
     julianDayTime <- as.vector(ncdf4::ncvar_get(file, "JULD"))
@@ -285,20 +289,57 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     latitude <- ncdfFixMatrix(ncdf4::ncvar_get(file, "LATITUDE"))
     latitudeNA <- ncdf4::ncatt_get(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
-    salinity <- ncdf4::ncvar_get(file, "PSAL")
-    salinityNA <- ncdf4::ncatt_get(file, "PSAL","_FillValue")$value
-    salinity[salinity == salinityNA] <- NA
-    temperature <- ncdf4::ncvar_get(file, "TEMP")
-    temperatureNA <- ncdf4::ncatt_get(file, "TEMP","_FillValue")$value
-    temperature[temperature == temperatureNA] <- NA
+
+    if ("PSAL" %in% itemNames) {
+        salinity <- ncdf4::ncvar_get(file, "PSAL")
+        salinityNA <- ncdf4::ncatt_get(file, "PSAL","_FillValue")$value
+        salinity[salinity == salinityNA] <- NA
+    } else {
+        warning("no 'PSAL' in file ... running some provisional code ...\n")
+        ## FIXME: pattern match; ... may need wider guesses if this fails
+        if (length(i <- grep("^PSAL", itemNames))) {
+            warning("itemNames[", paste(i, collapse=" "), "]: ", paste(itemNames[i], collapse=" "), "\n")
+            if ("PSAL_MED" %in% itemNames[i]) {
+                warning("assuming that PSAL_MED holds salinity\n")
+                salinity <- ncdf4::ncvar_get(file, "PSAL_MED")
+            } else {
+                stop("Neither 'PSAL' nor 'PSAL_MED' present in ", filename)
+            }
+        } else {
+            stop("File '", filename, "' does not contain PSAL or PSAL_MED")
+        }
+    }
+
+    if ("TEMP" %in% itemNames) {
+        temperature  <- ncdf4::ncvar_get(file, "TEMP")
+        temperatureNA <- ncdf4::ncatt_get(file, "TEMP", "_FillValue")$value
+        temperature[temperature == temperatureNA] <- NA
+    } else {
+        warning("no 'TEMP' in file ... running some provisional code ...\n")
+        ## FIXME: pattern match; ... may need wider guesses if this fails
+        if (length(i <- grep("^TEMP", itemNames))) {
+            warning("itemNames[", paste(i, collapse=" "), "]: ", paste(itemNames[i], collapse=" "), "\n")
+            if ("TEMP_MED" %in% itemNames[i]) {
+                warning("assuming that TEMP_MED holds temperature\n")
+                temperature <- ncdf4::ncvar_get(file, "TEMP_MED")
+            } else {
+                stop("Neither 'TEMP' nor 'TEMP_MED' present in ", filename)
+            }
+        } else {
+            stop("File '", filename, "' does not contain TEMP or TEMP_MED")
+        }
+    }
+
 
     dim <- dim(salinity)
 
     pressure <- ncdf4::ncvar_get(file, "PRES")
     pressureNA <- ncdf4::ncatt_get(file, "PRES","_FillValue")$value
-    flags$salinity <- argoDecodeFlags(ncdf4::ncvar_get(file, "PSAL_QC"), dim)
-    flags$temperature <- argoDecodeFlags(ncdf4::ncvar_get(file, "TEMP_QC"), dim)
-    flags$pressure <- argoDecodeFlags(ncdf4::ncvar_get(file, "PRES_QC"), dim)
+    try({
+        flags$salinity <- argoDecodeFlags(ncdf4::ncvar_get(file, "PSAL_QC"), dim)
+        flags$temperature <- argoDecodeFlags(ncdf4::ncvar_get(file, "TEMP_QC"), dim)
+        flags$pressure <- argoDecodeFlags(ncdf4::ncvar_get(file, "PRES_QC"), dim)
+    })
 
     pressure[pressure == pressureNA] <- NA
     ## make things into matrices, even for a single profile
