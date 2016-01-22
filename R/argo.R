@@ -262,7 +262,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     }
     flags <- list()
     if (debug > 0) {
-        message("This netcdf file contains the following variables: ", paste(names(file$var), collapse=" "))
+        if (debug > 10)
+            message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
         columnNames <- gsub(" *$", "",
                             unique(as.vector(ncdf4::ncvar_get(file, "STATION_PARAMETERS"))))
         message("columnNames: ", paste(columnNames, collapse=" "), " (from STATION_PARAMETERS)")
@@ -276,7 +277,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     id <- gsub("^ *", "", id)
 
     itemNames <- names(file$var)
-    print(itemNames)
 
     t0s <- as.vector(ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME"))
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
