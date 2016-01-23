@@ -1,17 +1,17 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold AMSR data
+#' Class to hold amsr data
 #'
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-#' function, \code{\link{plot.amsr}}, and \code{\link{summary.amsr}} all 
-#' apply linear scaling to create values appropriate to the units of
-#' the individual band.  The band names are \code{timeDay}, 
+#' function \code{\link{[[,amsr-method}}, \code{\link{plot.amsr}}, and
+#' \code{\link{summary.amsr}}, etc., all transform these raw values into
+#' physical units.  The band names are \code{timeDay}, 
 #' \code{SSTDay}, \code{LFwindDay}, \code{MFwindDay}, \code{vaporDay} (note
 #' the U.S. spelling), \code{cloudDay}, and \code{rainDay}, along with
 #' similarly-named items that end in \code{Night}.
 #'
 #' @author Dan Kelley
-#' @concept satellite data
+#' @concept satellite
 #' @references
 #' \url{http://www.remss.com/missions/amsre} describes the data.
 #' @aliases amsr-class
@@ -49,7 +49,7 @@ setMethod(f="show",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @aliases summary.amsr
-#' @concept satellite data
+#' @concept satellite
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -68,7 +68,7 @@ setMethod(f="summary",
 #' @param j Optional additional information on the \code{i} item (ignored).
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
-#' @concept satellite data
+#' @concept satellite
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -130,7 +130,7 @@ setMethod(f="[[",
 #'
 #' @author Dan Kelley
 #' @aliases plot.amsr
-#' @concept satellite data
+#' @concept satellite
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -158,7 +158,7 @@ setMethod(f="plot",
 #' @param file Sting indicating the name of a compressed file.
 #' @param debug A debugging flag, integer.
 #' @author Dan Kelley and Chantelle Layton
-#' @concept satellite data
+#' @concept satellite
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",

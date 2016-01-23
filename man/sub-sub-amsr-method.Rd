@@ -23,6 +23,6 @@ Extract something from an amsr object
 Dan Kelley
 }
 \concept{
-satellite data
+satellite
 }
 

@@ -20,6 +20,6 @@ this version
 Dan Kelley and Chantelle Layton
 }
 \concept{
-satellite data
+satellite
 }
 

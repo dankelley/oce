@@ -29,6 +29,6 @@ Plot an amsr object
 Dan Kelley
 }
 \concept{
-satellite data
+satellite
 }
 

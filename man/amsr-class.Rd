@@ -3,12 +3,12 @@
 \docType{class}
 \name{amsr-class}
 \alias{amsr-class}
-\title{Class to hold AMSR data}
+\title{Class to hold amsr data}
 \description{
 The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-function, \code{\link{plot.amsr}}, and \code{\link{summary.amsr}} all
-apply linear scaling to create values appropriate to the units of
-the individual band.  The band names are \code{timeDay},
+function \code{\link{[[,amsr-method}}, \code{\link{plot.amsr}}, and
+\code{\link{summary.amsr}}, etc., all transform these raw values into
+physical units.  The band names are \code{timeDay},
 \code{SSTDay}, \code{LFwindDay}, \code{MFwindDay}, \code{vaporDay} (note
 the U.S. spelling), \code{cloudDay}, and \code{rainDay}, along with
 similarly-named items that end in \code{Night}.
@@ -23,6 +23,6 @@ Dan Kelley
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 }
 \concept{
-satellite data
+satellite
 }
 

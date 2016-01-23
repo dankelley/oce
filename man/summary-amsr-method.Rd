@@ -21,6 +21,6 @@ presents results in physical units.
 Dan Kelley
 }
 \concept{
-satellite data
+satellite
 }
 
