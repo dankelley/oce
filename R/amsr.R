@@ -11,10 +11,11 @@
 #' similarly-named items that end in \code{Night}.
 #'
 #' @author Dan Kelley
-#'
+#' @concept satellite data
 #' @references
 #' \url{http://www.remss.com/missions/amsre} describes the data.
 #' @aliases amsr-class
+#' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 setClass("amsr", contains="oce")
 
 setMethod(f="initialize",
@@ -48,6 +49,7 @@ setMethod(f="show",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @aliases summary.amsr
+#' @concept satellite data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -65,8 +67,8 @@ setMethod(f="summary",
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item (ignored).
 #' @param ... Optional additional information (ignored).
-#'
 #' @author Dan Kelley
+#' @concept satellite data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -128,6 +130,7 @@ setMethod(f="[[",
 #'
 #' @author Dan Kelley
 #' @aliases plot.amsr
+#' @concept satellite data
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -154,8 +157,8 @@ setMethod(f="plot",
 #'
 #' @param file Sting indicating the name of a compressed file.
 #' @param debug A debugging flag, integer.
-#'
 #' @author Dan Kelley and Chantelle Layton
+#' @concept satellite data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
