@@ -19,4 +19,10 @@ Dan Kelley
 \references{
 \url{http://www.remss.com/missions/amsre} describes the data.
 }
+\seealso{
+\code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
+}
+\concept{
+satellite data
+}
 

@@ -1,8 +1,7 @@
-\name{plot.landsat}
-
-\alias{plot.landsat}
-\alias{plot,landsat,missing-method}
+\docType{methods}
+\name{plot,landsat-method}
 \alias{plot,landsat-method}
+\alias{plot.landsat}
 
 \title{Plot landsat data}
 
@@ -143,5 +142,5 @@ plot(landsat, which=2, band="temperature", breaks=100)
 }
 
 \author{Dan Kelley}
-
+\concept{satellite data}
 \keyword{hplot}

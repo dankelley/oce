@@ -30,6 +30,6 @@ library(oce)
 landsat <- decimate(read.landsat("LC80080292014065LGN00"), by=100)
 }
 }
-   
+\concept{satellite data}
 \keyword{datasets}
 

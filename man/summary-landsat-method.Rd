@@ -1,8 +1,7 @@
-\name{summary.landsat}
-
-\alias{summary.landsat}
-\alias{summary,landsat,missing-method}
+\docType{methods}
+\name{summary,landsat-method}
 \alias{summary,landsat-method}
+\alias{summary.landsat}
 
 \title{Summarize a landsat object}
 
@@ -26,6 +25,8 @@
     with them.}
 
 \author{Dan Kelley}
+
+\concept{satellite data}
 
 \keyword{misc}
 

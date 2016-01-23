@@ -161,10 +161,11 @@
     space for Landsat-8 images, and 8X more storage space for other satellites.
     A computer needs at least 8GB of RAM to work with such data.}
 
-\seealso{A file containing Landsat data may be read with
-    \code{\link{read.landsat}} or \code{\link{read.oce}}, and one such file is
-    provided by the \CRANpkg{ocedata} package as a dataset named
-    \code{landsat}.
+\seealso{Data from AMSR satellites are handled with \code{\link{amsr-class}}.
+    
+    A file containing Landsat data may be read with \code{\link{read.landsat}}
+    or \code{\link{read.oce}}, and one such file is provided by the
+    \CRANpkg{ocedata} package as a dataset named \code{landsat}.
 
     Plots may be made with \code{\link{plot.landsat}}.  Since plotting can be
     quite slow, decimation is available both in the plotting function and as
@@ -208,6 +209,8 @@ Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
 \author{Dan Kelley}
 
 \keyword{classes}
+
+\concept{satellite data}
 
 \keyword{oce}
 

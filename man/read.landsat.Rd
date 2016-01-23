@@ -91,5 +91,7 @@ read.landsat(file, band="all", emissivity=0.984, debug=getOption("oceDebug"))
 
 \author{Dan Kelley}
 
+\concept{satellite data}
+
 \keyword{misc}
 

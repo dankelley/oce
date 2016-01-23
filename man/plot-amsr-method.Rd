@@ -28,4 +28,7 @@ Plot an amsr object
 \author{
 Dan Kelley
 }
+\concept{
+satellite data
+}
 
