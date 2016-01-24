@@ -10,14 +10,42 @@
 \arguments{
 \item{x}{An amsr object, i.e. one inheriting from \code{\link{amsr-class}}.}
 
-\item{i}{The item to extract.}
+\item{i}{The item to extract; see \dQuote{Details}}
 
 \item{j}{Optional additional information on the \code{i} item (ignored).}
 
 \item{...}{Optional additional information (ignored).}
 }
+\value{
+In all cases, the returned value is a matrix with
+with dimension 1440 by 720, with \code{NA} values if the
+satellite data are over land (coded to \code{0x255}),
+have no observations (coded to \code{0xfe}),
+are bad observations (coded to \code{0xfd}),
+indicate sea ice (coded to \code{0xfc}),
+are are faulty owing to high rain (coded to \code{0xfb}).
+}
 \description{
-Extract something from an amsr object
+Extract something from the \code{metadata} or \code{data} slot of an
+\code{\link{amsr-class}} object.
+}
+\details{
+Partial matches for \code{i}
+are permitted for \code{metadata}, and \code{j} is ignored.
+
+Data within the \code{data} slot must be matched exactly by name,
+and may be retrieved with units (the default) or as raw bytes (if
+\code{j="raw"}.)  The available items are:
+seconds from the start of day (\code{time}),
+temperature in degC (\code{SST});
+wind speed in m/s (\code{LFwind} and \code{MFwindDay});
+water vapor content (\code{vaporDay});
+cloudiness (\code{cloud}),
+and rainfall in mm/h (\code{rain}).  Each of these is
+an average across day-time and night-time passes; to get
+the day/night data separately, use e.g. \code{SSTDay}
+\code{SSTNight}, and similarly-named versions of all
+bands.
 }
 \author{
 Dan Kelley

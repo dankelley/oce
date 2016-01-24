@@ -1,19 +1,30 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 #' Class to hold amsr data
 #'
-#' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-#' function \code{\link{[[,amsr-method}}, \code{\link{plot.amsr}}, and
-#' \code{\link{summary.amsr}}, etc., all transform these raw values into
-#' physical units.  The band names are \code{timeDay}, 
-#' \code{SSTDay}, \code{LFwindDay}, \code{MFwindDay}, \code{vaporDay} (note
-#' the U.S. spelling), \code{cloudDay}, and \code{rainDay}, along with
+#' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
+#' the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in
+#' May 2012. Data are processed by Remote Sensing Systems. The satellite
+#' completes an ascending and descending pass during local daytime and nightime
+#' hours respectively. Each daily file contains 7 daytime and 7 nighttime
+#' maps of variables named as follows within the \code{data}
+#' slot of amsr objects: \code{timeDay}, 
+#' \code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
+#' the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
+#' \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 #' similarly-named items that end in \code{Night}.
+#' See [1] for additional information on the instrument.
 #'
-#' @author Dan Kelley
+#' @details
+#' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
+#' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
+#' form or in physical units; \code{\link{plot.amsr}}, and
+#' \code{\link{summary.amsr}} work with physical units.
+#'
+#' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
 #' @references
-#' \url{http://www.remss.com/missions/amsre} describes the data.
+#' 1. \url{http://www.remss.com/missions/amsre}
 #' @aliases amsr-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 setClass("amsr", contains="oce")
@@ -63,8 +74,38 @@ setMethod(f="summary",
 
 #' Extract something from an amsr object
 #'
+#' Extract something from the \code{metadata} or \code{data} slot of an
+#' \code{\link{amsr-class}} object.
+
+#' @details
+#' Partial matches for \code{i}
+#' are permitted for \code{metadata}, and \code{j} is ignored.
+#'
+#' Data within the \code{data} slot must be matched exactly by name,
+#' and may be retrieved with units (the default) or as raw bytes (if
+#' \code{j="raw"}.)  The available items are:
+#' seconds from the start of day (\code{time}),
+#' temperature in degC (\code{SST});
+#' wind speed in m/s (\code{LFwind} and \code{MFwindDay});
+#' water vapor content (\code{vaporDay});
+#' cloudiness (\code{cloud}),
+#' and rainfall in mm/h (\code{rain}).  Each of these is
+#' an average across day-time and night-time passes; to get
+#' the day/night data separately, use e.g. \code{SSTDay}
+#' \code{SSTNight}, and similarly-named versions of all
+#' bands.
+#'
+#' @return
+#' In all cases, the returned value is a matrix with 
+#' with dimension 1440 by 720, with \code{NA} values if the 
+#' satellite data are over land (coded to \code{0x255}),
+#' have no observations (coded to \code{0xfe}),
+#' are bad observations (coded to \code{0xfd}),
+#' indicate sea ice (coded to \code{0xfc}),
+#' are are faulty owing to high rain (coded to \code{0xfb}).
+#'
 #' @param x An amsr object, i.e. one inheriting from \code{\link{amsr-class}}.
-#' @param i The item to extract.
+#' @param i The item to extract; see \dQuote{Details}
 #' @param j Optional additional information on the \code{i} item (ignored).
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
@@ -83,9 +124,11 @@ setMethod(f="[[",
                   oceDebug(debug, "} # amsr [[\n", unindent=1)
                   return(x@metadata[[i]])
               }
-              if (!(i %in% names(x@data)))
+              namesAllowed <- c(names(x@data), "SST", "LFwindDay", "MFwindDay", "vaporDay", "cloudDay", "rainDay")
+              if (!(i %in% namesAllowed))
                   stop("band '", i, "' is not available in this object; try one of: ",
-                       paste(names(x@data), collapse=" "))
+                       paste(namesAllowed, collapse=" "))
+              #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
               getBand <- function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
@@ -97,25 +140,54 @@ setMethod(f="[[",
                   dim(b) <- c(1440, 720)
                   b
               }
-              ## Apply units; see http://www.remss.com/missions/amsre
-              ## FIXME: the table at above link has two factors for time; I've no idea
-              ## what that means, and am extracting what seems to be seconds in the day.
-              if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # seconds since midnight (?)
-              else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # seconds since midnight (?)
-              else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
-              else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
-              else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
-              else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
-              else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
-              else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
-              else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
-              else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
-              else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-              else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-              else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
-              else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
-              else stop("setting units for band '", i, "' is not coded yet -- ask developer for it!")
-              dim(res) <- c(1440, 720)
+              if (missing(j) || j != "raw") {
+                  ## Apply units; see http://www.remss.com/missions/amsre
+                  ## FIXME: the table at above link has two factors for time; I've no idea
+                  ## what that means, and am extracting what seems to be seconds in the day.
+                  if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
+                  else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
+                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
+                  else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
+                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]))
+                  else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
+                  else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
+                  else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
+                  else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
+                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]))
+                  else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                  else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]))
+                  else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
+                  else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
+                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]))
+              } else {
+                  if      (i == "timeDay") res <- x@data[[i]]
+                  else if (i == "timeNight") res <- x@data[[i]]
+                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "SSTDay") res <- x@data[[i]]
+                  else if (i == "SSTNight") res <- x@data[[i]]
+                  else if (i == "SST") res <- .Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]])
+                  else if (i == "LFwindDay") res <- x@data[[i]]
+                  else if (i == "LFwindNight") res <- x@data[[i]]
+                  else if (i == "LFwind") res <- .Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]])
+                  else if (i == "MFwindDay") res <- x@data[[i]]
+                  else if (i == "MFwindNight") res <- x@data[[i]]
+                  else if (i == "MFwind") res <- .Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]])
+                  else if (i == "vaporDay") res <- x@data[[i]]
+                  else if (i == "vaporNight") res <- x@data[[i]]
+                  else if (i == "vapor") res <- .Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]])
+                  else if (i == "cloudDay") res <- x@data[[i]]
+                  else if (i == "cloudNight") res <- x@data[[i]]
+                  else if (i == "cloud") res <- .Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]])
+                  else if (i == "rainDay") res <- x@data[[i]]
+                  else if (i == "rainNight") res <- x@data[[i]]
+                  else if (i == "rain") res <- .Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]])
+              }
               res
           })
 
@@ -123,28 +195,32 @@ setMethod(f="[[",
 #'
 #' @param x An object inherting from \code{\link{amsr-class}}.
 #' @param y String indicating the name of the band to plot; if not provided, \code{SSTDay} is used..
-#' @param col Color palette.
-#' @param missingColor String indicating the colour to be used for missing data (land, clouds, etc)
 #' @param debug A debugging flag, integer.
-#' @param ... Ignored.
+#' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
+#' \code{col} to control colours.
 #'
 #' @author Dan Kelley
 #' @aliases plot.amsr
 #' @concept satellite
+#' @examples
+#' \dontrun{
+#' d <- read.amsr("f34_20160102v7.2.gz")
+#' asp <- 1/cos(pi*40/180)
+#' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+#' data(coastlineWorldMedium, package="ocedata")
+#' lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
+#' }
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
-          definition=function(x, y,
-                              col=oce.colorsPalette,
-                              missingColor="gray",
-                              debug=getOption("oceDebug"), ...)
+          definition=function(x, y, debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.amsr(..., y=c(",
                        if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", unindent=1)
               if (missing(y))
                   y <- "SSTDay"
-              imagep(x[["longitude"]], x[["latitude"]], x[[y]],
-                     zlab=y, col=col, missingColor=missingColor)
+              if ("zlab" %in% names(list(...))) imagep(x[["longitude"]], x[["latitude"]], x[[y]], ...)
+              else imagep(x[["longitude"]], x[["latitude"]], x[[y]], zlab=y, ...)
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
           })
 
@@ -234,6 +310,12 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
                          vaporNight=vaporNight, cloudNight=cloudNight, rainNight=rainNight)
         res@metadata$longitude  <- 0.25 * 1:dim[1] - 0.125
         res@metadata$latitude <- 0.25 * 1:dim[2] - 90.125
+        ## rearrange matrices so that Greenwich is near the centre
+        for (name in names(res@data)) {
+            t <- matrixShiftLongitude(res@data[[name]], res@metadata$longitude)
+            res@data[[name]] <- t$m
+        }
+        res@metadata$longitude <- t$longitude
     } else if (nchunks == 6) {
         stop("Cannot (yet) read 6-chunk data. Contact developers if you need this.")
     } else {

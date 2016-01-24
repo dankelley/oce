@@ -6,24 +6,29 @@
 \alias{plot.amsr}
 \title{Plot an amsr object}
 \usage{
-\S4method{plot}{amsr}(x, y, col = oce.colorsPalette, missingColor = "gray",
-  debug = getOption("oceDebug"), ...)
+\S4method{plot}{amsr}(x, y, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An object inherting from \code{\link{amsr-class}}.}
 
 \item{y}{String indicating the name of the band to plot; if not provided, \code{SSTDay} is used..}
 
-\item{col}{Color palette.}
-
-\item{missingColor}{String indicating the colour to be used for missing data (land, clouds, etc)}
-
 \item{debug}{A debugging flag, integer.}
 
-\item{...}{Ignored.}
+\item{...}{extra arguments passed to \code{\link{imagep}}, e.g. set
+\code{col} to control colours.}
 }
 \description{
 Plot an amsr object
+}
+\examples{
+\dontrun{
+d <- read.amsr("f34_20160102v7.2.gz")
+asp <- 1/cos(pi*40/180)
+plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+data(coastlineWorldMedium, package="ocedata")
+lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
+}
 }
 \author{
 Dan Kelley

@@ -5,19 +5,30 @@
 \alias{amsr-class}
 \title{Class to hold amsr data}
 \description{
-The bands are stored in \code{\link{raw}} form, to save storage. The accessor
-function \code{\link{[[,amsr-method}}, \code{\link{plot.amsr}}, and
-\code{\link{summary.amsr}}, etc., all transform these raw values into
-physical units.  The band names are \code{timeDay},
-\code{SSTDay}, \code{LFwindDay}, \code{MFwindDay}, \code{vaporDay} (note
-the U.S. spelling), \code{cloudDay}, and \code{rainDay}, along with
+The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
+the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in
+May 2012. Data are processed by Remote Sensing Systems. The satellite
+completes an ascending and descending pass during local daytime and nightime
+hours respectively. Each daily file contains 7 daytime and 7 nighttime
+maps of variables named as follows within the \code{data}
+slot of amsr objects: \code{timeDay},
+\code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
+the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
+\code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 similarly-named items that end in \code{Night}.
+See [1] for additional information on the instrument.
+}
+\details{
+The bands are stored in \code{\link{raw}} form, to save storage. The accessor
+function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
+form or in physical units; \code{\link{plot.amsr}}, and
+\code{\link{summary.amsr}} work with physical units.
 }
 \author{
-Dan Kelley
+Dan Kelley and Chantelle Layton
 }
 \references{
-\url{http://www.remss.com/missions/amsre} describes the data.
+1. \url{http://www.remss.com/missions/amsre}
 }
 \seealso{
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
