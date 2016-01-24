@@ -158,6 +158,7 @@ export(abbreviateTimeLabels,
        mapZones,
        map2lonlat,
        matchBytes,
+       matrixShiftLongitude,
        matrixSmooth,
        moonAngle,
        nitrate,
@@ -239,6 +240,7 @@ export(abbreviateTimeLabels,
        read.adv.sontek.serial,
        read.adv.sontek.adr,
        read.adv.sontek.text,
+       read.amsr,
        read.aquadopp, # wrapper for read.adp.nortek()
        read.aquadoppProfiler, # wrapper for read.adp.nortek()
        read.aquadoppHR, # wrapper for read.adp.nortek()
@@ -363,5 +365,5 @@ S3method(tail, adp)
 S3method(time, oce)
 S3method(window, oce)
 
-exportClasses(oce, bremen, adp, adv, cm, coastline, ctd, argo, ladp, landsat, lisst, lobo, met, odf, sealevel, section, rsk, tidem, topo, windrose)
+exportClasses(oce, adp, adv, amsr, bremen, cm, coastline, ctd, argo, ladp, landsat, lisst, lobo, met, odf, sealevel, section, rsk, tidem, topo, windrose)
 

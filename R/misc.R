@@ -959,37 +959,6 @@ fullFilename <- function(filename)
     res
 }
 
-matrixSmooth <- function(m, passes=1)
-{
-    if (missing(m))
-        stop("must provide matrix 'm'")
-    storage.mode(m) <- "double"
-    if (passes > 0) {
-        for (pass in seq.int(1, passes, 1)) {
-            m <- .Call("matrix_smooth", m)
-        }
-    } else {
-        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
-    }
-    m
-}
-
-matchBytes <- function(input, b1, ...)
-{
-    if (missing(input))
-        stop("must provide \"input\"")
-    if (missing(b1))
-        stop("must provide at least one byte to match")
-    ##n <- length(input)
-    dots <- list(...)
-    lb <- 1 + length(dots)
-    if (lb == 2)
-        .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
-    else if (lb == 3)
-        .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
-    else
-        stop("must provide 2 or 3 bytes")
-}
 
 resizableLabel <- function(item, axis, sep, unit=NULL)
 {
@@ -1999,6 +1968,69 @@ magneticField <- function(longitude, latitude, time)
         dim(intensity) <- dim
     }
     list(declination=declination, inclination=inclination, intensity=intensity)
+}
+
+
+matchBytes <- function(input, b1, ...)
+{
+    if (missing(input))
+        stop("must provide \"input\"")
+    if (missing(b1))
+        stop("must provide at least one byte to match")
+    ##n <- length(input)
+    dots <- list(...)
+    lb <- 1 + length(dots)
+    if (lb == 2)
+        .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
+    else if (lb == 3)
+        .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
+    else
+        stop("must provide 2 or 3 bytes")
+}
+
+
+#' Rearrange areal matrix so Greenwich is near the centre
+#'
+#' Sometimes datasets are provided in matrix form, with first
+#' index corresponding to longitudes ranging from 0 to 360.
+#' \code{matrixShiftLongitude} cuts such matrices at
+#' longitude=180, and swaps the pieces so that the dateline
+#' is at the left of the matrix, not in the middle.
+#'
+#' @param m The matrix to be modified.
+#' @param longitude A vector containing the longitude in the 0-360 convention. If missing, this is constructed to range from 0 to 360, with as many elements as the first index of \code{m}.
+#'
+#' @return A list containing \code{m} and \code{longitude}, both rearranged as appropriate.
+matrixShiftLongitude <- function(m, longitude)
+{
+    if (missing(m))
+        stop("must supply m")
+    n <- dim(m)[1]
+    if (missing(longitude))
+        longitude <- seq.int(0, 360, length.out=n)
+    if (n != length(longitude))
+        stop("dim(m) and length(longitude) are incompatible")
+    if (max(longitude, na.rm=TRUE) > 180) {
+        cut <- which.min(abs(longitude-180))
+        longitude <- c(longitude[seq.int(cut+1L, n)]-360, longitude[seq.int(1L, cut)])
+        m <- m[c(seq.int(cut+1L, n), seq.int(1L, cut)),]
+    }
+    list(m=m, longitude=longitude)
+}
+
+matrixSmooth <- function(m, passes=1)
+{
+    if (missing(m))
+        stop("must provide matrix 'm'")
+    storage.mode(m) <- "double"
+    if (passes > 0) {
+        for (pass in seq.int(1, passes, 1)) {
+            m <- .Call("matrix_smooth", m)
+        }
+    } else {
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+    }
+    m
 }
 
 secondsToCtime <- function(sec)
