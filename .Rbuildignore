@@ -1,4 +1,5 @@
 .travis.yml
+^.*.nc$
 create_data
 README_developers.md
 R/.*.swo
@@ -17,5 +18,5 @@ vignettes/oce.log
 ^.*\.Rproj$
 ^\.Rproj\.user$
 src/*.o$
-
 autom4te.cache
+
