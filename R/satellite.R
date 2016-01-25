@@ -81,15 +81,44 @@ setMethod(f="plot",
           })
 
 ## g1sst subclass
-#' Class to hold G1SST satellite data
+
+#' Class to hold G1SST satellite-model data
+#'
+#' G1SST is an acronym for global 1-km sea surface temperature, a product
+#' that combines satellite data with the model output. It is provided by
+#' the JPO ROMS (Regional Ocean Modelling System) modelling group.
+#' See the JPL website [1] to learn more about the data, and see
+#' the \code{\link{read.g1sst}} documentation for an example
+#' of downloading and plotting.
+#'
+#' It is important not to regard G1SST data in the same category as,
+#' say, \code{\link{amsr-class}} data, because the two products
+#' differ greatly with respect to cloud cover. The satellite used by
+#' \code{\link{amsr-class}} has the ability to sense water temperature
+#' even if there is cloud cover, whereas \code{g1sst} fills in cloud
+#' gaps with model simulations.  It can be helpful to consult 
+#' [1] for a given time, clicking and then unclicking the radio button
+#' that turns off the model-based filling of cloud gaps.
+#'
 #' @author Dan Kelley
 #' @concept satellite
+#' @references
+#' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 setClass("g1sst", contains="satellite")
  
 #' Read G1SST satellite data
 #'
 #' This works with netcdf files as provided by the ERDAPP server [1].
-#' @param filename name of a netcdf file containing data from the G1SST satellite
+#'
+#' As noted in the documentation for \code{\link{g1sst-class}}, one
+#' must be aware of the incorporation of model simulations in the 
+#' \code{g1sst} product. For example, the code presented below
+#' might lead one to believe that the mapped field represents
+#' observatins, whereas in fact it can be verified by
+#' consulting [2] (clicking and unclicking the radio button to
+#' show just the data) that the field mostly derives from simulation.
+#'
+#' @param filename name of a netcdf file containing G1SST data.
 #'
 #' @return An object of \code{\link{g1sst-class}}.
 #' @examples
@@ -115,7 +144,8 @@ setClass("g1sst", contains="satellite")
 #' }
 #'
 #' @references
-#' 1. \url{http://coastwatch.pfeg.noaa.gov/erddap/}
+#' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
+#' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 #' @concept satellite
 #' @author Dan Kelley
 read.g1sst <- function(filename)
