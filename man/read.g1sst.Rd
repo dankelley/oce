@@ -17,10 +17,20 @@ This works with netcdf files as provided by the ERDAPP server [1].
 }
 \examples{
 \dontrun{
-s <-
-"http://coastwatch.pfeg.noaa.gov/erddap/griddap/jplG1SST.nc?SST\%5B(2016-01-02T12:00:00Z)\%5D\%5B(44):(46)\%5D\%5B(-67.5):(-63.5)\%5D"
+# Construct query, making it easier to understand and modify.
+day <- "2016-01-02"
+lon0 <- -67.5
+lon1 <- -63.5
+lat0 <- 44
+lat1 <- 46
+source <- paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
+                "jplG1SST.nc?",
+                "SST\%5B(", day, "T12:00:00Z)",
+                "\%5D\%5B(", lat0, "):(", lat1, ")",
+                "\%5D\%5B(", lon0, "):(", lon1, ")",
+                "\%5D", sep="")
 if (!length(list.files(pattern="^a.nc$")))
-    download.file(s, "a.nc")
+    download.file(source, "a.nc")
 d <- read.g1sst("a.nc")
 plot(d, "SST", col=oceColorsJet)
 }
