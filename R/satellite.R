@@ -6,6 +6,7 @@
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
+#' @family functions dealing with satellite data
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
@@ -24,8 +25,9 @@ setMethod(f="initialize",
 #' @param object The object to be summarized.
 #' @param ... Ignored.
 #' @author Dan Kelley
-#' @aliases summarize.satellite summarize.g1sst
+#' @aliases summary.satellite summary.g1sst
 #' @concept satellite
+#' @family functions dealing with satellite data
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
@@ -49,7 +51,7 @@ setMethod(f="summary",
 
 #' Plot a satellite object
 #'
-#' For an example, see \code{\link{read.g1sst}}.
+#' For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
 #'
 #' @param x An object inherting from \code{\link{satellite-class}}.
 #' @param y String indicating the quantity to be plotted.
@@ -61,6 +63,7 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #' @aliases plot.satellite
 #' @concept satellite
+#' @family functions dealing with satellite data
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)
@@ -79,8 +82,6 @@ setMethod(f="plot",
               }
               oceDebug(debug, "} # plot.satellite()\n", unindent=1)
           })
-
-## g1sst subclass
 
 #' Class to hold G1SST satellite-model data
 #'
@@ -102,6 +103,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 #' @references
 #' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 setClass("g1sst", contains="satellite")
@@ -146,7 +148,7 @@ setClass("g1sst", contains="satellite")
 #' @references
 #' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
 #' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
-#' @concept satellite
+#' @family functions dealing with satellite data
 #' @author Dan Kelley
 read.g1sst <- function(filename)
 {
@@ -158,7 +160,7 @@ read.g1sst <- function(filename)
     res@metadata$latitude <- ncdf4::ncvar_get(f, "latitude")
     res@metadata$time <- numberAsPOSIXct(ncdf4::ncvar_get(f, "time"))
     res@metadata$units$SST <- list(unit=expression(degree*C), scale="ITS-90")
-    res@metadata$satellite <- "G1SST"
+    res@metadata$satellite <- "g1sst"
     res@data$SST <- ncdf4::ncvar_get(f, "SST")
     res
 }

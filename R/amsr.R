@@ -1,5 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+setClass("satellite", contains="oce")
+
 #' Class to hold amsr data
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
@@ -23,11 +25,12 @@
 #'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
+#' @family functions dealing with satellite data
 #' @references
 #' 1. \url{http://www.remss.com/missions/amsre}
 #' @aliases amsr-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-setClass("amsr", contains="oce")
+setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
           signature="amsr",
@@ -61,6 +64,7 @@ setMethod(f="show",
 #' @author Dan Kelley
 #' @aliases summary.amsr
 #' @concept satellite
+#' @family functions dealing with satellite data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -110,6 +114,7 @@ setMethod(f="summary",
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -202,6 +207,8 @@ setMethod(f="[[",
 #' @author Dan Kelley
 #' @aliases plot.amsr
 #' @concept satellite
+#' @family functions dealing with satellite data
+#'
 #' @examples
 #' \dontrun{
 #' d <- read.amsr("f34_20160102v7.2.gz")
@@ -235,6 +242,13 @@ setMethod(f="plot",
 #' @param debug A debugging flag, integer.
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
+#' @family functions dealing with satellite data
+#' @seealso \code{\link{plot.amsr}} for an example.
+#' \dontrun{
+#' d <- read.amsr("f34_20160102v7.2.gz")
+#' summary(d)
+#' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+#' }
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
@@ -321,6 +335,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     } else {
         stop("Can only handle 14-chunk data.")
     }
+    res@metadata$satellite <- "amsr"
     res@processingLog <- processingLogAppend(res@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.amsr()\n", unindent=1)
