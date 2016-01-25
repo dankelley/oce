@@ -17,5 +17,5 @@ vignettes/oce.log
 ^.*\.Rproj$
 ^\.Rproj\.user$
 src/*.o$
-
+^.*\.nc$
 autom4te.cache

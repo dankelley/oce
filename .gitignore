@@ -22,3 +22,5 @@ oce.Rproj
 .RData
 vignettes/.build.timestamp
 autom4te.cache
+*.nc
+
