@@ -199,7 +199,9 @@ setMethod(f="[[",
 #' Plot an amsr object
 #'
 #' @param x An object inherting from \code{\link{amsr-class}}.
-#' @param y String indicating the name of the band to plot; if not provided, \code{SSTDay} is used..
+#' @param y String indicating the name of the band to plot; if not provided,
+#' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
+#' @param asp Optional aspect ratio for plot.
 #' @param debug A debugging flag, integer.
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
@@ -221,14 +223,17 @@ setMethod(f="[[",
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
-          definition=function(x, y, debug=getOption("oceDebug"), ...)
+          definition=function(x, y, asp, debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.amsr(..., y=c(",
                        if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", unindent=1)
               if (missing(y))
-                  y <- "SSTDay"
-              if ("zlab" %in% names(list(...))) imagep(x[["longitude"]], x[["latitude"]], x[[y]], ...)
-              else imagep(x[["longitude"]], x[["latitude"]], x[[y]], zlab=y, ...)
+                  y <- "SST"
+              lon <- x[["longitude"]]
+              lat <- x[["latitude"]]
+              if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+              if ("zlab" %in% names(list(...))) imagep(lon, lat, x[[y]], asp=asp, ...)
+              else imagep(lon, lat, x[[y]], zlab=y, asp=asp, ...)
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
           })
 
