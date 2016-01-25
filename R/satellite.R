@@ -110,6 +110,8 @@ setClass("g1sst", contains="satellite")
 #'     download.file(source, "a.nc")
 #' d <- read.g1sst("a.nc")
 #' plot(d, "SST", col=oceColorsJet)
+#' data(coastlineWorldFine, package="ocedata")
+#' lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
 #' }
 #'
 #' @references
