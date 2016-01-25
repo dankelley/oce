@@ -165,6 +165,7 @@ all velocity data by 1 cm/s, use \code{adp[["v"]] <- 0.01 + adp[["v"]]}.
 
 \section{Dealing with suspect data}{
 
+There are many possibilities for confusion
 with \code{adp} devices, owing partly to the flexibility that manufacturers
 provide in the setup.  Prudent users will undertake many tests before trusting
 the details of the data.  Are mean currents in the expected direction, and of

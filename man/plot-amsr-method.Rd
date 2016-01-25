@@ -29,6 +29,7 @@ plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 data(coastlineWorldMedium, package="ocedata")
 lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 }
+
 }
 \author{
 Dan Kelley

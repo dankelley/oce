@@ -14,7 +14,8 @@ object, if desired.
 \describe{
 \item{\code{metadata}}{A list containing information about the data. The 
 contents vary across sub-classes, e.g. an \code{\link{adp-class}}
-object has information about beam patterns, which obviously would}
+object has information about beam patterns, which obviously would
+not make sense for a \code{\link{ctd-class}} object.}
 
 \item{\code{data}}{A list containing the data.}
 

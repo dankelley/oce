@@ -16,16 +16,18 @@ Read a compressed amsr file, generating an object that inherits from
 \code{\link{amsr-class}}.  Note that only compressed files are read in
 this version
 }
-\author{
-Dan Kelley and Chantelle Layton
-}
-\seealso{
-\code{\link{plot.amsr}} for an example.
+\examples{
 \dontrun{
 d <- read.amsr("f34_20160102v7.2.gz")
 summary(d)
 plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 }
+}
+\author{
+Dan Kelley and Chantelle Layton
+}
+\seealso{
+\code{\link{plot.amsr}} for an example.
 
 Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
   \code{\link{amsr-class}}, \code{\link{g1sst-class}},

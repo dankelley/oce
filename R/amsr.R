@@ -204,7 +204,6 @@ setMethod(f="[[",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @author Dan Kelley
 #' @aliases plot.amsr
 #' @concept satellite
 #' @family functions dealing with satellite data
@@ -217,6 +216,8 @@ setMethod(f="[[",
 #' data(coastlineWorldMedium, package="ocedata")
 #' lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 #' }
+#'
+#' @author Dan Kelley
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -244,6 +245,7 @@ setMethod(f="plot",
 #' @concept satellite
 #' @family functions dealing with satellite data
 #' @seealso \code{\link{plot.amsr}} for an example.
+#' @examples
 #' \dontrun{
 #' d <- read.amsr("f34_20160102v7.2.gz")
 #' summary(d)
