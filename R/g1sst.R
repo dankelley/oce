@@ -73,7 +73,7 @@ read.g1sst <- function(filename)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
         stop('must install.packages("ncdf4") to read argo data')
-    f <- ncdf4::nc_open("a.nc")
+    f <- ncdf4::nc_open(filename)
     res <- new("g1sst", filename=filename)
     res@metadata$longitude <- ncdf4::ncvar_get(f, "longitude")
     res@metadata$latitude <- ncdf4::ncvar_get(f, "latitude")
