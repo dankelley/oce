@@ -6,12 +6,15 @@
 \alias{plot.amsr}
 \title{Plot an amsr object}
 \usage{
-\S4method{plot}{amsr}(x, y, debug = getOption("oceDebug"), ...)
+\S4method{plot}{amsr}(x, y, asp, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An object inherting from \code{\link{amsr-class}}.}
 
-\item{y}{String indicating the name of the band to plot; if not provided, \code{SSTDay} is used..}
+\item{y}{String indicating the name of the band to plot; if not provided,
+\code{SST} is used; see \code{\link{amsr-class}} for a list of bands.}
+
+\item{asp}{Optional aspect ratio for plot.}
 
 \item{debug}{A debugging flag, integer.}
 
