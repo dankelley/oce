@@ -7,13 +7,22 @@
 read.g1sst(filename)
 }
 \arguments{
-\item{filename}{name of a netcdf file containing data from the G1SST satellite}
+\item{filename}{name of a netcdf file containing G1SST data.}
 }
 \value{
 An object of \code{\link{g1sst-class}}.
 }
 \description{
 This works with netcdf files as provided by the ERDAPP server [1].
+}
+\details{
+As noted in the documentation for \code{\link{g1sst-class}}, one
+must be aware of the incorporation of model simulations in the
+\code{g1sst} product. For example, the code presented below
+might lead one to believe that the mapped field represents
+observatins, whereas in fact it can be verified by
+consulting [2] (clicking and unclicking the radio button to
+show just the data) that the field mostly derives from simulation.
 }
 \examples{
 \dontrun{
@@ -41,7 +50,8 @@ lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
 Dan Kelley
 }
 \references{
-1. \url{http://coastwatch.pfeg.noaa.gov/erddap/}
+1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
+2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 }
 \concept{
 satellite
