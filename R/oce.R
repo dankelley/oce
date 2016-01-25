@@ -73,7 +73,7 @@ NULL
 #' yet unreleased) ODF package developed by the Bedford Institute of
 #' Oceanography, then \code{\link{ODF2oce}} is called (with
 #' no arguments other than the first) to calculate a return value.
-#" If the sub-class inference made by \code{\link{ODF2oce}} is 
+#' If the sub-class inference made by \code{\link{ODF2oce}} is 
 #' incorrect, users should call that function directly, specifying
 #' a value for its \code{coerce} argument.
 #'

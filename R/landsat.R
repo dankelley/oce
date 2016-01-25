@@ -17,6 +17,7 @@
 #' @name landsat
 #' @docType data
 #' @keywords satellite data
+#' @concept satellite
 NULL
 
 
@@ -133,6 +134,7 @@ NULL
 #'
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 #' @references
 #' 1. See the USGS "glovis" web site.
 #' 
@@ -167,7 +169,8 @@ NULL
 #' @author Dan Kelley and Clark Richards
 #' @aliases landsat-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-setClass("landsat", contains="oce")
+setClass("satellite", contains="oce")
+setClass("landsat", contains="satellite")
 
 setMethod(f="show",
           signature="landsat",
@@ -201,6 +204,7 @@ setMethod(f="initialize",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 #' @aliases summary.landsat
 setMethod(f="summary",
           signature="landsat",
@@ -286,6 +290,7 @@ setMethod(f="summary",
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -567,6 +572,7 @@ setMethod(f="[[",
 #' @aliases plot.landsat
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
@@ -923,6 +929,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' 
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
@@ -996,6 +1003,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
         }
     }
     options(warn=options$warn) 
+    res@metadata$satellite <- "landsat"
     res@processingLog <- processingLogAppend(res@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.landsat()\n", unindent=1)
@@ -1027,6 +1035,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
 #'
 #' @author Dan Kelley
 #' @concept satellite
+#' @family functions dealing with satellite data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
     if (!is.matrix(data))
@@ -1080,6 +1089,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' with them.
 #' @author Dan Kelley and Clark Richards
 #' @concept satellite
+#' @family functions dealing with satellite data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))

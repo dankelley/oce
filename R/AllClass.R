@@ -7,7 +7,7 @@
 #' @slot metadata A list containing information about the data. The 
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
-#" not make sense for a \code{\link{ctd-class}} object.
+#' not make sense for a \code{\link{ctd-class}} object.
 #' @slot data A list containing the data.
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.

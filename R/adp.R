@@ -158,7 +158,7 @@
 #' \code{show(d)}) displays information about an ADP object named \code{d}. 
 #' 
 #' @section Dealing with suspect data:
-#" There are many possibilities for confusion
+#' There are many possibilities for confusion
 #' with \code{adp} devices, owing partly to the flexibility that manufacturers
 #' provide in the setup.  Prudent users will undertake many tests before trusting
 #' the details of the data.  Are mean currents in the expected direction, and of
