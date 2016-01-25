@@ -46,8 +46,8 @@ setClass("g1sst", contains="satellite")
 #' \dontrun{
 #' # Construct query, making it easier to understand and modify.
 #' day <- "2016-01-02"
-#' lon0 <- -67.5
-#' lon1 <- -63.5
+#' lon0 <- -66.5
+#' lon1 <- -64.0
 #' lat0 <- 44
 #' lat1 <- 46
 #' source <- paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
