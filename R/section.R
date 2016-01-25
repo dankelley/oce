@@ -375,7 +375,7 @@ makeSection <- function(item, ...)
     res
 }
 
-#"+.section" <- function(section, station) # up until 2015-03-13
+# We also had "+.section" <- function(section, station) # until 2015-03-13
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
