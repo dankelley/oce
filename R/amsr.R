@@ -231,7 +231,11 @@ setMethod(f="plot",
                   y <- "SST"
               lon <- x[["longitude"]]
               lat <- x[["latitude"]]
-              if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+              if ("ylim" %in% names(list(...))) {
+                  if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(list(...)$ylim)))
+              } else {
+                  if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
+              }
               if ("zlab" %in% names(list(...))) imagep(lon, lat, x[[y]], asp=asp, ...)
               else imagep(lon, lat, x[[y]], zlab=y, asp=asp, ...)
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
