@@ -26,8 +26,8 @@ Suggests:
     testthat
 BugReports: https://github.com/dankelley/oce/issues?
     sort=created&direction=desc&state=open
-Description: Supports the analysis of Oceanographic data, including ADCP
-    measurements, measurements made with argo floats, CTD measurements, sectional
+Description: Supports the analysis of Oceanographic data, including 'ADCP'
+    measurements, measurements made with 'argo' floats, 'CTD' measurements, sectional
     data, sea-level time series, coastline and topographic data, etc. Provides
     specialized functions for calculating seawater properties such as potential
     temperature in either the 'UNESCO' or 'TEOS-10' equation of state. Produces
