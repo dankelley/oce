@@ -543,7 +543,11 @@ setMethod(f="plot",
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
                               oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              if (bestcoastline == "coastlineWorld") {
+                                  data(list=bestcoastline, package="oce", envir=environment())
+                              } else {
+                                  data(list=bestcoastline, package="ocedata", envir=environment())
+                              }
                               coastline <- get(bestcoastline)
                           } else {
                               oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")

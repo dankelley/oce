@@ -37,7 +37,11 @@ to try to find a subdirectory with name equal to \code{id}. The
 first matching subdirectory is then opened and a test is made
 for the existence of a file with name constructed by pasting 
 \code{"_prof.nc"} onto \code{id}. If this works, then the URL
-is returned; otherwise an error message is given.
+is returned; otherwise an error message is given. Note: early
+tests with \code{http://data.nodc.noaa.gov} showed that it stores 
+its argo files with \emph{lower-case} names, which is inconsistent
+with argo documentation [1] and incompatible with \code{\link{read.argo}}.
+So, don't use that server!
 }
 }
 \section{History}{
@@ -62,11 +66,22 @@ argo <- read.oce("argo.nc")
 summary(argo)
 plot(argo)
 }
+
 }
 \author{
 Dan Kelley
 }
+\references{
+\itemize{
+\item \strong{1.} The \code{argo} netCDF format is described at
+\code{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}; 
+as of January 28, 2016, Section 2.2.4 of this document
+indicates that variable names are to be in upper case,
+which is true for the \code{nodc.noaa.gov} server, so data provided
+by this server cannot be read with \code{\link{read.argo}}.
+}
+}
 \seealso{
-\code{\link{download.file}} for downloading the datafiles found by \code{repositoryURI}
+\code{\link{download.file}} for downloading the files found by \code{repositoryURI}
 }
 

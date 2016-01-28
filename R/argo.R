@@ -127,7 +127,8 @@ setMethod(f="subset",
                   for (field in fieldname) {
                       if (field != 'time' & field != 'longitude' & field != 'latitude') {
                           ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- res@data[[ifield]][keep,]
+                          res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
+                              res@data[[ifield]][,keep] else res@data[[ifield]][keep]
                       }
                   }
                   fieldname <- names(x@metadata$flags)
@@ -147,9 +148,11 @@ setMethod(f="subset",
                   res@metadata$dataMode <- x@metadata$dataMode[keep]
                   fieldname <- names(x@data)
                   for (field in fieldname) {
+                      ##> message("field: ", field)
                       if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
                           ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- res@data[[ifield]][,keep]
+                          res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
+                              res@data[[ifield]][,keep] else res@data[[ifield]][keep]
                       }
                   }
                   fieldname <- names(x@metadata$flags)
