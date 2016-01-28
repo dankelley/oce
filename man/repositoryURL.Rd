@@ -28,7 +28,7 @@ a wide suite of data types (see \dQuote{Contributing}).
 }
 \details{
 The following values for \code{item} are handled. \itemize{
-\item \code{argo} data are by default sought from domain
+\item \code{item="argo"}. The data are by default sought from domain
 \code{ftp://usgodae.org}, and the procedure is to construct
 a test URL as \code{ftp://usgodae.org/pub/outgoing/argo//dac/} and
 then to probe that to find the list of available 'dac' (data 

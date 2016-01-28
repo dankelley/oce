@@ -48,8 +48,9 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="argo",
-          definition=function(.Object,time,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {
+          definition=function(.Object,time,id,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {
               if (!missing(time)) .Object@data$time <- time
+              if (!missing(id)) .Object@data$id <- id
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(salinity)) .Object@data$salinity <- salinity
@@ -171,7 +172,9 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Argo Summary\n------------\n\n")
               cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
-              cat("* id:         \"", object@metadata$id, "\"\n", sep="")
+              nid <- length(unique(object@data$id))
+              if (1 == nid) cat("* id:         \"", object@data$id[1], "\"\n", sep="")
+              else cat("* ids:        \"", object@data$id[1], "\", \"", object@data$id[2], "\", ...\n", sep="")
               nD <- sum(object@metadata$dataMode == "D")
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
@@ -272,7 +275,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         physicalNames <- ODFNames2oceNames(columnNames)
         message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
     }
-    id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
+    id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
 
@@ -350,12 +353,11 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         dim(pressure) <- dim
     }
     res <- new("argo", time=time,
-               longitude=longitude, latitude=latitude, salinity=salinity, 
+               id=id, longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename,
                dataMode=dataMode)
     res@metadata$filename <- filename
     res@metadata$dataMode <- dataMode
-    res@metadata$id <- id
     res@metadata$flags <- flags
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
         res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
@@ -367,7 +369,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         res@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
     if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES", "units")$value, ignore.case=TRUE)))
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res@metadata$id <- if (!missing(id)) id else NA
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -387,6 +388,7 @@ as.argo <- function(time, longitude, latitude,
         pressure <- if ("pressure" %in% names) df$pressure else NULL
         longitude <- if ("longitude" %in% names) df$longitude else NULL
         latitude <- if ("latitude" %in% names) df$latitude else NULL
+        id <- if ("id" %in% names) df$id else NULL
     } else {
         if (missing(time)) stop("must give time")
         if (missing(longitude)) stop("must give longitude")
@@ -394,11 +396,11 @@ as.argo <- function(time, longitude, latitude,
         if (missing(temperature)) stop("must give temperature")
         if (missing(salinity)) stop("must give salinity")
         if (missing(pressure)) stop("must give pressure")
+        if (missing(id)) stop("must give id")
     }
-    res <- new("argo", time=time,
+    res <- new("argo", time=time, id=id,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
-    res@metadata$id <- if (!missing(id)) id else NA
     res@metadata$units <- if (!is.null(units)) units else
         list(longitude=list(expression(degree*E), scale=""),
              latitude=list(expression(degree*N), scale=""),

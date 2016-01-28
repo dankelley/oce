@@ -60,6 +60,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               names <- names(object@data)
               isTime <- grepl("^time", names, ignore.case=TRUE)
+              isId <- grepl("^id", names, ignore.case=TRUE)
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
                   if (inherits(time, "POSIXt")) {
@@ -78,11 +79,11 @@ setMethod(f="summary",
               }
               ndata <- length(object@data)
               if (ndata > 0) {
-                  threes <- matrix(nrow=sum(!isTime), ncol=3)
+                  threes <- matrix(nrow=sum(!isTime & !isId), ncol=3)
                   ii <- 1
                   for (i in 1:ndata) {
                       ##message("i: ", i, ", name: ", names(object@data)[i])
-                      if (isTime[i])
+                      if (isTime[i] || isId[i])
                           next
                       threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
@@ -135,7 +136,7 @@ setMethod(f="summary",
                                          }))
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
-                  rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
+                  rownames(threes) <- paste("    ", dataLabel(names[!isTime&!isId], units))
                   colnames(threes) <- c("Min.", "Mean", "Max.")
                   cat("* Statistics of data\n")
                   print(threes, indent='    ')
