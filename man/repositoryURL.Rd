@@ -4,35 +4,58 @@
 \alias{repositoryURL}
 \title{Calculate a web link to download Oceanographic data}
 \usage{
-repositoryURL(domain, subdomain, item, window, id)
+repositoryURL(item, id, window, domain, subdomain)
 }
 \arguments{
-\item{domain}{The base-level domain (more information to be added later).}
+\item{item}{A string indicating the item sought; see \dQuote{Details}.}
 
-\item{subdomain}{The second-level domain (more information to be added later).}
-
-\item{item}{A string indicating the item sought; at present only \code{"argo"} is allowed.}
+\item{id}{A string indicating the ID of the sought item.}
 
 \item{window}{An indication of a window to select data (ignored at present).}
 
-\item{id}{A string indicating the ID of the sought item.}
+\item{domain}{The base-level domain (more information to be added later).}
+
+\item{subdomain}{The second-level domain (more information to be added later).}
 }
 \description{
 This function is able to construct universal resource identifiers (URIs)
 that can be used with \code{\link{download.file}} to download data from
-several common Oceanographic repositories.
+several common Oceanographic repositories.   The goal of this function is to
+spare users the task of finding such URLs for casual use or one-off
+applications.  There is no intention of trying  to reproduce the web tools
+provided with many repositories, nor to provide an exhaustive interface to
+a wide suite of data types (see \dQuote{Contributing}).
 }
 \details{
-The goal is to spare users the task of finding such URIs for casual use
-or one-off applications.  There is no intention of trying to reproduce
-the web tools provided with many repositories.
+The following values for \code{item} are handled. \itemize{
+\item \code{argo} data are by default sought from domain
+\code{ftp://usgodae.org}, and the procedure is to construct
+a test URL as \code{ftp://usgodae.org/pub/outgoing/argo//dac/} and
+then to probe that to find the list of available 'dac' (data 
+archiving centre) subdirectories. Then each of these is searched
+to try to find a subdirectory with name equal to \code{id}. The
+first matching subdirectory is then opened and a test is made
+for the existence of a file with name constructed by pasting 
+\code{"_prof.nc"} onto \code{id}. If this works, then the URL
+is returned; otherwise an error message is given.
+}
+}
+\section{History}{
+
+This function was drafted in late January, 2016, and it is likely to
+change, perhaps in incompatible ways, through February.
+}
+
+\section{Contributing}{
 
 This function will be most useful if users contribute to it, both by 
 pointing out changes to URLs and by suggesting additions for useful
-datasets.
+datasets. The most useful comments will be concrete; merely suggesting
+that an interface be provided to such-and-such server is too vague
+to help much.
 }
 \examples{
-file <- repositoryURL(item="argo", id=list(id="6900388"))
+file <- repositoryURL(item="argo", id="6900388")
 \dontrun{
 download.file(file, "argo.nc")
 argo <- read.oce("argo.nc")
