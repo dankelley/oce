@@ -138,8 +138,9 @@ setMethod(f="summary",
                   ##> message("units:");str(units)
                   rownames(threes) <- paste("    ", dataLabel(names[!isTime&!isId], units))
                   colnames(threes) <- c("Min.", "Mean", "Max.")
-                  cat("* Statistics of data\n")
-                  print(threes, indent='    ')
+                  cat("* Statistics of data\n```\n")
+                  print(threes, indent='')
+                  cat("```\n")
               }
               processingLogShow(object)
               invisible(threes)
