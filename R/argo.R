@@ -597,12 +597,14 @@ setMethod(f="plot",
                       ## FIXME: how to handle the noise; if as below, document it
                       plotProfile(ctd, xtype="salinity",
                            Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
+                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                           col=if (missing(col)) "black" else col, type=type)
                   } else if (which[w] == 6) {    # T profile
                       ## FIXME: how to handle the noise; if as below, document it
                       plotProfile(ctd, xtype="temperature",
                            Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
+                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                           col=if (missing(col)) "black" else col, type=type)
                   } else {
                       stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }
