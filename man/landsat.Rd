@@ -5,7 +5,6 @@
 \alias{landsat}
 \title{Sample landsat dataset.}
 \description{
-This is a landsat-8 dataset
 This is a subset of the Landsat-8 image designated LC80080292014065LGN00, an
 image from March 2014 that covers Nova Scotia and portions of the Bay of
 Fundy and the Scotian Shelf. The image is decimated to reduce the memory

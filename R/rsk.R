@@ -1,3 +1,17 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' Sample rsk dataset.
+#'
+#' (FIXME: put 1 paragraph here)
+#'
+#' @details
+#' (FIXME: can have multiple paragraphs here)
+#'
+#' @name rsk
+#' @docType data
+NULL
+
+
 setMethod(f="initialize",
           signature="rsk",
           definition=function(.Object,time,pressure,temperature,filename="") {
