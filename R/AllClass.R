@@ -60,32 +60,37 @@ setMethod(f="summary",
           definition=function(object, ...) {
               names <- names(object@data)
               isTime <- grepl("^time", names, ignore.case=TRUE)
-              isId <- grepl("^id", names, ignore.case=TRUE)
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
-                  if (inherits(time, "POSIXt")) {
+                  if (inherits(time, "POSIXt") && length(time) > 0) {
                       from <- min(time, na.rm=TRUE)
                       to <- max(time, na.rm=TRUE)
                       deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
-                      if (deltat < 60)
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
-                      else if (deltat < 3600)
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
-                      else if (deltat < 24*3600)
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
-                      else
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
+                      if (is.na(deltat)) {
+                          cat("* Time:               ", format(from), "\n")
+                      } else {
+                          if (deltat < 60) {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                          } else if (deltat < 3600) {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
+                          } else if (deltat < 24*3600) {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
+                          } else {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
+                          }
+                      }
                   }
               }
               ndata <- length(object@data)
               if (ndata > 0) {
-                  threes <- matrix(nrow=sum(!isTime & !isId), ncol=3)
+                  threes <- matrix(nrow=sum(!isTime), ncol=3)
                   ii <- 1
                   for (i in 1:ndata) {
                       ##message("i: ", i, ", name: ", names(object@data)[i])
-                      if (isTime[i] || isId[i])
+                      if (isTime[i])
                           next
-                      threes[ii,] <- threenum(object@data[[i]])
+                      if (any(is.finite(object@data[[i]])))
+                          threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
@@ -136,7 +141,7 @@ setMethod(f="summary",
                                          }))
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
-                  rownames(threes) <- paste("    ", dataLabel(names[!isTime&!isId], units))
+                  rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                   colnames(threes) <- c("Min.", "Mean", "Max.")
                   cat("* Statistics of data\n```\n")
                   print(threes, indent='')
