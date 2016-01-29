@@ -50,7 +50,7 @@ setMethod(f="initialize",
           signature="argo",
           definition=function(.Object,time,id,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {
               if (!missing(time)) .Object@data$time <- time
-              if (!missing(id)) .Object@data$id <- id
+              if (!missing(id)) .Object@metadata$id <- id
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(salinity)) .Object@data$salinity <- salinity
@@ -69,9 +69,11 @@ setMethod(f="initialize",
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
 #' used in \code{subset} in any call to the function, which means that
 #' repeated calls will be necessary to subset based on more than one
-#' independent variable.  Subsetting may be by \code{time},
+#' independent variable.  Subsetting may be by by anything
+#' stored in the data, e.g. \code{time},
 #' \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
-#' or \code{pressure}.
+#' or \code{pressure} or by \code{profile} (a made-up variable)
+#' or \code{id} (from the \code{metadata} slot).
 #'
 #' @param x An object inheriting from \code{\link{argo-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
@@ -102,10 +104,18 @@ setMethod(f="subset",
               if (length(grep("time", subsetString)) ||
                   length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
-              } else if (length(grep("profile", subsetString))) {
+              } else if (length(grep("id", subsetString))) {
+                  ## add id into the data, then do as usual
+                  tmp <- x@data
+                  tmp$id <- x@metadata$id
+                  keep <- eval(substitute(subset), tmp, parent.frame(2))
+                  rm(tmp)
+               } else if (length(grep("profile", subsetString))) {
                   ## add profile into the data, then do as usual
-                  x@data$profile <- 1:length(x@data$time)
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  tmp <- x@data
+                  tmp$profile <- 1:length(x@data$time)
+                  keep <- eval(substitute(subset), tmp, parent.frame(2))
+                  rm(tmp)
               } else if (length(grep("pressure", subsetString))) {
                   ## check that it is a "gridded" argo
                   gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
@@ -148,11 +158,10 @@ setMethod(f="subset",
                   res@metadata$dataMode <- x@metadata$dataMode[keep]
                   fieldname <- names(x@data)
                   for (field in fieldname) {
-                      ##> message("field: ", field)
                       if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
                           ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
-                              res@data[[ifield]][,keep] else res@data[[ifield]][keep]
+                          res@data[[ifield]] <- if (is.matrix(x@data[[ifield]]))
+                              x@data[[ifield]][,keep] else x@data[[ifield]][keep]
                       }
                   }
                   fieldname <- names(x@metadata$flags)
@@ -160,6 +169,7 @@ setMethod(f="subset",
                       ifield <- which(field == fieldname)
                       res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][,keep]
                   }
+                  #if (sum(keep) < 1) warning("In subset.argo() :\n  removed all profiles", call.=FALSE)
                   ## res@data$salinity <- x@data$salinity[,keep]
                   ## res@data$temperature <- x@data$temperature[,keep]
                   ## res@data$pressure <- x@data$pressure[,keep]
@@ -174,14 +184,15 @@ setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
               cat("Argo Summary\n------------\n\n")
-              cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
-              nid <- length(unique(object@data$id))
-              if (1 == nid) cat("* id:         \"", object@data$id[1], "\"\n", sep="")
-              else cat("* ids:        \"", object@data$id[1], "\", \"", object@data$id[2], "\", ...\n", sep="")
+              showMetadataItem(object, "filename",                  "Source:              ", quote=TRUE)
+              nid <- length(unique(object@metadata$id))
+              if (1 == nid)
+                   cat("* id:                  \"", object@metadata$id[1], "\"\n", sep="")
+              else cat("* id list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
               nD <- sum(object@metadata$dataMode == "D")
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
-              cat("* Profiles:   \"", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\"\n", sep="")
+              cat("* Profiles:            ", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\n", sep="")
               callNextMethod()
           })
 
