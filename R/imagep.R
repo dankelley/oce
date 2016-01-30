@@ -400,6 +400,196 @@ drawPalette <- function(zlim, zlab="",
     invisible()
 }
 
+
+#' Plot an Image with a Color Palette
+#' 
+#' Plot an image with a color palette, in a way that does not conflict with
+#' \code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
+#' e.g. to get an x-y plot with points coloured according to a palette, use 
+#' \code{\link{drawPalette}} and then draw the main diagram.
+#'
+#' @details
+#' By default, creates an image with a color palette to the right.  The effect is similar to
+#' \code{\link{filled.contour}} except that with \code{imagep} it is possible to
+#' set the \code{\link{layout}} outside the function, which enables the creation
+#' of plots with many image-palette panels.  Note that the contour lines may not
+#' coincide with the color transitions, in the case of coarse images.
+#' 
+#' Note that this does not use \code{\link{layout}} or any of the other screen
+#' splitting methods.  It simply manipulates margins, and draws two plots
+#' together.  This lets users employ their favourite layout schemes.
+#' 
+#' The palette is drawn before the image, so that further drawing can be done on
+#' the image if desired, if the user prefers not to use the \code{adorn} argument.
+#' 
+#' NOTE: \code{imagep} is an analogue of \code{\link{image}}, and from that
+#' it borrows a the convention that the number of rows in the matrix corresponds to
+#' to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}} permits
+#' the length of \code{x} to match either \code{nrow(z)} or \code{1+nrow(z)}, but
+#' here only the first is permitted.)
+#'
+#' @param x,y These have different meanings in different modes of operation.
+#'         \emph{Mode 1.} One
+#'         mode has them meaning the locations of coordinates along which values
+#'         matrix \code{z} are defined. In this case, both \code{x} and \code{y}
+#'         must be supplied and, within each, the values must be finite and
+#'         distinct; if values are out of order, they (and \code{z}) will be
+#'         transformed to put them in order.
+#'         ordered in a matching way).  \strong{Mode 2.}
+#'         If \code{z} is provided but not \code{x} and \code{y}, then the latter
+#'         are constructed to 
+#'         indicate the indices of the matrix, in contrast
+#'         to the range of 0 to 1, as is the case for \code{\link{image}}.  
+#'         \emph{Mode 3.} If
+#'         \code{x} is a list, its components \code{x$x} and \code{x$y} are used
+#'         for \code{x} and \code{y}, respectively. If the list has component
+#'         \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
+#'         mimic those of \code{\link{image}}, which explains the same description
+#'         here.)  \emph{Mode 4.} There are also some special cases, e.g. if \code{x} is a
+#'         topographic object such as can be created with \code{\link{read.topo}}
+#'         or \code{\link{as.topo}}, then longitude and latitude are used for
+#'         axes, and topographic height is drawn.
+#' 
+#' @param z A matrix containing the values to be plotted (NAs are allowed). Note
+#'         that x can be used instead of z for convenience. (NOTE: these arguments
+#'         are meant to mimic those of \code{\link{image}}, which explains the same
+#'         description here.) 
+#' @param  xlim,ylim Limits on x and y axes.
+#' @param  zlim Either a pair of numbers giving the limits for the colorscale,
+#'         or \code{"histogram"} to have a flattened histogram (i.e. to maximally
+#'         increase contrast throughout the domain.)
+#' @param  decimate Controls whether the image will be decimated before plotting,
+#'         in three possible cases. \strong{Case 1.}
+#'         If \code{decimate=FALSE} then every grid cell in the matrix will
+#'         be represented by a pixel in the image. \strong{Case 2 (the default).}
+#'         If \code{decimate=TRUE}, then decimation will be done
+#'         in the horizontal or vertical direction (or both) if the length of the
+#'         corresponding edge of the \code{z} matrix exceeds 800. (This also creates
+#'         a warning message.) The decimation 
+#'         factor is computed as the integet just below the ratio of \code{z} dimension
+#'         to 400. Thus, no decimation is done if the dimension is less than 800,
+#'         but if the dimension s between 800 and 1199, only every second grid
+#'         point is mapped to a pixel in the image.  \strong{Case 3.}
+#'         If \code{decimate} is an integer, then that \code{z} is subsampled
+#'         at \code{seq.int(1L, dim(z)[1], by=decimate)} (as is \code{x}), and
+#'         the same is done for the \code{y} direction. \strong{Case 4.} If
+#'         \code{decimate} is a vector of two integers, the first is used for
+#'         the first index of \code{z}, and the second is used for the second
+#'         index.
+#' 
+#' @param  zclip Logical, indicating whether to clip the colors to those
+#'         corresponding to \code{zlim}. This only works if \code{zlim} is
+#'         provided. Clipped regions will be colored with \code{missingColor}.
+#'         Thus, clipping an image is somewhat analogous to clipping in an xy
+#'         plot, with clipped data being ignored, which in an image means to be be
+#'         colored with \code{missingColor}.
+#' 
+#' @param  flipy Logical, with \code{TRUE} indicating that the image
+#'         should be flipped top to bottom (e.g. to produce a profile image
+#'         for a downward-looking acoustic-doppler profile).
+#' @param  xlab,ylab,zlab Names for x axis, y axis, and the image values.
+#' @param  zlabPosition String indicating where to put the label for the z axis,
+#'         either at the top-right of the main image, or on the side, in the axis
+#'         for the palette.
+#' @param  breaks The z values for breaks in the color scheme.  If this is of
+#'         length 1, the value indicates the desired number of breaks, which is
+#'         supplied to \code{\link{pretty}}, in determining clean break points.
+#' @param  col Either a vector of colors corresponding to the breaks, of length
+#'         1 plus the number of breaks, or a function specifying colors,
+#'         e.g. \code{\link{oce.colorsJet}} for a rainbow.
+#' @param  colormap A color map as created by \code{\link{colormap}}.  If
+#'         provided, then \code{colormap$breaks} and \code{colormap$col} take
+#'         precedence over the present arguments \code{breaks} and \code{col}.
+#'         (All of the other contents of \code{colormap} are ignored, though.)
+#' @param  labels Optional vector of labels for ticks on palette axis (must
+#'         correspond with \code{at}).
+#' @param  at Optional vector of positions for the \code{label}s.
+#' @param  drawContours Logical value indicating whether to draw contours on the
+#'         image, and palette, at the color breaks.  Images with a great deal of
+#'         high-wavenumber variation look poor with contours.
+#' @param  tformat Optional argument passed to \code{\link{oce.plot.ts}}, for
+#'         plot types that call that function.  (See \code{\link{strptime}} for the
+#'         format used.)
+#' @param  drawTimeRange Logical, only used if the \code{x} axis is a
+#'         time.  If \code{TRUE}, then an indication of the time range of the
+#'         data (not the axis) is indicated at the top-left margin of the
+#'         graph.  This is useful because the labels on time axes only indicate
+#'         hours if the range is less than a day, etc.
+#' @param  drawPalette Indication of the type of palette to draw, if any.  If
+#'         \code{drawPalette=TRUE}, a palette is drawn at the right-hand side of the
+#'         main image.  If \code{drawPalette=FALSE}, no palette is drawn, and the
+#'         right-hand side of the plot has a thin margin.  If
+#'         \code{drawPalette="space"}, then no palette is drawn, but space is put in
+#'         the right-hand margin to occupy the region in which the palette would
+#'         have been drawn.  This last form is useful for producing stacked plots
+#'         with uniform left and right margins, but with palettes on only some of
+#'         the images.
+#' @param  drawTriangles Logical value indicating whether to draw
+#'         triangles on the top and bottom of the palette.  This is passed to
+#'         \code{\link{drawPalette}}.
+#' @param  filledContour Boolean value indicating whether to use filled
+#'         contours to plot the image.
+#' @param  missingColor A color to be used to indicate missing data, or
+#'         \code{NULL} to avoid making the indication.
+#' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
+#'         also for \code{par(mar)}, computed from this.  The default is
+#'         tighter than the R default, in order to use more space for the
+#'         data and less for the axes.
+#' @param  mar A 4-element Value to be used with \code{\link{par}("mar")}.  If not
+#'         given, a reasonable value is calculated based on whether \code{xlab} and
+#'         \code{ylab} are empty strings.
+#' @param  mai.palette Palette margin corrections (in inches), added to the
+#'         \code{mai} value used for the palette.  Use with care.
+#' @param  xaxs Character indicating whether image should extend to edge
+#'         of x axis (with value \code{"i"}) or not; see
+#'         \code{\link[graphics]{par}}("xaxs").
+#' @param  yaxs As \code{xaxs} but for y axis.
+#' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
+#' @param  adorn Optional \code{\link{expression}} to be performed immediately after
+#'         drawing the data panel.
+#' @param  axes Logical, set \code{TRUE} to get axes on the main image.
+#' @param  main Title for plot.
+#' @param  axisPalette Optional replacement function for \code{axis()}, passed to
+#'         \code{\link{drawPalette}}.
+#' @param  debug A flag that turns on debugging.  Set to 1 to get a
+#'         moderate amount of debugging information, or to 2 to get more.
+#' @param  \dots Optional arguments passed to plotting functions.
+#' 
+#' @return A list is silently returned, containing \code{xat} and \code{yat},
+#'     values that can be used by \code{\link{oce.grid}} to add a grid to the
+#'     plot.
+#' 
+#' @seealso This uses \code{\link{drawPalette}}.
+#' 
+#' @examples
+#' library(oce)
+#' 
+#' # 1. simplest use
+#' imagep(volcano)
+#' 
+#' # 2. something oceanographic (internal-wave speed)
+#' h <- seq(0, 50, length.out=100)
+#' drho <- seq(1, 3, length.out=200)
+#' speed <- outer(h, drho, function(drho, h) sqrt(9.8 * drho * h / 1024))
+#' imagep(h, drho, speed, xlab="Equivalent depth [m]",
+#' ylab=expression(paste(Delta*rho, " [kg/m^3]")),
+#' zlab="Internal-wave speed [m/s]")
+#' 
+#' # 3. fancy labelling on atan() function
+#' x <- seq(0, 1, 0.01)
+#' y <- seq(0, 1, 0.01)
+#' angle <- outer(x,y,function(x,y) atan2(y,x))
+#' imagep(x, y, angle, filledContour=TRUE, breaks=c(0, pi/4, pi/2),
+#'        col=c("lightgray", "darkgray"),
+#'        at=c(0, pi/4, pi/2),
+#'        labels=c(0, expression(pi/4), expression(pi/2)))
+#' 
+#' # 4. a colormap case
+#' data(topoWorld)
+#' cm <- colormap(name="gmt_globe")
+#' imagep(topoWorld, colormap=cm)
+#' 
+#' @author Dan Kelley and Clark Richards
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
                    zclip=FALSE, flipy=FALSE,
@@ -505,10 +695,11 @@ imagep <- function(x, y, z,
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
-    if (is.logical(decimate)) {
-        cdim <- dim                    # (possibly) clipped dim
+    decimateLogical <- is.logical(decimate)
+    if (decimateLogical) { # this block makes decimate be a vector of length 2
         ## message("decimate is logical; decimate:", decimate)
         if (decimate) {
+            cdim <- dim                    # (possibly) clipped dim
             ## issue 827: decide whether to decimate based on just the data 
             ## within the plot window.
             if (xlimGiven) {
@@ -530,29 +721,36 @@ imagep <- function(x, y, z,
                     cdim[2] <- ny
             }
             ## message("nx: ", nx, ", ny: ", ny)
-            decimate <- max(as.integer(round(max(cdim) / 400)), 1)
-            oceDebug(debug, "set auto decimation=", decimate, "\n")
+            ## message("cdim: ", cdim[1], " ", cdim[2])
+            decimate <- as.integer(cdim / 400)
+            decimate <- ifelse(decimate < 1, 1, decimate)
+            ## message("decimate: ", decimate[1], " ", decimate[2])
+            oceDebug(debug, "set auto decimation=", paste(decimate, collapse=" "), "\n")
         } else {
-            decimate <- 1
+            decimate <- c(1L, 1L)
         }
     }
-    if (decimate < 1)
-        stop("decimate must be a positive integer or a logical value")
-    oceDebug(debug, "decimate:", decimate, "\n")
-    if (decimate > 1) {
-        ## keep at least 100x100 pixels
-        if (dim[1] < 100 * decimate || dim[2] < 100 * decimate)
-            warning("decimation leaves less than 100 pixels in height or width\n")
-        ##> ilook <- if (dim[1] > 100*decimate) seq.int(1,dim[1],by=decimate) else seq.int(1,dim[1])
-        ##> jlook <- if (dim[2] > 100*decimate) seq.int(1,dim[2],by=decimate) else seq.int(1,dim[2])
-        ilook <- seq.int(1, dim[1], by=decimate)
-        jlook <- seq.int(1, dim[2], by=decimate)
-        oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
-        oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
+    if (1 == length(decimate))
+        decimate <- rep(decimate, 2)
+    ##> message("dim(z): ", paste(dim(z), collapse=" "))
+    oceDebug(debug, "decimation: ", paste(decimate, collapse=" "), "\n")
+    if (decimate[1] > 1) {
+        ilook <- seq.int(1, dim[1], by=decimate[1])
         x <- x[ilook]
-        y <- y[jlook]
-        z <- z[ilook, jlook]
+        z <- z[ilook,]
+        oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
+        if (decimateLogical)
+            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this\n")
     }
+    if (decimate[2] > 1) {
+        jlook <- seq.int(1, dim[2], by=decimate[2])
+        y <- y[jlook]
+        z <- z[, jlook]
+        oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
+        if (decimateLogical)
+            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this\n")
+    }
+    ##> message("dim(z): ", paste(dim(z), collapse=" "))
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
