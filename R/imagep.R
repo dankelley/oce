@@ -458,6 +458,19 @@ drawPalette <- function(zlim, zlab="",
 #' @param  zlim Either a pair of numbers giving the limits for the colorscale,
 #'         or \code{"histogram"} to have a flattened histogram (i.e. to maximally
 #'         increase contrast throughout the domain.)
+#' @param  zclip Logical, indicating whether to clip the colors to those
+#'         corresponding to \code{zlim}. This only works if \code{zlim} is
+#'         provided. Clipped regions will be colored with \code{missingColor}.
+#'         Thus, clipping an image is somewhat analogous to clipping in an xy
+#'         plot, with clipped data being ignored, which in an image means to be be
+#'         colored with \code{missingColor}.
+#' @param  flipy Logical, with \code{TRUE} indicating that the image
+#'         should be flipped top to bottom (e.g. to produce a profile image
+#'         for a downward-looking acoustic-doppler profile).
+#' @param  xlab,ylab,zlab Names for x axis, y axis, and the image values.
+#' @param  zlabPosition String indicating where to put the label for the z axis,
+#'         either at the top-right of the main image, or on the side, in the axis
+#'         for the palette.
 #' @param  decimate Controls whether the image will be decimated before plotting,
 #'         in three possible cases. \strong{Case 1.}
 #'         If \code{decimate=FALSE} then every grid cell in the matrix will
@@ -476,21 +489,6 @@ drawPalette <- function(zlim, zlab="",
 #'         \code{decimate} is a vector of two integers, the first is used for
 #'         the first index of \code{z}, and the second is used for the second
 #'         index.
-#' 
-#' @param  zclip Logical, indicating whether to clip the colors to those
-#'         corresponding to \code{zlim}. This only works if \code{zlim} is
-#'         provided. Clipped regions will be colored with \code{missingColor}.
-#'         Thus, clipping an image is somewhat analogous to clipping in an xy
-#'         plot, with clipped data being ignored, which in an image means to be be
-#'         colored with \code{missingColor}.
-#' 
-#' @param  flipy Logical, with \code{TRUE} indicating that the image
-#'         should be flipped top to bottom (e.g. to produce a profile image
-#'         for a downward-looking acoustic-doppler profile).
-#' @param  xlab,ylab,zlab Names for x axis, y axis, and the image values.
-#' @param  zlabPosition String indicating where to put the label for the z axis,
-#'         either at the top-right of the main image, or on the side, in the axis
-#'         for the palette.
 #' @param  breaks The z values for breaks in the color scheme.  If this is of
 #'         length 1, the value indicates the desired number of breaks, which is
 #'         supplied to \code{\link{pretty}}, in determining clean break points.
@@ -559,7 +557,8 @@ drawPalette <- function(zlim, zlab="",
 #'     values that can be used by \code{\link{oce.grid}} to add a grid to the
 #'     plot.
 #' 
-#' @seealso This uses \code{\link{drawPalette}}.
+#' @seealso This uses \code{\link{drawPalette}}, and is used by \code{\link{plot.adp}},
+#' \code{\link{plot.landsat}}, and other image-generating functions.
 #' 
 #' @examples
 #' library(oce)

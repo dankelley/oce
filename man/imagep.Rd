@@ -234,6 +234,7 @@ imagep(topoWorld, colormap=cm)
 Dan Kelley and Clark Richards
 }
 \seealso{
-This uses \code{\link{drawPalette}}.
+This uses \code{\link{drawPalette}}, and is used by \code{\link{plot.adp}},
+\code{\link{plot.landsat}}, and other image-generating functions.
 }
 
