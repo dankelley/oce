@@ -22,6 +22,7 @@ setMethod(f="initialize",
               .Object@metadata$model <- NA
               .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
               .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+              .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())
