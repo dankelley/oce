@@ -3,7 +3,7 @@
 \docType{data}
 \name{rsk}
 \alias{rsk}
-\title{Sample rsk dataset.}
+\title{Sample rsk Dataset}
 \description{
 (FIXME: put 1 paragraph here)
 }

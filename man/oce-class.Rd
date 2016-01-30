@@ -3,7 +3,7 @@
 \docType{class}
 \name{oce-class}
 \alias{oce-class}
-\title{Base class for objects in the oce package}
+\title{Base Class for oce Objects}
 \description{
 This is mainly used within oce to create sub-classes, although
 users can use \code{new("oce")} to create a blank \code{oce}

@@ -2,7 +2,7 @@
 
 setClass("satellite", contains="oce")
 
-#' Class to hold amsr data
+#' Class to Hold amsr Data
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
 #' the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in
@@ -54,7 +54,7 @@ setMethod(f="show",
           })
 
 
-#' Summarize an amsr object
+#' Summarize an amsr Object
 #'
 #' Although the data are stored in \code{\link{raw}} form, the summary
 #' presents results in physical units.
@@ -76,7 +76,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' Extract something from an amsr object
+#' Extract Something From an amsr Object
 #'
 #' Extract something from the \code{metadata} or \code{data} slot of an
 #' \code{\link{amsr-class}} object.
@@ -196,7 +196,7 @@ setMethod(f="[[",
               res
           })
 
-#' Plot an amsr object
+#' Plot an amsr Object
 #'
 #' @param x An object inherting from \code{\link{amsr-class}}.
 #' @param y String indicating the name of the band to plot; if not provided,
@@ -242,7 +242,7 @@ setMethod(f="plot",
           })
 
 
-#' Read an amsr file
+#' Read an amsr File
 #'
 #' Read a compressed amsr file, generating an object that inherits from
 #' \code{\link{amsr-class}}.  Note that only compressed files are read in

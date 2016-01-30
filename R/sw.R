@@ -1,4 +1,4 @@
-#' Look within the first element of a list, replacing other elements from its contents.
+#' Look Within the First Element of a List for Replacement Values
 #'
 #' @details 
 #' This is a helper function used by various seawater functions. It is used for a

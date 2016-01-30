@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,adp-method}
 \alias{[[,adp-method}
-\title{Extract something from an adp object}
+\title{Extract Something From an adp Object}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)
 }

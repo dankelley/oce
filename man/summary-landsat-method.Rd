@@ -4,7 +4,7 @@
 \name{summary,landsat-method}
 \alias{summary,landsat-method}
 \alias{summary.landsat}
-\title{Summarize a landsat object.}
+\title{Summarize a landsat Object}
 \usage{
 \S4method{summary}{landsat}(object, ...)
 }

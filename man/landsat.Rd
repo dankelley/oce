@@ -3,7 +3,7 @@
 \docType{data}
 \name{landsat}
 \alias{landsat}
-\title{Sample landsat dataset.}
+\title{Sample landsat Dataset}
 \description{
 This is a subset of the Landsat-8 image designated LC80080292014065LGN00, an
 image from March 2014 that covers Nova Scotia and portions of the Bay of

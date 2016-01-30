@@ -2,7 +2,7 @@
 % Please edit documentation in R/landsat.R
 \name{landsatAdd}
 \alias{landsatAdd}
-\title{Add a band to a landsat object.}
+\title{Add a Band to a landsat Object}
 \usage{
 landsatAdd(x, data, name, debug = getOption("oceDebug"))
 }

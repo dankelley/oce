@@ -2,7 +2,7 @@
 % Please edit documentation in R/units.R
 \name{as.unit}
 \alias{as.unit}
-\title{Convert a string to a unit}
+\title{Convert a String to a Unit}
 \usage{
 as.unit(u, default = list(unit = expression(), scale = ""))
 }
@@ -15,7 +15,7 @@ as.unit(u, default = list(unit = expression(), scale = ""))
 A list with elements \code{unit}, an \code{\link{expression}}, and \code{scale}, a string.
 }
 \description{
-Convert a string to a unit
+Convert a String to a Unit
 }
 \details{
 String matching is used to try to guess a unit from a character string.

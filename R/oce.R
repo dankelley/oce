@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A package for Oceanographic analysis.
+#' oce: A package for Oceanographic analysis
 #'
 #' The oce package provides functions for working with
 #' Oceanographic data, for calculations that are specific
@@ -57,7 +57,7 @@
 NULL
 #> NULL
 
-#' Coerce something into an object of \code{\link{oce-class}}.
+#' Coerce Something Into an oce Object
 #'
 #' @details
 #' This function is limited and not intended for common use.

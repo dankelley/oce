@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,adv-method}
 \alias{[[<-,adv-method}
-\title{Change something within an adv object}
+\title{Change Something Within an adv Object}
 \usage{
 \S4method{[[}{adv}(x, i, j) <- value
 }

@@ -4,7 +4,7 @@
 \name{plot,landsat-method}
 \alias{plot,landsat-method}
 \alias{plot.landsat}
-\title{Plot a landsat object}
+\title{Plot a landsat Object}
 \usage{
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,
   utm = FALSE, col = oce.colorsPalette, drawPalette = TRUE,
@@ -88,7 +88,7 @@ processing.}
 \item{...}{optional arguments passed to plotting functions.}
 }
 \description{
-Plot a landsat object
+Plot a landsat Object
 }
 \author{
 Dan Kelley

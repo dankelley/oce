@@ -2,7 +2,7 @@
 % Please edit documentation in R/landsat.R
 \name{landsatTrim}
 \alias{landsatTrim}
-\title{Trim a landsat image to a geographical region.}
+\title{Trim a landsat Image to a Geographical Region}
 \usage{
 landsatTrim(x, ll, ur, box, debug = getOption("oceDebug"))
 }

@@ -2,7 +2,7 @@
 
 \alias{matrixSmooth}
 
-\title{Smooth a matrix.}
+\title{Smooth a Matrix}
 
 \description{Smooth a matrix.}
 

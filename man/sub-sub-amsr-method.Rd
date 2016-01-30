@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,amsr-method}
 \alias{[[,amsr-method}
-\title{Extract something from an amsr object}
+\title{Extract Something From an amsr Object}
 \usage{
 \S4method{[[}{amsr}(x, i, j, ...)
 }

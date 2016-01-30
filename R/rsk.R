@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Sample rsk dataset.
+#' Sample rsk Dataset
 #'
 #' (FIXME: put 1 paragraph here)
 #'

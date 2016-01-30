@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Sample landsat dataset.
+#' Sample landsat Dataset
 #'
 #' This is a subset of the Landsat-8 image designated LC80080292014065LGN00, an
 #' image from March 2014 that covers Nova Scotia and portions of the Bay of
@@ -20,7 +20,7 @@
 NULL
 
 
-#' Class to hold Landsat data
+#' Class to Hold landsat Data
 #'
 #' This class has the standard slots of an \code{\link{oce-class}}
 #' object.  Landsat data are available at several websites (e.g. [1]).
@@ -193,7 +193,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' Summarize a landsat object.
+#' Summarize a landsat Object
 #'
 #' Provides a summary of a some information about an object of 
 #' \code{\link{landsat-class}}.
@@ -228,7 +228,7 @@ setMethod(f="summary",
           })
 
 
-#' Extract something from a landsat object
+#' Extract Something From a landsat Object
 #'
 #' Users are isolated from the details of the two-byte storage system
 #' by using the \code{[[} operator.
@@ -492,7 +492,7 @@ setMethod(f="[[",
               }
           })
 
-#' Plot a landsat object
+#' Plot a landsat Object
 #'
 #' @param x A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.
 #'
@@ -844,7 +844,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 }
 
 
-#' Read a landsat data file.
+#' Read a landsat File Directory
 #'
 #' Read a landsat data file, producing an object of \code{\link{landsat-class}}.
 #'
@@ -1010,7 +1010,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
 }
 
 
-#' Add a band to a landsat object.
+#' Add a Band to a landsat Object
 #'
 #' Add a band to an object of \code{\link{landsat-class}}. Note that
 #' it will be stored in numeric form, not raw form, and therefore
@@ -1050,7 +1050,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
     res
 }
 
-#' Trim a landsat image to a geographical region.
+#' Trim a landsat Image to a Geographical Region
 #'
 #' Trim a landsat image to a latitude-longitude box. This is only an approximate
 #' operation, because landsat images are provided in x-y coordinates, not

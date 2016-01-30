@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,landsat-method}
 \alias{[[,landsat-method}
-\title{Extract something from a landsat object}
+\title{Extract Something From a landsat Object}
 \usage{
 \S4method{[[}{landsat}(x, i, j, ...)
 }

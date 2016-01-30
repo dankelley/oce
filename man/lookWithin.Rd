@@ -2,7 +2,7 @@
 % Please edit documentation in R/sw.R
 \name{lookWithin}
 \alias{lookWithin}
-\title{Look within the first element of a list, replacing other elements from its contents.}
+\title{Look Within the First Element of a List for Replacement Values}
 \usage{
 lookWithin(list)
 }
@@ -13,7 +13,7 @@ lookWithin(list)
 A list with elements of the same names but possibly filled in from the first element.
 }
 \description{
-Look within the first element of a list, replacing other elements from its contents.
+Look Within the First Element of a List for Replacement Values
 }
 \details{
 This is a helper function used by various seawater functions. It is used for a

@@ -1,6 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to hold adp (adcp) data
+#' Class to Hold adp (adcp) Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
@@ -320,7 +320,7 @@ setMethod(f="summary",
           })
 
 
-#' Extract something from an adp object
+#' Extract Something From an adp Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
@@ -374,7 +374,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change something within an adp object
+#' Change Something Within an adp Object
 #'
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
@@ -540,7 +540,7 @@ setMethod(f="subset",
               res
           })
 
-#' create an object of \code{\link{adp-class}}
+#' Create an adp Object
 #'
 #' @details
 #' Construct an object of \code{\link{adp-class}}.  Only a basic

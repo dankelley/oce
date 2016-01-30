@@ -8,7 +8,7 @@
 \alias{oceDeleteMetadata}
 \alias{oceSetMetadata}
 
-\title{Access or alter data or metadata within oce object.}
+\title{Access or Alter Data or Metadata Within an oce Object}
   
 
 \usage{

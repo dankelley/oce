@@ -4,7 +4,7 @@
 \name{plot,amsr-method}
 \alias{plot,amsr-method}
 \alias{plot.amsr}
-\title{Plot an amsr object}
+\title{Plot an amsr Object}
 \usage{
 \S4method{plot}{amsr}(x, y, asp, debug = getOption("oceDebug"), ...)
 }
@@ -22,7 +22,7 @@
 \code{col} to control colours.}
 }
 \description{
-Plot an amsr object
+Plot an amsr Object
 }
 \examples{
 \dontrun{

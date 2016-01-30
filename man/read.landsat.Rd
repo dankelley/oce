@@ -2,7 +2,7 @@
 % Please edit documentation in R/landsat.R
 \name{read.landsat}
 \alias{read.landsat}
-\title{Read a landsat data file.}
+\title{Read a landsat File Directory}
 \usage{
 read.landsat(file, band = "all", emissivity = 0.984,
   debug = getOption("oceDebug"))

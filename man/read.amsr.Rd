@@ -2,7 +2,7 @@
 % Please edit documentation in R/amsr.R
 \name{read.amsr}
 \alias{read.amsr}
-\title{Read an amsr file}
+\title{Read an amsr File}
 \usage{
 read.amsr(file, debug = getOption("oceDebug"))
 }

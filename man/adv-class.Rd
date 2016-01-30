@@ -3,7 +3,7 @@
 \docType{class}
 \name{adv-class}
 \alias{adv-class}
-\title{Class to hold adv data}
+\title{Class to Hold adv Data}
 \description{
 This class holds data from acoustic-Dopper velocimeters.
 }

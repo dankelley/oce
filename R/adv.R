@@ -1,4 +1,4 @@
-#' Class to hold adv data
+#' Class to Hold adv Data
 #'
 #' This class holds data from acoustic-Dopper velocimeters.
 #'
@@ -77,7 +77,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' Extract something from an adv object
+#' Extract Something From an adv Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
@@ -128,7 +128,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change something within an adv object
+#' Change Something Within an adv Object
 #'
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.

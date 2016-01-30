@@ -3,7 +3,7 @@
 \docType{class}
 \name{amsr-class}
 \alias{amsr-class}
-\title{Class to hold amsr data}
+\title{Class to Hold amsr Data}
 \description{
 The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
 the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in

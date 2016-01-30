@@ -1,7 +1,7 @@
 \name{velocityStatistics}
 \alias{velocityStatistics}
 
-\title{Report statistics of ADP or ADV velocities.}
+\title{Report Statistics of adp or adv Velocities}
 
 \description{Report statistics of ADP or ADV velocities, such as means and
     variance ellipses.}

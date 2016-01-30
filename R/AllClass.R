@@ -1,4 +1,4 @@
-#' Base class for objects in the oce package
+#' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
 #' users can use \code{new("oce")} to create a blank \code{oce}
@@ -43,7 +43,7 @@ setClass("oce",
                         data=list(),
                         processingLog=list()))
 
-#' Summarize an oce object
+#' Summarize an oce Object
 #'
 #' Provide a summary of some pertinent aspects of the object, including
 #' important elements of its \code{metadata} slot and \code{data} slot,
@@ -171,7 +171,7 @@ setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
 
-#' Subset an oce object
+#' Subset an oce Object
 #'
 #' This is a basic class for general oce objects.  It has specialised
 #' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
@@ -210,7 +210,7 @@ setMethod(f="subset",
               res
           })
 
-#' Extract something from an oce object
+#' Extract Something From an oce Object
 #'
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
@@ -261,7 +261,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change something within an oce object
+#' Change Something Within an oce Object
 #'
 #' @description
 #' This is a base function that can be used to change items

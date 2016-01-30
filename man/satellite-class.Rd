@@ -4,7 +4,7 @@
 \name{satellite-class}
 \alias{landsat-class}
 \alias{satellite-class}
-\title{Class to hold Landsat data}
+\title{Class to Hold landsat Data}
 \description{
 This class has the standard slots of an \code{\link{oce-class}}
 object.  Landsat data are available at several websites (e.g. [1]).
