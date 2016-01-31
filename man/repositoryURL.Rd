@@ -11,7 +11,10 @@ repositoryURL(item, id, window, domain, subdomain)
 
 \item{id}{A string indicating the ID of the sought item.}
 
-\item{window}{An indication of a window to select data (ignored at present).}
+\item{window}{A list specifying a data window for a snapshot; the contents are
+\code{ocean}, a string naming the ocean (must be \code{"Atlantic"},
+\code{"Pacific"} or \code{"Indian"}) and a string named \code{time},
+specifying a date in the format \code{yyyymmdd}.}
 
 \item{domain}{The base-level domain (more information to be added later).}
 
@@ -27,27 +30,36 @@ provided with many repositories, nor to provide an exhaustive interface to
 a wide suite of data types (see \dQuote{Contributing}).
 }
 \details{
-The following values for \code{item} are handled. \itemize{
-\item \code{item="argo"}. The data are by default sought from domain
-\code{ftp://usgodae.org}, and the procedure is to construct
-a test URL as \code{ftp://usgodae.org/pub/outgoing/argo//dac/} and
-then to probe that to find the list of available 'dac' (data 
-archiving centre) subdirectories. Then each of these is searched
-to try to find a subdirectory with name equal to \code{id}. The
-first matching subdirectory is then opened and a test is made
-for the existence of a file with name constructed by pasting 
-\code{"_prof.nc"} onto \code{id}. If this works, then the URL
-is returned; otherwise an error message is given. Note: early
-tests with \code{http://data.nodc.noaa.gov} showed that it stores 
-its argo files with \emph{lower-case} names, which is inconsistent
-with argo documentation [1] and incompatible with \code{\link{read.argo}}.
-So, don't use that server!
+The following values for \code{item} are handled.
+
+\strong{argo} data. These may be looked up by float number or 
+by ocean/day window.\enumerate{
+\item \emph{Per-float mode.} The return value is constructed
+as \code{[domain]/pub/outgoing/argo/dac/[subdomain]/[id]/[id]_prof.nc},
+where square brackets indicate the values of the named arguments
+to \code{repositoryURL}. This has only been checked for domain
+\code{domain="ftp://usgodae.org"} and \code{subdomain="bodc"},
+so these are the defaults. The value of the relevant subdomain may
+be known to users familiar with argo data; others can discover the
+data archiving center for a given float by inspecting the subdirectories
+of the FTP site \code{ftp://usgodae.org/pub/outgoing/argo/dac}
+or by accessing
+\code{ftp://usgodae.org/pub/outgoing/argo/ar_index_global_meta.txt}
+and searching for the float identifer.
+\item \emph{Per-ocean/day mode.}  See example 2.
 }
+Caution: tests made in January 2016 revealed that 
+\code{http://data.nodc.noaa.gov} stores argo files with
+\emph{lower-case} names, which is inconsistent
+with argo documentation [1] and incompatible with \code{\link{read.argo}}.
 }
 \section{History}{
 
-This function was drafted in late January, 2016, and it is likely to
-change, perhaps in incompatible ways, through February.
+This function was drafted in late January, 2016, and its argument
+list is likely to change through the early months of 2016. Some
+of this will be to accommodate new data types, but changes to 
+website structures will also precipitate changes to how this
+function works.
 }
 
 \section{Contributing}{
@@ -59,12 +71,25 @@ that an interface be provided to such-and-such server is too vague
 to help much.
 }
 \examples{
+# 1. Historical data from individual float
 file <- repositoryURL(item="argo", id="6900388")
 \dontrun{
 download.file(file, "argo.nc")
 argo <- read.oce("argo.nc")
 summary(argo)
 plot(argo)
+mtext(file, side=3, line=0)
+}
+
+# 2. Snapshot of Atlantic floats on New Year's day, 2016.
+file <- repositoryURL(item="argo",
+                      window=list(ocean="atlantic", time="20130101"))
+\dontrun{
+download.file(file, "ny.nc")
+ny <- read.oce("ny.nc")
+summary(ny)
+plot(ny)
+mtext(file, side=3, line=0)
 }
 
 }
@@ -72,14 +97,12 @@ plot(argo)
 Dan Kelley
 }
 \references{
-\itemize{
-\item \strong{1.} The \code{argo} netCDF format is described at
+1. The \code{argo} netCDF format is described at
 \code{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}; 
 as of January 28, 2016, Section 2.2.4 of this document
 indicates that variable names are to be in upper case,
 which is true for the \code{nodc.noaa.gov} server, so data provided
 by this server cannot be read with \code{\link{read.argo}}.
-}
 }
 \seealso{
 \code{\link{download.file}} for downloading the files found by \code{repositoryURI}
