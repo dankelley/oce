@@ -96,7 +96,9 @@
 #' mtext(file, side=3, line=0)}
 #'
 #' # Example 2.
-#' # Map of Atlantic float SST on New Year's Day, 2016.
+#' # Map of Atlantic float SST on New Year's Day, 2016, 
+#' # with faded colours if the top datum is not close to 
+#' # the surface.
 #' file <- repositoryURL(item="argo",
 #'                       window=list(basin="Atlantic", time="20130101"))
 #' \dontrun{
@@ -104,10 +106,14 @@
 #' nyd <- read.oce("nyd.nc")
 #' ## Colour-code
 #' Tlim <- c(-2, 30)
-#' Ti <- rescale(nyd[['temperature']][1,], Tlim[1], Tlim[2], 1, 100)
-#' layout(matrix(1:2,nrow=1), width=c(0.9,0.1))
+#' temp <- nyd[['temperature']][1,]
+#' Ti <- rescale(temp, Tlim[1], Tlim[2], 1, 100)
+#' pres <- nyd[['pressure']][1,]
 #' col <- oceColorsJet(100)[Ti]
-#' plot(nyd, pch=21, bg=col, cex=2)
+#' col2 <- unlist(lapply(seq_along(temp),
+#'                       function(i) adjustcolor(col[i], pres[i]/10)))
+#' layout(matrix(1:2,nrow=1), width=c(0.9,0.1))
+#' plot(nyd, pch=21, bg=col2, cex=2)
 #' mtext(file, side=3, line=0)
 #' drawPalette(Tlim, col=oceColorsJet)}
 #'
