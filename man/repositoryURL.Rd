@@ -23,14 +23,16 @@ specifying a date in the format \code{yyyymmdd}.}
 \description{
 This function is able to construct universal resource locators (URLs)
 that can be used with \code{\link{download.file}} to download data from
-several common Oceanographic repositories.   The goal of this function is to
+several common Oceanographic repositories. The goal of this function is to
 spare users the task of finding such URLs for casual use or one-off
-applications.  There is no intention of trying to reproduce the web tools
-provided with many repositories, nor to provide an exhaustive interface to
-a wide suite of data types. However, efforts will be made to extend
-the range of data types, and particularly to account for changes
-that data-provision agencies tend to make in URL structures
-(see \dQuote{Contributing}).
+applications. There is no intention of trying to reproduce the web tools
+provided with many data repositories, nor of providing an exhaustive
+list of data types. Readers are advised strongly to become familiar with
+the data sites that are relevant to their own work, and also to the
+wide-reaching NOAA data-accumulator system known as ERDDAP [1], which
+provides powerful graphical tools for finding data. An R interface to
+ERDDAP is provided by the \CRANpkg{rerddap} package, of which 
+the present function is the faintest of faint echoes.
 }
 \details{
 The following values for \code{item} are handled. In each example, square
@@ -66,7 +68,7 @@ See example 2.
 Caution: tests made in January 2016 revealed that 
 \code{http://data.nodc.noaa.gov} stores argo files with
 \emph{lower-case} names, which is inconsistent
-with argo documentation [1] and incompatible with \code{\link{read.argo}}.
+with argo documentation [2] and incompatible with \code{\link{read.argo}}.
 
 \item \code{item="hydrography"} looks up hydrographic data, at present
 only by specified cruise (or EXPOCODE, in the notation used by archiving 
@@ -139,14 +141,21 @@ download.file(file, "cchdo_74JC20150110.zip")}
 Dan Kelley
 }
 \references{
-1. The \code{argo} netCDF format is described at
+\itemize{
+\item 1. The ERDDAP site is at \url{http://coastwatch.pfeg.noaa.gov/erddap/index.html} and
+\url{http://coastwatch.pfeg.noaa.gov/erddap/information.html} provides an itemized summary
+of some key issues relating to it.  Rich Signell's video tutorial on ERDDAP
+(\url{https://www.youtube.com/watch?v=18xZoXu1USM}) is a good way to get an idea for
+the scope of ERDDAP.
+\item 2. The \code{argo} netCDF format is described at
 \code{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}; 
 as of January 28, 2016, Section 2.2.4 of this document
 indicates that variable names are to be in upper case,
 which is true for the \code{nodc.noaa.gov} server, so data provided
 by this server cannot be read with \code{\link{read.argo}}.
 }
+}
 \seealso{
-\code{\link{download.file}} for downloading the files found by \code{repositoryURI}
+The \CRANpkg{rerddap} package provides excellent capabilities for searching for datasets, and the related website \url{http://coastwatch.pfeg.noaa.gov/erddap/index.html} provides excellent graphical interfaces to this archive. \code{\link{download.file}} for downloading the files found by \code{repositoryURI}
 }
 
