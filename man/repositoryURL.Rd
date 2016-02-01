@@ -21,16 +21,21 @@ specifying a date in the format \code{yyyymmdd}.}
 \item{subdomain}{The second-level domain (more information to be added later).}
 }
 \description{
-This function is able to construct universal resource identifiers (URIs)
+This function is able to construct universal resource locators (URLs)
 that can be used with \code{\link{download.file}} to download data from
 several common Oceanographic repositories.   The goal of this function is to
 spare users the task of finding such URLs for casual use or one-off
-applications.  There is no intention of trying  to reproduce the web tools
+applications.  There is no intention of trying to reproduce the web tools
 provided with many repositories, nor to provide an exhaustive interface to
-a wide suite of data types (see \dQuote{Contributing}).
+a wide suite of data types. However, efforts will be made to extend
+the range of data types, and particularly to account for changes
+that data-provision agencies tend to make in URL structures
+(see \dQuote{Contributing}).
 }
 \details{
-The following values for \code{item} are handled.
+The following values for \code{item} are handled. In each example, square
+brackets are used to indicate that the contents are to be replaced by
+the named item from the argument list.
 
 \enumerate{
 \item \code{item="argo"} looks up argo data, referenced either by 
@@ -39,18 +44,22 @@ float id or by basin plus time.
 \itemize{
 
 \item \emph{id mode.} The return value is constructed
-as \code{[domain]/pub/outgoing/argo/dac/[subdomain]/[id]/[id]_prof.nc},
-where square brackets indicate the values of the named arguments
-to \code{repositoryURL}. This has only been checked for domain
-\code{domain="ftp://usgodae.org"} and \code{subdomain="bodc"},
-so these are the defaults. The value of the relevant subdomain may
-be known to users familiar with argo data; others can discover the
-data archiving center for a given float by inspecting the subdirectories
+as \preformatted{"[domain]/pub/outgoing/argo/dac/[subdomain]/[id]/[id]_prof.nc"}
+where if \code{domain} is missing a default of 
+\code{"ftp://usgodae.org"} will be used, and similarly \code{"bodc"}
+will be used for \code{subdomain} if it is missing. The proper subdomain
+for a given float \code{id} will be known to users familiar with the data,
+while other users may infer it by inspecting the subdirectories
 of the FTP site \code{ftp://usgodae.org/pub/outgoing/argo/dac}
 or by accessing
 \code{ftp://usgodae.org/pub/outgoing/argo/ar_index_global_meta.txt}
-and searching for the float identifer.
-\item \emph{basin/time mode.}  See example 2.
+and searching for the float identifier, \code{id}. See example 1.
+
+\item \emph{basin/time mode.} The return value is constructed as
+\preformatted{"[domain]/pub/outgoing/argo/geo/[B]_ocea/[yyyy]/[mm]/[dd]/[yyy][mm][dd]_prof.nc"}
+where \code{B} is the value of \code{window$basin}, and \code{yyyy},
+\code{mm} and \code{dd} are extracted from the characters of \code{window$time}.
+See example 2.
 
 }
 
@@ -59,22 +68,26 @@ Caution: tests made in January 2016 revealed that
 \emph{lower-case} names, which is inconsistent
 with argo documentation [1] and incompatible with \code{\link{read.argo}}.
 
-\item \code{item="hydrography"} looks up hydrographic cruise data.
-At present, the only option is \code{window=list(cruise=EXPOCODE)},
-where \code{EXPOCODE} is a string holding an expedition code.  See example 3.
+\item \code{item="hydrography"} looks up hydrographic data, at present
+only by specified cruise (or EXPOCODE, in the notation used by archiving 
+agencies). The return value is constructed as
+\preformatted{"[domain]/cruise/[window$cruise]?download=dataset"} where
+the \code{domain} argument defaults to \code{"http://cchdo.ucsd.edu"}
+if it is not provided and \code{window$cruise} is a string containing 
+the cruise EXPOCODE.  (It is assumed that readers will know the identifier,
+or look it up with the searching tools provided at \url{http://cchdo.ucsd.edu}).
+The returned URL points to a zip file
+that can be expanded to get including bottle and CTD data. See example 3.
 
 }
 }
-\section{History}{
+\section{Contributing}{
 
 This function was drafted in late January, 2016, and its argument
 list is likely to change through the early months of 2016. Some
 of this will be to accommodate new data types, but changes to 
 website structures will also precipitate changes to how this
 function works.
-}
-
-\section{Contributing}{
 
 This function will be most useful if users contribute to it, both by 
 pointing out changes to URLs and by suggesting additions for useful
@@ -83,32 +96,37 @@ that an interface be provided to such-and-such server is too vague
 to help much.
 }
 \examples{
-# 1. Historical data from individual float
+# Example 1.
+# Trajectory of the argo float used for data("argo").
 file <- repositoryURL(item="argo", id="6900388")
 \dontrun{
 download.file(file, "argo.nc")
 argo <- read.oce("argo.nc")
 summary(argo)
 plot(argo)
-mtext(file, side=3, line=0)
-}
+mtext(file, side=3, line=0)}
 
-# 2. Plot map of Atlantic floats on New Year's Day, 2016.
+# Example 2.
+# Map of Atlantic float SST on New Year's Day, 2016.
 file <- repositoryURL(item="argo",
-                      window=list(basin="atlantic", time="20130101"))
+                      window=list(basin="Atlantic", time="20130101"))
 \dontrun{
 download.file(file, "nyd.nc")
 nyd <- read.oce("nyd.nc")
-summary(nydj)
-plot(nyd)
+## Colour-code
+Tlim <- c(-2, 30)
+Ti <- rescale(nyd[['temperature']][1,], Tlim[1], Tlim[2], 1, 100)
+layout(matrix(1:2,nrow=1), width=c(0.9,0.1))
+col <- oceColorsJet(100)[Ti]
+plot(nyd, pch=21, bg=col, cex=2)
 mtext(file, side=3, line=0)
-}
+drawPalette(Tlim, col=oceColorsJet)}
 
-# 3. Get a URL to a zipfile that expands to a directory holding files
-#    for data from cruise 74JC20150110.
+# Example 3.
+# Zipfile holds data from cruise 74JC20150110.
 file <- repositoryURL(item="hydrography", window=list(cruise="74JC20150110"))
-download.file(file, "cchdo_74JC20150110.zip")
-# expect  http://cchdo.ucsd.edu/cruise/74JC20150110?download=dataset
+\dontrun{
+download.file(file, "cchdo_74JC20150110.zip")}
 
 }
 \author{
