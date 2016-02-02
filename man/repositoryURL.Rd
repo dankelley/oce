@@ -119,6 +119,7 @@ download.file(file, "nyd.nc")
 nyd <- read.oce("nyd.nc")
 ## Colour-code
 Tlim <- c(-2, 30)
+temp <- nyd[["temperature"]][1,]
 cm <- colormap(temp, zlim=Tlim)
 pres <- nyd[['pressure']][1,]
 col <- cm$zcol
