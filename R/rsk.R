@@ -2,10 +2,12 @@
 
 #' Sample rsk Dataset
 #'
-#' (FIXME: put 1 paragraph here)
+#' A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 #'
-#' @details
-#' (FIXME: can have multiple paragraphs here)
+#' @details The data were obtained September 2015, off the west coast
+#'     of Greenland, by Matt Rutherford and Nicole Trenholm of the
+#'     Ocean Research Project, in collaboration with RBR and with the
+#'     NASA Oceans Melting Greenland project.
 #'
 #' @name rsk
 #' @docType data
