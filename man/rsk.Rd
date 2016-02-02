@@ -13,4 +13,14 @@ The data were obtained September 2015, off the west coast
     Ocean Research Project, in collaboration with RBR and with the
     NASA Oceans Melting Greenland project.
 }
+\examples{
+library(oce)
+data(rsk)
+plot(rsk)
+plot(as.ctd(rsk))
+plot(subset(as.ctd(rsk),pressure<10))
+}
+\references{
+\url{https://rbr-global.com/}
+}
 

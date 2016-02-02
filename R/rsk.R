@@ -11,8 +11,14 @@
 #'
 #' @name rsk
 #' @docType data
+#' @references \url{https://rbr-global.com/}
+#' @examples
+#' library(oce)
+#' data(rsk)
+#' plot(rsk)
+#' plot(as.ctd(rsk))
+#' plot(subset(as.ctd(rsk),pressure<10))
 NULL
-
 
 setMethod(f="initialize",
           signature="rsk",
