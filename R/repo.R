@@ -108,16 +108,15 @@
 #' nyd <- read.oce("nyd.nc")
 #' ## Colour-code
 #' Tlim <- c(-2, 30)
-#' temp <- nyd[['temperature']][1,]
-#' Ti <- rescale(temp, Tlim[1], Tlim[2], 1, 100)
+#' cm <- colormap(temp, zlim=Tlim)
 #' pres <- nyd[['pressure']][1,]
-#' col <- oceColorsJet(100)[Ti]
+#' col <- cm$zcol
 #' col2 <- unlist(lapply(seq_along(temp),
 #'                       function(i) adjustcolor(col[i], pres[i]/10)))
-#' layout(matrix(1:2,nrow=1), width=c(0.9,0.1))
-#' plot(nyd, pch=21, bg=col2, cex=2)
-#' mtext(file, side=3, line=0)
-#' drawPalette(Tlim, col=oceColorsJet)}
+#' par(mar=c(4, 4, 1, 4))
+#' drawPalette(colormap=cm)
+#' plot(nyd, pch=21, bg=col2, cex=2, mar=c(4, 4, 1, 4))
+#' mtext(file, side=3, line=0)}
 #'
 #' # Example 3.
 #' # Zipfile holds data from cruise 74JC20150110.
