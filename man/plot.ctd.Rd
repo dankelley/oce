@@ -87,7 +87,7 @@
   }
   \item{col}{colour of lines or symbols}
   \item{fill}{either a logical, indicating whether to fill the land with
-      light-gray, or a color name.  Owing to problems with some projections,
+      light-gray, or a colour name.  Owing to problems with some projections,
       the default is not to fill.}
   \item{eos}{equation of state to be used, either \code{"unesco"} or
       \code{"gsw"}.}

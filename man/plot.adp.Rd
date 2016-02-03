@@ -50,7 +50,7 @@
   \item{col}{optional indication of colour(s) to use.  If not provided,
     the default for images is \code{oce.colorsPalette(128,1)}, and for
     lines and points is black.}
-  \item{breaks}{optional breaks for color scheme}
+  \item{breaks}{optional breaks for colour scheme}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
       \code{\link{imagep}} call that is used to create the image.  If omitted,
       \code{zlim} is set for each panel individually, to encompass the data of
@@ -130,7 +130,7 @@
       argument is needed, because calling \code{\link{grid}} after doing a
       sequence of plots will not result in useful results for the individual
       panels.}
-  \item{grid.col}{color of grid}
+  \item{grid.col}{colour of grid}
   \item{grid.lty}{line type of grid}
   \item{grid.lwd}{line width of grid}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
@@ -278,7 +278,7 @@
         \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
     }
 
-    The color scheme for image plots (\code{which} in 1:12) is provided
+    The colour scheme for image plots (\code{which} in 1:12) is provided
     by the \code{col} argument, which is passed to \code{\link{image}}
     to do the actual plotting.  See \dQuote{Examples} for some
     comparisons.

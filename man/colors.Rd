@@ -5,12 +5,12 @@
 
 \alias{colors}
 
-\title{Data that define some color palettes}
+\title{Data that define some colour palettes}
 
-\description{The \code{colors} dataset is a list containing vectors of colors,
-  e.g. \code{colors$viridis} holds colors for the color palette known as
-  Viridis, which in 2015 became the default color palette in the matplotlib 2.0
-  Python library [1].}
+\description{The \code{colors} dataset is a list containing vectors of
+  colour-scheme names, e.g. \code{colors$viridis} holds colours for the colour
+  palette known as Viridis, which in 2015 became the default colour palette in
+  the matplotlib 2.0 Python library [1].}
 
 \usage{data(colors)}
 

@@ -51,7 +51,7 @@
     
     \item{lty}{line type, used if borders are drawn}
 
-    \item{missingColor}{a color to be used to indicate missing data, or
+    \item{missingColor}{a colour to be used to indicate missing data, or
         \code{NA} to skip the drawing of such regions (which will retain
         whatever material has already been drawn at the regions).}
 

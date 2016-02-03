@@ -99,7 +99,7 @@
 #'
 #' # Example 2.
 #' # Map of Atlantic float SST on New Year's Day, 2016, 
-#' # with faded colours if the top datum is not close to 
+#' # with faded colours if the top datum is not close to
 #' # the surface.
 #' file <- repositoryURL(item="argo",
 #'                       window=list(basin="Atlantic", time="20130101"))

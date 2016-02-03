@@ -16,8 +16,8 @@ mapDirectionField(longitude, latitude, u, v,
     \item{scale}{latitude degrees per unit of \code{u} or \code{v}.}
     \item{length}{length of arrow heads, passed to \code{\link{arrows}}}
     \item{code}{code of arrows, passed to \code{\link{arrows}}}
-    \item{col}{color of arrows.  This may be a single colour, or a matrix
-        of colors of the same dimension as \code{u}.}
+    \item{col}{colour of arrows.  This may be a single colour, or a matrix
+        of colours of the same dimension as \code{u}.}
     \item{\dots}{optional arguments passed to \code{\link{arrows}}, e.g.
         \code{angle} and \code{lwd} can be useful in differentiating different
         fields.}
