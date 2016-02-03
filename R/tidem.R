@@ -628,110 +628,110 @@ webtide <- function(action=c("map", "predict"),
                     region="nwatl",
                     plot=TRUE, tformat, ...)
 {
-  action <- match.arg(action)
-  subdir <- paste(basedir, "/data/", region, sep="")
-  if(region=="HRglobal"){
-    filename <- paste(subdir, "/", region, "ll.nod", sep="")
-  }else{
-    if(region=="arctic9"){
-      filename <- paste(subdir, "/", region, ".nod", sep="")
+    action <- match.arg(action)
+    subdir <- paste(basedir, "/data/", region, sep="")
+    if(region=="HRglobal"){
+        filename <- paste(subdir, "/", region, "ll.nod", sep="")
     }else{
-      filename <- paste(subdir, "/", region, "_ll.nod", sep="")
+        if(region=="arctic9"){
+            filename <- paste(subdir, "/", region, ".nod", sep="")
+        }else{
+            filename <- paste(subdir, "/", region, "_ll.nod", sep="")
     }}
-  
-  triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
-  if (action == "map") {
-    if (plot) {
-      asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
-      par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
-      plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
-           asp=asp, xlab="", ylab="", ...)
-      ##usr <- par('usr')
-      ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
-      warning("tidem: using default coastline for testing")
-      data("coastlineWorld", package="oce", envir=environment())
-      coastlineWorld <- get("coastlineWorld")
-      ##data(best, envir=environment(), debug=debug-1)
-      ##coastline <- get(best)
-      lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-      if (missing(node)) {
-        point <- locator(1)
-        node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
-      }
-      longitude <- triangles$longitude[node]
-      latitude <- triangles$latitude[node]
-      points(longitude, latitude, pch=20, cex=2, col='blue')
-      legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
-             legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
-    } else  {
-      node <- seq_along(triangles$longitude)
-      longitude <- triangles$longitude
-      latitude <- triangles$latitude
+
+    triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
+    if (action == "map") {
+        if (plot) {
+            asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
+            par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
+                 asp=asp, xlab="", ylab="", ...)
+            ##usr <- par('usr')
+            ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            warning("tidem: using default coastline for testing")
+            data("coastlineWorld", package="oce", envir=environment())
+            coastlineWorld <- get("coastlineWorld")
+            ##data(best, envir=environment(), debug=debug-1)
+            ##coastline <- get(best)
+            lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
+            if (missing(node)) {
+                point <- locator(1)
+                node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
+            }
+            longitude <- triangles$longitude[node]
+            latitude <- triangles$latitude[node]
+            points(longitude, latitude, pch=20, cex=2, col='blue')
+            legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
+                   legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
+        } else  {
+            node <- seq_along(triangles$longitude)
+            longitude <- triangles$longitude
+            latitude <- triangles$latitude
+        }
+        return(list(node=node, latitude=latitude, longitude=longitude))
+    } else if (action == "predict") {
+        if (missing(time))
+            time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
+        if (missing(node)) {
+            if (missing(longitude) || missing(latitude))
+                stop("'longitude' and 'latitude' must be given unless 'node' is given")
+            node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
+        } else {
+            latitude <- triangles$latitude[node]
+            longitude <- triangles$longitude[node]
+        }
+        constituentse <- dir(path=subdir, pattern="*.s2c")
+                                        #abbrev <- substr(constituentse, 1, 2)
+        abbrev <- as.character(read.table(paste(subdir,"/constituents.txt",sep=""))[,1])
+        constituentsuv <- dir(path=subdir, pattern="*.v2c")
+        nconstituents <- length(constituentse)
+        period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
+        data("tidedata", package="oce", envir=environment())
+        tidedata  <- get("tidedata")#,   pos=globalenv())
+        for (i in 1:nconstituents) {
+            period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            ## Elevation file contains one entry per node, starting with e.g.:
+            ##tri
+            ## period 23.934470 (hours) first harmonic 
+            ##260.000000 (days) 
+            ##1 0.191244 223.820954
+            ##2 0.188446 223.141200
+            cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
+            ampe[i] <- cone[[2]]
+            phasee[i] <- cone[[3]]
+            conuv <- read.table(paste(subdir,constituentsuv[i],sep="/"), skip=3)[node,]
+            ampu[i] <- conuv[[2]]
+            phaseu[i] <- conuv[[3]]
+            ampv[i] <- conuv[[4]]
+            phasev[i] <- conuv[[5]]
+        }
+        ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
+        elevation <- u <- v <- rep(0, length(time))
+        ## NOTE: tref is the *central time* for tidem()
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
+        h <- (as.numeric(time) - as.numeric(tRef)) / 3600
+        for (i in 1:nconstituents) {
+            vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            phaseOffset <- (vuf$u + vuf$v) * 360
+            ## NOTE: phase is *subtracted* here, but *added* in tidem()
+            elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
+            u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
+            v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
+        }
+        if (plot) {
+            par(mfrow=c(3,1))
+            oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
+                        main=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
+                        tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
+            oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"),
+                        drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
+            oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
+                        drawTimeRange=FALSE, tformat=tformat)
+            abline(h=0, lty='dotted', col='gray')
+        }
     }
-    return(list(node=node, latitude=latitude, longitude=longitude))
-  } else if (action == "predict") {
-    if (missing(time))
-      time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
-    if (missing(node)) {
-      if (missing(longitude) || missing(latitude))
-        stop("'longitude' and 'latitude' must be given unless 'node' is given")
-      node <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
-    } else {
-      latitude <- triangles$latitude[node]
-      longitude <- triangles$longitude[node]
-    }
-    constituentse <- dir(path=subdir, pattern="*.s2c")
-    #abbrev <- substr(constituentse, 1, 2)
-    abbrev <- as.character(read.table(paste(subdir,"/constituents.txt",sep=""))[,1])
-    constituentsuv <- dir(path=subdir, pattern="*.v2c")
-    nconstituents <- length(constituentse)
-    period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
-    data("tidedata", package="oce", envir=environment())
-    tidedata  <- get("tidedata")#,   pos=globalenv())
-    for (i in 1:nconstituents) {
-      period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
-      ## Elevation file contains one entry per node, starting with e.g.:
-      ##tri
-      ## period 23.934470 (hours) first harmonic 
-      ##260.000000 (days) 
-      ##1 0.191244 223.820954
-      ##2 0.188446 223.141200
-      cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
-      ampe[i] <- cone[[2]]
-      phasee[i] <- cone[[3]]
-      conuv <- read.table(paste(subdir,constituentsuv[i],sep="/"), skip=3)[node,]
-      ampu[i] <- conuv[[2]]
-      phaseu[i] <- conuv[[3]]
-      ampv[i] <- conuv[[4]]
-      phasev[i] <- conuv[[5]]
-    }
-    ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
-    elevation <- u <- v <- rep(0, length(time))
-    ## NOTE: tref is the *central time* for tidem()
-    tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
-    h <- (as.numeric(time) - as.numeric(tRef)) / 3600
-    for (i in 1:nconstituents) {
-      vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
-      phaseOffset <- (vuf$u + vuf$v) * 360
-      ## NOTE: phase is *subtracted* here, but *added* in tidem()
-      elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
-      u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
-      v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
-    }
-    if (plot) {
-      par(mfrow=c(3,1))
-      oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
-                  main=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
-                  tformat=tformat)
-      abline(h=0, lty='dotted', col='gray')
-      oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"),
-                  drawTimeRange=FALSE, tformat=tformat)
-      abline(h=0, lty='dotted', col='gray')
-      oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
-                  drawTimeRange=FALSE, tformat=tformat)
-      abline(h=0, lty='dotted', col='gray')
-    }
-  }
-  invisible(list(time=time, elevation=elevation, u=u, v=v,
-                 node=node, basedir=basedir, region=region))
+    invisible(list(time=time, elevation=elevation, u=u, v=v,
+                   node=node, basedir=basedir, region=region))
 }
