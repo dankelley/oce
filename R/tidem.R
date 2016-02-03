@@ -630,16 +630,26 @@ webtide <- function(action=c("map", "predict"),
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
-    if(region=="HRglobal"){
-        filename <- paste(subdir, "/", region, "ll.nod", sep="")
-    }else{
-        if(region=="arctic9"){
-            filename <- paste(subdir, "/", region, ".nod", sep="")
-        }else{
-            filename <- paste(subdir, "/", region, "_ll.nod", sep="")
-    }}
 
-    triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
+    ## 2016-02-03: it seems that there are several possibilities for this filename.
+    triangles <- NULL
+    warn <- options("warn")$warn
+    options(warn=-1)
+    t <- try({ triangles <- read.table(paste(subdir, "/", region, ".nod", sep=""),
+        col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+    if (inherits(t, "try-error")) {
+        t <- try({ triangles <- read.table(paste(subdir, "/", region, "ll.nod", sep=""),
+            col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+        if (inherits(t, "try-error")) {
+            t <- try({ triangles <- read.table(paste(subdir, "/", region, "_ll.nod", sep=""),
+                col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+        }
+    }
+    if (is.null(triangles))
+        stop("Could not find the '.nod' file")
+    options(warn=warn)
+    rm(warn)
+
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
