@@ -21,7 +21,7 @@
 }
 
 
-\details{This is mainly a wrapper around \code{mapproject}.}
+\details{This is mainly a wrapper around \code{\link{lonlat2map}}.}
 
 \value{A list containing \code{x} and \code{y}.}
 
