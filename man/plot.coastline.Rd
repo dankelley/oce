@@ -14,7 +14,7 @@
      asp,
      clongitude, clatitude, span,
      lonlabel=NULL, latlabel=NULL, sides=NULL,
-     projection=NULL, parameters=NULL, orientation=NULL,
+     projection=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
@@ -75,14 +75,6 @@
       Stereopoloar one is used as if \code{projection="+proj=stere"}.
       Otherwise, \code{projection} must be a character string identifying a
       projection accepted by \code{\link{mapPlot}}.}
-
-  \item{parameters}{optional parameters to map projection, if a
-      \code{mapproj}-style \code{projection} is specified (see
-      \code{\link{mapPlot}}.}
-
-  \item{orientation}{optional orientation of map projection, if a
-      \code{mapproj}-style \code{projection} is specified  (see
-      \code{\link{mapPlot}}.}
 
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
@@ -148,10 +140,11 @@
   with them.}
 
 \section{History}{Until February, 2016, \code{plot.coastline} function relied on
-  a now-defunct argument \code{fill} to control colours. This argument will be
-  permitted temporarily, with a warning being issued to instruct users to set
-  \code{col} to a colour, if filling is desired, or to set it to \code{NULL}
-  to avoid filling.}
+  a now-defunct argument \code{fill} to control colours; \code{col} is to be
+  used now, instead. Also, in February, 2016, the arguments named
+  \code{parameters} and \code{orientation} were both removed, as they had become
+  nonfunctional about a year previously, in the transition to using
+  \CRANpkg{rgdal} to carry out map projections.}
 
 \examples{
 \dontrun{

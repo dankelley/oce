@@ -66,7 +66,7 @@ setMethod(f="plot",
                                asp,
                                clongitude, clatitude, span,
                                lonlabel=NULL, latlabel=NULL, sides=NULL,
-                               projection=NULL, parameters=NULL, orientation=NULL,
+                               projection=NULL,
                                expand=1,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
                                bg,
@@ -139,7 +139,7 @@ setMethod(f="plot",
                           mgp=mgp, mar=mar,
                           bg="white", fill=fill, type='l', axes=TRUE, ## FIXME: use bg and col here; delete fill
                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                          projection=projection, parameters=parameters, orientation=orientation,
+                          projection=projection,
                           debug=debug-1, ...)
 
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)
