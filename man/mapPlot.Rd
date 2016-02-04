@@ -12,7 +12,7 @@
   lines, text, images and contours.}
 
 \usage{mapPlot(longitude, latitude, longitudelim, latitudelim,
-        grid=TRUE, bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE,
+        grid=TRUE, bg, fill, border=NULL, col=NA, type='l', axes=TRUE, drawBox=TRUE,
         showHemi=TRUE, polarCircle=0,
         lonlabel=NULL, latlabel=NULL, sides=NULL,
         projection="+proj=moll", tissot=FALSE, trim=TRUE,
@@ -44,11 +44,16 @@
 
   \item{bg}{background colour for plot (ignored at present).}
 
-  \item{fill}{colour to be used to fill land regions, or \code{NULL} to avoid
-    filling.  Filling is inaccurate for projections, e.g. yielding as misshaped
-    Antarticic continent or oceans filled instead of land. In such cases, it
-    makes sense to turn filling off.}
-        
+  \item{fill}{included only for compatibility with the previous version of
+    \code{mapPlot}; will be removed in next version.}
+
+  \item{border}{colour of coastlines and international borders. The default,
+    \code{NULL}, means to use \code{\link{par}("fg")}; see
+    \code{\link{polygon}}.}
+    
+  \item{col}{colour with which to fill coastline elements. The default,
+    \code{NA}, is not to fill; see \code{\link{polygon}}.}
+
   \item{type}{value to indicate type of plot, as with
     \code{\link{par}("plot")}.}
 

@@ -333,7 +333,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 } 
 
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
-                    bg, fill=NULL, type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
+                    bg, fill,
+                    border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
+                    type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -353,7 +355,19 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
     }
-
+    if (!missing(fill)) {
+        ## permit call as documented before 2016-02-03
+        ## Note: the code permitted fill=TRUE but this was never documented
+        if (is.character(fill)) {
+            col <- fill
+        } else {
+            if (is.logical(fill) && !fill) {
+                col <- NULL
+            }
+        }
+        warning("In mapPlot() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
+    }
+ 
     isTopo <- FALSE
     if (inherits(longitude, "topo")) {
         topo <- longitude
@@ -457,8 +471,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         x <- xy$x
         y <- xy$y
     }
-    if (!is.null(fill))
-        polygon(x, y, col=fill, ...)
+    if (!is.null(col))
+        polygon(x, y, border=border, col=col, ...)
     if (isTopo) {
         mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
     }
