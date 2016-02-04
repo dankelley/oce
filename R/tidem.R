@@ -635,16 +635,8 @@ webtide <- function(action=c("map", "predict"),
     triangles <- NULL
     warn <- options("warn")$warn
     options(warn=-1)
-    t <- try({ triangles <- read.table(paste(subdir, "/", region, ".nod", sep=""),
-        col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
-    if (inherits(t, "try-error")) {
-        t <- try({ triangles <- read.table(paste(subdir, "/", region, "ll.nod", sep=""),
-            col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
-        if (inherits(t, "try-error")) {
-            t <- try({ triangles <- read.table(paste(subdir, "/", region, "_ll.nod", sep=""),
-                col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
-        }
-    }
+    t <- try({ triangles <- read.table(paste(subdir, "/", list.files(path=subdir,pattern="*.nod"), sep=""),
+                                     col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
     if (is.null(triangles))
         stop("Could not find the '.nod' file")
     options(warn=warn)
