@@ -43,16 +43,16 @@ description here.)}
 
 \item{xlim, ylim}{Limits on x and y axes.}
 
-\item{zlim}{Either a pair of numbers giving the limits for the colorscale,
+\item{zlim}{Either a pair of numbers giving the limits for the colour scale,
 or \code{"histogram"} to have a flattened histogram (i.e. to maximally
 increase contrast throughout the domain.)}
 
-\item{zclip}{Logical, indicating whether to clip the colors to those
+\item{zclip}{Logical, indicating whether to clip the colours to those
 corresponding to \code{zlim}. This only works if \code{zlim} is
-provided. Clipped regions will be colored with \code{missingColor}.
+provided. Clipped regions will be coloured with \code{missingColor}.
 Thus, clipping an image is somewhat analogous to clipping in an xy
 plot, with clipped data being ignored, which in an image means to be be
-colored with \code{missingColor}.}
+coloured with \code{missingColor}.}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the image
 should be flipped top to bottom (e.g. to produce a profile image
@@ -83,15 +83,15 @@ the same is done for the \code{y} direction. \strong{Case 4.} If
 the first index of \code{z}, and the second is used for the second
 index.}
 
-\item{breaks}{The z values for breaks in the color scheme.  If this is of
+\item{breaks}{The z values for breaks in the colour scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
 supplied to \code{\link{pretty}}, in determining clean break points.}
 
-\item{col}{Either a vector of colors corresponding to the breaks, of length
-1 plus the number of breaks, or a function specifying colors,
+\item{col}{Either a vector of colours corresponding to the breaks, of length
+1 plus the number of breaks, or a function specifying colours,
 e.g. \code{\link{oce.colorsJet}} for a rainbow.}
 
-\item{colormap}{A color map as created by \code{\link{colormap}}.  If
+\item{colormap}{A colour map as created by \code{\link{colormap}}.  If
 provided, then \code{colormap$breaks} and \code{colormap$col} take
 precedence over the present arguments \code{breaks} and \code{col}.
 (All of the other contents of \code{colormap} are ignored, though.)}
@@ -102,7 +102,7 @@ correspond with \code{at}).}
 \item{at}{Optional vector of positions for the \code{label}s.}
 
 \item{drawContours}{Logical value indicating whether to draw contours on the
-image, and palette, at the color breaks.  Images with a great deal of
+image, and palette, at the colour breaks.  Images with a great deal of
 high-wavenumber variation look poor with contours.}
 
 \item{drawPalette}{Indication of the type of palette to draw, if any.  If
@@ -132,7 +132,7 @@ hours if the range is less than a day, etc.}
 \item{filledContour}{Boolean value indicating whether to use filled
 contours to plot the image.}
 
-\item{missingColor}{A color to be used to indicate missing data, or
+\item{missingColor}{A colour to be used to indicate missing data, or
 \code{NULL} to avoid making the indication.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
@@ -176,17 +176,17 @@ A list is silently returned, containing \code{xat} and \code{yat},
     plot.
 }
 \description{
-Plot an image with a color palette, in a way that does not conflict with
+Plot an image with a colour palette, in a way that does not conflict with
 \code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
 e.g. to get an x-y plot with points coloured according to a palette, use 
 \code{\link{drawPalette}} and then draw the main diagram.
 }
 \details{
-By default, creates an image with a color palette to the right.  The effect is similar to
+By default, creates an image with a colour palette to the right.  The effect is similar to
 \code{\link{filled.contour}} except that with \code{imagep} it is possible to
 set the \code{\link{layout}} outside the function, which enables the creation
 of plots with many image-palette panels.  Note that the contour lines may not
-coincide with the color transitions, in the case of coarse images.
+coincide with the colour transitions, in the case of coarse images.
 
 Note that this does not use \code{\link{layout}} or any of the other screen
 splitting methods.  It simply manipulates margins, and draws two plots
