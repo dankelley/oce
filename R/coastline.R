@@ -95,9 +95,7 @@ setMethod(f="plot",
                   if (is.character(fill)) {
                       col <- fill
                   } else {
-                      if (is.logical(fill)) {
-                          col <- if (fill) "lightgray" else NULL
-                      } else {
+                      if (is.logical(fill) && !fill) {
                           col <- NULL
                       }
                   }
@@ -137,10 +135,11 @@ setMethod(f="plot",
                   mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
                           showHemi=showHemi,
                           mgp=mgp, mar=mar,
-                          bg="white", fill=fill, type='l', axes=TRUE, ## FIXME: use bg and col here; delete fill
+                          bg="white", border=border, col=col, type='l', axes=TRUE, ## FIXME: use bg and col here; delete fill
                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                           projection=projection,
                           debug=debug-1, ...)
+                  message("about to call mapPlot() with border: ", border, ", col: ", col)
 
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)
                   return(invisible())
