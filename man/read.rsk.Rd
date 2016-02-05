@@ -91,18 +91,6 @@
 
 \value{An object of \code{\link{rsk-class}}.}
 
-\examples{
-library(oce)
-## A CTD-style rsk
-if (requireNamespace("R.utils")) {
-  file <- system.file("extdata", "sample.rsk.gz", package="oce")
-  tmp <- tempfile(fileext=".rsk")
-  R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
-  rsk <- read.rsk(tmp)
-  ctd <- as.ctd(rsk)
-}
-}
-
 \seealso{The documentation for \code{\link{rsk-class}} explains the structure of
   \code{rsk} objects, and also outlines other functions dealing with them.
   Since RBR has a wide variety of instruments, \code{rsk} datasets can be quite
