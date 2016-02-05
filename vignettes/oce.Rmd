@@ -22,7 +22,7 @@ setting.  These things are illustrated here, in the context of some practical
 examples.  Worked examples are provided, in order to help readers take early
 steps towards using the `oce` package in their research.
 
-## Introduction
+## 1. Introduction
 
 Oceanographers must deal with measurements made by a wide variety of
 instruments, a task that is complicated by the delight instrument manufacturers
@@ -46,7 +46,7 @@ according to the priorities of practical research. As a result, `oce` is a
 fairly comfortable tool today, and it should remain so as it grows.
 
 
-## Object design
+## 2. Object design
 
 As illustrated in Figure 1, each `oce` object contains three slots: (a) `{data`,
 a list or a data frame containing the actual data (e.g., for a CTD object, this
@@ -96,7 +96,7 @@ together, capitalizing the second and subsequent words. For example,
    a naming conflict (by calling it `approx`) is to avoid the necessity of
    writing `oce::approx`, a notation that can be confusing to users.
 
-## Calculation of seawater properties
+## 3. Calculation of seawater properties
 
 The `oce` package provides many functions for dealing with seawater properties.
 Perhaps the most used is `swRho(S,T,p)`, which computes seawater density
@@ -153,9 +153,9 @@ e. Draw a blank $T$-$S$ diagram with $S$ from $30$ to $40$\,PSU and $T$ from $-2
 
 
 
-## CTD data
+## 4. CTD data
 
-### Example with pre-trimmed data
+### 4.1 Example with pre-trimmed data
 
 
 To get you started with CTD data, `oce` provides a sample data set that has
@@ -194,7 +194,7 @@ a good idea to add log entries to any objects that you change, by using the
 **Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
 the pycnocline.
 
-### Example with raw data
+### 4.2 Example with raw data
 
 Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data.
@@ -237,7 +237,7 @@ following:
 plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
 ```
 
-### Example with WOCE archive data
+### 4.3 Example with WOCE archive data
 
 The package has a harder time scanning the headers of data files in the WOCE
 archive format than it does in the Seabird format illustrated in the previous
@@ -307,7 +307,7 @@ issues, and would then contact the data provider (or the chief scientist of the
 field work) with specific suggestions for correcting the files. The point here
 is to highlight how this package can be used with real-world data.
 
-### Section plots
+## 5. Section plots
 
 The commands
 ```{r eval=FALSE}
@@ -341,7 +341,7 @@ station.
 **Exercise 4.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream.
 
-## Maps
+## 6. Maps
 
 There are several ways to handle map projections in R and other systems. Oce
 uses the @rgdal package to calculate the details of map projections.  A
@@ -368,9 +368,9 @@ mapLines(lon, lat, col='red', lwd=2)
 indicated in red.](projection.png)
 
 
-## Sea-level data
+## 7. Sea-level data
 
-### Time-domain analysis
+### 7.1 Time-domain analysis
 
 The following code loads and graphs a build-in dataset of sea-level timeseries.
 The result, shown in Figure 6. The top panel is a timeseries view that provides
@@ -392,14 +392,14 @@ plot(sealevel)
 
 **Exercise 6.** Draw a spectrum of sea-level variation, with the M2 tidal component indicated.
 
-### Tidal analysis
+### 7.2 Tidal-harmonic analysis
 
 A preliminary version of tidal analysis is provided by the `tidem` function
 provided in this version of the package, but readers are cautioned that the
 results are certain to change in a future version.  (The problems involve
 phase, and the inference of satellite nodes.)
 
-## Acoustic Doppler Current Profiler data
+## 8. Acoustic Doppler Current Profiler data
 
 The following commands produce Figure 7, showing currents made in the St
 Lawrence Estuary Internal Wave Experiment.
@@ -409,7 +409,7 @@ data(adp)
 plot(adp, which=1, adorn=expression({lines(x[["time"]], x[["pressure"]])}))
 ```
 
-## Working in non-English languages
+## 9. Working in non-English languages
 
 Many of the `oce` plotting functions produce axis labels that can be
 displayed in languages other than English.  At the time of writing, French,
@@ -433,7 +433,7 @@ effort, if they have knowledge of how nautical words such as *Pitch* and *Roll*
 and technical terms such as *Absolute Salinity* and *Potential Temperature*
 should be written in various languages.
 
-## The future of oce
+## 10. The future of oce
 
 The present version of `oce` can only handle data types that the author has
 been using lately in his research. New data types will be added as the need
@@ -444,10 +444,11 @@ help in dealing with other types of data, given his research focus.)
 
 Two principles will guide the addition of data types and functions: (a) the
 need, as perceived by the author or by other contributors and (b) the ease with
-which the additions can be made.  One might call this development by triage, by
-analogy to the scheme used in Emergency Rooms to focus medical effort.
+which the additions can be made.  One might call this development-by-triage, by
+analogy to the scheme used in Emergency Rooms to organize medical effort
+efficiently.
 
-## Development website
+## 11. Development website
 
 The site [http://github.com/dankelley/oce](http://github.com/dankelley/oce)
 provides a window on the development that goes on between the CRAN releases of
@@ -461,7 +462,7 @@ merged back into the `master` branch.  Official CRAN releases derive from the
 stability and quality.  This is all in a common pattern for open-source
 software.
 
-## Answers to exercises
+## 12. Answers to exercises
 
 **Exercise 1.** Seawater properties.
 ```{r}
