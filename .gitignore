@@ -8,7 +8,6 @@ TAGS
 Rplots.pdf
 src-*
 *.swp
-TAGS
 issue*R
 issue*dat
 issue*png
@@ -28,3 +27,4 @@ autom4te.cache
 =======
 >>>>>>> satellite
 *.zip
+inst/doc

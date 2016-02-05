@@ -7,12 +7,12 @@ Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", rol
  person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb","cph"), comment="curl() coauthor"),
  person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field fortran subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends:
+Depends: 
     R (>= 2.15),
     utils,
     methods,
     gsw
-Suggests:
+Suggests: 
     ocedata,
     foreign,
     mapproj,
@@ -23,7 +23,8 @@ Suggests:
     DBI,
     rgdal,
     R.utils,
-    testthat
+    testthat,
+    knitr
 BugReports: https://github.com/dankelley/oce/issues?
     sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
@@ -39,3 +40,4 @@ LazyData: no
 Packaged: Dan Kelley
 Encoding: UTF-8
 RoxygenNote: 5.0.1
+VignetteBuilder: knitr

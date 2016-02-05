@@ -139,7 +139,7 @@
   structure of coastline objects, and also outlines the other functions dealing
   with them.}
 
-\section{History}{Until February, 2016, \code{plot.coastline} function relied on
+\section{History}{Until February, 2016, \code{plot.coastline} relied on
   a now-defunct argument \code{fill} to control colours; \code{col} is to be
   used now, instead. Also, in February, 2016, the arguments named
   \code{parameters} and \code{orientation} were both removed, as they had become

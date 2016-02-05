@@ -1,0 +1,241 @@
+---
+title: "oce"
+author: "Dan Kelley and Clark Richards"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+
+vignette: >
+  %\VignetteIndexEntry{oce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+## More Examples
+
+You can write tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+
+
+
+HERE HERE HERE HERE
+
+
+**Abstract.** The `oce` package makes it easy to read, summarize and plot data
+from a variety of Oceanographic instruments, isolating the researcher from the
+quirky data formats that are common in this field. It also provides functions
+for working with basic seawater properties such as the equation of state, and
+with derived quantities such as the buoyancy frequency.  Although simple enough
+to be used in a teaching context, `oce` is powerful enough for a research
+setting.  These things are illustrated here, in the context of some practical
+examples.  Worked examples are provided, in order to help readers take early
+steps towards using the `oce` package in their research.
+
+## Introduction
+
+Oceanographers must deal with measurements made by a wide variety of
+instruments, a task that is complicated by the delight instrument manufacturers
+seem to take in inventing new data formats. The manufacturers often provide
+software for scanning the data files and producing some standard plots, but this
+software is of limited use to researchers who work with several instrument types
+at the same time, and who need to carry the analysis beyond the first steps,
+e.g. moving beyond engineering plots to scientific plots and to statistical
+analysis.
+
+![**Fig. 1.** Basic layout of a CTD object.  All `oce` objects contain slots named `data`, `metadata`, and `processingLog`, with the contents depending on the type of data.](ctd-object.png)
+
+The need to scan diverse data files was one motivation for the creation of
+`oce`, but an equal goal was to make it easy to work with the data once they
+are in the system.  This was accomplished partly by the provision of functions
+to work with the data, and partly by developing a uniform object design that
+lets users reach inside without guesswork.
+
+At the core of the `oce` design process is a policy of adding features
+according to the priorities of practical research. As a result, `oce` is a
+fairly comfortable tool today, and it should remain so as it grows.
+
+
+## Object design
+
+As illustrated in Figure 1, each `oce` object contains three slots: (a) `{data`,
+a list or a data frame containing the actual data (e.g., for a CTD object, this
+will contain pressure, temperature, etc.), (b) `{metadata`, a list containing
+data such things as file headers, the location of a CTD cast, etc., and (c)
+`processingLog`, a list that documents how the file was created (often by a
+`read()` or `as.X()` method) and how it was changed thereafter (e.g. by
+decimating a CTD cast).
+
+The uniformity of the various `oce` objects makes it easy to build skill
+in examining and modifying objects.  The package provides for simple and general
+processing of `oce` objects.  For example, if `x` is an `oce`
+object, then the function call `plot(x)` will produce one type of plot if
+`x` contains hydrographic data from a CTD, and quite another type of plot
+if it contains velocity data from an ADCP.  This applies for a variety of
+actions that can be undertaken on the `oce` objects, and it makes for easy
+programming, e.g. for over a dozen types of oceanographic data files, the
+following general code produces a summary plot:
+```{r eval=FALSE}
+library(oce)
+d <- read.oce(filename)
+plot(d)
+```
+where `filename` is the name of a file containing the data.
+
+**Some notes on oce function names.**
+
+
+1. The function used above to read a dataset ends in @.oce, which is a signal
+that the returned object is of class `oce`.  Depending on the file contents, @d
+will also have an additional class, e.g.  if @filename contains CTD data, then
+the object would have two classes: `oce` and @ctd, and the second of these is
+used in plotting, meaning that R will call a function named @read.ctd for the
+plot.
+
+2. Generally, `oce` functions employ a "camel case" naming convention, in which
+a function that is described by several words is named by stringing the words
+together, capitalizing the second and subsequent words. For example,
+`ctdAddColumn` takes a @ctd object, and adds a column.
+
+3. Function names begin with `oce` in cases where the most natural function
+   name would otherwise be in conflict with a function in the base R system or
+   a package commonly used by Oceanographers.  For example, `oce.approx` is
+   used for a function that is analogous to @approx@ in the `stats` package.
+   The reason for not naming the function as @oceApprox is a desire to provide
+   a clear hint about the similarity of the functions. The reason for avoiding
+   a naming conflict (by calling it `approx`) is to avoid the necessity of
+   writing `oce::approx`, a notation that can be confusing to users.
+
+## Calculation of seawater properties
+
+The `oce` package provides many functions for dealing with seawater properties.
+Perhaps the most used is `swRho(S,T,p)`, which computes seawater density
+$\rho=\rho(S, T, p)$, where $S$ is salinity^[Salinity may be in any of several
+scales, and all seawater properties can be in the UNESCO or the newer TEOS-10
+formulations.], $T$ is *in-situ* temperature in $^\circ$C, and $p$ is seawater
+pressure, i.e. the excess over atmospheric pressure, in dbar.  (This and
+similar functions starts with the letters `sw` to designate that they relate to
+seawater properties; a future version of `oce` may provide air properties, with
+functions names starting with `air`.) The result is a number in the order of
+$1000$kg/m$^3$.  For many purposes, Oceanographers prefer to use the density
+anomaly $\sigma=\rho-1000$kg/m$^3$, provided with
+@swSigma(salinity,temperature,pressure), or its adiabatic cousin
+$\sigma_\theta$, provided with `swSigmaTheta`.
+
+Most of the functions use the UNESCO formulations of seawater properties, with
+an argument called `eos` to get the TEOS-10 equivalent. Note that the `oce`
+package uses the `gsw` package (by the same authors), which provides an
+interface to the C library for TEOS-10.
+
+A partial list of seawater functions is as follows:
+`swDynamicHeight` (dynamic height),
+`swN2` (buoyancy frequency),
+`swSCTp` (salinity from conductivity, temperature and pressure),
+`swSTrho` (salinity from temperature and density),
+`swTSrho` (temperature from salinity and density),
+`swTFreeze` (freezing temperature),
+`swAlpha` (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
+`swBeta` (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
+`swAlphaOverBeta` ($\alpha/\beta$),
+`swConductivity` (conductivity from $S$, $T$ and $p$),
+`swDepth` (depth from $p$ and latitude),
+`swLapseRate` (adiabatic lapse rate),
+`swRho` (density $\rho$ from $S$, $T$ and $p$),
+`swSigma` ($\rho-1000$\,kg/m$^3$),
+`swSigmaT` ($\sigma$ with $p$ set to zero and temperature unaltered),
+`swSigmaTheta` ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
+`swSoundSpeed` (speed of sound),
+`swSpecificHeat` (specific heat),
+`swSpice` (a quantity used in double-diffusive research),
+`swTheta` (potential temperature $\theta$),
+and
+`swViscosity` (viscosity).
+Details and examples are provided in the documentation of these functions.
+
+It might help the reader to try some exercises. Note that answers are provided
+at the end of this document.
+
+**Exercise 1.**
+a. What is the density of a seawater parcel at pressure
+$100$\,dbar, with salinity $34$\,PSU and temperature 10$^\circ$C?
+b. What temperature would the parcel have if raised adiabatically to the surface?
+c. What density would it have if raised adiabatically to the surface?
+d. What density would it have if lowered about 100m, increasing the pressure to $200$dbar?
+e. Draw a blank $T$-$S$ diagram with $S$ from $30$ to $40$\,PSU and $T$ from $-2$ to 20$^\circ$C.
+
+
+
+## CTD data
+
+### Example with pre-trimmed data
+
+
+To get you started with CTD data, `oce` provides a sample data set that has
+been trimmed to just the downcast portion of the sampling.  (See the next
+section to learn how to do this trimming.).  A summary of the contents of a
+CTD object named `x` is obtained with `summary(x)`. A generic plotting function
+is also provided, and the following commands produce Figure~2, illustrating
+such a plot for a built-in CTD dataset. 
+```{r fig.cap="**Fig. 2.** A overview of a ctd dataset.", fig.width=6, fig.height=6}
+library(oce)
+data(ctd)
+plot(ctd)
+```
+
+The object used to hold CTD data stores not just the data, but also the raw
+header sequence, and whatever other metadata has been discovered about the
+dataset by `names(ctd@metadata)` etc.
+
+Of course, you may apply any R techniques to the data in `oce` objects, e.g.
+`hist(ctd[["temperature"]])` produces a histogram of temperature for the `ctd`
+object.  (Note the use of a `[[` accessor function to look up the contents
+within `oce` objects. This accessor prevents users from having to know where
+data are stored in the object, and it also permits retrival of *computed*
+quantities, in addition to items that are actually stored in the object.)  It
+is always worth checking, though, to see if `oce` has already defined a
+function that you may be applying, e.g. `plotTS` will produce a
+temperature-salinity diagram, with isopycnals and proper units on the axes.
+
+The package provides facilities for some common operations with oceanographic
+data, such as trimming CTD profiles with `ctdTrim()`, but of course you may do
+that sort of work by acting on the data directly, if necessary.  Just make sure
+you realize that the metadata will not be altered if you do that.  Also, it is
+a good idea to add log entries to any objects that you change, by using the
+`processingLog` function. 
+
+**Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
+the pycnocline.
+
+### Example with raw data
+
+Practicing Oceanographers may be wondering how the CTD cast used in the
+preceding section was trimmed of equilibration-phase and upcast-phase data.
+Spurious data from these phases must be trimmed as a first step in processing.
+For example, consider the following code.
+
+
+

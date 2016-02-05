@@ -89,6 +89,8 @@ setMethod(f="plot",
                        ", inset=", inset, 
                        ", ...) {\n", sep="", unindent=1)
               dots <- list(...)
+              ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
+              ##> message("col: ", if(missing(col)) "MISSING" else col)
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03
                   ## Note: the code permitted fill=TRUE but this was never documented
@@ -101,6 +103,8 @@ setMethod(f="plot",
                   }
                   warning("In plot.coastline() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
               }
+              ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
+              ##> message("col: ", if(missing(col)) "MISSING" else col)
               if (is.character(col)) {
                   if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
                       col <- NULL
