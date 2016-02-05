@@ -203,7 +203,7 @@ Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data.
 Spurious data from these phases must be trimmed as a first step in processing.
 For example, consider the following code.
-```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=7, fig.height=3}
+```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=5, fig.height=3}
 data(ctdRaw)
 plotScan(ctdRaw)
 ```
@@ -388,6 +388,14 @@ coastline segments that cross the edge of the plotting area, and getting rid of
 this is tricky enough to be the heart of the longest-lived bug in the `oce`
 issue list.
 
+It should be noted that `oce` has a suite of tools for mapmaking. One must use
+`mapPlot()` to set up a map, after which points can be added with
+`mapPoints()`, lines with `mapLines()`, images with `mapImage()`, contours with
+`mapContours()`, and text with `mapText()`. It is mandatory to use these
+functions, instead of e.g. `points()`, because the coordinate system is
+"hidden".
+
+
 ### 6.2 Popular world-view projections
 
 A few common projections are worth highlighting here. In addition to the Winkel
@@ -400,12 +408,31 @@ par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=moll")
 ```
 
-```{r fig.cap="**Figure 5c.** World coastline in Eckert IV projection.", fig.width=5, fig.height=3}
+Before moving on to other projections, it may be helpful to show how to plot sea surface
+temperature in this projection.
+
+```{r fig.cap="**Figure 5c.** World SST in Mollweide projection.", fig.width=5, fig.height=2.7}
+par(mar=rep(1, 4))
+data(levitus, package='ocedata')
+lon <- levitus$longitude
+lat <- levitus$latitude
+SST <- levitus$SST
+Tlim <- c(-2, 30)
+drawPalette(Tlim, col=oce.colorsJet)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
+mapPolygon(coastlineWorld, col='gray')
+```
+
+Now we return to line drawings, in two other popular world-view projections:
+Eckert IV and Robinson.
+
+```{r fig.cap="**Figure 5d.** World coastline in Eckert IV projection.", fig.width=5, fig.height=3}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=eck4")
 ```
 
-```{r fig.cap="**Figure 5d.** World coastline in Robinson projection.", fig.width=5, fig.height=5}
+```{r fig.cap="**Figure 5e.** World coastline in Robinson projection.", fig.width=5, fig.height=3}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=robin")
 ```
@@ -414,13 +441,13 @@ mapPlot(coastlineWorld, projection="+proj=robin")
 
 Mid-latitude regions are often projected with Lambert Conformal Conic or
 Mercator projections, e.g.  Figure 5e and Figure 5f were produced as follows.
-```{r fig.cap="**Figure 5e.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 5f.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
         longitudelim=c(-80, 0), latitudelim=c(20, 60))
 ```
 
-```{r fig.cap="**Figure 5f.** North Atlantic in Mercator projection.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 5g.** North Atlantic in Mercator projection.", fig.width=5, fig.height=3}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=merc",
         longitudelim=c(-80, 0), latitudelim=c(20, 60))
@@ -430,7 +457,7 @@ mapPlot(coastlineWorld, projection="+proj=merc",
 
 High-latitude regions are often represented with stereopolar projections, e.g.
 Figure 5g was produces with the following.
-```{r fig.cap="**Figure 5g.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5}
+```{r fig.cap="**Figure 5h.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5}
 par(mar=rep(1, 4))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-80,0), latitudelim=c(70, 110))
@@ -451,9 +478,8 @@ bottom is a cumulative spectrum, which makes these narrow-banded constituents
 quite visible.
 
 
-```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=7, fig.height=3}
+```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=5, fig.height=5}
 library(oce)
-#sealevel <- read.oce("../../tests/h275a96.dat")
 data(sealevel)
 plot(sealevel)
 ```
