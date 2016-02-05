@@ -12,40 +12,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
-
-## More Examples
-
-You can write tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
-
-
-
-
-HERE HERE HERE HERE
-
-
 **Abstract.** The `oce` package makes it easy to read, summarize and plot data
 from a variety of Oceanographic instruments, isolating the researcher from the
 quirky data formats that are common in this field. It also provides functions
@@ -451,11 +417,14 @@ German, Spanish, and Mandarin are supported in at least a rudimentary way.
 Setting the language can be done at the general system level, or within R; the
 latter is illustrated below for French (which is coded `fr` in the ISO
 639 language standard).
-```{r}
+```{r fig.cap="**Figure 8.** French version of Figure 2.", fig.width=6, fig.height=6}
 library(oce)
 Sys.setenv(LANGUAGE="fr")
 data(ctd)
 plot(ctd)
+```
+```{r echo=FALSE}
+Sys.setenv(LANGUAGE="en")
 ```
 
 Most of the translated items were found by online dictionaries, and so they may
@@ -505,7 +474,7 @@ plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 ```
 
 
-** Exercise 2.** Profile plots
+**Exercise 2.** Profile plots
 
 Although one may argue as to the limits of the pycnocline, for illustration let
 us say it is in 5bar to 12dbar range.  One way to do this is
@@ -517,7 +486,8 @@ pycnocline <- ctdTrim(ctd, "range",
                       parameters=list(item="pressure", from=5, to=12))
 plotProfile(pycnocline, which="density+N2")
 ```
-and another is
+
+Another is
 ```{r}
 library(oce)
 data(ctd)
@@ -534,7 +504,8 @@ data(section)
 ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
 plotTS(ctd)
 ```
-but the point of \emph{this} exercise is to do the extraction manually, so a
+
+However, the point of *this* exercise is to do the extraction manually, so a
 more appropriate solution is as follows
 ```{r}
 library(oce)
