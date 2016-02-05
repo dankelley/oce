@@ -5,6 +5,9 @@ date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     fig_caption: yes
+    fig_width: 5
+    fig_height: 5
+    dev.args: list(pointsize=11)
 
 vignette: >
   %\VignetteIndexEntry{oce}
@@ -200,7 +203,7 @@ Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data.
 Spurious data from these phases must be trimmed as a first step in processing.
 For example, consider the following code.
-```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=6, fig.height=6}
+```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=7, fig.height=3}
 data(ctdRaw)
 plotScan(ctdRaw)
 ```
@@ -343,6 +346,8 @@ Stream.
 
 ## 6. Maps
 
+### 6.1 About projections
+
 There are several ways to handle map projections in R and other systems. Oce
 uses the @rgdal package to calculate the details of map projections.  A
 suite of functions for plotting maps is provided.  The first step is to use
@@ -354,9 +359,11 @@ data(coastlineWorld)
 par(mar=rep(0, 4))
 mapPlot(coastlineWorld, projection="+proj=wintri", fill="lightgray")
 ```
-plots a world coastline in the Winkel Tripel projection, using light gray ink
+plots a world coastline in the Winkel Tripel projection (used by the National
+Geographical Society, and so familiar to many viewers), using light gray ink
 for the land (Fig. 5).  Adding the cruise track for the `oce` dataset called
-@section is a simple matter
+`section` is a simple matter
+
 ```{r eval=FALSE}
 data(section)
 lon <- section[["longitude", "byStation"]]
@@ -364,8 +371,71 @@ lat <- section[["latitude", "byStation"]]
 mapLines(lon, lat, col='red', lwd=2)
 ```
 
-![**Figure 5.** World coastline in Winkel Tripel projection, with a cruise track
+![**Figure 5a.** World coastline in Winkel Tripel projection, with a cruise track
 indicated in red.](projection.png)
+
+```{r echo=FALSE}
+data(coastlineWorld)
+par(mar=rep(1, 4))
+```
+
+Projections in `oce` are done with the `rgdal` package, and there are far too
+many possibilities to illustrate here. See
+[http://dankelley.github.io/r/2015/04/03/oce-proj.html](http://dankelley.github.io/r/2015/04/03/oce-proj.html)
+for a blog item that provides examples of the available projections. Note that
+some have a problem with spurious horizontal lines. This can result from
+coastline segments that cross the edge of the plotting area, and getting rid of
+this is tricky enough to be the heart of the longest-lived bug in the `oce`
+issue list.
+
+### 6.2 Popular world-view projections
+
+A few common projections are worth highlighting here. In addition to the Winkel
+Tripel projection shown in Figure 5a, it is also common to employ Mollweide,
+Eckert IV or Robinson for world-wide views. Note the use of very thin margins, because
+there is no need to label latitude and longitude in world views.
+
+```{r fig.cap="**Figure 5b.** World coastline in Mollweide projection.", fig.width=5, fig.height=3}
+par(mar=rep(0.5, 4))
+mapPlot(coastlineWorld, projection="+proj=moll")
+```
+
+```{r fig.cap="**Figure 5c.** World coastline in Eckert IV projection.", fig.width=5, fig.height=3}
+par(mar=rep(0.5, 4))
+mapPlot(coastlineWorld, projection="+proj=eck4")
+```
+
+```{r fig.cap="**Figure 5d.** World coastline in Robinson projection.", fig.width=5, fig.height=5}
+par(mar=rep(0.5, 4))
+mapPlot(coastlineWorld, projection="+proj=robin")
+```
+
+### 6.3 Popular mid-latitude projections
+
+Mid-latitude regions are often projected with Lambert Conformal Conic or
+Mercator projections, e.g.  Figure 5e and Figure 5f were produced as follows.
+```{r fig.cap="**Figure 5e.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3}
+par(mar=c(2, 2, 1, 1))
+mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
+        longitudelim=c(-80, 0), latitudelim=c(20, 60))
+```
+
+```{r fig.cap="**Figure 5f.** North Atlantic in Mercator projection.", fig.width=5, fig.height=3}
+par(mar=c(2, 2, 1, 1))
+mapPlot(coastlineWorld, projection="+proj=merc",
+        longitudelim=c(-80, 0), latitudelim=c(20, 60))
+```
+
+### 6.4 Popular high-latitude projections
+
+High-latitude regions are often represented with stereopolar projections, e.g.
+Figure 5g was produces with the following.
+```{r fig.cap="**Figure 5g.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5}
+par(mar=rep(1, 4))
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+        longitudelim=c(-80,0), latitudelim=c(70, 110))
+```
+
 
 
 ## 7. Sea-level data
@@ -381,7 +451,7 @@ bottom is a cumulative spectrum, which makes these narrow-banded constituents
 quite visible.
 
 
-```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=7, fig.height=4}
+```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=7, fig.height=3}
 library(oce)
 #sealevel <- read.oce("../../tests/h275a96.dat")
 data(sealevel)
@@ -465,7 +535,7 @@ software.
 ## 12. Answers to exercises
 
 **Exercise 1.** Seawater properties.
-```{r}
+```{r fig.width=5, fig.height=5}
 library(oce)
 swRho(34, 10, 100)
 swTheta(34, 10, 100)
@@ -480,7 +550,7 @@ plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 Although one may argue as to the limits of the pycnocline, for illustration let
 us say it is in 5bar to 12dbar range.  One way to do this is
 
-```{r}
+```{r fig.width=5, fig.height=5}
 library(oce)
 data(ctd)
 pycnocline <- ctdTrim(ctd, "range",
@@ -489,7 +559,7 @@ plotProfile(pycnocline, which="density+N2")
 ```
 
 Another is
-```{r}
+```{r fig.width=5, fig.height=5}
 library(oce)
 data(ctd)
 pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
@@ -499,16 +569,17 @@ plotProfile(pycnocline, which="density+N2")
 **Exercise 3.** TS diagram for section data
 
 The simplest way is to use accessor functions to extract salinity, etc.
-```{r}
+```{r fig.width=5, fig.height=5}
 library(oce)
 data(section)
 ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
 plotTS(ctd)
 ```
 
-However, the point of *this* exercise is to do the extraction manually, so a
-more appropriate solution is as follows
-```{r}
+However, the point of *this* exercise is to show that manual extraction is
+awkward, so a more appropriate solution is as follows (plot identical to the
+above, and so not shown).
+```{r eval=FALSE}
 library(oce)
 data(section)
 SS <- TT <- pp <- id <- NULL
@@ -525,12 +596,12 @@ plotTS(ctd)
 **Exercise 4.** Gulf Stream
 
 (Try `?swDynamicHeight` for hints on smoothing.)
-```{r fig.width=5, fig.height=5}
+```{r fig.width=5, fig.height=3}
 library(oce)
 GS <- subset(section, 102<=stationId&stationId<=124)
 dh <- swDynamicHeight(GS)
-par(mfrow=c(2,1))
-plot(dh$distance, dh$height, type="b", xlab="", ylab="Dyn. Height [m]")
+par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+plot(dh$distance, dh$height, type="l", xlab="", ylab="Dyn. Height [m]")
 grid()
 # 1e3 metres per kilometre
 f <- coriolis(GS@data$station[[1]]@metadata$latitude)
@@ -546,13 +617,13 @@ abline(h=0)
 A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
 The author can verify that the strongest winds occurred a bit after midnight --
 that was the time he moved to a room without windows, in fear of flying glass.
-```{r fig.width=5, fig.height=5}
+```{r fig.width=7, fig.height=3}
 library(oce)
 data(sealevel)
 # Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
 plot(sealevel,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
 abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
-mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
+mtext("Juan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 ```
 
 **Exercise 6.** Sealevel spectrum
