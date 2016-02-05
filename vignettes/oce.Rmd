@@ -665,7 +665,7 @@ elevation <- sealevel[["elevation"]]
 ```
 and then we return to standard R processing, to compute the spectrum, and 
 indicate the M2 tide.
-```{r fig.width=5, fig.height=5}
+```{r fig.width=5, fig.height=5, results="hide"}
 spectrum(elevation, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
