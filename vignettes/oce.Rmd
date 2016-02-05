@@ -4,6 +4,7 @@ author: "Dan Kelley and Clark Richards"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
+    toc: true
     fig_caption: yes
     fig_width: 5
     fig_height: 5
@@ -11,7 +12,7 @@ output:
 
 vignette: >
   %\VignetteIndexEntry{oce}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown:render}
   %\VignetteEncoding{UTF-8}
 ---
 
