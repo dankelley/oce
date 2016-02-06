@@ -1,3 +1,4 @@
+^.*.org$
 .RData
 .travis.yml
 ^.*.nc$
@@ -14,6 +15,7 @@ README.rst
 .gitignore
 inst/doc/.gitignore
 inst/doc/ctd-object.svg
+vignettes/oce.html
 vignettes/.build.timestamp
 vignettes/oce.log
 ^.*\.Rproj$

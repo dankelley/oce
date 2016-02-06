@@ -12,3 +12,4 @@
   * 1,333,080 fig 5h at 72 dpi
   * 1,319,256 fig 5g at 72 dpi
   * 1,274,152 fig 6 at 72 dpi
+  *   634,535 remove a few figures reproduced by copy/paste of 1-2 lines
