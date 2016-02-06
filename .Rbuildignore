@@ -1,3 +1,4 @@
+.RData
 .travis.yml
 ^.*.nc$
 create_data

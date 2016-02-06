@@ -37,6 +37,7 @@
   electrical conductivity, see \code{\link{swSCTp}}.}
 
 \examples{
+swCSTp(35, T90fromT68(15), 0, eos="unesco") # 1, by definition of cond. ratio
 swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco") # 1
 swCSTp(34.25045, 15, 2000, eos="unesco") # 1.000081
 swCSTp(34.25045, 15, 2000, eos="gsw")  # 0.9999982
@@ -44,13 +45,13 @@ swCSTp(34.25045, 15, 2000, eos="gsw")  # 0.9999982
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation
   of fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
-    Science}, \bold{44}, 53 pp
+    Science}, \bold{44}, 53 pp.
 
-  Culkin, F., and Norman D. Smith, 1980. Determination of the
-  concentration of potassium chloride solution having the same
-  electrical conductivity, at 15 C and infinite frequency, as standard
-  seawater of salinity 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal
-  of Oceanic Engineering}, \bold{5}, pp 22-23.}
+  Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
+  potassium chloride solution having the same electrical conductivity, at 15 C
+  and infinite frequency, as standard seawater of salinity 35.0000 ppt
+  (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering},
+  \bold{5}, pp 22-23.}
 
 \author{Dan Kelley}
 
