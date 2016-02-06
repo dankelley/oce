@@ -1,0 +1,14 @@
+* TODO Reduce the size of the oce.html vignette
+  *   340,697 old pdf version
+  * 1,599,761 new html (with more figures)
+  * 1,542,516 remove spectrum at end
+  * 1,509,558 fig 2 at 72 dpi
+  * 1,501,566 fig 3 at 72 dpi
+  * 1,480,410 fig 4 at 72 dpi
+  * 1,460,956 fig 5b at 72 dpi
+  * 1,408,980 fig 5c at 72 dpi
+  * 1,390,204 fig 5d at 72 dpi
+  * 1,371,152 fig 5e at 72 dpi
+  * 1,333,080 fig 5h at 72 dpi
+  * 1,319,256 fig 5g at 72 dpi
+  * 1,274,152 fig 6 at 72 dpi

@@ -8,6 +8,7 @@ output:
     fig_caption: yes
     fig_width: 5
     fig_height: 5
+    dpi: 72
     dev.args: list(pointsize=11)
 
 vignette: >
@@ -168,7 +169,7 @@ section to learn how to do this trimming.).  A summary of the contents of a
 CTD object named `x` is obtained with `summary(x)`. A generic plotting function
 is also provided, and the following commands produce Figure~2, illustrating
 such a plot for a built-in CTD dataset. 
-```{r fig.cap="**Figure 2.** A overview of a ctd dataset.", fig.width=6, fig.height=6}
+```{r fig.cap="**Figure 2.** A overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72}
 library(oce)
 data(ctd)
 plot(ctd)
@@ -204,7 +205,7 @@ Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data.
 Spurious data from these phases must be trimmed as a first step in processing.
 For example, consider the following code.
-```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=9)}
 data(ctdRaw)
 plotScan(ctdRaw)
 ```
@@ -332,7 +333,7 @@ taking 124 stations in total; the @indices value selects the last few stations
 of the section, during which the ship heading was changed to run in a
 northwesterly direction, to cross isobaths (and perhaps, the Gulf Stream) at
 right angles.
-```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the sections.", fig.width=5, fig.height=5}
+```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the sections.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=9)}
 data(section)
 GS <- subset(section, 102<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
@@ -354,7 +355,7 @@ uses the @rgdal package to calculate the details of map projections.  A
 suite of functions for plotting maps is provided.  The first step is to use
 `mapPlot` to construct the map, and after that, points can be added
 with @mapPoints@, lines with `mapLines`, etc. For example,
-```{r eval=FALSE}
+```{r fig.keep="none"}
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
@@ -365,7 +366,7 @@ Geographical Society, and so familiar to many viewers), using light gray ink
 for the land (Fig. 5).  Adding the cruise track for the `oce` dataset called
 `section` is a simple matter
 
-```{r eval=FALSE}
+```{r fig.keep="none"}
 data(section)
 lon <- section[["longitude", "byStation"]]
 lat <- section[["latitude", "byStation"]]
@@ -404,7 +405,7 @@ Tripel projection shown in Figure 5a, it is also common to employ Mollweide,
 Eckert IV or Robinson for world-wide views. Note the use of very thin margins, because
 there is no need to label latitude and longitude in world views.
 
-```{r fig.cap="**Figure 5b.** World coastline in Mollweide projection.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 5b.** World coastline in Mollweide projection.", fig.width=5, fig.height=3, dpi=72}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=moll")
 ```
@@ -412,7 +413,7 @@ mapPlot(coastlineWorld, projection="+proj=moll")
 Before moving on to other projections, it may be helpful to show how to plot sea surface
 temperature in this projection.
 
-```{r fig.cap="**Figure 5c.** World SST in Mollweide projection.", fig.width=5, fig.height=2.7}
+```{r fig.cap="**Figure 5c.** World SST in Mollweide projection.", fig.width=5, fig.height=2.7, dpi=72}
 par(mar=rep(1, 4))
 data(levitus, package='ocedata')
 lon <- levitus$longitude
@@ -428,7 +429,7 @@ mapPolygon(coastlineWorld, col='gray')
 Now we return to line drawings, in two other popular world-view projections:
 Eckert IV and Robinson.
 
-```{r fig.cap="**Figure 5d.** World coastline in Eckert IV projection.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 5d.** World coastline in Eckert IV projection.", fig.width=5, fig.height=3, dpi=72}
 par(mar=rep(0.5, 4))
 mapPlot(coastlineWorld, projection="+proj=eck4")
 ```
@@ -442,13 +443,13 @@ mapPlot(coastlineWorld, projection="+proj=robin")
 
 Mid-latitude regions are often projected with Lambert Conformal Conic or
 Mercator projections, e.g.  Figure 5e and Figure 5f were produced as follows.
-```{r fig.cap="**Figure 5f.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 5f.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3, dpi=72}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
         longitudelim=c(-80, 0), latitudelim=c(20, 60))
 ```
 
-```{r fig.cap="**Figure 5g.** North Atlantic in Mercator projection.", fig.width=5, fig.height=3}
+```{r fig.cap="**Figure 5g.** North Atlantic in Mercator projection.", fig.width=5, fig.height=3, dpi=72}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=merc",
         longitudelim=c(-80, 0), latitudelim=c(20, 60))
@@ -458,7 +459,7 @@ mapPlot(coastlineWorld, projection="+proj=merc",
 
 High-latitude regions are often represented with stereopolar projections, e.g.
 Figure 5g was produces with the following.
-```{r fig.cap="**Figure 5h.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5}
+```{r fig.cap="**Figure 5h.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5, dpi=72}
 par(mar=rep(1, 4))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-80,0), latitudelim=c(70, 110))
@@ -479,7 +480,7 @@ bottom is a cumulative spectrum, which makes these narrow-banded constituents
 quite visible.
 
 
-```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=5, fig.height=5}
+```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=5, fig.height=5, dpi=72}
 library(oce)
 data(sealevel)
 plot(sealevel)
@@ -665,8 +666,8 @@ Next, we extract the elevation data
 elevation <- sealevel[["elevation"]]
 ```
 and then we return to standard R processing, to compute the spectrum, and 
-indicate the M2 tide.
-```{r fig.width=5, fig.height=5, results="hide"}
+indicate the M2 tide (plot not shown here).
+```{r fig.width=5, fig.height=5, results="hide", fig.keep="none"}
 spectrum(elevation, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
