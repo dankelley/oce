@@ -1139,7 +1139,7 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         abbreviated <- full <- bquote(.(var)*.(L)*.(unit)*.(R))
     } else if (item == "spectral density m2/cph") {
         var <- gettext("Spectral density", domain="R-oce")
-        abbreviated <- full <- bquote(.(var)*.(L)*.m^2/cph*.(R))
+        abbreviated <- full <- bquote(.(var)*.(L)*m^2/cph*.(R))
     }
     spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
