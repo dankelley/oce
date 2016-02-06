@@ -1,0 +1,675 @@
+---
+title: "oce"
+author: "Dan Kelley and Clark Richards"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    fig_caption: yes
+    fig_width: 5
+    fig_height: 5
+    dev.args: list(pointsize=11)
+
+vignette: >
+  %\VignetteIndexEntry{oce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+**Abstract.** The `oce` package makes it easy to read, summarize and plot data
+from a variety of Oceanographic instruments, isolating the researcher from the
+quirky data formats that are common in this field. It also provides functions
+for working with basic seawater properties such as the equation of state, and
+with derived quantities such as the buoyancy frequency.  Although simple enough
+to be used in a teaching context, `oce` is powerful enough for a research
+setting.  These things are illustrated here, in the context of some practical
+examples.  Worked examples are provided, in order to help readers take early
+steps towards using the `oce` package in their research.
+
+## 1. Introduction
+
+Oceanographers must deal with measurements made by a wide variety of
+instruments, a task that is complicated by the delight instrument manufacturers
+seem to take in inventing new data formats. The manufacturers often provide
+software for scanning the data files and producing some standard plots, but this
+software is of limited use to researchers who work with several instrument types
+at the same time, and who need to carry the analysis beyond the first steps,
+e.g. moving beyond engineering plots to scientific plots and to statistical
+analysis.
+
+![**Figure 1.** Basic layout of a CTD object.  All `oce` objects contain slots named `data`, `metadata`, and `processingLog`, with the contents depending on the type of data.](ctd-object.png)
+
+The need to scan diverse data files was one motivation for the creation of
+`oce`, but an equal goal was to make it easy to work with the data once they
+are in the system.  This was accomplished partly by the provision of functions
+to work with the data, and partly by developing a uniform object design that
+lets users reach inside without guesswork.
+
+At the core of the `oce` design process is a policy of adding features
+according to the priorities of practical research. As a result, `oce` is a
+fairly comfortable tool today, and it should remain so as it grows.
+
+
+## 2. Object design
+
+As illustrated in Figure 1, each `oce` object contains three slots: (a) `{data`,
+a list or a data frame containing the actual data (e.g., for a CTD object, this
+will contain pressure, temperature, etc.), (b) `{metadata`, a list containing
+data such things as file headers, the location of a CTD cast, etc., and (c)
+`processingLog`, a list that documents how the file was created (often by a
+`read()` or `as.X()` method) and how it was changed thereafter (e.g. by
+decimating a CTD cast).
+
+The uniformity of the various `oce` objects makes it easy to build skill
+in examining and modifying objects.  The package provides for simple and general
+processing of `oce` objects.  For example, if `x` is an `oce`
+object, then the function call `plot(x)` will produce one type of plot if
+`x` contains hydrographic data from a CTD, and quite another type of plot
+if it contains velocity data from an ADCP.  This applies for a variety of
+actions that can be undertaken on the `oce` objects, and it makes for easy
+programming, e.g. for over a dozen types of oceanographic data files, the
+following general code produces a summary plot:
+```{r eval=FALSE}
+library(oce)
+d <- read.oce(filename)
+plot(d)
+```
+where `filename` is the name of a file containing the data.
+
+**Some notes on oce function names.**
+
+
+1. The function used above to read a dataset ends in @.oce, which is a signal
+that the returned object is of class `oce`.  Depending on the file contents, @d
+will also have an additional class, e.g.  if @filename contains CTD data, then
+the object would have two classes: `oce` and @ctd, and the second of these is
+used in plotting, meaning that R will call a function named @read.ctd for the
+plot.
+
+2. Generally, `oce` functions employ a "camel case" naming convention, in which
+a function that is described by several words is named by stringing the words
+together, capitalizing the second and subsequent words. For example,
+`ctdAddColumn` takes a @ctd object, and adds a column.
+
+3. Function names begin with `oce` in cases where the most natural function
+   name would otherwise be in conflict with a function in the base R system or
+   a package commonly used by Oceanographers.  For example, `oce.approx` is
+   used for a function that is analogous to @approx@ in the `stats` package.
+   The reason for not naming the function as @oceApprox is a desire to provide
+   a clear hint about the similarity of the functions. The reason for avoiding
+   a naming conflict (by calling it `approx`) is to avoid the necessity of
+   writing `oce::approx`, a notation that can be confusing to users.
+
+## 3. Calculation of seawater properties
+
+The `oce` package provides many functions for dealing with seawater properties.
+Perhaps the most used is `swRho(S,T,p)`, which computes seawater density
+$\rho=\rho(S, T, p)$, where $S$ is salinity,  $T$ is *in-situ* temperature in
+$^\circ$C, and $p$ is seawater pressure, i.e. the excess over atmospheric
+pressure, in dbar.  (This and similar functions starts with the letters `sw` to
+designate that they relate to seawater properties; a future version of `oce`
+may provide air properties, with functions names starting with `air`.) The
+result is a number in the order of $1000$kg/m$^3$.  For many purposes,
+Oceanographers prefer to use the density anomaly $\sigma=\rho-1000$kg/m$^3$,
+provided with @swSigma(salinity,temperature,pressure), or its adiabatic cousin
+$\sigma_\theta$, provided with `swSigmaTheta`.
+
+Most of the functions use the UNESCO formulations of seawater properties, with
+an argument called `eos` to get the TEOS-10 equivalent. Note that the `oce`
+package uses the `gsw` package (by the same authors), which provides an
+interface to the C library for TEOS-10.
+
+A partial list of seawater functions is as follows:
+`swDynamicHeight` (dynamic height),
+`swN2` (buoyancy frequency),
+`swSCTp` (salinity from conductivity, temperature and pressure),
+`swSTrho` (salinity from temperature and density),
+`swTSrho` (temperature from salinity and density),
+`swTFreeze` (freezing temperature),
+`swAlpha` (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
+`swBeta` (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
+`swAlphaOverBeta` ($\alpha/\beta$),
+`swConductivity` (conductivity from $S$, $T$ and $p$),
+`swDepth` (depth from $p$ and latitude),
+`swLapseRate` (adiabatic lapse rate),
+`swRho` (density $\rho$ from $S$, $T$ and $p$),
+`swSigma` ($\rho-1000$\,kg/m$^3$),
+`swSigmaT` ($\sigma$ with $p$ set to zero and temperature unaltered),
+`swSigmaTheta` ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
+`swSoundSpeed` (speed of sound),
+`swSpecificHeat` (specific heat),
+`swSpice` (a quantity used in double-diffusive research),
+`swTheta` (potential temperature $\theta$),
+and
+`swViscosity` (viscosity).
+Details and examples are provided in the documentation of these functions.
+
+It might help the reader to try some exercises. Note that answers are provided
+at the end of this document.
+
+**Exercise 1.**
+a. What is the density of a seawater parcel at pressure
+$100$\,dbar, with salinity $34$\,PSU and temperature 10$^\circ$C?
+b. What temperature would the parcel have if raised adiabatically to the surface?
+c. What density would it have if raised adiabatically to the surface?
+d. What density would it have if lowered about 100m, increasing the pressure to $200$dbar?
+e. Draw a blank $T$-$S$ diagram with $S$ from $30$ to $40$\,PSU and $T$ from $-2$ to 20$^\circ$C.
+
+
+
+## 4. CTD data
+
+### 4.1 Example with pre-trimmed data
+
+
+To get you started with CTD data, `oce` provides a sample data set that has
+been trimmed to just the downcast portion of the sampling.  (See the next
+section to learn how to do this trimming.).  A summary of the contents of a
+CTD object named `x` is obtained with `summary(x)`. A generic plotting function
+is also provided, and the following commands produce Figure~2, illustrating
+such a plot for a built-in CTD dataset. 
+```{r fig.cap="**Figure 2.** A overview of a ctd dataset.", fig.width=6, fig.height=6}
+library(oce)
+data(ctd)
+plot(ctd)
+```
+
+The object used to hold CTD data stores not just the data, but also the raw
+header sequence, and whatever other metadata has been discovered about the
+dataset by `names(ctd@metadata)` etc.
+
+Of course, you may apply any R techniques to the data in `oce` objects, e.g.
+`hist(ctd[["temperature"]])` produces a histogram of temperature for the `ctd`
+object.  (Note the use of a `[[` accessor function to look up the contents
+within `oce` objects. This accessor prevents users from having to know where
+data are stored in the object, and it also permits retrival of *computed*
+quantities, in addition to items that are actually stored in the object.)  It
+is always worth checking, though, to see if `oce` has already defined a
+function that you may be applying, e.g. `plotTS` will produce a
+temperature-salinity diagram, with isopycnals and proper units on the axes.
+
+The package provides facilities for some common operations with oceanographic
+data, such as trimming CTD profiles with `ctdTrim()`, but of course you may do
+that sort of work by acting on the data directly, if necessary.  Just make sure
+you realize that the metadata will not be altered if you do that.  Also, it is
+a good idea to add log entries to any objects that you change, by using the
+`processingLog` function. 
+
+**Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
+the pycnocline.
+
+### 4.2 Example with raw data
+
+Practicing Oceanographers may be wondering how the CTD cast used in the
+preceding section was trimmed of equilibration-phase and upcast-phase data.
+Spurious data from these phases must be trimmed as a first step in processing.
+For example, consider the following code.
+```{r fig.cap="**Figure 3.** Scanwise plot of the `ctdRaw` sample data set.  Note the spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.", fig.width=5, fig.height=3}
+data(ctdRaw)
+plotScan(ctdRaw)
+```
+
+This produces a two-panel plot (Figure 3) of the data as a time-series, revealing
+not just the (useful) downcast, but also the subsequent upcast sequence.  The
+x-axis in this plot is the scan number, which is a convenient index for
+extraction of the downcast portion of the profile by an essentially manual
+method, e.g. proceeding with a sequence of commands such as
+
+```{r eval=FALSE}
+plotScan(ctdTrim(ctdRaw, "range",
+                 parameters=list(item="scan", from=140, to=250)))
+plotScan(ctdTrim(ctdRaw, "range",
+                 parameters=list(item="scan", from=150, to=250)))
+```
+
+This is the preferred method, which is recommended for detailed
+work. However, for quick work, you may find that the automatic downcast
+detection scheme works adequately, e.g.
+```{r eval=FALSE}
+ctdTrimmed <- ctdTrim(ctdRaw)
+```
+
+It should be noted that `ctdTrim` inserts entries into the object's log file,
+so that you (or anyone else with whom you share the object) will be able to see
+the details of how the trimming was done.
+
+Once the profile has been trimmed, you may wish to use `ctd.decimate` to smooth
+the data and interpolate the smoothed results to uniformly-spaced pressure
+values. For example, a quick examination of a file might be done by the
+following:
+```{r eval=FALSE}
+plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
+```
+
+### 4.3 Example with WOCE archive data
+
+The package has a harder time scanning the headers of data files in the WOCE
+archive format than it does in the Seabird format illustrated in the previous
+examples. This is mainly because front-line researchers tend to work in the
+Seabird format, and partly because the WOCE format is odd. For example, the
+first line of a WOCE file is of the form `CTD,20060609WHPOSIODAM` (or
+`BOTTLE,...`).  Scanning the item to the left of the comma is not difficult
+(although there are variants to the two shown, e.g. `CTDO` sometimes occurs).
+The part to the right of the comma is more difficult.  The first part is a date
+(`yyyymmdd`) so that is no problem.  But then things start to get tricky.  In
+the example provided, this text contains the division of the institute (WHPO),
+the institute itself (SIO), and initial of the investigator (DAM). The problem
+is that no dividers separate these items, and that there seem to be no
+standards for the item lengths. Rather than spend a great deal of time coding
+special cases (e.g. scanning to see if the string `WHOI` occurs in the header
+line), the approach taken with `oce` is to ignore such issues relating to
+quirky headers.  This frees up time to work on more important things, such as
+plotting the data.
+
+It is possible to access object constituents directly, e.g.  `x@data$salinity`
+is the salinity stored in a CTD object named `x`, but this is not the preferred
+method of access.  The better scheme is to use the *accessor functions*,
+mentioned previously, partly because it looks throughout the object to find the
+named quantities, e.g. `x[["salinity"]]` yields salinity (from the \verb+data+
+slot of the object) and `x[["station"]]` yields the station identifier (from
+the `metadata` slot).
+
+For a real-world example (with warts!), visit
+[http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410](http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410)
+and download the zip file containing the Arctic section called CARINA, measured
+in 1994. Expand the zip file, enter the directory, and run the code below.
+
+```{r eval=FALSE}
+library(oce)
+# Source: http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410
+files <- system("ls *.csv", intern=TRUE)
+for (i in 1:length(files)) {
+    cat(files[i], "\n")
+    x <- read.ctd(files[i])
+    if (i == 1) {
+        plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type="l", col="red")
+    } else {
+        lines(x[["salinity"]], x[["temperature"]], col="red")
+    }
+}
+```
+
+What you will see is an overall $T$-$S$ diagram for the entire dataset. It may take
+a while, since the dataset contains over 90,000 observations. You may note that,
+even though this is an official, quality-controlled dataset, it is not without
+problems. The graph that is produced by this code has several spurious lines
+oriented horizontally (indicating spurious salinity) and vertically (indicating
+spurious temperature). One way to find such values is to put the lines
+```{r eval=FALSE}
+print(range(x[["temperature"]]))
+print(range(x[["salinity"]]))
+```
+after the `read.ctd` call. One thing you'll find is that station 987
+has a minimum salinity range of 0.0009 to 987. These values are clearly in
+error, as are the temperatures at this spot in the file. (It is perhaps
+revealing that the spurious salinity is equal to the station number.) Indeed, at
+this spot in the file it can be seen that the pressure jumps from 1342 to 0, and
+then starts increasing again; the file contains two profiles, or the same
+profile twice. This is not the only flaw that is revealed by the graph, and by
+@range commands; a generous user would spend a week tracking down such
+issues, and would then contact the data provider (or the chief scientist of the
+field work) with specific suggestions for correcting the files. The point here
+is to highlight how this package can be used with real-world data.
+
+## 5. Section plots
+
+The commands
+```{r eval=FALSE}
+data(section)
+plot(section, which=c(1, 2, 3, 99))
+```
+will plot a summary diagram containing sections of
+$T$, $S$, and $\sigma_\theta$, along with a chart indicating station
+locations. In addition to such overview diagrams, @plot can also create
+individual plots of individual properties.
+
+
+The Halifax section is supplied in a pre-gridded format, but some datasets have
+different pressure levels at each station.  For such cases, the `sectionGrid`
+function may be used, e.g.  the following produces Figure 4. The ship doing the
+sampling was travelling westward from the Mediterranean towards North America,
+taking 124 stations in total; the @indices value selects the last few stations
+of the section, during which the ship heading was changed to run in a
+northwesterly direction, to cross isobaths (and perhaps, the Gulf Stream) at
+right angles.
+```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the sections.", fig.width=5, fig.height=5}
+data(section)
+GS <- subset(section, 102<=stationId&stationId<=124)
+GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
+plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
+```
+
+**Exercise 3.** Draw a $T$-$S$ diagram for the section data, colour-coded by
+station.
+
+**Exercise 4.** Plot dynamic height and geostrophic velocity across the Gulf
+Stream.
+
+## 6. Maps
+
+### 6.1 About projections
+
+There are several ways to handle map projections in R and other systems. Oce
+uses the @rgdal package to calculate the details of map projections.  A
+suite of functions for plotting maps is provided.  The first step is to use
+`mapPlot` to construct the map, and after that, points can be added
+with @mapPoints@, lines with `mapLines`, etc. For example,
+```{r eval=FALSE}
+library(oce)
+data(coastlineWorld)
+par(mar=rep(0, 4))
+mapPlot(coastlineWorld, projection="+proj=wintri", fill="lightgray")
+```
+plots a world coastline in the Winkel Tripel projection (used by the National
+Geographical Society, and so familiar to many viewers), using light gray ink
+for the land (Fig. 5).  Adding the cruise track for the `oce` dataset called
+`section` is a simple matter
+
+```{r eval=FALSE}
+data(section)
+lon <- section[["longitude", "byStation"]]
+lat <- section[["latitude", "byStation"]]
+mapLines(lon, lat, col='red', lwd=2)
+```
+
+![**Figure 5a.** World coastline in Winkel Tripel projection, with a cruise track
+indicated in red.](projection.png)
+
+```{r echo=FALSE}
+data(coastlineWorld)
+par(mar=rep(1, 4))
+```
+
+Projections in `oce` are done with the `rgdal` package, and there are far too
+many possibilities to illustrate here. See
+[http://dankelley.github.io/r/2015/04/03/oce-proj.html](http://dankelley.github.io/r/2015/04/03/oce-proj.html)
+for a blog item that provides examples of the available projections. Note that
+some have a problem with spurious horizontal lines. This can result from
+coastline segments that cross the edge of the plotting area, and getting rid of
+this is tricky enough to be the heart of the longest-lived bug in the `oce`
+issue list.
+
+It should be noted that `oce` has a suite of tools for mapmaking. One must use
+`mapPlot()` to set up a map, after which points can be added with
+`mapPoints()`, lines with `mapLines()`, images with `mapImage()`, contours with
+`mapContours()`, and text with `mapText()`. It is mandatory to use these
+functions, instead of e.g. `points()`, because the coordinate system is
+"hidden".
+
+
+### 6.2 Popular world-view projections
+
+A few common projections are worth highlighting here. In addition to the Winkel
+Tripel projection shown in Figure 5a, it is also common to employ Mollweide,
+Eckert IV or Robinson for world-wide views. Note the use of very thin margins, because
+there is no need to label latitude and longitude in world views.
+
+```{r fig.cap="**Figure 5b.** World coastline in Mollweide projection.", fig.width=5, fig.height=3}
+par(mar=rep(0.5, 4))
+mapPlot(coastlineWorld, projection="+proj=moll")
+```
+
+Before moving on to other projections, it may be helpful to show how to plot sea surface
+temperature in this projection.
+
+```{r fig.cap="**Figure 5c.** World SST in Mollweide projection.", fig.width=5, fig.height=2.7}
+par(mar=rep(1, 4))
+data(levitus, package='ocedata')
+lon <- levitus$longitude
+lat <- levitus$latitude
+SST <- levitus$SST
+Tlim <- c(-2, 30)
+drawPalette(Tlim, col=oce.colorsJet)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
+mapPolygon(coastlineWorld, col='gray')
+```
+
+Now we return to line drawings, in two other popular world-view projections:
+Eckert IV and Robinson.
+
+```{r fig.cap="**Figure 5d.** World coastline in Eckert IV projection.", fig.width=5, fig.height=3}
+par(mar=rep(0.5, 4))
+mapPlot(coastlineWorld, projection="+proj=eck4")
+```
+
+```{r fig.cap="**Figure 5e.** World coastline in Robinson projection.", fig.width=5, fig.height=3}
+par(mar=rep(0.5, 4))
+mapPlot(coastlineWorld, projection="+proj=robin")
+```
+
+### 6.3 Popular mid-latitude projections
+
+Mid-latitude regions are often projected with Lambert Conformal Conic or
+Mercator projections, e.g.  Figure 5e and Figure 5f were produced as follows.
+```{r fig.cap="**Figure 5f.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3}
+par(mar=c(2, 2, 1, 1))
+mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
+        longitudelim=c(-80, 0), latitudelim=c(20, 60))
+```
+
+```{r fig.cap="**Figure 5g.** North Atlantic in Mercator projection.", fig.width=5, fig.height=3}
+par(mar=c(2, 2, 1, 1))
+mapPlot(coastlineWorld, projection="+proj=merc",
+        longitudelim=c(-80, 0), latitudelim=c(20, 60))
+```
+
+### 6.4 Popular high-latitude projections
+
+High-latitude regions are often represented with stereopolar projections, e.g.
+Figure 5g was produces with the following.
+```{r fig.cap="**Figure 5h.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5}
+par(mar=rep(1, 4))
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+        longitudelim=c(-80,0), latitudelim=c(70, 110))
+```
+
+
+
+## 7. Sea-level data
+
+### 7.1 Time-domain analysis
+
+The following code loads and graphs a build-in dataset of sea-level timeseries.
+The result, shown in Figure 6. The top panel is a timeseries view that provides
+an overview of the entire data set. The second panel is narrowed to the most
+recent month, which should reveal spring-neap cycles if the tide is mixed. The
+third panel is a spectrum, with a few tidal constituents indicated. At the
+bottom is a cumulative spectrum, which makes these narrow-banded constituents
+quite visible.
+
+
+```{r fig.cap="**Figure 6.** Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike in September is the storm surge associated with Hurricane Juan, regarded by the Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes to ever hit Canada.)", fig.width=5, fig.height=5}
+library(oce)
+data(sealevel)
+plot(sealevel)
+```
+
+**Exercise 5.** Illustrate Halifax sealevel variations during Hurricane Juan.
+
+**Exercise 6.** Draw a spectrum of sea-level variation, with the M2 tidal component indicated.
+
+### 7.2 Tidal-harmonic analysis
+
+A preliminary version of tidal analysis is provided by the `tidem` function
+provided in this version of the package, but readers are cautioned that the
+results are certain to change in a future version.  (The problems involve
+phase, and the inference of satellite nodes.)
+
+## 8. Acoustic Doppler Current Profiler data
+
+The following commands produce Figure 7, showing currents made in the St
+Lawrence Estuary Internal Wave Experiment.
+```{r fig.cap="**Figure 7.** Measurements made with an ADP in the St Lawrence Estuary.  The data were recorded in beam format, so a two-step process is used to convert to enu coordinates.  The black curve indicates the water surface, inferred from the pressure measured by the ADP.", fig.width=6, fig.height=3}
+library(oce)
+data(adp)
+plot(adp, which=1, adorn=expression({lines(x[["time"]], x[["pressure"]])}))
+```
+
+## 9. Working in non-English languages
+
+Many of the `oce` plotting functions produce axis labels that can be
+displayed in languages other than English.  At the time of writing, French,
+German, Spanish, and Mandarin are supported in at least a rudimentary way.
+Setting the language can be done at the general system level, or within R; the
+latter is illustrated below for French (which is coded `fr` in the ISO
+639 language standard).
+```{r fig.cap="**Figure 8.** French version of Figure 2.", fig.width=6, fig.height=6}
+library(oce)
+Sys.setenv(LANGUAGE="fr")
+data(ctd)
+plot(ctd)
+```
+```{r echo=FALSE}
+Sys.setenv(LANGUAGE="en")
+```
+
+Most of the translated items were found by online dictionaries, and so they may
+be incorrect for oceanographic usage.  Readers can help out in the translation
+effort, if they have knowledge of how nautical words such as *Pitch* and *Roll*
+and technical terms such as *Absolute Salinity* and *Potential Temperature*
+should be written in various languages.
+
+## 10. The future of oce
+
+The present version of `oce` can only handle data types that the author has
+been using lately in his research. New data types will be added as the need
+arises in that work, but the author would also be happy to add other data types
+that are likely to prove useful to the Oceanographic community.  (The data types
+need not be restricted to Physical Oceanography, but the author will need some
+help in dealing with other types of data, given his research focus.) 
+
+Two principles will guide the addition of data types and functions: (a) the
+need, as perceived by the author or by other contributors and (b) the ease with
+which the additions can be made.  One might call this development-by-triage, by
+analogy to the scheme used in Emergency Rooms to organize medical effort
+efficiently.
+
+## 11. Development website
+
+The site [http://github.com/dankelley/oce](http://github.com/dankelley/oce)
+provides a window on the development that goes on between the CRAN releases of
+the package. Please visit the site to report bugs, to suggest new features, or
+just to see how `oce` development is coming along.  Note that the `development`
+branch is used by the author in his work, and is updated so frequently that it
+must be considered unstable, at least in those spots being changed on a given
+day.  Every week or so, as the `development` branch stabilizes, the changes are
+merged back into the `master` branch.  Official CRAN releases derive from the
+`master` branch, and are done when the code is considered to be of reasonable
+stability and quality.  This is all in a common pattern for open-source
+software.
+
+## 12. Answers to exercises
+
+**Exercise 1.** Seawater properties.
+```{r fig.width=5, fig.height=5}
+library(oce)
+swRho(34, 10, 100)
+swTheta(34, 10, 100)
+swRho(34, swTheta(34, 10, 100), 0)
+swRho(34, swTheta(34, 10, 100, 200), 200)
+plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+```
+
+
+**Exercise 2.** Profile plots
+
+Although one may argue as to the limits of the pycnocline, for illustration let
+us say it is in 5bar to 12dbar range.  One way to do this is
+
+```{r fig.width=5, fig.height=5}
+library(oce)
+data(ctd)
+pycnocline <- ctdTrim(ctd, "range",
+                      parameters=list(item="pressure", from=5, to=12))
+plotProfile(pycnocline, which="density+N2")
+```
+
+Another is
+```{r fig.width=5, fig.height=5}
+library(oce)
+data(ctd)
+pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
+plotProfile(pycnocline, which="density+N2")
+```
+
+**Exercise 3.** TS diagram for section data
+
+The simplest way is to use accessor functions to extract salinity, etc.
+```{r fig.width=5, fig.height=5}
+library(oce)
+data(section)
+ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
+plotTS(ctd)
+```
+
+However, the point of *this* exercise is to show that manual extraction is
+awkward, so a more appropriate solution is as follows (plot identical to the
+above, and so not shown).
+```{r eval=FALSE}
+library(oce)
+data(section)
+SS <- TT <- pp <- id <- NULL
+n <- length(section@data$station)
+for (stn in section@data$station) {
+    SS <- c(SS, stn[["salinity"]])
+    TT <- c(TT, stn[["temperature"]])
+    pp <- c(pp, stn[["pressure"]])
+}
+ctd <- as.ctd(SS, TT, pp)
+plotTS(ctd)
+```
+
+**Exercise 4.** Gulf Stream
+
+(Try `?swDynamicHeight` for hints on smoothing.)
+```{r fig.width=5, fig.height=3}
+library(oce)
+GS <- subset(section, 102<=stationId&stationId<=124)
+dh <- swDynamicHeight(GS)
+par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+plot(dh$distance, dh$height, type="l", xlab="", ylab="Dyn. Height [m]")
+grid()
+# 1e3 metres per kilometre
+f <- coriolis(GS@data$station[[1]]@metadata$latitude)
+g <- gravity(GS@data$station[[1]]@metadata$latitude)
+v <- diff(dh$height)/diff(dh$distance) * g / f / 1e3
+plot(dh$distance[-1], v, type="l", col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+grid()
+abline(h=0)
+```
+
+**Exercise 5.** Halifax sealevel during Hurricane Juan
+
+A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
+The author can verify that the strongest winds occurred a bit after midnight --
+that was the time he moved to a room without windows, in fear of flying glass.
+```{r fig.width=7, fig.height=3}
+library(oce)
+data(sealevel)
+# Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
+plot(sealevel,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
+abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
+mtext("Juan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
+```
+
+**Exercise 6.** Sealevel spectrum
+
+The first step is to load the data.
+```{r}
+library(oce)
+data(sealevel)
+```
+Next, we extract the elevation data
+```{r}
+elevation <- sealevel[["elevation"]]
+```
+and then we return to standard R processing, to compute the spectrum, and 
+indicate the M2 tide.
+```{r fig.width=5, fig.height=5, results="hide"}
+spectrum(elevation, spans=c(3,7))
+abline(v=1/12.42)
+mtext("M2",at=1/12.42,side=3)
+```
+
+

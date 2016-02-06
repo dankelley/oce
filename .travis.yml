@@ -1,10 +1,9 @@
 language: r
 sudo: required
+r_build_args: --no-build-vignettes --no-manual --no-resave-data
+r_check_args: --no-build-vignettes --no-manual
 env:
     global:
         - _R_CHECK_FORCE_SUGGESTS_=False
-        - _R_BUILD_ARGS="--no-build-vignettes --no-manual"
-        - _R_CHECK_ARGS="--no-build-vignettes --no-manual"
         - _R_CHECK_CRAN_INCOMING=False
-        - BOOTSTRAP_LATEX=""
-          
+

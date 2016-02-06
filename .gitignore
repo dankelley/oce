@@ -22,9 +22,5 @@ oce.Rproj
 vignettes/.build.timestamp
 autom4te.cache
 *.nc
-<<<<<<< HEAD
-
-=======
->>>>>>> satellite
 *.zip
 inst/doc
