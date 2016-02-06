@@ -12,7 +12,7 @@ output:
 
 vignette: >
   %\VignetteIndexEntry{oce}
-  %\VignetteEngine{rmarkdown:render}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
