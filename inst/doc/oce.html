@@ -140,13 +140,13 @@ d &lt;-<span class="st"> </span><span class="kw">read.oce</span>(filename)
 </ul>
 <p>Details and examples are provided in the documentation of these functions.</p>
 <p>It might help the reader to try some exercises. Note that answers are provided at the end of this document.</p>
-<p><strong>Exercise 1.</strong> a. What is the density of a seawater parcel at pressure <span class="math">\(100\)</span>,dbar, with salinity <span class="math">\(34\)</span>,PSU and temperature 10<span class="math">\(^\circ\)</span>C? b. What temperature would the parcel have if raised adiabatically to the surface? c. What density would it have if raised adiabatically to the surface? d. What density would it have if lowered about 100m, increasing the pressure to <span class="math">\(200\)</span>dbar? e. Draw a blank <span class="math">\(T\)</span>-<span class="math">\(S\)</span> diagram with <span class="math">\(S\)</span> from <span class="math">\(30\)</span> to <span class="math">\(40\)</span>,PSU and <span class="math">\(T\)</span> from <span class="math">\(-2\)</span> to 20<span class="math">\(^\circ\)</span>C.</p>
+<p><strong>Exercise 1.</strong> a. What is the density of a seawater parcel at pressure 100 dbar, with salinity 34 PSU and temperature 10<span class="math">\(^\circ\)</span>C? b. What temperature would the parcel have if raised adiabatically to the surface? c. What density would it have if raised adiabatically to the surface? d. What density would it have if lowered about 100m, increasing the pressure to 200 dbar? e. Draw a blank <span class="math">\(T\)</span>-<span class="math">\(S\)</span> diagram with <span class="math">\(S\)</span> from 30 to 40 PSU and <span class="math">\(T\)</span> from -2 to 20<span class="math">\(^\circ\)</span>C.</p>
 </div>
 <div id="ctd-data" class="section level2">
 <h2>4. CTD data</h2>
 <div id="example-with-pre-trimmed-data" class="section level3">
 <h3>4.1 Example with pre-trimmed data</h3>
-<p>To get you started with CTD data, <code>oce</code> provides a sample data set that has been trimmed to just the downcast portion of the sampling. (See the next section to learn how to do this trimming.). A summary of the contents of a CTD object named <code>x</code> is obtained with <code>summary(x)</code>. A generic plotting function is also provided, and the following commands produce Figure~2, illustrating such a plot for a built-in CTD dataset.</p>
+<p>To get you started with CTD data, <code>oce</code> provides a sample data set that has been trimmed to just the downcast portion of the sampling. (See the next section to learn how to do this trimming.). A summary of the contents of a CTD object named <code>x</code> is obtained with <code>summary(x)</code>. A generic plotting function is also provided, and the following commands produce Figure 2, illustrating such a plot for a built-in CTD dataset.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(oce)
 <span class="kw">data</span>(ctd)
 <span class="kw">plot</span>(ctd)</code></pre>
@@ -371,7 +371,7 @@ latlim &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">
 <pre><code>## [1] 1027.073</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plotTS</span>(<span class="kw">as.ctd</span>(<span class="kw">c</span>(<span class="dv">30</span>,<span class="dv">40</span>),<span class="kw">c</span>(-<span class="dv">2</span>,<span class="dv">20</span>),<span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">2</span>)), <span class="dt">grid=</span><span class="ot">TRUE</span>, <span class="dt">col=</span><span class="st">&quot;white&quot;</span>)</code></pre>
 <p><strong>Exercise 2.</strong> Profile plots</p>
-<p>Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5bar to 12dbar range. One way to do this is</p>
+<p>Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5 dbar to 12 dbar range. One way to do this is</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(oce)
 <span class="kw">data</span>(ctd)
 pycnocline &lt;-<span class="st"> </span><span class="kw">ctdTrim</span>(ctd, <span class="st">&quot;range&quot;</span>,

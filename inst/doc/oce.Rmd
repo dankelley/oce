@@ -151,11 +151,11 @@ at the end of this document.
 
 **Exercise 1.**
 a. What is the density of a seawater parcel at pressure
-$100$\,dbar, with salinity $34$\,PSU and temperature 10$^\circ$C?
+100 dbar, with salinity 34 PSU and temperature 10$^\circ$C?
 b. What temperature would the parcel have if raised adiabatically to the surface?
 c. What density would it have if raised adiabatically to the surface?
-d. What density would it have if lowered about 100m, increasing the pressure to $200$dbar?
-e. Draw a blank $T$-$S$ diagram with $S$ from $30$ to $40$\,PSU and $T$ from $-2$ to 20$^\circ$C.
+d. What density would it have if lowered about 100m, increasing the pressure to 200 dbar?
+e. Draw a blank $T$-$S$ diagram with $S$ from 30 to 40 PSU and $T$ from -2 to 20$^\circ$C.
 
 
 
@@ -168,7 +168,7 @@ To get you started with CTD data, `oce` provides a sample data set that has
 been trimmed to just the downcast portion of the sampling.  (See the next
 section to learn how to do this trimming.).  A summary of the contents of a
 CTD object named `x` is obtained with `summary(x)`. A generic plotting function
-is also provided, and the following commands produce Figure~2, illustrating
+is also provided, and the following commands produce Figure 2, illustrating
 such a plot for a built-in CTD dataset. 
 ```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
@@ -569,7 +569,7 @@ plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 **Exercise 2.** Profile plots
 
 Although one may argue as to the limits of the pycnocline, for illustration let
-us say it is in 5bar to 12dbar range.  One way to do this is
+us say it is in 5 dbar to 12 dbar range.  One way to do this is
 
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
