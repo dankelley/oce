@@ -16,6 +16,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
 
 **Abstract.** The `oce` package makes it easy to read, summarize and plot data
 from a variety of Oceanographic instruments, isolating the researcher from the
@@ -348,12 +351,12 @@ par(mar=rep(1, 4))
 ```
 
 There are far too many projections to illustrate here. See
-[http://dankelley.github.io/r/2015/04/03/oce-proj.html](http://dankelley.github.io/r/2015/04/03/oce-proj.html)
+<http://dankelley.github.io/r/2015/04/03/oce-proj.html>
 for a blog item that provides examples of the available projections. Note that
 some have a problem with spurious horizontal lines. This can result from
 coastline segments that cross the edge of the plotting area, and getting rid of
 this is tricky enough to be the heart of the longest-lived bug in the `oce`
-issue list, i.e. [https://github.com/dankelley/oce/issues/388](ttps://github.com/dankelley/oce/issues/388).
+issue list, i.e. <https://github.com/dankelley/oce/issues/388>.
 
 
 ### 6.2 Popular world-view projections

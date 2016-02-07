@@ -1,3 +1,6 @@
+## ---- echo = FALSE-------------------------------------------------------
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+
 ## ----eval=FALSE----------------------------------------------------------
 #  library(oce)
 #  d <- read.oce("station1.cnv")
