@@ -16,6 +16,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
 
 **Abstract.** The `oce` package makes it easy to read, summarize and plot data
 from a variety of Oceanographic instruments, isolating the researcher from the
