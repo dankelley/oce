@@ -80,23 +80,23 @@ where `filename` is the name of a file containing the data.
 **Some notes on oce function names.**
 
 
-1. The function used above to read a dataset ends in @.oce, which is a signal
-that the returned object is of class `oce`.  Depending on the file contents, @d
-will also have an additional class, e.g.  if @filename contains CTD data, then
-the object would have two classes: `oce` and @ctd, and the second of these is
-used in plotting, meaning that R will call a function named @read.ctd for the
+1. The function used above to read a dataset ends in `.oce`, which is a signal
+that the returned object is of class `oce`.  Depending on the file contents, `d`
+will also have an additional class, e.g.  if `filename` contains CTD data, then
+the object would have two classes: `oce` and `ctd`, and the second of these is
+used in plotting, meaning that R will call a function named `read.ctd` for the
 plot.
 
 2. Generally, `oce` functions employ a "camel case" naming convention, in which
 a function that is described by several words is named by stringing the words
 together, capitalizing the second and subsequent words. For example,
-`ctdAddColumn` takes a @ctd object, and adds a column.
+`ctdAddColumn` takes a `ctd` object, and adds a column.
 
 3. Function names begin with `oce` in cases where the most natural function
    name would otherwise be in conflict with a function in the base R system or
    a package commonly used by Oceanographers.  For example, `oce.approx` is
-   used for a function that is analogous to @approx@ in the `stats` package.
-   The reason for not naming the function as @oceApprox is a desire to provide
+   used for a function that is analogous to `approx` in the `stats` package.
+   The reason for not naming the function as `oceApprox` is a desire to provide
    a clear hint about the similarity of the functions. The reason for avoiding
    a naming conflict (by calling it `approx`) is to avoid the necessity of
    writing `oce::approx`, a notation that can be confusing to users.
@@ -112,7 +112,7 @@ designate that they relate to seawater properties; a future version of `oce`
 may provide air properties, with functions names starting with `air`.) The
 result is a number in the order of $1000$kg/m$^3$.  For many purposes,
 Oceanographers prefer to use the density anomaly $\sigma=\rho-1000$kg/m$^3$,
-provided with @swSigma(salinity,temperature,pressure), or its adiabatic cousin
+provided with `swSigma(salinity,temperature,pressure)`, or its adiabatic cousin
 $\sigma_\theta$, provided with `swSigmaTheta`.
 
 Most of the functions use the UNESCO formulations of seawater properties, with
@@ -306,7 +306,7 @@ revealing that the spurious salinity is equal to the station number.) Indeed, at
 this spot in the file it can be seen that the pressure jumps from 1342 to 0, and
 then starts increasing again; the file contains two profiles, or the same
 profile twice. This is not the only flaw that is revealed by the graph, and by
-@range commands; a generous user would spend a week tracking down such
+`range` commands; a generous user would spend a week tracking down such
 issues, and would then contact the data provider (or the chief scientist of the
 field work) with specific suggestions for correcting the files. The point here
 is to highlight how this package can be used with real-world data.
@@ -320,7 +320,7 @@ plot(section, which=c(1, 2, 3, 99))
 ```
 will plot a summary diagram containing sections of
 $T$, $S$, and $\sigma_\theta$, along with a chart indicating station
-locations. In addition to such overview diagrams, @plot can also create
+locations. In addition to such overview diagrams, `plot` can also create
 individual plots of individual properties.
 
 
@@ -328,7 +328,7 @@ The Halifax section is supplied in a pre-gridded format, but some datasets have
 different pressure levels at each station.  For such cases, the `sectionGrid`
 function may be used, e.g.  the following produces Figure 4. The ship doing the
 sampling was travelling westward from the Mediterranean towards North America,
-taking 124 stations in total; the @indices value selects the last few stations
+taking 124 stations in total; the `indices` value selects the last few stations
 of the section, during which the ship heading was changed to run in a
 northwesterly direction, to cross isobaths (and perhaps, the Gulf Stream) at
 right angles.
@@ -350,10 +350,10 @@ Stream.
 ### 6.1 About projections
 
 There are several ways to handle map projections in R and other systems. Oce
-uses the @rgdal package to calculate the details of map projections.  A
+uses the `rgdal` package to calculate the details of map projections.  A
 suite of functions for plotting maps is provided.  The first step is to use
 `mapPlot` to construct the map, and after that, points can be added
-with @mapPoints@, lines with `mapLines`, etc. For example,
+with `mapPoints`, lines with `mapLines`, etc. For example,
 ```{r fig.keep="none"}
 library(oce)
 data(coastlineWorld)
