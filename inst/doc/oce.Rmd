@@ -340,11 +340,12 @@ GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 ```
 
-**Exercise 3.** Draw a $T$-$S$ diagram for the section data, colour-coded by
-station.
+**Exercise 3.** Draw a $T$-$S$ diagram for the section data, using black
+symbols to the east of 30W and gray symbols to the west, thus highlighting
+Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
 
 **Exercise 4.** Plot dynamic height and geostrophic velocity across the Gulf
-Stream.
+Stream. (Hint: use the `swDynamicHeight` function.)
 
 ## 6. Maps
 
@@ -491,7 +492,12 @@ provided in this version of the package, but readers are cautioned that the
 results are certain to change in a future version.  (The problems involve
 phase, and the inference of satellite nodes.)
 
-## 8. Acoustic Doppler Current Profiler data
+**Exercise 7.** Plot the detided Halifax sea level during Autumn 2003, to see
+whether Hurricane Juan is visibible. (Hint: use `predict` with the results from
+`tidem`.)
+
+## 8. Acoustic Doppler Current
+Profiler data
 
 The following commands produce Figure 7, showing currents made in the St
 Lawrence Estuary Internal Wave Experiment.
@@ -587,34 +593,20 @@ pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
 plotProfile(pycnocline, which="density+N2")
 ```
 
-**Exercise 3.** TS diagram for section data
+**Exercise 3.** Draw a $T$-$S$ diagram for the section data, using black
+symbols to the east of 30W and gray symbols to the west, thus highlighting
+Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
 
-The simplest way is to use accessor functions to extract salinity, etc.
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
 data(section)
 ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
-plotTS(ctd)
+col <- ifelse(section[['longitude']] > -30, "black", "gray")
+plotTS(ctd, col=col)
 ```
 
-However, the point of *this* exercise is to show that manual extraction is
-awkward, so a more appropriate solution is as follows (plot identical to the
-above, and so not shown).
-```{r fig.keep="none"}
-library(oce)
-data(section)
-SS <- TT <- pp <- id <- NULL
-n <- length(section@data$station)
-for (stn in section@data$station) {
-    SS <- c(SS, stn[["salinity"]])
-    TT <- c(TT, stn[["temperature"]])
-    pp <- c(pp, stn[["pressure"]])
-}
-ctd <- as.ctd(SS, TT, pp)
-plotTS(ctd)
-```
-
-**Exercise 4.** Gulf Stream
+**Exercise 4.** Plot dynamic height and geostrophic velocity across the Gulf
+Stream. (Hint: use the `swDynamicHeight` function.)
 
 (Try `?swDynamicHeight` for hints on smoothing.)
 ```{r fig.width=5, fig.height=3, fig.keep="none"}
@@ -667,3 +659,17 @@ mtext("M2",at=1/12.42,side=3)
 ```
 
 
+**Exercise 7.** Plot the detided Halifax sea level during Autumn 2003, to see
+whether Hurricane Juan is visibible. (Hint: use `predict` with the results from
+`tidem`.)
+
+```{r results="hide", fig.keep="none"}
+library(oce)
+data(sealevel)
+m <- tidem(sealevel)
+oce.plot.ts(sealevel[['time']], sealevel[['elevation']] - predict(m),
+            ylab="Detided sealevel [m]", 
+            xlim=c(as.POSIXct("2003-09-20"), as.POSIXct("2003-10-08")))
+```
+
+The spike reveals a surge of about 1.5m, on the 29th of September, 2003.
