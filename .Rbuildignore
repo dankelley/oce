@@ -16,6 +16,7 @@ README.rst
 inst/doc/.gitignore
 inst/doc/oce.R
 inst/doc/oce.Rmd
+inst/doc/oce.html
 vignettes/.build.timestamp
 vignettes/oce.log
 ^.*\.Rproj$
