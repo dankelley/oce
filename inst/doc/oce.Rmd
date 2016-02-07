@@ -118,31 +118,32 @@ $\sigma_\theta$, provided with `swSigmaTheta`.
 Most of the functions use the UNESCO formulations of seawater properties, with
 an argument called `eos` to get the TEOS-10 equivalent. Note that the `oce`
 package uses the `gsw` package (by the same authors), which provides an
-interface to the C library for TEOS-10.
+interface to the C library for TEOS-10. Users should be cautioned that the results obtained when using the `eos="gsw"` argument in the `oce` seawater functions may differ from the results obtained when using the `gsw` functions directly, due to unit conventions (e.g. the function `swCSTp(..., eos="gsw")` reports conductivity ratio for consistency with the UNESCO formulation, however the underlying `gsw` function `gsw_C_from_SP()` reports conductivity in mS/cm). 
 
 A partial list of seawater functions is as follows:
-`swDynamicHeight` (dynamic height),
-`swN2` (buoyancy frequency),
-`swSCTp` (salinity from conductivity, temperature and pressure),
-`swSTrho` (salinity from temperature and density),
-`swTSrho` (temperature from salinity and density),
-`swTFreeze` (freezing temperature),
-`swAlpha` (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
-`swBeta` (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
-`swAlphaOverBeta` ($\alpha/\beta$),
-`swConductivity` (conductivity from $S$, $T$ and $p$),
-`swDepth` (depth from $p$ and latitude),
-`swLapseRate` (adiabatic lapse rate),
-`swRho` (density $\rho$ from $S$, $T$ and $p$),
-`swSigma` ($\rho-1000$\,kg/m$^3$),
-`swSigmaT` ($\sigma$ with $p$ set to zero and temperature unaltered),
-`swSigmaTheta` ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
-`swSoundSpeed` (speed of sound),
-`swSpecificHeat` (specific heat),
-`swSpice` (a quantity used in double-diffusive research),
-`swTheta` (potential temperature $\theta$),
-and
-`swViscosity` (viscosity).
+
+* `swDynamicHeight` (dynamic height),
+* `swN2` (buoyancy frequency),
+* `swSCTp` (salinity from conductivity, temperature and pressure),
+* `swSTrho` (salinity from temperature and density),
+* `swTSrho` (temperature from salinity and density),
+* `swTFreeze` (freezing temperature),
+* `swAlpha` (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
+* `swBeta` (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
+* `swAlphaOverBeta` ($\alpha/\beta$),
+* `swConductivity` (conductivity from $S$, $T$ and $p$),
+* `swDepth` (depth from $p$ and latitude),
+* `swLapseRate` (adiabatic lapse rate),
+* `swRho` (density $\rho$ from $S$, $T$ and $p$),
+* `swSigma` ($\rho-1000$\,kg/m$^3$),
+* `swSigmaT` ($\sigma$ with $p$ set to zero and temperature unaltered),
+* `swSigmaTheta` ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
+* `swSoundSpeed` (speed of sound),
+*`swSpecificHeat` (specific heat),
+* `swSpice` (a quantity used in double-diffusive research),
+* `swTheta` (potential temperature $\theta$), and
+* `swViscosity` (viscosity).
+
 Details and examples are provided in the documentation of these functions.
 
 It might help the reader to try some exercises. Note that answers are provided
