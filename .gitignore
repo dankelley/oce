@@ -14,15 +14,11 @@ issue*png
 man/figures/*pdf
 man/figures/*png
 !man/figures/starCoords.png
-inst/doc/oce.R
 .DS_Store
 .Rproj.user
 oce.Rproj
 .RData
-vignettes/.build.timestamp
-inst/doc/oce.R
-inst/doc/oce.Rmd
 autom4te.cache
 *.nc
 *.zip
-inst/doc
+
