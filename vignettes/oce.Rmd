@@ -327,13 +327,14 @@ individual plots of individual properties.
 
 The Halifax section is supplied in a pre-gridded format, but some datasets have
 different pressure levels at each station.  For such cases, the `sectionGrid`
-function may be used, e.g.  the following produces Figure 4. The ship doing the
+function may be used, e.g. the following produces Figure 4. The ship doing the
 sampling was travelling westward from the Mediterranean towards North America,
 taking 124 stations in total; the `indices` value selects the last few stations
 of the section, during which the ship heading was changed to run in a
 northwesterly direction, to cross isobaths (and perhaps, the Gulf Stream) at
 right angles.
 ```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the sections.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=12)}
+library(oce)
 data(section)
 GS <- subset(section, 102<=stationId&stationId<=124)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))

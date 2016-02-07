@@ -14,8 +14,8 @@ README.rst
 .Rhistory
 .gitignore
 inst/doc/.gitignore
-inst/doc/ctd-object.svg
-vignettes/oce.html
+inst/doc/oce.R
+inst/doc/oce.Rmd
 vignettes/.build.timestamp
 vignettes/oce.log
 ^.*\.Rproj$
