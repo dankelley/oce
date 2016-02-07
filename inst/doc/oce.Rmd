@@ -49,6 +49,7 @@ partly by providing accessor methods that make it convenient to reach inside
 the data objects.
 
 As illustrated in Figure 1, each `oce` object contains three slots:
+
 * `data`, a list containing the actual data (e.g., for a CTD object, this will
   contain `pressure`, `temperature`, etc.)
 * `metadata`, a list containing information about the data, such as units,
