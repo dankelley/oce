@@ -50,20 +50,20 @@ the data objects.
 
 As illustrated in Figure 1, each `oce` object contains three slots:
 
-* `data`, a list containing the actual data (e.g., for a CTD object, this will
-  contain `pressure`, `temperature`, etc.)
+* `data`, a list containing the actual data, e.g., for a CTD object, this will
+  contain `pressure`, `temperature`, etc.
 * `metadata`, a list containing information about the data, such as units,
   quality flags, sampling locations, etc.
-* `processingLog`, a list that documents how the file was created (often by a
-  `read()` or `as.X()` method) and how it was changed thereafter (e.g. by
-  decimating a CTD cast).
+* `processingLog`, a list that documents how the object was created how changed
+  thereafter.
 
-The uniformity of the various `oce` objects makes it easy to build skill
-in examining and modifying objects.  The package provides for simple and general
-processing of `oce` objects.  For example, if `x` is an `ctd`
-object, then `plot(x)` produces a multi-panel plot with profiles and a map,
-whereas if `x` is an `adp` object, then images will show the distance-time
-evolution of the velocity components.
+The uniformity of the various `oce` objects makes it easy to build skill in
+examining and modifying objects. Fine-scale control is provided throughout
+`oce`, but the way to learn is to start with general tools and their defaults.
+The generic-function system used in `oce` provides good starting point. For
+example, if `x` is an `ctd` object, then `plot(x)` produces a multi-panel plot
+with profiles and a map, whereas if `x` is an `adp` object, then images will
+show the distance-time evolution of the velocity components.
 
 Specialized functions are provided to read many data types, and in most cases
 the general function `read.oce()` function can detect file type and dispatch to

@@ -20,6 +20,9 @@ inst/doc/oce.R
 oce.Rproj
 .RData
 vignettes/.build.timestamp
+inst/doc/oce.R
+inst/doc/oce.Rmd
+inst/doc/oce.html
 autom4te.cache
 *.nc
 *.zip
