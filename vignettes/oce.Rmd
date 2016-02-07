@@ -358,7 +358,7 @@ with @mapPoints@, lines with `mapLines`, etc. For example,
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
-mapPlot(coastlineWorld, projection="+proj=wintri", fill="lightgray")
+mapPlot(coastlineWorld, projection="+proj=wintri", col="lightgray")
 ```
 plots a world coastline in the Winkel Tripel projection (used by the National
 Geographical Society, and so familiar to many viewers), using light gray ink
