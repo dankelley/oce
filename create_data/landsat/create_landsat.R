@@ -1,0 +1,5 @@
+library(oce)
+landsat <- decimate(read.landsat("/data/archive/landsat/LC80080292014065LGN00"), by=100)
+save(landsat, file='landsat.rda')
+library(tools)
+tools::resaveRdaFiles("landsat.rda", compress="auto")

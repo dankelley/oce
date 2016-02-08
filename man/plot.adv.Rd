@@ -37,7 +37,7 @@
         \dQuote{Details} for the meanings of various values of
         \code{which}.}
     \item{col}{optional indication of colour(s) to use.  If not provided,
-        the default for images is \code{oceColorsPalette(128,1)}, and for
+        the default for images is \code{oce.colorsPalette(128,1)}, and for
         lines and points is black.}
     \item{titles}{optional vector of character strings to be used as
         labels for the plot panels.  For images, these strings will be

@@ -24,18 +24,26 @@ setMethod(f="summary",
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
               showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
               showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
-              cat("* Statistics of subsample::\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3)
-              for (i in 2:ndata) { # skip time
-                  threes[i-1,] <- threenum(object@data[[i]])
-              }
-              rownames(threes) <- paste("   ", names(object@data)[-1])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
+
+setMethod(f="subset",
+          signature="met",
+          definition=function(x, subset, ...) {
+              res <- new("met") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- r & !is.na(r)
+                  res@data[[i]] <- x@data[[i]][r]
+              }
+              names(res@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
+              res
+          })
+ 
 
 
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
@@ -89,24 +97,25 @@ read.met <- function(file, type=NULL, skip,
     latitude <- textItem(text, "Latitude")
     longitude <- textItem(text, "Longitude")
     station <- textItem(text, "Station Name", FALSE)
-    province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
+    ##province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
     climateIdentifier <- textItem(text, "Climate Identifier", FALSE)
     WMOIdentifier <- textItem(text, "WMO Identifier", FALSE)
     TCIdentifier <- textItem(text, "TC Identifier", FALSE)
-    Identifier <- textItem(text, "Climate Identifier", FALSE)
+    ##Identifier <- textItem(text, "Climate Identifier", FALSE)
     if (missing(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
-    res@metadata <- list(latitude=latitude,
-                         longitude=longitude,
-                         elevation=elevation,
-                         climateIdentifier=climateIdentifier,
-                         WMOIdentifier=WMOIdentifier,
-                         TCIdentifier=TCIdentifier,
-                         filename=filename)
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$elevation <- elevation
+    res@metadata$station <- station
+    res@metadata$climateIdentifier <- climateIdentifier
+    res@metadata$WMOIdentifier <- WMOIdentifier
+    res@metadata$TCIdentifier <- TCIdentifier
+    res@metadata$filename <- filename
     rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
     time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
-    ntime <- length(time)
+    ##ntime <- length(time)
     names <- names(rawData)
     ## Must use grep to identify columns, because the names are not fixed.  In some
     ## test files, temperature was in a column named "..Temp...C.", but in others
@@ -120,18 +129,44 @@ read.met <- function(file, type=NULL, skip,
     ## It would be good if someone from Environment Canada would take pity on a
     ## poor user, and convince the powers-that-be to settle on a single format
     ## and even (gasp) to document it.
-    Tcol <- grep("^Temp.*C\\.", names) # sometimes they use a degree symbol in this name
-    if (length(Tcol)) temperature <- as.numeric(rawData[,Tcol[1]])
-    else temperature <- rep(NA, ntime)
-    pressure <- as.numeric(rawData[["Stn.Press..kPa."]])
-    speed <- as.numeric(rawData[["Wind.Spd..km.h."]]) * 1000 / 3600
-    direction <- 10 * as.numeric(rawData[["Wind.Dir..10.s.deg."]])
-    u <- -speed * sin(direction * atan2(1, 1) / 45)
-    v <- -speed * cos(direction * atan2(1, 1) / 45)
-    res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v)
+    ##j <- grep("^Temp.*C.*$", names(rawData))[1]
+    ##temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
+    ##pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
+    ##wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    ##speed <- wind * 1000 / 3600        # convert from km/h to m/s
+    ##j <- grep("^Wind.*deg.*$", names(rawData))[1]
+    ##direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
+    rpd <- atan2(1, 1) / 45            # radian/degree
+
+    names(rawData) <- decodeDataNames(names, "met")
+    rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
+
+
+    ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
+    theta <- (90 - 10 * rawData[["direction"]]) * rpd 
+    ## Note the (-) to get from "wind from" to "wind speed towards"
+    rawData[["u"]] <- -rawData[["speed"]] * sin(theta)
+    rawData[["v"]] <- -rawData[["speed"]] * cos(theta)
+    zero <- is.na(rawData[["direction"]]) & rawData[["wind"]] == 0
+    rawData[["u"]][zero] <- 0
+    rawData[["v"]][zero] <- 0
+    rawData[["time"]] <- time
+    res@data <- rawData #list(time=time, temperature=temperature, pressure=pressure, u=u, v=v,
+                     #wind=wind, direction=direction)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
+    names <- names(res@data)
+    if ("wind" %in% names) res@metadata$units$wind <- list(unit=expression(km/h), scale="")
+    if ("speed" %in% names) res@metadata$units$speed <- list(unit=expression(m/s), scale="")
+    if ("u" %in% names) res@metadata$units$u <- list(unit=expression(m/s), scale="")
+    if ("v" %in% names) res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
+    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    if ("dewPoint" %in% names) res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
+    if ("visibility" %in% names) res@metadata$units$visibility <- list(unit=expression(km), scale="")
     res
 }
 
@@ -148,19 +183,23 @@ setMethod(f="plot",
                opar <- par(no.readonly = TRUE)
                nw <- length(which)
                if (nw > 1) on.exit(par(opar))
-               par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+               if (nw > 1)
+                   par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+               else
+                   par(mgp=mgp, mar=mar)
                for (w in 1:nw) {
                    oceDebug(debug, "which=", w, "\n")
-                   if (which[w] == 1) {
+                   if (which[w] == 1 && any(!is.na(x@data$temperature))) {
                        oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"), tformat=tformat)
-                   } else if (which[w] == 2) {
+                   } else if (which[w] == 2 && any(!is.na(x@data$pressure))) {
                        oce.plot.ts(x@data$time, x@data$pressure, ylab="Pressure [kPa]", tformat=tformat)
-                   } else if (which[w] == 3) {
+                   } else if (which[w] == 3 && any(!is.na(x@data$u))) {
                        oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("eastward", "y"), tformat=tformat)
-                   } else if (which[w] == 4) {
+                   } else if (which[w] == 4 && any(!is.na(x@data$v))) {
                        oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("northward", "y"), tformat=tformat)
                    }
                }
+               oceDebug(debug, "} # plot.met()\n", unindent=1)
            })
 
 

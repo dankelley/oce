@@ -5,21 +5,24 @@
 
 \description{This is sample CTD profile provided for testing.  It
   includes not just the (useful) portion of the dataset during which the
-  instrument was being lowered, but also data from the upcast and from
-  time spent near the surface.  Spikes are also clearly evident in the
-  pressure record.  With such real-world wrinkles, this dataset provides a good
-  example of data that need trimming with the Oce function \code{ctdTrim}.}
+  instrument was being lowered, but also data from the upcast and from time
+  spent near the surface.  Spikes are also clearly evident in the pressure
+  record.  With such real-world wrinkles, this dataset provides a good example
+  of data that need trimming with \code{\link{ctdTrim}}.}
 
 \usage{data(ctdRaw)}
 
 \source{The data were acquired near the centre of the Bedford Basin of the
     Halifax Harbour, during an October 2003 field trip of Dalhousie
-    University's Oceanography 4120/5120 class.}
+    University's Oceanography 4120/5120 class. The original \code{.cnv} data
+    file had temperature in the IPTS-68 scale, but this was converted to the
+    more modern scale using \code{\link{T90fromT68}}.}
 
 \author{Dan Kelley}
 
-\seealso{The documentation for \code{ctd-class} in the Oce package explains the
-    structure of CTD objects, and also outlines the other functions dealing
-    with them.}
+\seealso{A similar dataset, but trimmed to the downcast, is provided as
+    \code{\link{ctd}}.  The documentation for \code{\link{ctd-class}} explains
+    the structure of \code{ctd} objects, and also outlines the other functions
+    dealing with them.}
 
 \keyword{datasets}

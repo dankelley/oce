@@ -7,7 +7,7 @@
 
 \arguments{
   \item{x}{the x component of wind speed (or stress) \emph{or} an object of
-      class \code{met} (see \link{met-class}), in which case the \code{u} and
+      class \code{met} (see \code{\link{met-class}}), in which case the \code{u} and
       \code{v} components of that object are used for the components of wind
       speed, and \code{y} here is ignored.}
   \item{y}{the y component of wind speed (or stress).}

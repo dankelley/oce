@@ -53,16 +53,14 @@ setMethod(f="summary",
 
 
 setMethod(f="[[",
-          signature="tidem",
-          definition=function(x, i, j, drop) {
+          signature(x="tidem", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
               if (i == "coef") {
                   x@data$model$coef
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ##as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 
@@ -86,7 +84,7 @@ setMethod(f="plot",
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              drawConstituents <- function(type="standard", labelIf=NULL, col="blue")
+              drawConstituents <- function(amplitude, type="standard", labelIf=NULL, col="blue")
               {
                   if (type == "standard") {
                       drawConstituent("SA", 0.0001140741, side=3)
@@ -119,10 +117,10 @@ setMethod(f="plot",
                   if (which[w] == 2) {
                       plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
                       segments(frequency, 0, frequency, amplitude)
-                      drawConstituents()
+                      drawConstituents(amplitude)
                   } else if (which[w] == 1) {
                       plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-                      drawConstituents()
+                      drawConstituents(amplitude)
                   } else {
                       stop("unknown value of which ", which, "; should be 1 or 2")
                   }
@@ -135,7 +133,7 @@ setMethod(f="plot",
 tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
-    data("tidedata", envir=environment())
+    data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
 
     a <- tidemAstron(t)
@@ -173,8 +171,8 @@ tidemVuf <- function(t, j, lat=NULL)
         oceDebug(debug, "uu[1:3]=",uu[1:3], "\n")
 
         nsat <- length(tidedata$sat$iconst)
-        nfreq <- length(tidedata$const$numsat)
-                                        # loop, rather than make a big matrix
+        ##nfreq <- length(tidedata$const$numsat)
+        ## loop, rather than make a big matrix
         oceDebug(debug,
                   "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
                   "length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
@@ -358,7 +356,7 @@ tidemAstron <- function(t)
 
     oceDebug(debug, "astro=",astro,"\n")
 
-    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days")
+    rem <- as.numeric(difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days"))
 
     oceDebug(debug, "rem2=",rem,"\n")
 
@@ -371,29 +369,34 @@ tidemAstron <- function(t)
     data.frame(astro=astro, ader=ader)
 }
 
-tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
+tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "tidem(x, t, constituents,",
+    oceDebug(debug, "tidem(t, x, constituents,",
              "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
-    if (missing(x))
-        stop("must supply 'x'")
-    if (inherits(x, "sealevel")) {
-        sl <- x
-        t <- x[["time"]]
+    if (missing(t))
+        stop("must supply 't', either a vector of times or a sealevel object")
+    if (inherits(t, "sealevel")) {
+        sl <- t
+        t <- sl[["time"]]
+        x <- sl[["elevation"]]
         if (is.null(latitude))
-            latitude <- x[["latitude"]]
+            latitude <- sl[["latitude"]]
     } else {
-        if (missing(t))
-            stop("must supply 't', since 'x' is not a sealevel object")
+        if (missing(x))
+            stop("must supply 'x', since the first argument is not a sealevel object")
+        if (inherits(x, "POSIXt")) {
+            warning("tidem() switching first 2 args to permit old-style usage\n")
+            tmp <- x
+            x <- t
+            t <- tmp
+        }
+        if (length(x) != length(t))
+            stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
         if (inherits(t, "POSIXt")) {
             t <- as.POSIXct(t)
-            if (length(x) != length(t))
-                stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
         } else {
-            if (1 != length(t))
-                stop("'t' must be of length 1, unless it is a vector of POSIXt times")
-            t <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") + t * seq(0, 1, length.out=length(x))
+            stop("t must be a vector of POSIXt times")
         }
         sl <- as.sealevel(x, t)
     }
@@ -406,7 +409,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
-    data("tidedata", envir=environment())
+    data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
@@ -572,27 +575,26 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
     ##     ~/src/t_tide_v1.3beta/t_tide.m:468
     ##     ~/src/foreman/tide12_r2.f:422
 
-    data <- list(model=model,
-                 call=cl,
-                 tRef=tRef,
-                 const=c(1,   index),
-                 name=c("Z0", name),
-                 freq=c(0,    freq),
-                 amplitude=amplitude,
-                 phase=phase,
-                 p=p)
-    rval <- new('tidem')
-    rval@metadata <- list(rc=rc)
-    rval@data <- data
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res <- new('tidem')
+    res@data <- list(model=model,
+                      call=cl,
+                      tRef=tRef,
+                      const=c(1,   index),
+                      name=c("Z0", name),
+                      freq=c(0,    freq),
+                      amplitude=amplitude,
+                      phase=phase,
+                      p=p)
+    res@metadata$rc <- rc
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 
 predict.tidem <- function(object, newdata, ...)
 {
     if (!missing(newdata) && !is.null(newdata)) {
-        newdata.class <- class(newdata)
+        ##newdata.class <- class(newdata)
         if (inherits(newdata, "POSIXt")) {
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
@@ -610,14 +612,14 @@ predict.tidem <- function(object, newdata, ...)
             name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
             dim(name2) <- c(2 * length(name), 1)
             colnames(x) <- name2
-            rval <- predict(object@data$model, newdata=list(x=x), ...)
+            res <- predict(object@data$model, newdata=list(x=x), ...)
         } else {
             stop("newdata must be of class POSIXt")
         }
     } else {
-        rval <- predict(object@data$model, ...)
+        res <- predict(object@data$model, ...)
     }
-    as.numeric(rval)
+    as.numeric(res)
 }
 
 webtide <- function(action=c("map", "predict"),
@@ -628,18 +630,36 @@ webtide <- function(action=c("map", "predict"),
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
-    filename <- paste(subdir, "/", region, "_ll.nod", sep="")
-    triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
+
+    ## 2016-02-03: it seems that there are several possibilities for this filename.
+    triangles <- NULL
+    warn <- options("warn")$warn
+    options(warn=-1)
+    t <- try({ triangles <- read.table(paste(subdir, "/", region, ".nod", sep=""),
+        col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+    if (inherits(t, "try-error")) {
+        t <- try({ triangles <- read.table(paste(subdir, "/", region, "ll.nod", sep=""),
+            col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+        if (inherits(t, "try-error")) {
+            t <- try({ triangles <- read.table(paste(subdir, "/", region, "_ll.nod", sep=""),
+                col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+        }
+    }
+    if (is.null(triangles))
+        stop("Could not find the '.nod' file")
+    options(warn=warn)
+    rm(warn)
+
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
                  asp=asp, xlab="", ylab="", ...)
-            usr <- par('usr')
-            best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            ##usr <- par('usr')
+            ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
             warning("tidem: using default coastline for testing")
-            data("coastlineWorld", envir=environment())
+            data("coastlineWorld", package="oce", envir=environment())
             coastlineWorld <- get("coastlineWorld")
             ##data(best, envir=environment(), debug=debug-1)
             ##coastline <- get(best)
@@ -671,11 +691,12 @@ webtide <- function(action=c("map", "predict"),
             longitude <- triangles$longitude[node]
         }
         constituentse <- dir(path=subdir, pattern="*.s2c")
-        abbrev <- substr(constituentse, 1, 2)
+                                        #abbrev <- substr(constituentse, 1, 2)
+        abbrev <- as.character(read.table(paste(subdir,"/constituents.txt",sep=""))[,1])
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
-        data("tidedata", envir=environment())
+        data("tidedata", package="oce", envir=environment())
         tidedata  <- get("tidedata")#,   pos=globalenv())
         for (i in 1:nconstituents) {
             period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
@@ -694,7 +715,7 @@ webtide <- function(action=c("map", "predict"),
             ampv[i] <- conuv[[4]]
             phasev[i] <- conuv[[5]]
         }
-        df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
+        ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
         ## NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
@@ -724,4 +745,3 @@ webtide <- function(action=c("map", "predict"),
     invisible(list(time=time, elevation=elevation, u=u, v=v,
                    node=node, basedir=basedir, region=region))
 }
-

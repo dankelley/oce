@@ -27,9 +27,8 @@
 \examples{
 library(oce)
 data(adp)
-plot(adp)
-#plot(subset(adp, distance < 10))
-#plot(subset(adp, time < mean(range(adp[['time']]))))
+# First part of time series
+plot(subset(adp, time < mean(range(adp[['time']]))))
 }
 
 \author{Dan Kelley}

@@ -6,11 +6,13 @@
 
 \description{Remove spikes from a time series}
 
-\usage{despike(x, reference=c("median","smooth", "trim"), n=4, k=7, min, max,
-        replace=c("reference", "NA"))}
+\usage{despike(x, reference=c("median","smooth", "trim"), n=4, k=7, min=NA, max=NA,
+        replace=c("reference", "NA"), skip)}
 
 \arguments{
-    \item{x}{a vector of values, interpreted as a time series}
+
+    \item{x}{a vector of (time-series) values, a list of vectors, a data frame,
+        or an object that inherits from class \code{oce}.}
 
     \item{reference}{indication of the type of reference time series to be used
         in the detection of spikes; see \sQuote{Details}.}
@@ -31,7 +33,15 @@
     \item{replace}{an indication of what to do with spike values, with
         \code{"reference"} indicating to replace them with the reference time
         series, and \code{"NA"} indicating to replace them with \code{NA}.}
-    
+
+    \item{skip}{optional vector naming columns to be skipped. This is ignored
+        if \code{x} is a simple vector. Any items named in \code{skip} will be
+        passed through to the return value without modification.  In some
+        cases, \code{despike} will set up reasonable defaults for \code{skip},
+        e.g. for a \code{ctd} object, \code{skip} will be set to
+        \code{c("time", "scan", "pressure")} if it is not supplied as an
+        argument.}
+        
 }
 
 \details{The method identifies spikes with respect to a "reference"
@@ -75,6 +85,15 @@ lines(x, despike(y, reference="smooth"), col='darkgreen')
 lines(x, despike(y, reference="trim", min=-3, max=3), col='blue')
 legend("topright", lwd=1, col=c("black", "red", "darkgreen", "blue"),
        legend=c("raw", "median", "smooth", "trim"))
+
+# add a spike to a CTD object
+data(ctd)
+plot(ctd)
+T <- ctd[["temperature"]]
+T[10] <- T[10] + 10
+ctd[["temperature"]] <- T
+CTD <- despike(ctd)
+plot(CTD)
 }
 
 \author{Dan Kelley}

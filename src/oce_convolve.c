@@ -18,7 +18,7 @@
  signal <- ifelse(sin(t * 2 * pi / 128) > 0, 1, 0)
  filter <- exp(-seq(5*tau, 0) / tau)
  filter <- filter / sum(filter)
- obs <- oceConvolve(signal, filter)
+ obs <- oce.convolve(signal, filter)
  plot(t, signal, type='l', lwd=4)
  lines(t, obs, col='red')
 

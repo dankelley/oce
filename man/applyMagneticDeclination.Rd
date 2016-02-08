@@ -31,9 +31,7 @@
 library(oce)
 }
 
-\references{
-  http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html
-}
+\references{\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}}
 
 \author{Dan Kelley}
 

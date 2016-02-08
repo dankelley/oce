@@ -1,3 +1,10 @@
+^.*.org$
+.RData
+.travis.yml
+^.*.nc$
+create_data
+README_developers.md
+R/.*.swo
 css
 _layouts
 _site
@@ -7,7 +14,8 @@ README.rst
 .Rhistory
 .gitignore
 inst/doc/.gitignore
-inst/doc/ctd-object.svg
-vignettes/.build.timestamp
 ^.*\.Rproj$
 ^\.Rproj\.user$
+src/*.o$
+autom4te.cache
+

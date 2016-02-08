@@ -8,7 +8,8 @@
 
 \usage{
 oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
-            drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
+            drawTimeRange=getOption("oceDrawTimeRange"), adorn=NULL, fill=FALSE,
+            xaxs=par("xaxs"), yaxs=par("yaxs"),
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -24,7 +25,9 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{x}{the times of observations.}
 \item{y}{the observations.}
 \item{type}{plot type, \code{"l"} for lines, \code{"p"} for points.}
-\item{xlim}{optional limit for x axis.}
+\item{xlim}{optional limit for x axis.  This has an additional effect, beyond
+    that for conventional R functions: it effectively windows the data, so that
+    autoscaling will yield limits for y that make sense within the window.}
 \item{ylim}{optional limit for y axis.}
 \item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of
     times in the top-left margin.}
@@ -34,6 +37,8 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
     incorrectly if there are missing values in \code{y}).}
 \item{xlab}{name for x axis; defaults to \code{""}.}
 \item{ylab}{name for y axis; defaults to the plotted item.}
+\item{xaxs}{control x axis ending; see \code{\link{par}("xaxs")}.}
+\item{yaxs}{control y axis ending; see \code{\link{par}("yaxs")}.}
 \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
 \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
 \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
@@ -58,7 +63,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
     argument is needed, because calling \code{\link{grid}} after doing a
     sequence of plots will not result in useful results for the individual
     panels.}
-\item{grid.col}{color of grid}
+\item{grid.col}{colour of grid}
 \item{grid.lty}{line type of grid}
 \item{grid.lwd}{line width of grid}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a
@@ -75,36 +80,16 @@ the timezone, to remove any possible confusion.
 The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
 }
 
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
+
 \examples{
 library(oce)
-t.start <- as.POSIXct("2008-01-01", tz="UTC")
-t <- seq(t.start, length.out=48, by="30 min")
-y <- sin(as.numeric(t - t.start) * 2 * pi / (12 * 3600))
+t0 <- as.POSIXct("2008-01-01", tz="UTC")
+t <- seq(t0, length.out=48, by="30 min")
+y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 oce.plot.ts(t, y, type='l', xaxs='i')
-
-\dontrun{
-weatherplot <- function(id=6358, time=as.POSIXlt(Sys.Date()))
-{
-    ## The default stationID is Halifax, NS, Canada
-    site <- "http://www.climate.weatheroffice.gc.ca/climateData/bulkdata_e.html"
-    time <- as.POSIXlt(time)
-    f <- paste(site,
-               "?timeframe=1&StationID=", id,
-               "&&Year=", time$year+1900,
-               "&Month=", time$mon+1,
-               "&Day=", time$mday,
-               "&format=csv", sep="")
-    ## Read lines first, to see where header ends.  Cannot parse header, owing
-    ## to multi-byte strings there.
-    ll <- readLines(f)
-    skip <- which(grepl("Date", ll, perl=TRUE))
-    d <- read.csv(f, skip=skip, header=FALSE)
-    t <- as.POSIXct(d[,1])
-    p <- d[,19]
-    oce.plot.ts(t, p, type='l', ylab="Pressure [dbar]", cex=2/3, main=paste("Station", id))
-}
-weatherplot()
-}
 }
 
 \author{Dan Kelley}

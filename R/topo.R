@@ -1,9 +1,10 @@
 setMethod(f="initialize",
           signature="topo",
-          definition=function(.Object,longitude,latitude,z,filename="") {
+          definition=function(.Object,longitude,latitude,z,filename="", units) {
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(z)) .Object@data$z <- z
+              if (!missing(units)) .Object@metadata$units <- units
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'topo' object"
@@ -14,34 +15,22 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
-              digits <- 4
-              latRange <- range(object[["latitude"]], na.rm=TRUE)
-              lonRange <- range(object[["longitude"]], na.rm=TRUE)
-              zRange <- range(object[["z"]], na.rm=TRUE)
               cat("\nTopo dataset\n------------\n")
               cat("* Source:          ", object[["filename"]], "\n")
-              cat("* Latitude range:   ", format(latRange[1], digits),
-                  " to ", format(latRange[2], digits), ", in steps of ", format(diff(object[["latitude"]][1:2]), digits), " deg\n", sep="")
-              cat("* Longitude range:  ", format(lonRange[1], digits),
-                  " to ", format(lonRange[2], digits), ", in steps of ", format(diff(object[["longitude"]][1:2]), digits), " deg\n", sep="")
-              cat("* Elevation range:  ", format(zRange[1], digits=digits),
-                  " to ", format(zRange[2], digits), " m\n", sep="")
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
 
 setMethod(f="[[",
-          signature="topo",
-          definition=function(x, i, j, drop) {
+          signature(x="topo", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
               i <- match.arg(i, c("longitude","latitude","z", "filename"))
               if (i == "longitude") return(x@data$longitude)
               else if (i == "latitude") return(x@data$latitude)
               else if (i == "z") return(x@data$z)
-              else if (i == "filename") return(x@metadata$filename)
-              else stop("cannot access \"", i, "\"") # cannot get here
+              else callNextMethod()
           })
 
 
@@ -49,7 +38,7 @@ setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
@@ -58,19 +47,21 @@ setMethod(f="subset",
                   stop("must give 'subset'")
               if (length(grep("longitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by longitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
-                  rval[["longitude"]] <- x[["longitude"]][keep]
-                  rval[["z"]] <- x[["z"]][keep,]
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of longitudes\n")
+                  res[["longitude"]] <- x[["longitude"]][keep]
+                  res[["z"]] <- x[["z"]][keep,]
               } else if (length(grep("latitude", subsetString))) {
                   oceDebug(debug, "subsetting a topo object by latitude\n")
-                  keep <- eval(substitute(subset), x@data, parent.frame())
-                  rval[["latitude"]] <- x[["latitude"]][keep]
-                  rval[["z"]] <- x[["z"]][,keep]
+                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  oceDebug(debug, "keeping", 100*sum(keep)/length(keep), "% of latitudes\n")
+                  res[["latitude"]] <- x[["latitude"]][keep]
+                  res[["z"]] <- x[["z"]][,keep]
               } else {
-                  stop("should express the subset in terms of distance or time")
+                  stop("the subset must be based on longitude or latitude")
               }
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.topo(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 
@@ -113,7 +104,7 @@ setMethod(f="plot",
                   stop("method is only for objects of class '", "topo", "'")
               oceDebug(debug, "plot.topo() {\n", unindent=1)
 
-              opar <- par(no.readonly = TRUE)
+              ##opar <- par(no.readonly = TRUE)
               ##on.exit(par(opar))
               par(mgp=mgp, mar=mar)
               dots <- list(...)
@@ -123,6 +114,10 @@ setMethod(f="plot",
 
               gave.span <- !missing(span)
               if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
+              if (!missing(clongitude) && clongitude > 180)
+                  clongitude <- clongitude - 360
+              if (!missing(clongitude) && clongitude < -180)
+                  clongitude <- clongitude + 360
               if (gave.center) {
                   if (!missing(asp))
                       warning("argument 'asp' being ignored, because argument 'center' was given")
@@ -251,7 +246,7 @@ setMethod(f="plot",
               }
 
               oceDebug(debug, "xr=", xr, "yr=",yr,"\n")
-              yaxp <- par("yaxp")
+              ##yaxp <- par("yaxp")
               oceDebug(debug, "par(yaxp)",par("yaxp"),"\n")
               oceDebug(debug, "par(pin)",par("pin"),"\n")
 
@@ -290,11 +285,11 @@ setMethod(f="plot",
                       } else {
                           water.z <- pretty(zr)
                       }
-                      water.z <- rev(sort(water.z))
+                      water.z <- sort(water.z)
                   }
                   nz <- length(water.z)
                   if (missing(col.water))
-                      col.water <- oceColorsGebco(nz, "water", "line")
+                      col.water <- oce.colorsGebco(nz, "water", "line")
                   if (missing(lty.water))
                       lty.water <- rep(par("lty"), nz)
                   else if (length(lty.water) == 1)
@@ -323,7 +318,7 @@ setMethod(f="plot",
                   nz <- length(land.z)
                   if (nz > 0) {
                       if (missing(col.land))
-                          col.land <- oceColorsGebco(nz, "land", "line")
+                          col.land <- oce.colorsGebco(nz, "land", "line")
                       if (missing(lty.land))
                           lty.land <- rep(par("lty"), nz)
                       else if (length(lty.land) == 1)
@@ -341,7 +336,7 @@ setMethod(f="plot",
                               drawlabels=FALSE, add=TRUE, ...)
                   }
               }
-              if (location != "none") {
+              if (!is.null(location) && location != "none") {
                   o <- rev(order(legend))
                   legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
               }
@@ -352,27 +347,41 @@ setMethod(f="plot",
 read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
-    if (is.character(file) && grep(".nc$", file)) {
-        if (!require("ncdf4"))
+    if (is.character(file) && length(grep(".nc$", file))) {
+        if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a netCDF file')
-        ## GEBCO netcdf
-        ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
-        ncdf <- ncdf4::nc_open(file)
-        xrange <- ncdf4::ncvar_get(ncdf, "x_range")
-        yrange <- ncdf4::ncvar_get(ncdf, "y_range")
-        zrange <- ncdf4::ncvar_get(ncdf, "z_range")
-        spacing <- ncdf4::ncvar_get(ncdf, "spacing")
-        longitude <- seq(xrange[1], xrange[2], by=spacing[1])
-        latitude <- seq(yrange[1], yrange[2], by=spacing[2])
-        z <- ncdf4::ncvar_get(ncdf, "z")
-        dim <- ncdf4::ncvar_get(ncdf, "dimension")
-        z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
-        z <- z[,dim[2]:1]
-        rval <- as.topo(longitude, latitude, z, filename=file)
+        } else {
+            ## GEBCO netcdf
+            ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
+            ncdf <- ncdf4::nc_open(file)
+            xrange <- ncdf4::ncvar_get(ncdf, "x_range")
+            yrange <- ncdf4::ncvar_get(ncdf, "y_range")
+            ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+            spacing <- ncdf4::ncvar_get(ncdf, "spacing")
+            longitude <- seq(xrange[1], xrange[2], by=spacing[1])
+            latitude <- seq(yrange[1], yrange[2], by=spacing[2])
+            z <- ncdf4::ncvar_get(ncdf, "z")
+            dim <- ncdf4::ncvar_get(ncdf, "dimension")
+            z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
+            z <- z[,dim[2]:1]
+            res <- as.topo(longitude, latitude, z, filename=file)
+        }
     } else {
         ## ASCII
+        ## NOTE: on 2014-11-13 it came to light that the old dataset website 
+        ##          http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html 
+        ## was no longer working, and that the new one
+        ##          http://maps.ngdc.noaa.gov/viewers/wcs-client/ 
+        ## seemed to have headers 5 lines long.  However,
+        ## the code below has a trick to (perhaps) auto-detect whether the header
+        ## length is 5 or 6.
         nh <- 6
         header <- readLines(file, n=nh)
+        if (nchar(header[length(header)]) > 50) {
+            ## the header is only 5 long, if the last header line is long.
+            nh <- nh - 1
+            header <- header[1:nh]
+        }
         ncol <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
         nrow <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
         longitudeLowerLeft <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
@@ -389,27 +398,39 @@ read.topo <- function(file, ...)
         z <- t(zz[dim(zz)[1]:1,])
         if (!is.na(missingValue))
             z[z == missingValue] <- NA
-        rval <- as.topo(longitude, latitude, z, filename=file)
+        res <- as.topo(longitude, latitude, z, filename=file) # FIXME: add units here
     }
-    rval@processingLog <- processingLog(rval@processingLog,
-                                        paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
-as.topo <- function(longitude, latitude, z, filename="")
+as.topo <- function(longitude, latitude, z, units=NULL, filename="")
 {
+    if (inherits(longitude, "bathy")) {
+        bathy <- longitude
+        longitude <- as.numeric(rownames(bathy))
+        latitude <- as.numeric(colnames(bathy))
+        z <- as.matrix(bathy)
+        if ("units" %in% names(bathy@metadata))
+            units <- bathy@metadata$units
+    }
     ncols <- length(longitude)
     nrows <- length(latitude)
-    longitudeLowerLeft <- min(longitude, na.rm=TRUE)
-    latitudeLowerLeft <- min(latitude, na.rm=TRUE)
+    ## longitudeLowerLeft <- min(longitude, na.rm=TRUE)
+    ## latitudeLowerLeft <- min(latitude, na.rm=TRUE)
     dim <- dim(z)
     if (dim[1] != ncols)
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
-    rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename)
-    rval@processingLog <- processingLog(rval@processingLog,
-                                        paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    if (missing(units))
+        units <- list(latitude=list(unit=expression(degree*E), scale=""),
+                      longitude=list(unit=expression(degree*N), scale=""),
+                      z=list(unit=expression(m), scale=""))
+    res <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 

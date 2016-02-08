@@ -14,7 +14,6 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="sealevel",
           definition=function(object, ...) {
-              threes <- matrix(nrow=1, ncol=3)
               cat("Sealevel Summary\n----------------\n\n")
               showMetadataItem(object, "stationNumber",  "number:              ")
               showMetadataItem(object, "version", "version:             ")
@@ -28,23 +27,31 @@ setMethod(f="summary",
               ndata <- length(object@data$elevation)
               cat("* number of observations:  ", ndata, "\n")
               cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              cat("* Statistics of subsample::\n")
-              threes <- matrix(nrow=1, ncol=3)
-              threes[1,] <- threenum(object@data$elevation)
-              rownames(threes) <- paste("   ", "elevation")
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='   ')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
 
+setMethod(f="subset",
+          signature="sealevel",
+          definition=function(x, subset, ...) {
+              res <- new("sealevel")
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
+              for (i in seq_along(x@data)) {
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
+                  r <- r & !is.na(r)
+                  res@data[[i]] <- x@data[[i]][r]
+              }
+              names(res@data) <- names(x@data)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.sealevel(x, subset=", subsetString, ")", sep=""))
+              res
+          })
+ 
 
 setMethod(f="[[",
-          signature="sealevel",
-          definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) return(x@metadata[[i]])
-              else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("there is no item named \"", i, "\" in this sealevel object")
+          signature(x="sealevel", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) { # FIXME: use j for e.g. times
+              callNextMethod()
           })
 
 setMethod(f="[[<-",
@@ -88,7 +95,7 @@ as.sealevel <- function(elevation,
 {
     if (missing(elevation))
         stop("must supply sealevel height, elevation, in metres")
-    rval <- new('sealevel')
+    res <- new('sealevel')
     n <- length(elevation)
     if (missing(time)) {              # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
@@ -102,28 +109,26 @@ as.sealevel <- function(elevation,
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
     if (is.na(deltat) | deltat <= 0)
         deltat <- 1
-    metadata <- list(filename="",
-                     header=header,
-                     year=year,
-                     stationNumber=stationNumber,
-                     stationVersion=stationVersion,
-                     stationName=stationName,
-                     region=region,
-                     latitude=latitude,
-                     longitude=longitude,
-                     GMTOffset=GMTOffset,
-                     decimationMethod=decimationMethod,
-                     referenceOffset=referenceOffset,
-                     referenceCode=referenceCode,
-                     units=units,
-                     n=length(t),
-                     deltat=deltat)
-    logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval@data$elevation <- elevation
-    rval@data$time <- time
-    rval@metadata <- metadata
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
-    rval
+    res@metadata$filename <- ""
+    res@metadata$header <- header
+    res@metadata$year <- year
+    res@metadata$stationNumber <- stationNumber
+    res@metadata$stationVersion <- stationVersion
+    res@metadata$stationName <- stationName
+    res@metadata$region <- region
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$GMTOffset <- GMTOffset
+    res@metadata$decimationMethod <- decimationMethod
+    res@metadata$referenceOffset <- referenceOffset
+    res@metadata$referenceCode <- referenceCode
+    res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
+    res@metadata$n <- length(t)
+    res@metadata$deltat <- deltat
+    res@data$elevation <- elevation
+    res@data$time <- time
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()),sep="",collapse=""))
+    res
 }
 
 setMethod(f="plot",
@@ -178,7 +183,8 @@ setMethod(f="plot",
               if (marginsAsImage) {
                   scale <- 0.7
                   w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-                  lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+                  if (lw > 1)
+                      lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
               } else {
                   if (lw > 1)
                       lay <- layout(cbind(1:lw))
@@ -209,7 +215,7 @@ setMethod(f="plot",
               n <- length(x@data$elevation) # do not trust value in metadata
 
               oceDebug(debug, "which:", which, "\n")
-              which2 <- ocePmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
+              which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
               oceDebug(debug, "which2:", which2, "\n")
 
               for (w in 1:length(which2)) {
@@ -279,7 +285,7 @@ setMethod(f="plot",
                           s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                           nCumSpec <- length(s$spec)
                           cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
-                          e <- x@data$elevation - mean(x@data$elevation)
+                          ##e <- x@data$elevation - mean(x@data$elevation)
                           par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
                           plot(s$freq, cumSpec,
                                xlab=resizableLabel("frequency cph"),
@@ -317,7 +323,9 @@ setMethod(f="plot",
 
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
-    ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    fileOrig <- file
     filename <- fullFilename(file)
     if (is.character(file)) {
         file <- file(file, "r")
@@ -344,7 +352,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     decimationMethod <- NA
     referenceOffset <- NA
     referenceCode <- NA
-    rval <- new('sealevel')
+    res <- new('sealevel')
     if (substr(firstLine, 1, 12) == "Station_Name") { # type 2
         oceDebug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
         ## Station_Name,HALIFAX
@@ -407,10 +415,11 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
         oceDebug(debug, "units=", units, "\n")
         if (tolower(units) != "mm")
             stop("require units to be 'mm' or 'MM', not '", units, "'")
-        elevation <- array(NA, 12*(n-1))
-        first.twelve.hours  <- 3600 * (0:11)
-        second.twelve.hours <- 3600 * (12:23)
+        elevation <- array(NA_real_, 12*(n-1))
+        ## first.twelve.hours  <- 3600 * (0:11)
+        ## second.twelve.hours <- 3600 * (12:23)
         twelve <- seq(1, 12, 1)
+        last.day.portion <- -1 # ignored; prevents undefined warning in code analysis
         for (i in 2:n) {
             sp <- strsplit(d[i],"[ ]+")[[1]]
             target.index <- 12 * (i-2) + twelve
@@ -420,10 +429,10 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                 start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"), tz=tz)
             } else {
                 if (day.portion == 1) {
-                    if (last.day.portion != 2)
+                    if (i > 2 && last.day.portion != 2)
                         stop("non-alternating day portions on data line ", i)
                 } else if (day.portion == 2) {
-                    if (last.day.portion != 1)
+                    if (i > 2 && last.day.portion != 1)
                         stop("non-alternating day portions on data line ", i)
                 } else {
                     stop("day portion is ", day.portion, " but must be 1 or 2, on data line", i)
@@ -441,30 +450,29 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     }
     num.missing <- sum(is.na(elevation))
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
-    data <- data.frame(time=time, elevation=elevation)
-    metadata <- list(filename=filename,
-                     header=header,
-                     year=year,
-                     stationNumber=stationNumber,
-                     stationVersion=stationVersion,
-                     stationName=stationName,
-                     region=region,
-                     latitude=latitude,
-                     longitude=longitude,
-                     GMTOffset=GMTOffset,
-                     decimationMethod=decimationMethod,
-                     referenceOffset=referenceOffset,
-                     referenceCode=referenceCode,
-                     units=NA,
-                     n=length(time),
-                     deltat=as.numeric(difftime(time[2], time[1], units="hours")))
+    res@metadata$filename <- filename
+    res@metadata$header <- header
+    res@metadata$year <- year
+    res@metadata$stationNumber <- stationNumber
+    res@metadata$stationVersion <- stationVersion
+    res@metadata$stationName <- stationName
+    res@metadata$region <- region
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$GMTOffset <- GMTOffset
+    res@metadata$decimationMethod <- decimationMethod
+    res@metadata$referenceOffset <- referenceOffset
+    res@metadata$referenceCode <- referenceCode
+    res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
+    res@metadata$n <- length(time)
+    res@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
     if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    rval@data$elevation <- elevation
-    rval@data$time <- time
-    rval@metadata <- metadata
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
-    rval
+        processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
+    res@data$elevation <- elevation
+    res@data$time <- time
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                              paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
+    res
 }
 
 

@@ -1,5 +1,0 @@
-library(oce)
-data(section)
-GS <- subset(section, 110<=stationId&stationId<=124)
-GSg <- sectionGrid(GS, p=seq(0, 2000, 10))
-plot(GSg, map.ylim=c(33,45))

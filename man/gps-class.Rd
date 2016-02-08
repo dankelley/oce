@@ -16,7 +16,9 @@
 \section{Methods}{
 
     \subsection{Extracting values}{Data may be accessed as e.g.
-        \code{gps[["longitude"]]} or \code{gps[["latitude"]]}.}
+        \code{gps[["longitude"]]} or \code{gps[["latitude"]]}.  Items in
+        \code{metadata} must be specifield by full name, but those in
+        \code{data} may be abbreviated, so long as the abbreviation is unique.}
 
     \subsection{Assigning values}{Latitude may be changed with e.g.
         \code{gps[["longitude"]] <- value}, and of course the same can be done

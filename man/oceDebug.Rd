@@ -1,6 +1,7 @@
 \name{oceDebug}
 
 \alias{oceDebug}
+\alias{oce.debug}
 
 \title{Print a debugging message}
 

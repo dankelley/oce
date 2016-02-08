@@ -6,8 +6,9 @@
 
 \title{Sample meteorological object}
 
-\description{This is sample \code{met} object, provided for testing, created by
-    the code given in \dQuote{Examples}.}
+\description{This is sample \code{met} object containing data for Halifax, Nova
+    Scotia, during September of 2003 (the period during which Hurricane Juan
+    struck the city).}
 
 \usage{data(met)}
 
@@ -19,12 +20,17 @@ plot(met)
 }
 }
 
-\source{Downloaded from the Environment Canada website
-    \url{http://climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=6358&Year=2011&Month=7&Day=15&format=csv}
-    on November 17, 2011.}
+\source{Downloaded from the Environment Canada website on May 29, 2014, and processed as follows.
+\preformatted{
+met <- read.met('http://climate.weather.gc.ca/climateData/bulkdata_e.html?format=csv&stationID=6358&Year=2003&Month=9&Day=17&timeframe=1&submit=Download+Data')
+met[['time']] <- met[['time']] + 4 * 3600
+}
+(Note the conversion from local standard time to UTC.)
+}
 
-\seealso{The documentation for \code{met-class} in the Oce package explains the
-    structure of \code{met} objects, and also outlines the other functions
-    dealing with them.}
+\seealso{The documentation for \code{\link{met-class}} explains the structure
+    of \code{met} objects, and also outlines the other functions dealing with
+    them.}
 
 \keyword{datasets}
+

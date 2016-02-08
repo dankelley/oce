@@ -26,7 +26,7 @@ contour(x, y, v, asp=1)
 ##print(grad$gy==100)
 
 */
-#define ix(i, j) ((i) + (nrow) * (j))
+#define ij(i, j) ((i) + (nrow) * (j))
 
 SEXP gradient(SEXP m, SEXP x, SEXP y)
 {
@@ -54,12 +54,12 @@ SEXP gradient(SEXP m, SEXP x, SEXP y)
   PROTECT(gx = allocMatrix(REALSXP, nrow, ncol));
   double *gxp = REAL(gx);
   for (j = 0; j < ncol; j++) {
-    gxp[ix(0, j)] = (mp[ix(1,j)] - mp[ix(0,j)]) / (xp[1] - xp[0]);
-    gxp[ix(nrow - 1, j)] = (mp[ix(nrow - 1, j)] - mp[ix(nrow - 2, j)]) / (xp[nrow-1] - xp[nrow-2]);
+    gxp[ij(0, j)] = (mp[ij(1,j)] - mp[ij(0,j)]) / (xp[1] - xp[0]);
+    gxp[ij(nrow - 1, j)] = (mp[ij(nrow - 1, j)] - mp[ij(nrow - 2, j)]) / (xp[nrow-1] - xp[nrow-2]);
   }
   for (i = 1; i < nrow - 1; i++) {
     for (j = 0; j < ncol; j++) {
-      gxp[ix(i, j)] = (mp[ix(i+1, j)] - mp[ix(i-1,j)]) / (xp[i+1] - xp[i-1]);
+      gxp[ij(i, j)] = (mp[ij(i+1, j)] - mp[ij(i-1,j)]) / (xp[i+1] - xp[i-1]);
     }
   }
   SET_VECTOR_ELT(lres, 0, gx);
@@ -70,12 +70,12 @@ SEXP gradient(SEXP m, SEXP x, SEXP y)
   PROTECT(gy = allocMatrix(REALSXP, nrow, ncol));
   double *gyp = REAL(gy);
   for (i = 0; i < nrow; i++) {
-    gyp[ix(i, 0)] = (mp[ix(i,1)] - mp[ix(i,0)]) / (yp[1] - yp[0]);
-    gyp[ix(i, ncol - 1)] = (mp[ix(i, ncol - 1)] - mp[ix(i, ncol - 2)]) / (yp[ncol-1] - yp[ncol-2]);
+    gyp[ij(i, 0)] = (mp[ij(i,1)] - mp[ij(i,0)]) / (yp[1] - yp[0]);
+    gyp[ij(i, ncol - 1)] = (mp[ij(i, ncol - 1)] - mp[ij(i, ncol - 2)]) / (yp[ncol-1] - yp[ncol-2]);
   }
   for (i = 0; i < nrow; i++) {
     for (j = 1; j < ncol - 1; j++) {
-      gyp[ix(i, j)] = (mp[ix(i, j+1)] - mp[ix(i,j-1)]) / (yp[j+1] - yp[j-1]);
+      gyp[ij(i, j)] = (mp[ij(i, j+1)] - mp[ij(i,j-1)]) / (yp[j+1] - yp[j-1]);
     }
   }
   SET_VECTOR_ELT(lres, 1, gy);

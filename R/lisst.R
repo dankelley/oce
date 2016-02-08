@@ -19,26 +19,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LISST Summary\n-------------\n\n")
               showMetadataItem(object, "filename", "File source:        ")
-              start <- object@data$time[1]
-              dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-              end <- object@data$time[length(object@data$time)]
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(start), attr(start, "tzone"),
-                          format(end), attr(end, "tzone"),
-                          1 / dt))
-              cat("* Statistics of subsample::\n")
-              ndata <- length(object@data)
-              threes <- matrix(nrow=ndata-1, ncol=3)
-              names <- names(object@data)
-              for (i in 1:ndata) {
-                  if (names[i] != "time") {
-                      threes[i,] <- threenum(object@data[[i]])
-                  }
-              }
-              rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 
@@ -48,14 +29,16 @@ setMethod(f="plot",
               oceDebug(debug, "plot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="", unindent=1)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
-              which <- ocePmatch(which,
-                                 list(C1=1, C2=2, C3=3, C4=4, C5=5, C6=6, C7=7, C8=8, C9=9, C10=10,
+              which <- oce.pmatch(which,
+                                  list(C1=1, C2=2, C3=3, C4=4, C5=5, C6=6, C7=7, C8=8, C9=9, C10=10,
                                       C11=11, C12=12, C13=13, C14=14, C15=15, C16=16, C17=17, C18=18, C19=19, C20=20,
                                       C21=21, C22=22, C23=23, C24=24, C25=25, C26=26, C27=27, C28=28, C29=29, C30=30,
                                       C31=31, C32=32,
                                       lts=33, voltage=34, aux=35, lrs=36,
                                       pressure=37, temperature=38, transmission=41, beam=42))
               oceDebug(debug, "which:", which, "\n")
+              opar <- par(no.readonly = TRUE)
+              if (length(which) > 1) on.exit(par(opar))
               par(mfrow=c(nw, 1))
               time <- x[["time"]]
               for (w in 1:nw) {
@@ -94,7 +77,7 @@ setMethod(f="plot",
 
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
-    rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
+    res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
     ncols <- ncol(data)
     if (ncols < 42)
         stop("data file must hold at least 42 space-separated columns")
@@ -123,15 +106,16 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     decimalday <- day + hour / 24 + minute / 60 / 24 + second / 24 / 60 / 60
     t0 <- as.POSIXct(paste(year, "-01-01 00:00:00", sep=""), tz=tz)
     data$time <- t0 + 86400 * decimalday / 365.25
-    rval@data <- data
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@data <- data
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    names <- names(data)
+    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
+    res
 }
 
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
-    processingLog <- paste(deparse(match.call()), sep="", collapse="")
-
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -145,7 +129,12 @@ read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
         on.exit(close(file))
     }
     data <- read.table(file, header=FALSE)
-    as.lisst(data, filename, year, tz, latitude, longitude)
+    res <- as.lisst(data, filename=filename, year=year, tz=tz, longitude=longitude, latitude=latitude)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    names <- names(data)
+    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
+    res
 }
 
 

@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{section}(x,
      which=c(1, 2, 3, 99),
-     eos=getOption("eos", default='unesco'),
+     eos=getOption("oceEOS", default="gsw"),
      at=NULL,
      labels=TRUE,
      grid=FALSE,
@@ -23,16 +23,20 @@
      ylim=NULL,
      map.xlim=NULL,
      map.ylim=NULL,
-     xtype=c("distance", "track", "longitude", "latitude"),
+     clongitude, clatitude, span,
+     projection=NULL, parameters=NULL, orientation=NULL,
+     xtype=c("distance", "track", "longitude", "latitude", "time"),
      ytype=c("depth", "pressure"),
      ztype=c("contour", "image", "points"),
      zbreaks=NULL, zcol=NULL,
      legend.loc="bottomright",
      adorn=NULL,
      showStations=FALSE,
+     showStart=TRUE,
      showBottom=TRUE,
+     axes=TRUE,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
      debug=getOption("oceDebug"),
      \dots)
@@ -40,21 +44,15 @@
 
 \arguments{
     \item{x}{a \code{section} object, e.g. as created by
-        \code{\link{makeSection}}.}
+        \code{\link{as.section}} or \code{\link{read.section}}.}
 
     \item{which}{a list of desired plot types, as explained in
         \dQuote{Details}.  There may be up to four panels in total, and the
         desired plots are placed in these panels, in reading order.  If only
         one panel is plotted, \code{par} is not adjusted, which makes it easy
         to add to the plot with subsequent plotting commands.}
-
-    \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
-        computer must have the TEOS library installed; see \code{\link{teos}}.
-        The effect of using \code{"teos"} is to plot ``absolute salinity''
-        instead of practical salinity, and conservative temperature instead of
-        in-situ temperature.  Typically, the temperature values will be very
-        similar to those with \code{unesco}, but the salinities will be increased
-        by 0.1 to 0.2 units.  See \code{\link{teos}} for more information.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{at}{if \code{NULL} (the default), the x axis will indicate the
         distance of the stations from the first in the section.  (This may
         give errors in the contouring routine, if the stations are not present
@@ -74,16 +72,18 @@
         resolution, or \code{"none"} to avoid drawing the coastline.}
     \item{xlim}{optional limit for x axis (only in sections, not map)}
     \item{ylim}{optional limit for y axis (only in sections, not map)}
-    \item{map.xlim}{optional xlim for station location, which can be
-        helpful in ensuring that a recognizable coastline can be seen.
-        (This value is used instead of \code{map.ylim}, if both are
-        supplied.)}
-    \item{map.ylim}{optional ylim for station location, which can be
-        helpful in ensuring that a recognizable coastline can be seen}
+    \item{map.xlim, map.ylim}{optional limits for station map;
+        \code{map.ylim} is ignored if \code{map.xlim} is provided.}
+    \item{clongitude, clatitude, span}{optional map centre position and span (km)}
+    \item{projection, parameters, orientation}{parameters specifying map
+        projection; see \code{\link{mapPlot}}.  If
+        \code{projection="automatic"}, however, a projection is devised from
+        the data, with \code{stereographic} if the mean latitude exceeds 70N
+        and \code{mollweide} otherwise.}
     \item{xtype}{type of x axis, for contour plots, either
         \code{"distance"} for distance (in km) to the first point in the
         section, \code{"track"} for distance along the cruise track,
-        or \code{"longitude"} or \code{"latitude"}.
+        \code{"longitude"}, \code{"latitude"}, or \code{"time"}.
         Note that if the x values are not in order, they will be put in
         order (which may make no sense) and a warning will be printed.}
     \item{ytype}{type of y axis for contour plots, either
@@ -102,7 +102,8 @@
         defaults to a vector of length 200, with values spanning the data
         range.}
 
-    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}},
+        or set to the empty string to avoid plotting a legend.}
 
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number of
@@ -112,11 +113,14 @@
         \dQuote{Examples}.)}
     \item{showStations}{logical indicating whether to draw station numbers
         on maps.}
+    \item{showStart}{logical indicating whether to indicate the first station
+        with a different symbol than the others.}
     \item{showBottom}{logical indicating whether to draw the bottom, or a
         character string indicating the method for plotting the bottom.  The
         allowed methods are: \code{polygon}, which fills the space to the bottom,
         or \code{lines}, which draws lines from stations to the bottom, or
         \code{points}, which draws points at the bottom.}
+    \item{axes}{logical value indicating whether to draw axes.}
     \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
         also for \code{par(mar)}, computed from this.  The default is
         tighter than the R default, in order to use more space for the data
@@ -144,6 +148,10 @@
         \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
         \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
         \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+        \item \code{which=9} or \code{"u"} for eastward velocity
+        \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
+        \item \code{which=11} or \code{"v"} for northward velocity
+        \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
         \item \code{which=20} or \code{"data"} for a dot for each data location
         \item \code{which=99} or \code{"map"} for a location map
     }
@@ -187,7 +195,7 @@ plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 ## image, with coloured dots to show if grid smoothing was OK
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]
-col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 }

@@ -1,8 +1,145 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' oce: A package for Oceanographic analysis
+#'
+#' The oce package provides functions for working with
+#' Oceanographic data, for calculations that are specific
+#' to Oceanography, and for producing graphics that
+#' match the conventions of the field.
+#'
+#' @section Specialized functions:
+#' A key function is \code{\link{read.oce}}, which will attempt
+#' to read Oceanographic data in raw format. This uses
+#' \code{\link{oceMagic}} to try to detect the file type,
+#' based on the file name and contents. If it proves impossible
+#' to detect the type, users should next try a more specialized
+#' function, e.g. \code{\link{read.ctd}} for CTD files, or 
+#' \code{\link{read.ctd.sbe}} for Teledyne-Seabird files.
+#'
+#' @section Generic methods:
+#' A list of the generic methods in oce is provided by
+#' `methods(class="oce")`; a few that are used frequently
+#' are as follows.
+#' \describe{
+#' \item{[[}{Find the value of an item in the object's
+#'     \code{metadata} or \code{data} slot.
+#'     See \link{[[,oce-method} or type \code{?"[[,oce-method"}
+#'     to learn more.}
+#' \item{[[<-}{Alters the named item in the object's \code{metadata} or
+#'     \code{data} slot.
+#'     See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
+#'     to learn more.}
+#' \item{summary}{Displays some information about the object named as an
+#'     argument, including a few elements from its \code{metadata} slot
+#'     and some statistics of the contents of its \code{data} slot.
+#'     See \link{summary,oce-method} or type \code{?"summary,oce-method"}
+#'     to learn more.}
+#' \item{subset}{Takes a subset of an oce object.
+#'     See \link{subset,oce-method} or type \code{?"subset,oce-method"}
+#'     to learn more.}
+#' }
+#'
+#' 
+#' @section Oceanographic data types handled:
+#' Over a dozen specialized data types are handled by oce,
+#' with generic plots and summaries for each, along with 
+#' the specialized functions needed for typical Oceanographic
+#' analysis.
+#' 
+#' @section Oce object structure:
+#' See \code{\link{oce-class}} for a summary of the class structure
+#' and links to documentation for the many subclasses of
+#' oce objects, each aligned with a class of instrument or
+#' or type of dataset.
+#'
+#' @docType package
+#' @name oce
+NULL
+#> NULL
+
+#' Coerce Something Into an oce Object
+#'
+#' @details
+#' This function is limited and not intended for common use.
+#' In most circumstances, users should employ a function such
+#' as \code{\link{as.ctd}} to construct specialized oce sub-classes.
+#'
+#' \code{as.ctd} creates an oce object from data contained within its
+#' first argument, which may be a list, a data frame, or an object
+#' of \code{\link{oce-class}}.  (In the last case, \code{x} is 
+#' simply returned, without modification.)
+#'
+#' If \code{x} is a list created by \code{read_odf} from the (as
+#' yet unreleased) ODF package developed by the Bedford Institute of
+#' Oceanography, then \code{\link{ODF2oce}} is called (with
+#' no arguments other than the first) to calculate a return value.
+#' If the sub-class inference made by \code{\link{ODF2oce}} is 
+#' incorrect, users should call that function directly, specifying
+#' a value for its \code{coerce} argument.
+#'
+#' If \code{x} has not been created by \code{read_odf}, then the names
+#' of the items it contains are examined, and used to try to infer
+#' the proper return value.  There
+#' are only a few cases (although more may be added if there is 
+#' sufficient user demand). The cases are as follows.
+#' \itemize{
+#'
+#' \item If \code{x} contains items named \code{temperature}, 
+#' \code{pressure} and either \code{salinity} or \code{conductivity},
+#' then an object of type \code{\link{ctd-class}} will be returned.
+#' 
+#' \item If \code{x} contains columns named \code{longitude} and \code{latitude},
+#' but no other columns, then an object of class \code{\link{coastline-class}}
+#' is returned.
+#' }
+#'
+#' @param x an item containing data. This may be data frame, list, or an oce object.
+#'
+#' @return an object inherting from \code{\link{oce-class}}.
+#'
+#' @examples
+#' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
+#' as.oce(list(longitude=1:3,latitude=11:13))
+
+as.oce <- function(x)
+{
+    if (inherits(x, "oce"))
+        return(x)
+    if (!is.list(x) && !is.data.frame(x))
+        stop("x must be a list, a data frame, or an oce object")
+    names <- names(x)
+    if ("EVENT_HEADER" %in% names) {
+        res <- ODF2oce(x)
+    } else {
+        if ("temperature" %in% names && "pressure" %in% names) {
+            ## Assume it's a CTD; if not, rely on users to understand their data
+            ## well enough to know the data type, and to use another function.
+            if ("salinity" %in% names) {
+                res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
+                ## Add any other columns
+                for (name in names) {
+                    if (name != "temperature" && name != "pressure" && name != "salinity")
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
+                }
+            } else if ("conductivity" %in% names) {
+                for (name in names) {
+                    if (name != "temperature" && name != "pressure" && name != "conductivity")
+                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
+                }
+            }
+        } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
+            res <- as.coastline(longitude=x$longitude, latitude=x$latitude)
+        } else {
+            stop("unknown data type; as of now, as.oce() only handles CTD data")
+        }
+    }
+    res
+}
+
 useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b@data))
-        stop("'from' does not have any heading data (in b@data$heading)")
+        stop("'b' does not have any heading data (in b@data$heading)")
     if (!"time" %in% names(b@data))
         stop("'b' does not have any time data (in b@data$time)")
     if (!"heading" %in% names(g@data))
@@ -12,11 +149,11 @@ useHeading <- function(b, g, add=0)
     res <- b
     t0 <- as.numeric(g@data$time[1])
     if (is.na(t0))
-        stop("need first element of from@data$time to be non-NA")
+        stop("need first element of g@data$time to be non-NA")
     b.t <- as.numeric(b@data$time) - t0 # FIXME: what if heading in tsSlow?
     g.t <- as.numeric(g@data$time) - t0 # FIXME: what if heading in tsSlow?
     res@data$heading <- approx(x=g.t, y=g@data$heading, xout=b.t)$y + add
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -131,7 +268,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     x <- r * cos(thetaRad)
     y <- r * sin(thetaRad)
     R <- 1.2 * max(r, na.rm=TRUE)
-    Rpretty <- pretty(c(0, R))
+    ##Rpretty <- pretty(c(0, R))
     plot.new()
     plot.window(c(-R, R), c(-R, R), asp=1)
     points(x, y, ...)
@@ -174,6 +311,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     .Call("oce_approx", x=x, y=y, xout=xout,
           method=pmatch(method, c("unesco", "rr")))
 }
+oce.approx <- oceApprox
 
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
@@ -216,10 +354,69 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     options(warn=warn)
 }
 
+#' Add a grid to an existing plot, with special abilities for those created by oce
+#'
+#' @details
+#' For plots not created by oce functions, or for missing \code{xat} and \code{yat},
+#' this is the same as a call to \code{\link{grid}} with missing \code{nx} and
+#' \code{ny}. However, if \code{xat} is the return value from certain oce functions,
+#' a more sophisticated grid is constructed. The problem with \code{\link{grid}} is
+#' that it cannot handle axes with non-uniform grids, e.g. those with time axes
+#' that span months of differing lengths.
+#'
+#' As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
+#' return value from the following functions: \code{\link{imagep}} and
+#' \code{\link{oce.plot.ts}}, \code{\link{plot.adp}}, \code{\link{plot.echosounder}},
+#' and \code{\link{plotTS}}.
+#' It makes no sense to try to use \code{oce.grid} for multiplanel oce plots,
+#' e.g. the default plot from \code{\link{plot.adp}}.
+#'
+#' @examples
+#' library(oce)
+#' i <- imagep(volcano)
+#' oce.grid(i, lwd=2)
+#' 
+#' data(sealevel)
+#' i <- oce.plot.ts(sealevel[["time"]], sealevel[["elevation"]])
+#' oce.grid(i, col='red')
+#' 
+#' data(ctd)
+#' i <- plotTS(ctd)
+#' oce.grid(i, col='red')
+#'
+#' data(adp)
+#' i <- plot(adp, which=1)
+#' oce.grid(i, col='gray', lty=1)
+#'
+#' data(echosounder)
+#' i <- plot(echosounder)
+#' oce.grid(i, col='pink', lty=1)
+#'
+#' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
+#' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)
+#' @param col colour of grid lines (see \code{\link{par}})
+#' @param lty type for grid lines (see \code{\link{par}})
+#' @param lwd width for grid lines (see \code{\link{par}})
+#' @return nothing
+oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd")) 
+{
+    if (missing(xat) && missing(yat)) {
+        grid(col=col, lty=lty, lwd=lwd)
+    } else {
+        if (is.list(xat)) {
+            ## following over-rides the args
+            yat <- xat$yat
+            xat <- xat$xat
+        }
+        if (!missing(xat)) abline(v=xat, col=col, lty=lty, lwd=lwd)
+        if (!missing(yat)) abline(h=yat, col=col, lty=lty, lwd=lwd)
+    }
+}
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
-                        drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
-                        #xaxs="i", yaxs="i",
+                        drawTimeRange=getOption("oceDrawTimeRange"),
+                        adorn=NULL, fill=FALSE,
+                        xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -237,7 +434,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         xlab <- ""
     if (missing(ylab))
         ylab  <- deparse(substitute(y))
-    ocex <- par("cex")
+    ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
     oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
@@ -258,9 +455,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ok <- xlim[1] <= x & x <= xlim[2]
-        x <- x[ok]
-        y <- y[ok]
+        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim), as.numeric(0.04))
+        x <- x[seq.int(ends$from, ends$to)]
+        y <- y[seq.int(ends$from, ends$to)]
     }
     if (length(y) == 1)
         y <- rep(y, length(x))
@@ -278,19 +475,21 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
+        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
+        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
              xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
              xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
     }
+    xat <- NULL
+    yat <- NULL
     if (axes) {
         xaxt <- list(...)["xaxt"]
         drawxaxis <- !is.null(xaxt) && xaxt != 'n'
@@ -303,6 +502,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       tformat=tformat,
                                       debug=debug-1)
+            xat <- xlabs
+            oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","),")", "\n", sep="")
         }
         if (grid) {
             lwd <- par("lwd")
@@ -316,7 +517,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
         if (drawyaxis)
             axis(2, cex.axis=cex.axis, cex=cex.axis)
-        axis(4, labels=FALSE)
+        yat <- axis(4, labels=FALSE)
     }
     if (grid)
         grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
@@ -327,7 +528,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     }
     ##par(cex=ocex)
     oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
-    invisible()
+    invisible(list(xat=xat, yat=yat))
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -387,12 +588,17 @@ oce.as.POSIXlt <- function (x, tz = "")
     as.POSIXlt(x, tz)
 }
 
-oceEdit <- function(x, item, value, action, reason="", person="",
+oce.edit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "oceEdit() {\n", unindent=1)
+    oceDebug(debug, "oce.edit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
+    if (missing(item) && missing(value) && missing(action)) {
+        x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        oceDebug(debug, "} # oce.edit()\n", unindent=1)
+        return(x)
+    }
     if (!missing(item)) {
         if (missing(value))
             stop("must supply a 'value' for this 'item'")
@@ -467,10 +673,11 @@ oceEdit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # oceEdit()\n", unindent=1)
+    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # oce.edit()\n", unindent=1)
     x
 }
+oceEdit <- oce.edit
 
 oce.write.table <- function (x, file="", ...)
 {
@@ -505,6 +712,7 @@ summary.oce <- function(object, ...)
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep=""), unindent=1)
     isdir<- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep=""))$isdir
@@ -536,19 +744,20 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
-            return(paste(subtype, "odf", sep="/"))
+            res <- paste(subtype, "odf", sep="/")
+            oceDebug(debug, "file type:", res, "\n")
+            return(res)
         } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
-        } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo drifter?
-            if (require("ncdf4")) {
+        } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
+            if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
                          filename, "\", \"", gsub(".*/", "", filename), "\")")
                 }
                 ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE))
-                    return("drifter/argo")
+                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo") else return("netcdf")
             } else {
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
@@ -558,6 +767,15 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             return("openstreetmap")
         } else if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
             return("gpx")
+        } else if (length(grep(".csv$", filename, ignore.case=TRUE))) {
+            someLines <- readLines(filename, 30)
+            if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
+                return("met") # FIXME: may be other things too ...
+            } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
+                return("sealevel")
+            } else {
+                return("unknown")
+            }
         }
         file <- file(file, "r")
     }
@@ -565,17 +783,27 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
         open(file, "r")
-    ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    line2 <- scan(file, what='char', sep="\n", skip=1, n=1, quiet=TRUE, fill=TRUE) # FIXME: what if just 1 line?
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    ## Grab text at start of file.
+    lines <- readLines(file, n=2, skipNul=TRUE)
+    line <- lines[1]
+    line2 <- lines[2]
+    oceDebug(debug, "first line of file: ", line, "\n", sep="")
+    oceDebug(debug, "second line of file: ", line2, "\n", sep="")
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
+    ##read.index()  ## check for an ocean index file e.g.
+    ##read.index()  # http://www.esrl.noaa.gov/psd/data/correlation/ao.data
+    ##read.index()  tokens <- scan(text=line, what='integer', n=2, quiet=TRUE)
+    ##read.index()  if (2 == length(tokens)) {
+    ##read.index()      tokens2 <- scan(text=line2, what='integer', quiet=TRUE)
+    ##read.index()      if (tokens[1] == tokens2[1])
+    ##read.index()          return("index")
+    ##read.index()  }
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
-        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
+        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n  }\n")
         return("shapefile")
     }
     if (bytes[3] == 0xff && bytes[4] == 0xff) {
@@ -585,13 +813,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
-            oceDebug(debug, "this is adp/sontek (4 byte match)\n")
+            oceDebug(debug, "this is adp/sontek (4 byte match)\n  }\n")
         else
-            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
+            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n  }\n")
         return("adp/sontek")
     }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oceDebug(debug, "this is adp/rdi\n")
+        oceDebug(debug, "this is adp/rdi\n  }\n")
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
@@ -636,6 +864,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         ##} else if (as.integer(bytes[1]) == 87) {
         ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
+    if (bytes[1] == 0x9b && bytes[2] == 0x00) {
+        warning(paste("Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
+                      " the author has not located file-format documents.  If you get such documents\n",
+                      " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
+        return("possibly RDI CTD")
+    }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
     if (substr(line, 1, 3) == "CTD") {
@@ -674,22 +908,38 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is topo\n")
         return("topo")
     }
-    if ("RBR TDR" == substr(line, 1, 7))  {
-        oceDebug(debug, "this is tdr\n")
-        return("tdr")
+    if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
+        oceDebug(debug, "this is RBR/dat\n")
+        return("RBR/dat")
+    }
+    if ("Model=" == substr(line, 1, 6))  {
+        oceDebug(debug, "this is RBR/txt\n")
+        return("RBR/txt")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
         oceDebug(debug, "this is section\n")
         return("section")
     }
+    if (length(grep("^//SDN_parameter_mapping", line, useBytes=TRUE)) ||
+        length(grep("^//SDN_parameter_mapping", line2, useBytes=TRUE))) {
+        oceDebug(debug, "this is ODV\n")
+        return("ctd/odv")
+    }
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
+oce.magic <- oceMagic
 
 read.oce <- function(file, ...)
 {
     type <- oceMagic(file)
+    debug <- if ("debug" %in% names(list(...))) list(...)$debug else 0
+    oceDebug(debug,
+             "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
+             sep="", unindent=1)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    ## read.index if (type == "index")
+    ## read.index     return(read.index(file))
     if (type == "shapefile")
         return(read.coastline.shapefile(file, processingLog=processingLog, ...))
     if (type == "openstreetmap")
@@ -717,42 +967,162 @@ read.oce <- function(file, ...)
         return(read.ctd.sbe(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/exchange")
         return(read.ctd.woce(file, processingLog=processingLog, ...))
-    if (type == "ctd/odf" || type == "mctd/odf")
+    if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (length(grep("/odf$", type)))
+        return(read.odf(file))
+    if (type == "mtg/odf") {
+        ## FIXME: document this data type
+        ## Moored tide gauge: returns a data frame.
+        fromHeader <- function(key)
+        {
+            i <- grep(key, lines)
+            if (length(i) < 1)
+                ""
+            else
+                gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
+        }
+        lines <- readLines(file, encoding="UTF-8")
+        nlines <- length(lines)
+        headerEnd <- grep("-- DATA --", lines)
+        if (1 != length(headerEnd))
+            stop("found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file")
+        ##header <- lines[1:headerEnd]
+        data <- lines[seq.int(headerEnd+1, nlines)]
+        d <- read.table(text=data, header=FALSE, col.names=c("time","temperature","ptotal","psea","depth"))
+        d$time <- strptime(d$time,"%d-%B-%Y %H:%M:%S", tz="UTC") # guess on timezone
+        missing_value <- -99.0 # FIXME: it's different for each column
+        d[d==missing_value] <- NA
+        attr(d, "scientist") <- fromHeader("CHIEF_SCIENTIST")
+        attr(d, "latitude") <- as.numeric(fromHeader("INITIAL_LATITUDE"))
+        attr(d, "longitude") <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
+        attr(d, "cruise_name") <- fromHeader("CRUISE_NAME")
+        attr(d, "cruise_description") <- fromHeader("CRUISE_DESCRIPTION")
+        attr(d, "inst_type") <- fromHeader("INST_TYPE")
+        attr(d, "model") <- fromHeader("MODEL")
+        attr(d, "serial_number") <- fromHeader("SERIAL_NUMBER")
+        attr(d, "missing_value") <- missing_value
+        warning("Missing-value code for mtg/odf is hard-wired to -99, which will likely be wrong in other files")
+        warning("The format of mtg/odf objects is likely to change throughout April, 2015")
+        return(d)
+    }
+    if (type == "ctd/odv")
+        return(read.ctd.odv(file, processingLog=processingLog, ...))
     if (type == "ctd/itp")
         return(read.ctd.itp(file, processingLog=processingLog, ...))
     if (type == "gpx")
         return(read.gps(file, type="gpx", processingLog=processingLog, ...))
-    if (type == "mvctd/odf")
-        return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (type == "coastline")
         return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
-    if (type == "drifter/argo")
-        return(read.drifter(file))
+    if (type == "argo")
+        return(read.argo(file))
     if (type == "lisst")
         return(read.lisst(file))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
         return(read.topo(file, processingLog=processingLog, ...))
-    if (type == "tdr")
-        return(read.tdr(file, processingLog=processingLog, ...))
+    if (type == "RBR/dat") # FIXME: obsolete; to be removed by Fall 2015
+        return(read.rsk(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
-        return(read.tdr(file, processingLog=processingLog, type='rsk'))
+        return(read.rsk(file, processingLog=processingLog, ...))
+    if (type == "RBR/txt")
+        return(read.rsk(file, processingLog=processingLog, type='txt', ...))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     if (type == "observatory")
         return(read.observatory(file, processingLog=processingLog, ...))
-    if (type == "landsat") {
-        return(read.landsat(file))
+    if (type == "landsat")
+        return(read.landsat(file, ...))
+    if (type == "netcdf")
+        return(read.netcdf(file, ...))
+    if (type == "met") {
+        return(read.met(file, ...))
     }
     stop("unknown file type \"", type, "\"")
 }
 
+#' Read a netcdf file
+#'
+#' @details
+#' Read a netcdf file, trying to interpret its contents sensibly.
+#'
+#' It is important to note that this is a preliminary version of
+#' this function, and much about it may change without notice.
+#' Indeed, it may be removed entirely.
+#'
+#' Below are some features that may be changed.
+#'
+#' 1. The names of data items are not changed from those in the netcdf
+#' file on the assumption that this will offer the least surprise to
+#' the user.
+#'
+#' 2. An attempt is made to find some common metadata from global
+#' attributes in the netcdf file. These attributes include 
+#' \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
+#' Before they are stored in the metadata, they are converted to
+#' lower case, since that is the oce convention.
+#'
+#' @param file the name of a file
+#' @param ... unused
+#'
+#' @return
+#' An object of \code{\link{oce-class}}.
+read.netcdf <- function(file, ...) 
+{
+    if (!requireNamespace("ncdf4", quietly=TRUE))
+        stop('must install.packages("ncdf4") to read netcdf data')
+    f <- ncdf4::nc_open(file)
+    res <- new("oce")
+    names <- names(f$var)
+    data <- list()
 
-oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+    for (name in names) {
+        item <- ncdf4::ncvar_get(f, name)
+        if (1 == length(dim(item))) # matrix column converted to vector
+            item <- as.vector(item)
+        data[[name]] <- item
+        if (name=="TIME") {
+            u <- ncdf4::ncatt_get(f,name,"units")$value
+            if ("seconds since 1970-01-01 UTC" == u) {
+                data[[name]] <- numberAsPOSIXct(item)
+            } else {
+                warning("time unit is not understood, so it remains simply numeric\n")
+            }
+        }
+    }
+    res@data <- data
+    ## Try to get some global attributes.
+    ## Inelegantly permit first letter lower-case or upper-case
+    if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt)
+        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
+    if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt)
+        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
+    if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt)
+        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
+    if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt)
+        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
+    if (ncdf4::ncatt_get(f, 0, "Station")$hasatt)
+        res@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
+    if (ncdf4::ncatt_get(f, 0, "station")$hasatt)
+        res@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
+    if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt)
+        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
+    if (ncdf4::ncatt_get(f, 0, "ship")$hasatt)
+        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
+    if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt)
+        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
+    if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt)
+        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                              paste("read.netcdf(\"", file, "\")", sep=""))
+    res
+}
+
+
+oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)
@@ -790,9 +1160,10 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
     }
     rgb(r, g, b)
 }
+oceColorsGebco <- oce.colorsGebco
 
 
-oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ((n <- as.integer(n[1])) > 0) {
@@ -809,8 +1180,35 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
     }
     else character(0)
 }
+oceColorsTwo <- oce.colorsTwo
 
-oceColorsJet <- function(n)
+oce.colorsCLOSURE <- function(colorname) {
+    function(n) {
+        data("colors", package="oce", envir=environment())
+        col <- get("colors")[[colorname]]
+        if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+    }
+}
+
+## Viridis is python matplotlib default colormap, as of mid/late 2015.
+oceColorsViridis <- oce.colorsViridis <- oce.colorsCLOSURE("viridis")
+## The next are from the cmocean colour schemes, as of 2015-10-01.
+oceColorsCDOM <- oce.colorsCDOM <- oce.colorsCLOSURE("cdom")
+oceColorsChlorophyll <- oce.colorsChlorophyll <- oce.colorsCLOSURE("chlorophyll")
+oceColorsDensity <- oce.colorsDensity <- oce.colorsCLOSURE("density")
+oceColorsFreesurface <- oce.colorsFreesurface <- oce.colorsCLOSURE("freesurface")
+oceColorsOxygen <- oce.colorsOxygen <- oce.colorsCLOSURE("oxygen")
+oceColorsPAR <- oce.colorsPAR <- oce.colorsCLOSURE("par")
+oceColorsPhase <- oce.colorsPhase <- oce.colorsCLOSURE("phase")
+oceColorsSalinity <- oce.colorsSalinity <- oce.colorsCLOSURE("salinity")
+oceColorsTemperature <- oce.colorsTemperature <- oce.colorsCLOSURE("temperature")
+oceColorsTurbidity <- oce.colorsTurbidity <- oce.colorsCLOSURE("turbidity")
+oceColorsVelocity <- oce.colorsVelocity <- oce.colorsCLOSURE("velocity")
+oceColorsVorticity <- oce.colorsVorticity <- oce.colorsCLOSURE("vorticity")
+
+
+## matlab-like scheme
+oce.colorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
@@ -820,13 +1218,15 @@ oceColorsJet <- function(n)
                            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
+oceColorsJet <- oce.colorsJet
 
-oceColors9A <- function(n)
+oce.colors9A <- function(n)
 {
-    oceColorsJet(n)
+    oce.colorsJet(n)
 }
+oceColors9A <- oce.colors9A
 
-oceColors9B <- function(n)
+oce.colors9B <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
@@ -836,9 +1236,10 @@ oceColors9B <- function(n)
                            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
+oceColors9B <- oce.colors9B
 
 
-oceColorsPalette <- function(n, which=1)
+oce.colorsPalette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
@@ -860,9 +1261,10 @@ oceColorsPalette <- function(n, which=1)
             m <- dim(rgb)[1]
             i <- 1:m
             xout <- seq(1, m, length.out=n)
-            rev(rgb(approx(i, rgb[,1], xout, rule=1)$y,
-                    approx(i, rgb[,2], xout, rule=1)$y,
-                    approx(i, rgb[,3], xout, rule=1)$y))
+            rev(rgb(red=approx(i, rgb[,1], xout, rule=1)$y,
+                    green=approx(i, rgb[,2], xout, rule=1)$y,
+                    blue=approx(i, rgb[,3], xout, rule=1)$y,
+                    alpha=1))
         } else if (which == 2) {
             ## http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
             m <- 11                         # number of classes
@@ -875,16 +1277,18 @@ oceColorsPalette <- function(n, which=1)
                     approx(i, g, xout, rule=1)$y,
                     approx(i, b, xout, rule=1)$y))
         } else if (which == 9.01 || which == "9A" || which == "jet") { # jet, also known as 9A or 9.01
-            oceColorsJet(n)
+            oce.colorsJet(n)
         } else if (which == 9.02 || which == "9B") {
-            oceColors9B(n)
+            oce.colors9B(n)
         } else stop("unknown which")
     }
     else character(0)
 }
+oceColorsPalette <- oce.colorsPalette
 
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
-                              drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
+                              drawTimeRange=getOption("oceDrawTimeRange"),
+                              abbreviateTimeRange=FALSE, drawFrequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
@@ -920,10 +1324,30 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 60) {                       # under a min
+    if (d < 2) {
+        ## The time rounding will fail for very small time intervals;
+        ## a wider range can be added easily.
         t.start <- rr[1]
         t.end <- rr[2]
-        z <- seq(t.start, t.end, length.out=10)
+        span <- as.numeric(t.end) - as.numeric(t.start)
+        if (     span > 1     ) round <- 0.5
+        else if (span > 0.1   ) round <- 0.05
+        else if (span > 0.01  ) round <- 0.005
+        else if (span > 0.001 ) round <- 0.0005
+        else if (span > 0.0001) round <- 0.00005
+        else round <- 0.00001
+        t0 <- trunc(t.start, "sec")
+        t.start <- t0+round*floor((as.numeric(t.start)-as.numeric(t0))/round)
+        t.end <- t0+round*floor((as.numeric(t.end)-as.numeric(t0))/round)
+        z <- seq(t.start, t.end, by=round)
+        oceDebug(debug, "time range is under 5 seconds\n")
+        oceDebug(debug, vectorShow(z, "z"))
+        if (missing(tformat))
+            tformat <- "%OS" # FIXME: not too useful if span is under 1ms
+    } else if (d < 60) {                       # under a min
+        t.start <- trunc(rr[1]-1, "secs")
+        t.end <- trunc(rr[2]+1, "secs")
+        z <- seq(t.start, t.end, by="1 sec")
         oceDebug(debug, "time range is under a minute\n")
         oceDebug(debug, vectorShow(z, "z"))
         if (missing(tformat))
@@ -1122,24 +1546,25 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
+    ## FIXME: why an axis() here and also in a dozen lines?
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
         axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
         oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
     oceDebug(debug, vectorShow(labels, "labels="))
-    ocex <- par('cex')
+    ##ocex <- par('cex')
     ocex.axis <- par('cex.axis')
     ocex.main <- par('cex.main')
     omgp <- par('mgp')
     par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
-    par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
+    par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
     par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
-    invisible()
+    invisible(z)                       # FIXME: or z.sub?
 }
 
 numberAsHMS <- function(t, default=0)
@@ -1170,7 +1595,9 @@ numberAsHMS <- function(t, default=0)
     list(hour=hour, minute=minute, second=second)
 }
 
-numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "spss", "yearday"), tz="UTC")
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
+                                      "ncep1", "ncep2",
+                                      "sas", "spss", "yearday"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -1184,18 +1611,25 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo", "sas", "s
             stop("'t' must have two columns, one for year, the other for yearday")
         return(ISOdatetime(t[,1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[,2] * 24 * 3600)
     } else if (type == "argo") {
-        return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
-    } else if (type == "argo") {
-        return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
+        return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
+    } else if (type == "ncep1") { # hours since the start of 1800
+        return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
+    } else if (type == "ncep2") {
+        ## days since 1-1-1 00:00:0.0 (supposedly, but offset to match a test case; see
+        resOriginal <- t * 86400 + as.POSIXct("0001-01-01 00:00:00",tz="UTC")
+        return(resOriginal - 2 * 86400) # kludge for ht of https://github.com/dankelley/oce/issues/738
     } else if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
+
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
-        ## http://en.wikipedia.org/wiki/Leap_second
+        ## See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
+        ## on June 30 and December 31 of any given year.  The information below is correct as of 2014-07-01,
+        ## which is the day after the June 2014 update possibility.
         leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
                                        "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
                                        "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01",
-                                       "2012-07-01"),
+                                       "2012-07-01", "2015-07-01"),
                                      format="%Y-%m-%d", tz="UTC"))
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
         for (l in 1:length(leaps)) {
@@ -1215,9 +1649,13 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
-    omfg <- par('mfg')                 # original mfg
+    opar <- par(no.readonly=TRUE)
+    mai <- par('mai')                  # bottom left top right
+    ##omfg <- par('mfg')                 # original mfg
     xLog <- par('xlog')
     yLog <- par('ylog')
+    usr <- par('usr')                  # xmin xmax ymin ymax
+    fin <- par('fin') # figure width height
     x2in <- function(x) {
         if (xLog)
             mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
@@ -1231,7 +1669,6 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
             mai[1] + (y-usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
     }
  
-    usr <- par('usr')                  # xmin xmax ymin ymax
     if (is.character(xleft)) {
         if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
@@ -1256,11 +1693,8 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                  sep="", unindent=1)
     }
     oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
-    opar <- par(no.readonly=TRUE)
-    mai <- par('mai')                  # bottom left top right
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
-    fin <- par('fin') # figure width height
     oceDebug(debug, "par('fin')=", fin, "(figure width and height)\n")
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
@@ -1273,7 +1707,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     if (nmai[3] > fin[2] - 0.2) {nmai[3] <- fin[2] - 0.2}
     if (nmai[4] > fin[1] - 0.2) {nmai[4] <- fin[1] - 0.2}
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
-    mfg2 <- par('mfg')
+    ##mfg2 <- par('mfg')
     par(new=TRUE, mai=nmai)
     thismar <- par('mar')
     par(mar=thismar+mar)
@@ -1316,28 +1750,33 @@ decodeTime <- function(time, timeFormats, tz="UTC")
                          "%Y/%B/%d %H:%M:%S", "%Y/%B/%d", # 2013/July/01
                          "%Y/%m/%d %H:%M:%S", "%Y/%m/%d") # 2013/07/01
     ## FIXME: permit time to be a vector
-    rval <- NA
+    res <- NA
     for (format in timeFormats) {
         ##cat("TRYING FORMAT:", format, "\n")
-        if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
+        if (!is.na(res <-  as.POSIXct(time, format=format, tz=tz))) {
             break
         }
     }
-    rval
+    res
 }
 
 drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
-                               type=1,
-                               debug=getOption("oceDebug"), ...)
+                               type=1, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "drawDirectionField(...) {\n", unindent=1)
     if (missing(x) || missing(y) || missing(u) || missing(v))
         stop("must supply x, y, u, and v")
     if ((missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)))
         stop("either 'scalex' or 'scaley' must be specified (but not both)")
+    if (length(x) != length(y))
+        stop("lengths of x and y must match")
+    if (length(x) != length(u))
+        stop("lengths of x and u must match")
+    if (length(x) != length(v))
+        stop("lengths of x and v must match")
     usr <- par('usr')
     pin <- par('pin')
-    mai <- par('mai')
+    ##mai <- par('mai')
     xPerInch <- diff(usr[1:2]) / pin[1]
     yPerInch <- diff(usr[3:4]) / pin[2]
     oceDebug(debug, 'pin=', pin, 'usr=', usr, 'xPerInch=', xPerInch, 'yPerInch=', yPerInch, '\n')
@@ -1346,6 +1785,8 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
         uPerX <- 1 / scalex
         vPerY <- uPerX * xPerInch / yPerInch
     } else {
+        vPerY <- 1 / scaley
+        uPerX <- vPerY * yPerInch / xPerInch
         oceDebug(debug, "scaling for y\n")
     }
     oceDebug(debug, 'uPerX=', uPerX, '\n')
@@ -1366,12 +1807,12 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
-oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
+oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)
 {
-    dots <- list(...)
-    dotsNames <- names(dots)
+    ##dots <- list(...)
+    ##dotsNames <- names(dots)
     mustReverseX <- any(0 > diff(order(x)))
     mustReverseY <- any(0 > diff(order(y)))
     oceDebug(debug, "mustReverseX:", mustReverseX, '\n')
@@ -1454,4 +1895,5 @@ oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
         box()
     }
 }
+oceContour <- oce.contour
 

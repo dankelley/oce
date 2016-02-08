@@ -7,7 +7,7 @@
 \title{Tidal constituent information}
 
 \description{The \code{tidedata} dataset contains Tide-constituent information
-    that is use by \code{tidem} in the Oce package to fit tidal models.
+    that is use by \code{\link{tidem}} to fit tidal models.
   \code{tidedata} is a list containing
   \describe{
     \item{const}{a list containing vectors
@@ -62,19 +62,16 @@
   \code{T_TIDE} values as a reference.
 }
 
-\seealso{\code{tidem} in the Oce package is used to fit tidal models using
-    \code{tidedata}.}
-
-\references{
-  Foreman, M. G. G., 1977.
-  Manual for tidal heights analysis and prediction.
-  Pacific Marine Science Report 77-10,
-  Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 58pp.
+\seealso{\code{\link{tidem}} uses this dataset to establish its harmonic
+    constituents.}
+    
+\references{Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+    prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
+    Sciences, Patricia Bay, Sidney, BC, 58pp.
   
-  Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-  Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
-  Computers and Geosciences, 28, 929-937.
-}
+  Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+  harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+  Computers and Geosciences, 28, 929-937.  }
 
 \author{Dan Kelley}
 

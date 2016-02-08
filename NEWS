@@ -1,7 +1,76 @@
+0.9-18
+- improve plot.coastline() and mapPlot()
+- add support for G1SST satellite
+- all objects now have metadata items for units and flags
+- ctdTrim() method renamed: old A and B are new A; old C is new B
+- support more channels and features of rsk files
+- as.adp() added
+- convert argo objects to sections
+- makeSection() deprecated; use as.section() instead
+- read.adp.rdi() handles Teledyne/RDI vsn 23.19 bottom-track data
+- geodXyInverse() added; geod functions now spell out longitude etc
+- read.odf() speeded up by a factor of about 30
+- add colour palettes from Kristen Thyng's cmocean Python package
+- as.oce() added
+- rename 'drifter' class as 'argo' to recognize what it actually handles
+- add oceColorsViridis()
+- interpBarnes() has new argument 'pregrid'
+- binMean2D() has new argument 'flatten'
+- data(topoWorld) now has longitude from -179.5 to 180
+- ODF2oce() added
+- read.odf() handles more data types
+- read.adp.rdi() reads more VmDas (navigational) data
+- ITS-90 is now the default temperature unit
+- ctd objects can have vector longitude and latitude
+- logger class renamed to rsk
+- bremen class added
+- coastlineCut() added
+- rgdal package used instead of local PROJ.4 source code
+- mapproj-style map projections eliminated
+
+0.9-17
+- remove an exit() call in a C function
+
+0.9-16
+- cite PROJ.4 contributors in DESCRIPTION
+- address package-build warnings; improve DESCRIPTION (thanks, BR)
+
+0.9-15
+- plot.echosounder() gets new argument 'drawPalette'
+- data(landsat) taken from ocedata (and shrunk)
+- data(nao) and data(soi) moved to ocedata
+- mapTissot() added
+- read.logger() with ctd-type data infers salinity if necessary
+- ctdTrim() can have "method" as a function
+- as.topo() can convert "bathy" objects from the marmap package
+- "+.section" renamed sectionAddStation()
+- oceApprox() renamed oce.approx(), with an alias for compatibility 
+- oce.grid() added
+- "tdr" class renamed "logger"
+- swCSTp() added
+- swConductivity() now swThermalConductivity(); using Caldwell (1974).
+- many sw*() functions handle eos="gsw"
+- libary(gsw) replaces teos()
+- curl() added
+- handle new NOAA ascii topography dataset type
+- mapGrid() added
+- data(soi) moved to ocedata package
+- lonlat2map() added
+- map2lonlat() made more accurate
+- permit proj4 style map projections
+- landsat-7 (and possibly 4 and 5) support
+- landsat decimation/plotting improvements
+- drifterGrid() added
+- mapDirectionField() added
+- mapArrows() added
+- read.index() added
+- utm2lonlat() and lonlat2utm() added
+- data(met) changed to time of Hurricane Juan
+
 0.9-14
 - fix compile-time warning
 - colormap() added, and functionality added to imagep() and drawPalette()
-- imagep() and drawPalette() new argument 'axisPalette' (suggestion of C. Richards)
+- imagep() and drawPalette() new arg. 'axisPalette' (suggested C. Richards)
 - drawPalette() has new args: plot, pos, levels, and cex.axis
 - ctdDecimate() permits user-supplied method function
 - data(nao) added; data(soi) updated, and names improved in latter
@@ -17,7 +86,7 @@
 - subset.topo() added
 - read.topo() now handles GEBCO netcdf files
 - decimate() now handles topo objects
-- reverse oceColorsGebco colours for water
+- reverse oce.colorsGebco colours for water
 - drawIsopycnals() and plotTS(): improve isopycnal labels
 - ctdDecimate() handles new method 'unesco'
 - coastline improvements (now 3 resolutions)
@@ -144,14 +213,14 @@
 - data(giss) added
 - data(topo2) added
 - plotPolar() added
-- oceMagic() new name for magic()
+- oce.magic() new name for magic(); renamed oceMagic() in 0.9-15
 - errorBars() added
 - numberAsPOSIXct() add a leap second for July 2012
 
 0.8-10
 - plot.topo(): automatic cut-point shift
 - add support for Nortek aquadopp-profiler instruments
-- oceContour() added
+- oce.contour() added
 - lisst class added
 - plotTaylor() added
 - oce.as.raw() added
@@ -165,11 +234,11 @@
 - plot.coastline(): improve argument 'geographical'
 - add prettyPosition()
 - add grad()
-- add (preliminary) support for the TEOS-10 library, which must be installed separately
+- add (preliminary) support for TEOS-10, installed separately
 - add integrateTrapezoid()
 - plotTS(): add argument teos
 - add teos() as an interface to the TEOS-10 library
-- add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
+- add moonAngle() plus other astronomy functions, e.g. julianDay()
 
 0.8-7
 - plotInset(): remove 'bg' and 'fg' arguments
@@ -222,7 +291,7 @@
 - plot.section() now uses 'col' if supplied
 
 0.7-1
-- improve oceColorsJet()
+- improve oce.colorsJet()
 - improve plotProfile() vertical range with missing data
 - add data(drag)
 - plotProfile() and plot.ctd(): add xtype="spice"
@@ -251,7 +320,7 @@
 - add support for ARGO drifters
 - latitude() and longitude(): new argument to repeat byDepth
 - addCtdColumn(): replace if column already exists
-- add CTD accessors for latitude, longitude, pressure, salinity, temperaure
+- add CTD accessors for lat, lon, pressure, salinity, temperature
 
 0.4-1
 - plot.sealevel(): only show 3 panels, for clarity
@@ -270,10 +339,10 @@
 - change data(ctd) to be derived from data(ctdRaw)
 - change to monitor=FALSE for all reading functions
 - add accessor functions heading(), latitude(), longitude(), pitch(),
-  pressure(), processingLog(), roll(), salinity(), temperature(), time(), and
-  velocity().
+  pressure(), processingLog(), roll(), salinity(), temperature(),
+  time(), and velocity()
 - rename history as processingLog
-- flatten all data objects to be 1 level thick (for future matlab exports)
+- flatten data objects to be 1 level thick (for future matlab exports)
 - add threenum() added, and use it in all summaries (for speed)
 
 0.2-3
@@ -289,7 +358,7 @@
 - rename beamAttenuateAdp() as beamUnattenuateAdp()
 
 0.2-1
-- camel-case function and argument names (and, retroactively, this NEWS file)
+- camel-case function and argument names (and the NEWS file)
 
 0.1-83
 - add binAverage()
@@ -322,17 +391,17 @@
 - logger.toc(): fix bug in discovering files ranging over days
 - as.ctd(): make temperature and salinity into vectors, if not already
 - plot.TS(): add argument 'use.smoothScatter'
-- oceDebug(): flush the console after printing a message
-- sw.theta(): rename the method possibilities, to be lower case, without dates
+- oce.debug(): flush the console after printing a message
+- sw.theta(): rename the method possibilities, to lower case
 - in some sw functions, rename 'pref' as 'reference.pressure'
 - read.ctd(): fix bug in getting start.time for some time formats
 - pwelch() added
 - plot.sealevel(): make y axis obey range in data subset, if xlim is given
 - adp.2enu() added
 - coastline.world: improve resolution by a factor of 4 or so
-- read.ctd.woce(): infer water depth as max(pressure) if it's not in the header
+- read.ctd.woce(): infer water depth as max(pressure) if not in header
 - section.smooth(): handle misordered stations; handle missing values better
-- plot.section(): allow strings for 'which'; avoid contouring error if two stations at same distance 
+- plot.section(): allow strings for 'which'; improve contouring
 - plot.ctd() and plot.profile(): add 'use.smoothScatter' argument
 - coriolis(): improve omega value
 
@@ -345,7 +414,7 @@
 - add unwrap.angle()
 - read.adv.nortek(): detect the velocity range
 - add processing.log.add(), an alternative to processing.log.append()
-- plot.ctd(): add more plot types (and re-use which=9 for salinity, not density)
+- plot.ctd(): add more plot types; which=9 for salinity, not density
 - as.ctd(): improve flexibilty
 - predict.tidem(): add 'newdata' argument
 - adv.2enu() added
@@ -366,7 +435,8 @@
 - fix google-code issue 56 [plot.topo() should accept land.z=NULL]
 - fix google-code issue 55 [plot.topo() could go past poles]
 - fix google-code issue 54 [plot.topo() was resetting par() on exit]
-- fix google-code issue 53 [interp.barnes() gives poor error msg for mismatched x and y]
+- fix google-code issue 53 [interp.barnes() gives poor error msg for
+  mismatched x and y]
 - fix google-code issue 52 [plot.section() draws incorrect bottom shape]
 
 0.1-80
@@ -390,7 +460,7 @@
 - set default for 'debug' argument to getOption("oceDebug") in all functions
 - plot.profile(): add argument ytype; change 'type' to 'xtype'
 - add swZ()
-- add oceSmooth()
+- add oce.smooth()
 - add read.adv(), etc., supporting Nortek and Sontek devices
 - add read.adp(), etc., supporting Nortek, RDI and Sontek devices
 - add oce.plot.ts()
@@ -406,7 +476,7 @@
 - add argument 'mgp' to all plotting functions
 - use abbreviations for axis names if space is tight
 - add argument 'adorn' to all plot() functions
-- add oceColorsTwo(), oceColorsJet(), and oceColorsPalette()
+- add oce.colorsTwo(), oce.colorsJet(), and oce.colorsPalette()
 - add byte2binary()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
@@ -420,12 +490,12 @@
 - read.tdr(): handle 5-column data files; add tz argument
 - plot.profile(): add types sigma+dpdt and sigma+time
 - ctdTrim(): add pmin parameter
-- plot.ctd(): add Slim, Tlim, plim, lonlim, latlim arguments; add ability to draw maps
+- plot.ctd(): add Slim, Tlim, plim, lonlim, latlim args; add maps
 - add coastline.sle dataset
-- plot.TS(): fix isopycnal labels for fresh water; add Slim and Tlim arguments
+- plot.TS(): fix isopycnal labels for fresh water; add args Slim, Tlim
 - read.ctd(): make it understand another SBE format
 - add parseLatlon()
-- oceEdit(): add argument 'action' 
+- oce.edit(): add argument 'action' 
 - add oce.write.table()
 - add fillGap()
 
@@ -445,9 +515,9 @@
 - add arguments 'xtype' and 'ytype' to plot.section()
 - improve accuracy of bottom drawn by plot.section()
 - add section.smooth()
-- fix bug making section.smooth() fail if fewer than 4 good data at any given level
+- fix bug making section.smooth() fail if <4 good data at a level
     http://code.google.com/p/r-oce/issues/detail?id=36
-- fix bug making summary.ctd() fail for stations within sections made by section.smooth()
+- fix bug making summary.ctd() fail for results of section.smooth()
     http://code.google.com/p/r-oce/issues/detail?id=34
 - fix bug making sw.dynamic.height() choke on empty stations
     http://code.google.com/p/r-oce/issues/detail?id=33
@@ -457,18 +527,18 @@
 
 0.1.74
 - add argument "src" to as.ctd()
-    http://code.google.com/p/r-oce/issues/detail?id=22
+  http://code.google.com/p/r-oce/issues/detail?id=22
 - plot.section() RHS axis needs tics
-    http://code.google.com/p/r-oce/issues/detail?id=32
+  http://code.google.com/p/r-oce/issues/detail?id=32
 - trim axis whitespace in plot.profile() and plot.TS()
-    http://code.google.com/p/r-oce/issues/detail?id=31
+  http://code.google.com/p/r-oce/issues/detail?id=31
 - make read.oce() understand WOCE section type
-    http://code.google.com/p/r-oce/issues/detail?id=30
+  http://code.google.com/p/r-oce/issues/detail?id=30
 - speed up swSpice()
-    http://code.google.com/p/r-oce/issues/detail?id=29
+  http://code.google.com/p/r-oce/issues/detail?id=29
 - add read.pt(), summary.pt(), plot.pt(), and ptTrim()
 - make plot.TS() isopycnal label size be same on top and right sides
-    http://code.google.com/p/r-oce/issues/detail?id=26
+  http://code.google.com/p/r-oce/issues/detail?id=26
 - add lwd argument to plot.profile() 
 - give plot.section() ability to control contour levels and labels
 - give plot.section() tics for station-location
@@ -477,13 +547,13 @@
 - plot.topo() narrows autoscale to xlim-ylim region, if provided
 - add plot.ctd() 'textpanel' option, and put the profiles in the same row
 - fix bug in plot.profile() to let it take Slim,..., as args
-    http://code.google.com/p/r-oce/issues/detail?id=25
+  http://code.google.com/p/r-oce/issues/detail?id=25
 - fix bug in plot.profile() font size
-    http://code.google.com/p/r-oce/issues/detail?id=24
+  http://code.google.com/p/r-oce/issues/detail?id=24
 - fix bug in plot.profile(type="S_T") positioning
-    http://code.google.com/p/r-oce/issues/detail?id=23
+  http://code.google.com/p/r-oce/issues/detail?id=23
 - fix bug in section plot (bottom was missing)
-    http://code.google.com/p/r-oce/issues/detail?id=21
+  http://code.google.com/p/r-oce/issues/detail?id=21
 - fix bug in size of salinity axis label for plot.ctd()
 - use pch=21 for TS plots (so data density is more visible)
 
@@ -492,30 +562,29 @@
 
 0.1.71
 - fix bug in makeSection (ignored the list, if a list provided)
-   http://code.google.com/p/r-oce/issues/detail?id=18&q=label:Type-Defect
+  http://code.google.com/p/r-oce/issues/detail?id=18&q=label:Type-Defect
 - add oce.edit(), later renamed oceEdit()
 - add topoMaritimes dataset
 - add read.topo(), plot.topo(), and summary.topo()
-- add gebcoColors() ... renamed oceColorsGebco() in version 0.1.77
+- add gebcoColors() ... renamed oce.colorsGebco() in version 0.1.77
 - make plot.section() check that pressures coincide
 
 0.1.70
 - plot.TS(): make isopycnal list work better for nearly-fresh water
-- trimCtd(): improve equilibration-phase deletion by piecewise-linear regression
+- trimCtd(): improve equilibration-phase deletion
 - read.ctd(): handle cases without cruise information or scan column
 - permit setting xlab and ylab in plot.TS()
 - make processing log timestamps be in GMT
 - add as.windrose() and plot.windrose()
 - add sealevel.tuk sea-level dataset
-- add tidem(), predict.tide(), summary.tide(), plot.tide(), and data(tidedata)
+- add tidem(), predict.tide(), summary.tide(), plot.tide(), data(tidedata)
 - establish a uniform form for objects created by "read" and "as"
-- let swRho() and similar sw. functions take a ctd object as a single argument
+- let swRho() and similar functions take a ctd object as a single argument
 - add swDynamicHeight()
-- make section.grid() and ctd.decimate() extrapolate to surface in "approx" method
+- make section.grid() and ctd.decimate() extrapolate to surface
 - add summary.oce()
 - make all objects inherit from a new class "oce"
-- fix google-code issue 12: read.sealevel() had a hard-wired filename (remnant from debugging)
-  [http://code.google.com/p/r-oce/issues/detail?id=12&can=1&q=label:Type-Defect]
+- fix google-code issue 12: read.sealevel() had a hard-wired filename
 
 0.1.69
 - modify documentation slightly
@@ -526,31 +595,30 @@
 - add a03 dataset (renamed 'section' in 0.9-13)
 - fix SF bug 1833719: warnings from read.ctd()
 - fix google-code issue 8: read.coastline() not producing data
-  [http://code.google.com/p/r-oce/issues/detail?id=8&can=1&q=label:Type-Defect]
 - improve ability of trimCtd() to ignore spurious initial data
 - add "connectPoints" option to plot.TS()
 - add "station" item to "ctd" object
 - change as.CTD() to produce sigma.theta instead of sigma
 
 0.1.68
-- add coastline.world dataset, and increase resolution of coastline.maritimes
-- plot.TS() no longer rotates the RH margin isopycnal labels (unless told to)
+- add coastline.world; increase resolution of coastline.maritimes
+- plot.TS() no longer rotates the RH margin isopycnal labels
 
 0.1.67
-- allow swRho() and similar routines take matrices as arguments for S, t, etc
+- allow swRho() and similar take matrices as arguments for S, T, etc
 
 0.1.66
-- fix bug in plot.TS() that prevented it from showing some isopycnals if min(S)=0
+- fix bug in plot.TS() that prevented it from showing some isopycnals
 
 0.1.65
-- switch to using UNESCO formulation for sw potential temperature by default
+- switch to UNESCO formulation for sw potential temperature by default
 - prevent warnings with C90 compiler on some machines
 
 0.1.64
 - add read.oce(), a generic function for reading several oceanographic files
 - make read.ctd() understand WOCE-exchange files
 - make read.sealevel() understand comma-separated data from MEDS
-- make plot.sealevel() skip the spectral graphs, if the timeseries has NA values
+- make plot.sealevel() skip spectral graphs if timeseries has NA values
 - improve aesthetics of plot.ctd()
 - extend plot.sealevel() by adding focus.time argument
 - add ctdDecimate()

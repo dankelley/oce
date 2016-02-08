@@ -21,7 +21,7 @@
 }
 
 
-\details{This is mainly a wrapper around \code{\link[mapproj]{mapproject}}.}
+\details{This is mainly a wrapper around \code{\link{lonlat2map}}.}
 
 \value{A list containing \code{x} and \code{y}.}
 
@@ -32,6 +32,8 @@
 \dontrun{
 library(oce)
 data(coastlineWorld)
+par(mfrow=c(2,1), mar=rep(2, 4))
+mapPlot(coastlineWorld, projection="+proj=moll") # sets a projection
 xy <- mapLongitudeLatitudeXY(coastlineWorld)
 plot(xy, type='l', asp=1)
 }

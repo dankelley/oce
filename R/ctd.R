@@ -1,12 +1,41 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+## To save storage, this new() function has arguments only for quantities that are present in almost all cases. For example, not
+## all data files will have oxygen, so that's not present here. Similarly, not all files have data-quality columns, so they are
+## not present either. Columnar data should be added after the object is created, using ctdAddColumn(), which updates metadata
+## as needed. As for adding metadata, do that directly. Examples of these things are seen throughout this file.  Note that
+## normal users should employ read.ctd() or as.ctd() to create ctd objects ... this function is intended for internal use, and
+## may be changed at any moment.
+
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,filename="") {
-              if (!missing(pressure)) .Object@data$pressure <- pressure
-              if (!missing(temperature)) .Object@data$temperature <-temperature 
-              if (!missing(salinity)) .Object@data$salinity <- salinity
-              .Object@metadata$filename <- filename
+          definition=function(.Object, pressure, salinity, temperature, conductivity, 
+                              units,
+                              pressureType, deploymentType) {
+              ## Assign to some columns so they exist if needed later (even if they are NULL)
+              .Object@data$pressure <- if (missing(pressure)) NULL else pressure
+              .Object@data$temperature <- if (missing(temperature)) NULL else temperature
+              .Object@data$salinity <- if (missing(salinity)) NULL else salinity
+              .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
+              names <- names(.Object@data)
+              .Object@metadata$names <- names
+              .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
+              ##.Object@metadata$filename <- filename
+              if (missing(units)) {
+                  .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                                                 salinity=list(unit=expression(), scale="PSS-78"),
+                                                 conductivity=list(unit=expression(ratio), scale=""),
+                                                 pressure=list(unit=expression(dbar), scale=""),
+                                                 depth=list(unit=expression(m), scale=""))
+              } else {
+                  .Object@metadata$units <- units # FIXME: but what if spelled wrong etc
+              }
+              .Object@metadata$pressureType <- if (!missing(pressureType)) pressureType else "sea" # guess on the unit
+              .Object@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
+              .Object@metadata$waterDepth <- NA
+              #.Object@metadata$latitude <- NA
+              #.Object@metadata$longitude <- NA
+              #.Object@metadata$waterDepth <- NA
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
@@ -16,62 +45,81 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
+              ##mnames <- names(object@metadata)
               cat("CTD Summary\n-----------\n\n")
-              showMetadataItem(object, "type", "Instrument: ")
-              showMetadataItem(object, "model", "Instrument model:  ")
-              showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
-              showMetadataItem(object, "filename", "File source:         ")
-              showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
-              showMetadataItem(object, "institute", "Institute:      ")
-              showMetadataItem(object, "scientist", "Chief scientist:      ")
-              showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
-              showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
-              showMetadataItem(object, "cruise",  "Cruise:              ")
-              showMetadataItem(object, "ship",    "Vessel:              ")
-              showMetadataItem(object, "station", "Station:             ")
-              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                               object@metadata$longitude,
-                                                               digits=5), "\n")
-              showMetadataItem(object, "waterDepth", "Water depth: ")
-              showMetadataItem(object, "levels", "Number of levels: ")
-              names <- names(object@data)
-              ndata <- length(names)
-              isTime <- names == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
+              showMetadataItem(object, "type",                      "Instrument:          ")
+              showMetadataItem(object, "model",                     "Instrument model:    ")
+              showMetadataItem(object, "serialNumber",              "Instr. serial no.:   ")
+              showMetadataItem(object, "serialNumberTemperature",   "Temp. serial no.:    ")
+              showMetadataItem(object, "serialNumberConductivity",  "Cond. serial no.:    ")
+              showMetadataItem(object, "filename",                  "File:                ")
+              showMetadataItem(object, "hexfilename",               "Original file:       ")
+              showMetadataItem(object, "institute",                 "Institute:           ")
+              showMetadataItem(object, "scientist",                 "Chief scientist:     ")
+              showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
+              showMetadataItem(object, "startTime",                 "Start time:          ", isdate=TRUE)
+              showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
+              showMetadataItem(object, "cruise",                    "Cruise:              ")
+              showMetadataItem(object, "ship",                      "Vessel:              ")
+              showMetadataItem(object, "station",                   "Station:             ")
+              showMetadataItem(object, "deploymentType",            "Deployment type:     ")
+              if ("longitude" %in% names(object@data)) {
+                  cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
+                                                                   mean(object@data$longitude, na.rm=TRUE),
+                                                                   digits=5), "\n")
+              } else if ("longitude" %in% names(object@metadata)) {
+                  cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                                   object@metadata$longitude,
+                                                                   digits=5), "\n")
+              } else {
+                  cat("* Mean location:      unknown\n")
               }
-              rownames(threes) <- paste("   ", names[!isTime])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              showMetadataItem(object, "waterDepth", "Water depth:         ")
+              showMetadataItem(object, "levels", "Number of levels: ")
+              callNextMethod()
           })
 
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
-          definition=function(x, i, j, drop) {
-              if (i == "N2") {
+          definition=function(x, i, j, ...) {
+              ##dataNames <- names(x@data)
+              if (i == "salinity" || i == "SP") {
+                  x@data$salinity
+              } else if (i == "SR") {
+                  gsw::gsw_SR_from_SP(SP=x@data$salinity)
+              } else if (i == "Sstar") {
+                  SA <- gsw::gsw_SA_from_SP(SP=x@data$salinity, p=x@data$pressure,
+                                            longitude=x@metadata$longitude,
+                                            latitude=x@metadata$latitude)
+                  gsw::gsw_Sstar_from_SA(SA=SA, p=x@data$pressure,
+                                         longitude=x@metadata$longitude,
+                                         latitude=x@metadata$latitude)
+              } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
+                  x@data$temperature
+              } else if (i == "temperature68") {
+                  T68fromT90(x@data$temperature)
+              } else if (i == "pressure" || i == "p") {
+                  x@data$pressure
+              } else if (i == "longitude") {
+                  if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
+              } else if (i == "latitude") {
+                  if ("latitude" %in% names(x@data)) x@data$latitude else x@metadata$latitude
+              } else if (i == "N2") {
                   swN2(x)
-              } else if (i %in% c("theta", "potential temperature")) { # FIXME: theta conflicts with TEOS and should be removed
+              } else if (i == "sigmaTheta") {
+                  swSigmaTheta(x)
+              } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
               } else if (i == "Rrho") {
                   swRrho(x)
               } else if (i == "spice") {
                   swSpice(x)
-              } else if (i %in% c("absolute salinity", "absoluteSalinity", "SA")) {
-                  Sp <- x@data$salinity
+              } else if (i %in% c("absolute salinity", "SA")) {
+                  SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  n <- length(Sp)
+                  n <- length(SP)
                   lon <- x@metadata$longitude
                   if (n != length(lon))
                       lon <- rep(x@metadata$longitude, length.out=n)
@@ -85,151 +133,405 @@ setMethod(f="[[",
                   if (n != length(lat))
                       lat <- rep(x@metadata$latitude, length.out=n)
                   if (!any(is.finite(lat))) {
-                      lat <- rep(0, n)
+                      lat <- rep(30, n)
                       haveLatLon <- FALSE
                   }
-                  if (!haveLatLon)
-                      warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
-                  Sp[is.nan(Sp)] <- NA
+                  SP[is.nan(SP)] <- NA
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
-                  teos("gsw_sa_from_sp", Sp, p, lon, lat)
-              } else if (i %in% c("conservative temperature", "conservativeTemperature", "CT")) {
-                  Sp <- x@data$salinity
+                  gsw::gsw_SA_from_SP(SP, p, lon, lat)
+              } else if (i %in% c("conservative temperature", "CT")) {
+                  SP <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
-                  teos("gsw_ct_from_t", Sp, t, p)
+                  gsw::gsw_CT_from_t(SP, t, p)
               } else if (i == "z") {
+                  ## FIXME-gsw: permit gsw version here
                   swZ(x)
               } else if (i == "depth") {
+                  ## FIXME-gsw: permit gsw version here
                   swDepth(x)
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ## rval <- as(x, "oce")[[i, j, drop]]
-                  rval <- as(x, "oce")[[i]]
-                  if (is.null(rval))
-                      stop("in ctd[[\"", i, "\"]]: no such item", call.=FALSE)
-                  rval
+                  callNextMethod()
               }
           })
 
-as.ctd <- function(salinity, temperature, pressure,
-                   SA, CT,
-                   oxygen, nitrate, nitrite, phosphate, silicate,
-                   scan, other,
-                   missingValue,
-                   quality,
+as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
+                   SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
+                   scan=NULL, time=NULL, other=NULL,
+                   ## salinityFlag, temperatureFlag, pressureFlag, conductivityFlag, SAFlag, CTFlag, oxygenFlag, nitrateFlag,
+                   ## nitriteFlag, phosphateFlag, silicateFlag,
+                   units=NULL,
+                   pressureType="sea",
+                   missingValue=NA, quality=NULL,
                    filename="", type="", model="", serialNumber="",
                    ship="", scientist="", institute="", address="", cruise="", station="",
-                   date="", startTime="", recovery="",
+                   date=NULL, startTime=NULL, recovery=NULL,
                    longitude=NA, latitude=NA,
-                   waterDepth=NA, sampleInterval=NA, src="")
+                   deploymentType="unknown",
+                   pressureAtmospheric=0, waterDepth=NA,
+                   sampleInterval=NA, 
+                   src="",
+                   debug=getOption("oceDebug"))
 {
-    if (!missing(salinity) && class(salinity) == "data.frame") {
-        d <- salinity
-        names <- names(d)
-        if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
-            ## FIXME: extract SA and CT if they exist
-            salinity <- d$salinity
-            temperature <- d$temperature
-            pressure <- d$pressure
-            ## FIXME: extract nitrate etc
-        } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
-    } else {
-        if (missing(temperature) && missing(CT))
-            stop("must give temperature or CT")
-        if (missing(pressure))
-            stop("must give pressure")
-    }
+    oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
-    salinity <- as.vector(salinity)
-    temperature <- as.vector(temperature)
-    pressure <- as.vector(pressure)
-    haveSA <- !missing(SA)
-    haveCT <- !missing(CT)
-    if (haveSA != haveCT)
-        stop("SA and CT must both be supplied, if either is")
-    if (!missing(SA)) {
-        n <- length(SA)
-        if (length(CT) != n)
-            stop("lengths of SA and CT must match")
-        if (missing(longitude)) {
-            longitude <- rep(300, n)
-            latitude <- rep(0, n)
-            warning("longitude and latitude set to default values, since none given")
+    unitsGiven <- !is.null(units)
+    if (missing(salinity)) {
+        stop("must provide salinity")
+        ##if (inherits(salinity, "ctd"))
+        ##    return(salinity) # a convenience that lets us coerce without altering
+        ## 1. coerce an oce object (with special tweaks for rsk)
+    } else if (inherits(salinity, "oce")) {
+        oceDebug(debug, "'salinity' is an oce object, so ignoring other arguments\n")
+        o <- salinity
+        d <- o@data
+        m <- o@metadata
+        dnames <- names(d)
+        mnames <- names(m)
+        ship <- m$ship
+        cruise <- m$cruise
+        station <- m$station
+        scientist <- m$station
+        if (is.na(latitude) && "latitude" %in% names(m))
+            latitude <- m$latitude
+        if (is.na(longitude) && "longitude" %in% names(m))
+            longitude <- m$longitude
+        if (missing(date) && "date" %in% names(m)) {
+            date <- m$date
         }
-        salinity <- teos("gsw_sp_from_sa", SA, pressure, longitude, latitude)
-        temperature <- teos("gsw_t_from_ct", SA, CT, pressure)
-    }
-    depths <- max(length(salinity), length(temperature), length(pressure))
-    if (length(pressure) < depths)
-        pressure <- rep(pressure[1], depths)
-    if (length(salinity) < depths)
-        salinity <- rep(salinity[1], depths)
-    if (length(temperature) < depths)
-        temperature <- rep(temperature[1], depths)
-    if (missing(quality))
-        quality <- rep(2, depths)
-    if (missing(scan))
-        scan <- 1:depths
-    else if (length(scan) < depths)
-        scan <- rep(scan[1], depths)
-    salinity <- as.vector(salinity)
-    temperature <- as.vector(temperature)
-    scan <- as.vector(scan)
-    n <- length(salinity)
-    data <- list(salinity=salinity,
-                 temperature=temperature,
-                 pressure=pressure,
-                 scan=scan,
-                 oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, n),
-                 nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, n),
-                 nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, n),
-                 phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, n),
-                 silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, n),
-                 quality=quality,
-                 sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
-    if (!missing(other)) {
-        names <- names(other)
-        n <- length(names)
-        for (i in 1:n) {
-            if (names[i] != "") {
-                data[[names[i]]] <- other[[names[i]]]
+        filename <- if ("filename" %in% mnames) m$filename else ""
+        model <- m$model
+        serialNumber <- m$serialNumber
+        sampleInterval <- m$sampleInterval
+        if (!is.null(m$waterDepth))
+            waterDepth <- m$waterDepth
+        ## Copy some WOCE things into oce-convention names (originals retained)
+        if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
+        if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
+        if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
+        temperature <- d$temperature
+        pressure <- d$pressure
+        ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
+        if (inherits(o, "rsk")) {
+            oceDebug(debug, "first argument is an rsk object\n")
+            pressureAtmosphericStandard <- 10.1325
+            ##pressureMin <- min(pressure, na.rm=TRUE)
+            ## FIXME: could examine min(pressure) to see if it's between 9 and 11.
+            if (is.null(o@metadata$pressureType)) {
+                oceDebug(debug, "metadata$pressureType is NULL\n")
+                warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
+                pressure <- pressure - pressureAtmosphericStandard
             } else {
-                warning("'other' item number ", i, " has no name")
+                ## subtract atm pressure, if it has not already been subtracted
+                oceDebug(debug, "metadata$pressureType is not NULL\n")
+                if ("sea" != substr(o@metadata$pressureType, 1, 3)) {
+                    oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
+                    if (!("pressureAtmospheric" %in% mnames)) {
+                        oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
+                        pressure <- pressure - 10.1325
+                    } else {
+                        pressure <- pressure - m$pressureAtmospheric
+                        oceDebug(debug, "pressure is 'absolute'; subtracting metadata 10.1325dbar\n")
+                    }
+                } else {
+                    oceDebug(debug, "this rsk object contains sea pressure, so no need to remove atmospheric pressure\n")
+                }
             }
         }
+        if (!missing(pressureAtmospheric)) {
+            len <- length(pressureAtmospheric)
+            if (1 != len && len != length(pressure))
+                stop("length(pressureAtmospheric) must be 1 or length(pressure)")
+            pressure <- pressure - pressureAtmospheric
+        }
+        ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
+        if ("COND" %in% names(d))
+            conductivity <- d$COND
+        else 
+            conductivity <- d$conductivity
+        if (inherits(o, "rsk")) {
+            if (is.null(conductivity))
+                stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
+            salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
+            if (is.null(units)) # this lets the user over-ride
+                units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                              salinity=list(unit=expression(), scale="PSS-78"),
+                              conductivity=list(unit=expression(mS/cm), scale=""),
+                              pressure=list(unit=expression(dbar), scale=""))
+        } else {
+            salinity <- d$salinity # FIXME: ok for objects (e.g. rsk) that lack salinity?
+        }
+        if (inherits(o, "ctd") && missing(units)) {
+            if (missing(units)) # this lets the user over-ride
+                units <- o@metadata$units
+        }
+        res@metadata$units <- units
+        res@metadata$pressureType <- pressureType
+        res@data$pressure <- pressure
+        res@data$salinity <- salinity
+        res@data$temperature <- temperature
+        res@data$conductivity <- conductivity
+        res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
+                            name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
+        ## copy relevant metadata
+        if ("date" %in% mnames) res@metadata$date <- o@metadata$date
+        if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
+        if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
+        if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber
+        if ("ship" %in% mnames) res@metadata$ship <- o@metadata$ship
+        if ("cruise" %in% mnames) res@metadata$cruise <- o@metadata$cruise
+        if ("station" %in% mnames) res@metadata$station <- o@metadata$station
+        if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
+        if ("units" %in% mnames) {
+            ## the usual case
+            res@metadata$units$conductivity <- o@metadata$units$conductivity
+            res@metadata$units$temperature <- o@metadata$units$temperature
+        } else {
+            ## permit a case that existed for a few months in 2015
+            if ("conductivityUnit" %in% mnames)
+                res@metadata$units$conductivity <- o@metadata$conductivityUnit
+            if ("temperatureUnit" %in% mnames)
+                res@metadata$units$temperature <- o@metadata$temperatureUnit
+        }
+        if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
+        if ("scan" %in% dnames) res@data$scan <- d$scan
+        if ("time" %in% dnames) res@data$time <- d$time
+        if ("quality" %in% dnames) res@data$quality <- d$quality
+        if ("oxygen" %in% dnames) res@data$oxygen <- d$oxygen
+        if ("nitrate" %in% dnames) res@data$nitrate <- d$nitrate
+        if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
+        if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
+        if ("silicate" %in% dnames) res@data$silicate <- d$silicate
+        ## FIXME: need to add all columns from @data in the rsk object
+        nrow <- length(res@data$temperature)
+        for (field in names(d)) {
+            if (!(field %in% c('pressure', 'salinity', 'temperature', 'conductivity'))) {
+                if (nrow == length(d[[field]]))
+                    res <- ctdAddColumn(res, d[[field]], field)
+            }
+        }
+        ## FIXME: next in dnames or mnames??
+        if ("longitude" %in% dnames && "latitude" %in% dnames) {
+            longitude <- d$longitude
+            latitude <- d$latitude
+            if (length(longitude) != length(latitude))
+                stop("lengths of longitude and latitude must match")
+            if (length(longitude) == length(temperature)) {
+                res@data$longitude <- longitude
+                res@data$latitude <- latitude
+            }
+        } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
+            res@metadata$longitude <- m$longitude
+            res@metadata$latitude <- m$latitude
+        }
+        res@metadata$deploymentType <- deploymentType
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+    } else if (is.list(salinity) || is.data.frame(salinity)) {
+        oceDebug(debug, "salinity is a list or data frame\n")
+        ## 2. coerce a data-frame or list
+        x <- salinity
+        names <- names(x)
+        ## Permit oce-style names or WOCE-style names for the three key variables (FIXME: handle more)
+        if (3 == sum(c("salinity", "temperature", "pressure") %in% names)) {
+            res@data$pressure <- x$pressure
+            res@data$salinity <- x$salinity
+            res@data$temperature <- x$temperature
+            res@metadata$units <- units
+            res@metadata$pressureType <- pressureType
+        } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
+            res@data$pressure <- x$PRES
+            res@data$salinity <- x$PSAL
+            res@data$temperature <- x$TEMP
+            res@metadatdata$units <- units
+            res@metadatdata$pressureType <- pressureType
+        } else {
+            stop("the first argument must contain salinity, temperature, and pressure")
+        }
+        if ("longitude" %in% names)
+            res@metadata$longitude <- if (1 == length(longitude)) longitude else x$longitude
+        if ("latitude" %in% names)
+            res@metadata$latitude <- if (1 == length(latitude)) latitude else x$latitude
+        if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
+        if ("COND" %in% names) res@data$conductivity <- x$COND # FIXME accept other WOCE names
+        if ("quality" %in% names)res@data$quality <- x$quality
+        if ("oxygen" %in% names)res@data$oxygen <- x$oxygen
+        if ("nitrate" %in% names)res@data$nitrate <- x$nitrate
+        if ("nitrite" %in% names)res@data$nitrite <- x$nitrite
+        if ("phosphate" %in% names)res@data$phosphate <- x$phosphate
+        if ("silicate" %in% names)res@data$silicate <- x$silicate
+        if ("time" %in% names)res@data$time <- x$time
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+    } else {
+        oceDebug(debug, "salinity, temperature, pressure (etc) supplied\n")
+        ## 3. explicit mode
+        if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
+        if (missing(pressure)) stop("must give pressure")
+        if (!missing(units))
+            res@metadata$units <- units
+        res@metadata$pressureType <- pressureType
+        salinity <- as.vector(salinity)
+        temperature <- as.vector(temperature)
+        pressure <- as.vector(pressure)
+        if (!missing(pressureAtmospheric))
+            pressure <- pressure - pressureAtmospheric
+        haveSA <- !missing(SA)
+        haveCT <- !missing(CT)
+        if (haveSA != haveCT)
+            stop("SA and CT must both be supplied, if either is")
+        if (!missing(SA)) {
+            n <- length(SA)
+            if (length(CT) != n)
+                stop("lengths of SA and CT must match")
+            if (missing(longitude)) {
+                longitude <- rep(300, n)
+                latitude <- rep(0, n)
+                warning("longitude and latitude set to default values, since none given")
+            }
+            salinity <- gsw::gsw_SP_from_SA(SA, pressure, longitude, latitude)
+            temperature <- gsw::gsw_t_from_CT(SA, CT, pressure)
+        }
+        ##depths <- max(length(salinity), length(temperature), length(pressure))
+        ## 2015-01-24: now insist that lengths make sense; only pressure can be mismatched
+        salinity <- as.vector(salinity)
+        temperature <- as.vector(temperature)
+        pressure <- as.vector(pressure)
+        nS <- length(salinity)
+        nT <- length(temperature)
+        np <- length(pressure)
+        if (nS != nT)
+            stop("lengths of salinity and temperature must match, but they are ", nS, " and ", nT)
+        if (np == 1)
+            pressure <- rep(pressure, nS)
+        np <- length(pressure)
+        if (nS != np)
+            stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
+        if (missing(scan))
+            scan <- as.numeric(seq_along(salinity))
+        data <- list(salinity=salinity,
+                     temperature=temperature,
+                     pressure=pressure,
+                     sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
+        res@metadata$units$sigmaTheta <- list(unit=expression(kg/m^3), scale="")
+        if (!missing(scan)) data$scan <- as.vector(scan)
+        if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
+        if (!missing(quality)) data$quality <- quality
+        if (!missing(oxygen)) data$oxygen <- oxygen
+        if (!missing(nitrate)) data$nitrate <- nitrate
+        if (!missing(nitrite)) data$nitrite <- nitrite
+        if (!missing(phosphate)) data$phosphate <- phosphate
+        if (!missing(silicate)) data$silicate <- silicate
+        if (!missing(time)) data$time <- time
+        if (!missing(other)) {
+            names <- names(other)
+            for (i in seq_along(names)) {
+                if (names[i] != "") {
+                    data[[names[i]]] <- other[[names[i]]]
+                } else {
+                    warning("'other' item number ", i, " has no name")
+                }
+            }
+        }
+        if (!missing(missingValue)) {
+            data[data==missingValue] <- NA
+        }
+        ##20150712 if (is.na(waterDepth)) {
+        ##20150712     waterDepth <- max(abs(data$pressure), na.rm=TRUE)
+        ##20150712     res@processingLog <- processingLogAppend(res@processingLog,
+        ##20150712                                              "inferred water depth from maximum pressure")
+        ##20150712 }
+        names <- names(data)
+        labels <- paste(toupper(substring(names,1,1)),substring(names,2),sep="")
+        if (length(longitude) != length(latitude))
+            stop("lengths of longitude and latitude must match")
+        if (1 < length(longitude) && length(longitude) != length(salinity))
+            stop("lengths of salinity and longitude must match")
+        ## FIXME: should sampleInterval be a default?
+        res@metadata$names <- names
+        res@metadata$labels <- labels
+        if (!missing(filename)) res@metadata$filename <- filename
+        if (!missing(ship)) res@metadata$ship <- ship
+        if (!missing(scientist)) res@metadata$scientist <- scientist
+        if (!missing(institute)) res@metadata$institute <- institute
+        if (!missing(address)) res@metadata$address <- address
+        if (!missing(cruise)) res@metadata$cruise <- cruise
+        if (!missing(station)) res@metadata$station <- station
+        if (!missing(date)) res@metadata$date <- date
+        if (!missing(startTime)) res@metadata$startTime <- startTime
+        if (!missing(recovery)) res@metadata$recovery <- recovery
+        if (!missing(type)) res@metadata$type <- type
+        if (!missing(model)) res@metadata$model <- model
+        if (!missing(serialNumber)) res@metadata$serialNumber <- serialNumber
+        ## if (!missing(systemUploadTime)) metadata$systemUploadTime <- systemUploadTime
+        if (!missing(src)) res@metadata$src <- src
+        ## If lon and lat are vectors, place in data, with averages in metadata.
+        if (length(latitude) == 1) {
+            res@metadata$longitude <- longitude
+            res@metadata$latitude <- latitude
+        } else {
+            if (length(latitude) != length(temperature))
+                stop("lengths of latitude and temperature must match")
+            data$longitude <- longitude
+            data$latitude <- latitude
+        }
+        res@data <- data
     }
-    if (!missing(missingValue)) {
-        data[data==missingValue] <- NA
+    if (!unitsGiven) { # guess on units
+        names <- names(res@data)
+        if ("salinity" %in% names) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (is.na(waterDepth)) {
-        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        res@processingLog <- processingLog(res@processingLog,
-                                           "inferred water depth from maximum pressure")
-    }
-    metadata <- list(header=NULL,
-                     type=type, model=model, filename=filename, serialNumber=serialNumber,
-                     filename.orig=filename,
-                     systemUploadTime=NULL,
-                     ship=ship,scientist=scientist,institute=institute,address=address,cruise=cruise,station=station,
-                     date=date, startTime=startTime, recovery=recovery,
-                     latitude=latitude, longitude=longitude,
-                     waterDepth=waterDepth,
-                     sampleInterval=sampleInterval,
-                     names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
-                     labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
-                     src=src)
-    res@metadata <- metadata
-    res@data <- data
+    ## the 'units' argument takes precedence over guesses
+    dataNames <- names(res@data)
+    unitsNames <- names(units)
+    if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
+        res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
+        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
+        res@metadata$waterDepth <- waterDepth
+    oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     res
 }
 
-ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDebug"))
+
+#' Add a column to the data slot of a ctd object
+#'
+#' Add a column to the \code{data} slot of an object of
+#' \code{\link{ctd-class}}, also updating the \code{metadata}
+#' slot as appropriate.
+#'
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param column A column of data to be inserted, in the form of a
+#'     numeric vector, whose length matches that of columns in the
+#'     objecct.
+#' @param name Character string indicating the name this column is to
+#'     have in the \code{data} slot of \code{x}.
+#' @param label Optional character string or expression indicating the
+#'     name of the column, as it will appear in plot labels.  (If not
+#'     given, \code{name} will be used.)
+#' @param unit Optional indication of the unit, in the form of a list containing
+#'     items \code{unit}, which is an expression, and \code{scale}, which is a
+#'     character string. For example, modern measurements of temperature have
+#'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
+#' @param debug A debugging flag; set this to a positive value to get debugging
+#'     information during processing.
+#' @return A ctd object.
+#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#'    of CTD objects, and also outlines the other functions dealing with them.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd) 
+#' F <- 32 + (9/5)*ctd[["temperature"]] 
+#' ctdNew <- ctdAddColumn(ctd, F, "temperatureF", 
+#'     unit=list(unit=expression(degree*F), scale="ITS-90"))
+ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
-    ## FIXME: not using the unit
+    ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
         stop("must supply column data")
@@ -241,20 +543,39 @@ ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDe
         label <- name
     replace <- name %in% names(x@data)
     res <- x
-    r <- range(column)
+    ##r <- range(column)
     res@data[[name]] <- column
     if (!replace) {
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
     }
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (!is.null(unit)) {
+        if (0 == length(unit)) {
+            ##> message("NULL unit; name:", name)
+            ##> message("unit:")
+            ##> print(unit)
+            res@metadata$units[[name]] <- list(unit=expression(), scale="")
+        } else if (1 == length(unit)) {
+            res@metadata$units[[name]] <- if (is.expression(unit)) list(unit=unit, scale="") else
+                list(unit=as.expression(unit), scale="")
+        } else if (2 == length(unit)) {
+            if (is.list(unit)) {
+                res@metadata$units[[name]] <- unit
+            } else {
+                stop("unit should be a list containing two items")
+            }
+        } else {
+            warning("ignoring unit since it not of length 1 or 2")
+        }
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste("ctdAddColumn(..., name=\"", name, "\", ...)", sep=""))
     oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
 
 ##method=c("boxcar", "approx", "lm", "rr", "unesco"),
 ## SHOULD ADD: spline; supsmu; ...
-ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebug"))
+ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
     if (!methodFunction) {
@@ -266,8 +587,8 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
     oceDebug(debug, "ctdDecimate(x, p, method=\"",
              if (methodFunction) "(a function)" else method,
              "\", ...) {\n", sep="", unindent=1)
-    if (!inherits(x, "ctd"))
-        stop("method is only for objects of class '", "ctd", "'")
+    ## if (!inherits(x, "ctd"))
+    ##     stop("method is only for objects of class '", "ctd", "'")
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
@@ -284,30 +605,40 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
     dataNames <- names(x@data)         # Step through each variable.
     dataNew <- vector("list", length(dataNames)) # as.data.frame(array(NA, dim=c(npt, length(dataNames))))
     names(dataNew) <- dataNames
-    if (methodFunction ) {
+    oceDebug(debug, "methodFunction=", methodFunction, "\n")
+    if (methodFunction) {
         ##message("function must have take three args: x, y and xout; x will be pressure.")
         pressure <- x[["pressure"]]
         tooDeep <- pt > max(pressure, na.rm=TRUE)
         for (datumName in names(x@data)) {
-            if ("pressure" == datumName)
-                next
-            oceDebug(debug, 'about to apply method() to "', datumName, '"\n', sep='')
-            dataNew[[datumName]] <- method(pressure, x[[datumName]], pt)
-            ##dataNew[[datumName]][tooDeep] <- NA
+            if (!length(x[[datumName]])) {
+                dataNew[[datumName]] <- NULL
+            } else {
+                if ("pressure" == datumName)
+                    next
+                oceDebug(debug, 'about to apply method() to "', datumName, '"\n', sep='')
+                dataNew[[datumName]] <- method(pressure, x[[datumName]], pt)
+            }
         }
         dataNew[["pressure"]] <- pt
     } else {
         if (method == "approx") {
-            tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
+            numGoodPressures <- sum(!is.na(x@data$pressure))
+            if (numGoodPressures > 0)
+                tooDeep <- pt > max(x@data[["pressure"]], na.rm=TRUE)
             for (datumName in dataNames) {
                 oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
-                if (datumName != "pressure") {
-                    good <- sum(!is.na(x@data[[datumName]]))
-                    if (good > 2) {
-                        dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=2)$y
-                        dataNew[[datumName]][tooDeep] <- NA
-                    } else {
-                        oceDebug(debug, " note: fewer than 2 good data in the above\n")
+                if (numGoodPressures < 2 || !length(x[[datumName]])) {
+                    dataNew[[datumName]] <- rep(NA, length(pt))
+                } else {
+                    if (datumName != "pressure") {
+                        good <- sum(!is.na(x@data[[datumName]]))
+                        if (good > 2) {
+                            dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=2)$y
+                            dataNew[[datumName]][tooDeep] <- NA
+                        } else {
+                            oceDebug(debug, " note: fewer than 2 good data in the above\n")
+                        }
                     }
                 }
             }
@@ -315,22 +646,29 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
             oceDebug(debug, "Reiniger-Ross method\n")
             xvar <- x@data[["pressure"]]
             for (datumName in dataNames) {
-                if (datumName != "pressure") {
-                    yvar <- x@data[[datumName]]
-                    pred <- oceApprox(xvar, yvar, pt, method=method)
-                    dataNew[[datumName]] <- pred
+                oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
+                if (!length(x[[datumName]])) {
+                    dataNew[[datumName]] <- NULL
+                } else {
+                    if (datumName != "pressure") {
+                        yvar <- x@data[[datumName]]
+                        pred <- oce.approx(xvar, yvar, pt, method=method)
+                        dataNew[[datumName]] <- pred
+                    }
                 }
             }
         } else if ("boxcar" == method) {
             dp <- diff(pt[1:2])
             pbreaks <- -dp / 2 + c(pt, tail(pt, 1) + dp)
             p <- x@data[["pressure"]]
-            browser()
             for (datumName in dataNames) {
                 oceDebug(debug, "decimating", datumName)
-                if (datumName != "pressure") {
-                    ## FIXME: we should probably not e averaging scan, flag, etc
-                    dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
+                if (!length(x[[datumName]])) {
+                    dataNew[[datumName]] <- NULL
+                } else {
+                    if (datumName != "pressure" && datumName != "scan" && datumName != "flag") {
+                        dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
+                    }
                 }
             }
         } else {
@@ -345,20 +683,28 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
                 if (sum(focus, na.rm=TRUE) > 0) {
                     if ("boxcar" == method) {
                         for (datumName in dataNames) {
-                            if (datumName != "pressure") {
-                                dataNew[[datumName]][i] <- mean(x@data[[datumName]][focus],na.rm=TRUE)
+                            if (!length(x[[datumName]])) {
+                                dataNew[[datumName]] <- NULL
+                            } else {
+                                if (datumName != "pressure") {
+                                    dataNew[[datumName]][i] <- mean(x@data[[datumName]][focus],na.rm=TRUE)
+                                }
                             }
                         }
                     } else if ("lm" == method) { # FIXME: this is far too slow
                         xvar <- x@data[["pressure"]][focus]
                         for (datumName in dataNames) {
-                            if (datumName != "pressure") {
-                                yvar <- x@data[[datumName]][focus]
-                                t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
-                                if (class(t) != "try-error")
-                                    dataNew[[datumName]][i] <- predict(m, newdata=list(xvar=pt[i]))
-                                else
-                                    dataNew[[datumName]][i] <- NA
+                            if (!length(x[[datumName]])) {
+                                dataNew[[datumName]] <- NULL
+                            } else {
+                                if (datumName != "pressure") {
+                                    yvar <- x@data[[datumName]][focus]
+                                    t <- try(m <- lm(yvar ~ xvar), silent=TRUE)
+                                    if (class(t) != "try-error")
+                                        dataNew[[datumName]][i] <- predict(m, newdata=list(xvar=pt[i]))
+                                    else
+                                        dataNew[[datumName]][i] <- NA
+                                }
                             }
                         }
                     } else {
@@ -366,9 +712,12 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
                     }
                 } else {                    # No data in the focus region
                     for (datumName in dataNames) {
-                        ##cat("i=",i,"NO DATA IN focus =\n")
-                        if (datumName != "pressure") {
-                            dataNew[[datumName]][i] <- NA
+                        if (!length(x[[datumName]])) {
+                            dataNew[[datumName]] <- NULL
+                        } else {
+                            if (datumName != "pressure") {
+                                dataNew[[datumName]][i] <- NA
+                            }
                         }
                     }
                 }
@@ -380,8 +729,9 @@ ctdDecimate <- function(x, p=1, method="approx", e=1.5, debug=getOption("oceDebu
     for (i in 1:length(dataNew)) {
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
+    ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
     res@data <- dataNew
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # ctdDecimate()\n", unindent=1)
     res
 }
@@ -459,11 +809,10 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
         casts <- vector("list", ncasts)
         for (i in 1:ncasts) {
             oceDebug(debug, "profile #", i, "of", ncasts, "\n")
-            ii <- seq.int(indices$start[i], indices$end[i])
-            cast <- ctdTrim(x, "index", parameters=ii)
-            cast@processingLog <- processingLog(cast@processingLog,
-                                                paste(paste(deparse(match.call()), sep="", collapse=""),
-                                                " # profile ", i, " of ", ncasts))
+            cast <- ctdTrim(x, "index", parameters=c(indices$start[i], indices$end[i]))
+            cast@processingLog <- processingLogAppend(cast@processingLog,
+                                                      paste(paste(deparse(match.call()), sep="", collapse=""),
+                                                            " # profile ", i, " of ", ncasts))
             casts[[i]] <- cast
         }
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
@@ -471,23 +820,55 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
     }
 }
 
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+                         debug=getOption("oceDebug"), processingLog, ...)
+{
+    oceDebug(debug, "read.ctd.odf() {")
+    if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
+    odf <- read.odf(file)
+    res <- as.ctd(odf)
+    if (!is.null(station))
+        res@metadata$station <- station
+    res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                               conductivity=list(unit=expression(ratio), scale="")) # FIXME just a guess for ODV
+    oceDebug(debug, "} # read.ctd.odf()")
+    res
+}
 
-ctdTrim <- function(x, method=c("downcast", "index", "range"),
-                    inferWaterDepth=TRUE, removeDepthInversions=FALSE, 
-                    parameters, debug=getOption("oceDebug"))
+
+ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
+                   debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
+    methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    if (!("scan" %in% names(x@data))) {
+        x@data$scan <- seq_along(x@data[["pressure"]])
+    }
     res <- x
-    n <- length(x@data$pressure)
-    if (n < 2) {
-        warning("too few data to ctdTrim()")
-        return(res)
-    } else {
-        which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
-        method <- match.arg(method)
-        oceDebug(debug, paste("ctdTrim() using method \"", method,"\"\n", sep=""))
+    if (!methodIsFunction) {
+        n <- length(x@data$pressure)
+        if (n < 2) {
+            warning("too few data to ctdTrim()")
+            return(res)
+        }
+        if (missing(method)) {
+            method <- "downcast"
+            submethod <- "A"
+        } else {
+            if (length(method) == 1) {
+                submethod <- method[1]
+                submethod <- "A"
+            } else if (length(method) == 2) {
+                submethod <- method[2]
+                method <- method[1]
+            } else {
+                stop("if provided, 'method' must be of length 1 or 2")
+            }
+        }
+        method <- match.arg(method, c("downcast", "index", "scan", "range"))
+        oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
             if (is.logical(parameters)) {
@@ -495,32 +876,55 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                     stop("for method=\"index\", need length(parameters) to match number of pressure values")
                 keep <- parameters
             } else {
-                if (min(parameters) < 1)
-                    stop("Cannot select indices < 1")
-                if (max(parameters) > n)
-                    stop(paste("Cannot select past end of array, i.e. past ", n))
-                keep <- rep(FALSE, n)
-                keep[parameters] <- TRUE
+                oceDebug(debug, paste("trimming from index \"", parameters[1], " to ", parameters[2], "\"\n", sep=""))
+                if (length(parameters) == 2) {
+                    parameters[1] <- max(1, as.integer(parameters[1]))
+                    parameters[2] <- min(n, as.integer(parameters[2]))
+                    keep <- rep(FALSE, n)
+                    keep[seq.int(parameters[1], parameters[2])] <- TRUE
+                } else {
+                    stop("length of parameters must be 2, or must match the ctd column length")
+                }
+            }
+        } else if (method == "scan") {
+            if (!"scan" %in% names(x@data)) stop("no \"scan\" in this ctd dataset")
+            scan <- x[["scan"]]
+            if (is.logical(parameters)) {
+                if (length(parameters) != n)
+                    stop("for method=\"scan\", need length(parameters) to match number of pressure values")
+                keep <- parameters
+            } else {
+                if (length(parameters) == 2) {
+                    keep <- parameters[1] <= scan & scan <= parameters[2]
+                } else {
+                    stop("length of parameters must be 2, or must match the ctd column length")
+                }
             }
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
-            pSmooth <- smooth(x@data$pressure, kind="3R")
+            ##pSmooth <- smooth(x@data$pressure, kind="3R")
             ## 2014-01-08: remove the following block that reverses a profile.  This
             ## was happening for some 24-Hz data (see also below), and it seems unlikely
             ## this block of code will ever be useful, anyway.
-            ascending <- FALSE
-            if (FALSE) {
-                ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
-                oceDebug(debug, "ascending=", ascending, "\n")
-                if (ascending) {
-                    for (name in names(x@data)) {
-                        x@data[[name]] <- rev(x@data[[name]])
-                    }
-                }
-            }
-            pmin <- 0
+            ## 2015-04-04 ascending <- FALSE
+            ## 2015-04-04 if (FALSE) {
+            ## 2015-04-04     ascending <- 0 > mean(diff(pSmooth[1:min(3, 0.2*n)]))
+            ## 2015-04-04     oceDebug(debug, "ascending=", ascending, "\n")
+            ## 2015-04-04     if (ascending) {
+            ## 2015-04-04         for (name in names(x@data)) {
+            ## 2015-04-04             x@data[[name]] <- rev(x@data[[name]])
+            ## 2015-04-04         }
+            ## 2015-04-04     }
+            ## 2015-04-04 }
+            pmin <- -5
+            pminGiven <- FALSE
             if (!missing(parameters)) {
-                if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
+                if ("pmin" %in% names(parameters)) {
+                    pmin <- parameters$pmin
+                    pminGiven <- TRUE
+                } else {
+                    stop("parameter not understood for this method")
+                }
             }
             oceDebug(debug, 'pmin=', pmin, '\n')
             keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
@@ -533,12 +937,17 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             ## 2014-01-08 ## for this reason, the line of code was dropped today.
 
             ## 3. trim the upcast and anything thereafter (ignore beginning and end)
-            trim.top <- as.integer(0.1*n)
-            trim.bottom <- as.integer(0.9*n)
-            max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
-            max.location <- trim.top + max.spot
+            ##2015-04-04 # This was misbehaving on RBR data, and I'd prefer to get the simpler
+            ##2015-04-04 # method working, anyway, so I'm removing the fancy bits.
+            ##2015-04-04 trim.top <- as.integer(0.1*n)
+            ##2015-04-04 trim.bottom <- as.integer(0.9*n)
+            ##2015-04-04 max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
+            ##2015-04-04 max.location <- trim.top + max.spot
+            ##2015-04-04 keep[max.location:n] <- FALSE
+            max.location <- which.max(smooth(x@data$pressure, kind="3R"))
             keep[max.location:n] <- FALSE
-            oceDebug(debug, "pressure maximum of", x@data$pressure[max.spot], "dbar, at index=", max.spot, "\n")
+            oceDebug(debug, "removed data at indices from ", max.location,
+                     " (where pressure is ", x@data$pressure[max.location], ") to the end of the data\n", sep="")
             ## 2011-02-04 if (FALSE) {
             ## 2011-02-04     ## deleted method: slowly-falling data
             ## 2011-02-04     delta.p.sorted <- sort(delta.p)
@@ -557,43 +966,97 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             ## 2011-02-04     equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x@data$scan)) < 0)
             ## 2011-02-04     keep[equilibration] <- FALSE
             ## 2011-02-04 }
-            if (TRUE) {                 # new method, after Feb 2008
-                bilinear1 <- function(s, s0, dpds) {
+            if (!pminGiven) {                 # new method, after Feb 2008
+                submethodChoices <- c("A", "B")
+                sm <- pmatch(submethod, submethodChoices)
+                if (is.na(submethod))
+                    stop("unknown submethod '", submethod, "'") 
+                submethod <- submethodChoices[sm]
+                ## bilinearAold <- function(param) { # param=c(s0,p0,dpds); this uses ss and pp
+                ##     s0 <-  param[1]
+                ##     p0 <- abs(param[2])
+                ##     dpds <- param[3]
+                ##     ifelse(ss < s0, p0, p0 + dpds * (ss - s0))
+                ##     model <- ifelse(ss < s0, p0, p0 + dpds * (ss - s0))
+                ##     diff <- pp - model
+                ##     misfit <- sqrt(mean(diff^2))
+                ##     oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "; misfit=", misfit, "\n")
+                ##     misfit
+                ## }
+                bilinearA <- function(s, s0, p0, dpds) { # same model as B but results treated differently
+                    oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
+                    ifelse(s < s0, p0, p0+dpds*(s-s0))
+                }
+                bilinearB <- function(s, s0, dpds) {
+                    oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
                 pp <- x@data$pressure[keep]
+                pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
                 ss <- x@data$scan[keep]
+                ##look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
+                end <- which(smooth(pp) > 20)[1]
+                if (!is.na(end)) {
+                    pp <- pp[1:end]
+                    ss <- ss[1:end]
+                }
                 p0 <- 0
                 s0 <- ss[0.25*length(ss)]
                 p0 <- pp[1]
-                p1 <- max(pp) #pp[0.9*length(pp)]
+                ##p1 <- max(pp) #pp[0.9*length(pp)]
                 if (length(ss) > 2)
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 else
                     dpds0 <- 0 
-                t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds), start=list(s0=s0, dpds=dpds0)),
-                         silent=TRUE)
-                if (class(t) != "try-error") {
-                    if (m$convInfo$isConv) {
-                        s0 <- floor(coef(m)[[1]])
-                        oceDebug(debug, "trimming scan numbers below", s0, "\n")
-                        keep <- keep & (x@data$scan > (coef(m)[[1]]))
-                    }
-                    ##} else {
-                    ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
+                ## Handle submethods.
+                ## Note in December 2015: the old method B seemed useless. Even method
+                ## C seems a bit useless to DK, actually, and he may remove that too.
+                if (submethod == "A") {
+                    oceDebug(debug, "method[2]=\"A\"\n")
+                    t <- try(m <- nls(pp ~ bilinearA(ss, s0, p0, dpds),
+                                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                    if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
+                    C <- coef(m)
+                    scanStart <- max(1, floor(0.5 + C["s0"]))
+                    ##> oceDebug(debug, "method[2]=\"A\", so using single-segment model\n")
+                    ##> sGuess <- mean(ss, na.rm=TRUE)
+                    ##> pGuess <- 0
+                    ##> dpdsGuess <- mean(diff(pp)/diff(ss), na.rm=TRUE) 
+                    ##> t <- try(o <- optim(c(sGuess, pGuess, dpdsGuess), bilinearA), silent=!TRUE)
+                    ##> if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
+                    ##> scanStart <- o$par[1]
+                ##} else if (submethod == "B") {
+                ##    oceDebug(debug, "method[2]=\"B\" so using two-segment model with constant near-surface pressure\n")
+                ##    t <- try(m <- nls(pp ~ bilinearB(ss, s0, p0, dpds),
+                ##                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                ##    if (class(t) == "try-error") stop("trimming failed to converge with submethod B")
+                ##    C <- coef(m)
+                ##    scanStart <- max(1, floor(0.5 + C["s0"] - C["p0"] / C["dpds"]))
+                } else if (submethod == "B") {
+                    oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
+                    t <- try(m <- nls(pp ~ bilinearB(ss, s0, dpds),
+                                      start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                    if (class(t) == "try-error") stop("trimming failed to converge with submethod B")
+                    C <- coef(m)
+                    scanStart <- max(1, floor(0.5 + C["s0"]))
                 } else {
-                    warning("bilinear method could not converge on a solution")
+                    stop("unknown submethod '", submethod, "'")
                 }
+                oceDebug(debug-1, "scanStart:", scanStart, "\n")
+                keep <- keep & (x@data$scan > scanStart)
             }
-            if (ascending) {
-                for (name in names(x@data)) {
-                    x@data[[name]] <- rev(x@data[[name]])
-                }
-            }
+            ## 2014-01-08: remove the following block that reverses a profile.
+            ## 2015-04-04 if (ascending) {
+            ## 2015-04-04     for (name in names(x@data)) {
+            ## 2015-04-04         x@data[[name]] <- rev(x@data[[name]])
+            ## 2015-04-04     }
+            ## 2015-04-04 }
         } else if (method == "range") {
             if (!("item" %in% names(parameters)))
                 stop("'parameters' must be a list containing 'item'")
-            oceDebug(debug, "method='range'; parameters= ", parameters, "\n")
+            oceDebug(debug, "method='range'; parameters are as follows:\n")
+            if (debug>0)
+                print(parameters)
             item <- parameters$item
             if (!(item %in% names(x@data)))
                 stop("x@data has no item named '", item, "'")
@@ -603,8 +1066,10 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             if ("to" %in% names(parameters))
                 keep <- keep & (x@data[[item]] <= parameters$to)
         } else {
-            stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
+            stop("'method' not recognized; must be 'index', 'downcast', 'scan', or 'range'")
         }
+    } else {
+        keep <- method(data=x@data, parameters=parameters)
     }
     if (is.data.frame(res@data)) {
         res@data <- res@data[keep,]
@@ -613,11 +1078,11 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             res@data[[i]] <- res@data[[i]][keep]
         }
     }
-    waterDepthWarning <- FALSE
-    if (inferWaterDepth && !is.finite(res@metadata$waterDepth)) {
-        res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
+    ## waterDepthWarning <- FALSE
+    ## if (inferWaterDepth) {
+    ##     res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
+    ##     waterDepthWarning <- TRUE
+    ## }
     if (removeDepthInversions) {
         badDepths <- c(FALSE, diff(res@data$pressure) <= 0)
         nbad <- sum(badDepths)
@@ -631,10 +1096,9 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
             warning("should add note about trimming depth inversions to processingLog")
         }
     }
-    res@metadata$waterDepth <- max(abs(res@data$pressure)) # the bad data sometimes have high p
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    ## if (waterDepthWarning)
+    ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # ctdTrim()\n", unindent=1)
     res
 }
@@ -658,8 +1122,8 @@ ctdUpdateHeader <- function (x, debug = FALSE)
     ## adjust nvalues
     ## ... fill in ...
     ## adjust column ranges
-    nquan <- length(x@data)
-    rval <- x
+    ##nquan <- length(x@data)
+    res <- x
     h <- x@metadata$header
     for (i in seq_along(x@data)) {
         r <- range(x@data[[i]])
@@ -667,8 +1131,8 @@ ctdUpdateHeader <- function (x, debug = FALSE)
         span <- sprintf("# span %d = %g, %g", i, r[1], r[2])
         h <- replaceHeaderElement(h, prefix, span)
     }
-    rval@metadata$header <- h
-    rval
+    res@metadata$header <- h
+    res
 }
 
 write.ctd <- function(object, file=stop("'file' must be specified"))
@@ -688,15 +1152,18 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 
 setMethod(f="plot",
           signature=signature("ctd"),
-          definition=function(x, which = c(1, 2, 3, 5), col=par("fg"),
-                              eos=getOption("eos", default='unesco'),
-                              ref.lat = NaN, ref.lon = NaN,
-                              grid = TRUE,
-                              coastline="best",
-                              Slim, Tlim, plim, densitylim, N2lim, Rrholim,
+          definition=function(x, which,
+                              col=par("fg"),
+                              fill, # to catch old method
+                              borderCoastline=NA, colCoastline="lightgray",
+                              eos=getOption("oceEOS", default='gsw'),
+                              ref.lat=NaN, ref.lon=NaN,
+                              grid=TRUE, coastline="best",
+                              Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
                               clongitude, clatitude, span, showHemi=TRUE,
+                              lonlabel=NULL, latlabel=NULL, sides=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -713,9 +1180,51 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              eos <- match.arg(eos, c("unesco", "teos"))
-              oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
-                       "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+              eos <- match.arg(eos, c("unesco", "gsw"))
+              if (!missing(fill)) {
+                  ## permit call as documented before 2016-02-03
+                  ## Note: the code permitted fill=TRUE but this was never documented
+                  if (is.character(fill)) {
+                      colCoastline <- fill
+                  } else {
+                      if (is.logical(fill) && !fill) {
+                          colCoastline <- NULL
+                      }
+                  }
+                  warning("In plot.ctd() : 'fill' being accepted for backwards compatibility; please use 'colCoastline' instead", call.=FALSE)
+              }
+              if (missing(which)) {
+                  oceDebug(debug, "plot.ctd(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+                  dt <- x@metadata$deploymentType
+                  if (is.null(dt)) {
+                      which <- c(1, 2, 3, 5)
+                  } else {
+                      types <- c("profile", "moored", "thermosalinograph", "tsg", "towyo")
+                      itype <- pmatch(dt, types, nomatch=0)
+                      if (itype == 0) {
+                          ## warning("unknown deploymentType \"", dt, "\"; using \"profile\" instead")
+                          dt <- "profile"
+                      } else {
+                          dt <- types[itype]
+                      }
+                      if ("profile" == dt) {
+                          which <- c(1, 2, 3, 5)
+                      } else if ("moored" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("thermosalinograph" == dt) {
+                          which <- c(30, 3, 31, 5)
+                      } else if ("tsg" == dt) { # @richardsc -- do you think we still need this?
+                          which <- c(30, 3, 31, 5)
+                      } else if ("towyo" == dt) {
+                          which <- c(30, 3, 33, 5)
+                      } else {
+                          which <- c(1, 2, 3, 5)
+                      }
+                  }
+               } else {
+                  oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                           "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+              }
               lw <- length(which)
               dots <- list(...)
               dotsNames <- names(dots)
@@ -738,26 +1247,24 @@ setMethod(f="plot",
                   pch <- rep(pch, lw) # FIXME: recycle more sensibly
               if (length(cex) < lw)
                   cex <- rep(cex, lw) # FIXME: recycle more sensibly
-              dec_deg <- function(x, code = "lat")
-              {
-                  if (code == "lat") {
-                      if (x < 0) {
-                          x <- -x
-                          sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
-                      }
-                      else {
-                          sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
-                      }
-                  } else {
-                      if (x < 0) {
-                          x <- -x
-                          sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
-                      }
-                      else {
-                          sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
-                      }
-                  }
-              }
+              ##dec_deg <- function(x, code = "lat")
+              ##{
+              ##    if (code == "lat") {
+              ##        if (x < 0) {
+              ##            x <- -x
+              ##            sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
+              ##        } else {
+              ##            sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
+              ##        }
+              ##    } else {
+              ##        if (x < 0) {
+              ##            x <- -x
+              ##            sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
+              ##        } else {
+              ##            sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
+              ##        }
+              ##    }
+              ##}
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
                   adorn <- rep(adorn, lw)
@@ -768,22 +1275,20 @@ setMethod(f="plot",
               par(mgp=mgp)
 
               if (lw > 1) {
-                  oldpar <- par(no.readonly = TRUE)
-                  if (lw > 2)
-                      lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
-                  else
-                      lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
+                  ##oldpar <- par(no.readonly = TRUE)
+                  if (lw > 2) layout(matrix(1:4, nrow=2, byrow=TRUE)) else
+                      layout(matrix(1:2, nrow=2, byrow=TRUE))
                   ##layout.show(lay)
                   ##stop()
               }
               ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
-              ## as created by makeSection().
+              ## as created by as.section() or read.section().
               if (0 == length(x@data$salinity)) {
                   warning("no data to plot in this object")
                   return(invisible())
               }
               last.good <- which(rev(is.na(x@data$salinity))==FALSE)[1]
-              if (length(last.good) > 0) {
+              if (!is.na(last.good) && length(last.good) > 0) {
                   last.good <- length(x@data$temperature) - last.good + 1
                   for (nc in seq_along(x@data)) {
                       if (!is.null(x@data[[nc]])) {
@@ -796,33 +1301,48 @@ setMethod(f="plot",
               if (!missing(lonlim))
                   warning("the lonlim argument is deprecated; should instead specify clongitude, clatitude, and span")
 
-              oceDebug(debug, "which:", which, "(before matching character strings)\n")
-              which <- ocePmatch(which,
-                                 list("salinity+temperature"=1,
-                                      "density+N2"=2,
-                                      TS=3,
-                                      text=4,
-                                      map=5,
-                                      "density+dpdt"=6,
-                                      "density+time"=7,
-                                      index=8,
-                                      salinity=9,
-                                      temperature=10,
-                                      density=11,
-                                      N2=12,
-                                      spice=13,
-                                      tritium=14,
-                                      Rrho=15,
-                                      RrhoSF=16))
-              oceDebug(debug, "which:", which, "(after matching character strings)\n")
+              whichOrig <- which
+              which <- oce.pmatch(which,
+                                  list("salinity+temperature"=1,
+                                       "density+N2"=2,
+                                       TS=3,
+                                       text=4,
+                                       map=5,
+                                       "density+dpdt"=6,
+                                       "density+time"=7,
+                                       index=8,
+                                       salinity=9,
+                                       temperature=10,
+                                       density=11,
+                                       N2=12,
+                                       spice=13,
+                                       tritium=14,
+                                       Rrho=15,
+                                       RrhoSF=16,
+                                       "conductivity"=17,
+                                       "Sts"=30,
+                                       "Tts"=31,
+                                       "pts"=32,
+                                       "rhots"=33))
 
               for (w in 1:length(which)) {
                   if (is.na(which[w])) {
-                      warning("plot.ctd(): unknown plot type requested\n", call.=FALSE)
+                      if (whichOrig[w] %in% names(x@data)) {
+                          plotProfile(x, xtype=x[[whichOrig[w]]], xlab=whichOrig[w],
+                                      Slim=Slim, Tlim=Tlim, plim=plim,
+                                      eos=eos,
+                                      useSmoothScatter=useSmoothScatter,
+                                      grid=grid, col.grid="lightgray", lty.grid="dotted",
+                                      cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                      debug=debug-1,
+                                      ...)
+                      } else {
+                          warning("plot.ctd(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
+                      }
                       next
                   }
                   if (which[w] == 1) {
-                      plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
+                      plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, plim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
@@ -831,7 +1351,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 2) {
                       plotProfile(x, xtype="density+N2",
-                                  ylim=plim,
+                                  plim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   df=df,
@@ -841,7 +1361,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 6) {
                       plotProfile(x, xtype="density+dpdt",
-                                  ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                                  plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -851,7 +1371,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 7) {
                       plotProfile(x, xtype="density+time",
-                                  ylim=plim, densitylim=densitylim, timelim=timelim,
+                                  plim=plim, densitylim=densitylim, timelim=timelim,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
@@ -859,7 +1379,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 8) {
                       plotProfile(x, xtype="index",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -869,7 +1389,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 9) {
                       plotProfile(x, xtype="salinity",
-                                  ylim=plim,
+                                  plim=plim,
                                   Slim=Slim,
                                   col=col,
                                   eos=eos,
@@ -880,7 +1400,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 10) {
                       plotProfile(x, xtype="temperature",
-                                  ylim=plim,
+                                  plim=plim,
                                   Tlim=Tlim,
                                   col=col,
                                   eos=eos,
@@ -891,7 +1411,7 @@ setMethod(f="plot",
                                   ...)
                    } else if (which[w] == 11) {
                       plotProfile(x, xtype="density",
-                                  ylim=plim,
+                                  plim=plim,
                                   densitylim=densitylim,
                                   grid=grid,
                                   col=col,
@@ -903,7 +1423,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 12) {
                       plotProfile(x, xtype="N2",
-                                  ylim=plim,
+                                  plim=plim,
                                   N2lim=N2lim,
                                   grid=grid,
                                   col=col,
@@ -916,7 +1436,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 13) {
                       plotProfile(x, xtype="spice",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -926,7 +1446,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 14) {
                       plotProfile(x, xtype="tritium",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -936,7 +1456,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 15) {
                       plotProfile(x, xtype="Rrho",
-                                  ylim=plim,
+                                  plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -946,7 +1466,16 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 16) {
                       plotProfile(x, xtype="RrhoSF",
-                                  ylim=plim,
+                                  plim=plim,
+                                  col=col,
+                                  eos=eos,
+                                  useSmoothScatter=useSmoothScatter,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  debug=debug-1,
+                                  ...)
+                  } else if (which[w] == 17) {
+                      plotProfile(x, xtype="conductivity", Clim=Clim, plim=plim,
                                   col=col,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
@@ -967,146 +1496,168 @@ setMethod(f="plot",
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4) {
-                      text.item <- function(item, label, cex=0.8) {
-                          if (!is.null(item) && !is.na(item)) {
+                      textItem <- function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
+                          if (!is.null(item) && !is.na(item))
                               text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex)
-                          }
+                          yloc - d.yloc
                       }
                       par(mar=c(0,0,0,0))
                       plot.new()
                       plot.window(c(0,10), c(0,10))
                       xloc <- 0
                       yloc <- 8
-                      d.yloc <- 0.8
                       cex <- 3/4
-                      text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
-                      yloc <- yloc - d.yloc
                       xm <- x@metadata
+                      yloc <- textItem(xloc, yloc, xm$station,         " Station:  ", cex=cex)
                       if (!is.null(xm$filename) && nchar(xm$filename) > 0) {
-                          text.item(xm$filename,    " File:     ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$filename,    " File:     ", cex=cex)
                       }
                       if (!is.null(xm$scientist))	{
-                          text.item(xm$scientist,   " Scientist:", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$scientist,   " Scientist:", cex=cex)
                       }
                       if (!is.null(xm$institute))	{
-                          text.item(xm$institute,   " Institute:", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$institute,   " Institute:", cex=cex)
                       }
                       if (!is.null(xm$date)) {
-                          text.item(xm$date,        " Date:     ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$date,        " Date:     ", cex=cex)
                       }
                       if (!is.null(xm$ship)) {
-                          text.item(xm$ship,        " Ship:     ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$ship,        " Ship:     ", cex=cex)
                       }
                       if (!is.null(xm$cruise)) {
-                          text.item(xm$cruise,      " Cruise:   ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$cruise,      " Cruise:   ", cex=cex)
                       }
                       if (!is.null(xm$station)) {
-                          text.item(xm$station,     " Station:  ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$station,     " Station:  ", cex=cex)
                       }
                       if (!is.null(xm$waterDepth)) {
-                          text.item(xm$waterDepth, " Depth:    ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, xm$waterDepth, " Depth:    ", cex=cex)
                       }
                       if (!is.na(xm$longitude) && !is.na(xm$latitude)) {
-                          text.item(latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
-                          yloc <- yloc - d.yloc
+                          yloc <- textItem(xloc, yloc, latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
                       }
-                      if (!is.na(ref.lat) && !is.na(ref.lon)) {
-                          dist <- geodDist(xm$longitude, xm$latitude, ref.lon, ref.lat)
-                          kms <- sprintf("%.2f km", dist/1000)
-                          rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon),
-                                                         ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
-                          yloc <- yloc - d.yloc
-                      }
-                  } else if (which[w] == 5) {
-                      if (is.finite(x[["latitude"]][1]) && is.finite(x[["longitude"]][1])) {
+                      ## if (!is.na(ref.lat) && !is.na(ref.lon)) {
+                      ##     ##dist <- geodDist(xm$longitude, xm$latitude, ref.lon, ref.lat)
+                      ##     ##kms <- sprintf("%.2f km", dist/1000)
+                      ##     ##rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon),
+                      ##     ##                               ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
+                      ##     yloc <- yloc - d.yloc
+                      ## }
+                  } else if (which[w] == 5) { # map
+                      if (!is.null(x[["latitude"]]) &&
+                          !is.null(x[["longitude"]]) &&
+                          is.finite(x[["latitude"]][1]) &&
+                          is.finite(x[["longitude"]][1])) {
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
-                          ## FIXME: use waterdepth to guess a reasonable span, if not supplied
-                          if ("waterDepth" %in% names(x@metadata) && !is.na(x@metadata$waterDepth))
-                              waterDepth <- x[["waterDepth"]]
-                          else 
-                              waterDepth <- max(x[["pressure"]], na.rm=TRUE)
+                          ## Calculate span, if not given
                           if (missing(span)) {
-                              if (waterDepth < 50)
-                                  span <- 50
-                              else if (waterDepth < 100)
-                                  span <- 100
-                              else if (waterDepth < 200)
-                                  span <- 500
-                              else if (waterDepth < 2000)
-                                  span <- 1000
-                              else
-                                  span <- 5000
-                              oceDebug(debug, "**OLD METHOD** span not given, and waterDepth=", waterDepth, "m, so set span=", span, "\n")
-                              if (TRUE) {
-                                  ## find nearest point on (coarse) globe
-                                  data("coastlineWorld", envir=environment())
-                                  d <- geodDist(coastlineWorld[['longitude']],
-                                                coastlineWorld[['latitude']],
-                                                x[['longitude']],
-                                                x[['latitude']])
-                                  nearest <- d[which.min(d)] # in km
-                                  span <- 3 * nearest
-                                  oceDebug(debug, "**NEW METHOD** span not given, and nearest point is=", nearest,
-                                           "km away (coarse coastline), so set span=", span, "\n")
+                              if (requireNamespace("ocedata", quietly=TRUE)) {
+                                  data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                  mcoastline <- get("coastlineWorldMedium")
+                                  d <- geodDist(mcoastline[['longitude']],
+                                                mcoastline[['latitude']],
+                                                mean(x[['longitude']], na.rm=TRUE),
+                                                mean(x[['latitude']], na.rm=TRUE))
+                                  rm(mcoastline)
+                              } else {
+                                  data("coastlineWorld", package="oce", envir=environment())
+                                  mcoastline <- get("coastlineWorld")
+                                  d <- geodDist(mcoastline[['longitude']],
+                                                mcoastline[['latitude']],
+                                                mean(x[['longitude']], na.rm=TRUE),
+                                                mean(x[['latitude']], na.rm=TRUE))
                               }
+                              ## Previously, used nearest 20 points, but that requires sorting a 
+                              ## possibly very long vector. Note the check on the result
+                              ## of bound125(), which is a new function
+                              nearest <- min(d, na.rm=TRUE)
+                              span <- bound125(5 * nearest)
+                              if (span < 5 * nearest)
+                                  span <- 5 * nearest # safety check
+                              oceDebug(debug, "span not given; nearest land ", round(nearest,0),
+                                       "km, so set span=", round(span,0), "\n")
                           }
                           ## the "non-projection" case is terrible up north (FIXME: prob should not do this)
-                          if (x[["latitude"]][1] > 70 && missing(projection))
-                              projection <- "stereographic"
-                          oceDebug(debug, "span=", span, "km\n")
+                          if (!missing(projection) && !is.na(pmatch(projection, "automatic"))) {
+                              meanlon <- mean(x[["longitude"]], na.rm=TRUE)
+                              meanlat <- mean(x[["latitude"]], na.rm=TRUE)
+                              projection <- if (meanlat > 70)
+                                  paste("+proj=stere +lon_0=", meanlon, sep="") else "+proj=merc"
+                              oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
+                          } else {
+                              oceDebug(debug, "using", projection, "projection (specified)\n")
+                          }
+                          ##message("projection:", projection)
+                          oceDebug(debug, "projection=", if (is.null(projection)) "NULL" else projection, ", span=", span, "km\n")
                           if (is.character(coastline)) {
-                              oceDebug(debug, " coastline is a string: \"", coastline, "\"\n", sep="")
-                              if (require(ocedata, quietly=TRUE)) {
-                                  library(ocedata)
-                                  oceDebug(debug, "ocedata is present\n")
+                              oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
+                              if (requireNamespace("ocedata", quietly=TRUE)) {
+                                  library(ocedata) # FIXME: is this needed?
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
-                                      oceDebug(debug, " 'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                                      data(list=bestcoastline, package="ocedata", envir=environment())
+                                      oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
+                                      if (bestcoastline == "coastlineWorld")
+                                          data(list=bestcoastline, package="oce", envir=environment())
+                                      else
+                                          data(list=bestcoastline, package="ocedata", envir=environment())
                                       coastline <- get(bestcoastline)
                                   } else if (coastline == "coastlineWorld") {
-                                      data("coastlineWorld", envir=environment())
-                                      coastline <- coastlineWorld
+                                      oceDebug(debug, "using 'coastlineWorld'\n")
+                                      data("coastlineWorld", package="oce", envir=environment())
+                                      coastline <- get("coastlineWorld")
                                   } else if (coastline == "coastlineWorldFine") {
-                                      data("coastlineWorldFine", envir=environment())
-                                      coastline <- coastlineWorldFine
+                                      oceDebug(debug, "using 'coastlineWorldFine'\n")
+                                      data("coastlineWorldFine", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldFine")
                                   } else if (coastline == "coastlineWorldMedium") {
-                                      data("coastlineWorldMedium", envir=environment())
-                                      coastline <- coastlineWorldMedium
+                                      oceDebug(debug, "using 'coastlineWorldMedium'\n")
+                                      data("coastlineWorldMedium", package="ocedata", envir=environment())
+                                      coastline <- get("coastlineWorldMedium")
                                   }  else {
                                       stop("there is no built-in coastline file of name \"", coastline, "\"")
                                   }
                               } else {
                                   warning("CTD plots will have better coastlines after doing install.packages(\"ocedata\")", call.=FALSE)
-                                  data("coastlineWorld", envir=environment())
-                                  coastline <- coastlineWorld
+                                  data("coastlineWorld", package="oce", envir=environment())
+                                  coastline <- get("coastlineWorld")
                               }
                           }
                           if (missing(lonlim)) {
-                              lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
+                              mlon <- mean(x[["longitude"]], na.rm=TRUE)
+                              lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
                               clon <- mean(lonlim.c)
                               if (missing(latlim)) {
-                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
-                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  mlat <- mean(x[["latitude"]], na.rm=TRUE)
+                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=", 
+                                           if (is.null(projection)) "NULL" else projection, "\n")
+                                  latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - mlat))
+                                  latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
+                                  oceDebug(debug, "about to plot coastline\n")
+                                  oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
+                                  oceDebug(debug, "clongitude=", clon, "\n")
+                                  oceDebug(debug, "span=", span, "\n")
+                                  oceDebug(debug, "projection=", projection, "\n")
+                                  oceDebug(debug, "parameters=", parameters, "\n")
+                                  oceDebug(debug, "orientation=", orientation, "\n")
+                                  oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
-                                       clatitude=mean(latlim.c), clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       border=borderCoastline, col=colCoastline,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
+                                  oceDebug(debug, " ... did plot(coastline)\n")
                               } else {
                                   oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       border=borderCoastline, col=colCoastline,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               }
                               if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
                                   mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
@@ -1115,37 +1666,51 @@ setMethod(f="plot",
                               clon <- mean(lonlim)
                               if (missing(latlim)) {
                                   oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                                  latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
+                                  latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                   clat <- mean(latlim.c)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       border=borderCoastline, col=colCoastline,
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               } else {
                                   oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                   clat <- mean(latlim)
                                   plot(coastline,
-                                       clatitude=clat, clongitude=clon, span=span,
+                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                       border=borderCoastline, col=colCoastline,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis, debug=debug-1)
+                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                       debug=debug-1)
                               }
                           }
-                          oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
                           if (is.null(projection)) {
-                              points(x@metadata$longitude, x@metadata$latitude,
+                              points(standardizeLongitude(x[["longitude"]]), x[["latitude"]],
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
-                              mapPoints(x@metadata$longitude, x@metadata$latitude,
+                              mapScalebar()
+                              mapPoints(x[["longitude"]], x[["latitude"]],
                                      cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
-                              mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=0, cex=0.8*par("cex"), line=0.5)
-                          if (!is.null(x@metadata$startTime))
-                              mtext(format(x@metadata$startTime), side=3, adj=1, cex=0.8*par("cex"), line=0.5)
-                          ##if (!is.null(x@metadata$scientist))
-                          ##    mtext(paste(" ", x@metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
+                              mtext(x@metadata$station,
+                                    side=3, adj=0, cex=0.8*par("cex"), line=1.125)
+                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime))
+                              mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
+                                    side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
-                      oceDebug(debug, "} # plot(ctd, ...) of type MAP\n")
+                      oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
+                  } else if (which[w] ==30) { # S timeseries
+                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y"))
+                  } else if (which[w] ==31) { # T timeseries
+                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T", "y"))
+                  } else if (which[w] ==32) { # p timeseries
+                      oce.plot.ts(x[["time"]], x[["pressure"]], ylab=resizableLabel("p", "y"))
+                  } else if (which[w] ==33) { # sigmaTheta timeseries
+                      oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y"))
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
@@ -1159,101 +1724,118 @@ setMethod(f="plot",
               invisible()
           })
 
+#' Subset a CTD object
+#'
+#' This function is somewhat analogous to
+#' \code{\link{subset.data.frame}}, but only one independent variable may be
+#' used in \code{subset} in any call to the function, which means that
+#' repeated calls will be necessary to subset based on more than one
+#' independent variable (e.g. time and distance).
+#'
+#' @param x An object inheriting from \code{\link{ctd-class}}.
+#' @param subset An expression indicating how to subset \code{x}.
+#' @param ... Ignored.
+#' @return A ctd object.
+#' 
+#' @aliases subset.ctd
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' plot(ctd)
+#' plot(subset(ctd, pressure<10))
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              rval <- new("ctd") # start afresh in case x@data is a data.frame
-              rval@metadata <- x@metadata
-              rval@processingLog <- x@processingLog
+              res <- new("ctd") # start afresh in case x@data is a data.frame
+              res@metadata <- x@metadata
+              res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame())
+                  r <- eval(substitute(subset), x@data, parent.frame(2))
                   r <- r & !is.na(r)
-                  rval@data[[i]] <- x@data[[i]][r]
+                  res@data[[i]] <- x@data[[i]][r]
               }
-              names(rval@data) <- names(x@data)
+              names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval@processingLog <- processingLog(rval@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              res
           })
  
 
-plotScan <- function(x,
-                     name = "scan",
-                     adorn=NULL,
-                     mgp=getOption("oceMgp"),
-                     type='l',
-                     ...)
+plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
+                     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    if (3 == length(mgp)) par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
+    nw <- length(which)
+    if (nw > 1)
+        par(mfrow=c(nw,1))
+    par(mar=mar)
+    par(mgp=mgp)
+    scan <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
+    for (w in which) {
+        if (w == 1) {
+            plot(scan, x@data$pressure, ylab=resizableLabel("p", "y"), xlab="Scan", yaxs='r', type=type, ...)
+        } else if (w == 2) {
+            dp <- diff(x@data$pressure)
+            dp <- c(dp, dp[length(dp)])
+            plot(scan, dp, ylab="diff(pressure)", xlab="Scan", yaxs='r', type=type, ...)
+        } else if (w == 3) {
+            dp <- diff(x@data$pressure)
+            dp <- c(dp, dp[length(dp)])
+            plot(scan, x[["temperature"]], ylab=resizableLabel("T", "y"),
+                 xlab="Scan", yaxs='r', type=type, ...)
+        } else if (w == 4) {
+            dp <- diff(x@data$pressure)
+            dp <- c(dp, dp[length(dp)])
+            plot(scan, x[["salinity"]], ylab=resizableLabel("S", "y"),
+                 xlab="Scan", yaxs='r', type=type, ...)
+        } else {
+            stop("unknown 'which'; must be in 1:4")
+        }
+    }
+    ## mtext(x@metadata$station, side=3, adj=1, cex=par('cex'))
+    ## mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
+    ## if (1 <= adorn.length) {
+    ##     t <- try(eval(adorn[1]), silent=TRUE)
+    ##     if (class(t) == "try-error")
+    ##         warning("cannot evaluate adorn[", 1, "]\n")
+    ## }
 
-    adorn.length <- length(adorn)
-    if (adorn.length == 1) {
-        adorn <- rep(adorn, 2)
-        adorn.length <- 2
-    }
-##    layout(matrix(1:2, nrow=2))
-    par(mfrow=c(3,1))
-    xx <- x@data[[name]];
-    xxlen <- length(xx)
-    ##if (xxlen < 1)
-    ##   stop(paste("this ctd has no data column named '", name, "'",sep=""))
-    if (xxlen < 1) {
-        xxlen <- length(x@data$pressure)
-        xx <- seq(1, xxlen)             # fake a scan number
-    }
-    if (xxlen != length(x@data$pressure))
-        stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x@data$pressure),sep=""))
-    if (!("scan" %in% names(x@data))) {
-        x@data[["scan"]] <- 1:length(x@data$pressure)
-    }
-    plot(x[[name]], x@data$pressure,
-         xlab=name, ylab=resizableLabel("p", "y"),
-         yaxs='r',
-         type=type)
-    mtext(paste(gettext("Station", domain="R-oce"), x@metadata$station), side=3, adj=1, cex=par('cex'))
-    mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
-    if (1 <= adorn.length) {
-        t <- try(eval(adorn[1]), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn[", 1, "]\n")
-    }
-
-    ##    par(mar=c(4,4,1,4)) # bot left top right
-    Slen <- length(x@data$salinity)
-    Tlen <- length(x@data$temperature)
-    if (Slen != Tlen)
-        stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
-         yaxs='r', type=type)
-    grid()
-    if (2 <= adorn.length) {
-        t <- try(eval(adorn[2]), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn[", 2, "]\n")
-    }
-    plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
-         yaxs='r', type=type)
-    grid()
-    if (2 <= adorn.length) {
-        t <- try(eval(adorn[2]), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn[", 2, "]\n")
-    }
-    invisible(x)
+    ## ##    par(mar=c(4,4,1,4)) # bot left top right
+    ## Slen <- length(x@data$salinity)
+    ## Tlen <- length(x@data$temperature)
+    ## if (Slen != Tlen)
+    ##     stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
+    ## plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
+    ##      yaxs='r', type=type)
+    ## grid()
+    ## if (2 <= adorn.length) {
+    ##     t <- try(eval(adorn[2]), silent=TRUE)
+    ##     if (class(t) == "try-error")
+    ##         warning("cannot evaluate adorn[", 2, "]\n")
+    ## }
+    ## plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
+    ##      yaxs='r', type=type)
+    ## grid()
 }
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
+    ## Special case: ruskin files are handled by read.rsk()
+    if (is.character(file) && length(grep(".rsk$",file))) {
+        return(read.rsk(file=file, debug=debug))
+    }
+
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ofile <- file
+    ##ofile <- file
     filename <- NULL
     if (is.null(type)) {
         if (is.character(file)) {
+            if (length(grep(".rsk$",file))) {
+                return(read.rsk(file=file, debug=debug))
+            }
             filename <- fullFilename(file)
             file <- file(file, "r")
             on.exit(close(file))
@@ -1266,29 +1848,40 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         }
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
-        if ("CTD" == substr(line, 1, 3))              type <- "WOCE"
-        else if ("* Sea-Bird" == substr(line, 1, 10)) type <- "SBE19"
-        else stop("Cannot discover type in line '", line, "'\n")
+        ## FIXME: detect ODV type in first or second line; see oce.magic().
+        if ("CTD" == substr(line, 1, 3)) {
+            type <- "WOCE"
+        } else if ("* Sea-Bird" == substr(line, 1, 10)) {
+            type <- "SBE19"
+        } else {
+            stop("Cannot discover type in line '", line, "'\n")
+        }
     } else {
-        if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
-        else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
-        else stop("type must be SBE19, WOCE, ODF, or ITP, not ", type)
-    }                                   # FIXME: should just use oceMagic() here
-    rval <- switch(type,
+        if (!is.na(pmatch(type, "SBE19"))) {
+            type <- "SBE19"
+        } else if (!is.na(pmatch(type, "WOCE"))) {
+            type <- "WOCE"
+        } else {
+            stop("type must be SBE19, WOCE, ODF, ODV, or ITP, not ", type)
+        }
+    }                                   # FIXME: should just use oce.magic() here
+    res <- switch(type,
                    SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
                                         debug=debug, processingLog=processingLog, ...),
                    WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
                                          debug=debug, processingLog=processingLog, ...),
                    ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
+                   ODV = read.ctd.odv(file, columns=columns, station=station, monitor=monitor,
+                                      debug=debug, processingLog=processingLog, ...),
                    ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
     ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
-    if (!"waterDepth" %in% names(ctd@metadata)) # may be entirely missing
-        rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
-    if (ctd@metadata$waterDepth < 1)   # may be silly
-        rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
-    rval
+    #if (!"waterDepth" %in% names(res@metadata)) # may be entirely missing
+    #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
+    #if (res@metadata$waterDepth < 1)   # may be silly
+    #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
+    res
 }
 
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
@@ -1300,14 +1893,14 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         nfiles <- length(files)
         if (monitor)
             pb <- txtProgressBar(1, nfiles, style=3)
-        rval <- vector("list", nfiles)
+        res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            rval[[i]] <- read.ctd.woce(files[i], debug=debug-1)
+            res[[i]] <- read.ctd.woce(files[i], debug=debug-1)
             if (monitor)
                 setTxtProgressBar(pb, i)
         }
         oceDebug(debug, "} # read.ctd.woce() {\n")
-        return(rval)
+        return(res)
     }
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
     oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
@@ -1324,7 +1917,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         open(file, "r")
         on.exit(close(file))
     }
-    res <- new("ctd")
+    res <- new("ctd", pressureType="sea")
     ## Header
     scientist <- ship <- institute <- address <- NULL
     filename.orig <- NULL
@@ -1335,12 +1928,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     waterDepth <- NA
     date <- recovery <- NULL
     header <- c()
-    col.names.inferred <- NULL
-    found.scan <- FALSE
-    found.temperature <- found.salinity <- found.pressure <- found.depth <- FALSE
-    foundSigmaTheta <- foundSigmaT <- foundSigma <- FALSE
-    found.conductivity <- found.conductivity.ratio <- FALSE
-    conductivity.standard <- 4.2914
+    ##col.names.inferred <- NULL
+    ##conductivity.standard <- 4.2914
     ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
     ## First line
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
@@ -1395,26 +1984,30 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         }
         dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
         data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
-        metadata <- list(header=header,
-                         filename=filename, # provided to this routine
-                         filename.orig=filename.orig, # from instrument
-                         systemUploadTime=systemUploadTime,
-                         ship=ship,
-                         scientist=scientist,
-                         institute=institute,
-                         address=address,
-                         cruise=NULL,
-                         station=station,
-                         date=date,
-                         startTime=startTime,
-                         latitude=latitude,
-                         longitude=longitude,
-                         recovery=recovery,
-                         waterDepth=max(abs(data$pressure), na.rm=TRUE), # not in header
-                         sampleInterval=sampleInterval,
-                         names=names,
-                         labels=labels,
-                         src=filename)
+        res@metadata$header <- header
+        res@metadata$filename <- filename # provided to this routine
+        res@metadata$filename.orig <- filename.orig # from instrument
+        res@metadata$systemUploadTime <- systemUploadTime
+        res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                                   conductivity=list(unit=expression(ratio), scale=""))
+        res@metadata$pressureType <- "sea"
+        res@metadata$ship <- ship
+        res@metadata$scientist <- scientist
+        res@metadata$institute <- institute
+        res@metadata$address <- address
+        res@metadata$cruise <- NULL
+        res@metadata$station <- station
+        res@metadata$deploymentType <- "unknown"
+        res@metadata$date <- date
+        res@metadata$startTime <- startTime
+        res@metadata$latitude <- latitude
+        res@metadata$longitude <- longitude
+        res@metadata$recovery <- recovery
+        res@metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE) # not in header
+        res@metadata$sampleInterval <- sampleInterval
+        res@metadata$names <- names
+        res@metadata$labels <- labels
+        res@metadata$src <- filename
     } else {                           # CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
@@ -1570,35 +2163,39 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ## catch e.g. -999 sometimes used for water depth's missing value
         if (is.finite(waterDepth) && waterDepth <= 0)
             waterDepth <- NA
-        metadata <- list(header=header,
-                         filename=filename, # provided to this routine
-                         filename.orig=filename.orig, # from instrument
-                         systemUploadTime=systemUploadTime,
-                         ship=ship,
-                         scientist=scientist,
-                         institute=institute,
-                         address=address,
-                         cruise=NULL,
-                         station=station,
-                         date=date,
-                         startTime=startTime,
-                         latitude=latitude,
-                         longitude=longitude,
-                         recovery=recovery,
-                         waterDepth=waterDepth,
-                         sampleInterval=sampleInterval,
-                         names=names,
-                         labels=labels,
-                         src=filename)
+        res@metadata$header <- header
+        res@metadata$filename <- filename # provided to this routine
+        res@metadata$filename.orig <- filename.orig # from instrument
+        res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                                   conductivity=list(unit=expression(ratio), scale=""))
+        res@metadata$pressureType <- "sea"
+        res@metadata$systemUploadTime <- systemUploadTime
+        res@metadata$ship <- ship
+        res@metadata$scientist <- scientist
+        res@metadata$institute <- institute
+        res@metadata$address <- address
+        res@metadata$cruise <- NULL
+        res@metadata$station <- station
+        res@metadata$deploymentType <- "unknown"
+        res@metadata$date <- date
+        res@metadata$startTime <- startTime
+        res@metadata$latitude <- latitude
+        res@metadata$longitude <- longitude
+        res@metadata$recovery <- recovery
+        res@metadata$waterDepth <- waterDepth
+        res@metadata$sampleInterval <- sampleInterval
+        res@metadata$names <- names
+        res@metadata$labels <- labels
+        res@metadata$src <- filename
     }
-    res@metadata <- metadata
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # read.ctd.woce()\n" , unindent=1) # FIXME: use S4 for ctd / woce
+    res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     res
 }
 
@@ -1640,15 +2237,13 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=
     as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
 }
 
-
-
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
     ## * NMEA Latitude = 47 54.760 N
     ## ** Latitude:      47 53.27 N
     x <- line
-    positive <- TRUE
+    ##positive <- TRUE
     oceDebug(debug, "parseLatLon(\"", line, "\") {\n", sep="")
     oceDebug(debug, "  step 1. \"", x, "\" (as provided)\n", sep="")
     x <- sub("^[ =a-z*:]*", "", x, ignore.case=TRUE)
@@ -1661,17 +2256,19 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     ## if single number, it's decimal degrees; if two numbers, degrees and then decimal minutes
     xx <- strsplit(x, '[ \\t]+')[[1]]
     if (1 == length(xx)) {
-        rval <- as.numeric(xx)
-        oceDebug(debug, "  step 4a. \"", rval, "\" (inferred from single #, decimal degrees)\n", sep="")
+        res <- as.numeric(xx)
+        oceDebug(debug, "  step 4a. \"", res, "\" (inferred from single #, decimal degrees)\n", sep="")
     } else if (2 == length(xx)) {
-        rval <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
-        oceDebug(debug, "  step 4b. \"", rval, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
+        res <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
+        oceDebug(debug, "  step 4b. \"", res, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
     } else {
-        stop("cannot decode latitude or longitude from \"", line, "\"")
+        ## 2014-06-17 it's annoying to see this error msg
+        ##warning("cannot decode latitude or longitude from \"", line, "\"")
+        res <- NA
     }
-    rval <- rval * sign
+    res <- res * sign
     oceDebug(debug, "} # parseLatLon()\n", unindent=1)
-    rval
+    res
 }
 
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
@@ -1692,14 +2289,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         nfiles <- length(files)
         if (monitor)
             pb <- txtProgressBar(1, nfiles, style=3)
-        rval <- vector("list", nfiles)
+        res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            rval[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
+            res[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
             if (monitor)
                 setTxtProgressBar(pb, i)
         }
         oceDebug(debug, "} # read.ctd.sbe() {\n")
-        return(rval)
+        return(res)
     }
     oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
 
@@ -1717,7 +2314,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         open(file, "r")
         on.exit(close(file))
     }
-    res <- new("ctd")
+    res <- new("ctd", pressureType="sea")
     ## Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sampleInterval <- NA
@@ -1728,21 +2325,32 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     date <- recovery <- NA
     header <- c()
     col.names.inferred <- NULL
-    found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <-
-        found.time <- foundSigmaTheta <- foundSigmaT <- found.sigma <-
-            found.conductivity <- found.conductivity.ratio <- FALSE
-    conductivity.standard <- 4.2914
+    found.time <- FALSE
+    ##conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
-    serialNumber <- ""
-    while (TRUE) {
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
+    conductivityUnit = list(unit=expression(ratio), scale="") # guess; other types are "mS/cm" and "S/m"
+    temperatureUnit = list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
+    pressureType = "sea"               # guess; other option is "absolute"
+
+    lines <- readLines(file)
+    for (iline in seq_along(lines)) {
+        line <- lines[iline]
+        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, "examining header line '",line,"'\n", sep="")
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) break;
+        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+            ## Sometimes SBE files have a header line after the *END* line.
+            iline <- iline + 1  
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
+                iline <- iline + 1
+            break
+        }
         lline <- tolower(aline)
         ## BUG: discovery of column names is brittle to format changes
+        found.depth <- FALSE
         if (0 < (r <- regexpr("# name ", lline))) {
             oceDebug(debug, "lline: '",lline,"'\n",sep="")
             tokens <- strsplit(line, split=" ", useBytes=TRUE)
@@ -1754,8 +2362,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                 found.scan <- TRUE
             }
             if (0 < regexpr("pressure", lline)) {
-                name <- "pressure"
-                found.pressure <- TRUE
+                if (0 > regexpr("deg c", lline)) {
+                    ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
+                    name <- "pressure"
+                    found.pressure <- TRUE
+                }
             }
             if (0 < regexpr("time", lline)) {
                 name <- "time"
@@ -1766,16 +2377,31 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                 found.salinity <- TRUE
             }
             if (0 < regexpr("temperature", lline)) {
-                name <- "temperature"
-                found.temperature <- TRUE
+                ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
+                if (0 > regexpr("pressure", lline) && 0 > regexpr("potential", lline)) {
+                    name <- "temperature"
+                    found.temperature <- TRUE
+                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
+                    if (length(grep("68", unit)))
+                        temperatureUnit <- list(unit=expression(degree*C), scale="IPTS-68")
+                    else if (length(grep("90", unit)))
+                        temperatureUnit <- list(unit=expression(degree*C), scale="ITS-90")
+                    oceDebug(debug, "temperatureUnit: ", temperatureUnit$unit, "(inferred from '", unit, "'\n", sep="")
+                }
             }
             if (0 < regexpr("conductivity", lline)) {
                 if (0 < regexpr("ratio", lline)) {
                     found.conductivity.ratio <- TRUE;
-                    name <- "conductivityratio";
+                    name <- "conductivityratio"
+                    conductivityUnit = list(unit=expression(ratio), scale="")
                 } else {
                     found.conductivity <- TRUE;
-                    name <- "conductivity";
+                    name <- "conductivity"
+                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
+                    if (length(grep("S/m", unit)))
+                        conductivityUnit <- list(unit="S/m", scale="")
+                    else if (length(grep("mS/cm", unit)))
+                        conductivityUnit <- list(unit="mS/cm", scale="")
                 }
             }
             if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
@@ -1790,27 +2416,34 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             if (0 < regexpr("flag", lline)) name <- "flag"
             if (0 < regexpr("sigma-theta", lline)) {
                 name <- "sigmaTheta"
-                foundSigmaTheta <- TRUE
+                ##foundSigmaTheta <- TRUE
             } else {
                 if (0 < regexpr("sigma-t", lline)) {
                     name <- "sigmat"
-                    foundSigmaT <- TRUE
+                    ##foundSigmaT <- TRUE
                 }
             }
             col.names.inferred <- c(col.names.inferred, name)
         }
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
+        if (length(grep("^\\* temperature sn", lline)))
+            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
+        if (length(grep("^\\* conductivity sn", lline)))
+            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline)
             date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
         }
         ##* NMEA UTC (Time) = Jul 28 2011  04:17:53 
+        ##* system upload time = jan 26 2010 13:02:57
         if (length(grep("^\\* .*time.*=.*$", lline))) {
-            d <- sub(".*=", "", lline)
-            d <- sub("^ *", "", d)
-            d <- sub(" *$", "", d)
-            date <- decodeTime(d)
+            if (0 == length(grep("real-time sample interval", lline))) {
+                d <- sub(".*=", "", lline)
+                d <- sub("^ *", "", d)
+                d <- sub(" *$", "", d)
+                date <- decodeTime(d)
+            }
         }
         if (0 < (r<-regexpr("filename", lline)))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
@@ -1933,40 +2566,56 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (!found.pressure && !found.depth)
         stop("no column named 'pressure', 'depth' or 'depSM'")
 
-    metadata <- list(header=header,
-                     type="SBE",
-                     hexfilename=hexfilename, # from instrument
-                     serialNumber=serialNumber,
-                     systemUploadTime=systemUploadTime,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=address,
-                     cruise=cruise,
-                     station=station,
-                     date=date,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=recovery,
-                     waterDepth=waterDepth, # if NA, will update later
-                     sampleInterval=sampleInterval,
-                     names=col.names.inferred,
-                     labels=col.names.inferred,
-                     filename=filename)
-
+    res@metadata$header <- header
+    res@metadata$type <- "SBE"
+    res@metadata$hexfilename <- hexfilename # from instrument
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$serialNumberConductivity <- serialNumberConductivity
+    res@metadata$pressureType <- pressureType
+    res@metadata$units <- list(conductivity=conductivityUnit, temperature=temperatureUnit)
+    res@metadata$systemUploadTime <- systemUploadTime
+    res@metadata$ship <- ship
+    res@metadata$scientist <- scientist
+    res@metadata$institute <- institute
+    res@metadata$address <- address
+    res@metadata$cruise <- cruise
+    res@metadata$station <- station
+    res@metadata$deploymentType <- "unknown"
+    res@metadata$date <- date
+    res@metadata$startTime <- startTime
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$recovery <- recovery
+    res@metadata$waterDepth <- waterDepth # if NA, will update later
+    res@metadata$sampleInterval <- sampleInterval
+    res@metadata$names <- col.names.inferred
+    res@metadata$labels <- col.names.inferred
+    res@metadata$filename <- filename
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
+
+    ## Handle similar names by tacking numbers on the end, e.g. the first column that
+    ## is automatically inferred to hold temperature is called "temperature", while the
+    ## next one is called "temperature2", and a third would be called "temperature3".
     col.names.inferred <- tolower(col.names.inferred)
+    for (uname in unique(col.names.inferred)) {
+        w <- which(uname == col.names.inferred)
+        lw <- length(w)
+        ##message("uname:", uname, ", lw: ", lw)
+        if (1 != lw) {
+            col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
+        }
+    }
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        data <- as.list(read.table(file, col.names=col.names.inferred, colClasses="numeric"))
+        data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
+                                   header=FALSE, col.names=col.names.inferred))
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
             names <- names(data)
-            labels <- names
+            ##labels <- names
             if (!found.scan) {
                 data[['scan']] <- 1:ndata
             }
@@ -1976,7 +2625,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
-        dataAll <- read.table(file, header=FALSE, colClasses="numeric")
+        dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
+                              header=FALSE, col.names=col.names.inferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
             names(data) <- names(columns)
@@ -1990,191 +2640,80 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    res@metadata <- metadata
+    ##hitem <- processingLogItem(processingLog)
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {
         if (!found.salinity) {
             if (found.conductivity.ratio) {
-                warning("cannot find 'salinity' in this file; calculating from T, C, and p")
-                S <- swSCTp(data$conductivityratio, data$temperature, data$pressure)
+                warning("cannot find 'salinity' in this file; calculating from T, conductivity ratio, and p")
+                C <- data$conductivityratio
+                cmax <- max(C, na.rm=TRUE)
+                if (cmax > 5) {
+                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
+                    C <- C / 42.914
+                } else if (cmax > 1) {
+                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
+                    C <- C / 4.2914
+                }
+                S <- swSCTp(C, data$temperature, data$pressure)
             } else if (found.conductivity) {
-                warning("cannot find 'salinity' in this file; calculating from T, C-ratio, and p")
-                S <- swSCTp(data$conductivity/conductivity.standard, data$temperature, data$pressure)
+                warning("cannot find 'salinity' in this file; calculating from T, conductivity, and p")
+                C <- data$conductivity
+                cmax <- max(C, na.rm=TRUE)
+                if (cmax > 5) {
+                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
+                    C <- C / 42.914
+                } else if (cmax > 1) {
+                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
+                    C <- C / 4.2914
+                }
+                S <- swSCTp(C, data$temperature, data$pressure)
             } else {
                 stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
             }
-            res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit="PSU", debug=debug-1)
+            res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit=c("", "PSS-78"), debug=debug-1)
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
-            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), rep(0, length(res@data$salinity)))
-            res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure", unit="dbar", debug=debug-1)
+            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
+            res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
+                                unit=list(unit="dbar", scale=""), debug=debug-1)
+            warning("created a pressure column from the depth column\n")
         }
         res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
+                        name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""),
+                        debug=debug-1)
     }
-    waterDepthWarning <- FALSE
-    if (is.na(res@metadata$waterDepth)) {
-        res@metadata$waterDepth <- max(abs(data$pressure))
-        waterDepthWarning <- TRUE
+    ## waterDepthWarning <- FALSE
+    ## if (is.na(res@metadata$waterDepth)) {
+    ##     res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+    ##     waterDepthWarning <- TRUE
+    ## }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    ## update to temperature IPTS-90, if have an older version
+    if (2 == length(res@metadata$unit$temperature) &&
+        "IPTS-68" == as.character(res@metadata$units$temperature$scale)) {
+        res@data$temperature68 <- res@data$temperature
+        res@metadata$units$temperature68 <- list(unit=expression(degree*C), scale="IPTS-68")
+        res@data$temperature <- T90fromT68(res@data$temperature68)
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        warning("converted temperature from IPTS-68 to ITS-90")
+        res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }
-
+    if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.ctd.sbe()\n")
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
+    ## if (waterDepthWarning)
+    ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     res
 }
 
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
-    fromHeader <- function(key)
-    {
-        i <- grep(key, lines)
-        if (length(i) < 1)
-            ""
-        else
-            gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
-    }
-    oceDebug(debug, "read.ctd.odf() {\n", unindent=1)
-    if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "r")
-        on.exit(close(file))
-    } else {
-        filename <- ""
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
-    lines <- readLines(file, encoding="UTF-8")
-    dataStart <- grep("-- DATA --", lines)
-    if (!length(dataStart))
-        stop("cannot locate a line containing '-- DATA --'")
-    parameterStart <- grep("PARAMETER_HEADER", lines)
-    if (!length(parameterStart))
-        stop("cannot locate any lines containing 'PARAMETER_HEADER'")
-    namesWithin <- parameterStart[1]:dataStart[1]
-    ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
-    nullValue <- as.numeric(fromHeader("NULL_VALUE")[1]) # FIXME: should do this for columns separately
-    names <- lines[grep("^\\s*CODE\\s*=", lines)]
-    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim start/end whitespace
-    names <- gsub(",", "", names) # trim commas
-    names <- gsub("'", "", names) # trim single quotes
-    names <- gsub(",\\s*$", "", gsub("^\\s*","", names)) # "  CODE=PRES_01," -> "CODE=PRES_01"
-    names <- gsub("^CODE\\s*=\\s*", "", names) # "CODE=PRES_01" -> "PRES_01"
-    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim remnant start/end spaces
-    scientist <- fromHeader("CHIEF_SCIENTIST")
-    ship <- fromHeader("PLATFORM") # maybe should rename, e.g. for helicopter
-    institute <- fromHeader("ORGANIZATION") # maybe should rename, e.g. for helicopter
-    latitude <- as.numeric(fromHeader("INITIAL_LATITUDE"))
-    longitude <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
-    cruise <- fromHeader("CRUISE_NAME")
-    countryInstituteCode <- fromHeader("COUNTRY_INSTITUTE_CODE")
-    cruiseNumber <- fromHeader("CRUISE_NUMBER")
-    date <- strptime(fromHeader("START_DATE"), "%b %d/%y")
-    startTime <- strptime(tolower(fromHeader("START_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    waterDepth <- as.numeric(fromHeader("SOUNDING"))
-    station <- fromHeader("EVENT_NUMBER")
-
-    ## water depth could be missing or e.g. -999
-    waterDepthWarning <- FALSE
-    if (is.na(waterDepth)) {
-        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
-    if (!is.na(waterDepth) && waterDepth < 0)
-        waterDepth <- NA
-
-    type <- fromHeader("INST_TYPE")
-    if (length(grep("sea", type, ignore.case=TRUE)))
-        type <- "SBE"
-    serialNumber <- fromHeader("SERIAL_NUMBER")
-    model <- fromHeader("MODEL")
-    metadata <- list(header=NULL, # FIXME
-                     type=type,        # only odt
-                     model=model,      # only odt
-                     serialNumber=serialNumber,
-                     ship=ship,
-                     scientist=scientist,
-                     institute=institute,
-                     address=NULL,
-                     cruise=cruise,
-                     station=station,
-                     countryInstituteCode=countryInstituteCode, # ODF only
-                     cruiseNumber=cruiseNumber, # ODF only
-                     date=startTime,
-                     startTime=startTime,
-                     latitude=latitude,
-                     longitude=longitude,
-                     recovery=NULL,
-                     waterDepth=waterDepth,
-                     sampleInterval=NA,
-                     filename=filename)
-    fff <- textConnection(lines)
-    data <- read.table(fff, skip=dataStart)
-    close(fff)
-    if (length(data) != length(names))
-        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
-    if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
-    ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
-    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
-    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
-    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
-    ## view of names.
-    ## Step 1: trim numbers at end (which occur for BIO files)
-    ## Step 2: recognize some official names
-    names[grep("CNTR_*.*", names)[1]] <- "scan"
-    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
-    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
-    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
-    names[grep("PSAL_*.*", names)[1]] <- "salinity"
-    names[grep("PSAR_*.*", names)[1]] <- "par"
-    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
-    names[grep("TEMP_*.*", names)[1]] <- "temperature"
-    names[grep("TE90_*.*", names)[1]] <- "temperature"
-    names[grep("PRES_*.*", names)[1]] <- "pressure"
-    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
-    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
-    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
-    names[grep("FFFF_*.*", names)[1]] <- "flag"
-    names[grep("SYTM_*.*", names)[1]] <- "time" # in a moored ctd file examined 2014-05-15
-    names[grep("SIGT_*.*", names)[1]] <- "sigmat" # in a moored ctd file examined 2014-05-15
-    names[grep("POTM_*.*", names)[1]] <- "theta" # in a moored ctd file examined 2014-05-15
-    ## Step 3: recognize something from moving-vessel CTDs
-    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
-    if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
-    names(data) <- names
-    if (!is.na(nullValue)) {
-        data[data==nullValue] <- NA
-    }
-    if (!("salinity" %in% names)) warning("missing data$salinity")
-    if (!("pressure" %in% names)) warning("missing data$pressure")
-    if (!("temperature" %in% names)) warning("missing data$temperature")
-    if ("time" %in% names)
-        data$time <- strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC")
-    metadata$names <- names
-    metadata$labels <- names
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    if (waterDepthWarning)
-        res@processingLog <- processingLog(res@processingLog, "inferred water depth from maximum pressure")
-    hitem <- processingLogItem(processingLog)
-    res <- new("ctd")
-    res@data <- data
-    res@metadata <- metadata
-    res@processingLog <- hitem
-    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
-    oceDebug(debug, "} # read.ctd.odf()\n")
-    res
+    stop("FIXME: make read.ctd.odv() work")
 }
 
 
@@ -2187,12 +2726,12 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    eos=getOption("eos", default='unesco'),
+                    eos=getOption("oceEOS", default='gsw'),
                     cex=par("cex"), col = par("col"), pch=par("pch"),
                     bg, pt.bg="transparent",
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
-                    rotate=FALSE,
+                    rotate=TRUE,
                     useSmoothScatter=FALSE,
                     xlab, ylab,
                     Slim, Tlim,
@@ -2209,39 +2748,47 @@ plotTS <- function (x,
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
              "...) {\n", sep="", unindent=1)
-    eos <- match.arg(eos, c("unesco", "teos"))
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    xat <- NULL
+    yat <- NULL
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
-            salinity <- salinity(x) # FIXME: new accessors?
-            temperature <- temperature(x)
-            x <- as.ctd(salinity, temperature, 0) # FIXME: what if we want theta?
+            x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
         } else {
             names <- names(x)
             if ("temperature" %in% names && "salinity" %in% names) {
-                x <- as.ctd(x$salinity, x$temperature, 0) # FIXME: what if we want theta?
+                x <- as.ctd(x$salinity, x$temperature, x$pressure)
             } else {
                 names <- names(x@data)
                 if ("temperature" %in% names && "salinity" %in% names) {
-                    x <- as.ctd(x@data$salinity, x@data$temperature, 0) # FIXME: what if we want theta?
+                    x <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure)
                 } else {
                     stop("cannot find salinity and temperature in 'x'")
                 }
             }
         }
     }
-    if (eos == "teos") {
+    if (eos == "gsw") {
         salinity <- x[["SA"]]
         y <- x[["CT"]]
     } else {
-        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure)
+        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure, eos=eos)
         salinity <- x[["salinity"]]
+    }
+    if (!any(is.finite(salinity))) {
+        warning("no valid salinity data")
+        return(invisible(list(xat=NULL, yat=NULL)))
+    }
+    if (!any(is.finite(y))) {
+        warning("no valid temperature data")
+        return(invisible(list(xat=NULL, yat=NULL)))
     }
     if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
     if (!add) {
-        omar <- par("mar")
-        omgp <- par("mgp")
-        opar <- par(no.readonly = TRUE)
+        ##omar <- par("mar")
+        ##omgp <- par("mgp")
+        ##opar <- par(no.readonly=TRUE)
         if (!inset) {
             ## on.exit(par(mar=omar, mgp=omgp))
             if (3 == length(mgp)) par(mgp=mgp)
@@ -2250,15 +2797,15 @@ plotTS <- function (x,
             }
         }
     }
-    axis.name.loc <- mgp[1]
+    ##axis.name.loc <- mgp[1]
     if (missing(xlab)) {
-        if (eos == "teos")
+        if (eos == "gsw")
             xlab <- resizableLabel("absolute salinity", "x")
         else
             xlab <- resizableLabel("S","x")
     }
     if (missing(ylab)) {
-        if (eos == "teos")
+        if (eos == "gsw")
             ylab <- resizableLabel("conservative temperature", "y")
         else
             ylab <- if (inSitu) resizableLabel("T", "y") else resizableLabel("theta", "y")
@@ -2315,23 +2862,28 @@ plotTS <- function (x,
     lines(Sr, swTFreeze(salinity=Sr, pressure=0)) # old: darkblue that looked black
     box()                              # redraw box (otherwise overdrawn with isopycnals)
     oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
+    ## infer from par()
+    xaxp <- par("xaxp")
+    xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
+    yaxp <- par("yaxp")
+    yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
+    invisible(list(xat=xat, yat=yat))
 }
 
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
-                           eos=getOption("eos", default='unesco'),
+                           eos=getOption("oceEOS", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
-    eos <- match.arg(eos, c("unesco","teos"))
+    eos <- match.arg(eos, c("unesco", "gsw"))
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
     SAxisMax <- usr[2]
     TAxisMin <- usr[3]
     TAxisMax <- usr[4]
-    if (eos == "teos") {
-        rhoCorners <- teos("gsw_rho",
-                           c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
-                           c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                           rep(0, 4)) - 1000
+    Scorners <- c(SAxisMin, SAxisMax, SAxisMin, SAxisMax)
+    Tcorners <- c(TAxisMin, TAxisMin, TAxisMax, TAxisMax)
+    if (eos == "gsw") {
+        rhoCorners <- gsw::gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
     } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
@@ -2353,6 +2905,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     for (rho in levels) {
         rhoLabel <- if (rho1000) 1000+rho else rho
         rhoLabel <- round(rhoLabel, digits)
+        ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
@@ -2378,7 +2931,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "depth", "sigmaTheta"),
-                         eos=getOption("eos", default='unesco'),
+                         eos=getOption("oceEOS", default="gsw"),
+                         lty=1,
                          xlab=NULL, ylab=NULL,
                          col='black',
                          col.salinity = "darkgreen",
@@ -2391,7 +2945,7 @@ plotProfile <- function (x,
                          grid = TRUE,
                          col.grid = "lightgray",
                          lty.grid = "dotted",
-                         Slim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, ylim,
+                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
                          lwd=par("lwd"),
                          xaxs="r",
                          yaxs="r",
@@ -2401,7 +2955,7 @@ plotProfile <- function (x,
                          keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
-                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+2, mgp[1] + 2, 2),
+                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1.5, mgp[1]+1.5, mgp[1]),
                          add=FALSE,
                          inset=FALSE,
                          debug=getOption("oceDebug"),
@@ -2409,8 +2963,8 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
-    eos <- match.arg(eos, c("unesco", "teos"))
-    plotJustProfile <- function(x, y, col="black", type="l",
+    eos <- match.arg(eos, c("unesco", "gsw"))
+    plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug"))
@@ -2420,28 +2974,32 @@ plotProfile <- function (x,
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
             y <- y[keep]
+            if (length(x) < 1 || length(y) < 1) {
+                warning("no good data to plot")
+                return(invisible())
+            }
         }
         if (type == 'l') {
-            lines(x, y, col = col, lwd=lwd)
+            lines(x, y, col = col, lwd=lwd, lty=lty, ...)
         } else if (type == 's') {
-            lines(x, y, col = col, lwd=lwd, type='s')
+            lines(x, y, col = col, lwd=lwd, lty=lty, type='s')
         } else if (type == 'p') {
             points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'o') {
-            lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
+            lines(x, y, col=col, lwd=lwd, lty=lty, ...)
+            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'b') {
-            lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex, pch=pch, bg=pt.bg)
+            lines(x, y, col=col, lwd=lwd, lty=lty, ...)
+            points(x, y, col=col, cex=cex, pch=pch, bg=pt.bg)
         } else if (type == 'n') {
             ; # skip it
         } else {
-            lines(x, y, col = col, lwd=lwd)
+            lines(x, y, col = col, lwd=lwd, lty=lty)
         }
         oceDebug(debug, "} # plotJustProfile\n")
     }                                  # plotJustProfile
-    if (!inherits(x, "ctd"))
-        stop("method is only for objects of class '", "ctd", "'")
+    #if (!inherits(x, "ctd"))
+    #    stop("method is only for objects of class '", "ctd", "'")
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
@@ -2455,16 +3013,20 @@ plotProfile <- function (x,
                         depth=resizableLabel("depth", "y"),
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
+    ## if plim given on a pressure plot, then it takes precedence over ylim
+    if (ytype == "pressure")
+        if (!missing(plim))
+            ylim <- plim
     if (missing(ylim))
         ylim <- switch(ytype,
-                       pressure = rev(range(x@data$pressure, na.rm=TRUE)),
-                       z = range(swZ(x), na.rm=TRUE),
-                       depth = rev(range(swDepth(x), na.rm=TRUE)),
-                       sigmaTheta = rev(range(x@data$sigmaTheta, na.rm=TRUE)))
+                       pressure=rev(range(x@data$pressure, na.rm=TRUE)),
+                       z=range(swZ(x@data$pressure), na.rm=TRUE),
+                       depth=rev(range(swDepth(x), na.rm=TRUE)),
+                       sigmaTheta=rev(range(x@data$sigmaTheta, na.rm=TRUE)))
     examineIndices <- switch(ytype,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
-                       z = (min(ylim) <= swZ(x) & swZ(x) <= max(ylim)),
-                       depth = (min(ylim) <= swDepth(x) & swDepth(x) <= max(ylim)),
+                       z = (min(ylim) <= swZ(x@data$pressure) & swZ(x@data$pressure) <= max(ylim)),
+                       depth = (min(ylim) <= swDepth(x@data$pressure) & swDepth(x@data$pressure) <= max(ylim)),
                        sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
@@ -2484,7 +3046,7 @@ plotProfile <- function (x,
         time <- x@data$time
     } else {
         time <- 0:(length(x@data$pressure) - 1)
-        if (!is.na(x@metadata$sampleInterval)) {
+        if (!is.null(x@metadata$sampleInterval) && !is.na(x@metadata$sampleInterval)) {
             know.time.unit <- TRUE
             time <- time * x@metadata$sampleInterval
         }
@@ -2492,18 +3054,17 @@ plotProfile <- function (x,
     if (ytype == "pressure")
         y <- x@data$pressure
     else if (ytype == "z")
-        y <- swZ(x)
+        y <- swZ(x@data$pressure)
     else if (ytype == "depth")
-        y <- swDepth(x)
+        y <- swDepth(x@data$pressure)
     else if (ytype == "sigmaTheta")
         y <- swSigmaTheta(x)
 
     if (!add)
         par(mar=mar, mgp=mgp)
-
     if (length(xtype) == length(y)) {
         if ('axes' %in% names(list(...))) {
-            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
                 axis(3)
                 mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2511,7 +3072,7 @@ plotProfile <- function (x,
             }
             box()
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
@@ -2521,9 +3082,9 @@ plotProfile <- function (x,
         if (length(xtype) != length(y))
             stop("length(xtype) must match number of levels in the CTD object")
         if (add) {
-            lines(xtype, y, type=type, ...)
+            lines(xtype, y, type=type, lty=lty, ...)
         } else {
-            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, ...)
+            plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
             mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
@@ -2537,7 +3098,7 @@ plotProfile <- function (x,
         }
     } else if (xtype == "index") {
         index <- 1:length(x@data$pressure)
-        plot(index, x@data$pressure, ylim=ylim, col=col, xlab = "index", ylab = yname, type='l', xaxs=xaxs, yaxs=yaxs)
+        plot(index, x@data$pressure, ylim=ylim, col=col, lty=lty, xlab = "index", ylab = yname, type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch)
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
@@ -2545,28 +3106,34 @@ plotProfile <- function (x,
     } else if (xtype == "density+time") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+time\"")
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # why recalculate?
+        st <- if (eos == "unesco") swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) else
+            swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure,
+                         longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
             densitylim <- range(x@data$sigmaTheta, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
-        plot(st[look], y[look], xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-        lines(st[look], y[look])
+        plot(st[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch, 
+             type = type, col = col.rho, lty=lty, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+        ## lines(st[look], y[look])
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         ## FIXME: do next with resizable label; also for the N2
+        ##br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
+                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
+                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
         }
+        mtext(label, side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
         par(new = TRUE)                ## FIXME: this probably won't work if add=TRUE
         if (missing(timelim))
             timelim <- range(time, na.rm=TRUE)
-        plot(time, y, xlim=timelim, ylim=ylim, type='n', xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs)
-        axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.time)
-        lines(time, y, lwd=lwd, col=col.time)
+        plot(time, y, xlim=timelim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch)
+        axis(1, col=col.time, col.axis=col.time, col.lab=col.time)
+        ## lines(time, y, lwd=lwd, col=col.time)
         if (know.time.unit) {
             if (getOption("oceUnitBracket") == '[') {
                 mtext(expression(paste(Delta*t, " [ s ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.time)
@@ -2593,8 +3160,8 @@ plotProfile <- function (x,
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look],
-             xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch, 
+             type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == '[') {
             mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
@@ -2603,7 +3170,7 @@ plotProfile <- function (x,
         }
         axis(2)
         box()
-        lines(st, y, col = col.rho, lwd=lwd)
+        ## lines(st, y, col = col.rho, lwd=lwd)
         par(new = TRUE)
         dpdt <- diff(x@data$pressure) / diff(time)
         dpdt <- c(dpdt[1], dpdt)        # fake first point
@@ -2611,10 +3178,10 @@ plotProfile <- function (x,
         dpdt.sm <- smooth.spline(x@data$pressure, dpdt, df=df)
         if (missing(dpdtlim))
             dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type='n', xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt,
-             xaxs=xaxs, yaxs=yaxs, ...)
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
+             xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
-        lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
+        ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == '[') {
             mtext(expression(paste(dp/dt, if (know.time.unit) " [ dbar/s ]" else " [ dbar/(time-unit)]")),
                   side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
@@ -2631,7 +3198,11 @@ plotProfile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "S" || xtype == "salinity") {
-        salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
+        salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x@data$salinity
+        if (!any(is.finite(salinity))) {
+            warning("no valid salinity data")
+            return(invisible())
+        }
         if (missing(Slim)) {
             if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(salinity, na.rm=TRUE)
         }
@@ -2640,20 +3211,30 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "teos")
-                mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-            else
-                mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            if (is.null(xlab)) {
+                if (eos == "gsw") {
+                    mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                }
+            } else {
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            }
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
-                     xlim=Slim, ylim=ylim,
+                     xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "teos")
-                    mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                else
-                    mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                if (is.null(xlab)) {
+                    if (eos == "gsw") {
+                        mtext(resizableLabel("absolute salinity", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                    } else {
+                        mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                    }
+                } else {
+                    mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+                }
                 axis(2)
                 axis(3)
                 box()
@@ -2665,11 +3246,89 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(salinity, y, type=type, lwd=lwd,
+            plotJustProfile(salinity, y, type=type, lwd=lwd, lty=lty,
                             cex=cex, pch=pch, col=col, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
-    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
+    } else if (xtype == "C" || xtype == "conductivity") {
+        if ('conductivity' %in% names(x@data)) {
+            conductivity <- x@data$conductivity
+        } else {
+            conductivity <- swCSTp(x[['salinity']], x[['temperature']], x[['pressure']], eos=eos)
+        }
+        if (!any(is.finite(conductivity))) {
+            warning("no valid conductivity data")
+            return(invisible())
+        }
+        if (missing(Clim)) {
+            if ("xlim" %in% names(dots)) Clim <- dots$xlim else Clim <- range(conductivity, na.rm=TRUE)
+        }
+        if (useSmoothScatter) {
+            smoothScatter(conductivity, y, xlim=Clim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
+            axis(2)
+            axis(3)
+            box()
+            if (is.null(xlab)) {
+                ## Look up conductivity unit (issue 731)
+                unit <- x[["conductivityUnit"]]
+                if (is.null(unit)) {
+                    mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                } else {
+                    if (unit$unit == "ratio") {
+                        mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else if (unit[[1]] == "mS/cm") {
+                        mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else if (unit[[1]] == "S/m") {
+                        mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else {
+                        stop("unknown conductivity unit ", unit, "; should be 'ratio', 'mS/cm' or 'S/m'")
+                    }
+                }
+            } else {
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            }
+        } else {
+            look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
+            if (!add) {
+                plot(conductivity[look], y[look],
+                     xlim=Clim, ylim=ylim, lty=lty, cex=cex, pch=pch, 
+                     type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                if (is.null(xlab)) {
+                    ## Look up conductivity unit (issue 731)
+                    unit <- x[["conductivityUnit"]]
+                    if (is.null(unit)) {
+                        mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else {
+                        if (as.character(unit[[1]]) == "ratio") {
+                            mtext(resizableLabel("C", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        } else if (as.character(unit[[1]]) == "mS/cm") {
+                            mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        } else if (as.character(unit[[1]]) == "S/m") {
+                            mtext(resizableLabel("conductivity S/m", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                        } else {
+                            stop("unknown conductivity unit ", unit[[1]], "; should be 'ratio', 'mS/cm' or 'S/m'")
+                        }
+                    }
+                } else {
+                    mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+                }
+                axis(2)
+                axis(3)
+                box()
+                if (grid) {
+                    at <- par("yaxp")
+                    abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                    at <- par("xaxp")
+                    abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                }
+            }
+            ## 2014-02-07: use col here, since no second axis to worry about
+            plotJustProfile(conductivity, y, type=type, lwd=lwd, lty=lty,
+                            cex=cex, pch=pch, col=col, pt.bg=pt.bg,
+                            keepNA=keepNA, debug=debug-1)
+        }
+    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
+                            "u" ,"v")) {
         if (!(xtype %in% names(x@data)))
             stop("no ", xtype, " in this station")
         if (!any(!is.na(x@data[[xtype]])))
@@ -2685,11 +3344,11 @@ plotProfile <- function (x,
             if (!add) {
                 if (ylimGiven) {
                     plot(x@data[[xtype]][look], y[look],
-                         ylim=ylim,
+                         ylim=ylim, lty=lty,
                          type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
                     plot(x@data[[xtype]][look], y[look],
-                         ylim=rev(range(y[look])),
+                         ylim=rev(range(y[look])), lty=lty,
                          type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2704,7 +3363,7 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd,
+            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, lty=lty,
                             cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -2713,12 +3372,12 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(Rrho) & !is.na(y)
         if (!add) {
             if (ylimGiven) {
-                plot(Rrho, y[look],
-                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim,
+                plot(Rrho, y[look], lty=lty,
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             } else {
-                plot(Rrho, y[look],
-                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])),
+                plot(Rrho, y[look], lty=lty,
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])), cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
             mtext(expression(R[rho]), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -2733,11 +3392,15 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col here, since no second axis to worry about
-        plotJustProfile(Rrho, y[look], type=type, lwd=lwd,
+        plotJustProfile(Rrho, y[look], type=type, lwd=lwd, lty=lty,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
-        temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
+        temperature <- if (eos == "gsw") swConservativeTemperature(x) else x@data$temperature
+        if (!any(is.finite(temperature))) {
+            warning("no valid temperature data")
+            return(invisible())
+        }
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(temperature, na.rm=TRUE)
         }
@@ -2746,20 +3409,23 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "teos")
+            if (eos == "gsw")
                 mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             else
                 mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(x@data$temperature) & !is.na(y)
             if (!add) {
-                plot(temperature[look], y[look],
-                     xlim=Tlim, ylim=ylim,
+                plot(temperature[look], y[look], lty=lty,
+                     xlim=Tlim, ylim=ylim, cex=cex, pch=pch, 
                      type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "teos")
-                    mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                else
-                    mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+                if (eos == "gsw") {
+                    mtext(resizableLabel("conservative temperature", "x"),
+                          side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(resizableLabel("T", "x"),
+                          side = 3, line = axis.name.loc, cex=par("cex"))
+                }
                 mtext(yname, side = 2, line = axis.name.loc, cex=par("cex"))
                 axis(2)
                 axis(3)
@@ -2771,12 +3437,12 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd,
+            plotJustProfile(temperature, y, type=type, col=col, lwd=lwd, lty=lty,
                             cex=cex, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
-        theta <- swTheta(x, method=eos)
+        theta <- swTheta(x, eos=eos)
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
         }
@@ -2785,21 +3451,26 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "teos")
-                mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            if (eos == "gsw")
+                mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             else
                 mtext(resizableLabel(theta, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(theta) & !is.na(y)
             if (!add) {
-                plot(theta[look], y[look],
-                     xlim=Tlim, ylim=ylim,
-                     type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (eos == "teos")
-                    mtext(resizableLabel("Conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                else
-                    mtext(resizableLabel("theta", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
-                mtext(yname, side = 2, line = axis.name.loc, cex=par("cex"))
+                plot(theta[look], y[look], lty=lty,
+                     xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
+                     type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                if (is.null(xlab)) {
+                    if (eos == "gsw") {
+                        mtext(resizableLabel("conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    } else {
+                        mtext(resizableLabel("theta", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                    }
+                } else {
+                    mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+                }
+                mtext(yname, side=2, line=axis.name.loc, cex=par("cex"))
                 axis(2)
                 axis(3)
                 box()
@@ -2810,7 +3481,7 @@ plotProfile <- function (x,
                     abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
                 }
             }
-            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex,
+            plotJustProfile(theta, y, type=type, lwd=lwd, cex=cex, lty=lty,
                             col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
@@ -2821,14 +3492,18 @@ plotProfile <- function (x,
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
             if (densitylimGiven) {
-                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             } else {
-                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             }
-            if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+            if (is.null(xlab)) {
+                if (getOption("oceUnitBracket") == '[') {
+                    mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                }
             } else {
-                mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
             }
             axis(2)
             axis(3)
@@ -2840,53 +3515,66 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col, type=type, lwd=lwd,
+        plotJustProfile(st, y, col = col, type=type, lwd=lwd, lty=lty,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
+        st <- swSigmaTheta(x, eos=eos)
+        if (!any(is.finite(st))) {
+            warning("no valid sigma-theta data")
+            return(invisible())
+        }
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         if (missing(densitylim))
             densitylim <- range(st, na.rm=TRUE)
-        plot(st[look], y[look],
-             xlim=densitylim, ylim=ylim,
+        plot(st[look], y[look], lty=lty,
+             xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        tmpsep <- getOption("oceUnitSep")
+        sep <- if (!is.null(tmpsep)) tmpsep else ""
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") bquote(sigma[theta]*" ["*.(sep)*kg/m^3*.(sep)*"]") else
+                bquote(sigma[0]*" ["*.(sep)*kg/m^3*.(sep)*"]")
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+            label <- if (eos == "unesco") bquote(sigma[theta]*" ("*.(sep)*kg/m^3*.(sep)*")") else
+                bquote(sigma[0]*" ("*.(sep)*kg/m^3*.(sep)*")")
         }
+        mtext(label, side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         axis(2)
         box()
         if (type == 'l') {
-            lines(st, y, col = col.rho, lwd=lwd) 
+            lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
         } else if (type == 'p') {
-            points(st, y, col = col.rho, pch=pch)
+            points(st, y, col = col.rho, pch=pch, cex=cex)
         } else {
-            points(st, y, col = col.rho, pch=pch)
-            lines(st, y, col = col.rho, lwd=lwd) 
+            points(st, y, col = col.rho, pch=pch, cex=cex)
+            lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
         }
         par(new = TRUE)
-        N2 <- swN2(x@data$pressure, st, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
-        plot(N2[look], y[look],
-             xlim=N2lim, ylim=ylim,
+        if (0 == sum(look)) {
+            warning("no valid N2 data")
+            return(invisible())
+        }
+        plot(N2[look], y[look], lty=lty,
+             xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
 
         if (type == 'l') {
-            lines(N2, y, col = col.N2, lwd=lwd) 
+            lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
         } else if (type == 'p') {
-            points(N2, y, col = col.N2, pch=pch)
+            points(N2, y, col = col.N2, pch=pch, cex=cex)
         } else {
-            points(N2, y, col = col.N2, pch=pch)
-            lines(N2, y, col = col.N2, lwd=lwd) 
+            points(N2, y, col = col.N2, pch=pch, cex=cex)
+            lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
         }
         if (getOption("oceUnitBracket") == '[') {
             mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
@@ -2899,13 +3587,13 @@ plotProfile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x@data$pressure, x@data$sigmaTheta, df=df)
+        N2 <- swN2(x, df=df, eos=eos)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         if (!add) {
-            plot(N2[look], y[look],
-                 xlim=N2lim, ylim=ylim,
+            plot(N2[look], y[look], lty=lty, 
+                 xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
                 mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
@@ -2923,15 +3611,15 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
-        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd,
+        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, lty=lty, 
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
         if (!add) {
-            plot(spice[look], y[look],
-                 ylim=ylim,
+            plot(spice[look], y[look], lty=lty, 
+                 ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             mtext(resizableLabel("spice", "x"), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             axis(2)
@@ -2944,44 +3632,56 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=spice, y=y, type=type, lwd=lwd,
+        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, lty=lty, 
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg, 
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"salinity+temperature\"")
-        salinity <- if (eos == "teos") swAbsoluteSalinity(x) else x@data$salinity
-        temperature <- if (eos == "teos") swConservativeTemperature(x) else x@data$temperature
+        salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x@data$salinity
+        temperature <- if (eos == "gsw") swConservativeTemperature(x) else x@data$temperature
+        if (!any(is.finite(salinity))) {
+            warning("no valid salinity data")
+            return(invisible())
+        }
+        if (!any(is.finite(temperature))) {
+            warning("no valid temperature data")
+            return(invisible())
+        }
         if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
-             xlim=Tlim, ylim=ylim,
-             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             xlim=Tlim, ylim=ylim, col = col.temperature, lty=lty, cex=cex, pch=pch,
+             type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
-        if (eos == "teos")
-            mtext(resizableLabel("conservative temperature", "x"), side = 3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
-        else
-            mtext(resizableLabel("T", "x"), side=3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
+        if (is.null(getOption('plotProfileNoXLab'))) {
+            if (eos == "gsw")
+                mtext(resizableLabel("conservative temperature", "x"), side = 3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
+            else
+                mtext(resizableLabel("T", "x"), side=3, line=axis.name.loc, col=col.temperature, cex=par("cex"))
+        }
         axis(2)
         box()
-        lines(temperature, y, col = col.temperature, lwd=lwd)
+        ## lines(temperature, y, col = col.temperature, lwd=lwd)
         par(new = TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(x@data$salinity) & !is.na(y)
         plot(salinity[look], y[look],
-             xlim=Slim, ylim=ylim,
-             type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             xlim=Slim, ylim=ylim, col = col.salinity, lty=lty, cex=cex, pch=pch,
+             type = type, xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
-        if (eos == "teos")
-            mtext(resizableLabel("absolute salinity", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
-        else
-            mtext(resizableLabel("S", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
+        if (is.null(getOption('plotProfileNoXLab'))) {
+            if (eos == "gsw")
+                mtext(resizableLabel("absolute salinity", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
+            else
+                mtext(resizableLabel("S", "x"), side=1, line=axis.name.loc, col=col.salinity, cex=par("cex"))
+        }
         box()
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        lines(salinity, y, col = col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
+        ## lines(salinity, y, col = col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
@@ -2989,13 +3689,12 @@ plotProfile <- function (x,
         look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         if (!add) {
             plot(x@data[[xtype]][look], y[look],
-                 ylim=ylim,
+                 ylim=ylim, lty=lty, cex=cex, pch=pch,
                  type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
             mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
-            label <- x@metadata$labels[w]
-            if (is.null(label))
-                label <- as.character(xtype)
+            label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
+                as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x")
             mtext(label, side=3, line=axis.name.loc, cex=par("cex"))
@@ -3003,14 +3702,14 @@ plotProfile <- function (x,
             box()
         }
         if (type == "l") {
-            lines(x@data[[w]], y, lwd=lwd, col=col)
+            lines(x@data[[w]], y, lwd=lwd, col=col, lty=lty)
         } else if (type == "p") {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         } else if (type == "b" || type == "o") {
             lines(x@data[[w]], y, lwd=lwd, col=col)
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         } else {
-            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col)
+            points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         }
     }
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
@@ -3068,7 +3767,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         temperature <- d[, Tcol]
         salinity <- d[, Scol]
         oxygen <- d[, Ocol]
-        rval <- as.ctd(salinity, temperature, pressure,
+        res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen,
                        longitude=longitude, latitude=latitude,
                        startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                        station=station)
@@ -3076,46 +3775,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
     oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
-    rval
+    res
 }
- 
 
-
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ofile <- file
-    filename <- NULL
-    if (is.null(type)) {
-        if (is.character(file)) {
-            filename <- fullFilename(file)
-            file <- file(file, "r")
-            on.exit(close(file))
-        }
-        if (!inherits(file, "connection"))
-            stop("argument `file' must be a character string or connection")
-        if (!isOpen(file)) {
-            open(file, "r")
-            on.exit(close(file))
-        }
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
-        pushBack(line, file)
-        if ("CTD" == substr(line, 1, 3))              type <- "WOCE"
-        else if ("* Sea-Bird" == substr(line, 1, 10)) type <- "SBE19"
-        else stop("Cannot discover type in line '", line, "'\n")
-    } else {
-        if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
-        else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
-        else stop("type must be SBE19 or WOCE, not ", type)
-    }                                   # FIXME: should just use oceMagic() here
-    switch(type,
-           SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
-                                debug=debug, processingLog=processingLog, ...),
-           WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
-                                 debug=debug, processingLog=processingLog, ...),
-           ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
-                              debug=debug, processingLog=processingLog, ...),
-           ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
-                              debug=debug, processingLog=processingLog, ...))
-}
 

@@ -7,7 +7,7 @@
 \description{Draw a scalebar on an existing map}
 
 \usage{mapScalebar(x, y=NULL, length,
-            lwd=4*par("lwd"), cex=1.2*par("cex"), col="black")
+            lwd=1.5*par("lwd"), cex=par("cex"), col="black")
 }
 
 \arguments{
@@ -17,13 +17,13 @@
         \code{y} must be \code{NULL} and \code{x} must be \code{"topleft"}.}
 
     \item{length}{length to indicate, in kilometres.  If not provided, a
-        possibly reasonable choice is made.}
+        reasonable choice is made, based on the underlying map.}
 
     \item{lwd}{scalebar line width}
 
-    \item{col}{colour}
+    \item{col}{scalebar colour}
     
-    \item{cex}{character size for label}
+    \item{cex}{scalebar character size}
 
 }
 
@@ -52,4 +52,5 @@ mapScalebar()
 }
 
 \author{Dan Kelley}
+
 \keyword{hplot}

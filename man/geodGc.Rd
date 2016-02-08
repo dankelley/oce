@@ -23,20 +23,22 @@
 \seealso{\code{\link{geodDist}} and \code{\link{geodXy}}}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-longitudelim=c(-80,10), latitudelim=c(35,80),
-projection="orthographic", orientation=c(35, -35, 0))
+        longitudelim=c(-80,10), latitudelim=c(35,80),
+        projection="+proj=ortho", orientation=c(35, -35, 0))
 ## Great circle from New York to Paris (Lindberg's flight)
 l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
 mapLines(l$longitude, l$latitude, col='red', lwd=2)
 }
+}
 
 \author{Dan Kelley, based on code from Clark Richards, in turn based on
-    formulae provided by Ed Williams.}
+    formulae provided by Ed Williams [1].}
 
-\source{\url{http://williams.best.vwh.net/avform.htm#Intermediate}}
+\references{1.  \url{http://williams.best.vwh.net/avform.htm#Intermediate}}
 
 \keyword{misc}
 

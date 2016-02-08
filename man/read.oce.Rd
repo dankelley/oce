@@ -33,7 +33,7 @@ of the following is called:
 \code{\link{read.ctd}},
 \code{\link{read.coastline}}
 \code{\link{read.lobo}}, 
-\code{\link{read.tdr}}, 
+\code{\link{read.rsk}}, 
 \code{\link{read.sealevel}}, etc.
 }
 

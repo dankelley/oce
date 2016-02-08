@@ -26,6 +26,22 @@ processingLog <- function(h, value="")
     res
 }
 
+processingLogAppend <- function(h, value="")
+{
+    if (inherits(h, "oce"))
+        h <- h@processingLog
+    res <- if (is.null(h)) list(time=NULL, value=NULL) else h
+    if (is.null(h$time[1])) {
+        res$time <- as.POSIXct(Sys.time(), tz="UTC")
+        res$value <- value
+    } else {
+        res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
+        res$value <- c(res$value, value)
+    }
+    res
+}
+
+
 processingLogItem <- function(value="")
 {
     list(time=c(Sys.time()), value=value)
@@ -33,9 +49,9 @@ processingLogItem <- function(value="")
 
 processingLogShow <- function(x)
 {
-    cat("* Processing Log::\n")
+    cat("* Processing Log\n")
     for (i in seq_along(x@processingLog$value)) {
-        cat("  * ", format(x@processingLog$time[i]), " UTC: ``",
+        cat("    - ", format(x@processingLog$time[i]), " UTC: ``",
             x@processingLog$value[i], "``\n", sep="")
     }
 }

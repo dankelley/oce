@@ -1,6 +1,7 @@
 \name{oceMagic}
 
 \alias{oceMagic}
+\alias{oce.magic}
 
 \title{Find the type of an oceanographic data file}
 

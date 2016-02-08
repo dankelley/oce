@@ -20,32 +20,29 @@
       matching these location values.}
 }
 
-\details{Implements the International geomagnetic reference field, based
-on a reworked version of a Fortran program downloaded from a NOAA
-website.  The code seems to have been written by Susan Macmillon of the
-British Geological Survey.  Comments in the code indicate that it
-employs coefficients agreed to in December 2009 by the IAGA Working
-Group V-MOD.  The code also suggests that the valid time interval is
-1900.0 to 2015.0, with values up to 2020 having reduced accuracy.  And,
-finally, values for dates 1945 to 2005.0 are said to be
-``non-definitative,'' with other values in the range being declared
-``definitative.''}
+\details{Implements the 12th generation International Geomagnetic Reference
+    Field (IGRF), based on a reworked version of a Fortran program downloaded
+    from a NOAA website [1,2].  The code (subroutine \code{igrf12syn}) seems to
+    have been written by Susan Macmillan of the British Geological Survey.
+    Comments in the code indicate that it employs coefficients agreed to in
+    December 2014 by the IAGA Working Group V-MOD.  Comments in the
+    \code{igrf12syn} source code also suggest that the valid time interval is
+    from years 1900 to 2020, with only the values from 1945 to 2010 being
+    considered definitive.}
 
 \value{A list containing \code{declination}, \code{inclination}, and
     \code{intensity}.}
-
-\section{Caution}{This code has not been adequately checked.  The hope is to
-    get some independent test values sometime in Oct 2013.}
 
 \examples{
 library(oce)
 # Halifax NS
 magneticField(-(63+36/60), 44+39/60, 2013)
 
+\dontrun{
 ## map of North American values
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
-proj="lambert", parameters=c(lat0=40,lat1=60), orientation=c(90,-100,0))
+        projection="+proj=lcc +lat_0=20 +lat_1=60 +lon_0=-100")
 lon <- seq(-180, 180, 1)
 lat <- seq(-90, 90)
 lonm <- rep(lon, each=length(lat))
@@ -58,20 +55,19 @@ incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
                nrow=length(lon), byrow=TRUE)
 mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
 }
+}
 
 \references{
 
-1. The underlying Fortran code is from a NOAA website
-(\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}).
-
-2. A website with a calculator for these fields is at
-\url{http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html},
-and, as of October 7 2013, this site produces values that agree with those
-calculated by the present function to three digits after the decimal.
+1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
+website (\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7, 2015.
 
 }
 
-\author{Dan Kelley}
+\author{Dan Kelley wrote the R code and a fortran wrapper to the
+    \code{igrf12.f} subroutine, which was written by Susan Macmillan of the
+    British Geological Survey and distributed ``without limitation'' (email
+    from SM to DK dated June 5, 2015).}
 
 \keyword{misc}
 

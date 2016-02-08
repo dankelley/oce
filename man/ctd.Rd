@@ -6,9 +6,10 @@
 
 \title{A CTD profile in Halifax Harbour}
 
-\description{A CTD profile measured in Halifax Harbour in 2003, by students
-    enrolled in the author's Physical Oceanography class at Dalhousie
-    University.}
+\description{A CTD profile measured in Halifax Harbour in 2003, based on
+    \code{\link{ctdRaw}}, but trimmed to just the downcast with
+    \code{\link{ctdTrim}}, using indices inferred by inspection of the results
+    from \code{\link{plotScan}}.}
 
 \usage{data(ctd)}
 
@@ -16,15 +17,16 @@
 \dontrun{
 library(oce)
 data(ctd)
-plot(ctd, which=c(1,2,3,5), coastline="coastlineWorldFine")
+plot(ctd)
 }
 }
 
-\source{This is a station within the \code{\link{section}} dataset, and details
-   are provided in the documentation for the latter.}
+\source{This station was sampled by students enrolled in the Dan Kelley's
+    Physical Oceanography class at Dalhousie University.}
 
-\seealso{The documentation for \code{ctd-class} in the Oce package explains the
-    structure of CTD objects, and also outlines the other functions dealing
-    with them.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of \code{ctd} objects, and also outlines the other functions dealing with
+    them.}
 
 \keyword{datasets}
+

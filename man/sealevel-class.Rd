@@ -15,19 +15,15 @@
 \section{Methods}{
     Data may be accessed as e.g.  \code{sealevel[["time"]]}, where the string could
     also be e.g.  \code{"elevation"} for the corresponding sea-level elevation,
-    or e.g.  \code{"longitude"} or \code{"latitude"} for scalars.  (The names
-    of the columns are displayed with \code{show()}.) The name of the source
-    file is found with \code{"filename"}.
+    or e.g.  \code{"longitude"} or \code{"latitude"} for scalars.  Items in
+    \code{metadata} must be specifield by full name, but those in \code{data}
+    may be abbreviated, so long as the abbreviation is unique.
 
     Everything that may be accessed may also be assigned, e.g.
     \code{sealevel[["elevation"]] <- value}.
     
     The \code{show} method displays information about the object, while
     \code{\link{summary.sealevel}} provides a statistical summary.  }
-
-\seealso{The documentation for \code{\link{sealevel-class}} explains the
-    structure of sealevel objects, and also outlines the other functions
-    dealing with them.}
 
 \examples{
 library(oce)

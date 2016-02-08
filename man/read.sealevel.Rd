@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.sealevel}
 
 \alias{read.sealevel}
@@ -35,13 +36,13 @@ read.sealevel(file, tz=getOption("oceTz"),
 
 \value{An object of \code{\link[base]{class}} \code{"sealevel"}, which
   is a \code{\link[base]{list}} containing
- \item{data}{A \code{\link{data.frame}} containing
+ \item{\code{data}}{: a list containing
    \describe{
      \item{\code{time}}{time}
      \item{\code{eta}}{sea level [m]}
    }
   }
-  \item{metadata}{A list containing
+  \item{\code{metadata}}{: a list containing
     \describe{
       \item{\code{header}}{the header line or lines.  (This may prove
 	helpful if detail extraction fails.)}
@@ -71,12 +72,12 @@ read.sealevel(file, tz=getOption("oceTz"),
       \item{\code{sampling.interval}}{hours between samples in the timeseries.}
     }
   }
-  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
+  \item{\code{processingLog}}{: a log of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The documentation for \code{\link{sealevel-class}} explains the
-    structure of sealevel objects, and also outlines the other functions
-    dealing with them.}
+  structure of sealevel objects, and also outlines the other functions dealing
+  with them.}
 
 \examples{
 \dontrun{
@@ -90,11 +91,13 @@ plot(m)
 }
 }
 
-\references{The Hawaii archive site at \url{http://ilikai.soest.hawaii.edu/uhslc/datai.html}
-provides a graphical interface for downloading sealevel data in Type 1
-(the format is described at
-\url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}). The MEDS repository
-provides Type 2 data, at \url{http://www.meds-sdmm.dfo-mpo.gc.ca/meds/Databases/TWL/TWL_inventory_e.htm}.}
+\references{The Hawaii archive site at
+    \code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
+    interface for downloading sealevel data in Type 1, with format as described
+    at \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
+    worked for years but failed at least temporarily on December 4, 2016).  The MEDS
+    repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
+    provides Type 2 data.}
 
 \author{Dan Kelley}
 

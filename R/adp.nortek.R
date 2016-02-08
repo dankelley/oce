@@ -323,8 +323,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"),
                             ...)
 {
-    degToRad <- atan2(1, 1) / 45
-    bisectAdpNortek <- function(t.find, add=0, debug=0) {
+    ##degToRad <- atan2(1, 1) / 45
+    profileStart <- NULL # prevents scope warning in rstudio; defined later anyway
+    bisectAdpNortek <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profileStart)
         lower <- 1
@@ -367,9 +368,10 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (missing(to))
         to <- NA                       # will catch this later
     oceDebug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
-    fromKeep <- from
-    toKeep <- to
-    syncCode <- as.raw(0xa5)
+    res <- new("adp")
+    ##fromKeep <- from
+    ##toKeep <- to
+    ##syncCode <- as.raw(0xa5)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -391,12 +393,12 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     header <- decodeHeaderNortek(buf, type=type, debug=debug-1)
-    averagingInterval <- header$user$averagingInterval
+    ##averagingInterval <- header$user$averagingInterval
     numberOfBeams <- header$numberOfBeams
     numberOfCells <- header$numberOfCells
-    bin1Distance <- header$bin1Distance
-    xmitPulseLength <- header$xmitPulseLength
-    cellSize <- header$cellSize
+    ##bin1Distance <- header$bin1Distance
+    ##xmitPulseLength <- header$xmitPulseLength
+    ##cellSize <- header$cellSize
     ##profilesInFile <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset+1], " 0x", buf[header$offset+2], '\n', sep="")
@@ -437,9 +439,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        fromPair <- bisectAdpNortek(from, -1, debug-1)
+        fromPair <- bisectAdpNortek(buf, from, -1, debug-1)
         from <- fromIndex <- fromPair$index
-        toPair <- bisectAdpNortek(to, 1, debug-1)
+        toPair <- bisectAdpNortek(buf, to, 1, debug-1)
         to <- toIndex <- toPair$index
         oceDebug(debug, "  from=", format(fromPair$t), " yields profileStart[", fromIndex, "]\n",
                   "  to  =", format(toPair$t),   " yields profileStart[", toIndex, "]\n",
@@ -569,26 +571,26 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         aDia[, , 3] <- buf[diaStart + 38]
     }
 
-    data <- list(v=v, a=a, q=q,
-                 distance=distance,
-                 time=time,
-                 pressure=pressure,
-                 error=error,
-                 temperature=temperature,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll)
+    res@data <- list(v=v, a=a, q=q,
+                     distance=distance,
+                     time=time,
+                     pressure=pressure,
+                     error=error,
+                     temperature=temperature,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll)
     if (type == "aquadopp" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
-        data$timeDia <- timeDia
-        data$errorDia <- errorDia
-        data$headingDia <- headingDia
-        data$pitchDia <- pitchDia
-        data$rollDia <- rollDia
-        data$pressureDia <- pressureDia
-        data$temperatureDia <- temperatureDia
-        data$vDia <- vDia
-        data$aDia <- aDia
+        res@data$timeDia <- timeDia
+        res@data$errorDia <- errorDia
+        res@data$headingDia <- headingDia
+        res@data$pitchDia <- pitchDia
+        res@data$rollDia <- rollDia
+        res@data$pressureDia <- pressureDia
+        res@data$temperatureDia <- temperatureDia
+        res@data$vDia <- vDia
+        res@data$aDia <- aDia
     }
 
     if (missing(orientation)) {
@@ -596,53 +598,63 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
-    metadata <- list(manufacturer="nortek",
-                     instrumentType=type, #"aquadopp-hr",
-                     filename=filename,
-                     manufacturer="nortek",
-                     latitude=latitude,
-                     longitude=longitude,
-                     numberOfSamples=dim(v)[1],
-                     numberOfCells=dim(v)[2],
-                     numberOfBeams=dim(v)[3],
-                     numberOfBeamSequencesPerBurst=header$user$numberOfBeamSequencesPerBurst,
-                     measurementStart=measurementStart,
-                     measurementEnd=measurementEnd,
-                     measurementDeltat=measurementDeltat,
-                     subsampleStart=time[1],
-                     subsampleEnd=time[length(time)],
-                     subsampleDeltat=as.numeric(time[2]) - as.numeric(time[1]),
-                     size=header$head$size,
-                     serialNumber=header$hardware$serialNumber,
-                     internalCodeVersion=header$hardware$picVersion,
-                     hardwareRevision=header$hardware$hwRevision,
-                     recSize=header$hardware$recSize,
-                     velocityRange=header$hardware$velocityRange, # FIXME: should check against velocityMaximum
-                     firmwareVersion=header$hardware$fwVersion,
-                     config=header$hardware$config,
-                     configPressureSensor=header$head$configPressureSensor,
-                     configMagnetometerSensor=header$head$configMagnetometerSensor,
-                     configTiltSensor=header$head$configTiltSensor,
-                     beamAngle=25,     # FIXME: may change with new devices
-                     tiltSensorOrientation=header$head$tiltSensorOrientation,
-                     orientation=orientation,
-                     frequency=header$head$frequency,
-                     headSerialNumber=header$head$headSerialNumber,
-                     bin1Distance=header$user$blankingDistance, # FIXME: is this right?
-                     blankingDistance=header$user$blankingDistance,
-                     measurementInterval=header$user$measurementInterval,
-                     transformationMatrix=header$head$transformationMatrix,
-                     deploymentName=header$user$deploymentName,
-                     cellSize=header$user$cellSize,
-                     velocityResolution=velocityScale,
-                     velocityMaximum=velocityScale * 2^15,
-                     originalCoordinate=header$user$originalCoordinate,
-                     oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnspreaded=FALSE
-                     )
-    res <- new("adp")
-    res@data <- data
-    res@metadata <- metadata
+    res@manufacturer <- "nortek"
+    res@instrumentType <- type #"aquadopp-hr"
+    res@filename <- filename
+    res@manufacturer <- "nortek"
+    res@latitude <- latitude
+    res@longitude <- longitude
+    res@numberOfSamples <- dim(v)[1]
+    res@metadata$numberOfCells <- dim(v)[2]
+    res@metadata$numberOfBeams <- dim(v)[3]
+    res@metadata$numberOfBeamSequencesPerBurst <- header$user$numberOfBeamSequencesPerBurst
+    res@metadata$measurementStart <- measurementStart
+    res@metadata$measurementEnd <- measurementEnd
+    res@metadata$measurementDeltat <- measurementDeltat
+    res@metadata$subsampleStart <- time[1]
+    res@metadata$subsampleEnd <- time[length(time)]
+    res@metadata$subsampleDeltat <- as.numeric(time[2]) - as.numeric(time[1])
+    res@metadata$size <- header$head$size
+    res@metadata$serialNumber <- header$hardware$serialNumber
+    res@metadata$internalCodeVersion <- header$hardware$picVersion
+    res@metadata$hardwareRevision <- header$hardware$hwRevision
+    res@metadata$recSize <- header$hardware$recSize
+    res@metadata$velocityRange <- header$hardware$velocityRange # FIXME: should check against velocityMaximum
+    res@metadata$firmwareVersion <- header$hardware$fwVersion
+    res@metadata$config <- header$hardware$config
+    res@metadata$configPressureSensor <- header$head$configPressureSensor
+    res@metadata$configMagnetometerSensor <- header$head$configMagnetometerSensor
+    res@metadata$configTiltSensor <- header$head$configTiltSensor
+    res@metadata$beamAngle <- 25     # FIXME: may change with new devices
+    res@metadata$tiltSensorOrientation <- header$head$tiltSensorOrientation
+    res@metadata$orientation <- orientation
+    res@metadata$frequency <- header$head$frequency
+    res@metadata$headSerialNumber <- header$head$headSerialNumber
+    res@metadata$bin1Distance <- header$user$blankingDistance # FIXME: is this right?
+    res@metadata$blankingDistance <- header$user$blankingDistance
+    res@metadata$measurementInteres <- header$user$measurementInteres
+    res@metadata$transformationMatrix <- header$head$transformationMatrix
+    res@metadata$deploymentName <- header$user$deploymentName
+    res@metadata$cellSize <- header$user$cellSize
+    res@metadata$velocityResolution <- velocityScale
+    res@metadata$velocityMaximum <- velocityScale * 2^15
+    res@metadata$originalCoordinate <- header$user$originalCoordinate
+    res@metadata$oceCoordinate <- header$user$originalCoordinate
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$distance=list(unit=expression(m), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$salinity=list(unit=expression(), scale="PSS-78")
+    res@metadata$units$temperature=list(unit=expression(degree*C), scale="ITS-90")
+    res@metadata$units$soundSpeed=list(unit=expression(m/s), scale="")
+    res@metadata$units$heading=list(unit=expression(degree), scale="")
+    res@metadata$units$pitch=list(unit=expression(degree), scale="")
+    res@metadata$units$roll=list(unit=expression(degree), scale="")
+    res@metadata$units$headingStd=list(unit=expression(degree), scale="")
+    res@metadata$units$pitchStd=list(unit=expression(degree), scale="")
+    res@metadata$units$rollStd=list(unit=expression(degree), scale="")
+    res@metadata$units$attitude=list(unit=expression(degree), scale="")
+
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogItem(processingLog)

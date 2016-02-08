@@ -27,8 +27,8 @@ plot(adp, which=15:18)
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{The Oce documentation for \code{adp-class} explains the structure of
-    ADP objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and outlines other functions that deal with them.}
 
 \author{Dan Kelley}
 

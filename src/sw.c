@@ -3,12 +3,43 @@
 #include <Rdefines.h>
 int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
 double strho_f(double x, int teos);
-void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval); // in teos.c
 int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
-char *get_libteos(); // in toes.c
+
+void bisect2(double ax, double bx, double (*f)(double x), double tol, double res, int maxiter, double *zero)
+{
+  double af, bf, ff;
+  af = f(ax);
+  bf = f(bx);
+  //Rprintf("ax=%g bx=%g af=%g bf=%g\n", ax, bx, af, bf);
+  if (af * bf > 0.0) { // no root in interval
+    *zero = NA_REAL;
+    return;
+  }
+  int iter = 0;
+  while (fabs(ff = f(*zero = (ax + bx) / 2.0)) > tol || fabs (ax - bx) > res) {
+    //Rprintf("bisect2 iter=%d af=%g bf=%g ff=%g\n", iter, af, bf, ff);
+    if (++iter > maxiter) {
+      *zero = NA_REAL; // too many iterations
+      return;
+    }
+    if (!ff) // exact solution
+      return;
+    if (af * ff < 0) { // root is nearer ax than bx
+      bx = *zero;
+      bf = ff;
+    } else if (bf * ff < 0) { // root is nearer bx than ax
+      ax = *zero;
+      af = ff;
+    } else {	// problem
+      *zero = NA_REAL;
+      return;
+    }
+  }
+}
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
+  //Rprintf("sw_alpha_over_beta(*n, %f, %f, %f, ...)\n", *pS, *ptheta, *pp);
   for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
@@ -29,6 +60,7 @@ void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *
 
 void sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
+  //Rprintf("sw_beta(*n, %f, %f, %f, ...)\n", *pS, *ptheta, *pp);
   for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
@@ -140,6 +172,41 @@ void sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
 		  T * (9.1697e-10)))));
       *value++ = (ro / (1.0 - p1 / xkst));
     }
+  }
+}
+
+double Sglobal, Tglobal, pglobal;
+double sw_salinity_C(double C)
+{
+  void sw_salinity(int *n, double *pC, double *pT, double *pp, double *value);
+  extern double Tglobal, pglobal;
+  int n=1;
+  double S;
+  sw_salinity(&n, &C, &Tglobal, &pglobal, &S);
+  //Rprintf("sw_salinity_C(%f) with Sglobal=%f, Tglobal=%f and pglobal=%f got S=%f so returning %f\n",
+  //    C, Sglobal, Tglobal, pglobal, S, S-Sglobal);
+  return(S - Sglobal);
+}
+
+/*
+
+system("R CMD shlib sw.c")
+dyn.load("sw.so")
+.C("sw_CSTp", as.integer(1), as.double(35), as.double(15), as.double(0), C=double(1))$C
+
+ */
+void sw_CSTp(int *n, double *pS, double *pT, double *pp, double *value)
+{
+  extern double Tglobal, pglobal;
+  for (int i = 0; i < *n; i++) {
+    //Rprintf("sw_CSTp() i=%d\n", i);
+    Sglobal = pS[i];
+    Tglobal = pT[i];
+    pglobal = pp[i];
+    // Use 100 iterations as the limit, although 30 iterations should be sufficient
+    // since 5/2^30 is 5e-9, and we are setting the res and tol to 1e-8.
+    bisect2(0.0, 5.0, sw_salinity_C, 1e-8, 1e-8, 100, value+i);
+    //Rprintf("sw_CSTp() set value[%d] = %f\n", i, value+i);
   }
 }
 
@@ -256,37 +323,95 @@ void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
    Pierre Flament.
 */
 static double sig_0, p_ref, S, T;
-void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
+void sw_strho(int *n, double *pT, double *prho, double *pp, int *teos, double *res)
 {
-  T = *pT;
-  sig_0 = *prho;			/* target density */
-  p_ref = *pp;				/* target pressure */
-  *res = NA_REAL;
-  if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
-    return;
-  //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
-  // Note regarding next two lines: every bisection reduces the x
-  // range by a factor of two, so it's not too expensive to ask for
-  // tight resolution.
-  double xresolution = 1e-4; // 4 fractional digits in salinity, for < 1% of typical axis axis interval
-  double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
-  strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
-  //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
-  *res = S;
+  // FIXME: should check teos here, because gsw offers its own
+  // calculation, with gsw_SA_from_rho().
+  for (int i = 0; i < *n; i++) {
+    //Rprintf("i: %d\n", i);
+    T = pT[i];
+    sig_0 = prho[i];			/* target density */
+    p_ref = pp[i];				/* target pressure */
+    res[i] = NA_REAL;
+    if (!ISNA(pT[i]) && !ISNA(prho[i]) && !ISNA(pp[i])) {
+      //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
+      // Note regarding next two lines: every bisection reduces the x
+      // range by a factor of two, so it's not too expensive to ask for
+      // tight resolution.
+      double xresolution = 1e-4; // 4 fractional digits in salinity, for < 1% of typical axis axis interval
+      double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
+      strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
+      //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
+      res[i] = S;
+    }
+  }
 }
+
+#if 1
+// 2014-12-20 copy the gsw code.
+double
+gsw_rho(double sa, double ct, double p)
+{
+	double	v01 =  9.998420897506056e+2, v02 =  2.839940833161907e0,
+		v03 = -3.147759265588511e-2, v04 =  1.181805545074306e-3,
+		v05 = -6.698001071123802e0,  v06 = -2.986498947203215e-2,
+		v07 =  2.327859407479162e-4, v08 = -3.988822378968490e-2,
+		v09 =  5.095422573880500e-4, v10 = -1.426984671633621e-5,
+		v11 =  1.645039373682922e-7, v12 = -2.233269627352527e-2,
+		v13 = -3.436090079851880e-4, v14 =  3.726050720345733e-6,
+		v15 = -1.806789763745328e-4, v16 =  6.876837219536232e-7,
+		v17 = -3.087032500374211e-7, v18 = -1.988366587925593e-8,
+		v19 = -1.061519070296458e-11,v20 =  1.550932729220080e-10,
+		v21 =  1.0e0,
+		v22 =  2.775927747785646e-3, v23 = -2.349607444135925e-5,
+		v24 =  1.119513357486743e-6, v25 =  6.743689325042773e-10,
+		v26 = -7.521448093615448e-3, v27 = -2.764306979894411e-5,
+		v28 =  1.262937315098546e-7, v29 =  9.527875081696435e-10,
+		v30 = -1.811147201949891e-11, v31 = -3.303308871386421e-5,
+		v32 =  3.801564588876298e-7, v33 = -7.672876869259043e-9,
+		v34 = -4.634182341116144e-11, v35 =  2.681097235569143e-12,
+		v36 =  5.419326551148740e-6, v37 = -2.742185394906099e-5,
+		v38 = -3.212746477974189e-7, v39 =  3.191413910561627e-9,
+		v40 = -1.931012931541776e-12, v41 = -1.105097577149576e-7,
+		v42 =  6.211426728363857e-10, v43 = -1.119011592875110e-10,
+		v44 = -1.941660213148725e-11, v45 = -1.864826425365600e-14,
+		v46 =  1.119522344879478e-14, v47 = -1.200507748551599e-15,
+		v48 =  6.057902487546866e-17;
+	double	sqrtsa, v_hat_denominator, v_hat_numerator;
+
+	sqrtsa			= sqrt(sa);
+
+	v_hat_denominator	=
+			v01 + ct*(v02 + ct*(v03 + v04*ct))  
+			+ sa*(v05 + ct*(v06 + v07*ct) 
+			+ sqrtsa*(v08 + ct*(v09 + ct*(v10 + v11*ct)))) 
+			+ p*(v12 + ct*(v13 + v14*ct) + sa*(v15 + v16*ct) 
+			+ p*(v17 + ct*(v18 + v19*ct) + v20*sa));
+
+	v_hat_numerator		=
+			v21 + ct*(v22 + ct*(v23 + ct*(v24 + v25*ct))) 
+			+ sa*(v26 + ct*(v27 + ct*(v28 + ct*(v29 + v30*ct)))
+			+ v36*sa 
+			+ sqrtsa*(v31 + ct*(v32 + ct*(v33 + ct*(v34+v35*ct)))))
+			+ p*(v37 + ct*(v38 + ct*(v39 + v40*ct))  
+			+ sa*(v41 + v42*ct) 
+			+ p*(v43 + ct*(v44 + v45*ct + v46*sa) 
+			+ p*(v47 + v48*ct)));
+
+	return (v_hat_denominator/v_hat_numerator);
+}
+
+#endif
 
 double strho_f(double x, int teos)
 {
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
-  //Rprintf("libteos='%s'\n", get_libteos());
   int n=1;
+  // FIXME-gsw: how to hook up to gsw_rho()? Prefer to do it directly.
   if (teos) {
-    //char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
-    char *fcn = "gsw_rho"; // stated to be used for TS diagrams on p2 of "Getting_Started.pdf"
-    extern char* libteosp;
-    gsw3a(&libteosp, &fcn, &n, &x, &T, &p_ref, &this_rho);
+    this_rho = gsw_rho(x, T, p_ref);
   } else {
     sw_rho(&n, &x, &T, &p_ref, &this_rho); // is this right? (is T theta?, and so is p_ref zero?)
   }
@@ -314,8 +439,14 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     return 0;
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
-  while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos=teos)) > ftol || fabs (x1 - x2) > xresolution) {
-    //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f\n",*x, g, g1);
+  int iteration = 0;
+  int maxiteration = 50; // with range <100deg, have 100/2^20 < 1e-4 degC, good enough for practical
+  while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
+    if (++iteration > maxiteration) {
+      *x = NA_REAL;
+      return(1);
+    }
+    //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f   (iteration %d)\n",*x, g, g1, iteration);
     if (g1 * g < 0) { /* root is nearer x1 so move x2 to x */
       x2 = *x;
       g2 = g;
@@ -463,6 +594,11 @@ double atg_UNESCO_1983(double S, double T, double p)
 	 + (-4.6206e-13 + (1.8676e-14 - 2.1687e-16*T)*T)*p*p);
 }
 
+/*
+   library(oce)
+   data(ctd)
+   source('~/src/oce/R/sw.R');swTheta(ctd)
+   */
 void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref, double *value)
 {
   /* Source: UNESCO 1983
@@ -475,7 +611,7 @@ void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref
     double p = *pp++;
     double pref = *ppref++;
     if (ISNA(S) || ISNA(T) || ISNA(p) || ISNA(pref)) {
-      *value++ = NA_REAL;
+      value[i] = NA_REAL;
     } else {
       double H, XK, Q;
       H = pref - p;
@@ -491,8 +627,9 @@ void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref
       Q = 3.414213562 * XK - 4.121320344 * Q;
       p = p + 0.5 * H;
       XK = H * atg_UNESCO_1983(S,T,p);
-      *value++ = T + (XK - 2.0 * Q) / 6.0;
+      value[i] = T + (XK - 2.0 * Q) / 6.0;
     }
+    //Rprintf("src/sw.c i=%d S=%.4f T=%.4f p=%.4f pref=%.4f -> theta=%.5f\n", i, S, T, p, pref, value[i]);
   }
 }
 

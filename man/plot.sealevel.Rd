@@ -73,22 +73,22 @@ debug=getOption("oceDebug"),
 \examples{
 library(oce)
 data(sealevel)
-plot(sealevel)
-plot(sealevel, which=1, 
-     xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
-juan <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
-abline(v=juan, col="red")
-mtext("Hurricane\nJuan", juan, col="red")
+## local Halifax time is UTC + 4h; see [2] on timing
+juan <- as.POSIXct("2003-09-29 00:15:00", tz="UTC")+4*3600
+plot(sealevel, which=1, xlim=juan+86400*c(-7,7))
+abline(v=juan, col='red')
 }
 
-\references{The example refers to Hurricane Juan, which caused a great
-    deal of damage to Halifax in 2003.  Since this was in the era of the
-    digital photo, a casual web search will uncover some spectacular
-    images of damage, from both wind and storm surge.  The wikipedia entry
-    \url{http://en.wikipedia.org/wiki/Hurricane_Juan} provides a good
-    entry to the topic, with the Canadian Hurricane Centre's
-    \url{http://www.atl.ec.gc.ca/weather/hurricane/juan/summary_e.html}
-    filling in some more technical details.}
+\references{The example refers to Hurricane Juan, which caused a great deal of
+    damage to Halifax in 2003.  Since this was in the era of the digital photo,
+    a casual web search will uncover some spectacular images of damage, from
+    both wind and storm surge. A map of the path of Hurricane Juan across Nova
+    Scotia is at
+    \url{http://ec.gc.ca/ouragans-hurricanes/default.asp?lang=En&n=222F51F7-1}
+    (link checked April 15, 2015). Landfall, very near the site of this
+    sealevel gauge, was between 00:10 and 00:20 Halifax local time on Monday,
+    Sept 29, 2003.
+}
 
 \author{Dan Kelley}
 

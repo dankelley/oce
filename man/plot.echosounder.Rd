@@ -13,10 +13,10 @@
      newx,
      xlab, ylab,
      xlim, ylim, zlim,
-     type="l", col=oceColorsJet, lwd=2,
+     type="l", col=oce.colorsJet, lwd=2,
      despike=FALSE,
      drawBottom, ignore=5,
-     drawTimeRange=FALSE,
+     drawTimeRange=FALSE, drawPalette=TRUE,
      radius, coastline,
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -59,12 +59,12 @@
 
   \item{ylim}{optional range for y axis.}
 
-  \item{zlim}{optional range for colorscale.}
+  \item{zlim}{optional range for colour scale.}
 
   \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
       \code{"b"} for both.}
 
-  \item{col}{colorscale for image, a function}
+  \item{col}{colour scale for image, a function}
 
   \item{lwd}{line width (ignored if \code{type="p"})}
 
@@ -97,6 +97,8 @@
 
   \item{drawTimeRange}{if \code{TRUE}, the time range will be drawn at the top.
       Ignored except for \code{which=2}, i.e. distance-depth plots.}
+
+  \item{drawPalette}{if \code{TRUE}, the palette will be drawn.}
  
   \item{radius}{radius to use for maps; ignored unless \code{which=3} or
       \code{which="map"}.}
@@ -131,10 +133,16 @@
     structure of echosounder objects, and also outlines the other functions
     dealing with them.}
 
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
+
 \examples{
+\dontrun{
 library(oce)
 data(echosounder)
 plot(echosounder, which=c(1,2), drawBottom=TRUE)
+}
 }
 
 \author{Dan Kelley, with extensive help from Clark Richards}

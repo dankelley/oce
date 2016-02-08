@@ -22,9 +22,9 @@
         spanned by \code{rlow} and \code{rhigh}.}
 }
 
-\details{This is helpful in e.g. developing a color scale for an image plot.
+\details{This is helpful in e.g. developing a colour scale for an image plot.
     It is not necessary that \code{rlow} be less than \code{rhigh}, and in fact
-    reversing them is a good way to get a reversed colorscale for a plot.}
+    reversing them is a good way to get a reversed colour scale for a plot.}
 
 \value{A new vector, which has minimum \code{lim[1]} and maximum \code{lim[2]}.}
 
@@ -35,7 +35,7 @@ t <- seq(0, 600, 5)
 x <- 0.5 * t
 z <- 50 * (-1 + sin(2 * pi * t / 360))
 T <- 5 + 10 * exp(z / 100)
-palette <- oceColorsJet(100)
+palette <- oce.colorsJet(100)
 zlim <- range(T)
 drawPalette(zlim=zlim, col=palette)
 plot(x, z, type='p', pch=20, cex=3,

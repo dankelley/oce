@@ -7,27 +7,29 @@
 \description{Plot CTD data as time-series against scan number, to help
   with trimming extraneous data from a CTD cast.}
 
-\usage{plotScan(x, name = "scan", adorn=NULL, mgp=getOption("oceMgp"), type='l', \dots)}
+\usage{plotScan(x, which=1, type='l',
+    mgp=getOption("oceMgp"),
+    mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), \dots)}
 
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{name}{name of variable for x axis}
-  \item{adorn}{list of character strings containing commands to be
-    executed for the panels.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels, as
-    they are drawn from top-left to bottom-right.   If only a single
-    string is provided, it is used for all panels.  (See
-    \dQuote{Examples}.)}
-  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
-    also for \code{par(mar)}, computed from this.  The default is
-    tighter than the R default, in order to use more space for the data
-    and less for the axes.}
+  \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{which}{A vector containing numerical codes specifying the panels to
+      draw: 1 for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for
+      temperature vs scan, and 4 for salinity vs scan.}
   \item{type}{line type}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+      also for \code{par(mar)}, computed from this.  The default is
+      tighter than the R default, in order to use more space for the data
+      and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.  If set to
+      \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS
+      diagram with a palette to the right is \code{mar=par("mar")+c(0, 0, 0,
+          1))}.} 
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Plots \code{ctd} data as time-series against the scan number,
-  as an aide to trimming to downcasts, \emph{etc}.  }
+\details{Plots \code{ctd} data as time-series against the scan number, as an
+    aide to trimming to downcasts, \emph{etc}.  }
 
 \seealso{
   \code{\link{summary.ctd}} summarizes a \code{ctd} object
@@ -37,12 +39,9 @@
 
 \examples{
 library(oce)
-data(ctd) 
-plotScan(ctd)
-
-# demonstrate adding elements to plots, e.g. to narrow
-# down on good start end points
-plotScan(ctd, adorn="abline(v=240,col='red')")
+data(ctdRaw) 
+plotScan(ctdRaw)
+abline(v=c(130, 350), col='red') # useful for ctdTrim()
 }
 
 \author{Dan Kelley}

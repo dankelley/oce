@@ -6,17 +6,19 @@
 
 \description{Sort a section}
 
-\usage{sectionSort(section, by=c("stationId", "distance"))}
+\usage{sectionSort(section, by)}
 
 \arguments{
   \item{section}{a \code{section} object containing the section whose stations
       are to be sorted}
-  \item{by}{a string indicating how to reorder.  Note that the
-    \code{"distance"} method does not yet work ... also, eventually there
-    will be other possibilities, e.g. \code{"latitude"}.}
+
+  \item{by}{an optional string indicating how to reorder.  If not provided,
+      \code{"stationID"} will be assumed.  Other choices are \code{"distance"},
+      for distance from the first station, \code{"longitude"}, for longitude,
+      and \code{"latitude"} for latitude.}
 }
 
-\details{Sections created with \code{\link{makeSection}} have
+\details{Sections created with \code{\link{as.section}} have
 "stations" that are in the order of the CTD objects (or filenames for
 such objects) provided.  Sometimes, this is not the desired order,
 e.g. if file names discovered with \code{\link{dir}} are in an order
@@ -28,8 +30,8 @@ The purpose of \code{sectionSort} is to permit reordering the
 constituent stations in sensible ways.
 }
 
-\value{An object of \code{\link[base]{class}} \code{"section"} that
-has less lateral variation than the input section.}
+\value{An object of \code{\link[base]{class}} \code{"section"} that has less
+    lateral variation than the input section.}
 
 \seealso{The documentation for \code{\link{section-class}} explains the
     structure of section objects, and also outlines the other functions dealing
@@ -37,12 +39,14 @@ has less lateral variation than the input section.}
 
 \examples{
 \dontrun{
-# Eastern North Atlantic, showing Mediterranean water. 
+# Eastern North Atlantic, showing Mediterranean water;
+# sorting by longitude makes it easier to compare
+# the map and the section.
 library(oce)
-s <- subset(section, 1<=stationId&stationId<=60)
-ss <- sectionGrid(s, p=seq(00, 5000, 100))
-ss <- sectionSort(ss, by="stationId")
-plot(ss, which=c(2,99), map.xlim=c(-75,0))
+data(section)
+s <- sectionGrid(subset(section, -30 <= longitude))
+ss <- sectionSort(ss, by="longitude")
+plot(ss)
 }
 }
 

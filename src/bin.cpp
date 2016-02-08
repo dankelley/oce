@@ -129,7 +129,7 @@ extern "C" {
     void bin_mean_2d(int *nx, double *x, double *y, double *f,
             int *nxbreaks, double *xbreaks,
             int *nybreaks, double *ybreaks,
-            int *number, double *mean)
+            int *fill, int *number, double *mean)
     {
 #ifdef DEBUG
         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
@@ -164,32 +164,57 @@ extern "C" {
                 mean[bij] = NA_REAL;
             }
         }
+        if (*fill) {
+            int bad = 0;
+            int im, ip, jm, jp;
+            // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to x
+            // FIXME: is upper limit in the next loops correct?
+            for (int i = 0; i < *nxbreaks-1; i++) {
+                for (int j = 0; j < *nybreaks-1; j++) {
+                    if (ISNA(mean[ij(i,j)])) {
+                        for (im=i-1; im > -1; im--) if (!ISNA(mean[ij(im, j)])) break;
+                        for (jm=j-1; jm > -1; jm--) if (!ISNA(mean[ij(i, jm)])) break;
+                        // FIXME: is the limit correct on next ... maybe nxbreaks-1 ???
+                        for (ip=i+1; ip < *nxbreaks-1; ip++) if (!ISNA(mean[ij(ip, j)])) break;
+                        for (jp=j+1; jp < *nybreaks-1; jp++) if (!ISNA(mean[ij(i, jp)])) break;
+                        int N=0;
+                        double SUM=0.0;
+                        if (0 <= im && ip < *(nxbreaks)-1) {
+                            double interpolant = mean[ij(im,j)]+(mean[ij(ip,j)]-mean[ij(im,j)])*(i-im)/(ip-im);
+                            SUM += interpolant;
+                            N++;
+#ifdef DEBUG
+                            if (bad < 30 && bad < 40) {
+                                Rprintf("i:%d, j:%d, i neighbors: [%d,%d]=%.1f  [%d,%d]=%.1f -> %.1f\n",
+                                        i,j,im,j,mean[ij(im,j)],ip,j,mean[ij(ip,j)],interpolant);
+                            }
+#endif
+                        }
+                        if (0 <= jm && jp < *(nybreaks)-1) {
+                            double interpolant = mean[ij(i,jm)]+(mean[ij(i,jp)]-mean[ij(i,jm)])*(j-jm)/(jp-jm);
+                            SUM += interpolant;
+                            N++;
+#ifdef DEBUG
+                            if (bad < 30 && bad < 40) {
+                                Rprintf("i:%d, j:%d, j neighbors: [%d,%d]=%.1f  [%d,%d]=%.1f -> %.1f\n",
+                                        i,j,i,jm,mean[ij(i,jm)],i,jp,mean[ij(i,jp)],interpolant);
+                            }
+#endif
+                        }
+                        if (N > 0) {
+                            mean[ij(i, j)] = SUM / N;
+                            number[ij(i, j)] = 1; // doesn't have much meaning
+                        }
+                        bad++;
+                    }
+                }
+            }
+#ifdef DEBUG
+            Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
+            Rprintf("number of gaps filled: %d\n", bad);
+#endif
+        }
     }
 }
 #undef ij
-
-
-// /* keep below in case .bincode() proves to be slow for binApply1D() and binApply2D() */
-//extern "C" {
-//    void bin_which_1d(int *nx, double *x, int *nxbreaks, double *xbreaks, int *bi)
-//    {
-//        if (*nxbreaks < 2)
-//            error("cannot have fewer than 1 break"); // already checked in R but be safe
-//        std::vector<double> b(xbreaks, xbreaks + *nxbreaks);
-//        std::sort(b.begin(), b.end()); // STL wants breaks ordered
-//        for (int i = 0; i < (*nx); i++) {
-//            if (ISNA(x[i])) {
-//                bi[i] = NA_REAL;
-//            } else{
-//                std::vector<double>::iterator lower_bound;
-//                lower_bound = std::lower_bound(b.begin(), b.end(), x[i]);
-//                int which = lower_bound - b.begin();
-//                if (which > 0 && which < (*nxbreaks))
-//                    bi[i] = which;
-//                else
-//                    bi[i] = NA_REAL;
-//            }
-//        }
-//    }
-//}
 

@@ -14,31 +14,16 @@ setMethod(f="summary",
               n <- length(object@data$theta)
               dtheta <- abs(diff(object@data$theta[1:2]))
               cat("* Have n=", n, "angles, separated by dtheta=", dtheta,"\n\n")
-              ##cat("* Statistics by angle::\n\n", ...)
-              ##threes <- matrix(nrow=2, ncol=3)
-              ##threes[1,] <- threenum(object@data$theta)
-              ##threes[2,] <- threenum(object@data$count)
-              ##colnames(threes) <- c("Min.", "Mean", "Max.")
-              ##rownames(threes) <- c("theta", "count")
-              ##print(threes)
-              ##cat('\n')
-              processingLogShow(object)
-              invisible(NULL)
+              callNextMethod()
           })
-
 
 
 setMethod(f="[[",
-          signature="windrose",
-          definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("theta", "count", "fives"))
-              if (i == "theta") return(x@data$theta)
-              else if (i == "count") return(x@data$count)
-              else if (i == "fives") return(x@data$fives)
-              else stop("cannot access \"", i, "\"") # cannot get here
+          signature(x="windrose", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
           })
+
 
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
@@ -57,7 +42,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
     dt2 <- dt / 2
     R <- sqrt(x^2 + y^2)
     angle <- atan2(y, x)
-    L <- max(R, na.rm=TRUE)
+    ## L <- max(R, na.rm=TRUE)
     nt <- round(2 * pi / dt)
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
@@ -86,8 +71,8 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
     res <- new('windrose')
     res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi,
                      count=count, mean=mean, fives=fives)
-    res@metadata <- list(dtheta=dtheta)
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@metadata$dtheta <- dtheta
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # as.windrose()\n", sep="", unindent=1)
     res
 }

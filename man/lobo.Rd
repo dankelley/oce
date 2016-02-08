@@ -21,11 +21,11 @@ plot(lobo)
 }
 
 \source{The data were downloaded from a web interface at Satlantic LOBO web
-    server and then read with \code{read.lobo} in the Oce package.}
+    server and then read with \code{\link{read.lobo}}.}
 
-\seealso{The documentation for \code{lobo-class} in the Oce package explains
-    the structure of LOBO objects, and also outlines the other functions
-    dealing with them.}
+\seealso{The documentation for \code{\link{lobo-class}} explains the structure
+    of \code{lobo} objects, and also outlines the other functions dealing with
+    them.}
 
 \author{Dan Kelley}
 \keyword{datasets}

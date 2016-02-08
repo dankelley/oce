@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2014-02-28 14:54\n"
+"POT-Creation-Date: 2015-01-16 15:10\n"
 "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: English\n"
@@ -950,6 +950,92 @@ msgstr "has shape type"
 msgid ", which does not match file value"
 msgstr ", which does not match file value"
 
+#, fuzzy
+msgid "must give z, zlim or breaks"
+msgstr "must give time"
+
+msgid "must give z or zlim if length(breaks)=1"
+msgstr ""
+
+msgid "cannot supply 'col' and 'colormap' at the same time"
+msgstr ""
+
+msgid "cannot supply 'breaks' and 'colormap' at the same time"
+msgstr ""
+
+#, fuzzy
+msgid "mismatched lengths of x0 and x1 ("
+msgstr "mismatch between length of data names ("
+
+#, fuzzy
+msgid "mismatched lengths of x0 and col0 ("
+msgstr "mismatch between length of data names ("
+
+#, fuzzy
+msgid "mismatched lengths of x0 and col1 ("
+msgstr "mismatch between length of data names ("
+
+msgid "must give either 'file' or 'text'"
+msgstr "must give either 'file' or 'text'"
+
+#, fuzzy
+msgid "cannot decode \"F\" from \""
+msgstr "cannot decode latitude or longitude from \""
+
+#, fuzzy
+msgid "cannot decode \"B\" from \""
+msgstr "cannot decode latitude or longitude from \""
+
+#, fuzzy
+msgid "cannot decode missingColor from \""
+msgstr "cannot decode latitude or longitude from \""
+
+#, fuzzy
+msgid "unknown colormap name \""
+msgstr "no column named '"
+
+msgid "\"; try one of:"
+msgstr ""
+
+msgid "unknown colormap name; try one of:"
+msgstr ""
+
+msgid "cannot specify both zlim and breaks, unless length(breaks)==1"
+msgstr ""
+
+msgid "cannot infer zlim; please specify zlim, breaks, name, or z"
+msgstr ""
+
+msgid "must supply \"z\" if length(breaks)==1"
+msgstr ""
+
+msgid ""
+"must give \"breaks\" or \"name\", or each of \"x0\", \"x1\", \"col0\", and "
+"\"col1\""
+msgstr ""
+
+msgid "give either \"name\" or all of: \"x0\", \"x1\", \"col0\" and \"col1\""
+msgstr ""
+
+#, fuzzy
+msgid "lengths of \"x0\" and \"x1\" must agree"
+msgstr "lengths of x and y must agree"
+
+#, fuzzy
+msgid "lengths of \"x0\" and \"col0\" must agree"
+msgstr "lengths of x and y must agree"
+
+#, fuzzy
+msgid "lengths of \"x0\" and \"col1\" must agree"
+msgstr "lengths of x and y must agree"
+
+#, fuzzy
+msgid "unknown palette name \""
+msgstr "unknown file type \""
+
+msgid "' is not a recognized value for 'palette'"
+msgstr ""
+
 msgid "TEOS-10 calculation assuming lat=0 lon=300, because location is unknown"
 msgstr ""
 "TEOS-10 calculation assuming lat=0 lon=300, because location is unknown"
@@ -1000,6 +1086,9 @@ msgstr "data to match existing object"
 
 msgid "must supply \"name\""
 msgstr "must supply \"name\""
+
+msgid "unknown method \""
+msgstr "unknown method \""
 
 msgid "ctd"
 msgstr ""
@@ -1103,9 +1192,6 @@ msgstr ""
 "CTD plots will have better coastlines after doing install.packages(\"ocedata"
 "\")"
 
-msgid "Station"
-msgstr "Estación"
-
 msgid "unknown value of which,"
 msgstr "unknown value of which,"
 
@@ -1127,7 +1213,8 @@ msgstr "but 'temperature' has length"
 msgid "Cannot discover type in line '"
 msgstr "Cannot discover type in line '"
 
-msgid "type must be SBE19, WOCE, ODF, or ITP, not"
+#, fuzzy
+msgid "type must be SBE19, WOCE, ODF, ODV, or ITP, not"
 msgstr "type must be SBE19, WOCE, ODF, or ITP, not"
 
 msgid "cannot decode the header in this CTD file"
@@ -1156,9 +1243,6 @@ msgstr "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'"
 
 msgid "cannot find temperature column in list"
 msgstr "cannot find temperature column in list"
-
-msgid "cannot decode latitude or longitude from \""
-msgstr "cannot decode latitude or longitude from \""
 
 msgid "'columns' must contain 'temperature'"
 msgstr "'columns' must contain 'temperature'"
@@ -1205,6 +1289,9 @@ msgstr "cannot find 'temperature' in this file"
 msgid "no column named 'pressure', 'depth' or 'depSM'"
 msgstr "no column named 'pressure', 'depth' or 'depSM'"
 
+msgid "data-header conflict; check that #names matches #columns"
+msgstr ""
+
 msgid "no data in CTD file \""
 msgstr "no data in CTD file \""
 
@@ -1219,6 +1306,9 @@ msgid ""
 "cannot find salinity in this file, nor conductivity or conductivity ratio"
 msgstr ""
 "cannot find salinity in this file, nor conductivity or conductivity ratio"
+
+msgid "created a pressure column from the depth column"
+msgstr ""
 
 msgid "cannot locate a line containing '-- DATA --'"
 msgstr "cannot locate a line containing '-- DATA --'"
@@ -1241,8 +1331,23 @@ msgstr "missing data$pressure"
 msgid "missing data$temperature"
 msgstr "missing data$temperature"
 
+msgid "FIXME: make read.ctd.odv() work"
+msgstr ""
+
 msgid "cannot find salinity and temperature in 'x'"
 msgstr "cannot find salinity and temperature in 'x'"
+
+#, fuzzy
+msgid "no valid salinity data"
+msgstr "no non-missing salinity data"
+
+#, fuzzy
+msgid "no valid temperature data"
+msgstr "no non-missing temperature data"
+
+#, fuzzy
+msgid "no good data to plot"
+msgstr "no good temperatures to plot"
 
 msgid ""
 "nothing is being plotted, because z is always negative and ylim specified a "
@@ -1272,6 +1377,12 @@ msgstr "all"
 msgid "values in this station are NA"
 msgstr "values in this station are NA"
 
+msgid "no valid sigma-theta data"
+msgstr ""
+
+msgid "no valid N2 data"
+msgstr ""
+
 msgid "argument 'add' is ignored for xtype=\"salinity+temperature\""
 msgstr "argument 'add' is ignored for xtype=\"salinity+temperature\""
 
@@ -1289,6 +1400,22 @@ msgstr "can only handle 'profile' data type, not (presumably) SAMI type"
 
 msgid "type must be SBE19 or WOCE, not"
 msgstr "type must be SBE19 or WOCE, not"
+
+#, fuzzy
+msgid ""
+"may only subset by time, longitude, or latitude, and not by combinations"
+msgstr "must provide longitude, latitude, and time"
+
+#, fuzzy
+msgid "'p' must exceed 1"
+msgstr "but must exceed 1"
+
+#, fuzzy
+msgid "value of 'p' must be numeric, or \"levitus\""
+msgstr "'x' must be numeric or character"
+
+msgid "must install.packages(\"ncdf4\") to read drifter data"
+msgstr ""
 
 msgid "must give time"
 msgstr "must give time"
@@ -1357,8 +1484,20 @@ msgstr "cannot supply 'ylim'; use 'clatitude' and 'span' instead"
 msgid "cannot determine file type; assuming 'gpx'"
 msgstr "cannot determine file type; assuming 'gpx'"
 
-msgid "must give either 'file' or 'text'"
-msgstr "must give either 'file' or 'text'"
+#, fuzzy
+msgid "'pos' must be 1, 2, 3 or 4"
+msgstr "of style; must be 0 or 1"
+
+#, fuzzy
+msgid "pos must be in 1:4"
+msgstr "t must be in UTC"
+
+#, fuzzy
+msgid "pos must be 1, 2, 3 or 4"
+msgstr "of style; must be 0 or 1"
+
+msgid "horizontal triangles not working yet"
+msgstr ""
 
 msgid "may not give y, since x is a list"
 msgstr "may not give y, since x is a list"
@@ -1384,6 +1523,10 @@ msgstr "must supply y"
 msgid "must supply z"
 msgstr "must supply z"
 
+#, fuzzy
+msgid "decimate must be a positive integer or a logical value"
+msgstr "samplingRate must be a positive integer, but got"
+
 msgid "image width ("
 msgstr "image width ("
 
@@ -1398,6 +1541,116 @@ msgstr ") does not match length of y ("
 
 msgid "cannot evaluate adorn='"
 msgstr "cannot evaluate adorn='"
+
+#, fuzzy
+msgid "cannot find missing-value token"
+msgstr "cannot find item named '"
+
+msgid "Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'"
+msgstr ""
+
+#, fuzzy
+msgid "landsat item must be specified by name"
+msgstr "'file' must be specified"
+
+#, fuzzy
+msgid "cannot compute temperature without \"tirs1\" band"
+msgstr "cannot find 'temperature' in this file"
+
+msgid "the \"tirs1\" band is not stored in two-byte format"
+msgstr ""
+
+#, fuzzy
+msgid "cannot decimate by a step smaller than 1, but got"
+msgstr "cannot have control$bin less than 1, but got"
+
+msgid "cannot decimate by a step larger than image dimension"
+msgstr ""
+
+msgid ""
+"cannot calculate Landsat temperature because no \"tirs1\" band in object"
+msgstr ""
+
+msgid "FIXME: should handle temperature for landsat-5"
+msgstr ""
+
+msgid "K1="
+msgstr ""
+
+msgid "# Landsat7_Handbook.pdf Table 11.5"
+msgstr ""
+
+msgid "K2="
+msgstr ""
+
+msgid "landsat-5 is not converted AT ALL"
+msgstr ""
+
+#, fuzzy
+msgid "unknown satellite:"
+msgstr "unknown value"
+
+msgid "this landsat object lacks a band named \""
+msgstr ""
+
+msgid ""
+"band=\"terralook\" requires landsat object to contain \"red\", \"green\" and "
+"\"nir\""
+msgstr ""
+
+msgid "this landsat object has no band named \""
+msgstr ""
+
+#, fuzzy
+msgid "unknown value of 'which'"
+msgstr "unknown value of which"
+
+msgid "spacecraft type"
+msgstr ""
+
+#, fuzzy
+msgid "cannot be handled yet"
+msgstr "cannot handle deltat yet"
+
+msgid "must install.packages(\"tiff\") to read landsat data"
+msgstr ""
+
+#, fuzzy
+msgid "band \""
+msgstr "and 0x"
+
+msgid "\" unknown; must be one of:"
+msgstr ""
+
+#, fuzzy
+msgid "data must be a matrix"
+msgstr "x must be a vector"
+
+#, fuzzy
+msgid "must provide a name for the data"
+msgstr "must provide at least one byte to match"
+
+msgid "dim(data) = c("
+msgstr ""
+
+#, fuzzy
+msgid ") must match existing dimension c("
+msgstr "to match existing data"
+
+#, fuzzy
+msgid "method is only for landsat objects"
+msgstr "método sólo es para la clase de oce"
+
+#, fuzzy
+msgid "'ll' must have named items 'longitude' and 'latitude'"
+msgstr "must give 'longitude' and possibly 'latitude'"
+
+#, fuzzy
+msgid "'ur' must have named items 'longitude' and 'latitude'"
+msgstr "must give 'longitude' and possibly 'latitude'"
+
+msgid "no intersection between landsat image and trimming box"
+msgstr ""
 
 msgid "Size Class #"
 msgstr "Clase de tamaño"
@@ -1435,6 +1688,126 @@ msgstr "no time column in data file.  The column names are:"
 msgid "must give u, v, salinity, temperature, and pressure"
 msgstr "must give u, v, salinity, temperature, and pressure"
 
+msgid "must give (at least) time, temperature, and pressure"
+msgstr "must give (at least) time, temperature, and pressure"
+
+msgid "'time' must be POSIXt"
+msgstr "'time' must be POSIXt"
+
+msgid "lengths of 'time' and 'temperature' must match"
+msgstr "lengths of 'time' and 'temperature' must match"
+
+msgid "lengths of 'time' and 'pressure' must match"
+msgstr "lengths of 'time' and 'pressure' must match"
+
+msgid "rsk"
+msgstr ""
+
+msgid "no good temperatures to plot"
+msgstr "no good temperatures to plot"
+
+msgid "no good pressures to plot"
+msgstr "no good pressures to plot"
+
+#, fuzzy
+msgid ""
+"in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim "
+"(for type=4)"
+msgstr ""
+"in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for "
+"type=4)"
+
+#, fuzzy
+msgid ""
+"in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim "
+"(for type=3)"
+msgstr ""
+"in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for "
+"type=3)"
+
+msgid "Serial Number"
+msgstr "Número de serie"
+
+msgid "from cannot be an integer less than 1"
+msgstr "from cannot be an integer less than 1"
+
+msgid ""
+"cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead"
+msgstr ""
+"cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead"
+
+msgid "cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
+msgstr ""
+"cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
+
+msgid ""
+"cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
+msgstr ""
+"cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
+
+#, fuzzy
+msgid ""
+"read.rsk(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this "
+"file has"
+msgstr ""
+"read.rsk(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file "
+"has"
+
+msgid "making some (untested) assumptions, since the ruskin Version ("
+msgstr "making some (untested) assumptions, since the ruskin Version ("
+
+msgid "."
+msgstr "."
+
+msgid ") is outside the range for which tests have been done"
+msgstr ") is outside the range for which tests have been done"
+
+msgid ""
+"cannot locate temperature column in 'channels' table of database; assuming "
+"column 2"
+msgstr ""
+"cannot locate temperature column in 'channels' table of database; assuming "
+"column 2"
+
+msgid ""
+"cannot locate pressure column in 'channels' table of database; assuming "
+"column 3"
+msgstr ""
+"cannot locate pressure column in 'channels' table of database; assuming "
+"column 3"
+
+msgid "if 'from' is POSIXt or character, then 'to' must be, also"
+msgstr "if 'from' is POSIXt or character, then 'to' must be, also"
+
+msgid "cannot have 'to' <= 'from'"
+msgstr "cannot have 'to' <= 'from'"
+
+msgid "cannot have 'from' < 1"
+msgstr "cannot have 'from' < 1"
+
+msgid "cannot have 'to' < 'from'"
+msgstr "cannot have 'to' < 'from'"
+
+msgid "wrong number of variables; need 2, 4, or 5, but got"
+msgstr "wrong number of variables; need 2, 4, or 5, but got"
+
+#, fuzzy
+msgid "too few data to trim rsk record"
+msgstr "too few data to trim rsk record"
+
+msgid "Unknown method"
+msgstr "Unknown method"
+
+msgid ""
+"mapAxis(side=1) cannot draw latitude labels yet; contact author if you need "
+"this"
+msgstr ""
+
+msgid ""
+"mapAxis(side=2) cannot draw longitude labels yet; contact author if you need "
+"this"
+msgstr ""
+
 msgid "must create a map first, with mapPlot()"
 msgstr "must create a map first, with mapPlot()"
 
@@ -1447,32 +1820,130 @@ msgstr "lattudelim must contain two distinct values"
 msgid "longitudelim must contain two distinct values"
 msgstr "longitudelim must contain two distinct values"
 
-msgid ""
-"mapPlot(): trimming spurious edge-to-edge lines; filling may be inaccurate"
+msgid "cannot handle map projection of type 'wintri'"
+msgstr ""
+
+msgid "cannot handle map projection of type 'aitoff'"
+msgstr ""
+
+msgid "mapPlot(): trimming"
+msgstr ""
+
+#, fuzzy
+msgid "spurious edge-to-edge lines; filling may be inaccurate"
 msgstr ""
 "mapPlot(): trimming spurious edge-to-edge lines; filling may be inaccurate"
 
-msgid ""
-"DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
-"instead of 'axis'"
+msgid "FIXME: mapGrid() should check if longitude or latitude is NULL"
 msgstr ""
-"DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
-"instead of 'axis'"
+
+msgid ""
+"Use mapGrid(longitude=NULL,latitude=latitude) instead of "
+"mapMeridians(latitude)"
+msgstr ""
+
+msgid "mapScalebar() only works for plots created with projections"
+msgstr ""
 
 msgid "y must be NULL in this (early) version of mapScalebar()"
 msgstr "y must be NULL in this (early) version of mapScalebar()"
 
-msgid "x must be \"topleft\"in this (early) version of mapScalebar()"
-msgstr "x must be \"topleft\"in this (early) version of mapScalebar()"
+#, fuzzy
+msgid "x must be \"topleft\" or \"topright\", but it is \""
+msgstr "input must be in \"enu\" coordinates, but it is in"
+
+msgid ""
+"Use mapGrid(longitude=longitude,latitude=NULL) instead of mapZones(longitude)"
+msgstr ""
 
 msgid "mapLines() does not yet handle argument 'greatCircle'"
 msgstr "mapLines() does not yet handle argument 'greatCircle'"
 
-msgid "mapImage() cannot yet handle filledContour"
-msgstr "mapImage() cannot yet handle filledContour"
+#, fuzzy
+msgid "lengths of longitude0 and latitude0 must match but they are"
+msgstr "lengths of longitude and latitude must match"
+
+#, fuzzy
+msgid "lengths of longitude1 and latitude1 must match but they are"
+msgstr "lengths of longitude and latitude must match"
+
+#, fuzzy
+msgid "lengths of x and y must match but they are"
+msgstr "lengths of x and y must match, but they are"
+
+msgid "must install 'proj4' package to get options(externalProj4=TRUE) to work"
+msgstr ""
+
+msgid "zclip:"
+msgstr ""
+
+msgid "breaks:"
+msgstr ""
+
+msgid "col:"
+msgstr ""
+
+msgid "must install.packages(\"akima\") to plot filled contours on maps"
+msgstr ""
+
+msgid "breaksMin:"
+msgstr ""
+
+msgid "breaksMax:"
+msgstr ""
+
+msgid "Z:"
+msgstr ""
+
+msgid "z is NA"
+msgstr ""
+
+msgid "z:"
+msgstr ""
+
+msgid "is < breaksMin"
+msgstr ""
+
+msgid "is > breaksMax"
+msgstr ""
+
+msgid ", w:"
+msgstr ""
+
+msgid ", using non-missing col:"
+msgstr ""
+
+msgid ", using missing col:"
+msgstr ""
 
 msgid "lengths of longitude and latude must match"
 msgstr "lengths of longitude and latude must match"
+
+#, fuzzy
+msgid "lengths of longitude and latitude must match but they are"
+msgstr "lengths of longitude and latitude must match"
+
+msgid "mapPlot() suggestion: try using projection=\""
+msgstr ""
+
+#, fuzzy
+msgid "projection '"
+msgstr "section"
+
+msgid "' is unknown; try one of:"
+msgstr ""
+
+msgid "+proj=aitoff cannot be used"
+msgstr ""
+
+msgid "+proj=robin cannot be used"
+msgstr ""
+
+msgid "+proj=wintri cannot be used"
+msgstr ""
+
+msgid "proj4 calculation is slow because it was done pointwise"
+msgstr ""
 
 msgid "must provide time"
 msgstr "must provide time"
@@ -1488,6 +1959,45 @@ msgstr "length of 'u' must match length of 'time'"
 
 msgid "length of 'v' must match length of 'time'"
 msgstr "length of 'v' must match length of 'time'"
+
+msgid "must supply u"
+msgstr "must supply u"
+
+msgid "must supply v"
+msgstr "must supply v"
+
+msgid "must supply x"
+msgstr "must supply x"
+
+#, fuzzy
+msgid "length(x) must exceed 1 but it is"
+msgstr "but must exceed 1"
+
+#, fuzzy
+msgid "length(y) must exceed 1 but it is"
+msgstr "but must exceed 1"
+
+#, fuzzy
+msgid "length(x) must equal nrow(u)"
+msgstr "length of x (%d) must equal number of rows in h (%d)"
+
+#, fuzzy
+msgid "length(x) must equal ncol(u)"
+msgstr "length of y (%d) must equal number of cols in h (%d)"
+
+msgid "nrow(u) and nrow(v) must match"
+msgstr ""
+
+msgid "ncol(u) and ncol(v) must match"
+msgstr ""
+
+#, fuzzy
+msgid "geographical must be a logical quantity"
+msgstr "argument geographical must be 0, 1, or 2"
+
+#, fuzzy
+msgid "method must be 1 or 2"
+msgstr "deriv must be 0 or 1"
 
 msgid "must supply 'f'"
 msgstr "must supply 'f'"
@@ -1552,14 +2062,11 @@ msgstr "y values must be equi-spaced"
 msgid "z values must be equi-spaced"
 msgstr "z values must be equi-spaced"
 
-msgid "must supply x"
-msgstr "must supply x"
+msgid "x and y must be of same length"
+msgstr "x and y must be of same length"
 
 msgid "must give either xe or ye"
 msgstr "must give either xe or ye"
-
-msgid "x and y must be of same length"
-msgstr "x and y must be of same length"
 
 msgid "x and xe must be of same length"
 msgstr "x and xe must be of same length"
@@ -1643,7 +2150,7 @@ msgstr "must provide 2 or 3 bytes"
 msgid "Temperature"
 msgstr "Temperatura"
 
-msgid "Conservative temperature"
+msgid "Conservative Temperature"
 msgstr "temperatura conservador"
 
 msgid "Potential density anomaly"
@@ -1700,7 +2207,7 @@ msgstr ""
 msgid "Practical Salinity"
 msgstr "Salinidad práctica"
 
-msgid "absolute salinity"
+msgid "Absolute Salinity"
 msgstr "salinidad absoluta"
 
 msgid "g/kg"
@@ -1885,10 +2392,10 @@ msgid "cannot smooth ADP objects (feel free to request this from the author)"
 msgstr "cannot smooth ADP objects (feel free to request this from the author)"
 
 msgid ""
-"oceSmooth() has recently been recoded for 'adv' objects -- do not trust it "
+"oce.smooth() has recently been recoded for 'adv' objects -- do not trust it "
 "yet!"
 msgstr ""
-"oceSmooth() has recently been recoded for 'adv' objects -- do not trust it "
+"oce.smooth() has recently been recoded for 'adv' objects -- do not trust it "
 "yet!"
 
 msgid "smoothing does not work (yet) for objects of class"
@@ -1927,10 +2434,19 @@ msgstr "must give h"
 msgid "must give y"
 msgstr "must give y"
 
-msgid "length of x (%d) must equal number of rows in h (%d)"
+msgid "length of x ("
+msgstr "length of x ("
+
+#, fuzzy
+msgid ") must equal number of rows in h ("
 msgstr "length of x (%d) must equal number of rows in h (%d)"
 
-msgid "length of y (%d) must equal number of cols in h (%d)"
+#, fuzzy
+msgid "length of y ("
+msgstr "length of x ("
+
+#, fuzzy
+msgid ") must equal number of cols in h ("
 msgstr "length of y (%d) must equal number of cols in h (%d)"
 
 msgid "must supply month, day, hour, min, sec, and tz"
@@ -1944,6 +2460,9 @@ msgstr "must give 'longitude'"
 
 msgid "must give 'latitude'"
 msgstr "must give 'latitude'"
+
+msgid "t must be in UTC"
+msgstr "t must be in UTC"
 
 msgid "unknown type of observatory data"
 msgstr "unknown type of observatory data"
@@ -2005,9 +2524,6 @@ msgstr "must supply 'r'"
 msgid "must supply 'theta'"
 msgstr "must supply 'theta'"
 
-msgid "length of x ("
-msgstr "length of x ("
-
 msgid ") and y ("
 msgstr ") and y ("
 
@@ -2017,12 +2533,6 @@ msgstr ") must agree"
 msgid "must not have any NA values in xout"
 msgstr "must not have any NA values in xout"
 
-msgid "must supply u"
-msgstr "must supply u"
-
-msgid "must supply v"
-msgstr "must supply v"
-
 msgid "lengths of x and y must match, but they are"
 msgstr "lengths of x and y must match, but they are"
 
@@ -2031,6 +2541,10 @@ msgstr "lengths of x and u must match, but they are"
 
 msgid "lenghts of x and v must match, but they are"
 msgstr "lenghts of x and v must match, but they are"
+
+#, fuzzy
+msgid "x cannot be a function"
+msgstr "'FUN' must be a function"
 
 msgid "'xlim' must be of length 2"
 msgstr "'xlim' must be of length 2"
@@ -2090,6 +2604,9 @@ msgstr "\", \""
 msgid ".*/"
 msgstr ".*/"
 
+msgid "must install.packages(\"ncdf4\") to read a netCDF file"
+msgstr ""
+
 msgid "some sort of nortek ... two bytes are 0x"
 msgstr "some sort of nortek ... two bytes are 0x"
 
@@ -2139,6 +2656,18 @@ msgstr "must supply x, y, u, and v"
 msgid "either 'scalex' or 'scaley' must be specified (but not both)"
 msgstr "either 'scalex' or 'scaley' must be specified (but not both)"
 
+#, fuzzy
+msgid "lengths of x and y must match"
+msgstr "lengths of SA and CT must match"
+
+#, fuzzy
+msgid "lengths of x and u must match"
+msgstr "lengths of SA and CT must match"
+
+#, fuzzy
+msgid "lengths of x and v must match"
+msgstr "lengths of SA and CT must match"
+
 msgid "unknown value of type"
 msgstr "unknown value of type"
 
@@ -2159,6 +2688,9 @@ msgstr "\" in this sealevel object"
 
 msgid "must supply sealevel height, elevation, in metres"
 msgstr "must supply sealevel height, elevation, in metres"
+
+msgid "Station"
+msgstr "Estación"
 
 msgid "sealevel"
 msgstr ""
@@ -2198,11 +2730,13 @@ msgstr "cannot give both 'subset' and 'indices'"
 msgid "2. cannot give both 'subset' and 'indices'"
 msgstr "2. cannot give both 'subset' and 'indices'"
 
-msgid "sort.section() cannot yet handle argument by=\"distance\""
-msgstr "sort.section() cannot yet handle argument by=\"distance\""
+#, fuzzy
+msgid "unknown by value \""
+msgstr "unknown xtype value (\""
 
-msgid "argument 'by' is incorrect"
-msgstr "argument 'by' is incorrect"
+#, fuzzy
+msgid "\"; should be one of:"
+msgstr "; should be 1 or 2"
 
 msgid "need more than 1 station to make a section"
 msgstr "need more than 1 station to make a section"
@@ -2219,9 +2753,6 @@ msgstr "'section' is not a section"
 
 msgid "'station' is not a station"
 msgstr "'station' is not a station"
-
-msgid "In plot.section() : gridded the data for plotting"
-msgstr ""
 
 msgid "coastline must be a character string"
 msgstr "coastline must be a character string"
@@ -2310,9 +2841,6 @@ msgstr "pressure mismatch between station 1 and station"
 msgid "pressure mismatch between station 1 and station."
 msgstr "pressure mismatch between station 1 and station."
 
-msgid "unknown method \""
-msgstr "unknown method \""
-
 msgid "n must round to a positive integer"
 msgstr "n must round to a positive integer"
 
@@ -2360,9 +2888,6 @@ msgid ""
 msgstr ""
 "lengths of t, latitude and longitude must match, unless last two are of "
 "length 1"
-
-msgid "t must be in UTC"
-msgstr "t must be in UTC"
 
 msgid "year="
 msgstr "year="
@@ -2451,112 +2976,6 @@ msgstr "lengths of salinity and longitude must match"
 msgid "lengths of salinity and latitude must match"
 msgstr "lengths of salinity and latitude must match"
 
-msgid "must give (at least) time, temperature, and pressure"
-msgstr "must give (at least) time, temperature, and pressure"
-
-msgid "'time' must be POSIXt"
-msgstr "'time' must be POSIXt"
-
-msgid "lengths of 'time' and 'temperature' must match"
-msgstr "lengths of 'time' and 'temperature' must match"
-
-msgid "lengths of 'time' and 'pressure' must match"
-msgstr "lengths of 'time' and 'pressure' must match"
-
-msgid "tdr"
-msgstr ""
-
-msgid "no good temperatures to plot"
-msgstr "no good temperatures to plot"
-
-msgid "no good pressures to plot"
-msgstr "no good pressures to plot"
-
-msgid ""
-"in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for "
-"type=4)"
-msgstr ""
-"in plot.tdr() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for "
-"type=4)"
-
-msgid ""
-"in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for "
-"type=3)"
-msgstr ""
-"in plot.tdr() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for "
-"type=3)"
-
-msgid "Serial Number"
-msgstr "Número de serie"
-
-msgid "from cannot be an integer less than 1"
-msgstr "from cannot be an integer less than 1"
-
-msgid ""
-"cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead"
-msgstr ""
-"cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead"
-
-msgid "cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
-msgstr ""
-"cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
-
-msgid ""
-"cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
-msgstr ""
-"cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
-
-msgid ""
-"read.tdr(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file "
-"has"
-msgstr ""
-"read.tdr(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file "
-"has"
-
-msgid "making some (untested) assumptions, since the ruskin Version ("
-msgstr "making some (untested) assumptions, since the ruskin Version ("
-
-msgid "."
-msgstr "."
-
-msgid ") is outside the range for which tests have been done"
-msgstr ") is outside the range for which tests have been done"
-
-msgid ""
-"cannot locate temperature column in 'channels' table of database; assuming "
-"column 2"
-msgstr ""
-"cannot locate temperature column in 'channels' table of database; assuming "
-"column 2"
-
-msgid ""
-"cannot locate pressure column in 'channels' table of database; assuming "
-"column 3"
-msgstr ""
-"cannot locate pressure column in 'channels' table of database; assuming "
-"column 3"
-
-msgid "if 'from' is POSIXt or character, then 'to' must be, also"
-msgstr "if 'from' is POSIXt or character, then 'to' must be, also"
-
-msgid "cannot have 'to' <= 'from'"
-msgstr "cannot have 'to' <= 'from'"
-
-msgid "cannot have 'from' < 1"
-msgstr "cannot have 'from' < 1"
-
-msgid "cannot have 'to' < 'from'"
-msgstr "cannot have 'to' < 'from'"
-
-msgid "wrong number of variables; need 2, 4, or 5, but got"
-msgstr "wrong number of variables; need 2, 4, or 5, but got"
-
-msgid "too few data to trim tdr record"
-msgstr "too few data to trim tdr record"
-
-msgid "Unknown method"
-msgstr "Unknown method"
-
 msgid ""
 "a function name must be given, and it must be in lower case letters, e.g. "
 "\"gsw_sa_from_sp\""
@@ -2638,6 +3057,11 @@ msgstr "'longitude' and 'latitude' must be given unless 'node' is given"
 msgid "cannot access \""
 msgstr "cannot access \""
 
+#, fuzzy
+msgid "the subset must be based on longitude or latitude"
+msgstr ""
+"xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
+
 msgid "must supply longitude"
 msgstr "must supply longitude"
 
@@ -2675,8 +3099,8 @@ msgstr ""
 msgid "there are no topographic data within the latitudes of the plot region."
 msgstr "there are no topographic data within the latitudes of the plot region."
 
-msgid "need the ncdf library to read a netcdf topography file"
-msgstr "need the ncdf library to read a netcdf topography file"
+msgid "must install.packages(\"ncdf4\") to read topo data from a netCDF file"
+msgstr ""
 
 msgid "longitude vector has length"
 msgstr "longitude vector has length"
@@ -2704,6 +3128,28 @@ msgstr ""
 
 msgid "'col' should be a list of 4 colours"
 msgstr "'col' should be a list of 4 colours"
+
+#~ msgid ""
+#~ "DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
+#~ "instead of 'axis'"
+#~ msgstr ""
+#~ "DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
+#~ "instead of 'axis'"
+
+#~ msgid "x must be \"topleft\"in this (early) version of mapScalebar()"
+#~ msgstr "x must be \"topleft\"in this (early) version of mapScalebar()"
+
+#~ msgid "mapImage() cannot yet handle filledContour"
+#~ msgstr "mapImage() cannot yet handle filledContour"
+
+#~ msgid "sort.section() cannot yet handle argument by=\"distance\""
+#~ msgstr "sort.section() cannot yet handle argument by=\"distance\""
+
+#~ msgid "argument 'by' is incorrect"
+#~ msgstr "argument 'by' is incorrect"
+
+#~ msgid "need the ncdf library to read a netcdf topography file"
+#~ msgstr "need the ncdf library to read a netcdf topography file"
 
 #~ msgid ""
 #~ "plot.section() requires stations to have identical pressure levels.\n"

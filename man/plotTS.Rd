@@ -15,12 +15,12 @@
     col.grid="lightgray",
     lty.grid="dotted",
     rho1000=FALSE,
-    eos=getOption("eos", default='unesco'),
+    eos=getOption("oceEOS", default='gsw'),
     cex=par("cex"), col=par("col"), pch=par("pch"),
     bg, pt.bg="transparent",
     col.rho="darkgray",
     cex.rho=3/4*par("cex"),
-    rotate=FALSE,
+    rotate=TRUE,
     useSmoothScatter=FALSE,
     xlab,
     ylab,
@@ -37,12 +37,12 @@
 
 \arguments{
     \item{x}{An object containing salinity and temperature data, typically a
-        \code{cdt} object or \code{section} object.}
-    \item{inSitu}{A boolean indicating whether to use in-situ temperature or (the
-        default) potential temperature, calculated with reference pressure given
-        by \code{referencePressure}.  This is ignored if \code{eos="teos"}, because
-        in that case the y axis is necessarily the conservative formulation of
-        temperature.}
+        \code{ctd} object or \code{section} object.}
+    \item{inSitu}{A boolean indicating whether to use in-situ temperature or
+        (the default) potential temperature, calculated with reference pressure
+        given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
+        because those cases the y axis is necessarily the
+        conservative formulation of temperature.}
     \item{type}{representation of data, \code{"p"} for points, \code{"l"} for
         connecting lines, or \code{"n"} for no indication.}
     \item{referencePressure}{reference pressure, to be used in calculating
@@ -54,19 +54,13 @@
     \item{col.grid}{colour for grid.}
     \item{lty.grid}{line type for grid.}
     \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
-    \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
-        computer must have the TEOS library installed; see \code{\link{teos}}.
-        The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
-        axis and ``conservative temperature'' on the y axis.  Typically, the
-        temperature values will be very similar to those with \code{unesco}, but
-        the salinities will be increased by 0.1 to 0.2 units.  The isopycnals
-        will still run through the same points as for the \code{unesco} style.
-        See \code{\link{teos}} for more information.}
+    \item{eos}{equation of state to be used, either \code{"unesco"} or
+        \code{"gsw"}.}
     \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.
         (This is useful for cases in which \code{inset=TRUE}.)}
-    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
+    \item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
     \item{col}{colour for symbols.}
     \item{col.rho}{colour for isopycnal lines.}
     \item{cex.rho}{size of isopycnal labels.}
@@ -102,7 +96,9 @@
 
 \details{Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.}
 
-\value{None.}
+\value{A list is silently returned, containing \code{xat} and \code{yat},
+    values that can be used by \code{\link{oce.grid}} to add a grid to the
+    plot.}
 
 \seealso{
     \code{\link{summary.ctd}} summarizes the information, while

@@ -1,13 +1,16 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.section}
 \alias{read.section}
+
 \title{Read a section containing multiple CTD profiles}
-\description{Read a file that contains a series of \code{ctd} profiles that make up an oceanographic section.}
+
+\description{Read a file that contains a series of \code{ctd} profiles that make
+  up an oceanographic section.}
 
 \usage{read.section(file, directory, sectionId="", flags, 
              ship="", scientist="", institute="",
              missingValue=-999,
-             debug=getOption("oceDebug"),
-  processingLog)}
+             debug=getOption("oceDebug"), processingLog)}
 
 \arguments{
   \item{file}{a file containing a set of CTD observations.  At present, only 
@@ -37,38 +40,24 @@
     it provides is better for normal calls by a user.)}
 }
 
-\details{Only \emph{exchange BOT} comma-separated value format is
-permitted at this time, but other formats may be added later.  It
-should also be noted that the parsing scheme was developed after
-inspection of the A03 data set (see Examples). This may cause problems
-if the format is not universal. For example, the header must name the
-salinity column "\code{CTDSAL}"; if not, salinity values will not be
-read from the file.}
+\details{Only \emph{exchange BOT} comma-separated value format is permitted at
+  this time, but other formats may be added later.  It should also be noted that
+  the parsing scheme was developed after inspection of the A03 data set (see
+  Examples). This may cause problems if the format is not universal. For
+  example, the header must name the salinity column "\code{CTDSAL}"; if not,
+  salinity values will not be read from the file.}
 
-\value{An object of \code{\link[base]{class}} \code{"section"}, which is a \code{\link[base]{list}}
-containing
-\item{data}{a list containing just one item, 
-\code{station}, which is a list of \code{ctd} objects, one per station.}
-\item{metadata}{a list containing:
-\code{header}, the header from the data file;
-\code{sectionId}, a name for the section;
-\code{stationId}, a vector of station IDs, one per station;
-\code{latitude}, a vector of station latitudes, decimal and positive in northern hemisphere;
-and
-\code{longitude}, a vector of station latitudes, decimal and positive in eastern hemisphere.
-}
-\item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
-}
+\value{An object of class \code{\link{section-class}}.}
 
-\seealso{The documentation for \code{\link{section-class}} explains the
-    structure of section objects, and also outlines the other functions dealing
-    with them.}
+\seealso{Sections can also be created with \code{\link{as.section}}. The
+  documentation for \code{\link{section-class}} explains the structure of
+  section objects, and outlines other functions dealing with them.}
 
 \references{Several repository sites provide section data. An example that is
-    perhaps likely to exist for years is \url{http://cchdo.ucsd.edu}, but a
-    search on \code{"WOCE bottle data"} should turn up other sites, if this one
-    ceases to exist. Only the so-called \emph{exchange BOT} data format can be
-    processed by read.section() at this time.}
+  perhaps likely to exist for years is \url{http://cchdo.ucsd.edu}, but a search
+  on \code{"WOCE bottle data"} should turn up other sites, if this one ceases to
+  exist. Only the so-called \emph{exchange BOT} data format can be processed by
+  read.section() at this time.}
 
 \author{Dan Kelley}
 

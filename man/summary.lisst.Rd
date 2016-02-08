@@ -20,7 +20,7 @@
 \details{Pertinent summary information is presented, including the sampling
     times, data ranges, etc.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure
     of LISST objects, and also outlines the other functions dealing with them.}
@@ -30,10 +30,6 @@ library(oce)
 data(lisst)
 summary(lisst)
 }
-
-\references{The LIST-100 users guide (version 4.65), which provided the
-    information for this function, was downloaded in late May 2012, from
-    \url{http://www.sequoiasci.com/products/fam_LISST_100.aspx}.}
 
 \author{Dan Kelley}
 

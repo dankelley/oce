@@ -20,7 +20,7 @@ asMatrix=FALSE, debug=getOption("oceDebug"))}
         moderate amount of debugging information, or to 2 to get more.}
 }
 
-\details{ First, beam echo intensity is converted from counts to decibels, by
+\details{First, beam echo intensity is converted from counts to decibels, by
     multiplying by \code{count2db}.  Then, the signal decrease owing to
     spherical spreading is compensated for by adding the term
     \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
@@ -43,7 +43,7 @@ plot(apply(a,2,mean), distance, type='l', xlim=c(0,256))
 lines(apply(a,2,median), distance, type='l',col='red')
 legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 ## Image
-plot(adp.att, which="amplitude",col=oceColorsJet(100))
+plot(adp.att, which="amplitude",col=oce.colorsJet(100))
 }
 
 \references{The coefficient to convert to decibels is a personal communication.
