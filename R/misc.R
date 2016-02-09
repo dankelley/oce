@@ -77,6 +77,9 @@ bound125 <- function(x)
 #'
 #' @param longitude in degrees East, possibly exceeding 180
 #' @return longitude in signed degrees East
+#' @seealso
+#' \code{\link{matrixShiftLongitude}} and \code{\link{shiftLongitude}} are more
+#' powerful relatives to \code{standardizeLongitude}.
 standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
 
 #' Show an argument to a function, e.g. for debugging
@@ -2003,6 +2006,7 @@ matchBytes <- function(input, b1, ...)
 #' @param longitude A vector containing the longitude in the 0-360 convention. If missing, this is constructed to range from 0 to 360, with as many elements as the first index of \code{m}.
 #'
 #' @return A list containing \code{m} and \code{longitude}, both rearranged as appropriate.
+#' @seealso \code{\link{shiftLongitude}} and \code{\link{standardizeLongitude}}.
 matrixShiftLongitude <- function(m, longitude)
 {
     if (missing(m))

@@ -17,4 +17,7 @@ This is a utility function used by \code{\link{mapGrid}}. It works
 simply by subtracting 180 from each longitude, if any longitude
 in the vector exceeds 180.
 }
+\seealso{
+\code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
+}
 
