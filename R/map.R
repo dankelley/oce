@@ -24,6 +24,7 @@
 #'
 #' @param longitudes a numericl vector of longitudes
 #' @return vector of longitudes, shifted to the desired range. 
+#' @seealso \code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
 shiftLongitude <- function(longitudes) {
     if (any(longitudes > 180)) longitudes-360 else longitudes
 }
