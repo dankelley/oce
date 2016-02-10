@@ -626,7 +626,7 @@ webtide <- function(action=c("map", "predict"),
                     longitude, latitude, node, time,
                     basedir=getOption("webtide"),
                     region="nwatl",
-                    plot=TRUE, tformat, ...)
+                    plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
@@ -635,15 +635,27 @@ webtide <- function(action=c("map", "predict"),
     triangles <- NULL
     warn <- options("warn")$warn
     options(warn=-1)
-    t <- try({ triangles <- read.table(paste(subdir, "/", region, ".nod", sep=""),
+    nodFile <- paste(subdir, "/", region, ".nod", sep="")
+    t <- try({ triangles <- read.table(nodFile,
         col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
     if (inherits(t, "try-error")) {
-        t <- try({ triangles <- read.table(paste(subdir, "/", region, "ll.nod", sep=""),
+        nodFile <- paste(subdir, "/", region, "ll.nod", sep="")
+        t <- try({ triangles <- read.table(nodFile,
             col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
         if (inherits(t, "try-error")) {
-            t <- try({ triangles <- read.table(paste(subdir, "/", region, "_ll.nod", sep=""),
+            nodFile <- paste(subdir, "/", region, "_ll.nod", sep="")
+            t <- try({ triangles <- read.table(nodFile,
                 col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+            if (inherits(t, "try-error")) {
+                stop("cannot find WebTide nod file; last trial name was ", nodFile)
+            } else {
+                oceDebug(debug, "Found node information in ", nodFile, "\n")
+            }
+        } else {
+            oceDebug(debug, "Found node information in ", nodFile, "\n")
         }
+    } else {
+        oceDebug(debug, "Found node information in ", nodFile, "\n")
     }
     if (is.null(triangles))
         stop("Could not find the '.nod' file")
@@ -690,6 +702,8 @@ webtide <- function(action=c("map", "predict"),
             latitude <- triangles$latitude[node]
             longitude <- triangles$longitude[node]
         }
+        oceDebug(debug, latitude, "N ", longitude, "E -- use node ", node,
+                 " at ", triangles$latitude[node], "N ", triangles$longitude[node], "E\n", sep="")
         constituentse <- dir(path=subdir, pattern="*.s2c")
                                         #abbrev <- substr(constituentse, 1, 2)
         abbrev <- as.character(read.table(paste(subdir,"/constituents.txt",sep=""))[,1])
@@ -699,21 +713,29 @@ webtide <- function(action=c("map", "predict"),
         data("tidedata", package="oce", envir=environment())
         tidedata  <- get("tidedata")#,   pos=globalenv())
         for (i in 1:nconstituents) {
-            period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            twoLetter <- substr(constituentse[i], 1, 2)
+            C <- which(twoLetter == tidedata$const$name)
+            period[i] <- 1 / tidedata$const$freq[C] # which(abbrev[C] == tidedata$const$name)]
             ## Elevation file contains one entry per node, starting with e.g.:
             ##tri
             ## period 23.934470 (hours) first harmonic 
             ##260.000000 (days) 
             ##1 0.191244 223.820954
             ##2 0.188446 223.141200
-            cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
+            coneFile <- paste(subdir, constituentse[i], sep="/")
+            cone <- read.table(coneFile, skip=3)[node,]
             ampe[i] <- cone[[2]]
             phasee[i] <- cone[[3]]
-            conuv <- read.table(paste(subdir,constituentsuv[i],sep="/"), skip=3)[node,]
+            conuvFile <- paste(subdir,constituentsuv[i],sep="/")
+            conuv <- read.table(conuvFile, skip=3)[node,]
             ampu[i] <- conuv[[2]]
             phaseu[i] <- conuv[[3]]
             ampv[i] <- conuv[[4]]
             phasev[i] <- conuv[[5]]
+            oceDebug(debug, coneFile, sprintf("%s ", twoLetter), 
+                     sprintf("%4.2fh", period[i]),
+                     sprintf(" (node %d) ", node),
+                     sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
         }
         ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
@@ -721,13 +743,22 @@ webtide <- function(action=c("map", "predict"),
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
-            vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            twoLetter <- substr(constituentse[i], 1, 2)
+            C <- which(twoLetter == tidedata$const$name)
+            ## vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            vuf <- tidemVuf(tRef, j=C, lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
+            ##> lines(time, elevation, col=i,lwd=3) ## Debug
             u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
             v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
+            oceDebug(debug, sprintf("%s ", twoLetter),  
+                     sprintf("%4.2fh ", period[i]),
+                     sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
+ 
         }
+        ##> legend("topleft", lwd=1, col=1:5, legend=abbrev[1:5])
         if (plot) {
             par(mfrow=c(3,1))
             oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
