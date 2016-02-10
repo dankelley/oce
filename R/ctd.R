@@ -3178,17 +3178,27 @@ plotProfile <- function (x,
         dpdt.sm <- smooth.spline(x@data$pressure, dpdt, df=df)
         if (missing(dpdtlim))
             dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
+        plot(dpdt.sm$y, dpdt.sm$x,
+             xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
              xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(dp/dt, if (know.time.unit) " [ dbar/s ]" else " [ dbar/(time-unit)]")),
-                  side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
-
+            if (know.time.unit) {
+                mtext(expression(dp/dt * " [ dbar / s ]"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            } else {
+                mtext(expression(dp/dt * " [ dbar / (time unit) ]"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            }
         } else {
-            mtext(expression(paste(dp/dt, if (know.time.unit) " ( dbar/s )" else " ( dbar/(time-unit))")),
-                  side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
+            if (know.time.unit) {
+                mtext(expression(dp/dt * " ( dbar / s )"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            } else {
+                mtext(expression(dp/dt * " ( dbar / (time unit) )"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            }
         }
         box()
         if (grid) {
