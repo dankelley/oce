@@ -742,9 +742,11 @@ webtide <- function(action=c("map", "predict"),
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
+            lines(time, elevation, col=i,lwd=3) ## Debug
             u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
             v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
         }
+        legend("topleft", lwd=1, col=1:5, legend=abbrev[1:5])
         if (plot) {
             par(mfrow=c(3,1))
             oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
