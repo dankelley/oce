@@ -51,11 +51,11 @@ plotScan(ctdRaw)
 ## ----fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=12)----
 library(oce)
 data(section)
-GS <- subset(section, 102<=stationId&stationId<=124)
+GS <- subset(section, 102 <= stationId & stationId <= 124)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 
-## ----fig.cap="**Figure 5.** World in Mollweide projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72----
+## ----fig.cap="**Figure 5.** World in Winkel Tripel projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72----
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
@@ -74,17 +74,17 @@ mapPlot(coastlineWorld, projection="+proj=moll") # Molleweide
 mapPlot(coastlineWorld, projection="+proj=eck4") # Eckert IV
 mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
 
-## ----fig.cap="**Figure 6.** World SST in Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72----
-par(mar=rep(1, 4))
-data(levitus, package='ocedata')
-lon <- levitus$longitude
-lat <- levitus$latitude
-SST <- levitus$SST
-Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oce.colorsJet)
+## ----fig.cap="**Figure 6.** World bathymetry in Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)----
+par(mar=c(1.5, 1, 1.5, 1))
+data(topoWorld)
+topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot
+lon <- topo[["longitude"]]
+lat <- topo[["latitude"]]
+z <- topo[["z"]]
+cm <- colormap(name="gmt_globe")
+drawPalette(colormap=cm)
 mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-mapPolygon(coastlineWorld, col='gray')
+mapImage(lon, lat, z, colormap=cm)
 
 ## ----fig.cap="**Figure 7.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3, dpi=72----
 par(mar=c(2, 2, 1, 1))
@@ -142,7 +142,7 @@ plotProfile(pycnocline, which="density+N2")
 ## ----fig.width=5, fig.height=5, fig.keep="none"--------------------------
 library(oce)
 data(ctd)
-pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
+pycnocline <- subset(ctd, 5 <= pressure & pressure <= 12)
 plotProfile(pycnocline, which="density+N2")
 
 ## ----eval=FALSE----------------------------------------------------------
@@ -173,23 +173,25 @@ plotProfile(pycnocline, which="density+N2")
 library(oce)
 data(section)
 ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
-col <- ifelse(section[['longitude']] > -30, "black", "gray")
+col <- ifelse(section[["longitude"]] > -30, "black", "gray")
 plotTS(ctd, col=col)
 
 ## ----fig.width=5, fig.height=3, fig.keep="none"--------------------------
 library(oce)
-GS <- subset(section, 102<=stationId&stationId<=124)
+data(section)
+GS <- subset(section, 102 <= stationId & stationId <= 124)
 dh <- swDynamicHeight(GS)
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(dh$distance, dh$height, type="l", xlab="", ylab="Dyn. Height [m]")
 grid()
 # 1e3 metres per kilometre
-f <- coriolis(GS@data$station[[1]]@metadata$latitude)
-g <- gravity(GS@data$station[[1]]@metadata$latitude)
+latMean <- mean(GS[["latitude"]])
+f <- coriolis(latMean)
+g <- gravity(latMean)
 v <- diff(dh$height)/diff(dh$distance) * g / f / 1e3
-plot(dh$distance[-1], v, type="l", col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+plot(dh$distance[-1], v, type="l", xlab="Distance [km]", ylab="Velocity [m/s]")
 grid()
-abline(h=0)
+abline(h=0, col='red')
 
 ## ----fig.width=7, fig.height=3, fig.keep="none"--------------------------
 library(oce)

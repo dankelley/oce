@@ -372,19 +372,20 @@ mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
 ```
 
 Before moving on to other projections, it may be helpful to show how to plot
-gridded data with projection, using sea-surface temperature as a test case.
+gridded data with projection, illustrated in Figure 6 with bathymetry near
+eastern Canada.
 
-```{r fig.cap="**Figure 6.** World SST in Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72}
-par(mar=rep(1, 4))
-data(levitus, package='ocedata')
-lon <- levitus$longitude
-lat <- levitus$latitude
-SST <- levitus$SST
-Tlim <- c(-2, 30)
-drawPalette(Tlim, col=oce.colorsJet)
+```{r fig.cap="**Figure 6.** World bathymetry in Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)}
+par(mar=c(1.5, 1, 1.5, 1))
+data(topoWorld)
+topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot
+lon <- topo[["longitude"]]
+lat <- topo[["latitude"]]
+z <- topo[["z"]]
+cm <- colormap(name="gmt_globe")
+drawPalette(colormap=cm)
 mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
-mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
-mapPolygon(coastlineWorld, col='gray')
+mapImage(lon, lat, z, colormap=cm)
 ```
 
 ### 6.3 Popular mid-latitude projections
