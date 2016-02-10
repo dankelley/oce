@@ -69,13 +69,14 @@
 \examples{
 \dontrun{
 library(oce)
-prediction <- webtide("predict", lon=-69.61, lat=48.14)
+prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
 }
 }
 
 \references{The WebTide software may be downloaded for free at
-  the Department of Fisheries and Oceans (Canada) website, at a URL
-  that changes too frequently to be citable here.
+  the Department of Fisheries and Oceans (Canada) website, which in February
+  2016 was \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
+  although this site seems not to be particularly static.
   %\url{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-eng.php}
   %\url{https://inter-l01.dfo-mpo.gc.ca/sites/bio/science/research-recherche/ocean/webtide/index-en.php},
   Note that WebTide is not an open-source

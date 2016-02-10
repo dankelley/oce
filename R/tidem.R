@@ -635,15 +635,27 @@ webtide <- function(action=c("map", "predict"),
     triangles <- NULL
     warn <- options("warn")$warn
     options(warn=-1)
-    t <- try({ triangles <- read.table(paste(subdir, "/", region, ".nod", sep=""),
+    nodFile <- paste(subdir, "/", region, ".nod", sep="")
+    t <- try({ triangles <- read.table(nodFile,
         col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
     if (inherits(t, "try-error")) {
-        t <- try({ triangles <- read.table(paste(subdir, "/", region, "ll.nod", sep=""),
+        nodFile <- paste(subdir, "/", region, "ll.nod", sep="")
+        t <- try({ triangles <- read.table(nodFile,
             col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
         if (inherits(t, "try-error")) {
-            t <- try({ triangles <- read.table(paste(subdir, "/", region, "_ll.nod", sep=""),
+            nodFile <- paste(subdir, "/", region, "_ll.nod", sep="")
+            t <- try({ triangles <- read.table(nodFile,
                 col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+            if (inherits(t, "try-error")) {
+                stop("cannot find WebTide nod file; last trial name was ", nodFile)
+            } else {
+                message("Found node information in ", nodFile)
+            }
+        } else {
+            message("Found node information in ", nodFile)
         }
+    } else {
+        message("Found node information in ", nodFile)
     }
     if (is.null(triangles))
         stop("Could not find the '.nod' file")
@@ -690,6 +702,8 @@ webtide <- function(action=c("map", "predict"),
             latitude <- triangles$latitude[node]
             longitude <- triangles$longitude[node]
         }
+        message("node: ", node, ", latitude: ", latitude, ", longitude: ", longitude,
+                ", latitudeNode: ", triangles$latitude[node], ", longitudeNode: ", triangles$longitude[node])
         constituentse <- dir(path=subdir, pattern="*.s2c")
                                         #abbrev <- substr(constituentse, 1, 2)
         abbrev <- as.character(read.table(paste(subdir,"/constituents.txt",sep=""))[,1])
@@ -714,11 +728,14 @@ webtide <- function(action=c("map", "predict"),
             phaseu[i] <- conuv[[3]]
             ampv[i] <- conuv[[4]]
             phasev[i] <- conuv[[5]]
+            message("i: ", i, ", ampe[i]: ", ampe[i], ", phasee[i]: ", phasee[i])
+            message("i: ", i, ", abbrev[i]: ", abbrev[i])
         }
         ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
         ## NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
+        message("time[1]: ", time[1], ", tRef: ", tRef)
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
             vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
