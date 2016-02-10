@@ -11,7 +11,7 @@
         longitude, latitude, node, time,
         basedir=getOption("webtide"),
         region="nwatl", plot=TRUE,
-        tformat, \dots)}
+        tformat, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
 
@@ -37,6 +37,7 @@
   \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
       plot types that call that function.  (See \code{\link{strptime}} for the
       format used.)}
+  \item{debug}{a debugging flag; set higher for more debugging and 0 for no debugging}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 }
@@ -81,7 +82,9 @@ prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
   %\url{https://inter-l01.dfo-mpo.gc.ca/sites/bio/science/research-recherche/ocean/webtide/index-en.php},
   Note that WebTide is not an open-source
   application, as it consists mainly of compiled Java code, which precludes examination of the
-  source.}
+  source. The present function relies on a certain structure of the WebTide data files, and since
+  the WebTide source is closed, this was done partly by guessing. This means that the present
+  function is brittle to changes in WebTide; users should be on the lookout for odd results.}
 
 \author{Dan Kelley}
 
