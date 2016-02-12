@@ -472,10 +472,13 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         x <- xy$x
         y <- xy$y
     }
-    if (!is.null(col))
-        polygon(x, y, border=border, col=col, ...)
-    if (isTopo) {
-        mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
+    if (type != 'n') {
+        if (!is.null(col)) {
+            polygon(x, y, border=border, col=col, ...)
+        }
+        if (isTopo) {
+            mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
+        }
     }
     usr <- par('usr')
     ## FIXME: meridians and zones should be added later because they can change depending
