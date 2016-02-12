@@ -16,8 +16,8 @@ mapDirectionField(longitude, latitude, u, v,
     \item{scale}{latitude degrees per unit of \code{u} or \code{v}.}
     \item{length}{length of arrow heads, passed to \code{\link{arrows}}}
     \item{code}{code of arrows, passed to \code{\link{arrows}}}
-    \item{col}{color of arrows.  This may be a single colour, or a matrix
-        of colors of the same dimension as \code{u}.}
+    \item{col}{colour of arrows.  This may be a single colour, or a matrix
+        of colours of the same dimension as \code{u}.}
     \item{\dots}{optional arguments passed to \code{\link{arrows}}, e.g.
         \code{angle} and \code{lwd} can be useful in differentiating different
         fields.}
@@ -56,9 +56,7 @@ mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
 }
 }
 
-\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
-    PROJ.4).}
-
+\author{Dan Kelley}
 
 \keyword{hplot}
 

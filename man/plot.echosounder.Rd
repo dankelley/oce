@@ -59,12 +59,12 @@
 
   \item{ylim}{optional range for y axis.}
 
-  \item{zlim}{optional range for colorscale.}
+  \item{zlim}{optional range for colour scale.}
 
   \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
       \code{"b"} for both.}
 
-  \item{col}{colorscale for image, a function}
+  \item{col}{colour scale for image, a function}
 
   \item{lwd}{line width (ignored if \code{type="p"})}
 
@@ -138,9 +138,11 @@
     plot.}
 
 \examples{
+\dontrun{
 library(oce)
 data(echosounder)
 plot(echosounder, which=c(1,2), drawBottom=TRUE)
+}
 }
 
 \author{Dan Kelley, with extensive help from Clark Richards}

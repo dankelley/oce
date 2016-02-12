@@ -37,7 +37,7 @@
 
 \arguments{
     \item{x}{An object containing salinity and temperature data, typically a
-        \code{cdt} object or \code{section} object.}
+        \code{ctd} object or \code{section} object.}
     \item{inSitu}{A boolean indicating whether to use in-situ temperature or
         (the default) potential temperature, calculated with reference pressure
         given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
@@ -60,7 +60,7 @@
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.
         (This is useful for cases in which \code{inset=TRUE}.)}
-    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
+    \item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
     \item{col}{colour for symbols.}
     \item{col.rho}{colour for isopycnal lines.}
     \item{cex.rho}{size of isopycnal labels.}

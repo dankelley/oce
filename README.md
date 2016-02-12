@@ -1,3 +1,13 @@
+# **oce**
+
+TravisCI test: [![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
+
+
+CRAN: ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/oce)
+![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-week/oce)
+![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-day/oce)
+
+
 ``Oce`` is an R package for processing oceanographic data.  Its
 [webpage](http://dankelley.github.com/oce/) provides details, of which this
 README file is just a sketch.
@@ -14,11 +24,11 @@ The easy way to install the ``develop`` branch is to execute the
 following commands in R.
 ```splus
 library(devtools)
-install_github('oce/dankelley', ref='develop')
+install_github('dankelley/oce', ref='develop')
 ```
 and most readers should also install Ocedata, with
 ```splus
-install_github('ocedata/dankelley', ref='master')
+install_github('dankelley/ocedata', ref='master')
 ```
 
 Oce is emphatically an open-source system, and so the participation of users is

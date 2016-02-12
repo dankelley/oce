@@ -58,12 +58,12 @@ rm(n, x, y, theta, u, v)
 
 # Oceanographic example
 if (require(ocedata)) {
-    data(airHalifax)
-    t <- airHalifax$t
-    u <- airHalifax$u
-    v <- airHalifax$v
-    temperature <- airHalifax$temperature
-    oce.plot.ts(t, temperature, type='l', ylim=c(0,25))
+    data(met)
+    t <- ISOdatetime(met[["Year"]], met[["Month"]], met[["Day"]], 0, 0, 0, tz="UTC")
+    u <- met[["u"]]
+    v <- met[["v"]]
+    temperature <- met[["temperature"]]
+    oce.plot.ts(t, temperature, type='p', ylim=c(-5, 30))
     plotSticks(t, 5, u, v, yscale=2, add=TRUE)
 }
 }

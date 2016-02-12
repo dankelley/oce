@@ -11,12 +11,12 @@
         longitude, latitude, node, time,
         basedir=getOption("webtide"),
         region="nwatl", plot=TRUE,
-        tformat, \dots)}
+        tformat, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
 
   \item{action}{An indication of the action, either \code{action="map"} to draw a map or
-    \code{actoin="predict"} to get a prediction; see \sQuote{Details}.}
+    \code{action="predict"} to get a prediction; see \sQuote{Details}.}
   
   \item{longitude}{longitude at which prediction is required (ignored if \code{node} is given).}
 
@@ -37,6 +37,7 @@
   \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
       plot types that call that function.  (See \code{\link{strptime}} for the
       format used.)}
+  \item{debug}{a debugging flag; set higher for more debugging and 0 for no debugging}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 }
@@ -69,15 +70,21 @@
 \examples{
 \dontrun{
 library(oce)
-prediction <- webtide("predict", lon=-69.61, lat=48.14)
+prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
 }
 }
 
 \references{The WebTide software may be downloaded for free at
-  \url{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-eng.php}, along with a
-  suite of databases for various geographical regions.  Note that WebTide is not an open-source
+  the Department of Fisheries and Oceans (Canada) website, which in February
+  2016 was \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
+  although this site seems not to be particularly static.
+  %\url{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-eng.php}
+  %\url{https://inter-l01.dfo-mpo.gc.ca/sites/bio/science/research-recherche/ocean/webtide/index-en.php},
+  Note that WebTide is not an open-source
   application, as it consists mainly of compiled Java code, which precludes examination of the
-  source.}
+  source. The present function relies on a certain structure of the WebTide data files, and since
+  the WebTide source is closed, this was done partly by guessing. This means that the present
+  function is brittle to changes in WebTide; users should be on the lookout for odd results.}
 
 \author{Dan Kelley}
 

@@ -8,8 +8,9 @@
 
 \usage{mapImage(longitude, latitude, z, zlim, zclip=FALSE,
          breaks, col, colormap, border=NA,
-         lwd=par("lwd"), lty=par("lty"),
-         filledContour=FALSE, missingColor=NA, debug=getOption("oceDebug"))}
+         lwd=par("lwd"), lty=par("lty"), missingColor=NA,
+         filledContour=FALSE, gridder="binMean2D",
+         debug=getOption("oceDebug"))}
 
 \arguments{
 
@@ -21,12 +22,14 @@
     
     \item{zlim}{limit for z (colour)}
     
-    \item{zclip}{logical, indicating whether to clip the colours by using the
-        \code{missingColor} for out-of-range values.  If if \code{zlim} is
-        given then its min and max set the range.  If \code{zlim} is not given
-        but \code{breaks} is given, then the min and max of \code{breaks} sets
-        the range.  If neither \code{zlim} nor \code{breaks} is given, clipping
-        is not done, i.e. the action is as if \code{zclip} were \code{FALSE}.}
+    \item{zclip}{logical, with \code{TRUE} indicating that out-of-range z
+        values should be painted with \code{missingColor} and \code{FALSE}
+        indicating that these values should be painted with the nearest
+        in-range colour.  If \code{zlim} is given then its min and max set the
+        range.  If \code{zlim} is not given but \code{breaks} is given, then
+        the min and max of \code{breaks} sets the range used for z.  If neither
+        \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
+        action is as if \code{zclip} were \code{FALSE}.}
 
     \item{breaks}{the z values for breaks in the colour scheme.  If this is of
         length 1, the value indicates the desired number of breaks, which is
@@ -48,14 +51,23 @@
     
     \item{lty}{line type, used if borders are drawn}
 
+    \item{missingColor}{a colour to be used to indicate missing data, or
+        \code{NA} to skip the drawing of such regions (which will retain
+        whatever material has already been drawn at the regions).}
+
     \item{filledContour}{either a boolean value indicating whether to use
         filled contours to plot the image, or a numerical value indicating the
         resampling rate to be used in interpolating from lon-lat coordinates to
-        x-y coordinates.  See \dQuote{Details}.}
+        x-y coordinates.  See \dQuote{Details} for how this interacts with
+        \code{gridder}.}
 
-    \item{missingColor}{a color to be used to indicate missing data, or
-        \code{NA} to skip the drawing of such regions (which will retain
-        whatever material has already been drawn at the regions).}
+    \item{gridder}{name of gridding function used if \code{filledContour} is
+        \code{TRUE}.  This can be either \code{"binMean2D"} to select
+        \code{\link{binMean2D}} or \code{"interp"} for
+        \code{\link[akima]{interp}}. If not provided, then a selection is made
+        automatically, with \code{\link{binMean2D}} being used if there are
+        more than 10,000 data points in the present graphical view. This
+        \code{"binMean2D"} method is much faster than \code{"interp"}.}
 
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.
@@ -73,28 +85,28 @@
     there are two approaches, depending on the value of \code{filledContour}.
 
     If \code{filledContour} is \code{FALSE}, the image ``pixels'' are with
-    \code{\link{polygon}}.  This can be slow for fine grids.  Also, the results
-    can seem ``washed out'' on some plotting devices, owing to an issue with
-    anti-aliasing in the drawing of the pixel polygons.  If a \code{\link{png}}
-    device is to be used, it is advised to supply arguments \code{type="cairo"}
-    and \code{antialias="none"}; see [1].
+    \code{\link{polygon}}, which can be prohibitively slow for fine grids. 
 
-    If \code{filledContour} is \code{TRUE} or a numerical value, then the the
+    If \code{filledContour} is \code{TRUE} or a numerical value, then the
     ``pixels'' are remapped into a regular grid and then displayed with
     \code{\link{.filled.contour}}.  The remapping starts by converting the
     regular lon-lat grid to an irregular x-y grid using
     \code{\link{lonlat2map}}.  This irregular grid is then interpolated onto a
-    regular x-y grid  with \code{\link[akima]{interp}} from the \code{akima}
-    package.   If \code{filledContour} is \code{TRUE}, the dimensions of the
-    regular x-y grid is the same as that of the original lon-lat grid;
-    otherwise, the number of rows and columns are multiplied by the numerical
-    value of \code{filledContour}, e.g. the value 2 means to make the grid
-    twice as fine.
+    regular x-y grid  with \code{\link{binMean2D}} or with
+    \code{\link[akima]{interp}} from the \code{akima} package, as determined by
+    the \code{gridder} argument.   If \code{filledContour} is \code{TRUE}, the
+    dimensions of the regular x-y grid is the same as that of the original
+    lon-lat grid; otherwise, the number of rows and columns are multiplied by
+    the numerical value of \code{filledContour}, e.g. the value 2 means to make
+    the grid twice as fine.
     
     Filling contours can produce aesthetically-pleasing results, but the method
     involves interpolation, so the data are not represented exactly and
     analysts are advised to compare the results from the two methods (and
     perhaps various grid refinement values) to guard against misinterpretation.
+
+    If a \code{\link{png}} device is to be used, it is advised to supply
+    arguments \code{type="cairo"} and \code{antialias="none"}; see [1].
 
 }
 
@@ -114,36 +126,35 @@ lonlim <- c(-70,-50)
 latlim <- c(40,50)
 topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
 topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
-topo <- subset(topo, (360+lonlim[1]) < longitude & longitude < (360+lonlim[2]))
+topo <- subset(topo, lonlim[1] < longitude & longitude < lonlim[2])
 mapPlot(coastlineWorld, type='l',
         longitudelim=lonlim, latitudelim=latlim,
-        proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
+        projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
 breaks <- seq(-5000, 1000, 500)
 mapImage(topo, col=oce.colorsGebco, breaks=breaks)
 mapLines(coastlineWorld)
 box()
 mapPlot(coastlineWorld, type='l',
         longitudelim=lonlim, latitudelim=latlim,
-        proj="polyconic", orientation=c(90,-60,0), grid=TRUE)
+        projection="+proj=lcc +lat_1=40 +lat_2=50 +lon_0=-60")
 mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
 box()
 mapLines(coastlineWorld)
 
 ## Northern polar region, with colour-coded bathymetry
+par(mfrow=c(1,1))
 drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oce.colorsJet)
-mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-180,180), latitudelim=c(60,120),
-        proj="stereographic", grid=TRUE)
+mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
+        longitudelim=c(-180,180), latitudelim=c(60,120))
 mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
-# Levitus SST (requires dataset from http://www.esrl.noaa.gov)
+# Levitus SST
 par(mfrow=c(1,1))
-library(ncdf4)
-con <- nc_open("/data/oar/levitus/temperature_annual_5deg.nc")
-lon <- ncvar_get(con, "lon")
-lat <- ncvar_get(con, "lat")
-SST <- ncvar_get(con, "t_mn")[,,1]
+data(levitus, package='ocedata')
+lon <- levitus$longitude
+lat <- levitus$latitude
+SST <- levitus$SST
 par(mar=rep(1, 4))
 Tlim <- c(-2, 30)
 drawPalette(Tlim, col=oce.colorsJet)
@@ -153,7 +164,6 @@ mapPolygon(coastlineWorld, col='gray')
 }
 }
 
-\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
-    PROJ.4).}
+\author{Dan Kelley}
 
 \keyword{hplot}

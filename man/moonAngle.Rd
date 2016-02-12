@@ -2,7 +2,7 @@
 
 \alias{moonAngle}
 
-\title{Lunar angle as function of space and time.}
+\title{Lunar Angle as Function of Space and Time}
 
 \description{Lunar angle as function of space and time.}
 

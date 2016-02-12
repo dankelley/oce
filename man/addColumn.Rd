@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{addColumn}
 \alias{addColumn}
 \title{Add a column to an oce object}
@@ -12,12 +13,12 @@
 }
 
 \details{If there is already a column with the given name, its contents are
-    replaced by the new value.}
+  replaced by the new value.}
 
 \value{An object of \code{\link[base]{class}} \code{oce}, with a new column.}
 
-\seealso{\code{\link{ctdAddColumn}} does a similar thing for \code{ctd}
-    objects, and is in fact called, if \code{x} is of class \code{ctd}.}
+\seealso{\code{\link{ctdAddColumn}} does a similar thing for \code{ctd} objects,
+  and is in fact called, if \code{x} is of class \code{ctd}.}
 
 \examples{
 library(oce)

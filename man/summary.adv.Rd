@@ -18,8 +18,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{An object of class \code{"summary.adv"}, which contains
-  pertinent information about the ADV record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{adv-class}} explains the structure
     of ADV objects, and also outlines the other functions dealing with them.}

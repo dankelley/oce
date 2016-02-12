@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{interpBarnes}
 
 \alias{interpBarnes}
@@ -9,20 +10,21 @@
 \usage{interpBarnes(x, y, z, w,
     xg, yg, xgl, ygl,
     xr, yr, gamma=0.5, iterations=2, trim=0,
-    debug=getOption("oceDebug"))}
+    pregrid=FALSE,
+    debug=getOption("oceDebug"))
+}
 
 \arguments{
   \item{x, y}{a vector of x and ylocations.}
   \item{z}{a vector of z values, one at each (x,y) location.}
-  \item{w}{a optional vector of weights at the (x,y) location.  If not
-      supplied, then a weight of 1 is used for each point, which means equal
-      weighting.  Higher weights give data points more influence.}
+  \item{w}{a optional vector of weights at the (x,y) location.  If not supplied,
+    then a weight of 1 is used for each point, which means equal weighting.
+    Higher weights give data points more influence.}
   \item{xg, yg}{optional vectors defining the x and y grids.  If not supplied,
-      these values are inferred from the data, using e.g. \code{pretty(x,
-          n=50)}.}
+    these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.}
   \item{xgl, ygl}{optional lengths of the x and y grids, to be constructed with
-      \code{\link{seq}} spanning the data range.  These values \code{xgl} are
-      only examined if \code{xg} and \code{yg} are not supplied.}
+    \code{\link{seq}} spanning the data range.  These values \code{xgl} are only
+    examined if \code{xg} and \code{yg} are not supplied.}
   \item{xr,yr}{optional values defining the width of the radius ellipse in
     the x and y directions.  If not supplied, these are calculated as the span
     of x and y over the square root of the number of data.}
@@ -30,25 +32,38 @@
     and \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
   \item{iterations}{number of iterations.}
   \item{trim}{a number between 0 and 1, indicating the quantile of data weight
-      to be used as a criterion for blanking out the gridded value (using
-      \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any
-      spots on the grid where the data weight is less than the \code{trim}-th
-      \code{\link{quantile}} are set to \code{NA}.  See examples.}
+    to be used as a criterion for blanking out the gridded value (using
+    \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any spots
+    on the grid where the data weight is less than the \code{trim}-th
+    \code{\link{quantile}} are set to \code{NA}.  See examples.}
+
+  \item{pregrid}{an indication of whether to pre-grid the data. If \code{FALSE},
+    this is not done, i.e. conventional Barnes interpolation is performed.
+    Otherwise, then the data are first averaged within grid cells using
+    \code{\link{binMean2D}}.  If \code{pregrid} is \code{TRUE} or \code{4}, then
+    this averaging is done within a grid that is 4 times finer than the grid
+    that will be used for the Barnes interpolation. Otherwise, \code{pregrid}
+    may be a single integer indicating the grid refinement (4 being the result
+    if \code{TRUE} had been supplied), or a vector of two integers, for the
+    grid refinement in x and y. The purpose of using \code{pregrid} is to speed
+    processing on large datasets, and to remove spatial bias (e.g. with a single
+    station that is repeated frequently in an otherwise seldom-sampled region).
+    A form of pregridding is done in the World Ocean Atlas, for example.}
   \item{debug}{a flag that turns on debugging.  Set to 0 for no debugging
-      information, to 1 for more, etc; the value is reduced by 1 for each
-      descendent function call.}
+    information, to 1 for more, etc; the value is reduced by 1 for each
+    descendent function call.}
 }
 
 \details{The algorithm follows that described by Koch et al. (1983), with the
-    addition of the ability to blank out the grid in spots where data are
-    sparse, using the \code{trim} argument.
-}
+  addition of the ability to blank out the grid in spots where data are sparse,
+  using the \code{trim} argument, and the ability to pre-grid, with the
+  \code{pregrid} argument.}
 
 \value{A list containing: \code{xg}, a vector holding the x-grid); \code{yg}, a
-    vector holding the y-grid; \code{zg}, a matrix holding the gridded values;
-    \code{wg}, a matrix holding the weights used in the interpolation at its
-    final iteration; and \code{zd}, a vector of the same length as \code{x},
-    which holds the interpolated values at the data points.}
+  vector holding the y-grid; \code{zg}, a matrix holding the gridded values;
+  \code{wg}, a matrix holding the weights used in the interpolation at its final
+  iteration; and \code{zd}, a vector of the same length as \code{x}, which holds
+  the interpolated values at the data points.}
 
 \examples{
 library(oce)

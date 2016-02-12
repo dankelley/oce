@@ -15,7 +15,7 @@
 
 \value{A numerical vector indicating the indices of left-sided neighbors.}
 
-\details{ The indices point to the largest items in \code{x} that are less than
+\details{The indices point to the largest items in \code{x} that are less than
     or equal the values in \code{f}.  The method uses a bisection search, so
     the time taken is proportional to \code{length(f) * log2(length(x))}.}
 

@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swSoundAbsorption}
 
 \alias{swSoundAbsorption}
@@ -12,7 +13,9 @@
 \arguments{
   \item{frequency}{frequency of sound in Hz}
   \item{salinity}{salinity in PSU}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+    on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
   \item{pressure}{water pressure in dbar}
   \item{pH}{seawater pH}
   \item{formulation}{specify the formulation to use; see references}

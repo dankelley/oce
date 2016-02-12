@@ -19,8 +19,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{An object of class \code{"summary.adp"}, which contains
-  pertinent information about the ADP record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{adp-class}} explains the structure
     of ADP objects, and also outlines the other functions dealing with them.}

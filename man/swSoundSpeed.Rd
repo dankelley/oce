@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swSoundSpeed}
 
 \alias{swSoundSpeed}
@@ -15,14 +16,16 @@
     a \code{ctd} object (in which case \code{salinity},
     \code{temperature} and \code{pressure} are determined from the
     object, and must not be provided in the argument list).}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
+    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}, and the examples below.}
   \item{pressure}{pressure [dbar]}
   \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
-      \sQuote{Details}).}
+    \sQuote{Details}).}
   \item{latitude}{latitude of observation (only used if \code{eos="gsw"}; see
-      \sQuote{Details}).}
+    \sQuote{Details}).}
   \item{eos}{equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
-      [3,4].}
+    [3,4].}
 }
 
 \details{If the first argument is a \code{ctd} or \code{section} object, then
@@ -32,21 +35,20 @@
 
     If \code{eos="unesco"}, the sound speed is calculated using the formulation
     in section 9 of Fofonoff and Millard (1983). If \code{eos="gsw"}, then the
-    \code{\link[gsw]{gsw_sound_speed}} function from the \code{gsw} package is
-    used.
+    \code{\link[gsw]{gsw_sound_speed}} function from the \CRANpkg{gsw} package
+    is used.
 
 }
 
 \value{Sound speed [m/s].}
 
 \examples{
-s <- swSoundSpeed(40, 40, 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
+swSoundSpeed(40, T90fromT68(40), 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
 }
 
-\references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
- computation of fundamental properties of seawater. \emph{Unesco
- Technical Papers in Marine Science}, \bold{44}, 53 pp.  (See section
- 9.)  }
+\references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation
+  of fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
+    Science}, \bold{44}, 53 pp.  (See section 9.)  }
 
 \author{Dan Kelley}
 

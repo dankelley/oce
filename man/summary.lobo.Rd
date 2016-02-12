@@ -19,7 +19,7 @@
 \details{Pertinent summary information is presented, including the
   sampling interval, data ranges, etc.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{lobo-class}} explains the structure
     of LOBO objects, and also outlines the other functions dealing with them.}

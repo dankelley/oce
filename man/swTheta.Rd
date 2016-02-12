@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swTheta}
 
 \alias{swTheta}
@@ -14,7 +15,9 @@
   \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
       \code{pressure} must be provided) \strong{or} an \code{oce} object (in
       which case \code{salinity}, etc. are inferred from the object).}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
+      on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+      \code{\link{swRho}}, and the examples below.}
   \item{pressure}{pressure [dbar]}
   \item{referencePressure}{reference pressure [dbar]}
   \item{longitude}{longitude of observation (only used if \code{eos="gsw"}; see
@@ -52,15 +55,14 @@
 \examples{
 library(oce)
 
-print(swTheta(40, 40, 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
+print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
 	
-# Demonstrate that the methods agree to a couple of
-# millidegrees over a typical span of values
-S <- c(30,30,38,38)
+# Demonstrate that the UNESCO and GSW methods agree to a about 0.1C over a
+# typical span of values.
+S <- c(30,35,30,35)
 T <- c(-2,-2,30,30)
 p <- 1000 * runif(n=4)
-print(max(abs(swTheta(S,T,p) - swTheta(S,T,p,0,eos="gsw"))))
-
+print(max(abs(swTheta(S,T90fromT68(T),p) - swTheta(S,T,p,0,eos="gsw"))))
 
 # Example from a cross-Atlantic section
 data(section)

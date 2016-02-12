@@ -19,7 +19,7 @@
 \details{If \code{eos="unesco"} this is done by numerical inversion of
     \code{\link{swDepth}} is done using \code{\link{uniroot}}. If
     \code{eos="gsw"}, it is done using \code{\link[gsw]{gsw_p_from_z}} in the
-    \code{gsw} package.}
+    \CRANpkg{gsw} package.}
 
 \value{Pressure in dbar.}
 

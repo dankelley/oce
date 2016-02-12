@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.lobo}
 
 \alias{read.lobo}
@@ -17,14 +18,13 @@
     it provides is better for normal calls by a user.)}
 }
 
-\details{This version of read.lobo is really quite crude, having been
-  developed mainly for a ``predict the Spring bloom'' contest at
-  Dalhousie University. In particular, the function assumes that the
-  data columns are exactly as specified in the Examples section; if you
-  reorder the columns or add new ones, this function is unlikely to work
-  correctly. Furthermore, it should be noted that the file format was
-  inferred simply by downloading files; the supplier makes no claims
-  that the format will be fixed in time.
+\details{This version of \code{read.lobo} is really quite crude, having been
+  developed mainly for a ``predict the Spring bloom'' contest at Dalhousie
+  University.  In particular, the function assumes that the data columns are
+  exactly as specified in the Examples section; if you reorder the columns or
+  add new ones, this function is unlikely to work correctly. Furthermore, it
+  should be noted that the file format was inferred simply by downloading files;
+  the supplier makes no claims that the format will be fixed in time.
 
   It is also worth noting that there is no \code{\link{read.oce}}
   equivalent to \code{read.lobo}, because the file format has no
@@ -32,7 +32,7 @@
 
 \value{An object of \code{\link[base]{class}} \code{"lobo"}, which has the
     following slots:
-  \item{data}{a \code{\link{list}} containing the following vectors:
+  \item{\code{data}}{: a \code{\link{list}} containing the following vectors:
     \describe{
       \item{\code{time}}{the times of observation}
       \item{\code{u}}{one horizontal component of velocity (necessarily
@@ -45,13 +45,15 @@
       \item{\code{fluorescence}}{[unit?]}
     }
   }
-  \item{metadata}{a list containing \code{header}, the header from the data file.}
-  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
+  \item{\code{metadata}}{: a list containing \code{header}, the header from the
+    data file.}
+  \item{\code{processingLog}}{: a processingLog of processing, in the standard
+    \code{oce} format.}
 }
 
-\note{The \code{oce} author was unable to find a description of the data format, and so
-\code{read.lobo} makes some restrictive assumptions about the data format, e.g.
-trying to find columns whose names contain the following strings
+\note{The \code{oce} author was unable to find a description of the data format,
+  and so \code{read.lobo} makes some restrictive assumptions about the data
+  format, e.g.  trying to find columns whose names contain the following strings
 \code{"date"}, 
 \code{"current across"}, 
 \code{"current along"},
@@ -64,7 +66,7 @@ data, or with vectors with \code{NA} values, for unfound columns.
 }
 
 \seealso{The documentation for \code{\link{lobo-class}} explains the structure
-    of LOBO objects, and also outlines the other functions dealing with them.}
+  of LOBO objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

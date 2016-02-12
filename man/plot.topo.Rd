@@ -57,16 +57,16 @@
     \code{ylim} is given.}
   \item{water.z}{depths at which to plot water contours.  If not
     provided, these are inferred from the data.}
-  \item{col.water}{colors corresponding to \code{water.z} values.  If
-    not provided, these will be \code{"fill"} colors from
+  \item{col.water}{colours corresponding to \code{water.z} values.  If
+    not provided, these will be \code{"fill"} colours from
     \code{\link{oce.colorsGebco}}.}
   \item{lty.water}{line type(s) for water contours}
   \item{lwd.water}{line width(s) for water contours}
   \item{land.z}{depths at which to plot land contours.  If not provided,
     these are inferred from the data.  If set to \code{NULL}, no land
     contours will be plotted.}
-  \item{col.land}{colors corresponding to \code{land.z} values.  If
-    not provided, these will be \code{"fill"} colors from
+  \item{col.land}{colours corresponding to \code{land.z} values.  If
+    not provided, these will be \code{"fill"} colours from
     \code{\link{oce.colorsGebco}}.}
   \item{lty.land}{line type(s) for land contours}
   \item{lwd.land}{line width(s) for land contours}
@@ -100,8 +100,7 @@
 \examples{
 library(oce)
 data(topoWorld)
-plot(topoWorld)
-plot(topoWorld, clongitude=300, clatitude=45, span=10000)
+plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
 }
 
 \author{Dan Kelley}

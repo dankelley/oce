@@ -2,7 +2,7 @@
 
 \alias{plotTaylor}
 
-\title{Plot a model-data comparison diagram.}
+\title{Plot a Model-data Comparison Diagram}
 
 \description{Plot a model-data comparison diagram as described by Taylor
     (2001).}

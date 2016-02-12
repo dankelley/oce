@@ -1,3 +1,33 @@
+0.9-18
+- improve plot.coastline() and mapPlot()
+- add support for G1SST satellite
+- all objects now have metadata items for units and flags
+- ctdTrim() method renamed: old A and B are new A; old C is new B
+- support more channels and features of rsk files
+- as.adp() added
+- convert argo objects to sections
+- makeSection() deprecated; use as.section() instead
+- read.adp.rdi() handles Teledyne/RDI vsn 23.19 bottom-track data
+- geodXyInverse() added; geod functions now spell out longitude etc
+- read.odf() speeded up by a factor of about 30
+- add colour palettes from Kristen Thyng's cmocean Python package
+- as.oce() added
+- rename 'drifter' class as 'argo' to recognize what it actually handles
+- add oceColorsViridis()
+- interpBarnes() has new argument 'pregrid'
+- binMean2D() has new argument 'flatten'
+- data(topoWorld) now has longitude from -179.5 to 180
+- ODF2oce() added
+- read.odf() handles more data types
+- read.adp.rdi() reads more VmDas (navigational) data
+- ITS-90 is now the default temperature unit
+- ctd objects can have vector longitude and latitude
+- logger class renamed to rsk
+- bremen class added
+- coastlineCut() added
+- rgdal package used instead of local PROJ.4 source code
+- mapproj-style map projections eliminated
+
 0.9-17
 - remove an exit() call in a C function
 

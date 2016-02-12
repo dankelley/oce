@@ -25,7 +25,7 @@
      map.ylim=NULL,
      clongitude, clatitude, span,
      projection=NULL, parameters=NULL, orientation=NULL,
-     xtype=c("distance", "track", "longitude", "latitude"),
+     xtype=c("distance", "track", "longitude", "latitude", "time"),
      ytype=c("depth", "pressure"),
      ztype=c("contour", "image", "points"),
      zbreaks=NULL, zcol=NULL,
@@ -34,6 +34,7 @@
      showStations=FALSE,
      showStart=TRUE,
      showBottom=TRUE,
+     axes=TRUE,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -43,7 +44,7 @@
 
 \arguments{
     \item{x}{a \code{section} object, e.g. as created by
-        \code{\link{makeSection}}.}
+        \code{\link{as.section}} or \code{\link{read.section}}.}
 
     \item{which}{a list of desired plot types, as explained in
         \dQuote{Details}.  There may be up to four panels in total, and the
@@ -82,7 +83,7 @@
     \item{xtype}{type of x axis, for contour plots, either
         \code{"distance"} for distance (in km) to the first point in the
         section, \code{"track"} for distance along the cruise track,
-        or \code{"longitude"} or \code{"latitude"}.
+        \code{"longitude"}, \code{"latitude"}, or \code{"time"}.
         Note that if the x values are not in order, they will be put in
         order (which may make no sense) and a warning will be printed.}
     \item{ytype}{type of y axis for contour plots, either
@@ -101,7 +102,8 @@
         defaults to a vector of length 200, with values spanning the data
         range.}
 
-    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
+    \item{legend.loc}{location of legend, as supplied to \code{\link{legend}},
+        or set to the empty string to avoid plotting a legend.}
 
     \item{adorn}{list of expressions to be executed for the panels in
         turn, e.g. to adorn the plots.  If the number matches the number of
@@ -118,6 +120,7 @@
         allowed methods are: \code{polygon}, which fills the space to the bottom,
         or \code{lines}, which draws lines from stations to the bottom, or
         \code{points}, which draws points at the bottom.}
+    \item{axes}{logical value indicating whether to draw axes.}
     \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
         also for \code{par(mar)}, computed from this.  The default is
         tighter than the R default, in order to use more space for the data
@@ -145,6 +148,10 @@
         \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
         \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
         \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+        \item \code{which=9} or \code{"u"} for eastward velocity
+        \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
+        \item \code{which=11} or \code{"v"} for northward velocity
+        \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
         \item \code{which=20} or \code{"data"} for a dot for each data location
         \item \code{which=99} or \code{"map"} for a location map
     }

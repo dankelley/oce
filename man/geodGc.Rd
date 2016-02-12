@@ -23,6 +23,7 @@
 \seealso{\code{\link{geodDist}} and \code{\link{geodXy}}}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
@@ -32,11 +33,12 @@ mapPlot(coastlineWorld, type='l',
 l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
 mapLines(l$longitude, l$latitude, col='red', lwd=2)
 }
+}
 
 \author{Dan Kelley, based on code from Clark Richards, in turn based on
-    formulae provided by Ed Williams.}
+    formulae provided by Ed Williams [1].}
 
-\source{\url{http://williams.best.vwh.net/avform.htm#Intermediate}}
+\references{1.  \url{http://williams.best.vwh.net/avform.htm#Intermediate}}
 
 \keyword{misc}
 

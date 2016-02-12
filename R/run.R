@@ -29,11 +29,11 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
             L <- L * 1.5
         ##cat("L:", L, ", spacing:", spacing, "\n")
     }
-    rval <- .Call("run_lm", x, y, xout, switch(window, boxcar=0, hanning=1), L)
+    res <- .Call("run_lm", x, y, xout, switch(window, boxcar=0, hanning=1), L)
     if (!missing(deriv) && deriv == 0)
-        rval <- rval$y
+        res <- res$y
     else if (!missing(deriv) && deriv == 1)
-        rval <- rval$dydx
-    rval
+        res <- res$dydx
+    res
 }
 

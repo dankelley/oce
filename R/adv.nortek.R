@@ -50,45 +50,49 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat("\nheader is as follows:\n")
         str(header)
     }
-    metadata <- list(manufacturer="nortek",
-                     instrumentType="vector",
-                     filename=filename,
-                     longitude=longitude, latitude=latitude,
-                     numberOfSamples=NA, # filled in later
-                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
-                     measurementStart=NA, # FIXME
-                     measurementEnd=NA,   # FIXME
-                     samplingRate=512/header$user$averagingInterval, # FIXME: why 512?
-                     serialNumber=header$hardware$serialNumber,
-                     internalCodeVersion=header$hardware$picVersion,
-                     softwareVersion=header$user$swVersion,
-                     hardwareRevision=header$hardware$hwRevision,
-                     recSize=header$hardware$recSize,
-                     velocityRange=header$hardware$velocityRange,
-                     firmwareVersion=header$hardware$fwVersion,
-                     hardwareConfiguration=header$hardware$config,
-                     configPressureSensor=header$head$configPressureSensor,
-                     configMagnetometerSensor=header$head$configMagnetometerSensor,
-                     configTiltSensor=header$head$configTiltSensor,
-                     beamAngle=25,     # FIXME: should read from file
-                     tiltSensorOrientation=header$head$tiltSensorOrientation,
-                     frequency=header$head$frequency,
-                     headSerialNumber=header$head$headSerialNumber,
-                     bin1Distance=header$user$blankingDistance, # FIXME: is this right?
-                     blankingDistance=header$user$blankingDistance,
-                     measurementInterval=header$user$measurementInterval,
-                     transformationMatrix=header$head$transformationMatrix,
-                     deploymentName=header$user$deploymentName,
-                     cellSize=header$user$cellSize,
-                     velocityScale=header$user$velocityScale,
-                     originalCoordinate=header$user$originalCoordinate,
-                     oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnspreaded=FALSE,
-                     comments=header$user$comments)
+    res <- new("adv")
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$instrumentType <- "vector"
+    res@metadata$filename <- filename
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$numberOfSamples <- NA # filled in later
+    res@metadata$numberOfBeams <- header$head$numberOfBeams # FIXME: check that this is correct
+    res@metadata$measurementStart <- NA # FIXME
+    res@metadata$measurementEnd <- NA   # FIXME
+    res@metadata$samplingRate <- 512/header$user$averagingInterval # FIXME: why 512?
+    res@metadata$serialNumber <- header$hardware$serialNumber
+    res@metadata$internalCodeVersion <- header$hardware$picVersion
+    res@metadata$softwareVersion <- header$user$swVersion
+    res@metadata$hardwareRevision <- header$hardware$hwRevision
+    res@metadata$recSize <- header$hardware$recSize
+    res@metadata$velocityRange <- header$hardware$velocityRange
+    res@metadata$firmwareVersion <- header$hardware$fwVersion
+    res@metadata$hardwareConfiguration <- header$hardware$config
+    res@metadata$configPressureSensor <- header$head$configPressureSensor
+    res@metadata$configMagnetometerSensor <- header$head$configMagnetometerSensor
+    res@metadata$configTiltSensor <- header$head$configTiltSensor
+    res@metadata$beamAngle <- 25     # FIXME: should read from file
+    res@metadata$tiltSensorOrientation <- header$head$tiltSensorOrientation
+    res@metadata$frequency <- header$head$frequency
+    res@metadata$headSerialNumber <- header$head$headSerialNumber
+    res@metadata$bin1Distance <- header$user$blankingDistance # FIXME: is this right?
+    res@metadata$blankingDistance <- header$user$blankingDistance
+    res@metadata$measurementInterval <- header$user$measurementInterval
+    res@metadata$transformationMatrix <- header$head$transformationMatrix
+    res@metadata$deploymentName <- header$user$deploymentName
+    res@metadata$cellSize <- header$user$cellSize
+    res@metadata$velocityScale <- header$user$velocityScale
+    res@metadata$originalCoordinate <- header$user$originalCoordinate
+    res@metadata$oceCoordinate <- header$user$originalCoordinate
+    res@metadata$oceBeamUnspreaded <- FALSE
+    res@metadata$comments <- header$user$comments
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
+
+    vsdStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectNortekVectorSd <- function(tFind, add=0, debug=0) { # tFind=time add=offset debug=debug
         oceDebug(debug, "\n")
         oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ")\n")
@@ -154,29 +158,29 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## factors, namely 1mm/s and 0.1mm/s.  Starting on 2010-09-13, the
     ## present function started using this possibility of two scale
     ## factors, as determined in the next code line, following p36.
-    metadata$velocityScale <- if ("0" == substr(byteToBinary(buf[vsdStart[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
-    oceDebug(debug, "velocityScale=", metadata$velocityScale, "m/s (from VSD header byte 24, 0x",
+    res@metadata$velocityScale <- if ("0" == substr(byteToBinary(buf[vsdStart[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
+    oceDebug(debug, "velocityScale=", res@metadata$velocityScale, "m/s (from VSD header byte 24, 0x",
               as.raw(buf[vsdStart[1] + 23]), "(bit 7 of",
               byteToBinary(buf[vsdStart[1] + 23], endian="big"), ")\n")
 
     ## Measurement start and end times.
     vsdLen <- length(vsdStart)
-    metadata$measurementStart <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1]+8]),  # year
-                                              bcdToInteger(buf[vsdStart[1]+9]), # month
-                                              bcdToInteger(buf[vsdStart[1]+6]), # day
-                                              bcdToInteger(buf[vsdStart[1]+7]), # hour
-                                              bcdToInteger(buf[vsdStart[1]+4]), # min
-                                              bcdToInteger(buf[vsdStart[1]+5]), # sec
-                                              tz=tz)
-    metadata$measurementEnd <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[vsdLen]+8]),  # year
-                                           bcdToInteger(buf[vsdStart[vsdLen]+9]), # month
-                                           bcdToInteger(buf[vsdStart[vsdLen]+6]), # day
-                                           bcdToInteger(buf[vsdStart[vsdLen]+7]), # hour
-                                           bcdToInteger(buf[vsdStart[vsdLen]+4]), # min
-                                           bcdToInteger(buf[vsdStart[vsdLen]+5]), # sec
-                                           tz=tz)
+    res@metadata$measurementStart <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1]+8]),  # year
+                                                 bcdToInteger(buf[vsdStart[1]+9]), # month
+                                                 bcdToInteger(buf[vsdStart[1]+6]), # day
+                                                 bcdToInteger(buf[vsdStart[1]+7]), # hour
+                                                 bcdToInteger(buf[vsdStart[1]+4]), # min
+                                                 bcdToInteger(buf[vsdStart[1]+5]), # sec
+                                                 tz=tz)
+    res@metadata$measurementEnd <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[vsdLen]+8]),  # year
+                                               bcdToInteger(buf[vsdStart[vsdLen]+9]), # month
+                                               bcdToInteger(buf[vsdStart[vsdLen]+6]), # day
+                                               bcdToInteger(buf[vsdStart[vsdLen]+7]), # hour
+                                               bcdToInteger(buf[vsdStart[vsdLen]+4]), # min
+                                               bcdToInteger(buf[vsdStart[vsdLen]+5]), # sec
+                                               tz=tz)
     vvdLen <- length(vvdStart)
-    metadata$measurementDeltat <- (as.numeric(metadata$measurementEnd) - as.numeric(metadata$measurementStart)) / (vvdLen - 1)
+    res@metadata$measurementDeltat <- (as.numeric(res@metadata$measurementEnd) - as.numeric(res@metadata$measurementStart)) / (vvdLen - 1)
 
     toGiven <- !missing(to)
     if (!toGiven)
@@ -316,8 +320,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     oceDebug(debug, "reading Nortek Vector, and using timezone: ", tz, "\n")
 
-    ## update metadata$measurementDeltat
-    metadata$measurementDeltat <- mean(diff(as.numeric(vsdTime)), na.rm=TRUE) * length(vsdStart) / length(vvdStart) # FIXME
+    ## update res@metadata$measurementDeltat
+    res@metadata$measurementDeltat <- mean(diff(as.numeric(vsdTime)), na.rm=TRUE) * length(vsdStart) / length(vvdStart) # FIXME
 
     vsdLen <- length(vsdStart)
     vsdStart2 <- sort(c(vsdStart, 1 + vsdStart))
@@ -331,15 +335,15 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     temperature <- 0.01 * readBin(buf[vsdStart2 + 20], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
     oceDebug(debug, vectorShow(temperature, "temperature"))
     salinity <- header$user$salinity
-    oceDebug(debug, "salinity (in metadata):", salinity, "\n")
+    oceDebug(debug, "salinity (in res@metadata):", salinity, "\n")
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsdStart[floor(0.5*length(vsdStart))] + 23]
-    metadata$orientation <- if ("0" == substr(byteToBinary(status, endian="big"), 1, 1)) "upward" else "downward"
+    res@metadata$orientation <- if ("0" == substr(byteToBinary(status, endian="big"), 1, 1)) "upward" else "downward"
     # FIXME: should read roll and pitch "out of range" or "OK" here, in bites 3 and 2
     
-    ##FIXME was wrong## metadata$burstLength <- round(length(vvdStart) / length(vsdStart), 0) # FIXME: surely this is in the header (?!?)
-    ##FIXME was wrong## oceDebug(debug, vectorShow(metadata$burstLength, "burstLength"))
+    ##FIXME was wrong## res@metadata$burstLength <- round(length(vvdStart) / length(vsdStart), 0) # FIXME: surely this is in the header (?!?)
+    ##FIXME was wrong## oceDebug(debug, vectorShow(res@metadata$burstLength, "burstLength"))
 
     vvdStart2 <- sort(c(vvdStart, 1 + vvdStart))
     vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
@@ -357,9 +361,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pressure <- (65536 * p.MSB + p.LSW) / 1000
     oceDebug(debug, vectorShow(pressure, "pressure"))
     v <- array(double(), dim=c(vvdLen, 3))
-    v[,1] <- metadata$velocityScale*readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
-    v[,2] <- metadata$velocityScale*readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
-    v[,3] <- metadata$velocityScale*readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,1] <- res@metadata$velocityScale*readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,2] <- res@metadata$velocityScale*readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,3] <- res@metadata$velocityScale*readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     if (debug > 0.9) {
         oceDebug(debug, "v[", dim(v), "] begins...\n")
         print(matrix(as.numeric(v[1:min(3,vvdLen),]), ncol=3))
@@ -380,8 +384,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat("q[", dim(q), "] begins...\n")
         print(matrix(as.numeric(q[1:min(3,vvdLen),]), ncol=3))
     }
-    sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
-    vds <- var(diff(sec))
+    ##sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
+    ##vds <- var(diff(sec))
     ##BAD: vvdSec <- .Call("stutter_time", sec, 8)
     #######vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
     #######oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
@@ -390,17 +394,17 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rm(buf)
     gc()
     ## subset using 'by'
-    by.orig <- by
+    ##by.orig <- by
     if (is.character(by)) {
         oceDebug(debug, "by='",by,"' given as argument to read.adv.nortek()\n",sep="")
         oceDebug(debug, " ... infer to be", ctimeToSeconds(by), "s\n")
-        by <- ctimeToSeconds(by) / metadata$measurementDeltat
+        by <- ctimeToSeconds(by) / res@metadata$measurementDeltat
         oceDebug(debug, " ... so step by" ,by,"through the data\n")
     }
     len <- length(vvdStart)
     look <- seq(1, len, by=by)
     oceDebug(debug, "length(vvdStart)=",length(vvdStart),"\n")
-    vvdStart.orig <- vvdStart
+    ##vvdStart.orig <- vvdStart
     vvdStart <- vvdStart[look]
     oceDebug(debug, "length(vvdStart)=",length(vvdStart),"(after 'look'ing) with by=", by, "\n")
     ######vvdSec <- vvdSec[look]
@@ -409,7 +413,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     a <- a[look,]
     q <- q[look,]
     if (0 < sum(vvdhRecords)) {
-        metadata$samplingMode <- "burst"
+        res@metadata$samplingMode <- "burst"
 
         ## Note: if we knew that all bursts were of the same length, we could use the same method
         ## as for the continuous case, specifying e.g. vvdhRecords[1] instead of 0.  But do we know that?
@@ -417,45 +421,48 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## also them won't be expensive.
         sss <- NULL
         for (b in 1:length(vvdhRecords)) {
-            sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
+            sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/res@metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
-        delayForWarmup <- 2 + 1 / (metadata$samplingRate * 2) # FIXME: this is from a forum posting, not an official doc.
+        delayForWarmup <- 2 + 1 / (res@metadata$samplingRate * 2) # FIXME: this is from a forum posting, not an official doc.
         time <- time + delayForWarmup
     } else {
-        metadata$samplingMode <- "continuous"
-        time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, metadata$samplingRate))
+        res@metadata$samplingMode <- "continuous"
+        time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, res@metadata$samplingRate))
     }
-    metadata$numberOfSamples <- dim(v)[1]
-    metadata$numberOfBeams <- dim(v)[2]
-    metadata$velocityResolution <- metadata$velocityScale / 2^15
-    metadata$salinity <- salinity
+    res@metadata$numberOfSamples <- dim(v)[1]
+    res@metadata$numberOfBeams <- dim(v)[2]
+    res@metadata$velocityResolution <- res@metadata$velocityScale / 2^15
+    res@metadata$salinity <- salinity
 
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
-    data <- list(v=v, a=a, q=q,
-                 time=time,
-                 pressure=pressure,
+    res@data <- list(v=v, a=a, q=q,
+                     time=time,
+                     pressure=pressure,
 
-                 timeBurst=vvdhTime,
-                 recordsBurst=vvdhRecords,
-                 voltageSlow=voltage,
+                     timeBurst=vvdhTime,
+                     recordsBurst=vvdhRecords,
+                     voltageSlow=voltage,
 
-                 timeSlow=vsdTime,
-                 headingSlow=heading,
-                 pitchSlow=pitch,
-                 rollSlow=roll,
-                 temperatureSlow=temperature)
+                     timeSlow=vsdTime,
+                     headingSlow=heading,
+                     pitchSlow=pitch,
+                     rollSlow=roll,
+                     temperatureSlow=temperature)
     if (haveAnalog1)
-        data$analog1 <- analog1
+        res@data$analog1 <- analog1
     if (haveAnalog2)
-        data$analog2 <- analog2
-    res <- new("adv")
-    res@data <- data
-
-    metadata$velocityResolution <- metadata$velocityScale
-    metadata$velocityMaximum <- metadata$velocityScale * 2^15
-    res@metadata <- metadata
+        res@data$analog2 <- analog2
+    res@metadata$velocityResolution <- res@metadata$velocityScale
+    res@metadata$velocityMaximum <- res@metadata$velocityScale * 2^15
+    res@metadata$units <- list(v="m/s")
     res@processingLog <- unclass(hitem)
+    res@metadata$units$v=list(unit=expression(m/s), scale="")
+    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
+    res@metadata$units$headingSlow=list(unit=expression(degree), scale="")
+    res@metadata$units$pitchSlow=list(unit=expression(degree), scale="")
+    res@metadata$units$rollSlow=list(unit=expression(degree), scale="")
+    res@metadata$units$temperatureSlow=list(unit=expression(degree*C), scale="")
     oceDebug(debug, "} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="", unindent=1)
     res
 }

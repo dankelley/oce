@@ -18,7 +18,7 @@
       and \code{"latitude"} for latitude.}
 }
 
-\details{Sections created with \code{\link{makeSection}} have
+\details{Sections created with \code{\link{as.section}} have
 "stations" that are in the order of the CTD objects (or filenames for
 such objects) provided.  Sometimes, this is not the desired order,
 e.g. if file names discovered with \code{\link{dir}} are in an order

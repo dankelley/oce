@@ -1,7 +1,6 @@
 ## functions that dispatch to either adv or adp
 velocityStatistics <- function(x, control, ...)
 {
-    rval <- NULL
     if (inherits(x, "adp")) {
         if (!missing(control) && !is.null(control$bin)) {
             if (control$bin < 1)

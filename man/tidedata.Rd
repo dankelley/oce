@@ -65,7 +65,7 @@
 \seealso{\code{\link{tidem}} uses this dataset to establish its harmonic
     constituents.}
     
-\references{ Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+\references{Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
     prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
     Sciences, Patricia Bay, Sidney, BC, 58pp.
   

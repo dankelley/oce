@@ -8,17 +8,17 @@ TAGS
 Rplots.pdf
 src-*
 *.swp
-TAGS
 issue*R
 issue*dat
 issue*png
 man/figures/*pdf
 man/figures/*png
 !man/figures/starCoords.png
-inst/doc/oce.R
 .DS_Store
 .Rproj.user
 oce.Rproj
 .RData
+autom4te.cache
+*.nc
+*.zip
 
-vignettes/.build.timestamp

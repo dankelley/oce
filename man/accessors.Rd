@@ -1,5 +1,7 @@
 \name{accessors}
 \alias{[[,coastline,string,missing,ANY-method}
+\alias{conductivity}
+\alias{conductivity<-}
 \alias{elevation}
 \alias{distance}
 \alias{heading}
@@ -40,6 +42,8 @@
 \description{Access or modify part of an Oce object}
 
 \usage{
+conductivity(x) # whatever unit is in the object
+conductivity(x) <- value # sets conductivityunit to "ratio"
 elevation(x, time)
 distance(x, time)
 heading(x, time)
@@ -93,13 +97,16 @@ velocity(x)
 
 }
 
-\details{These accessor functions provide a convenient way to discover, or set,
-    data within \code{oce} objects.  This prevents the user from having to know
-    the details of storage, e.g.  that Nortek Vector velocimeters record angles
-    on slow timescales compared with velocities (stored within the \code{data}
-    slot in entries named \code{timeSlow}, \code{headingSlow}, etc), whereas
-    Sontek ADV velocimeters record them on the same timescale as velocity
-    (stored in \code{time}, \code{heading}, etc.)}
+\details{Normally, users should access elements within \code{oce} objects using
+    the double bracket notation, e.g. if \code{x} is an object of
+    \code{\link{ctd-class}}, then \code{x[["salinity"]]} refers to the
+    salinity, either as a value to be retrieved or one to be set.
+    
+    The accessor functions referred to above prove another way to access
+    \code{oce} data. This is much more limited and are not generally
+    recommended; they are included mainly so that old code will still work.
+
+}
 
 \value{Value of indicated portion of \code{x}.}
 
@@ -111,7 +118,8 @@ heading(adp) <- 5 + heading(adp) # add 5 degrees to the heading
 print(heading(adp))
 }
 
-\seealso{Similar accessor functions are \code{\link{time}}, and \code{\link{velocity}}.}
+\seealso{Individual object classes handle accessing in specialized ways; see
+    e.g. \code{\link{ctd-class}} for how \code{[[} works for CTD objects.}
 
 \author{Dan Kelley}
 

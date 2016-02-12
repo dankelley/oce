@@ -1595,7 +1595,7 @@ msgstr ""
 msgid "lengths of 'time' and 'pressure' must match"
 msgstr ""
 
-msgid "logger"
+msgid "rsk"
 msgstr ""
 
 msgid "no good temperatures to plot"
@@ -1605,12 +1605,12 @@ msgid "no good pressures to plot"
 msgstr ""
 
 msgid ""
-"in plot.logger() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim "
+"in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim "
 "(for type=4)"
 msgstr ""
 
 msgid ""
-"in plot.logger() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim "
+"in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim "
 "(for type=3)"
 msgstr ""
 
@@ -1632,7 +1632,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"read.logger(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this "
+"read.rsk(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this "
 "file has"
 msgstr ""
 
@@ -1670,7 +1670,7 @@ msgstr ""
 msgid "wrong number of variables; need 2, 4, or 5, but got"
 msgstr ""
 
-msgid "too few data to trim logger record"
+msgid "too few data to trim rsk record"
 msgstr ""
 
 msgid "Unknown method"

@@ -22,6 +22,7 @@
     including other functions.}
 
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
@@ -34,9 +35,9 @@ lat <- 44.6479
 mapPoints(lon, lat, pch=20, col="red")
 mapText(lon, lat, "Halifax", col="red", pos=1, offset=1)
 }
+}
 
-\author{Dan Kelley (see \code{\link{lonlat2map}} for a note on the authors of
-    PROJ.4).}
+\author{Dan Kelley}
 
 \keyword{hplot}
 

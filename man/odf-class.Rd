@@ -9,7 +9,12 @@
 
 \title{Class to store ODF data}
 
-\description{Class to store ODF data.}
+\description{Class for data stored in a format used at Canadian Department of
+    Fisheries and Oceans laboratories. This is somewhat unusual amongst
+    \code{oce} classes, in that it does not map to a particular instrument, but
+    rather to a storage type; in that sense, it is similar to the
+    \code{bremen-class}.}
+
 
 \section{Methods}{
 
@@ -45,8 +50,8 @@
     Statistical summaries are provided by \code{\link{summary.odf}}, while
     \code{\link{show}} displays an overview.
   
-    ODF objects may be plotted with \code{\link{plot.odf}}.
-
+    ODF objects may be plotted with \code{\link{plot.odf}}, although it is more
+    common to coerce to another class and plot that.
 }
 
 \author{Dan Kelley}
