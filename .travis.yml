@@ -3,8 +3,8 @@ warnings_are_errors: false
 sudo: required
 r_build_args: --no-build-vignettes --no-manual --no-resave-data
 r_check_args: --no-build-vignettes --no-manual
-install:
-    - Rscript -e 'install.packages("devtools", repos="http://cran.rstudio.com")'
+r_packages:
+    - devtools
 env:
     global:
         - _R_CHECK_FORCE_SUGGESTS_=False
