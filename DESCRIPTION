@@ -25,8 +25,7 @@ Suggests:
     R.utils,
     testthat,
     knitr
-BugReports: https://github.com/dankelley/oce/issues?
-    sort=created&direction=desc&state=open
+BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements, sectional
     data, sea-level time series, coastline and topographic data, etc. Provides
