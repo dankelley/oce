@@ -257,6 +257,103 @@ argoDecodeFlags <- function(f, dim) # local function
     res
 }
 
+
+
+#' Read an Argo data file
+#' 
+#' \code{read.argo} is used to read an Argo file, producing an object of type
+#' \code{argo}. The file must be in the ARGO-style netCDF format described at [2].
+#' 
+#' @param file a character string giving the name of the file to load.
+#' 
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate amount
+#' of debugging information, or to 2 to get more.
+#' 
+#' @param processingLog if provided, the action item to be stored in the log.
+#' (Typically only provided for internal calls; the default that it provides is
+#' better for normal calls by a user.)
+#' 
+#' @param ... additional arguments, passed to called routines.
+#' 
+#' @return
+#' An object of \code{\link{argo-class}}.
+#' 
+#' @examples
+#' \dontrun{
+#' ## Example 1: read from a local file
+#' library(oce)
+#' d <- read.argo("/data/OAR/6900388_prof.nc")
+#' summary(d)
+#' plot(d)
+#'
+#' ## Example 2: construct URL for download (brittle)
+#' id <- "6900388"
+#' url <- "http://www.usgodae.org/ftp/outgoing/argo"
+#' if (!length(list.files(pattern="argo_index.txt")))
+#'     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
+#' index <- readLines("argo_index.txt")
+#' line <- grep(id, index)
+#' if (0 == length(line)) stop("id ", id, " not found")
+#' if (1 < length(line)) stop("id ", id, " found multiple times")
+#' dac <- strsplit(index[line], "/")[[1]][1]
+#' profile <- paste(id, "_prof.nc", sep="")
+#' float <- paste(url, "dac", dac, id, profile, sep="/")
+#' download.file(float, profile)
+#' argo <- read.argo(profile)
+#' summary(argo)
+#' }
+#' 
+#' 
+#' @seealso
+#' The documentation for \code{\link{argo-class}} explains the structure of argo
+#' objects, and also outlines the other functions dealing with them.
+#' 
+#' @references
+#' 1. \url{http://www.argo.ucsd.edu/}
+#' 
+#' 2. \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf} documents the codes used in the netCDF files.
+#' 
+#' @section Data sources:
+#' Argo data are made available at several websites. A bit of detective
+#' work can be required to track down the data.  
+#'
+#' Some servers provide  data for floats that surfaced in a given ocean
+#' on a given day, the anonymous FTP server 
+#' \url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+#'
+#' Other servers provide data on a per-float basis. A complicating
+#' factor is that these data tend to be categorized by "dac" (data
+#' archiving centre), which makes it difficult to find a particular
+#' float. For example, 
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+#' a such a repository. If the ID of a float is known but not the
+#' "dac", then a first step is to download the text file
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+#' and search for the ID. The first few lines of that file are header,
+#' and after that the format is simple, with columns separated by slash
+#' (\code{/}). The dac is in the first such column and the float ID in the
+#' second. A simple search will reveal the dac.
+#' For example \code{data(argo)} is based on float 6900388, and the line
+#' containing that token is
+#' \url{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+#' which the dac is seen to be the British Oceanographic Data Centre
+#' (\code{bodc}). Armed with that information, visit
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+#' and see a directory called `profiles` that contains a NetCDF
+#' file for each profile the float made. These can be read with
+#' \code{read.argo}. It is also possible, and probably more common,
+#' to read a NetCDF file containing all the profiles together and for
+#' that purpose the file
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+#' should be downloaded and provided as the \code{file} argument to
+#' \code{read.argo}.  This can be automated as in Example 2,
+#' although readers are cautioned that URL structures tend to change
+#' over time.
+#'
+#' Similar steps can be followed on other servers.
+#'
+#' @author Dan Kelley
+#' @family functions that deal with argo data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
