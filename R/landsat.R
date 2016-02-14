@@ -175,11 +175,15 @@ setMethod(f="show",
           signature="landsat",
           definition=function(object) {
               cat("Landsat object, ID", object@metadata$header$landsat_scene_id, "\n")
-              cat("Data (bands or calculated):\n")
               dataNames <- names(object@data)
-              for (b in seq_along(dataNames)) {
-                  dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$lsb) else dim(object@data[[b]])
-                  cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep='')
+              if (length(dataNames)) {
+                  cat("Data (bands or calculated):\n")
+                  for (b in seq_along(dataNames)) {
+                      dim <- if (is.list(object@data[[b]])) dim(object@data[[b]]$lsb) else dim(object@data[[b]])
+                      cat("  \"", dataNames[b], "\" has dimension c(", dim[1], ",", dim[2], ")\n", sep='')
+                  }
+              } else {
+                  cat("Object contains no band data.\n")
               }
           })
 
@@ -494,6 +498,49 @@ setMethod(f="[[",
 
 #' Plot a landsat Object
 #'
+#' Plot the data within a landsat image, or information computed from the
+#' data. The second category includes possibilities such as an estimate of
+#' surface temperature and the \code{"terralook"} estimate of a natural-colour
+#' view.
+#'
+#' @details
+#' For Landsat-8 data, the \code{band} may be
+#' one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
+#' \code{"nir"}, \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"},
+#' \code{"cirrus"}, \code{"tirs1"}, or \code{"tirs2"}.
+#'
+#' For Landsat-7 data, \code{band} may be one of \code{"blue"}, \code{"green"}, \code{"red"},
+#' \code{"nir"}, \code{"swir1"}, \code{"tirs1"}, \code{"tirs2"},
+#' \code{"swir2"}, or \code{"panchromatic"}.
+#'
+#' For Landsat data prior to
+#' Landsat-7, \code{band} may be one of \code{"blue"}, \code{"green"},
+#' \code{"red"}, \code{"nir"}, \code{"swir1"}, \code{"tirs1"},
+#' \code{"tirs2"}, or \code{"swir2"}.  
+#'
+#' If \code{band} is not given, the
+#' (\code{"tirs1"}) will be used if it exists in the object data, or
+#' otherwise the first band will be used.
+#'
+#' In addition to the above there are also some pseudo-bands that
+#' can be plotted, as follows.
+#' \itemize{
+#' \item Setting \code{band="temperature"} will plot an estimate
+#' of at-satellite brightness temperature, computed from the
+#' \code{tirs1} band.
+#' \item Setting \code{band="terralook"} will plot a sort of natural
+#' colour by combining the \code{red}, \code{green}, \code{blue} and
+#' \code{nir} bands according to the formula provided at
+#' \url{http://terralook.cr.usgs.gov/what_is_terralook.php}, namely
+#' that the red band carries forward to the \code{red} argument provided
+#' to \code{\link{rgb}}, while the \code{green} argument is computed as
+#' 2/3 of the green-band data plus 1/3 of the nir-band data, and
+#' the \code{blue} argument is computed as 2/3 of the green band
+#' minus 1/3 of the nir band. (This is not a typo: the blue band
+#' data are not used.)
+#' }
+#'
+#'
 #' @param x A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.
 #'
 #' @param band If given, the name of the band.  For Landsat-8 data, this may be
@@ -510,8 +557,10 @@ setMethod(f="[[",
 #' otherwise the first band will be used.  In addition to the above, using
 #' \code{band="temperature"} will plot an estimate of at-satellite
 #' brightness temperature, computed from the \code{tirs1} band, and
-#' \code{band="terralook"} will plot a sort of natural colour; see
-#' \dQuote{Details}.
+#' \code{band="terralook"} will plot a sort of natural colour by combining
+#' the \code{red}, \code{green}, \code{blue} and \code{nir} bands
+#' according to the formula provided at
+#' \url{http://terralook.cr.usgs.gov/what_is_terralook.php}
 #'
 #' @param which Desired plot type; 1=image, 2=histogram.
 #'
@@ -587,6 +636,10 @@ setMethod(f="plot",
                        "), decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
+              if (!length(x@data)) {
+                  warning("In plot.landsat(): object contains no band data\n", call.=FALSE)
+                  return(invisible())
+              }
               terralook <- FALSE
               datanames <- names(x@data)
               spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
@@ -609,8 +662,9 @@ setMethod(f="plot",
                       oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
                       na <- r==0 && g23==0 && nir3==0
                       ## http://terralook.cr.usgs.gov/what_is_terralook.php
-                      b <- g23 - nir3
                       g <- g23 + nir3
+                      b <- g23 - nir3
+                      rm(list=c("g23", "nir3")) # clean up asap
                       g[g<0] <- 0
                       b[b<0] <- 0
                       if (spacecraft == "LANDSAT_8") {
@@ -620,7 +674,7 @@ setMethod(f="plot",
                           oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
                           colors <- rgb(r, g, b, maxColorValue=2^8-1)
                       }
-                      rm(list=c("r", "g", "b")) # memory is likely tight
+                      rm(list=c("r", "g", "b")) # clean up asap
                       col <- unique(colors)
                       d <- array(match(colors, col), dim=dim) # method of Clark Richards
                       oceDebug(debug, "colour compaction: ",floor(prod(dim)/length(col)), '\n')
@@ -847,9 +901,9 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' Read a landsat File Directory
 #'
 #' Read a landsat data file, producing an object of \code{\link{landsat-class}}.
-#'
-#' @details
-#' The \CRANpkg{tiff} package must be installed for \code{read.landsat} to work.
+#' The actual reading is done with \link[tiff]{readTIFF} in the 
+#' \CRANpkg{tiff} package, so that package must be installed for 
+#' \code{read.landsat} to work.
 #'     
 #' Landsat data are provided in directories that contain TIFF files and header
 #' information, and \code{read.landsat} relies on a strict convention for the
@@ -876,8 +930,11 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' @param file A connection or a character string giving the name of the file to
 #' load.  This is a directory name containing the data.
 #'
-#' @param band The bands to be read, by default all of the bands.  See
-#' \sQuote{Details} for the names of the bands.
+#' @param band The bands to be read, by default all of the bands.  Use
+#' `band=NULL` to skip the reading of bands, instead reading only the
+#' image metadata, which is often enough to check if the image is of 
+#' interest in a given study. See \sQuote{Details} for the names of the
+#' bands, some of which are pseudo-bands, computed from the actual data.
 #'  
 #' @param emissivity Value of the emissivity of the surface, stored as
 #' \code{emissivity} in the \code{metadata} slot of the
@@ -889,18 +946,27 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' \code{metadata$emissivity} is easy to alter, either as a single value or
 #' as a matrix, yielding flexibility of calcuation.
 #'
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate
+#' @param decimate optional positive integer indicating the degree to which
+#' the data should be subsampled after reading and before storage. Setting
+#' this to 10 can speed up reding by a factor of 3 or more, but higher values
+#' have diminishing effect.  In exploratory work, it is useful to set
+#' \code{decimate=10}, to plot the image to determine a subregion
+#' of interest, and then to use \code{\link{landsatTrim}} to trim the image.
+#'
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @section storage requirements:
+#' @section Storage requirements:
 #' 
-#' Landsat images are large, with the given scene requiring about a gigabyte of
-#' storage, adding the full suite of bands.  The storage of the Oce object is
+#' Landsat data files (directories, really) are large, accounting for 
+#' approximately 1 gigabyte each.  The storage of the Oce object is
 #' similar (see \code{\link{landsat-class}}).  In R, many operations involving
 #' copying data, so that dealing with full-scale landsat images can overwhelm
 #' computers with storage under 8GB.  For this reason, it is typical to read just
 #' the bands that are of interest.  It is also helpful to use
-#' \code{\link{landsatTrim}} to trim the data to a geographical range.
+#' \code{\link{landsatTrim}} to trim the data to a geographical range, or
+#' to use \code{\link{decimate}} to get a coarse view of the domain, especially
+#' early in an analysis.
 #'    
 #' @return An object of \code{\link{landsat-class}}, with the conventional Oce
 #' slots \code{metadata}, \code{data} and \code{processingLog}.  The
@@ -929,12 +995,15 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 #' @concept satellite
 #' @family functions dealing with satellite data
-read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oceDebug"))
+read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  paste("band=\"", band, "\"", sep=""),
                  ", debug=", debug, ") {\n", sep="", unindent=1)
+    decimateGiven <- !missing(decimate)
+    if (decimateGiven && decimate < 1)
+        warning("invalid value of decimate (", decimate, ") being ignored\n")
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
     res <- new("landsat")
@@ -946,61 +1015,78 @@ read.landsat <- function(file, band="all", emissivity=0.984, debug=getOption("oc
     oceDebug(debug, "file type: ", header$spacecraft, "\n")
     ## convert to numerical bands (checks also that named bands are OK)
     ##bandOrig <- band
-    if (band[1] == "all") {
-        band <- header$bandnames
-    }
-    band2 <- rep(NA, length(band))
-    for (b in seq_along(band)) {
-        if (is.character(band[b])) {
-            ##message("b:", b, " band[b]:", band[b], " bandnames:", paste(header$bandnames, sep=","))
-            m <- pmatch(band[b], header$bandnames, nomatch=0)
-            if (0 == m)
-                stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
-            else
-                band2[b] <- m
-        } else {
-            band2[b] <- band[b]
+    if (!is.null(band)) {
+        if (band[1] == "all") {
+            band <- header$bandnames
         }
+        band2 <- rep(NA, length(band))
+        for (b in seq_along(band)) {
+            if (is.character(band[b])) {
+                ##message("b:", b, " band[b]:", band[b], " bandnames:", paste(header$bandnames, sep=","))
+                m <- pmatch(band[b], header$bandnames, nomatch=0)
+                if (0 == m)
+                    stop('band "', band[b], '" unknown; must be one of: ', paste(header$bandnames, collapse=", "))
+                else
+                    band2[b] <- m
+            } else {
+                band2[b] <- band[b]
+            }
+        }
+        band <- band2
+        oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
     }
-    band <- band2
-    oceDebug(debug, "numerical version of band=c(", paste(band, collapse=","), ")\n", sep="")
     for (name in names(header))
         res@metadata[[name]] <- header[[name]]
-    res@metadata[["spacecraft"]] <- header$spacecraft
-    res@metadata[["id"]] <- header$id
-    res@metadata[["emissivity"]] <- emissivity
-    res@metadata[["filename"]] <- file
-    res@metadata[["headerfilename"]] <- headerfilename
+    res@metadata$spacecraft <- header$spacecraft
+    res@metadata$id <- header$id
+    res@metadata$emissivity <- emissivity
+    res@metadata$filename <- file
+    res@metadata$headerfilename <- headerfilename
     ## Bandnames differ by satellite.
-    res@metadata[["bands"]] <- band # FIXME: still ok?
+    res@metadata$bands <- band 
     actualfilename <- gsub(".*/", "", file)
 ##    res@metadata[["bandfiles"]] <- paste(file,"/",actualfilename,"_B",band,".TIF",sep="")
     options <- options('warn') # avoid readTIFF() warnings about geo tags
     options(warn=-1) 
-    ## print(header$bandsuffices)
+    ##> cat("BEFORE\n")
+    ##> print(Sys.time())
     for (b in seq_along(band)) {       # 'band' is numeric
         ## message("b:", b, " band: ", header$bandnames[b], " suffix: ", header$filesuffices[b])
         ##bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
         bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?
         ## message(bandfilename)
         ##res@metadata[["filename"]] <- bandfilename 
-        oceDebug(debug, "reading \"", header$bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
+        ##> oceDebug(debug, "reading \"", header$bandnames[band[b]], "\" band in \"", bandfilename, "\"\n", sep="")
         ## FIXME: should also handle JPG data (i.e. previews)
+        ##> cat("reading ", header$bandnames[band[b]], "\n")
+        ##> print(system.time(
         d <- tiff::readTIFF(bandfilename)
+        if (decimateGiven) {
+            dim <- dim(d)
+            d <- d[seq.int(1, dim[1], by=decimate), seq.int(1, dim[2], by=decimate)] 
+        }
+        ##>))
+        ##> cat("---DONE reading ", header$bandnames[band[b]], "\n")
         ## if (FALSE && !is.null(getOption("testLandsat1"))) { # FIXME: disable
         ##bandname <- header$bandnames[band[b]] # FIXME: 1 more layer of indexing?
         #if (is.null(x@metadata$spacecraft) || x@metadata$spacecraft == "LANDSAT_7") {
+        ##> print("assembling bytes")
+        ##> print(system.time({
         if ("LANDSAT_8" == header$spacecraft) {
             d <- .Call("landsat_numeric_to_bytes", d, 16) # reuse 'd' to try to save storage
             res@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
-                                                           lsb=.Call("landsat_transpose_flip", d$lsb))
+                                                          lsb=.Call("landsat_transpose_flip", d$lsb))
         } else {
             ## FIXME: assume all others are 1-byte, like LANDSAT_7
             d <- .Call("landsat_numeric_to_bytes", d, 8) # reuse 'd' to try to save storage
             res@data[[header$bandnames[band[b]]]] <- list(msb=0,
-                                                           lsb=.Call("landsat_transpose_flip", d$lsb))
+                                                          lsb=.Call("landsat_transpose_flip", d$lsb))
         }
+        ##> }))
+        ##> print("--DONE assembling bytes")
     }
+    ##> cat("AFTER\n")
+    ##> print(Sys.time())
     options(warn=options$warn) 
     res@metadata$satellite <- "landsat"
     res@processingLog <- processingLogAppend(res@processingLog,

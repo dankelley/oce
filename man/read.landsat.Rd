@@ -4,15 +4,18 @@
 \alias{read.landsat}
 \title{Read a landsat File Directory}
 \usage{
-read.landsat(file, band = "all", emissivity = 0.984,
+read.landsat(file, band = "all", emissivity = 0.984, decimate,
   debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
 load.  This is a directory name containing the data.}
 
-\item{band}{The bands to be read, by default all of the bands.  See
-\sQuote{Details} for the names of the bands.}
+\item{band}{The bands to be read, by default all of the bands.  Use
+`band=NULL` to skip the reading of bands, instead reading only the
+image metadata, which is often enough to check if the image is of 
+interest in a given study. See \sQuote{Details} for the names of the
+bands, some of which are pseudo-bands, computed from the actual data.}
 
 \item{emissivity}{Value of the emissivity of the surface, stored as
 \code{emissivity} in the \code{metadata} slot of the
@@ -24,7 +27,14 @@ but a wider range of values can be found in the literature.  The value of
 \code{metadata$emissivity} is easy to alter, either as a single value or
 as a matrix, yielding flexibility of calcuation.}
 
-\item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate
+\item{decimate}{optional positive integer indicating the degree to which
+the data should be subsampled after reading and before storage. Setting
+this to 10 can speed up reding by a factor of 3 or more, but higher values
+have diminishing effect.  In exploratory work, it is useful to set
+\code{decimate=10}, to plot the image to determine a subregion
+of interest, and then to use \code{\link{landsatTrim}} to trim the image.}
+
+\item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 }
 \value{
@@ -38,9 +48,9 @@ if desired, e.g. to store calculated quantities.
 }
 \description{
 Read a landsat data file, producing an object of \code{\link{landsat-class}}.
-}
-\details{
-The \CRANpkg{tiff} package must be installed for \code{read.landsat} to work.
+The actual reading is done with \link[tiff]{readTIFF} in the 
+\CRANpkg{tiff} package, so that package must be installed for 
+\code{read.landsat} to work.
     
 Landsat data are provided in directories that contain TIFF files and header
 information, and \code{read.landsat} relies on a strict convention for the
@@ -54,7 +64,8 @@ For Landsat 8, there are 11 bands, with names \code{"aerosol"} (band 1),
 \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
 \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9), \code{"tirs1"} (band
 10), and \code{"tirs2"} (band 11).
-
+}
+\details{
 For Landsat 7, there 8 bands, with names \code{"blue"} (band 1), \code{"green"}
 (band 2), \code{"red"} (band 3), \code{"nir"} (band 4), \code{"swir1"} (band
 5), \code{"tir1"} (band 6A), \code{"tir2"} (band 6B), \code{"swir2"} (band 7)
@@ -63,16 +74,18 @@ and \code{"panchromatic"} (band 8).
 For Landsat 4 and 5, the bands similar to Landsat 7 but without
 \code{"panchromatic"} (band 8).
 }
-\section{storage requirements}{
+\section{Storage requirements}{
 
 
-Landsat images are large, with the given scene requiring about a gigabyte of
-storage, adding the full suite of bands.  The storage of the Oce object is
+Landsat data files (directories, really) are large, accounting for 
+approximately 1 gigabyte each.  The storage of the Oce object is
 similar (see \code{\link{landsat-class}}).  In R, many operations involving
 copying data, so that dealing with full-scale landsat images can overwhelm
 computers with storage under 8GB.  For this reason, it is typical to read just
 the bands that are of interest.  It is also helpful to use
-\code{\link{landsatTrim}} to trim the data to a geographical range.
+\code{\link{landsatTrim}} to trim the data to a geographical range, or
+to use \code{\link{decimate}} to get a coarse view of the domain, especially
+early in an analysis.
 }
 \author{
 Dan Kelley
