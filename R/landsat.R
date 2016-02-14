@@ -1079,7 +1079,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or a higher value for more debugging.
 #'
-#' return An object of \code{\link[base]{class}} \code{"landsat"}, with data having
+#' @return An object of \code{\link{landsat-class}}, with data having
 #' been trimmed approximately as specified.
 #'
 #' @seealso

@@ -20,10 +20,11 @@ corresponding to the values for \code{ll} and \code{ur}, such as would
 be produced by a call to \code{locator(2)}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or a higher value for more debugging.
-
-return An object of \code{\link[base]{class}} \code{"landsat"}, with data having
-been trimmed approximately as specified.}
+amount of debugging information, or a higher value for more debugging.}
+}
+\value{
+An object of \code{\link{landsat-class}}, with data having
+been trimmed approximately as specified.
 }
 \description{
 Trim a landsat image to a latitude-longitude box. This is only an approximate
