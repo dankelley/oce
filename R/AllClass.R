@@ -89,7 +89,7 @@ setMethod(f="summary",
                       ##message("i: ", i, ", name: ", names(object@data)[i])
                       if (isTime[i])
                           next
-                      if (any(is.finite(object@data[[i]])))
+                      if (is.list(object@data[[i]]) || any(is.finite(object@data[[i]])))
                           threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }

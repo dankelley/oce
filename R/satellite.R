@@ -31,17 +31,19 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
-              cat("Satellite Summary\n-----------------\n\n")
-              showMetadataItem(object, "filename",   "Data file:           ")
-              showMetadataItem(object, "satellite",  "Satellite:           ")
-              lon <- object@metadata$longitude
-              lat <- object@metadata$latitude
-              if (length(lon) > 2) cat("* Longitude:           ", lon[1], ", ", lon[2],  ", ..., ", tail(lon, 1), "\n", sep="")
-              else cat("* Longitude:           ", paste(lon, collapse=", "), "\n", sep="")
-              if (length(lat) > 2) cat("* Latitude:            ", lat[1], ", ", lat[2],  ", ..., ", tail(lat, 1), "\n", sep="")
-              else cat("* Latitude:            ", paste(lat, collapse=", "), "\n", sep="")
-              cat("* Time:                ",
-                  format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
+              if ("LANDSAT_8" != object@metadata$spacecraft) {
+                  cat("Satellite Summary\n-----------------\n\n")
+                  showMetadataItem(object, "filename",   "Data file:           ")
+                  showMetadataItem(object, "satellite",  "Satellite:           ")
+                  lon <- object@metadata$longitude
+                  lat <- object@metadata$latitude
+                  if (length(lon) > 2) cat("* Longitude:           ", lon[1], ", ", lon[2],  ", ..., ", tail(lon, 1), "\n", sep="")
+                  else cat("* Longitude:           ", paste(lon, collapse=", "), "\n", sep="")
+                  if (length(lat) > 2) cat("* Latitude:            ", lat[1], ", ", lat[2],  ", ..., ", tail(lat, 1), "\n", sep="")
+                  else cat("* Latitude:            ", paste(lat, collapse=", "), "\n", sep="")
+                  cat("* Time:                ",
+                      format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
+              }
               if (FALSE) { # FIXME: this is just for amsr, when we drop it's specific fcn
                   for (name in names(object@data))
                       object@data[[name]] <- object[[name]] # translate to science units
