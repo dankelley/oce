@@ -1,4 +1,6 @@
 0.9-18
+- improve plot.coastline() and mapPlot()
+- add support for G1SST satellite
 - all objects now have metadata items for units and flags
 - ctdTrim() method renamed: old A and B are new A; old C is new B
 - support more channels and features of rsk files

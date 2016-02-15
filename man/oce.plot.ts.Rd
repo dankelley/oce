@@ -63,7 +63,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
     argument is needed, because calling \code{\link{grid}} after doing a
     sequence of plots will not result in useful results for the individual
     panels.}
-\item{grid.col}{color of grid}
+\item{grid.col}{colour of grid}
 \item{grid.lty}{line type of grid}
 \item{grid.lwd}{line width of grid}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a

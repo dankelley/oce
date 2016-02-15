@@ -1,4 +1,4 @@
-#' Convert a string to a unit
+#' Convert a String to a Unit
 #'
 #' @details
 #' String matching is used to try to guess a unit from a character string.

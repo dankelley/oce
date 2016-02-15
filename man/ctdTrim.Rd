@@ -96,6 +96,7 @@
     of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
+\dontrun{
 library(oce)
 data(ctdRaw) 
 plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
@@ -108,6 +109,7 @@ trimByIndex <- function(data, parameters) {
 }
 trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
 plot(trimmed)
+}
 }
 
 \references{The Seabird CTD instrument is described at

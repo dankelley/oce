@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A package for Oceanographic analysis.
+#' oce: A package for Oceanographic analysis
 #'
 #' The oce package provides functions for working with
 #' Oceanographic data, for calculations that are specific
@@ -57,7 +57,7 @@
 NULL
 #> NULL
 
-#' Coerce something into an object of \code{\link{oce-class}}.
+#' Coerce Something Into an oce Object
 #'
 #' @details
 #' This function is limited and not intended for common use.
@@ -73,7 +73,7 @@ NULL
 #' yet unreleased) ODF package developed by the Bedford Institute of
 #' Oceanography, then \code{\link{ODF2oce}} is called (with
 #' no arguments other than the first) to calculate a return value.
-#" If the sub-class inference made by \code{\link{ODF2oce}} is 
+#' If the sub-class inference made by \code{\link{ODF2oce}} is 
 #' incorrect, users should call that function directly, specifying
 #' a value for its \code{coerce} argument.
 #'

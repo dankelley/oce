@@ -41,7 +41,7 @@
 
   \item{conductivity}{electrical conductivity ratio through the water column
     (optional). To convert from raw conductivity in milliSeimens per centimeter
-    divide by 42.914 to get conductivity ratio.}
+    divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
   \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
     salinity is converted internally to UNESCO-defined practical salinity.}
@@ -169,5 +169,11 @@ plot(ctd)
 }
 
 \author{Dan Kelley}
+
+\references{Culkin, F., and Norman D. Smith, 1980. Determination of the
+  concentration of potassium chloride solution having the same electrical
+  conductivity, at 15 C and infinite frequency, as standard seawater of salinity
+  35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
+    Engineering}, \bold{5}, pp 22-23.}
 
 \keyword{misc}

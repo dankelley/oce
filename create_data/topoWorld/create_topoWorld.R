@@ -1,4 +1,5 @@
 rm(list=ls())
+plot <- FALSE
 ## Read world topo dataset at 1/12 deg res, then subsample to 1/12 deg.
 ## File format described at
 ## http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/ETOPO5.txt
@@ -33,6 +34,14 @@ nlat <- length(ilat)
 nlon <- length(ilon)
 latitude <- latitude[seq.int(nlat,1)]
 z <- z[, seq.int(nlat, 1)]
+if (plot) {
+    par(mfrow=c(2,1))
+    imagep(longitude, latitude, z)
+}
+t <- matrixShiftLongitude(z, longitude)
+if (plot) {
+    imagep(t$longitude, latitude, t$m)
+}
 
 ## Plot to check
 cut <- which(longitude==180)

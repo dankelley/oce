@@ -65,7 +65,7 @@
     \item{col}{optional list of colours for plotting.}
 
     \item{fill}{either a logical, indicating whether to fill the land with
-        light-gray, or a color name.  Owing to problems with some projections,
+        light-gray, or a colour name.  Owing to problems with some projections,
         the default is not to fill.}
 
     \item{adorn}{list of expressions to be executed for the panels in

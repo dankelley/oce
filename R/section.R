@@ -375,7 +375,7 @@ makeSection <- function(item, ...)
     res
 }
 
-#"+.section" <- function(section, station) # up until 2015-03-13
+# We also had "+.section" <- function(section, station) # until 2015-03-13
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -543,7 +543,11 @@ setMethod(f="plot",
                           if (haveOcedata) {
                               bestcoastline <- coastlineBest(lonRange=lonr, latRange=latr)
                               oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
-                              data(list=bestcoastline, package="ocedata", envir=environment())
+                              if (bestcoastline == "coastlineWorld") {
+                                  data(list=bestcoastline, package="oce", envir=environment())
+                              } else {
+                                  data(list=bestcoastline, package="ocedata", envir=environment())
+                              }
                               coastline <- get(bestcoastline)
                           } else {
                               oceDebug(debug, "using \"coastlineWorld\" because ocedata package not installed\n")

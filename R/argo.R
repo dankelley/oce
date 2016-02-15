@@ -48,8 +48,9 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="argo",
-          definition=function(.Object,time,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {
+          definition=function(.Object,time,id,longitude,latitude,salinity,temperature,pressure,filename,dataMode) {
               if (!missing(time)) .Object@data$time <- time
+              if (!missing(id)) .Object@metadata$id <- id
               if (!missing(longitude)) .Object@data$longitude <- longitude
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(salinity)) .Object@data$salinity <- salinity
@@ -68,9 +69,11 @@ setMethod(f="initialize",
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
 #' used in \code{subset} in any call to the function, which means that
 #' repeated calls will be necessary to subset based on more than one
-#' independent variable.  Subsetting may be by \code{time},
+#' independent variable.  Subsetting may be by by anything
+#' stored in the data, e.g. \code{time},
 #' \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
-#' or \code{pressure}.
+#' or \code{pressure} or by \code{profile} (a made-up variable)
+#' or \code{id} (from the \code{metadata} slot).
 #'
 #' @param x An object inheriting from \code{\link{argo-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
@@ -101,10 +104,18 @@ setMethod(f="subset",
               if (length(grep("time", subsetString)) ||
                   length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
-              } else if (length(grep("profile", subsetString))) {
+              } else if (length(grep("id", subsetString))) {
+                  ## add id into the data, then do as usual
+                  tmp <- x@data
+                  tmp$id <- x@metadata$id
+                  keep <- eval(substitute(subset), tmp, parent.frame(2))
+                  rm(tmp)
+               } else if (length(grep("profile", subsetString))) {
                   ## add profile into the data, then do as usual
-                  x@data$profile <- 1:length(x@data$time)
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  tmp <- x@data
+                  tmp$profile <- 1:length(x@data$time)
+                  keep <- eval(substitute(subset), tmp, parent.frame(2))
+                  rm(tmp)
               } else if (length(grep("pressure", subsetString))) {
                   ## check that it is a "gridded" argo
                   gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
@@ -126,7 +137,8 @@ setMethod(f="subset",
                   for (field in fieldname) {
                       if (field != 'time' & field != 'longitude' & field != 'latitude') {
                           ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- res@data[[ifield]][keep,]
+                          res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
+                              res@data[[ifield]][,keep] else res@data[[ifield]][keep]
                       }
                   }
                   fieldname <- names(x@metadata$flags)
@@ -148,7 +160,8 @@ setMethod(f="subset",
                   for (field in fieldname) {
                       if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
                           ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- res@data[[ifield]][,keep]
+                          res@data[[ifield]] <- if (is.matrix(x@data[[ifield]]))
+                              x@data[[ifield]][,keep] else x@data[[ifield]][keep]
                       }
                   }
                   fieldname <- names(x@metadata$flags)
@@ -156,6 +169,7 @@ setMethod(f="subset",
                       ifield <- which(field == fieldname)
                       res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][,keep]
                   }
+                  #if (sum(keep) < 1) warning("In subset.argo() :\n  removed all profiles", call.=FALSE)
                   ## res@data$salinity <- x@data$salinity[,keep]
                   ## res@data$temperature <- x@data$temperature[,keep]
                   ## res@data$pressure <- x@data$pressure[,keep]
@@ -170,12 +184,15 @@ setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
               cat("Argo Summary\n------------\n\n")
-              cat("* source:     \"", object@metadata$filename, "\"\n", sep="")
-              cat("* id:         \"", object@metadata$id, "\"\n", sep="")
+              showMetadataItem(object, "filename",                  "Source:              ", quote=TRUE)
+              nid <- length(unique(object@metadata$id))
+              if (1 == nid)
+                   cat("* id:                  \"", object@metadata$id[1], "\"\n", sep="")
+              else cat("* id list:             \"", object@metadata$id[1], "\", \"", object@metadata$id[2], "\", ...\n", sep="")
               nD <- sum(object@metadata$dataMode == "D")
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
-              cat("* Profiles:   \"", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\"\n", sep="")
+              cat("* Profiles:            ", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\n", sep="")
               callNextMethod()
           })
 
@@ -240,6 +257,103 @@ argoDecodeFlags <- function(f, dim) # local function
     res
 }
 
+
+
+#' Read an Argo data file
+#' 
+#' \code{read.argo} is used to read an Argo file, producing an object of type
+#' \code{argo}. The file must be in the ARGO-style netCDF format described at [2].
+#' 
+#' @param file a character string giving the name of the file to load.
+#' 
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate amount
+#' of debugging information, or to 2 to get more.
+#' 
+#' @param processingLog if provided, the action item to be stored in the log.
+#' (Typically only provided for internal calls; the default that it provides is
+#' better for normal calls by a user.)
+#' 
+#' @param ... additional arguments, passed to called routines.
+#' 
+#' @return
+#' An object of \code{\link{argo-class}}.
+#' 
+#' @examples
+#' \dontrun{
+#' ## Example 1: read from a local file
+#' library(oce)
+#' d <- read.argo("/data/OAR/6900388_prof.nc")
+#' summary(d)
+#' plot(d)
+#'
+#' ## Example 2: construct URL for download (brittle)
+#' id <- "6900388"
+#' url <- "http://www.usgodae.org/ftp/outgoing/argo"
+#' if (!length(list.files(pattern="argo_index.txt")))
+#'     download.file(paste(url, "ar_index_global_meta.txt", sep="/"), "argo_index.txt")
+#' index <- readLines("argo_index.txt")
+#' line <- grep(id, index)
+#' if (0 == length(line)) stop("id ", id, " not found")
+#' if (1 < length(line)) stop("id ", id, " found multiple times")
+#' dac <- strsplit(index[line], "/")[[1]][1]
+#' profile <- paste(id, "_prof.nc", sep="")
+#' float <- paste(url, "dac", dac, id, profile, sep="/")
+#' download.file(float, profile)
+#' argo <- read.argo(profile)
+#' summary(argo)
+#' }
+#' 
+#' 
+#' @seealso
+#' The documentation for \code{\link{argo-class}} explains the structure of argo
+#' objects, and also outlines the other functions dealing with them.
+#' 
+#' @references
+#' 1. \url{http://www.argo.ucsd.edu/}
+#' 
+#' 2. \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf} documents the codes used in the netCDF files.
+#' 
+#' @section Data sources:
+#' Argo data are made available at several websites. A bit of detective
+#' work can be required to track down the data.  
+#'
+#' Some servers provide  data for floats that surfaced in a given ocean
+#' on a given day, the anonymous FTP server 
+#' \url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
+#'
+#' Other servers provide data on a per-float basis. A complicating
+#' factor is that these data tend to be categorized by "dac" (data
+#' archiving centre), which makes it difficult to find a particular
+#' float. For example, 
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
+#' a such a repository. If the ID of a float is known but not the
+#' "dac", then a first step is to download the text file
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/ar_index_global_meta.txt}
+#' and search for the ID. The first few lines of that file are header,
+#' and after that the format is simple, with columns separated by slash
+#' (\code{/}). The dac is in the first such column and the float ID in the
+#' second. A simple search will reveal the dac.
+#' For example \code{data(argo)} is based on float 6900388, and the line
+#' containing that token is
+#' \url{bodc/6900388/6900388_meta.nc,846,BO,20120225005617}, from
+#' which the dac is seen to be the British Oceanographic Data Centre
+#' (\code{bodc}). Armed with that information, visit
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}
+#' and see a directory called `profiles` that contains a NetCDF
+#' file for each profile the float made. These can be read with
+#' \code{read.argo}. It is also possible, and probably more common,
+#' to read a NetCDF file containing all the profiles together and for
+#' that purpose the file
+#' \url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}
+#' should be downloaded and provided as the \code{file} argument to
+#' \code{read.argo}.  This can be automated as in Example 2,
+#' although readers are cautioned that URL structures tend to change
+#' over time.
+#'
+#' Similar steps can be followed on other servers.
+#'
+#' @author Dan Kelley
+#' @family functions that deal with argo data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -272,7 +386,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         physicalNames <- ODFNames2oceNames(columnNames)
         message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
     }
-    id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")[1]
+    id <- ncdf4::ncvar_get(file, "PLATFORM_NUMBER")
     id <- gsub(" *$", "", id)
     id <- gsub("^ *", "", id)
 
@@ -350,12 +464,11 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         dim(pressure) <- dim
     }
     res <- new("argo", time=time,
-               longitude=longitude, latitude=latitude, salinity=salinity, 
+               id=id, longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename,
                dataMode=dataMode)
     res@metadata$filename <- filename
     res@metadata$dataMode <- dataMode
-    res@metadata$id <- id
     res@metadata$flags <- flags
     if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
         res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
@@ -367,7 +480,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         res@metadata$units$latitude <- list(unit=expression(degree*N), scale="")
     if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES", "units")$value, ignore.case=TRUE)))
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res@metadata$id <- if (!missing(id)) id else NA
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -387,6 +499,7 @@ as.argo <- function(time, longitude, latitude,
         pressure <- if ("pressure" %in% names) df$pressure else NULL
         longitude <- if ("longitude" %in% names) df$longitude else NULL
         latitude <- if ("latitude" %in% names) df$latitude else NULL
+        id <- if ("id" %in% names) df$id else NULL
     } else {
         if (missing(time)) stop("must give time")
         if (missing(longitude)) stop("must give longitude")
@@ -394,11 +507,11 @@ as.argo <- function(time, longitude, latitude,
         if (missing(temperature)) stop("must give temperature")
         if (missing(salinity)) stop("must give salinity")
         if (missing(pressure)) stop("must give pressure")
+        if (missing(id)) stop("must give id")
     }
-    res <- new("argo", time=time,
+    res <- new("argo", time=time, id=id,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
-    res@metadata$id <- if (!missing(id)) id else NA
     res@metadata$units <- if (!is.null(units)) units else
         list(longitude=list(expression(degree*E), scale=""),
              latitude=list(expression(degree*N), scale=""),
@@ -592,12 +705,14 @@ setMethod(f="plot",
                       ## FIXME: how to handle the noise; if as below, document it
                       plotProfile(ctd, xtype="salinity",
                            Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
+                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                           col=if (missing(col)) "black" else col, type=type)
                   } else if (which[w] == 6) {    # T profile
                       ## FIXME: how to handle the noise; if as below, document it
                       plotProfile(ctd, xtype="temperature",
                            Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),
-                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE), type=type)
+                           ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                           col=if (missing(col)) "black" else col, type=type)
                   } else {
                       stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
                   }

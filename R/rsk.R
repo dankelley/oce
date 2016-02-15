@@ -1,3 +1,25 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' Sample rsk Dataset
+#'
+#' A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
+#'
+#' @details The data were obtained September 2015, off the west coast
+#'     of Greenland, by Matt Rutherford and Nicole Trenholm of the
+#'     Ocean Research Project, in collaboration with RBR and with the
+#'     NASA Oceans Melting Greenland project.
+#'
+#' @name rsk
+#' @docType data
+#' @references \url{https://rbr-global.com/}
+#' @examples
+#' library(oce)
+#' data(rsk)
+#' plot(rsk)
+#' plot(as.ctd(rsk))
+#' plot(subset(as.ctd(rsk),pressure<10))
+NULL
+
 setMethod(f="initialize",
           signature="rsk",
           definition=function(.Object,time,pressure,temperature,filename="") {
@@ -8,6 +30,7 @@ setMethod(f="initialize",
               .Object@metadata$model <- NA
               .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
               .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+              .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())

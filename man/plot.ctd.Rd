@@ -12,7 +12,8 @@
     indicating the station location.}
 
 \usage{\S4method{plot}{ctd}(x, which,
-     col=par("fg"), fill=FALSE,
+     col=par("fg"), fill,
+     borderCoastline=NA, colCoastline="lightgray",
      eos=getOption("oceEOS", default='gsw'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
@@ -86,9 +87,13 @@
     }
   }
   \item{col}{colour of lines or symbols}
-  \item{fill}{either a logical, indicating whether to fill the land with
-      light-gray, or a color name.  Owing to problems with some projections,
-      the default is not to fill.}
+  \item{fill}{a legacy parameter that will be permitted only temporarily;
+    see \dQuote{History}.}
+  \item{borderCoastline}{colour of coastlines and international borders, passed
+      to \code{\link{plot.coastline}} if a map is included in \code{which}.}
+  \item{colCoastline}{fill colour of coastlines and international borders, passed
+      to \code{\link{plot.coastline}} if a map is included in \code{which}. Set
+      to \code{NULL} to avoid filling.}
   \item{eos}{equation of state to be used, either \code{"unesco"} or
       \code{"gsw"}.}
   \item{ref.lat}{Latitude of reference point for distance calculation}
@@ -199,6 +204,11 @@
 
 \seealso{The documentation for \code{\link{ctd-class}} explains the structure
     of CTD objects, and also outlines the other functions dealing with them.}
+
+\section{History}{Until February, 2016, \code{plot.cctd} relied on
+  a now-defunct argument \code{fill} to control colours; \code{colCoastline} is to be
+  used now, instead. Also, now it is possible to set the edge of coasts and 
+  international boundaries, with \code{borderCoastline}.}
 
 \examples{
 library(oce)

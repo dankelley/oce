@@ -412,8 +412,8 @@ as.topo <- function(longitude, latitude, z, units=NULL, filename="")
         longitude <- as.numeric(rownames(bathy))
         latitude <- as.numeric(colnames(bathy))
         z <- as.matrix(bathy)
-        if ("units" %in% names(bathy@metadata))
-            units <- bathy@metadata$units
+        ##> if ("units" %in% names(bathy@metadata))
+        ##>     units <- bathy@metadata$units
     }
     ncols <- length(longitude)
     nrows <- length(latitude)

@@ -63,9 +63,9 @@
   \emph{A note on conductivity.} RBR devices record conductivity in
   mS/cm, and it is this value that is stored in the object returned by
   \code{read.rsk}. This can be converted to conductivity ratio (which is
-  what many other instruments report) by dividing by 42.914, which will
-  be necessary in any seawater-related function that takes conductivity
-  ratio as an argument (see \dQuote{Examples}).
+  what many other instruments report) by dividing by 42.914 (see Culkin and
+  Smith, 1980) which will be necessary in any seawater-related function that
+  takes conductivity ratio as an argument (see \dQuote{Examples}).
     
   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
@@ -91,18 +91,6 @@
 
 \value{An object of \code{\link{rsk-class}}.}
 
-\examples{
-library(oce)
-## A CTD-style rsk
-if (requireNamespace("R.utils")) {
-  file <- system.file("extdata", "sample.rsk.gz", package="oce")
-  tmp <- tempfile(fileext=".rsk")
-  R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
-  rsk <- read.rsk(tmp)
-  ctd <- as.ctd(rsk)
-}
-}
-
 \seealso{The documentation for \code{\link{rsk-class}} explains the structure of
   \code{rsk} objects, and also outlines other functions dealing with them.
   Since RBR has a wide variety of instruments, \code{rsk} datasets can be quite
@@ -111,5 +99,11 @@ if (requireNamespace("R.utils")) {
   so that the generic plot obeys the CTD format.}
 
 \author{Dan Kelley and Clark Richards}
+
+\references{Culkin, F., and Norman D. Smith, 1980. Determination of the
+  concentration of potassium chloride solution having the same
+  electrical conductivity, at 15 C and infinite frequency, as standard
+  seawater of salinity 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal
+  of Oceanic Engineering}, \bold{5}, pp 22-23.}
 
 \keyword{misc}

@@ -1153,7 +1153,9 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
-                              col=par("fg"), fill=FALSE,
+                              col=par("fg"),
+                              fill, # to catch old method
+                              borderCoastline=NA, colCoastline="lightgray",
                               eos=getOption("oceEOS", default='gsw'),
                               ref.lat=NaN, ref.lon=NaN,
                               grid=TRUE, coastline="best",
@@ -1179,6 +1181,18 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "gsw"))
+              if (!missing(fill)) {
+                  ## permit call as documented before 2016-02-03
+                  ## Note: the code permitted fill=TRUE but this was never documented
+                  if (is.character(fill)) {
+                      colCoastline <- fill
+                  } else {
+                      if (is.logical(fill) && !fill) {
+                          colCoastline <- NULL
+                      }
+                  }
+                  warning("In plot.ctd() : 'fill' being accepted for backwards compatibility; please use 'colCoastline' instead", call.=FALSE)
+              }
               if (missing(which)) {
                   oceDebug(debug, "plot.ctd(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
                   dt <- x@metadata$deploymentType
@@ -1625,12 +1639,11 @@ setMethod(f="plot",
                                   oceDebug(debug, "projection=", projection, "\n")
                                   oceDebug(debug, "parameters=", parameters, "\n")
                                   oceDebug(debug, "orientation=", orientation, "\n")
-                                  oceDebug(debug, "fill=", fill, "\n")
                                   oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       fill=fill,
+                                       border=borderCoastline, col=colCoastline,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
@@ -1641,7 +1654,7 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       fill=fill,
+                                       border=borderCoastline, col=colCoastline,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
@@ -1658,7 +1671,7 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        projection=projection, parameters=parameters, orientation=orientation,
-                                       fill=fill,
+                                       border=borderCoastline, col=colCoastline,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
@@ -1667,7 +1680,7 @@ setMethod(f="plot",
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                       fill=fill,
+                                       border=borderCoastline, col=colCoastline,
                                        projection=projection, parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
@@ -3165,17 +3178,27 @@ plotProfile <- function (x,
         dpdt.sm <- smooth.spline(x@data$pressure, dpdt, df=df)
         if (missing(dpdtlim))
             dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
+        plot(dpdt.sm$y, dpdt.sm$x,
+             xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
              xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(dp/dt, if (know.time.unit) " [ dbar/s ]" else " [ dbar/(time-unit)]")),
-                  side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
-
+            if (know.time.unit) {
+                mtext(expression(dp/dt * " [ dbar / s ]"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            } else {
+                mtext(expression(dp/dt * " [ dbar / (time unit) ]"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            }
         } else {
-            mtext(expression(paste(dp/dt, if (know.time.unit) " ( dbar/s )" else " ( dbar/(time-unit))")),
-                  side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
+            if (know.time.unit) {
+                mtext(expression(dp/dt * " ( dbar / s )"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            } else {
+                mtext(expression(dp/dt * " ( dbar / (time unit) )"),
+                      side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
+            }
         }
         box()
         if (grid) {

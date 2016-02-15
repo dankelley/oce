@@ -68,7 +68,8 @@
 
     \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
     which makes no sense, so the unit was assumed to be mS/cm, and the value was
-    divided by the standard value 42.914mS/cm, to estimate the conductivity ratio.
+    divided by the standard value 42.914mS/cm (see Culkin and Smith, 1980),
+    to estimate the conductivity ratio.
 
     \item The file contained a column named \code{"T-Temp"}, which is not
     something the author has seen in his career. It was assumed to stand for
@@ -126,5 +127,11 @@
 }
 
 \author{Dan Kelley}
+
+\references{Culkin, F., and Norman D. Smith, 1980. Determination of the
+  concentration of potassium chloride solution having the same electrical
+  conductivity, at 15 C and infinite frequency, as standard seawater of salinity
+  35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
+    Engineering}, \bold{5}, pp 22-23.}
 
 \keyword{misc}

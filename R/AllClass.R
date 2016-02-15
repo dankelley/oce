@@ -1,4 +1,4 @@
-#' Base class for objects in the oce package
+#' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
 #' users can use \code{new("oce")} to create a blank \code{oce}
@@ -7,7 +7,7 @@
 #' @slot metadata A list containing information about the data. The 
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
-#" not make sense for a \code{\link{ctd-class}} object.
+#' not make sense for a \code{\link{ctd-class}} object.
 #' @slot data A list containing the data.
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
@@ -43,7 +43,7 @@ setClass("oce",
                         data=list(),
                         processingLog=list()))
 
-#' Summarize an oce object
+#' Summarize an oce Object
 #'
 #' Provide a summary of some pertinent aspects of the object, including
 #' important elements of its \code{metadata} slot and \code{data} slot,
@@ -62,21 +62,27 @@ setMethod(f="summary",
               isTime <- grepl("^time", names, ignore.case=TRUE)
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
-                  if (inherits(time, "POSIXt")) {
+                  if (inherits(time, "POSIXt") && length(time) > 0) {
                       from <- min(time, na.rm=TRUE)
                       to <- max(time, na.rm=TRUE)
                       deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
-                      if (deltat < 60)
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
-                      else if (deltat < 3600)
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
-                      else if (deltat < 24*3600)
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
-                      else
-                          cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
+                      if (is.na(deltat)) {
+                          cat("* Time:               ", format(from), "\n")
+                      } else {
+                          if (deltat < 60) {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                          } else if (deltat < 3600) {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
+                          } else if (deltat < 24*3600) {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
+                          } else {
+                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
+                          }
+                      }
                   }
               }
               ndata <- length(object@data)
+              threes <- NULL
               if (ndata > 0) {
                   threes <- matrix(nrow=sum(!isTime), ncol=3)
                   ii <- 1
@@ -84,7 +90,8 @@ setMethod(f="summary",
                       ##message("i: ", i, ", name: ", names(object@data)[i])
                       if (isTime[i])
                           next
-                      threes[ii,] <- threenum(object@data[[i]])
+                      if (is.list(object@data[[i]]) || any(is.finite(object@data[[i]])))
+                          threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
@@ -135,10 +142,13 @@ setMethod(f="summary",
                                          }))
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
-                  rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
-                  colnames(threes) <- c("Min.", "Mean", "Max.")
-                  cat("* Statistics of data\n")
-                  print(threes, indent='    ')
+                  if (!is.null(threes)) {
+                      rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
+                      colnames(threes) <- c("Min.", "Mean", "Max.")
+                      cat("* Statistics of data\n```\n")
+                      print(threes, indent='')
+                      cat("```\n")
+                  }
               }
               processingLogShow(object)
               invisible(threes)
@@ -164,7 +174,7 @@ setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
 
-#' Subset an oce object
+#' Subset an oce Object
 #'
 #' This is a basic class for general oce objects.  It has specialised
 #' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
@@ -203,7 +213,7 @@ setMethod(f="subset",
               res
           })
 
-#' Extract something from an oce object
+#' Extract Something From an oce Object
 #'
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
@@ -254,7 +264,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change something within an oce object
+#' Change Something Within an oce Object
 #'
 #' @description
 #' This is a base function that can be used to change items

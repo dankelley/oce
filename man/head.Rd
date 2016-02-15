@@ -4,7 +4,7 @@
 \alias{tail}
 \alias{tail.adp}
 
-\title{Ends of \code{oce} objects.}
+\title{Ends of oce Objects}
 
 \description{Returns the first or last parts of an \code{oce} object.}
 

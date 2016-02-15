@@ -55,6 +55,10 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
     res
 }
 
+## old default: fill with 'lightgray'; border colour black (no way to control)
+## to retain old default: border=NULL
+##                        col='lightgray' (*not* the polygon() default)
+## If "fill" %in% names(list(...)) and it is a colour, set col=that colour
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
@@ -62,10 +66,12 @@ setMethod(f="plot",
                                asp,
                                clongitude, clatitude, span,
                                lonlabel=NULL, latlabel=NULL, sides=NULL,
-                               projection=NULL, parameters=NULL, orientation=NULL,
+                               projection=NULL,
                                expand=1,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
-                               bg, fill='lightgray',
+                               bg,
+                               fill, # just so we catch it's use ... will be removed at some later time
+                               border=NULL, col="lightgray", # OLD: border and col did not exist
                                axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE, inset=FALSE,
                                geographical=0,
@@ -82,6 +88,29 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="", unindent=1)
+              dots <- list(...)
+              ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
+              ##> message("col: ", if(missing(col)) "MISSING" else col)
+              if (!missing(fill)) {
+                  ## permit call as documented before 2016-02-03
+                  ## Note: the code permitted fill=TRUE but this was never documented
+                  if (is.character(fill)) {
+                      col <- fill
+                  } else {
+                      if (is.logical(fill) && !fill) {
+                          col <- NULL
+                      }
+                  }
+                  warning("In plot.coastline() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
+              }
+              ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
+              ##> message("col: ", if(missing(col)) "MISSING" else col)
+              if (is.character(col)) {
+                  if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
+                      col <- NULL
+                      warning("setting col=NULL because the coastline is not fillable\n")
+                  }
+              }
               if (!missing(clongitude))
                   if (clongitude > 180) clongitude <- clongitude - 360
               if (!missing(longitudelim) || !missing(latitudelim)) {
@@ -110,10 +139,11 @@ setMethod(f="plot",
                   mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
                           showHemi=showHemi,
                           mgp=mgp, mar=mar,
-                          bg="white", fill=fill, type='l', axes=TRUE,
+                          bg="white", border=border, col=col, type='l', axes=TRUE, ## FIXME: use bg and col here; delete fill
                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                          projection=projection, parameters=parameters, orientation=orientation,
+                          projection=projection,
                           debug=debug-1, ...)
+                  message("about to call mapPlot() with border: ", border, ", col: ", col)
 
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)
                   return(invisible())
@@ -131,7 +161,7 @@ setMethod(f="plot",
               }
               longitude <- x[["longitude"]]
               latitude <- x[["latitude"]]
-              dots <- list(...)
+              ##dots <- list(...)
               dotsNames <- names(dots)
               ##gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
@@ -142,13 +172,13 @@ setMethod(f="plot",
                   par(mar=mar)
               par(mgp=mgp)
               if (add) {
-                  if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                      polygon(longitude, latitude, col=fill, ...)
-                      if (axes)
-                          box()                      # clean up edges
-                  } else {
-                      lines(longitude, latitude, ...)
-                  }
+                  ##> if (is.character(fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                  polygon(longitude, latitude, border=border, col=fill, ...)
+                  if (axes)
+                      box()                      # clean up edges
+                  ##> } else {
+                  ##>     lines(longitude, latitude, ...)
+                  ##> }
               } else {
                   ##gaveSpan <- !missing(span)
                   if (!missing(clatitude) && !missing(clongitude)) {
@@ -298,21 +328,21 @@ setMethod(f="plot",
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
                       ##yscale <- 180 / (yaxp[2] - yaxp[1])
-                      if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                          polygon(x[["longitude"]], x[["latitude"]], col=fill, ...)
-                      } else {
-                          lines(x[["longitude"]], x[["latitude"]], ...)
-                      }
+                      ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                      polygon(x[["longitude"]], x[["latitude"]], border=border, col=col, ...)
+                      ##> } else {
+                      ##>     lines(x[["longitude"]], x[["latitude"]], ...)
+                      ##> }
                   } else {
-                      if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                          polygon(longitude, latitude, col=fill, ...)
-                          if (axes)
-                              rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
-                      } else {
-                          lines(longitude, latitude, ...)
-                          if (axes)
-                              rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
-                      }
+                      ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                      polygon(longitude, latitude, border=border, col=col, ...)
+                      if (axes)
+                          rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
+                      ##> } else {
+                      ##>     lines(longitude, latitude, ...)
+                      ##>     if (axes)
+                      ##>         rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
+                      ##> }
                   }
               }
               ##box()

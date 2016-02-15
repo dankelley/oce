@@ -2,7 +2,7 @@
 \name{geodXy}
 \alias{geodXy}
 
-\title{Convert from geographical to geodesic coordinates.}
+\title{Convert From Geographical to Geodesic Coordinates}
 
 \description{Convert (longitude,latitude) to geodesic (x,y) coordinates.}
 

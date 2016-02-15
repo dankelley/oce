@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{plot.coastline}
 
 \alias{plot.coastline}
@@ -13,12 +14,13 @@
      asp,
      clongitude, clatitude, span,
      lonlabel=NULL, latlabel=NULL, sides=NULL,
-     projection=NULL, parameters=NULL, orientation=NULL,
+     projection=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
-     fill='lightgray',
+     fill, # just so we catch it's use ... will be removed at some later time
+     border=NULL, col="lightgray",
      axes=TRUE, cex.axis=par('cex.axis'),
      add=FALSE, inset=FALSE,
      geographical=0,
@@ -74,14 +76,6 @@
       Otherwise, \code{projection} must be a character string identifying a
       projection accepted by \code{\link{mapPlot}}.}
 
-  \item{parameters}{optional parameters to map projection, if a
-      \code{mapproj}-style \code{projection} is specified (see
-      \code{\link{mapPlot}}.}
-
-  \item{orientation}{optional orientation of map projection, if a
-      \code{mapproj}-style \code{projection} is specified  (see
-      \code{\link{mapPlot}}.}
-
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
@@ -94,10 +88,13 @@
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
-  \item{fill}{colour to be used to fill land regions.  This is ignored
-    unless the coastline object is fillable (e.g. for a "shapefile" read
-    by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
-    filling.} 
+  \item{fill}{a legacy parameter that will be permitted only temporarily;
+    see \dQuote{History}.}
+  \item{border}{colour of coastlines and international borders
+    (passed to \code{\link{polygon}}, which does the drawing).}
+  \item{col}{the colour with which to fill (passed to \code{\link{polygon}},
+    which does the drawing.) This is ignored unless the coastline
+    object is fillable.}
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
   \item{cex.axis}{value for axis font size factor.}
   \item{add}{boolean, set to \code{TRUE} to draw the coastline on an existing
@@ -139,8 +136,15 @@
 \value{None.}
 
 \seealso{The documentation for \code{\link{coastline-class}} explains the
-    structure of coastline objects, and also outlines the other functions
-    dealing with them.}
+  structure of coastline objects, and also outlines the other functions dealing
+  with them.}
+
+\section{History}{Until February, 2016, \code{plot.coastline} relied on
+  a now-defunct argument \code{fill} to control colours; \code{col} is to be
+  used now, instead. Also, in February, 2016, the arguments named
+  \code{parameters} and \code{orientation} were both removed, as they had become
+  nonfunctional about a year previously, in the transition to using
+  \CRANpkg{rgdal} to carry out map projections.}
 
 \examples{
 \dontrun{
