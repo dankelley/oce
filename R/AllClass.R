@@ -145,9 +145,8 @@ setMethod(f="summary",
                   if (!is.null(threes)) {
                       rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                       colnames(threes) <- c("Min.", "Mean", "Max.")
-                      cat("* Statistics of data\n```\n")
+                      cat("* Statistics of data\n")
                       print(threes, indent='')
-                      cat("```\n")
                   }
               }
               processingLogShow(object)
