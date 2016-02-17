@@ -518,7 +518,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     t0s <- as.vector(ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME"))
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
     julianDayTime <- as.vector(ncdf4::ncvar_get(file, "JULD"))
-    res@metadata$time <- t0 + julianDayTime * 86400
+    res@data$time <- t0 + julianDayTime * 86400
     rm(list=c("t0s", "t0", "julianDayTime")) # no longer needed
 
     res@metadata$juldQc <- if ("JULD_QC" %in% varNames)

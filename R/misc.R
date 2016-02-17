@@ -35,8 +35,9 @@ handleFlags <- function(x, action="NA")
     }
     if ("NA" != action) stop("the only permitted action is \"NA\"")
     fnames <- names(x@metadata$flags)
+    fnamesPlain <- gsub("Qc$","",fnames)
     dnames <- names(x@data)
-    for (name in fnames) {
+    for (name in fnamesPlain) {
         if (name %in% dnames) {
             if (inherits(x, "argo")) {
                 bad <- x@metadata$flags[[name]] != "1"
