@@ -2201,3 +2201,13 @@ decodeDataNames <- function(names, scheme)
     }
     res
 }
+
+#' Remove leading and trailing whitespace from strings
+#'
+#' @param s vector of character strings
+#' @return a new vector formed by trimming leading and trailing whitespace
+#' from the elements of \code{s}.
+trimString <- function(s)
+{
+    gsub("^ *", "", gsub(" *$", "", s))
+}

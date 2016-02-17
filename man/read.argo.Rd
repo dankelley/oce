@@ -23,7 +23,66 @@ An object of \code{\link{argo-class}}.
 }
 \description{
 \code{read.argo} is used to read an Argo file, producing an object of type
-\code{argo}. The file must be in the ARGO-style netCDF format described at [2].
+\code{argo}. The file must be in the ARGO-style netCDF format described at
+in the Argo documentation [2,3].
+}
+\details{
+Metadata items such as \code{time}, \code{longitude} and \code{latitude}
+are inferred from the data file in a straightforward way, using
+\code{\link[ncdf4]{ncvar_get}} and data-variable names as listed in
+the Argo documentation [2,3]. The items listed in section 2.2.3
+of [3] is read from the file and stored in the \code{metadata} slot, 
+with the exception of \code{longitude} and \code{latitude},
+which are stored in the \code{data} slot.
+
+String data that contain trailing blanks in the argo NetCDF
+are trimmed using \code{\link{trimString}}.  One-dimensional
+matrices are converted to vectors using \code{\link{as.vector}}.
+Items listed in section 2.2.3 of [3] are meant to be present
+in all files, but tests showed that this is not the case, and so
+\code{read.argo} sets such items to \code{NULL} before saving
+them in returned object.
+
+Items are translated from upper-case Argo names to \code{oce} names
+as follows.
+\itemize{
+\item \code{PLATFORM_NUMBER} becomes \code{id}
+\item \code{PROJECT_NAME} becomes \code{projectName}
+\item \code{PI_NAME} becomes \code{PIName}
+\item \code{STATION_PARAMETERS} becomes \code{stationParameters}
+\item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
+\item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
+\item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
+\item \code{DC_REFERENCE} becomes \code{DCReference}
+\item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
+\item \code{DATA_MODE} becomes \code{dataMode}
+\item \code{INST_REFERENCE} becomes \code{instReference}
+\item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
+\item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
+\item \code{JULD} becomes \code{juld} (and used to compute \code{time})
+\item \code{JULD_QC} becomes \code{juldQc}
+\item \code{JULD_QC_LOCATION} becomes \code{juldQcLocation}
+\item \code{LATITUDE} becomes \code{latitude}
+\item \code{LONGITUDE} becomes \code{longitude}
+\item \code{POSITION_QC} becomes \code{positionQC}
+\item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
+\item \code{PROFILE_QC} becomes \code{} ... FIX ME
+}
+
+It is assumed that the profile data are as listed in the NetCDF variable
+called \code{STATION_PARAMETERS}. Each item can have variants, as
+described in Sections 2.3.4 of [3].
+For example, if \code{"PRES"} is found in \code{STATION_PARAMETERS},
+then \code{PRES} (pressure) data are sought in the file, along with
+\code{PRES_QC}, \code{PRES_ADJUSTED}, \code{PRES_ADJUSTED_QC}, and
+\code{PRES_ERROR}. The same pattern works for other profile data. The variables
+are stored with different names within the resultant \code{\link{argo-class}}
+object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
+\code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
+and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
+stored in the \code{data} slot. Meanwhile, the quality-control flags
+\code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressureQc}
+and \code{pressureAdjustedQc} in the \code{metadata} slot.
 }
 \section{Data sources}{
 
@@ -99,6 +158,9 @@ Dan Kelley
 1. \url{http://www.argo.ucsd.edu/}
 
 2. \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf} documents the codes used in the netCDF files.
+
+3. \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+is the main document describing argo data.
 }
 \seealso{
 The documentation for \code{\link{argo-class}} explains the structure of argo

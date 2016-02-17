@@ -1,3 +1,5 @@
+0.9-19
+- trimString() added
 0.9-18
 - improve plot.coastline() and mapPlot()
 - add support for G1SST satellite
