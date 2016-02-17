@@ -94,11 +94,24 @@ argoDataNames <- function(names)
 
 #' Subset an argo object
 #'
-#' This function is somewhat analogous to
-#' \code{\link{subset.data.frame}}, but only one independent variable may be
-#' used in \code{subset} in any call to the function, which means that
+#' Subset an argo object, either by selecting just the "adjusted" data
+#' or by subsetting by pressure or other variables.
+#'
+#' @details
+#' If \code{subset} is the string \code{"adjusted"}, then \code{subset} 
+#' replaces the station variables with their adjusted counterparts. In
+#' the argo notation, e.g. \code{PSAL} is replaced with \code{PSAL_ADJUSTED};
+#' in the present notation, this means that \code{salinity} in the \code{data}
+#' slot is replaced with \code{salinityAdjusted}, and the latter is deleted.
+#' Similar replacements are also done with the flags stored in the \code{metadata}
+#' slot.
+#'
+#' If \code{subset} is an expression, then the action is somewhat similar
+#' to other \code{subset} functions, but with the restriction that
+#' only one independent variable may be
+#' used in in any call to the function, so that 
 #' repeated calls will be necessary to subset based on more than one
-#' independent variable.  Subsetting may be by by anything
+#' independent variable.  Subsetting may be done by anything
 #' stored in the data, e.g. \code{time},
 #' \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
 #' or \code{pressure} or by \code{profile} (a made-up variable)
@@ -110,99 +123,147 @@ argoDataNames <- function(names)
 #' @return An argo object.
 #' 
 #' @aliases subset.argo
-#' @seealso
-#' \code{\link{argoGrid}} for gridding argo objects.
 #'
 #' @examples
 #' library(oce)
 #' data(argo)
+#'
+#' # Example 1: buset by time, longitude, and pressure
 #' par(mfrow=c(2,2))
 #' plot(argo)
 #' plot(subset(argo, time > mean(time)))
 #' plot(subset(argo, longitude > mean(longitude)))
 #' plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
 #' 
-#' # Plot only delayed-mode profiles.
+#' # Example 2: restrict attention to delayed-mode profiles.
 #' par(mfrow=c(1,1))
 #' plot(subset(argo, dataMode == "D"))
+#'
+#' # Example 3: contrast corrected and uncorrected data
+#' par(mfrow=c(1,2))
+#' plotTS(argo)
+#' plotTS(subset(argo, "adjusted"))
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
-              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              res <- x
-              if (length(grep("time", subsetString)) ||
-                  length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
-                  keep <- eval(substitute(subset), x@data, parent.frame(2))
-              } else if (length(grep("id", subsetString))) {
-                  ## add id into the data, then do as usual
-                  tmp <- x@data
-                  tmp$id <- x@metadata$id
-                  keep <- eval(substitute(subset), tmp, parent.frame(2))
-                  rm(tmp)
-               } else if (length(grep("profile", subsetString))) {
-                  ## add profile into the data, then do as usual
-                  tmp <- x@data
-                  tmp$profile <- 1:length(x@data$time)
-                  keep <- eval(substitute(subset), tmp, parent.frame(2))
-                  rm(tmp)
-              } else if (length(grep("pressure", subsetString))) {
-                  ## check that it is a "gridded" argo
-                  gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
-                  if (gridded) {
-                      x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
-                      keep <- eval(substitute(subset), x@data, parent.frame(2))
-                      x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
-                  } else {
-                      stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
-                  }
-              } else if (length(grep("dataMode", subsetString))) {
-                  keep <- eval(substitute(subset), x@metadata, parent.frame(2))
-              } else {
-                  stop("can only subset by time, longitude, latitude, pressure, dataMode, and not by combinations", call.=FALSE)
+              if (missing(subset)) {
+                  warning("subset.argo(): argument 'subset' must be given\n", call.=FALSE)
+                  return(x)
               }
-              ## Now do the subset
-              if (length(grep("pressure", subsetString))) {
-                  fieldname <- names(x@data)
-                  for (field in fieldname) {
-                      if (field != 'time' & field != 'longitude' & field != 'latitude') {
-                          ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
-                              res@data[[ifield]][,keep] else res@data[[ifield]][keep]
-                      }
+              if (is.character(substitute(subset))) {
+                  if (subset != "adjusted") 
+                      stop("if subset is a string, it must be \"adjusted\"")
+                  res <- x
+                  dataNames <- names(x@data)
+                  ## Seek 'Adjusted' names
+                  adjustedIndices <- grep(".*Adjusted$", dataNames)
+                  for (i in adjustedIndices) {
+                      adjusted <- dataNames[i]
+                      base <- gsub("Adjusted$", "", adjusted)
+                      adjustedError <- paste(adjusted, "Error", sep="")
+                      ##> message("    base:          ", base)
+                      ##> message("    adjusted:      ", adjusted)
+                      ##> message("    adjustedError: ", adjustedError)
+                      res@data[[base]] <- res@data[[adjusted]]
+                      res@data[[adjusted]] <- NULL
+                      res@data[[adjustedError]] <- NULL
                   }
-                  fieldname <- names(x@metadata$flags)
-                  for (field in fieldname) {
-                      ifield <- which(field == fieldname)
-                      res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][keep,]
+                  flagNames <- names(x@metadata$flags)
+                  adjustedIndices <- grep(".*AdjustedQc$", flagNames)
+                  ##> message("FLAGS")
+                  ##> message("flagNames...");print(flagNames)
+                  ##> message("adjustedIndices");print(adjustedIndices)
+                  for (i in adjustedIndices) {
+                      adjusted <- flagNames[i]
+                      base <- gsub("AdjustedQc$", "Qc", adjusted)
+                      adjustedError <- paste(adjusted, "ErrorQc", sep="")
+                      ##> message("    base:          ", base)
+                      ##> message("    adjusted:      ", adjusted)
+                      ##> message("    adjustedError: ", adjustedError)
+                      res@metadata$flags[[base]] <- res@metadata$flags[[adjusted]]
+                      res@metadata$flags[[adjusted]] <- NULL
+                      res@metadata$flags[[adjustedError]] <- NULL
                   }
-                  ## res@data$salinity <- x@data$salinity[keep,]
-                  ## res@data$temperature <- x@data$temperature[keep,]
-                  ## res@data$pressure <- x@data$pressure[keep,]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog,
+                                                           paste("subset.argo(x, subset=\"",
+                                                                 as.character(subset), "\")", sep=""))
               } else {
-                  res@data$time <- x@data$time[keep]
-                  res@data$longitude <- x@data$longitude[keep]
-                  res@data$latitude <- x@data$latitude[keep]
-                  res@data$profile <- x@data$profile[keep]
-                  res@metadata$dataMode <- x@metadata$dataMode[keep]
-                  fieldname <- names(x@data)
-                  for (field in fieldname) {
-                      if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
-                          ifield <- which(field == fieldname)
-                          res@data[[ifield]] <- if (is.matrix(x@data[[ifield]]))
-                              x@data[[ifield]][,keep] else x@data[[ifield]][keep]
+                  subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+                  res <- x
+                  if (length(grep("time", subsetString)) ||
+                      length(grep("longitude", subsetString)) || length(grep("latitude", subsetString))) {
+                      keep <- eval(substitute(subset), x@data, parent.frame(2))
+                  } else if (length(grep("id", subsetString))) {
+                      ## add id into the data, then do as usual
+                      tmp <- x@data
+                      tmp$id <- x@metadata$id
+                      keep <- eval(substitute(subset), tmp, parent.frame(2))
+                      rm(tmp)
+                  } else if (length(grep("profile", subsetString))) {
+                      ## add profile into the data, then do as usual
+                      tmp <- x@data
+                      tmp$profile <- 1:length(x@data$time)
+                      keep <- eval(substitute(subset), tmp, parent.frame(2))
+                      rm(tmp)
+                  } else if (length(grep("pressure", subsetString))) {
+                      ## check that it is a "gridded" argo
+                      gridded <- ifelse(all(apply(x@data$pressure, 1, diff) == 0, na.rm=TRUE), TRUE, FALSE)
+                      if (gridded) {
+                          x@data$pressure <- x@data$pressure[,1] ## FIXME: have to convert pressure to vector
+                          keep <- eval(substitute(subset), x@data, parent.frame(2))
+                          x@data$pressure <- res@data$pressure ## FIXME: convert back to original for subsetting below
+                      } else {
+                          stop("cannot subset ungridded argo by pressure -- use argoGrid() first", call.=FALSE)
                       }
+                  } else if (length(grep("dataMode", subsetString))) {
+                      keep <- eval(substitute(subset), x@metadata, parent.frame(2))
+                  } else {
+                      stop("can only subset by time, longitude, latitude, pressure, dataMode, and not by combinations", call.=FALSE)
                   }
-                  fieldname <- names(x@metadata$flags)
-                  for (field in fieldname) {
-                      ifield <- which(field == fieldname)
-                      res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][,keep]
+                  ## Now do the subset
+                  if (length(grep("pressure", subsetString))) {
+                      fieldname <- names(x@data)
+                      for (field in fieldname) {
+                          if (field != 'time' & field != 'longitude' & field != 'latitude') {
+                              ifield <- which(field == fieldname)
+                              res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
+                                  res@data[[ifield]][,keep] else res@data[[ifield]][keep]
+                          }
+                      }
+                      fieldname <- names(x@metadata$flags)
+                      for (field in fieldname) {
+                          ifield <- which(field == fieldname)
+                          res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][keep,]
+                      }
+                      ## res@data$salinity <- x@data$salinity[keep,]
+                      ## res@data$temperature <- x@data$temperature[keep,]
+                      ## res@data$pressure <- x@data$pressure[keep,]
+                      res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
+                  } else {
+                      res@data$time <- x@data$time[keep]
+                      res@data$longitude <- x@data$longitude[keep]
+                      res@data$latitude <- x@data$latitude[keep]
+                      res@data$profile <- x@data$profile[keep]
+                      res@metadata$dataMode <- x@metadata$dataMode[keep]
+                      fieldname <- names(x@data)
+                      for (field in fieldname) {
+                          if (field != 'time' && field != 'longitude' && field != 'latitude' && field != 'profile') {
+                              ifield <- which(field == fieldname)
+                              res@data[[ifield]] <- if (is.matrix(x@data[[ifield]]))
+                                  x@data[[ifield]][,keep] else x@data[[ifield]][keep]
+                          }
+                      }
+                      fieldname <- names(x@metadata$flags)
+                      for (field in fieldname) {
+                          ifield <- which(field == fieldname)
+                          res@metadata$flags[[ifield]] <- res@metadata$flags[[ifield]][,keep]
+                      }
+                                        #if (sum(keep) < 1) warning("In subset.argo() :\n  removed all profiles", call.=FALSE)
+                      ## res@data$salinity <- x@data$salinity[,keep]
+                      ## res@data$temperature <- x@data$temperature[,keep]
+                      ## res@data$pressure <- x@data$pressure[,keep]
+                      res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
                   }
-                  #if (sum(keep) < 1) warning("In subset.argo() :\n  removed all profiles", call.=FALSE)
-                  ## res@data$salinity <- x@data$salinity[,keep]
-                  ## res@data$temperature <- x@data$temperature[,keep]
-                  ## res@data$pressure <- x@data$pressure[,keep]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
               }
               res
           })
@@ -635,10 +696,44 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         else
             res@metadata$units$pressureAdjustedError<- list(unit=expression(dbar), scale="")
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- if (is.character(file))
+        processingLogAppend(res@processingLog, paste("read.argo(\"", file, "\")", sep=""))
+    else processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
+#' Coerce data into argo dataset
+#' 
+#' Coerce a dataset into an argo dataset. This is not the right way to 
+#' read official argo datasets, which are provided in NetCDF format and may
+#' be read with \code{\link{read.argo}}.
+#'
+#' @param time vector of POSIXct times.
+#' @param longitude vector of longitudes.
+#' @param latitude vector of latitudes.
+#' @param salinity vector of salinities.
+#' @param temperature vector of temperatures.
+#' @param pressure vector of pressures.
+#' @param units optional list containing units. If \code{NULL}, the default,
+#' then \code{"degree east"} is used for \code{longitude},
+#' \code{"degree north"} for \code{latitude},
+#' \code{""} for \code{salinity},
+#' \code{"ITS-90"} for \code{temperature}, and
+#' \code{"dbar"} for \code{pressure}.
+#' @param id identifier.
+#' @param filename source filename.
+#' @param missingValue Optional missing value, indicating data that should be
+#' taken as \code{NA}.
+#' 
+#' @return
+#' An object of \code{\link{argo-class}}.
+#' 
+#' @seealso
+#' The documentation for \code{\link{argo-class}} explains the structure of argo
+#' objects, and also outlines the other functions dealing with them.
+#' 
+#' @author Dan Kelley
+#' @family functions that deal with argo data
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure, 
                        units=NULL,

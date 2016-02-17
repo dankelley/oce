@@ -1,5 +1,8 @@
 0.9-19
+- subset(argo, "adjusted") drops non-adjusted data
+- read.argo() reads all documented data and metadata fields
 - trimString() added
+
 0.9-18
 - improve plot.coastline() and mapPlot()
 - add support for G1SST satellite
