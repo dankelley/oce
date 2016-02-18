@@ -705,8 +705,6 @@ webtide <- function(action=c("map", "predict"),
         oceDebug(debug, latitude, "N ", longitude, "E -- use node ", node,
                  " at ", triangles$latitude[node], "N ", triangles$longitude[node], "E\n", sep="")
         constituentse <- dir(path=subdir, pattern="*.s2c")
-                                        #abbrev <- substr(constituentse, 1, 2)
-        abbrev <- as.character(read.table(paste(subdir,"/constituents.txt",sep=""))[,1])
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
@@ -715,7 +713,7 @@ webtide <- function(action=c("map", "predict"),
         for (i in 1:nconstituents) {
             twoLetter <- substr(constituentse[i], 1, 2)
             C <- which(twoLetter == tidedata$const$name)
-            period[i] <- 1 / tidedata$const$freq[C] # which(abbrev[C] == tidedata$const$name)]
+            period[i] <- 1 / tidedata$const$freq[C]
             ## Elevation file contains one entry per node, starting with e.g.:
             ##tri
             ## period 23.934470 (hours) first harmonic 
@@ -737,7 +735,6 @@ webtide <- function(action=c("map", "predict"),
                      sprintf(" (node %d) ", node),
                      sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
         }
-        ##df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
         ## NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
@@ -745,7 +742,6 @@ webtide <- function(action=c("map", "predict"),
         for (i in 1:nconstituents) {
             twoLetter <- substr(constituentse[i], 1, 2)
             C <- which(twoLetter == tidedata$const$name)
-            ## vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
             vuf <- tidemVuf(tRef, j=C, lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
@@ -758,7 +754,6 @@ webtide <- function(action=c("map", "predict"),
                      sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
  
         }
-        ##> legend("topleft", lwd=1, col=1:5, legend=abbrev[1:5])
         if (plot) {
             par(mfrow=c(3,1))
             oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 

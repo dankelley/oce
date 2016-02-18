@@ -531,7 +531,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         }
     }
     res <- new("argo")
-    flags <- list()
     if (debug > 0) {
         if (debug > 10)
             message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
@@ -613,8 +612,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         as.vector(ncdf4::ncvar_get(file, "POSITION_QC")) else NULL
     res@metadata$positioningSystem <- if ("POSITIONING_SYSTEM" %in% varNames)
         as.vector(trimString(ncdf4::ncvar_get(file, "POSITIONING_SYSTEM"))) else NULL
-
-    itemNames <- names(file$var)
 
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
     for (item in stationParameters) {
