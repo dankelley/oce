@@ -9,9 +9,8 @@
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",
   "coastlineWorld", "coastlineWorldMedium", "coastlineWorldFine", "none"),
   cex = 1, pch = 1, type = "p", col, fill = FALSE, adorn = NULL,
-  projection = NULL, parameters = NULL, orientation = NULL,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
-  tformat, debug = getOption("oceDebug"), ...)
+  projection = NULL, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
+  mgp[1] + 1.5, 1.5, 1.5), tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{object inheriting from \code{\link{argo-class}}.}
@@ -65,17 +64,22 @@ are applied to the appropriate panels, as they are drawn from top-left to
 bottom-right.   If only a single expression is provided, it is used for all
 panels. (See \dQuote{Examples}.)}
 
-\item{projection}{map projection to use, e.g. \code{"+proj=merc"} for Mercator.
-As a special case, setting \code{projection="automatic"} indicates that a
-projection is to be devised from the data, with \code{stereographic} if the
-mean latitude exceeds 70N and \code{mollweide} otherwise. \code{projection} is
-passed to \code{\link{mapPlot}}.}
+\item{projection}{indication of the projection to be used
+in trajetory maps. If this is \code{NULL}, no projection is used, although
+the plot aspect ratio will be set to yield zero shape distortion at the 
+mean float latitude.  If \code{projection="automatic"}, then one
+of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
+where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
+otherwise.  Otherwise, \code{projection} must be a character string specifying
+a projection in the notation used by \link[rgdal]{project} in the \CRANpkg{rgdal};
+this will be familiar to many readers as the PROJ.4 notation;
+see \code{\link{mapPlot}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mar}{value to be used with \code{\link{par}}("mar").}
 
 \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for plot
 types that call that function.  (See \code{\link{strptime}} for the format

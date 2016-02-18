@@ -833,14 +833,18 @@ as.argo <- function(time, longitude, latitude,
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' 
-#' @param projection map projection to use, e.g. \code{"+proj=merc"} for Mercator.
-#' As a special case, setting \code{projection="automatic"} indicates that a
-#' projection is to be devised from the data, with \code{stereographic} if the
-#' mean latitude exceeds 70N and \code{mollweide} otherwise. \code{projection} is
-#' passed to \code{\link{mapPlot}}.
-#'         
-#'  
-#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param projection indication of the projection to be used
+#' in trajetory maps. If this is \code{NULL}, no projection is used, although
+#' the plot aspect ratio will be set to yield zero shape distortion at the 
+#' mean float latitude.  If \code{projection="automatic"}, then one
+#' of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
+#' where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})
+#' otherwise.  Otherwise, \code{projection} must be a character string specifying
+#' a projection in the notation used by \link[rgdal]{project} in the \CRANpkg{rgdal};
+#' this will be familiar to many readers as the PROJ.4 notation;
+#' see \code{\link{mapPlot}}.
+#'
+#' @param mar value to be used with \code{\link{par}}("mar").
 #' 
 #' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for plot
 #' types that call that function.  (See \code{\link{strptime}} for the format
@@ -870,7 +874,7 @@ setMethod(f="plot",
                                            "coastlineWorldFine", "none"),
                                cex=1, pch=1, type='p', col, fill=FALSE, 
                                adorn=NULL,
-                               projection=NULL, parameters=NULL, orientation=NULL,
+                               projection=NULL,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                                tformat,
                                debug=getOption("oceDebug"),
@@ -970,7 +974,7 @@ setMethod(f="plot",
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
                           mapPlot(x[["longitude"]], x[["latitude"]],
-                                  projection=projection, orientation=orientation, parameters=parameters,
+                                  projection=projection,
                                   type='p', cex=cex, pch=pch,
                                   col=if (missing(col)) "black" else col,
                                   debug=debug-1)
