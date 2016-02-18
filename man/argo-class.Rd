@@ -5,7 +5,7 @@
 \alias{argo-class}
 \title{Class to hold argo data}
 \description{
-This class stores data from argo drifters. It will be in fairly
+This class stores data from argo floats. It will be in fairly
 active development in the early months of 2016.
 }
 \details{

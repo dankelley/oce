@@ -2,7 +2,7 @@
 
 #' Class to hold argo data
 #'
-#' This class stores data from argo drifters. It will be in fairly
+#' This class stores data from argo floats. It will be in fairly
 #' active development in the early months of 2016.
 #'
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
@@ -143,6 +143,9 @@ argoDataNames <- function(names)
 #' par(mfrow=c(1,2))
 #' plotTS(argo)
 #' plotTS(subset(argo, "adjusted"))
+#'
+#' @author Dan Kelley
+#' @family functions that deal with argo data
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -772,6 +775,97 @@ as.argo <- function(time, longitude, latitude,
     res
 }
 
+
+#' Plot argo data
+#' 
+#' Plot a summary diagram for argo data.
+#' 
+#' @param x object inheriting from \code{\link{argo-class}}.
+#' 
+#' @param which list of desired plot types, one of the following.
+#' \itemize{
+#'     \item \code{which=1} or \code{which="trajectory"} gives a 
+#'     plot of the argo trajectory, with the coastline, if one is provided.
+#' 
+#'     \item \code{which=2} or \code{"salinity ts"} gives a time series of
+#'     salinity at the indicated level(s)
+#' 
+#'     \item \code{which=3} or \code{"temperature ts"} gives a time series
+#'     of temperature at the indicated level(s)
+#' 
+#'     \item \code{which=4} or \code{"TS"} gives a TS diagram at the
+#'     indicated level(s)
+#' 
+#'     \item \code{which=5} or \code{"salinity profile"} gives a salinity
+#'     profile of all the data (with S and p trimmed to the 1 and 99
+#'     percentiles)
+#' 
+#'     \item \code{which=6} or \code{"temperature profile"} gives a
+#'     temperature profile (with T and p trimmed to the 1 and 99
+#'     percentiles)
+#' }
+#'     
+#' @param level depth pseudo-level to plot, for \code{which=2} and higher.  May be an
+#' integer, in which case it refers to an index of depth (1 being the top)
+#' or it may be the string "all" which means to plot all data.
+#' 
+#' @param coastline character string giving the coastline to be used in an Argo-location
+#' map, or \code{"best"} to pick the one with highest resolution, or
+#' \code{"none"} to avoid drawing the coastline.
+#' 
+#' @param cex size of plotting symbols to be used if \code{type='p'}.
+#' 
+#' @param pch type of plotting symbols to be used if \code{type='p'}.
+#' 
+#' @param type plot type, either \code{"l"} or \code{"p"}.
+#' 
+#' @param col optional list of colours for plotting.
+#' 
+#' @param fill Either a logical, indicating whether to fill the land with
+#' light-gray, or a colour name.  Owing to problems with some projections, the
+#' default is not to fill.
+#' 
+#' @param adorn list of expressions to be executed for the panels in turn, e.g. to
+#' adorn the plots.  If the number matches the number of panels, then the strings
+#' are applied to the appropriate panels, as they are drawn from top-left to
+#' bottom-right.   If only a single expression is provided, it is used for all
+#' panels. (See \dQuote{Examples}.)
+#' 
+#' 
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
+#' \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' 
+#' @param projection map projection to use, e.g. \code{"+proj=merc"} for Mercator.
+#' As a special case, setting \code{projection="automatic"} indicates that a
+#' projection is to be devised from the data, with \code{stereographic} if the
+#' mean latitude exceeds 70N and \code{mollweide} otherwise. \code{projection} is
+#' passed to \code{\link{mapPlot}}.
+#'         
+#'  
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' 
+#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for plot
+#' types that call that function.  (See \code{\link{strptime}} for the format
+#' used.)
+#' 
+#' @param debug debugging flag.
+#' 
+#' @param ... optional arguments passed to plotting functions.
+#' 
+#' @return None.
+#' 
+#' @examples
+#' library(oce)
+#' data(argo)
+#' plot(argo, which="trajectory")
+#' 
+#' 
+#' @references \url{http://www.argo.ucsd.edu/}
+#' 
+#' @aliases plot.argo
+#' @author Dan Kelley
+#' @family functions that deal with argo data
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,
