@@ -61,5 +61,13 @@ plot(subset(argo, dataMode == "D"))
 par(mfrow=c(1,2))
 plotTS(argo)
 plotTS(subset(argo, "adjusted"))
+
+}
+\author{
+Dan Kelley
+}
+\seealso{
+Other functions that deal with argo data: \code{\link{as.argo}},
+  \code{\link{plot,argo-method}}, \code{\link{read.argo}}
 }
 

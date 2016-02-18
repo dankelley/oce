@@ -166,6 +166,8 @@ is the main document describing argo data.
 The documentation for \code{\link{argo-class}} explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other functions that deal with argo data: \code{\link{as.argo}}
+Other functions that deal with argo data: \code{\link{as.argo}},
+  \code{\link{plot,argo-method}},
+  \code{\link{subset,argo-method}}
 }
 
