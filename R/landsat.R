@@ -602,14 +602,14 @@ setMethod(f="[[",
 #' \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
 #' green hues (e.g. forests).
 #'
-#' @param blue.f Argument used if \code{col="natural"}, to adjust colours with
+#' @param blue.f Argument used if \code{band="terralook"}, to adjust colours with
 #' \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
 #' hues (e.g. ocean).
 #'
-#' @param offset Argument used if \code{col="natural"}, to adjust colours with
+#' @param offset Argument used if \code{band="terralook"}, to adjust colours with
 #' \code{\link{adjustcolor}}.
 #'
-#' @param transform Argument used if \code{col="natural"}, to adjust colours
+#' @param transform Argument used if \code{band="terralook"}, to adjust colours
 #' with \code{\link{adjustcolor}}.
 #'
 #' @param debug Set to a positive value to get debugging information during
@@ -1153,14 +1153,19 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' @param x A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.
 #'
 #' @param ll A list containing \code{longitude} and \code{latitude}, for the
-#' lower-left corner of the portion of the image to retain.
+#' lower-left corner of the portion of the image to retain, or a vector
+#' with first element longitude and second element latitude. If provided,
+#' then \code{ur} must also be provided, but \code{box} cannot.
 #'
 #' @param ur A list containing \code{longitude} and \code{latitude}, for the
-#' upper-right corner of the portion of the image to retain.
+#' upper-right corner of the portion of the image to retain, or a vector
+#' with first element longitude and second element latitude. If provided,
+#' then \code{ll} must also be provided, but \code{box} cannot.
 #'
 #' @param box A list containing \code{x} and \code{y} (each of length 2),
 #' corresponding to the values for \code{ll} and \code{ur}, such as would
-#' be produced by a call to \code{locator(2)}.
+#' be produced by a call to \code{locator(2)}. If provided, neither
+#' \code{ll} nor \code{ur} may be provided.
 #'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or a higher value for more debugging.
@@ -1183,7 +1188,12 @@ landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
         stop("must provide both ll and ur, or neither")
     if (!missing(ll) && !missing(box))
         stop("cannot provide both box and (ll, ur)")
-    if (!missing(box)) {
+    if (missing(box)) {
+        if (is.null(names(ll)))
+            ll <- list(longitude=ll[1], latitude=ll[2])
+        if (is.null(names(ur)))
+            ur <- list(longitude=ur[1], latitude=ur[2])
+    } else {
         ll <- list(longitude=box$x[1], latitude=box$y[1])
         ur <- list(longitude=box$x[2], latitude=box$y[2])
     }
