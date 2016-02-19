@@ -10,14 +10,19 @@ landsatTrim(x, ll, ur, box, debug = getOption("oceDebug"))
 \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
 
 \item{ll}{A list containing \code{longitude} and \code{latitude}, for the
-lower-left corner of the portion of the image to retain.}
+lower-left corner of the portion of the image to retain, or a vector
+with first element longitude and second element latitude. If provided,
+then \code{ur} must also be provided, but \code{box} cannot.}
 
 \item{ur}{A list containing \code{longitude} and \code{latitude}, for the
-upper-right corner of the portion of the image to retain.}
+upper-right corner of the portion of the image to retain, or a vector
+with first element longitude and second element latitude. If provided,
+then \code{ll} must also be provided, but \code{box} cannot.}
 
 \item{box}{A list containing \code{x} and \code{y} (each of length 2),
 corresponding to the values for \code{ll} and \code{ur}, such as would
-be produced by a call to \code{locator(2)}.}
+be produced by a call to \code{locator(2)}. If provided, neither
+\code{ll} nor \code{ur} may be provided.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or a higher value for more debugging.}

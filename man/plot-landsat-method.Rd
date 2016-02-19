@@ -74,14 +74,14 @@ to be emphasized (e.g. dry land).}
 \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
 green hues (e.g. forests).}
 
-\item{blue.f}{Argument used if \code{col="natural"}, to adjust colours with
+\item{blue.f}{Argument used if \code{band="terralook"}, to adjust colours with
 \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
 hues (e.g. ocean).}
 
-\item{offset}{Argument used if \code{col="natural"}, to adjust colours with
+\item{offset}{Argument used if \code{band="terralook"}, to adjust colours with
 \code{\link{adjustcolor}}.}
 
-\item{transform}{Argument used if \code{col="natural"}, to adjust colours
+\item{transform}{Argument used if \code{band="terralook"}, to adjust colours
 with \code{\link{adjustcolor}}.}
 
 \item{debug}{Set to a positive value to get debugging information during
