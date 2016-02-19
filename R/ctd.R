@@ -617,7 +617,11 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 if ("pressure" == datumName)
                     next
                 oceDebug(debug, 'about to apply method() to "', datumName, '"\n', sep='')
-                dataNew[[datumName]] <- method(pressure, x[[datumName]], pt)
+                if (all(is.na(x@data[[datumName]]))) {
+                    dataNew[[datumName]] <- rep(NA, npt)
+                } else {
+                    dataNew[[datumName]] <- method(pressure, x[[datumName]], pt)
+                }
             }
         }
         dataNew[["pressure"]] <- pt
@@ -629,7 +633,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
             for (datumName in dataNames) {
                 oceDebug(debug, "decimating \"", datumName, "\"\n", sep="")
                 if (numGoodPressures < 2 || !length(x[[datumName]])) {
-                    dataNew[[datumName]] <- rep(NA, length(pt))
+                    dataNew[[datumName]] <- rep(NA, npt)
                 } else {
                     if (datumName != "pressure") {
                         good <- sum(!is.na(x@data[[datumName]]))
@@ -637,7 +641,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                             dataNew[[datumName]] <- approx(x@data[["pressure"]], x@data[[datumName]], pt, rule=2)$y
                             dataNew[[datumName]][tooDeep] <- NA
                         } else {
-                            oceDebug(debug, " note: fewer than 2 good data in the above\n")
+                            dataNew[[datumName]] <- rep(NA, npt)
                         }
                     }
                 }
@@ -652,8 +656,12 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 } else {
                     if (datumName != "pressure") {
                         yvar <- x@data[[datumName]]
-                        pred <- oce.approx(xvar, yvar, pt, method=method)
-                        dataNew[[datumName]] <- pred
+                        if (all(is.na(yvar))) {
+                            dataNew[[datumName]] <- rep(NA, npt)
+                        } else {
+                            pred <- oce.approx(xvar, yvar, pt, method=method)
+                            dataNew[[datumName]] <- pred
+                        }
                     }
                 }
             }
@@ -667,7 +675,11 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                     dataNew[[datumName]] <- NULL
                 } else {
                     if (datumName != "pressure" && datumName != "scan" && datumName != "flag") {
-                        dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
+                        if (all(is.na(x@data[[datumName]]))) {
+                            dataNew[[datumName]] <- rep(NA, pt)
+                        } else {
+                            dataNew[[datumName]] <- binMean1D(p, x@data[[datumName]], xbreaks=pbreaks)$result
+                        }
                     }
                 }
             }
