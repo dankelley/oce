@@ -124,12 +124,13 @@ of at-satellite brightness temperature, computed from the
 colour by combining the \code{red}, \code{green}, \code{blue} and
 \code{nir} bands according to the formula provided at
 \url{http://terralook.cr.usgs.gov/what_is_terralook.php}, namely
-that the red band carries forward to the \code{red} argument provided
-to \code{\link{rgb}}, while the \code{green} argument is computed as
-2/3 of the green-band data plus 1/3 of the nir-band data, and
-the \code{blue} argument is computed as 2/3 of the green band
-minus 1/3 of the nir band. (This is not a typo: the blue band
-data are not used.)
+that the \code{red}-band data are provided as the \code{red}
+argument of the \code{\link{rgb}} function, while
+the \code{green} argument is computed as
+2/3 of the \code{green}-band data plus 1/3 of the \code{nir}-band data, and
+the \code{blue} argument is computed as 2/3 of the \code{green}-band
+data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
+\code{blue} band is not used.)
 }
 }
 \author{

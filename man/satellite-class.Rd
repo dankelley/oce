@@ -74,6 +74,8 @@ The Landsat 8 satellite has 11 frequency bands, listed below (see [2]).
 |   11 | Thermal Infrared (TIRS) 2 | tirs2        | 11.50 - 12.51 |        100 |
 .------------------------------------------------------------------------------.
 }
+In addition to the above, setting \code{band="terralook"} may be used as
+an abbreviation for \code{band=c("red", "green", "nir")}.
 
 Band 8 is panchromatic, and has the highest resolution.  For convenience of
 programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and

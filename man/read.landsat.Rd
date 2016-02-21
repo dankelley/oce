@@ -51,7 +51,8 @@ Read a landsat data file, producing an object of \code{\link{landsat-class}}.
 The actual reading is done with \link[tiff]{readTIFF} in the 
 \CRANpkg{tiff} package, so that package must be installed for 
 \code{read.landsat} to work.
-    
+}
+\details{
 Landsat data are provided in directories that contain TIFF files and header
 information, and \code{read.landsat} relies on a strict convention for the
 names of the files in those directories.  Those file names were found by
@@ -64,8 +65,9 @@ For Landsat 8, there are 11 bands, with names \code{"aerosol"} (band 1),
 \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
 \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9), \code{"tirs1"} (band
 10), and \code{"tirs2"} (band 11).
-}
-\details{
+In addition to the above, setting \code{band="terralook"} may be used as
+an abbreviation for \code{band=c("red", "green", "nir")}.
+
 For Landsat 7, there 8 bands, with names \code{"blue"} (band 1), \code{"green"}
 (band 2), \code{"red"} (band 3), \code{"nir"} (band 4), \code{"swir1"} (band
 5), \code{"tir1"} (band 6A), \code{"tir2"} (band 6B), \code{"swir2"} (band 7)

@@ -84,6 +84,8 @@ NULL
 #' |   11 | Thermal Infrared (TIRS) 2 | tirs2        | 11.50 - 12.51 |        100 |
 #' .------------------------------------------------------------------------------.
 #' }
+#' In addition to the above, setting \code{band="terralook"} may be used as
+#' an abbreviation for \code{band=c("red", "green", "nir")}.
 #'
 #' Band 8 is panchromatic, and has the highest resolution.  For convenience of
 #' programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
@@ -532,12 +534,13 @@ setMethod(f="[[",
 #' colour by combining the \code{red}, \code{green}, \code{blue} and
 #' \code{nir} bands according to the formula provided at
 #' \url{http://terralook.cr.usgs.gov/what_is_terralook.php}, namely
-#' that the red band carries forward to the \code{red} argument provided
-#' to \code{\link{rgb}}, while the \code{green} argument is computed as
-#' 2/3 of the green-band data plus 1/3 of the nir-band data, and
-#' the \code{blue} argument is computed as 2/3 of the green band
-#' minus 1/3 of the nir band. (This is not a typo: the blue band
-#' data are not used.)
+#' that the \code{red}-band data are provided as the \code{red}
+#' argument of the \code{\link{rgb}} function, while
+#' the \code{green} argument is computed as
+#' 2/3 of the \code{green}-band data plus 1/3 of the \code{nir}-band data, and
+#' the \code{blue} argument is computed as 2/3 of the \code{green}-band
+#' data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
+#' \code{blue} band is not used.)
 #' }
 #'
 #'
@@ -905,6 +908,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' \CRANpkg{tiff} package, so that package must be installed for 
 #' \code{read.landsat} to work.
 #'     
+#' @details
 #' Landsat data are provided in directories that contain TIFF files and header
 #' information, and \code{read.landsat} relies on a strict convention for the
 #' names of the files in those directories.  Those file names were found by
@@ -917,6 +921,8 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
 #' \code{"panchromatic"} (band 8), \code{"cirrus"} (band 9), \code{"tirs1"} (band
 #' 10), and \code{"tirs2"} (band 11).
+#' In addition to the above, setting \code{band="terralook"} may be used as
+#' an abbreviation for \code{band=c("red", "green", "nir")}.
 #' 
 #' For Landsat 7, there 8 bands, with names \code{"blue"} (band 1), \code{"green"}
 #' (band 2), \code{"red"} (band 3), \code{"nir"} (band 4), \code{"swir1"} (band
@@ -1001,6 +1007,8 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  paste("band=\"", band, "\"", sep=""),
                  ", debug=", debug, ") {\n", sep="", unindent=1)
+    if (band == "terralook")
+        band <- c("red", "green", "nir")
     decimateGiven <- !missing(decimate)
     if (decimateGiven && decimate < 1)
         warning("invalid value of decimate (", decimate, ") being ignored\n")
