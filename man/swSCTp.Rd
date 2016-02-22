@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{swSCTp}
 
 \alias{swSCTp}
@@ -12,35 +13,35 @@
 
 \arguments{
   \item{conductivity}{conductivity ratio, or a CTD object. If a CTD object,
-      then the next 3 arguments are ignored, since the information can be
-      gleaned from the object.}
-  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+    then the next 3 arguments are ignored, since the information can be
+    gleaned from the object.}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
+    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
   \item{pressure}{pressure [dbar]}
   \item{conductivityUnit}{string indicating the unit used for conductivity;
-      \code{ratio} means actual conductivity divided by standard conductivity
-      (4.2914 S/m).}
+    \code{ratio} means actual conductivity divided by standard conductivity
+    (4.2914 S/m).}
   \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }
 
-\details{Calculate salinity from what is actually measured by a CTD,
-    \emph{i.e.} conductivity, \emph{in-situ} temperature and pressure.  Often
-    this is done by the CTD processing software, but sometimes it is helpful to
-    do this directly, \emph{e.g.}  when there is a concern about mismatches in
-    sensor response times.  If \code{eos="unesco"} then salinity is calculated
-    using the UNESCO algorithm described by Fofonoff and Millard (1983); if it
-    is \code{"gsw"} then the Gibbs-SeaWater formulation is used, via
-    \code{\link{gsw_SP_from_C}}.}
+\details{Calculate salinity from what is actually measured by a CTD, \emph{i.e.}
+  conductivity, \emph{in-situ} temperature and pressure.  Often this is done by
+  the CTD processing software, but sometimes it is helpful to do this directly,
+  \emph{e.g.}  when there is a concern about mismatches in sensor response
+  times.  If \code{eos="unesco"} then salinity is calculated using the UNESCO
+  algorithm described by Fofonoff and Millard (1983); if it is \code{"gsw"} then
+  the Gibbs-SeaWater formulation is used, via \code{\link{gsw_SP_from_C}}.}
 
 \value{Practical salinity.}
 
 \seealso{For thermal (as opposed to electrical) conductivity, see
-    \code{\link{swThermalConductivity}}.  For computation of electrical
-    conductivity from salinity, see \code{\link{swCSTp}}.}
+  \code{\link{swThermalConductivity}}.  For computation of electrical
+  conductivity from salinity, see \code{\link{swCSTp}}.}
 
 \examples{
-swSCTp(1,15,2000, eos="unesco")                      # 34.25045
-swSCTp(1.2,20,2000, eos="unesco")                    # 37.24563
-swSCTp(0.65,5,1500, eos="unesco")                    # 27.99535
+swSCTp(1, T90fromT68(15), 0, eos="unesco") # 35
+swSCTp( 1,            15, 0, eos="gsw") # 35
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

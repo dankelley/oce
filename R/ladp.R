@@ -32,34 +32,13 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LADP Summary\n------------\n\n")
               showMetadataItem(object, "station", "Station:             ")
-              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                               object@metadata$longitude,
-                                                               digits=5), "\n")
-              cat("* Water depth:        ",       object@metadata$waterDepth, "\n")
-              names <- names(object@data)
-              ndata <- length(names)
-              isTime <- names == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("   ", names[!isTime])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               if (i == "pressure" || i == "p") {
                   x@data$pressure
               } else if (i == "u") {
@@ -75,9 +54,7 @@ setMethod(f="[[",
               } else if (i == "salinity" || i == "S") {
                   x@data$salinity
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ## rval <- as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 
@@ -154,9 +131,9 @@ as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, 
         salinity <- if (missing(salinity)) NULL else fixColumn(salinity)
         temperature <- if (missing(temperature)) NULL else fixColumn(temperature)
     }
-    rval <- new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
+    res <- new("ladp", longitude=longitude, latitude=latitude, station=station, time=time,
                 pressure=pressure, u=u, v=v, uz=uz, vz=vz, salinity=salinity, temperature=temperature, ...)  
-    rval@metadata$waterDepth <- max(pressure, na.rm=TRUE)
-    rval
+    res@metadata$waterDepth <- max(pressure, na.rm=TRUE)
+    res
 }
 

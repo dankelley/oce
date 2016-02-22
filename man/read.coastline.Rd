@@ -7,8 +7,7 @@
 
 \title{Scan a coastline data file}
 
-\description{Read a coastline file in mapgen, matlab, Splus, or shapefile
-    format.}
+\description{Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap format.}
 
 \usage{
 read.coastline(file, type=c("R","S","mapgen","shapefile","openstreetmap"),
@@ -62,8 +61,8 @@ which is a \code{\link[base]{list}} containing
 }
 
 \seealso{The documentation for \code{\link{coastline-class}} explains the
-  structure of coastline objects, and also outlines the other functions dealing
-  with them.}
+  structure of coastline objects, outlines other functions dealing with them,
+  and provides hints on data sources and archiving.}
 
 \examples{
 \dontrun{
@@ -91,26 +90,23 @@ lines(lon-360, lat)
         library(oce)
         d <- read.coastline.shapefile("~/Dropbox/DepthContours/DepthContours.shp")
         isna <- is.na(d[["latitude"]])
-        idx<-1+cumsum(isna)
-        lat<-split(d[["latitude"]][!isna], idx[!isna])
-        lon<-split(d[["longitude"]][!isna], idx[!isna])
+        idx <- 1 + cumsum(isna)
+        lat <- split(d[["latitude"]][!isna], idx[!isna])
+        lon <- split(d[["longitude"]][!isna], idx[!isna])
         depths <- d[["depths"]]
         n <- length(depths)
-        D<-200
-        plot(c(-180,180),c(-90,90), xlab="", ylab="", asp=1, type='n')
+        D <- 200
+        plot(c(-180,180), c(-90,90), xlab="", ylab="", asp=1, type='n')
         for (i in 1:n) {
             if (depths[i]==D)
-                lines(lon[[i]],lat[[i]])
+                lines(lon[[i]], lat[[i]])
         }
     }
 }
 
-\references{The NOAA website
-    \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html} may be a good
-    starting point for a search for coastline data.  The ``shapefile'' format
-    is described in \emph{ESRI Shapefile Technical Description}, March 1998,
-    available at
-    \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.}
+\references{The ``shapefile'' format is described in \emph{ESRI Shapefile
+    Technical Description}, March 1998, available at
+  \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.}
 
 \author{Dan Kelley}
 

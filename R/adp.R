@@ -1,12 +1,219 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
+#' Class to Hold adp (adcp) Data
+#'
+#' This class stores data from acoustic Doppler profilers. Some manufacturers
+#' call these ADCPs, while others call them ADPs; here the shorter form is
+#' used by analogy to ADVs.
+#'
+#' The \code{metadata} slot contains various
+#' items relating to the dataset, including source file name, sampling rate,
+#' velocity resolution, velocity maximum value, and so on.  Some of these are
+#' particular to particular instrument types, and prudent researchers will take
+#' a moment to examine the whole contents of the metadata, either in summary
+#' form (with \code{str(adp[["metadata"]])}) or in detail (with
+#' \code{adp[["metadata"]]}).  Perhaps the most useful general properties are
+#' \code{adp[["bin1Distance"]]} (the distance, in metres, from the sensor to
+#' the bottom of the first bin), \code{adp[["cellSize"]]} (the cell height, in
+#' metres, in the vertical direction, \emph{not} along the beam), and
+#' \code{adp[["beamAngle"]]} (the angle, in degrees, between beams and an
+#' imaginary centre line that bisects all beam pairs).
+#' 
+#' The diagram provided below indicates the coordinate-axis and beam-numbering
+#' conventions for three- and four-beam ADP devices, viewed as though the
+#' reader were looking towards the beams being emitted from the transducers.
+#' 
+#' \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
+#'     
+#' The bin geometry of a four-beam profiler is illustrated below, for
+#' \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
+#' equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   In the diagram, the
+#' viewer is in the plane containing two beams that are not shown, so the two
+#' visible beams are separated by 40 degrees.  Circles indicate the centres of
+#' the range-gated bins within the beams.  The lines enclosing those circles
+#' indicate the coverage of beams that spread plus and minus 2.5 degrees from
+#' their centreline.
+#'     
+#' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
+#' 
+#' Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
+#' of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+#' \code{"enu"}.  (This should not be confused with
+#' \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
+#' in the original data file.)
+#' 
+#' The \code{data} slot holds some standardized items, and
+#' many that vary from instrument to instrument.  One standard item is
+#' \code{adp[["v"]]}, a three-dimensional numeric matrix of velocities in
+#' m/s.  In this matrix, the first index indicates time, the second bin
+#' number, and the third beam number.  The meanings of the beams depends on
+#' whether the object is in beam coordinates, frame coordinates, or earth
+#' coordinates.  
+#'     
+#' Corresponding to the velocity matrix are two matrices of type raw, and
+#' identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
+#' holding measures of signal strength and data quality quality,
+#' respectively.  (The exact meanings of these depend on the particular type
+#' of instrument, and it is assumed that users will be familiar enough with
+#' instruments to know both the meanings and their practical consequences in
+#' terms of data-quality assessment, etc.)
+#' 
+#' In addition to the matrices, there are time-based vectors.  The vector
+#' \code{adp[["time"]]} (of length equal to the first index of
+#' \code{adp[["v"]]}, etc.) holds times of observation.  Depending on type of
+#' instrument and its configuration, there may also be corresponding vectors
+#' for sound speed (\code{adp[["soundSpeed"]]}), pressure
+#' (\code{adp[["pressure"]]}), temperature (\code{adp[["temperature"]]}),
+#' heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
+#' (\code{adp[["roll"]]}), depending on the setup of the instrument.
+#' 
+#' The precise meanings of the data items depend on the instrument type.  All
+#' instruments have \code{v} (for velocity), \code{q} (for a measure of data
+#' quality) and \code{a} (for a measure of backscatter amplitude, also called
+#' echo intensity).  
+#'       
+#' Teledyne-RDI profilers have an additional item \code{g} (for
+#' percent-good). 
+#'       
+#' VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+#' details listed in the table below; note that the RDI documentation [2] and
+#' the RDI gui use inconsistent names for most items.
+#' 
+#' \tabular{lll}{
+#'   \strong{Oce name}\tab \strong{RDI doc name}\tab \strong{RDI GUI name}\cr
+#'   \code{avgSpeed}\tab Avg Speed\tab Speed/Avg/Mag\cr
+#'   \code{avgMagnitudeVelocityEast}\tab Avg Mag Vel East\tab ?\cr
+#'   \code{avgMagnitudeVelocityNorth}\tab Avg Mag Vel North\tab ?\cr
+#'   \code{avgTrackMagnetic}\tab Avg Track Magnetic\tab Speed/Avg/Dir (?)\cr
+#'   \code{avgTrackTrue}\tab Avg Track True\tab Speed/Avg/Dir (?)\cr
+#'   \code{avgTrueVelocityEast}\tab Avg True Vel East\tab ?\cr
+#'   \code{avgTrueVelocityNorth}\tab Avg True Vel North\tab ?\cr
+#'   \code{directionMadeGood}\tab Direction Made Good\tab Speed/Made Good/Dir\cr
+#'   \code{firstLatitude}\tab First latitude\tab Start Lat\cr
+#'   \code{firstLongitude}\tab First longitude\tab Start Lon\cr
+#'   \code{firstTime}\tab UTC Time of last fix\tab End Time\cr
+#'   \code{lastLatitude}\tab Last latitude\tab End Lat\cr
+#'   \code{lastLongitude}\tab Last longitude\tab End Lon\cr
+#'   \code{lastTime}\tab UTC Time of last fix\tab End Time\cr
+#'   \code{numberOfHeadingSamplesAveraged}\tab Number heading samples averaged\tab ?\cr
+#'   \code{numberOfMagneticTrackSamplesAveraged}\tab Number of magnetic track samples averaged\tab ? \cr
+#'   \code{numberOfPitchRollSamplesAvg}\tab Number of magnetic track samples averaged\tab ? \cr
+#'   \code{numberOfSpeedSamplesAveraged}\tab Number of speed samples averaged\tab ? \cr
+#'   \code{numberOfTrueTrackSamplesAvg}\tab Number of true track samples averaged\tab ? \cr
+#'   \code{primaryFlags}\tab Primary Flags\tab ?\cr
+#'   \code{shipHeading}\tab Heading\tab ?\cr
+#'   \code{shipPitch}\tab Pitch\tab ?\cr
+#'   \code{shipRoll}\tab Roll\tab ?\cr
+#'   \code{speedMadeGood}\tab Speed Made Good\tab Speed/Made Good/Mag\cr
+#'   \code{speedMadeGoodEast}\tab Speed MG East\tab ?\cr
+#'   \code{speedMadeGoodNorth}\tab Speed MG North\tab ?\cr
+#' }
+#' 
+#' For Teledyne-RDI profilers, there are four three-dimensional arrays
+#' holding beamwise data.  In these, the first index indicates time, the
+#' second bin number, and the third beam number (or coordinate number, for
+#' data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+#' the list below, the quoted phrases are quantities as defined in Figure 9
+#' of reference 1.
+#' 
+#' \itemize{
+#' 
+#'   \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+#'   integer values (multiplied by the scale factor that is stored in
+#'   \code{velocityScale} in the metadata).
+#' 
+#'   \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
+#'   as type \code{raw} in the object. The values may range from 0 to 255.
+#' 
+#'   \item \code{a} is ``backscatter amplitude``, also known as ``echo
+#'   intensity'' a one-byte quantity stored as type \code{raw} in the object.
+#'   The values may range from 0 to 255.
+#' 
+#'   \item \code{g} is ``percent good'' a one-byte quantity stored as \code{raw}
+#'   in the object.  The values may range from 0 to 100.
+#' 
+#' }
+#' 
+#' Finally, there is a vector \code{adp[["distance"]]} that indicates the bin
+#' distances from the sensor, measured in metres along an imaginary centre
+#' line bisecting beam pairs.  The length of this vector equals
+#' \code{dim(adp[["v"]])[2]}.
+#' 
+#' The \code{processingLog} slot is in standard form and needs little comment.
+#' 
+#' @section methods:
+#' \emph{Extracting values} Matrix data may be accessed as illustrated
+#' above, e.g.  or an adp object named \code{adv}, the data are provided by
+#' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
+#' convenience, the last two of these can be accessed as numeric (as opposed to
+#' raw) values by e.g.  \code{adp[["a", "numeric"]]}.  The vectors are accessed
+#' in a similar way, e.g. \code{adp[["heading"]]}, etc.  Quantities in the
+#' \code{metadata} slot are also available by name, e.g.
+#' \code{adp[["velocityResolution"]]}, etc.
+#' 
+#' \emph{Assigning values.} This follows the standard form, e.g. to increase
+#' all velocity data by 1 cm/s, use \code{adp[["v"]] <- 0.01 + adp[["v"]]}.
+#' 
+#' \emph{Overview of contents} The \code{show} method (e.g.
+#' \code{show(d)}) displays information about an ADP object named \code{d}. 
+#' 
+#' @section Dealing with suspect data:
+#' There are many possibilities for confusion
+#' with \code{adp} devices, owing partly to the flexibility that manufacturers
+#' provide in the setup.  Prudent users will undertake many tests before trusting
+#' the details of the data.  Are mean currents in the expected direction, and of
+#' the expected magnitude, based on other observations or physical constraints?
+#' Is the phasing of currents as expected?  If the signals are suspect, could an
+#' incorrect scale account for it?  Could the transformation matrix be incorrect?
+#' Might the data have exceeded the maximum value, and then ``wrapped around'' to
+#' smaller values?  Time spent on building confidence in data quality is seldom
+#' time wasted.
+#' 
+#' @section References:
+#' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+#' format.} P/N 957-6156-00 (November 2007).  
+#' 
+#' 2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
+#' 
+#' @seealso 
+#' A file containing ADP data is usually recognized by Oce, and so
+#' \code{\link{read.oce}} will usually read the data.  If not, one may use the
+#' general ADP function \code{\link{read.adp}} or specialized variants
+#' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
+#' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
+#' 
+#' ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+#' generic function so it may be called simply as \code{plot}.
+#' 
+#' Statistical summaries of ADP data are provided by the generic function
+#' \code{summary}, while briefer overviews are provided with \code{show}.
+#' 
+#' Conversion from beam to xyz coordinates may be done with
+#' \code{\link{beamToXyzAdp}}, and from xyz to enu (east north up) may be done
+#' with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
+#' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
+#' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+setClass("adp", contains="oce")
+
 setMethod(f="initialize",
           signature="adp",
-          definition=function(.Object,time,u,a,q,filename) {
+          definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {
               if (!missing(time)) .Object@data$time <- time
-              if (!missing(u)) .Object@data$u <- u
+              if (!missing(distance)) {
+                  .Object@data$distance <- distance
+                  .Object@metadata$cellSize <- tail(diff(distance), 1) # first one has blanking, perhaps
+              }
+              if (!missing(v)) {
+                  .Object@data$v <- v
+                  .Object@metadata$numberOfBeams <- dim(v)[3]
+                  .Object@metadata$numberOfCells <- dim(v)[2]
+              }
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
-              .Object@metadata$filename <- if (missing(filename)) "" else filename
+              .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
+              .Object@metadata$units$distance <- list(unit=expression(m), scale="")
+              .Object@metadata$oceCoordinate <- oceCoordinate # FIXME: should check that it is allowed
+              .Object@metadata$orientation  <- orientation # FIXME: should check that it is allowed
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'adp' object"
               return(.Object)
@@ -15,12 +222,18 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="adp",
           definition=function(object, ...) {
+              mnames <- names(object@metadata)
               cat("ADP Summary\n-----------\n\n", ...)
-              cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
-              cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
-              cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
-              cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
-              cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
+              if ("instrumentType" %in% mnames)
+                  cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
+              if ("manufacturere" %in% mnames)
+                  cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
+              if ("serialNumber" %in% mnames)
+                  cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
+              if ("firmwareVersion" %in% mnames)
+                  cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
+              if ("filename" %in% mnames)
+                  cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
               if ("latitude" %in% names(object@metadata)) {
                   cat(paste("* Location:           ",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
@@ -68,7 +281,8 @@ setMethod(f="summary",
                                       slantAngle=object@metadata$slantAngle,
                                       orientation=object@metadata$orientation)
               } else {
-                  stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+                  resSpecific <- list(orientation=object@metadata$orientation)
+                  #stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
               }
               cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                           format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
@@ -89,9 +303,10 @@ setMethod(f="summary",
 
               cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
               cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
-              cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
-                                                                              object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
-                  "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
+              if ("oceBeamUnspreaded" %in% mnames)
+                  cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
+                                                                                  object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
+                      "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
               if (!is.null(object@metadata$transformationMatrix)) {
                   digits <- 4
                   cat("* Transformation matrix::\n\n")
@@ -101,79 +316,74 @@ setMethod(f="summary",
                   if (object@metadata$numberOfBeams > 3)
                       cat("  ", format(object@metadata$transformationMatrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              cat("\n")
-              ## start building res from the header information
-              haveData <- !is.null(object@data)
-              res <- resSpecific
-              res$measurementStart <- object@metadata$measurementStart
-              res$measurementEnd <- object@metadata$measurementEnd
-              res$measurementDeltat <- object@metadata$measurementDeltat
-              res$frequency <- object@metadata$frequency
-              res$numberOfDataTypes <- object@metadata$numberOfDataType
-              res$bin1Distance <- object@metadata$bin1Distance
-              res$xmitPulseLength <- object@metadata$xmitPulseLength
-              res$oceBeamUnspreaded <- object@metadata$oceBeamUnspreaded
-              res$beamAngle <- object@metadata$beamAngle
-              res$beamConfig <- object@metadata$beamConfig
-              res$transformationMatrix <- object@metadata$transformationMatrix
-              res$orientation <- object@metadata$orientation
-              res$originalCoordinate <- object@metadata$originalCoordinate
-              res$oceCoordinate <- object@metadata$oceCoordinate
-              res$processingLog <- object@processingLog
-              dataNames <- names(object@data)
-              threes <- matrix(nrow=(-2+length(dataNames)), ncol=3)
-              ii <- 1
-              for (i in 1:length(dataNames)) {
-                  if (dataNames[i] != "time" && dataNames[i] != "distance") {
-                      threes[ii,] <- threenum(object@data[[dataNames[i]]])
-                      ii <- ii + 1
-                  }
-              }
-              rownames(threes) <- c(dataNames[dataNames != "time" & dataNames != "distance"])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of subsample::\n\n")
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
 
+
+#' Extract Something From an adp Object
+#'
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrived in \code{\link{raw}} form or numeric
+#' form; see examples.
+#' 
+#' @param x An adp object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
+#' @examples
+#' data(adp)
+#' head(adp[["v"]][,,1])
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               if (i == "a") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$a
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$a
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$a
+                      res <- x@data$a
                   }
-                  rval
+                  res
               } else if (i == "q") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$q
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$q
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$q
+                      res <- x@data$q
                   }
-                  rval
+                  res
               } else if (i == "g") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$g
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$g
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$g
+                      res <- x@data$g
                   }
-                  rval
+                  res
               } else {
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 
+#' Change Something Within an adp Object
+#'
+#' In addition to the usual insertion of elements by name, note
+#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' 
+#' @param x An adp object
+#' @param i The item to insert
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value to be inserted into \code{x}.
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
@@ -230,7 +440,7 @@ setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
@@ -253,7 +463,7 @@ setMethod(f="subset",
                   oceDebug(debug, "number of kept bins:", sum(keep), "\n")
                   if (sum(keep) < 2)
                       stop("must keep at least 2 profiles")
-                  rval <- x
+                  res <- x
                   ## FIXME: are we handling slow timescale data?
                   for (name in names(x@data)) {
                       if (length(grep("Dia$", name))) {
@@ -261,26 +471,26 @@ setMethod(f="subset",
                               next
                           if (name == "timeDia" || is.vector(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepDia]
+                              res@data[[name]] <- x@data[[name]][keepDia]
                           } else if (is.matrix(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepDia,]
+                              res@data[[name]] <- x@data[[name]][keepDia,]
                           } else if (is.array(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
+                              res@data[[name]] <- x@data[[name]][keepDia,,, drop=FALSE]
                           }
                       } else {
                           if (name == "time" || is.vector(x@data[[name]])) {
                               if ("distance" == name)
                                   next
                               oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
+                              res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
                           } else if (is.matrix(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep,]
+                              res@data[[name]] <- x@data[[name]][keep,]
                           } else if (is.array(x@data[[name]])) {
                               oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                              res@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
                           }
                       }
                   }
@@ -292,69 +502,113 @@ setMethod(f="subset",
                   oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
                   if (sum(keep) < 2)
                       stop("must keep at least 2 bins")
-                  rval <- x
-                  rval@data$distance <- x@data$distance[keep]
+                  res <- x
+                  res@data$distance <- x@data$distance[keep]
                   for (name in names(x@data)) {
                       if (name == "time")
                           next
                       if (is.array(x@data[[name]]) && 3 == length(dim(x@data[[name]]))) {
                           oceDebug(debug, "subsetting array data[[", name, "]] by distance\n")
-                          oceDebug(debug, "before, dim(", name, ") =", dim(rval@data[[name]]), "\n")
-                          rval@data[[name]] <- x@data[[name]][,keep,, drop=FALSE]
-                          oceDebug(debug, "after, dim(", name, ") =", dim(rval@data[[name]]), "\n")
+                          oceDebug(debug, "before, dim(", name, ") =", dim(res@data[[name]]), "\n")
+                          res@data[[name]] <- x@data[[name]][,keep,, drop=FALSE]
+                          oceDebug(debug, "after, dim(", name, ") =", dim(res@data[[name]]), "\n")
                       }
                   }
               } else if (length(grep("pressure", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
-                  rval <- x
-                  rval@data$v <- rval@data$v[keep,,]
-                  rval@data$a <- rval@data$a[keep,,]
-                  rval@data$q <- rval@data$q[keep,,]
-                  rval@data$time <- rval@data$time[keep]
+                  res <- x
+                  res@data$v <- res@data$v[keep,,]
+                  res@data$a <- res@data$a[keep,,]
+                  res@data$q <- res@data$q[keep,,]
+                  res@data$time <- res@data$time[keep]
                   ## the items below may not be in the dataset
-                  names <- names(rval@data)
-                  if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
-                  if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
-                  if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
-                  if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
-                  if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
-                  if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
-                  if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
-                  if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
+                  names <- names(res@data)
+                  if ("bottomRange" %in% names) res@data$bottomRange <- res@data$bottomRange[keep,]
+                  if ("pressure" %in% names) res@data$pressure <- res@data$pressure[keep]
+                  if ("temperature" %in% names) res@data$temperature <- res@data$temperature[keep]
+                  if ("salinity" %in% names) res@data$salinity <- res@data$salinity[keep]
+                  if ("depth" %in% names) res@data$depth <- res@data$depth[keep]
+                  if ("heading" %in% names) res@data$heading <- res@data$heading[keep]
+                  if ("pitch" %in% names) res@data$pitch <- res@data$pitch[keep]
+                  if ("roll" %in% names) res@data$roll <- res@data$roll[keep]
               } else {
                   stop("should express the subset in terms of distance or time")
               }
-              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
-              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@metadata$numberOfSamples <- dim(res@data$v)[1]
+              res@metadata$numberOfCells <- dim(res@data$v)[2]
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
+#' Create an adp Object
+#'
+#' @details
+#' Construct an object of \code{\link{adp-class}}.  Only a basic
+#' subset of the typical \code{data} slot is represented in the arguments
+#' to this function, on the assumption that typical usage in reading data
+#' is to set up a nearly-blank \code{\link{adp-class}} object, the \code{data}
+#' slot of which is then inserted.  However, in some testing situations it
+#' can be useful to set up artificial \code{adp} objects, so the other
+#' arguments may be useful.
+#'
+#' A few defaults are set for some 
+#'
+#' @param time of observations in POSIXct format
+#' @param distance to centre of bins
+#' @param v array of velocities, with first index for time, second for bin number, and third for beam number
+#' @param a amplitude, a \code{\link{raw}} array with dimensions matching \code{u}
+#' @param q quality, a \code{\link{raw}} array with dimensions matching \code{u}
+#' @param orientation a string indicating sensor orientation, e.g. \code{"upward"} and \code{"downward"}
+#' @param coordinate a string indicating the coordinate system, \code{"enu"}, \code{"beam"}, \code{"xy"}, or \code{"other"}
+#' @return An object of \code{\link{adp-class}}.
+#'
+#' @examples
+#' data(adp)
+#' t <- adp[["time"]]
+#' d <- adp[["distance"]]
+#' v <- adp[["v"]]
+#' a <- as.adp(time=t, distance=d, v=v)
+#' \dontrun{
+#' plot(a)
+#' }
+as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
+{
+    res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
+    if (!missing(v)) {
+        res@metadata$numberOfBeams <- dim(v)[3]
+        res@metadata$numberOfCells <- dim(v)[2]
+    }
+    res@metadata$oceCoordinate <- coordinate
+    res@metadata$orientation <- orientation
+    res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
+    res@metadata$units <- list(v="m/s", distance="m")
+    res
+}
 
 
-head.adp <- function(x, n = 6L, ...)
+head.adp <- function(x, n=6L, ...)
 {
     numberOfProfiles <- dim(x@data$v)[1]
     if (n < 0)
         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
     else
         look <- seq.int(1, min(n, numberOfProfiles))
-    rval <- x
+    res <- x
     for (name in names(x@data)) {
         if ("distance" == name)
             next
         if (is.vector(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look]
+            res@data[[name]] <- x@data[[name]][look]
         } else if (is.matrix(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,]
+            res@data[[name]] <- x@data[[name]][look,]
         } else if (is.array(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,,]
+            res@data[[name]] <- x@data[[name]][look,,]
         } else {
-            rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 tail.adp <- function(x, n = 6L, ...)
@@ -364,20 +618,20 @@ tail.adp <- function(x, n = 6L, ...)
         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
     else
         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-    rval <- x
+    res <- x
     for (name in names(x@data)) {
         if (is.vector(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look]
+            res@data[[name]] <- x@data[[name]][look]
         } else if (is.matrix(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,]
+            res@data[[name]] <- x@data[[name]][look,]
         } else if (is.array(x@data[[name]])) {
-            rval@data[[name]] <- x@data[[name]][look,,]
+            res@data[[name]] <- x@data[[name]][look,,]
         } else {
-            rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval 
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res 
 }
 
 coordinate <- function(x)
@@ -502,7 +756,7 @@ setMethod(f="plot",
               zlimGiven <- !missing(zlim)
               if (breaksGiven && zlimGiven)
                   stop("cannot supply both zlim and breaks")
-              rval <- list(xat=NULL, yat=NULL)
+              res <- list(xat=NULL, yat=NULL)
               mode <- match.arg(mode)
               if (mode == "diagnostic") {
                   if (x@metadata$instrumentType != "aquadopp") {
@@ -641,10 +895,10 @@ setMethod(f="plot",
                                        uv=28,
                                        "uv+ellipse"=29,
                                        "uv+ellipse+arrow"=30,
-                                       bottomrange=40,
-                                       bottomrange1=41, bottomrange2=42, bottomrange3=43, bottomrange4=44,
-                                       bottomvelocity=50,
-                                       bottomvelocity1=51, bottomvelocity2=52, bottomvelocity3=53, bottomvelocity4=54,
+                                       bottomRange=40,
+                                       bottomRange1=41, bottomRange2=42, bottomRange3=43, bottomRange4=44,
+                                       bottomVelocity=50,
+                                       bottomVelocity1=51, bottomVelocity2=52, bottomVelocity3=53, bottomVelocity4=54,
                                        heaving=55,
                                        map=60,
                                        soundSpeed=100,
@@ -658,7 +912,7 @@ setMethod(f="plot",
               images <- c(1:12, 70:73)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
-              speed <- 28
+              #speed <- 28
 
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
@@ -667,7 +921,7 @@ setMethod(f="plot",
               }
 
               tt <- x@data$time
-              ttDia <- x@data$timeDia  # may be null
+              ##ttDia <- x@data$timeDia  # may be null
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
                   zlim <- range(abs(as.numeric(x[["a"]][,,which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
@@ -784,7 +1038,7 @@ setMethod(f="plot",
                                                     else oce.colorsPalette(length(breaks)-1, 1)
                                                 },
                                                 breaks=breaks,
-                                                ylab=resizableLabel("distance m"),
+                                                ylab=resizableLabel("distance km"),
                                                 xlab="Time",
                                                 zlab=zlab,
                                                 tformat=tformat,
@@ -848,8 +1102,8 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  adorn=adorn[w],
                                                  debug=debug-1)
-                              rval$xat <- grid$xat
-                              rval$yat <- grid$yat
+                              res$xat <- grid$xat
+                              res$yat <- grid$yat
                           }
                       }
                       drawTimeRange <- FALSE
@@ -1212,17 +1466,21 @@ setMethod(f="plot",
                           n <- prod(dim(x@data$v)[1:2])
                           if ("br" %in% names(x@data)) {
                               if (which[w] == 40) {
-                                  ats <- oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]",
+                                  R <- apply(x@data$br, 1, mean, na.rm=TRUE)
+                                  ats <- oce.plot.ts(x@data$time, R,
+                                                     ylab="Bottom range [m]",
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
-                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$br, na.rm=TRUE),
+                                                     ylim=if(ylimGiven) ylim[w,] else range(R, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               } else {
-                                  ats <- oce.plot.ts(x@data$time, x@data$br[,which[w]-40], ylab=c("Beam", which[w]-40, "range [m]"),
+                                  R <- x@data$br[,which[w]-40]
+                                  ats <- oce.plot.ts(x@data$time, R,
+                                                     ylab=paste("Beam", which[w]-40, "bottom range [m]"),
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
-                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$br[,1], na.rm=TRUE),
+                                                     ylim=if(ylimGiven) ylim[w,] else range(R, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               }
@@ -1234,17 +1492,21 @@ setMethod(f="plot",
                           n <- prod(dim(x@data$v)[1:2])
                           if ("bv" %in% names(x@data)) {
                               if (which[w] == 50) {
-                                  ats <- oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]",
+                                  V <- apply(x@data$bv, 1, mean, na.rm=TRUE)
+                                  ats <- oce.plot.ts(x@data$time, V,
+                                                     ylab="Bottom speed [m/s]",
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
-                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$bv, na.rm=TRUE),
+                                                     ylim=if(ylimGiven) ylim[w,] else range(V, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               } else {
-                                  ats <- oce.plot.ts(x@data$time, x@data$bv[,which[w] - 50], ylab=c("Beam",which[w]-50,"velocity [m/s]"),
+                                  V <- x@data$bv[, which[w]-50]
+                                  ats <- oce.plot.ts(x@data$time, V,
+                                                     ylab=paste("Beam",which[w]-50,"bottom velocity [m/s]"),
                                                      type=type,
                                                      xlim=if(xlimGiven) xlim[w,] else tlim,
-                                                     ylim=if(ylimGiven) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE),
+                                                     ylim=if(ylimGiven) ylim[w,] else range(V, na.rm=TRUE),
                                                      tformat=tformat,
                                                      debug=debug-1)
                               }
@@ -1429,9 +1691,9 @@ setMethod(f="plot",
                           col <- if (colGiven) col else "darkblue"
                           lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                           lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
-                          rval$ellipseMajor <- major
-                          rval$ellipseMinor <- minor
-                          rval$ellipseAngle <- theta
+                          res$ellipseMajor <- major
+                          res$ellipseMinor <- minor
+                          res$ellipseAngle <- theta
                           if (which[w] >= 30) {
                               if (!missing(control) && !is.null(control$bin)) {
                                   if (control$bin < 1)
@@ -1445,8 +1707,8 @@ setMethod(f="plot",
                                   umean <- mean(x@data$v[,,1], na.rm=TRUE)
                                   vmean <- mean(x@data$v[,,2], na.rm=TRUE)
                               }
-                              rval$meanU <- umean
-                              rval$meanV <- vmean
+                              res$meanU <- umean
+                              res$meanV <- vmean
                               arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
@@ -1484,10 +1746,10 @@ setMethod(f="plot",
                               }
                           }
                           ## FIXME: span should be an arg
-                          if ("slatitude" %in% names(x@data)) {
-                              lat <- x[["slatitude"]]
-                              lon <- x[["slongitude"]]
-                              asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
+                          if ("firstLatitude" %in% names(x@data)) {
+                              lat <- x[["firstLatitude"]]
+                              lon <- x[["firstLongitude"]]
+                              ##asp <- 1 / cos(mean(lat, na.rm=TRUE) * pi / 180)
                               plot(coastline, clatitude=mean(lat, na.rm=TRUE), clongitude=mean(lon, na.rm=TRUE), span=span)
                               points(lon, lat)
                               #plot(lon, lat, asp=asp, xlab="Latitude", ylab="Longitude")
@@ -1519,10 +1781,10 @@ setMethod(f="plot",
               par(cex=opar$cex)
               oceDebug(debug, "} # plot.adp()\n", unindent=1)
               if (exists("ats")) {
-                  rval$xat <- ats$xat
-                  rval$yat <- ats$yat
+                  res$xat <- ats$xat
+                  res$yat <- ats$yat
               }
-              invisible(rval)
+              invisible(res)
           })
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -1912,15 +2174,15 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
         warning("there is no bottom velocity in this object")
         return(x)
     }
-    rval <- x
+    res <- x
     numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
         oceDebug(debug, "beam #", beam, "\n")
-        rval@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
+        res@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
     }
     oceDebug(debug, "} # subtractBottomVelocity()\n", unindent=1)
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 binmapAdp <- function(x, debug=getOption("oceDebug"))
@@ -1947,7 +2209,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     qbm <- array(raw(), dim=dim(v))
     gbm <- array(raw(), dim=dim(v))
     nprofile <- dim(v)[1]
-    rval <- x
+    res <- x
     for (profile in 1:nprofile) {
         r <- roll[profile]
         p <- pitch[profile]
@@ -2001,12 +2263,12 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         gbm[profile,,3] <- oce.as.raw(approx(z3, as.numeric(g[profile,,3], rule=rule), distance)$y)
         gbm[profile,,4] <- oce.as.raw(approx(z4, as.numeric(g[profile,,4], rule=rule), distance)$y)
     }
-    rval@data$v <- vbm
+    res@data$v <- vbm
     ##cat("R : v1      ", format(v[1,1:8,1], width=11, digits=7), '\n')
     ##cat("R : V1      ", format(vbm[1,1:8,1], width=11, digits=7), '\n')
-    rval@data$a <- abm
-    rval@data$q <- qbm
-    rval@data$g <- gbm
-    rval
+    res@data$a <- abm
+    res@data$q <- qbm
+    res@data$g <- gbm
+    res
 }
 

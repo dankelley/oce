@@ -13,9 +13,11 @@ echosounder <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/B
 
 echosounder <- subset(echosounder, depth < 40)
 #echosounder <- subset(echosounder, time > as.POSIXct("2008-07-01 16:44:30", tz="UTC"))
-#echosounder <- decimate(echosounder, c(1.2,30))
+echosounder <- decimate(echosounder, c(2, 40))
 print(dim(echosounder@data$a))
 print("Hope for above dim 736 88 or so")
 plot(echosounder, drawBottom=TRUE, despike=TRUE, which="zx image")
 #plot(echosounder2, drawBottom=TRUE)
+save(echosounder, file="echosounder.rda")
+tools::resaveRdaFiles("echosounder.rda")
 

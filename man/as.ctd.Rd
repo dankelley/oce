@@ -1,21 +1,25 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+%salinityFlag, temperatureFlag, pressureFlag, conductivityFlag,
+%SAFlag, CTFlag, oxygenFlag, nitrateFlag, nitriteFlag, phosphateFlag, silicateFlag,
+
 \name{as.ctd}
 \alias{as.ctd}
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{as.ctd(salinity, temperature, pressure, conductivity,
-       SA, CT,
-       oxygen, nitrate, nitrite, phosphate, silicate,
-       scan, time, other,
-       missingValue,
-       quality, 
-       filename, type, model, serialNumber,
-       ship, scientist, institute, address, cruise, station, 
-       date, startTime, recovery,
+\usage{as.ctd(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
+       SA=NULL, CT=NULL, oxygen=NULL,
+       nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
+       scan=NULL, time=NULL, other=NULL,
+       units=NULL, pressureType="sea",
+       missingValue=NA, quality=NULL, 
+       filename="", type="", model="", serialNumber="",
+       ship="", scientist="", institute="", address="", cruise="", station="", 
+       date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
-       pressureAtmospheric, waterDepth,
-       sampleInterval, src,
+       deploymentType="unknown",
+       pressureAtmospheric=0, waterDepth=NA,
+       sampleInterval=NA, src="",
        debug=getOption("oceDebug"))}
 
 \arguments{
@@ -27,15 +31,17 @@
     temperature, etc., can be inferred. In that case, the relevant information
     is extracted and the other arguments to \code{as.ctd} are ignored, except
     for \code{pressureAtmospheric}; see \dQuote{Details}.}
-    
-  \item{temperature}{Temperature through the water column.}
+
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined on
+    the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+    \code{\link{swRho}}.}
 
   \item{pressure}{pressure through the water column. If only one value is given,
     then it is repeated to match the length of the temperature vector.}
 
   \item{conductivity}{electrical conductivity ratio through the water column
     (optional). To convert from raw conductivity in milliSeimens per centimeter
-    divide by 42.914 to get conductivity ratio.}
+    divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
   \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
     salinity is converted internally to UNESCO-defined practical salinity.}
@@ -43,9 +49,7 @@
   \item{CT}{conservative temperature (as in TEOS-10).  If given, the supplied
     conservative temperature is converted internally to UNESCO-defined in-situ
     temperature.}
-
   \item{oxygen}{optional oxygen concentration}
-
   \item{nitrate}{optional nitrate concentration [micromole/kg]}
   \item{nitrite}{optional nitrite concentration [micromole/kg]}
   \item{phosphate}{optional phosphate concentration [micromole/kg]}
@@ -54,6 +58,29 @@
     \code{1:length(salinity)}.}
   \item{time}{optional vector of times of observation}
   \item{other}{optional list of other data columns that are not in the standard list}
+%  \item{salinityFlag}{a quality flag, defined and interpreted by the user}
+%  \item{temperatureFlag}{a quality flag, defined and interpreted by the user}
+%  \item{pressureFlag}{a quality flag, defined and interpreted by the user}
+%  \item{conductivityFlag}{a quality flag, defined and interpreted by the user}
+%  \item{SAFlag}{a quality flag, defined and interpreted by the user}
+%  \item{CTFlag}{a quality flag, defined and interpreted by the user}
+%  \item{oxygenFlag}{a quality flag, defined and interpreted by the user}
+%  \item{nitrateFlag}{a quality flag, defined and interpreted by the user}
+%  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
+%  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
+%  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
+
+  \item{units}{an optional list containing units.  If not supplied, a default of
+    \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+      salinity=list(unit=expression(ratio), scale="",
+      pressure=list(unit=expression(dbar), scale="")} is used. This is quite
+    typical of archived datasets, but for some instrumental files it will make
+    sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
+    \code{salinity=list(unit=expression(S/m), scale="")}.}
+  
+  \item{pressureType}{a character string indicating the type of pressure; may be
+    \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
+    and sea pressure, or \code{"sea"}.}
   \item{missingValue}{optional missing value, indicating data that should be
     taken as \code{NA}.}
   \item{quality}{quality flag, e.g. from the salinity quality flag in WOCE data.
@@ -80,6 +107,14 @@
   \item{latitude}{optional numerical value containing the latitude in decimal
     degrees, positive in the northern hemisphere. See the note on length, for
     the \code{longitude} argument.}
+  \item{deploymentType}{character string indicating the type of deployment. Use
+    \code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+    which the data were acquired during a downcast, while the device was lowered
+    into the water column, perhaps also including an upcast; \code{"moored"} if
+    the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
+    \code{"tsg"}) if the device is mounted on a moving vessel, to record
+    near-surface properties, or \code{"towyo"} if the device is repeatedly
+    lowered and raised.}
   \item{pressureAtmospheric}{if \code{NA} (the default), then pressure is copied
     from the \code{pressure} argument or from the contents of the first argument
     (as described above for \code{salinity}). Otherwise, if
@@ -98,7 +133,7 @@
 }
 
 \details{If the first argument is an \code{\link{rsk-class}} object, the
-  pressure it contains may need to adjustment, because \code{rsk} objects may
+  pressure it contains may need to be adjusted, because \code{rsk} objects may
   contain either absolute pressure or sea pressure. This adjustment is handled
   automatically by \code{as.ctd}, by examination of the metadata item named
   \code{pressureType} (described in the documentation for
@@ -134,5 +169,11 @@ plot(ctd)
 }
 
 \author{Dan Kelley}
+
+\references{Culkin, F., and Norman D. Smith, 1980. Determination of the
+  concentration of potassium chloride solution having the same electrical
+  conductivity, at 15 C and infinite frequency, as standard seawater of salinity
+  35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
+    Engineering}, \bold{5}, pp 22-23.}
 
 \keyword{misc}

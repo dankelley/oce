@@ -28,6 +28,42 @@
         \code{show(coastline)}) displays information about the object.}
 }
 
+\section{Data sources}{The NOAA website
+    \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html} is a popular
+    starting point for coastline data. One assumes the data have some sort of
+    authority, being provided by a national organization.  Another source for
+    coastline data is \url{http://www.naturalearthdata.com}, which provides
+    world datasets in a variety of resolutions. Another advantage of the
+    Natural Earth is that it provides data not just for coastlines, but also
+    for rivers, lakes, glaciated areas, and place names. The \code{oce} dataset
+    named \code{\link{coastlineWorld}} came from Natural Earth.}
+
+\section{Archiving your own coastline files}{The present package provides a
+    coarse-resolution world coastline in \code{\link{coastlineWorld}}, and the
+    \CRANpkg{ocedata} package provides two alternatives at world scale. It is
+    common for users to want to use other coastlines, but CRAN policies do not
+    allow packages with tens of megabytes of such data. Users should download
+    such data and store them in \code{.rda} files with e.g., for a
+    shapefile-formate file is named \code{"mycoastline.shp"} to be stored
+    in a directory named \code{/data/coastlines}, one might do as
+    follows.
+
+    \preformatted{
+      mycoastline <- oce::read.oce("mycoastline.shp")
+      save(mycoastline, file="/data/coastlines/mycoastline.rda")
+      tools::resaveRdaFiles("/data/coastlines/mycoastline.rda", compress="auto")
+    }
+    after which accessing the saved \code{mycoastline} dataset is as simple as
+    writing
+    \preformatted{
+        load("/data/coastlines/mycoastline.rda")
+    }
+    Note: it is important to save the coastline with a new name, to avoid
+    conflicts with \code{\link{coastlineWorld}} in the present package, and
+    \code{coastlineWorldMedium} and \code{coastlineWorldFine} in the
+    \CRANpkg{ocedata} package.
+}
+
 \seealso{Use \code{\link{as.coastline}} to convert data to this form,
     \code{\link{read.coastline}} to read data in various formats, and
     \code{\link{plot.coastline}} to plot coastlines.}

@@ -13,7 +13,7 @@
 \arguments{
   \item{object}{an object of class \code{"section"}, usually, a result of a
     call to \code{\link{read.section}}, \code{\link{read.oce}}, or
-    \code{\link{makeSection}}.}
+    \code{\link{as.section}}.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 
@@ -23,6 +23,8 @@
 \seealso{The documentation for \code{\link{section-class}} explains the
     structure of section objects, and also outlines the other functions dealing
     with them.}
+
+\value{\code{NULL}}
 
 \examples{
 library(oce)

@@ -1,9 +1,11 @@
 \name{makeSection}
 \alias{makeSection}
 
-\title{Bind CTD profiles together into a cross section}
+\title{Bind CTD profiles together into a cross section [DEPRECATED]}
 
-\description{Combine a series of CTD profiles together to create a section.}
+\description{Combine a series of CTD profiles together to create a section.
+    This function is deprecated, meaning that \strong{it will be removed two
+        CRAN releases from now}. Please use \code{\link{as.section}} instead.}
 
 \usage{makeSection(item, \dots)}
 
@@ -31,7 +33,8 @@ library(oce)
 data(ctd)
 ctd2 <- ctd
 ctd2[["temperature"]] <- ctd[["temperature"]] + 0.5
-ctd2[["latitude"]] <- ctd[["latitude"]] + 0.1
+ctd2[["salinity"]] <- ctd[["salinity"]] + 0.1
+ctd2[["longitude"]] <- ctd[["longitude"]] + 0.01
 section <- makeSection(ctd, ctd2)
 summary(section)
 # Below is how to create a section from well-named CSV files

@@ -1,0 +1,103 @@
+Information about the ETOPO5 5-minute gridded elevation data
+ 
+NOTE:
+On 27 May 2005, the contents of the data file ETOPO5.DOS was replaced by the contents of the file ETOPO5.DAT; the two files are now identical except for byte order. Previously, the area covering 64-70 deg N and 95-128 deg W in ETOPO5.DOS contained lower-resolution topographic data from an earlier source. The two files now contain the same numeric data for the entire world. The original ETOPO5.DOS file is still available on the "Global Relief CD-ROM" (http://www.ngdc.noaa.gov/mgg/fliers/93mgg01.html).
+
+Sources for ETOPO5:
+
+ETOPO5 was generated from a digital data base of land and sea-
+floor elevations on a 5-minute latitude/longitude grid.  The 
+resolution of the gridded data varies from true 5-minute for the
+ocean floors, the U.S.A., Europe, Japan,and Australia to 1 degree
+in data-deficient parts of Asia, South America, northern Canada,
+and Africa.  Data sources are as follows:  Ocean Areas: U.S.
+Naval Oceanographic Ofice; U.S.A., W. Europe, Japan/Korea: U.S.
+Defense Mapping Agency; Australia: Bureau of Mineral Resources,
+Australia; New Zealand: Department of Industrial and Scientific
+Research, New Zealand; balance of world land masses: U.S. Navy
+Fleet Numerical Oceanographic Center.
+
+ETOPO5 was derived from data assembled by Margo Edwards, 
+et al., Washington University.  Related Map: Edwards, M.H., 
+and R.E. Arvidson, Report MGG-2, Relief of the surface of the
+Earth, J.R. Heirtzler (ed.), published for World Data Center A 
+for Marine Geology and Geophysics by the National Geophysical 
+Data Center, Boulder, CO, 1985. Edwards and Arvidson added land
+topography to the (then) current version of the DBDB-5 ocean
+bathymetry grid from the US Naval Oceanographic Office to
+produce the land-sea grid that became ETOPO5.
+
+
+Data Formats for ETOPO5:
+
+The data file is formatted as 16-bit BINARY INTEGERS in two byte 
+orders: ETOPO5.DOS is in IBM-PC/DEC-VAX "swapped," lo-byte-first 
+order. The file ETOPO5.DAT is in "normal," or hi-byte-first 
+order, as used by Macintosh, Sun, and some other workstations. In 
+both files, there are 2160x4320 data values, one for each five 
+minutes of latitude and longitude, for a total of 9,331,200 
+points or 18,662,400 bytes.  Data values are in whole meters, 
+representing the elevation of the CENTER of each cell.
+The files "ETOPO5.FMT;1" and ETOPO5.HDR;1" are placed in the
+ETOPO5 directory for convenient use of the "FREEFORM" and "GEOVU2"
+utilities being developed at NGDC. (These programs were not available
+for inclusion on the CD -- watch for an announcement of their release.)
+
+
+Data Order in the Files:
+
+The file may be thought of as having a logical record size of 
+8640 bytes.  The data start at the North Pole (90 deg N, 0 deg 0' 
+E) and are arranged in bands of 360 degrees x 12 points/degree = 
+4320 values (8640 bytes) ranging eastward from 0 deg 0' East 
+longitude to 359 deg 55' East longitude (since it represents the 
+North Pole, all possible longitudes still refer to a single 
+point, thus the first band has 4320 identical values of -4290 m). 
+The 8641st starts the latitude band for 89 deg 55' N, and so on. 
+There is NO record for the South Pole (elevation 2810 m.) 
+
+USING THE PC DOS ACCESS PROGRAMS FOR ETOPO5 DATA:
+
+(Macintosh users will find their own software in the Mac part of this
+CD-ROM)
+
+There are three programs in this directory for accessing the ETOPO5
+data on a PC-compatible computer (Macintosh users will find their
+specific software in the "Macintosh Files:Public Software:NGDC
+Software" directory.). The PC programs are:
+
+1)   SELTOP1.EXE
+2)   SELTOP5.EXE
+3)  SELTOP5B.EXE
+
+Each program copies a data selection from the ETOPO5 data base to a
+user-specified file. The programs are run by entering
+
+   set ETOPO5=<path to ETOPO5.DOS>
+   SELTOPx /r 8640
+
+where "x" is "1", "5", or "5B", and "path to ETOPO5.DOS" is the pathname
+to access the file "ETOPO5.DOS" from the CD-ROM, or from a copy on hard
+disk, e.g., "F:\TOPO\ETOPO5\ETOPO5.DOS". The command-line arguments "/r 8640"
+are necessary to set up a buffer for file access. As their names suggest,
+the three programs select data as follows: SELTOP1 copies to ASCII (text)
+data by 1-degree squares, SELTOP5 copies to ASCII data by 5-degree
+squares, and SELTOP5B copies to 16-bit binary data by 5-degree squares.
+Each program prompts you for the name of a file to recieve the copied
+data (the file name must not already exist), followed by the latitude
+and longitude in whole degrees of the southwest corner of the data area.
+The program then asks for the number of 1- or 5- degree squares north
+and east of the origin to be copied -- an area 30 degrees wide (W-E)
+and 20 degrees high (S-N) would consist of 4 (5-deg) blocks northward
+and 6 (5-deg) blocks eastward of the origin (or 20x30 1-degree blocks).
+The ASCII output files contain this type of header:
+
+"Data format: depths/elevations in whole Meters (+ = above sea                 
+ level). Lat and lon are given for SouthWest corner of 1-degree                
+ square area covered by a 13x13 matrix of 5-minute grid values                 
+ starting at the NorthWest corner of the square and then                       
+ given Eastward along increasing longitude for 13 values, then                 
+ stepping 5 minutes South for the next row (last row, first                    
+ entry = SW corner point of degree square). "
+
+followed by the data. The binary files have no header.

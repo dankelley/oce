@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{plot.coastline}
 
 \alias{plot.coastline}
@@ -13,15 +14,17 @@
      asp,
      clongitude, clatitude, span,
      lonlabel=NULL, latlabel=NULL, sides=NULL,
-     projection=NULL, parameters=NULL, orientation=NULL,
+     projection=NULL,
      expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
-     fill='lightgray',
+     fill, # just so we catch it's use ... will be removed at some later time
+     border=NULL, col="lightgray",
      axes=TRUE, cex.axis=par('cex.axis'),
      add=FALSE, inset=FALSE,
      geographical=0,
+     longitudelim, latitudelim,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -48,12 +51,13 @@
       then any provided value of \code{asp} is ignored, and instead the plot
       aspect ratio is computed based on the center latitude.  If
       \code{clongitude} and \code{clatitude} are provided, then \code{span}
-      must also be provided.}
-  \item{span}{optional suggested span of plot, in kilometers.  The suggestion
-      is an upper limit on the scale; depending on the aspect ratio of the
-      plotting device, the radius may be smaller than \code{span}.  A value for
-      \code{span} must be supplied, if \code{clongitude} and \code{clatitude}
-      are supplied.}
+      must also be provided, and in this case, it is not permitted
+      to also specify \code{longitudelim} and \code{latitudelim}.}
+  \item{span}{optional suggested diagonal span of the plot, in kilometers.
+      The plotted span is usually close to the suggestion, although the details
+      depend on the plot aspect ratio and other factors, so some adjustment may
+      be required to fine-tune a plot.  A value for \code{span} must be
+      supplied, if \code{clongitude} and \code{clatitude} are supplied.}
   \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
       label on the indicated sides of plot, passed to
       \code{\link{plot.coastline}}.  Using these arguments permits reasonably
@@ -72,14 +76,6 @@
       Otherwise, \code{projection} must be a character string identifying a
       projection accepted by \code{\link{mapPlot}}.}
 
-  \item{parameters}{optional parameters to map projection, if a
-      \code{mapproj}-style \code{projection} is specified (see
-      \code{\link{mapPlot}}.}
-
-  \item{orientation}{optional orientation of map projection, if a
-      \code{mapproj}-style \code{projection} is specified  (see
-      \code{\link{mapPlot}}.}
-
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
@@ -92,10 +88,13 @@
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
-  \item{fill}{colour to be used to fill land regions.  This is ignored
-    unless the coastline object is fillable (e.g. for a "shapefile" read
-    by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
-    filling.} 
+  \item{fill}{a legacy parameter that will be permitted only temporarily;
+    see \dQuote{History}.}
+  \item{border}{colour of coastlines and international borders
+    (passed to \code{\link{polygon}}, which does the drawing).}
+  \item{col}{the colour with which to fill (passed to \code{\link{polygon}},
+    which does the drawing.) This is ignored unless the coastline
+    object is fillable.}
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
   \item{cex.axis}{value for axis font size factor.}
   \item{add}{boolean, set to \code{TRUE} to draw the coastline on an existing
@@ -113,6 +112,10 @@
       values being in decreasing order within the southern and western
       hemispheres.  If \code{geographical=2}, the signs are dropped and the
       axes are labelled with degrees, minutes and seconds, as appropriate.}
+  \item{longitudelim}{this and \code{latitudelim} provide a second way to
+      suggest plot ranges. Note that these may not be supplied if
+      \code{clongitude}, \code{clatitude} and \code{span} are given.}
+  \item{latitudelim}{see \code{longitudelim}.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For
@@ -133,8 +136,15 @@
 \value{None.}
 
 \seealso{The documentation for \code{\link{coastline-class}} explains the
-    structure of coastline objects, and also outlines the other functions
-    dealing with them.}
+  structure of coastline objects, and also outlines the other functions dealing
+  with them.}
+
+\section{History}{Until February, 2016, \code{plot.coastline} relied on
+  a now-defunct argument \code{fill} to control colours; \code{col} is to be
+  used now, instead. Also, in February, 2016, the arguments named
+  \code{parameters} and \code{orientation} were both removed, as they had become
+  nonfunctional about a year previously, in the transition to using
+  \CRANpkg{rgdal} to carry out map projections.}
 
 \examples{
 \dontrun{

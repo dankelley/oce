@@ -1,3 +1,54 @@
+#' Class to Hold adv Data
+#'
+#' This class holds data from acoustic-Dopper velocimeters.
+#'
+#' The \code{metadata} slot
+#'     contains various items relating to the dataset, including source file name,
+#'     sampling rate, velocity resolution and scale, etc.  The
+#'     \code{processingLog} is in standard form and needs little comment.  The
+#'     \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
+#'     the first index indicating time and the second indicating beam number.  The
+#'     meanings of the beams depends on whether the object is in beam
+#'     coordinates, frame coordinates, or earth coordinates.  The \code{data} slot
+#'     also contains identically-dimensioned raw matrices \code{a} and \code{q},
+#'     holding measures of signal strength and data quality quality, respectively.
+#'     It also contains a series of vectors, e.g. \code{time}, \code{temperature}
+#'     and \code{pressure}, etc., depending on what sensors are included in the
+#'     package.  For all of these quantities, the details can be different for
+#'     different instrument types, and it is assumed that the user will be
+#'     familiar with the details.
+#' 
+#' Data may be extracted with \code{\link{[[,adv-method}} and inserted
+#' with \code{\link{[[<-,adv-method}}. Type \code{?"[[,adv-method"}
+#' or \code{?"[[<-,adv-method"} to learn more.
+#'
+#' @seealso
+#' A file containing ADV data is usually recognized by Oce, and so
+#'     \code{\link{read.oce}} will usually read the data.  If not, one may use the
+#'     general ADV function \code{\link{read.adv}} or specialized variants
+#'     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
+#'     \code{\link{read.adv.sontek.text}}.
+#' 
+#'     ADV data may be plotted with \code{\link{plot.adv}} function, which is a
+#'     generic function so it may be called simply as \code{plot(x)}, where
+#'     \code{x} is an object inheriting from \code{\link{adv-class}}.
+#' 
+#'     Statistical summaries of ADV data are provided by the generic function
+#'     \code{\link{summary.adv}}.
+#' 
+#'     Conversion from beam to xyz coordinates may be done with
+#'     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
+#'     with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+#'     transfer either beam or xyz to enu.  Enu may be converted to other
+#'     coordinates (e.g. aligned with a coastline) with
+#'     \code{\link{enuToOtherAdv}}.
+#'
+#' @examples
+#' data(adv)
+#' adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
+#' @aliases adv-class
+setClass("adv", contains="oce")
+
 setMethod(f="initialize",
           signature="adv",
           definition=function(.Object,time,v,a,q,filename) {
@@ -23,110 +74,70 @@ setMethod(f="summary",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
                             if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
               }
-              cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                          1 / object@metadata$measurementDeltat), ...)
-              cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                          format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
-                          format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
-                          1 / object@metadata$subsampleDeltat), ...)
-              if ("samplingMode" %in% names(object@metadata)) {
-                  if ("burst" == object@metadata$samplingMode) {
-                      cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-                  } else {
-                      cat("* Sampling in continuous mode\n")
-                  }
-              }
-              cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-              cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
-              cat("* Orientation:           ", object@metadata$orientation, "\n")
-              cat("* Frequency:             ", object@metadata$frequency, "kHz\n")
-              dataNames <- names(object@data)
-              nrow <- length(dataNames) - length(grep("^time", dataNames))
-              threes <- matrix(nrow=nrow, ncol=3)
-              ii <- 1
-              for (name in dataNames) {
-                  if (0 == length(grep("^time", name))) {
-                      if (0 == length(object@data[[name]])) {
-                          threes[ii,] <- c(NA, NA, NA)
-                      } else {
-                          threes[ii,] <- threenum(as.numeric(object@data[[name]]))
-                      }
-                      ii <- ii + 1
-                  }
-              }
-              rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              print(threes)
-              processingLogShow(object)
+              callNextMethod()
           })
 
+#' Extract Something From an adv Object
+#'
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrived in \code{\link{raw}} form or numeric
+#' form; see examples.
+#' 
+#' @param x An adv object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
+#' @examples
+#' data(adv)
+#' head(adv[["q"]])            # in raw form
+#' head(adv[["q", "numeric"]]) # in numeric form
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
-              if (i == "filename") {
-                  return(x@metadata$filename)
-              } else if (i == "time") {
-                  return(x@data$time)
-              } else if (i == "timeSlow") {
-                  return(x@data$timeSlow)
-              } else if (i == "v") {
-                  return(x@data$v)
-              } else if (i == "u1") {
+          definition=function(x, i, j, ...) {
+              if (i == "u1") {
                   return(x@data$v[,1])
               } else if (i == "u2") {
                   return(x@data$v[,2])
               } else if (i == "u3") {
                   return(x@data$v[,3])
-              #} else if (i == "heading") {
-              #    if ("heading" %in% names(x@data)) return(x@data$heading)
-              #    else if ("headingSlow" %in% names(x@data)) return(x@data$headingSlow)
-              #    else return(NULL)
-              #} else if (i == "headingSlow") {
-              #    return(x@data$headingSlow)
-              #} else if (i == "pitch") {
-              #     if ("pitch" %in% names(x@data)) return(x@data$pitch)
-              #    else if ("pitchSlow" %in% names(x@data)) return(x@data$pitchSlow)
-              #    else return(NULL)
-              #} else if (i == "pitchSlow") {
-              #    return(x@data$pitchSlow)
-              #} else if (i == "roll") {
-              #    if ("roll" %in% names(x@data)) return(x@data$roll)
-              #    else if ("rollSlow" %in% names(x@data)) return(x@data$rollSlow)
-              #    else return(NULL)
-              #} else if (i == "rollSlow") {
-              #    return(x@data$rollSlow)
-              #} else if (i == "temperature") {
-              #    return(x@data$temperature)
               } else if (i == "a") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$a
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$a
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$a
+                      res <- x@data$a
                   }
-                  return(rval)
+                  return(res)
               } else if (i == "q") {
                   if (!missing(j) && j == "numeric") {
-                      rval <- x@data$q
-                      dim <- dim(rval)
-                      rval <- as.numeric(rval)
-                      dim(rval) <- dim
+                      res <- x@data$q
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
                   } else {
-                      rval <- x@data$q
+                      res <- x@data$q
                   }
-                  return(rval)
+                  return(res)
               } else {
-                  rval <- as(x, "oce")[[i]]
-                  ## if (missing(j) || j != "nowarn")
-                  ##     warning("adv[[\"", i, "\"]]: there is no item of that name\n", call.=FALSE)
-                  rval
+                  callNextMethod()
               }
           })
 
+#' Change Something Within an adv Object
+#'
+#' In addition to the usual insertion of elements by name, note
+#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' 
+#' @param x An adv object
+#' @param i The item to insert
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value to be inserted into \code{x}.
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
@@ -153,7 +164,7 @@ setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              rval <- x
+              res <- x
               dots <- list(...)
               debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
               if (missing(subset))
@@ -169,7 +180,7 @@ setMethod(f="subset",
                       stop("must keep at least 2 profiles")
                   oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
                   oceDebug(debug, vectorShow(keep, "keeping bins:"))
-                  rval <- x
+                  res <- x
                   names <- names(x@data)
                   haveSlow <- "timeSlow" %in% names
                   keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
@@ -185,30 +196,30 @@ setMethod(f="subset",
                       if ("distance" == name)
                           next
                       if (length(grep("Burst$", name))) {
-                          rval@data[[name]] = x@data[[name]][keepBurst]
-                      } else if (length(grep("^time", name)) || is.vector(rval@data[[name]])) {
+                          res@data[[name]] = x@data[[name]][keepBurst]
+                      } else if (length(grep("^time", name)) || is.vector(res@data[[name]])) {
                           if (1 == length(agrep("Slow$", name))) {
                               oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keepSlow]
+                              res@data[[name]] <- x@data[[name]][keepSlow]
                           } else {
                               oceDebug(debug, "subsetting data$", name, "\n", sep="")
-                              rval@data[[name]] <- x@data[[name]][keep]
+                              res@data[[name]] <- x@data[[name]][keep]
                           }
-                      } else if (is.matrix(rval@data[[name]])) {
+                      } else if (is.matrix(res@data[[name]])) {
                           oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
-                          rval@data[[name]] <- x@data[[name]][keep,]
-                      } else if (is.array(rval@data[[name]])) {
+                          res@data[[name]] <- x@data[[name]][keep,]
+                      } else if (is.array(res@data[[name]])) {
                           oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
-                          rval@data[[name]] <- x@data[[name]][keep,,]
+                          res@data[[name]] <- x@data[[name]][keep,,]
                       }
                   }
               } else {
                   stop("only 'time' is permitted for subsetting")
               }
-              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
-              rval@metadata$numberOfCells <- dim(rval@data$v)[2]
-              rval@processingLog <- processingLogAppend(rval@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              rval
+              res@metadata$numberOfSamples <- dim(res@data$v)[1]
+              res@metadata$numberOfCells <- dim(res@data$v)[2]
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              res
           })
 
 

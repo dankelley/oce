@@ -14,6 +14,7 @@
     xtype="salinity+temperature", 
     ytype=c("pressure", "z", "depth", "sigmaTheta"),
     eos=getOption("oceEOS", default="gsw"),
+    lty=1, 
     xlab=NULL, ylab=NULL,
     col="black",
     col.salinity="darkgreen",
@@ -85,14 +86,15 @@
   \item{xlab}{optional label for x axis (at top of plot).}
   \item{ylab}{optional label for y axis.  Set to \code{""} to prevent labelling
     the axis.}
+  \item{lty}{line type for the profile.}
   \item{col}{colour for a general profile.}
-  \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
-  \item{col.temperature}{color for temperature (see \dQuote{Details}).}
-  \item{col.rho}{color for density (see \dQuote{Details}).}
-  \item{col.N2}{color for square of buoyancy frequency (see \dQuote{Details}).}
-  \item{col.dpdt}{color for dP/dt.}
-  \item{col.time}{color for delta-time.}
-  \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
+  \item{col.salinity}{colour for salinity profile (see \dQuote{Details}).}
+  \item{col.temperature}{colour for temperature (see \dQuote{Details}).}
+  \item{col.rho}{colour for density (see \dQuote{Details}).}
+  \item{col.N2}{colour for square of buoyancy frequency (see \dQuote{Details}).}
+  \item{col.dpdt}{colour for dP/dt.}
+  \item{col.time}{colour for delta-time.}
+  \item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
   \item{grid}{logical, set to \code{TRUE} to get a grid.}
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}

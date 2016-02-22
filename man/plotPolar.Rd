@@ -2,7 +2,7 @@
 
 \alias{plotPolar}
 
-\title{Draw a polar plot.}
+\title{Draw a Polar Plot}
 
 \description{Draw a polar plot.}
 

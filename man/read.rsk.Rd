@@ -3,9 +3,9 @@
 
 \alias{read.rsk}
 
-\title{Read a rsk file}
+\title{Read an RBR rsk or Ruskin export file}
 
-\description{Read an rsk file, e.g. as produced by an RBR logger, producing an
+\description{Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
   object of class \code{rsk}.}
 
 \usage{read.rsk(file, from=1, to, by=1, type,
@@ -25,11 +25,12 @@
     to the end of the file.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
-    profiles are skipped between each pair of profiles that is read.  If
+    samples are skipped between each pair of samples that is read.  If
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
-  \item{type}{optional file type, presently only permitted to be \code{rsk}. If
+  \item{type}{optional file type, presently can be \code{rsk} or
+  \code{txt} (for a text export of an RBR rsk or hex file). If
     this argument is not provided, an attempt will be made to infer the type
     from the file name and contents.}
   \item{tz}{time zone.  The value \code{oceTz} is set at package setup.}
@@ -44,22 +45,27 @@
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{This can read rsk files produced by several RBR instruments.  At the
-  moment, four styles are understood: (1) text file with columns for temperature
-  and pressure (with sampling times indicated in the header); (2) text file with
+\details{This can read files produced by several RBR instruments.  At the
+  moment, five styles are understood: (1) text file produced as an
+  export of an RBR \code{hex} or \code{rsk} file; (2) text file with columns for temperature
+  and pressure (with sampling times indicated in the header); (3) text file with
   four columns, in which the date the time of day are given in the first two
-  columns, followed by the temperature, and pressure; (3) text file with five
-  columns, in which depth in the water column is given after the pressure; (4)
-  an SQLite-based database format. The first three options are provided mainly
+  columns, followed by the temperature, and pressure; (4) text file with five
+  columns, in which depth in the water column is given after the pressure; (5)
+  an SQLite-based database format. The first four options are provided mainly
   for historical reasons, since RBR instruments at the date of writing commonly
-  use the SQLite format.
+  use the SQLite format, though the first option is common for all
+  instruments that produce a \code{hex} file that can be read using
+  Ruskin.
 
-  \emph{A note on conductivity.} RBR devices record conductivity in mS/cm, and
-  that it is this value that is stored in the object returned by
-  \code{read.rsk}. This can be converted to conductivity ratio (which is what
-  many other instruments report) by dividing by 42.914, which will be necessary
-  in any seawater-related function that takes conductivity ratio as an argument
-  (see \dQuote{Examples}).
+  Options 2-4 are mostly obsolete, and will be removed from future versions.
+
+  \emph{A note on conductivity.} RBR devices record conductivity in
+  mS/cm, and it is this value that is stored in the object returned by
+  \code{read.rsk}. This can be converted to conductivity ratio (which is
+  what many other instruments report) by dividing by 42.914 (see Culkin and
+  Smith, 1980) which will be necessary in any seawater-related function that
+  takes conductivity ratio as an argument (see \dQuote{Examples}).
     
   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
@@ -85,24 +91,19 @@
 
 \value{An object of \code{\link{rsk-class}}.}
 
-\examples{
-library(oce)
-## A CTD-style rsk
-if (requireNamespace("R.utils")) {
-  file <- system.file("extdata", "sample.rsk.gz", package="oce")
-  tmp <- tempfile(fileext=".rsk")
-  R.utils::decompressFile(file, destname=tmp, ext="gz", FUN=gzfile, remove=FALSE)
-  rsk <- read.rsk(tmp)
-  ctd <- as.ctd(rsk)
-  plot(ctdTrim(ctd))
-}
-}
+\seealso{The documentation for \code{\link{rsk-class}} explains the structure of
+  \code{rsk} objects, and also outlines other functions dealing with them.
+  Since RBR has a wide variety of instruments, \code{rsk} datasets can be quite
+  general, and it is common to coerce \code{rsk} objects to other forms for
+  specialized work, e.g. \code{\link{as.ctd}} can be used to create CTD object,
+  so that the generic plot obeys the CTD format.}
 
-\seealso{The documentation for \code{\link{rsk-class}} explains the
-    structure of \code{rsk} objects, and also outlines other functions
-    dealing with them. See \code{\link{as.ctd}} for the method of converting to
-    a CTD object.}
+\author{Dan Kelley and Clark Richards}
 
-\author{Dan Kelley}
+\references{Culkin, F., and Norman D. Smith, 1980. Determination of the
+  concentration of potassium chloride solution having the same
+  electrical conductivity, at 15 C and infinite frequency, as standard
+  seawater of salinity 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal
+  of Oceanic Engineering}, \bold{5}, pp 22-23.}
 
 \keyword{misc}

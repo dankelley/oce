@@ -25,7 +25,7 @@
      map.ylim=NULL,
      clongitude, clatitude, span,
      projection=NULL, parameters=NULL, orientation=NULL,
-     xtype=c("distance", "track", "longitude", "latitude"),
+     xtype=c("distance", "track", "longitude", "latitude", "time"),
      ytype=c("depth", "pressure"),
      ztype=c("contour", "image", "points"),
      zbreaks=NULL, zcol=NULL,
@@ -44,7 +44,7 @@
 
 \arguments{
     \item{x}{a \code{section} object, e.g. as created by
-        \code{\link{makeSection}}.}
+        \code{\link{as.section}} or \code{\link{read.section}}.}
 
     \item{which}{a list of desired plot types, as explained in
         \dQuote{Details}.  There may be up to four panels in total, and the
@@ -83,7 +83,7 @@
     \item{xtype}{type of x axis, for contour plots, either
         \code{"distance"} for distance (in km) to the first point in the
         section, \code{"track"} for distance along the cruise track,
-        or \code{"longitude"} or \code{"latitude"}.
+        \code{"longitude"}, \code{"latitude"}, or \code{"time"}.
         Note that if the x values are not in order, they will be put in
         order (which may make no sense) and a warning will be printed.}
     \item{ytype}{type of y axis for contour plots, either

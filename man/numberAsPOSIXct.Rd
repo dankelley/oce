@@ -8,7 +8,7 @@
 \description{Convert a numeric time to a POSIXct time}
 
 \usage{numberAsPOSIXct(t, type=c("unix", "matlab", "gps", "argo",
-                          "ncep", "sas", "spss", "yearday"), tz="UTC")}
+                          "ncep1", "ncep2", "sas", "spss", "yearday"), tz="UTC")}
 
 \arguments{
 
@@ -22,23 +22,48 @@
 
 }
 
-\details{Unix times, indicated by \code{type="unix"}, are measured in seconds
-  since the start of the year 1970.  Matlab times, indicated by
-  \code{type="matlab"}, are measured in years since the start of the year 1899.
-  Argo times, indicated by \code{type="argo"}, are measured in days since the
-  beginning of the year 1900.  NCEP times, indicated by \code{type="ncep"}, are
-  measured in hours since the beginning of year 1800. SAS times, indicated by
-  \code{type="sas"}, have origin at the start of 1960.  SPSS times, indicated by
-  \code{type="spss"}, have origin at 1582-10-14.
-    
-  Note that in these cases, \code{t} is a vector.  In the yearday and GPS cases,
-  however, \code{t} must be a two-column matrix.  For \code{type="gps"}, the
-  first column is the GPS "week" (referenced to 1999-08-22) and the second
-  column is GPS "second" (i.e. the second within the week).  For
-  \code{type="yearday"}, the first column is the year, and the second is the
-  yearday (starting at 1 for the first second of January 1, to match the
-  convention used by Sea-Bird CTD software).}
-    
+\details{There are many varieties, according to the value of \code{type} as
+  defined below.
+
+  \itemize{
+
+    \item \code{"unix"} employs Unix times, measured in seconds since the start
+    of the year 1970.
+
+    \item \code{"matlab"} employs Matlab times, measured in days since what
+    MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
+      0, 0)} in R notation).  
+
+    \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
+    two-column matrix, with the first column being the the GPS "week"
+    (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
+    second within the week). 
+
+    \item \code{"argo"} employs Argo times, measured in days since the
+    start of the year 1900.  
+
+    \item \code{"ncep1"} employs NCEP times, measured in hours since the start
+    of the year 1800.
+
+    \item \code{"ncep2"} employs NCEP times, measured in days since the start
+    of the year 1. (Note that, for reasons that are unknown at this time, a
+    simple R expression of this definition is out by two days compared with the
+    UDUNITS library, which is used by NCEP. Therefore, a two-day offset is
+    applied. See [2,3].)
+  
+    \item \code{"sas"} employs  SAS times, indicated by \code{type="sas"}, have
+    origin at the start of 1960.
+  
+    \item \code{"spss"} employs SPSS times, in seconds after 1582-10-14.
+
+    \item \code{"yearday"} employs a convention in which \code{t} is a
+    two-column matrix, with the first column being the year, and the second the
+    yearday (starting at 1 for the first second of January 1, to match the
+    convention used by Sea-Bird CTD software).
+  
+  }
+}
+
 \value{A \code{\link{POSIXct}} time vector.}
 
 \examples{
@@ -51,5 +76,13 @@ numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 \seealso{\code{\link{numberAsHMS}}}
 
 \author{Dan Kelley}
+
+\references{
+  [1] Matlab times: \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
+
+  [2] NCEP times: \url{http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+
+  [3] problem with NCEP times: \url{https://github.com/dankelley/oce/issues/738}
+}
 
 \keyword{misc}

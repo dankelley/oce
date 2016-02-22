@@ -38,6 +38,7 @@ library(oce)
 # Halifax NS
 magneticField(-(63+36/60), 44+39/60, 2013)
 
+\dontrun{
 ## map of North American values
 data(coastlineWorld)
 mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
@@ -53,6 +54,7 @@ mapContour(lon, lat, decl, col='red', levels=seq(-90, 90, 5))
 incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
                nrow=length(lon), byrow=TRUE)
 mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
+}
 }
 
 \references{

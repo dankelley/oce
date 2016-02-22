@@ -1,5 +1,4 @@
 library(oce)
-context("Curl")
 
 test_that("curl 1", {
           lat <- c(85,82.5,80,77.5)

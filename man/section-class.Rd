@@ -1,3 +1,4 @@
+% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2:spell
 \name{section-class}
 
 \docType{class}
@@ -10,7 +11,7 @@
 \title{Class to store hydrographic section data}
 
 \description{Class to store hydrographic section data, with standard slots
-    \code{metadata}, \code{data} and \code{processingLog}.}
+  \code{metadata}, \code{data} and \code{processingLog}.}
 
 \section{Methods}{
     The examples given below use \code{s} to represent the name of a section.
@@ -46,7 +47,7 @@
 
 \seealso{Sections can be read with \code{\link{read.section}} or created with
     \code{\link{read.section}} or created from CTD objects by using
-    \code{\link{makeSection}} or by adding a ctd station to an existing section
+    \code{\link{as.section}} or by adding a ctd station to an existing section
     with \code{\link{sectionAddStation}}.
     
     Sections may be sorted with \code{\link{sectionSort}}, subsetted with

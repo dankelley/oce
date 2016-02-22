@@ -47,24 +47,11 @@
   example, the header must name the salinity column "\code{CTDSAL}"; if not,
   salinity values will not be read from the file.}
 
-\value{An object of \code{\link[base]{class}} \code{"section"}, which is a
-  \code{\link[base]{list}} containing\itemize{
-    \item{\code{data}}{: a list containing just one item, \code{station}, which
-      is a list of \code{ctd} objects, one per station.}
+\value{An object of class \code{\link{section-class}}.}
 
-    \item{\code{metadata}}{: a list containing: \code{header}, the header from
-      the data file; \code{sectionId}, a name for the section; \code{stationId},
-      a vector of station IDs, one per station; \code{latitude}, a vector of
-      station latitudes, decimal and positive in northern hemisphere; and
-      \code{longitude}, a vector of station latitudes, decimal and positive in
-      eastern hemisphere.}
-
-    \item{\code{processingLog}}{: a log of processing, in the standard
-      \code{oce} format.}}}
-
-\seealso{The documentation for \code{\link{section-class}} explains the
-  structure of section objects, and also outlines the other functions dealing
-  with them.}
+\seealso{Sections can also be created with \code{\link{as.section}}. The
+  documentation for \code{\link{section-class}} explains the structure of
+  section objects, and outlines other functions dealing with them.}
 
 \references{Several repository sites provide section data. An example that is
   perhaps likely to exist for years is \url{http://cchdo.ucsd.edu}, but a search

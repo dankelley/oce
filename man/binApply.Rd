@@ -8,8 +8,8 @@
 
 \description{Apply a function to binned matrix data}
 
-\usage{binApply1D(x, f, xbreaks, FUN)
-binApply2D(x, y, f, xbreaks, ybreaks, FUN)}
+\usage{binApply1D(x, f, xbreaks, FUN, \dots)
+binApply2D(x, y, f, xbreaks, ybreaks, FUN, \dots)}
 
 \arguments{
   \item{x}{a vector of numerical values.}
@@ -26,6 +26,8 @@ binApply2D(x, y, f, xbreaks, ybreaks, FUN)}
       \code{\link{pretty}} if not supplied.}
 
   \item{FUN}{function to apply to the data}
+   
+  \item{\dots}{arguments to pass to the function \code{FUN}}
 
 }
 
@@ -52,6 +54,8 @@ polygon(c(q1$result, rev(q3$result)),
 c(q1$xmids, rev(q1$xmids)), col='gray')
 points(S, p, pch=20)
 
+\dontrun{
+## This requires the rgdal package to be installed
 ## (b) 2D: secchi depths in lat and lon bins
 if (require(ocedata)) {
     data(secchi, package="ocedata")
@@ -71,6 +75,7 @@ if (require(ocedata)) {
                      f=secchi$depth, FUN=mean)
     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
     mapPolygon(coastlineWorld, col='gray')
+}
 }
 }
 

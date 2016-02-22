@@ -15,29 +15,15 @@ setMethod(f="initialize",
 setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
-              threes <- matrix(nrow=2, ncol=3)
-              threes[1,] <- threenum(object@data$latitude)
-              threes[2,] <- threenum(object@data$longitude)
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              rownames(threes) <- c("Latitude", "Longitude")
-              cat("GPX Summary\n-----------------\n\n")
-              cat("* Number of points:", length(object@data$latitude), ", of which", 
-                  sum(is.na(object@data$latitude)), "are NA.\n")
-              cat("\n",...)
-              cat("* Statistics of subsample::\n\n", ...)
-              print(threes)
-              cat("\n")
-              processingLogShow(object)
-              invisible(NULL)
+              cat("GPS Summary\n-----------------\n\n")
+              callNextMethod()
           })
 
 
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
-              ## I use 'as' because I could not figure out callNextMethod() etc
-              #as(x, "oce")[[i, j, drop]]
-              as(x, "oce")[[i]]
+          definition=function(x, i, j, ...) {
+              callNextMethod()
           })
 
 setMethod(f="plot",
@@ -98,7 +84,7 @@ setMethod(f="plot",
               latitude <- x[["latitude"]]
               dots <- list(...)
               dotsNames <- names(dots)
-              gave.center <- !missing(clongitude) && !missing(clatitude)
+              ##gave.center <- !missing(clongitude) && !missing(clatitude)
               if ("center" %in% dotsNames)
                   stop("use 'clongitude' and 'clatitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; use 'clongitude' and 'span' instead")
@@ -109,7 +95,7 @@ setMethod(f="plot",
               if (add) {
                   lines(longitude, latitude, ...)
               } else {
-                  gaveSpan <- !missing(span)
+                  ##gaveSpan <- !missing(span)
                   if (!missing(clatitude) && !missing(clongitude)) {
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' were given")
@@ -245,7 +231,7 @@ setMethod(f="plot",
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
                       oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
-                      yscale <- 180 / (yaxp[2] - yaxp[1])
+                      ##yscale <- 180 / (yaxp[2] - yaxp[1])
                       ## FIXME: should allow type as an arg
                       points(x[["longitude"]], x[["latitude"]], ...)
                   } else {
@@ -268,7 +254,7 @@ as.gps <- function(longitude, latitude, filename="")
         latitude <- longitude[["latitude"]]
         longitude <- longitude[["longitude"]]
     }
-    rval <- new('gps', longitude=longitude, latitude=latitude, filename=filename)
+    new('gps', longitude=longitude, latitude=latitude, filename=filename)
 }
 
 
@@ -303,8 +289,8 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)
-    rval <- new("gps", longitude=latlon[,2], latitude=latlon[,1], file=filename)
+    res <- new("gps", longitude=latlon[,2], latitude=latlon[,1], file=filename)
     oceDebug(debug, "} # read.gps()\n", sep="", unindent=1)
-    rval
+    res
 }
 

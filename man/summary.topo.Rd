@@ -19,7 +19,7 @@
 \details{Pertinent summary information is presented, including the
   longitude and latitude range, and the range of elevation.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{A \code{topo} object may be read with \code{\link{read.topo}}.}
 
