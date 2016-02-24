@@ -715,7 +715,18 @@ setMethod(f="plot",
                               axis(4, labels=FALSE)
                               ytics <- axis(2, labels=FALSE)
                               axis(2, at=ytics, labels=-ytics)
-                              if (xIsTime) axis(1, at=pretty(xx), labels=pretty(xx)) else axis(1)
+                              ## If constructing labels for time, need to check xlim
+                              if (xIsTime) {
+                                  if (!is.null(xlim)) {
+                                      ## FIXME: might need to check whether/how xx used later
+                                      XX <- xx[xlim[1] <= xx & xx <= xlim[2]]
+                                      axis(1, at=pretty(XX), labels=pretty(XX))
+                                  } else {
+                                      axis(1, at=pretty(xx), labels=pretty(xx))
+                                  }
+                              } else {
+                                  axis(1)
+                              }
                           }
                           box()
                       } else {
@@ -818,6 +829,9 @@ setMethod(f="plot",
                       ## cannot contour with duplicates in x or y; the former is the only problem
                       xx.unique <- c(TRUE, 0 != diff(xx))
                       yy.unique <- c(TRUE, 0 != diff(yy))
+                      xx.unique <- xx.unique & !is.na(xx.unique)
+                      yy.unique <- yy.unique & !is.na(yy.unique)
+                      ## a problem with mbari data revealed that we need to chop NA valaues too
                       if (variable == "data") {
                           for (i in 1:numStations) {
                               thisStation <- x[["station", i]]
@@ -932,7 +946,15 @@ setMethod(f="plot",
                       }
                       ##axis(1, pretty(xxOrig))
                       if (axes) {
-                          if (xIsTime) axis(1, at=pretty(xx), labels=pretty(xx)) else axis(1)
+                          if (xIsTime) {
+                              if (!is.null(xlim)) {
+                                  ## FIXME: might need to check whether/how xx used later
+                                  XX <- xx[xlim[1] <= xx & xx <= xlim[2]]
+                                  axis(1, at=pretty(XX), labels=pretty(XX))
+                              } else {
+                                  axis(1, at=pretty(xx), labels=pretty(xx))
+                              }
+                          }
                       }
                       if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
