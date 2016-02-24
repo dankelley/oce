@@ -737,7 +737,7 @@ setMethod(f="plot",
                           band <- knownBands[i]
                           d <- x[[band, decimate]]
                           if (!any(!is.na(d))) {
-                              if (band == "temperature") {
+                              if (band[1] == "temperature") {
                                   stop("cannot compute landsat temperature; see e.g. http://landsat.usgs.gov/mission_headlines2015.php",
                                        call.=FALSE)
                               } else {
@@ -1025,7 +1025,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
              if (length(band) > 1) paste("band=c(\"", paste(band, collapse="\",\""), "\")", sep="") else
                  paste("band=\"", band, "\"", sep=""),
                  ", debug=", debug, ") {\n", sep="", unindent=1)
-    if (band == "terralook")
+    if (band[1] == "terralook")
         band <- c("red", "green", "nir")
     decimateGiven <- !missing(decimate)
     if (decimateGiven && decimate < 1)
