@@ -380,7 +380,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         ##   }, silent=TRUE)
         ##
 
-        ## ruskin database-schema serial number: hard to decode, so I'll just give up on it
+        ## rsk database-schema version number
+        dbInfo <- RSQLite::dbReadTable(con, "dbInfo")
+        rskv <- dbInfo[1,1]
+        rskVersion <- as.numeric(strsplit(gsub(".[a-z].*$","",gsub("^.*- *", "", rskv)),"\\.")[[1]])
+        ## Ruskin software version number
         appSettings <- RSQLite::dbReadTable(con, "appSettings")
         rv <- appSettings[1,2]
         ##OLD rv <- read.table(pipe(cmd), sep="|")[1,2]
@@ -448,6 +452,13 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
         data <- DBI::dbFetch(res, n=-1)
         time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
+        ## Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
+        ## If so, for now just extract it from the data matrix
+        hasDatasetID <- sum(grep('datasetID', names(data))) > 0
+        if (hasDatasetID) {
+            datasetID <- data[,grep('datasetID', names(data))]
+            data <- data[,-grep('datasetID', names(data)), drop=FALSE]
+        }
         data <- data[,c(-1, -2), drop=FALSE] # drop the corrupted time column
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
@@ -510,7 +521,9 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$sampleInterval <- sampleInterval
+        res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
+        if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
         ## this, in case some RBR devices use different units
