@@ -173,7 +173,7 @@ setMethod(f="plot",
               par(mgp=mgp)
               if (add) {
                   ##> if (is.character(fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                  polygon(longitude, latitude, border=border, col=fill, ...)
+                  polygon(longitude, latitude, border=border, col=col, ...)
                   if (axes)
                       box()                      # clean up edges
                   ##> } else {
