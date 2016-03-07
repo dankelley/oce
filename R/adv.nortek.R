@@ -9,6 +9,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     ## abbreviations:
     ##   SIG=System Integrator Guide
+    ##   SIG2014=system-integrator-manual_Dec2014_jan.pdf
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
@@ -140,6 +141,15 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vsdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
     ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
     vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+
+    ## "imu" stands for 'inertial motion unit' [p31 SIG2014]
+    message("TEST: some early tests to try to detect IMU sequences")
+    imuStartA <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 86, c(0x00, 0x00), 0)
+    message("TEST: length(imuStartA)=", length(imuStartA), "\n")
+    imuStartB <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 50, c(0x00, 0x00), 0)
+    message("TEST: length(imuStartB)=", length(imuStartB), "\n")
+    imuStartC <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 50, c(0x00, 0x00), 0)
+    message("TEST: length(imuStartC)=", length(imuStartC), "\n")
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
     vvdhRecords <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
