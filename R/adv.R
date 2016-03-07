@@ -444,6 +444,7 @@ setMethod(f="plot",
                                       ...)
                           points(x@data$time[!good], x@data$v[!good,which[w]], col=colBrush, ...)
                       } else {
+                          message("A")
                           oce.plot.ts(x@data$time, y, ylab=beamName(x, which[w]),
                                       drawTimeRange=drawTimeRange,
                                       adorn=adorn[w],
@@ -457,6 +458,7 @@ setMethod(f="plot",
                                       main=main,
                                       tformat=tformat,
                                       debug=debug-1)
+                          message("B")
                       }
                       if (drawZeroLine)
                           abline(h=0)
