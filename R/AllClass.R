@@ -92,8 +92,8 @@ setMethod(f="summary",
                       ##message("i: ", i, ", name: ", names(object@data)[i])
                       if (isTime[i])
                           next
-                      if (is.list(object@data[[i]]) || any(is.finite(object@data[[i]])))
-                          threes[ii,] <- threenum(object@data[[i]])
+                      ##if (is.list(object@data[[i]]) || is.raw(object@data[[i]][1]))# || any(is.finite(object@data[[i]])))
+                      threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
