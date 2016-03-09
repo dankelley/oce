@@ -144,7 +144,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
     vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
 
-    ## "imu" stands for 'inertial motion unit' [p31 SIG2014]
+    ## "imu" stands for 'inertial motion unit' [p30 SIG2014]
     message("TEST: some early tests to try to detect IMU sequences")
     imuStartA <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 86, c(0x00, 0x00), 0)
     message("TEST: length(imuStartA)=", length(imuStartA), "\n")

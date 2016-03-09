@@ -1,7 +1,16 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+
+/*
+ * References:
+ * SIG2 = system-integrator-manual_Dec2014_jan.pdf
+ */
+
+
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+
+//#define DEBUG
 
 /* 
  * 1. compile from commandline:
@@ -327,6 +336,88 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   return(res);
 }
 
+/* NEW */
+/*#define DEBUG 1*/
+SEXP locate_vector_imu_sequences(SEXP buf)
+{
+  /*
+   * imu = Inertial Motion Unit (system-integrator-manual_Dec2014_jan.pdf p30-32)
+   *
+   * *(buf)     0xa5
+   * *(buf+1)   0x71
+   * *(buf+2,3) int, # bytes in structure
+   * There are 3 possibilities, keyed by *(buf+6)
+   *
+   * Case *(buf+6) Contents
+   * ====|========|=======================================================================
+   *    A 0xcc     Acceleration, Angular Rate, Magnetometer Vectors and Orientation Matrix
+   *    B 0xd2     Gyro-stabilized Acceleration, Angular Rate and Magnetometer Vectors
+   *    C 0xd3     DeltaAngle, DeltaVelocity and Magnetometer Vectors
+   *
+   * QUESTION: what is AHRSchecksum? do we check that? And what is
+   * this second 'Checksum'?
+   * Case A has checksum starting at offset 84 (sum of all words in structure)
+   */
+
+  /* 
+
+     library(oce)
+     system("R CMD SHLIB bitwise.c")
+     dyn.load("bitwise.so")
+     f <- "/Users/kelley/src/dolfyn/example_data/vector_data_imu01.VEC"
+     buf <- readBin(f, what="raw", n=1e5) 
+     a <- .Call("locate_vector_imu_sequences", buf)
+     for (aa in a[1:10]) {
+         message(paste(paste("0x", buf[aa+seq.int(0, 6L)], sep=""), collapse=" "))
+     }
+     ensembleCounter <- as.numeric(buf[a + 4])
+     plot(seq_along(a), ensembleCounter, type='l')
+
+
+     */
+  PROTECT(buf = AS_RAW(buf));
+  unsigned char *bufp;
+  bufp = RAW_POINTER(buf);
+  int bufn = LENGTH(buf);
+  SEXP res;
+  PROTECT(res = NEW_INTEGER(bufn)); // definitely more than enough space
+  int *resp = INTEGER_POINTER(res);
+  int resn = 0;
+  // We check 5 bytes, on the assumption that false positives will be
+  // effectively zero then (1e-12, if independent random numbers
+  // in range 0 to 255).
+  // FIXME: test the checksum, but SIG2 does not state how.
+  for (int i = 0; i < bufn-1; i++) {
+    if (bufp[i] == 0xa5 && bufp[i+1] == 0x71) {
+      // Check at offset=5, which must be 1 of 3 choices.
+      if (bufp[i+5] == 0xcc) {
+	// length indication should be 0x2b=43=86/2 (SIG2, top of page 31)
+	if (bufp[i+2] == 0x2b) {
+	  resp[resn++] = i + 1; // add 1 for R notation
+	  i++; //FIXME: skip to end, when we really trust identification
+	}
+      } else if (bufp[i+5] == 0xd2) { 
+	// length indication should be 0x19=25=50/2 (SIG2, middle of page 31)
+	if (bufp[i+2] == 0x19) {
+	  resp[resn++] = i + 1; // add 1 for R notation
+	  i++; //FIXME: skip to end, when we really trust identification
+	}
+      } else if (bufp[i+5] ==0xd3) {
+	// length indication should be 0x19=25=50/2 (SIG2, page 32)
+	if (bufp[i+2] == 0x19) {
+	  resp[resn++] = i + 1; // add 1 for R notation
+	  i++; //FIXME: skip to end, when we really trust identification
+	}
+      }
+    }
+  }
+  SET_LENGTH(res, resn);
+  UNPROTECT(2);
+  return(res);
+}
+
+
+
 /*#define DEBUG 1*/
 SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
 {
@@ -453,15 +544,6 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   }
   UNPROTECT(5);
   return(res);
-}
-void dan(int *n, long int *in, unsigned long int *out)
-{
-  if (*n < 1)
-    error("invalid n (%d); must be 1 or higher ", *n);
-  for (int i = 0; i < (*n); i++) {
-    *out++ = (unsigned int) *in++;
-    Rprintf("i=%d in=%d:%d out=%d\n", i, *in, *in, *out);
-  }
 }
 
 // create (*n) unsigned 16-bit little-endian int values from 2*(*n) bytes, e.g.
