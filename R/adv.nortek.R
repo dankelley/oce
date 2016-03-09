@@ -14,7 +14,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
     type <- match.arg(type)
-    oceDebug(debug, "read.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", longitude=", longitude, ", latitude=", latitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="", unindent=1)
+    oceDebug(debug, "read.adv.nortek(file=\"", file, "\", from=", format(from),
+             ", to=", if (!missing(to)) format(to) else "(missing)",
+             ", by=", by, ", tz=\"", tz, "\", header=", header, ", longitude=", longitude, ", latitude=", latitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="", unindent=1)
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (by != 1)
@@ -183,8 +185,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$measurementDeltat <- (as.numeric(res@metadata$measurementEnd) - as.numeric(res@metadata$measurementStart)) / (vvdLen - 1)
 
     toGiven <- !missing(to)
-    if (!toGiven)
-        stop("must supply 'to'")
+    if (!toGiven) {
+        to <- length(vvdStart)
+        oceDebug(debug, "No 'to' given, so using whole dataset: to=", to, "\n")
+    }
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
@@ -224,65 +228,68 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
     } else {
         ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
-        if (inherits(from, "POSIXt")) {
-            if (!inherits(to, "POSIXt"))
-                stop("if 'from' is POSIXt, then 'to' must be, also")
-            fromPair <- bisectNortekVectorSd(from, -1, debug-1)
-            from <- fromIndex <- fromPair$index
-            toPair <- bisectNortekVectorSd(to, 1, debug-1)
-            to <- toIndex <- toPair$index
-            byTime <- ctimeToSeconds(by)
-            oceDebug(debug,
-                      "  from=", format(fromPair$t), " yields vsdStart[", fromIndex, "]\n",
-                      "  to  =", format(toPair$t),   " yields vsdStart[", toIndex, "]\n",
-                      "  by=", by, "byTime=", byTime, "s\n",
-                      "vsdStart[",fromPair$index, "]=", vsdStart[fromPair$index], "at time", format(fromPair$t), "\n",
-                      "vsdStart[",  toPair$index, "]=", vsdStart[  toPair$index], "at time", format(  toPair$t), "\n")
-            twoTimes <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1:2]+8]),  # year
-                                     bcdToInteger(buf[vsdStart[1:2]+9]), # month
-                                     bcdToInteger(buf[vsdStart[1:2]+6]), # day
-                                     bcdToInteger(buf[vsdStart[1:2]+7]), # hour
-                                     bcdToInteger(buf[vsdStart[1:2]+4]), # min
-                                     bcdToInteger(buf[vsdStart[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
-                                     tz=tz)
-            vsd.dt <- as.numeric(twoTimes[2]) - as.numeric(twoTimes[1]) # FIXME: need # samplesPerBurst here
-            ## Next two lines suggest that readBin() can be used instead of bcdToInteger ... I imagine it would be faster
-            ##cat("month=", readBin(buf[vsdStart[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
-            ##cat("month=", bcdToInteger(buf[vsdStart[1]+9]), "(as bcd)\n")
-            oceDebug(debug, "nrecords=", readBin(buf[vsdStart[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
-            oceDebug(debug, "vsd.dt=",vsd.dt,"(from twoTimes)\n")
-            vvdStart <- vvdStart[vsdStart[fromIndex] < vvdStart & vvdStart < vsdStart[toIndex]]
-            vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
-            oceDebug(debug,
-                      'vvdDt=',vvdDt,'\n',
-                      'by=',by, "1/by=",1/by,"\n",
-                      "vvdStart after indexing:\n",
-                      str(vvdStart))
-            ## find vvd region that lies inside the vsd [from, to] region.
-            vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
-            vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
-        } else {
-            oceDebug(debug, 'numeric values for args from=',from,'to=',to,'by=', by, '\n')
-            fromIndex <- from
-            toIndex <- to
-            if (toIndex < 1 + fromIndex)
-                stop("need more separation between from and to")
-            oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
-            oceDebug(debug, vectorShow(vvdStart, "before subset, vvdStart is"))
-            oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))
-            vvdStart <- vvdStart[fromIndex:toIndex]
-            oceDebug(debug, vectorShow(vvdStart, "after  subset, vvdStart is"))
-            ## ensure that vvdStart pointers are bracketed by vsdStart pointers
-            ## FIXME: but will this invalidate fromIndex and toIndex?
-            vsdStartFrom <- which(vvdStart[1] >= vsdStart)[1]
-            vsdStartTo <- which(vsdStart >= vvdStart[length(vvdStart)])[1]
-            oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(before NA check)\n")
-            if (is.na(vsdStartTo))
-                vsdStartTo <- length(vsdStart)
-            oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(after NA check)\n")
-            vsdStart <- vsdStart[seq(vsdStartFrom, vsdStartTo)]
-            oceDebug(debug, vectorShow(vsdStart, "after  subset, vsdStart is"))
-        }
+        ## 2016-03-09: this code could never be executed ... I need a taller monitor or
+        ## better eyes, so I an see bigger chunks of code! This block will get removed
+        ## after the next gitcommit.
+        ## if (inherits(from, "POSIXt")) {
+        ##     if (!inherits(to, "POSIXt"))
+        ##         stop("if 'from' is POSIXt, then 'to' must be, also")
+        ##     fromPair <- bisectNortekVectorSd(from, -1, debug-1)
+        ##     from <- fromIndex <- fromPair$index
+        ##     toPair <- bisectNortekVectorSd(to, 1, debug-1)
+        ##     to <- toIndex <- toPair$index
+        ##     byTime <- ctimeToSeconds(by)
+        ##     oceDebug(debug,
+        ##               "  from=", format(fromPair$t), " yields vsdStart[", fromIndex, "]\n",
+        ##               "  to  =", format(toPair$t),   " yields vsdStart[", toIndex, "]\n",
+        ##               "  by=", by, "byTime=", byTime, "s\n",
+        ##               "vsdStart[",fromPair$index, "]=", vsdStart[fromPair$index], "at time", format(fromPair$t), "\n",
+        ##               "vsdStart[",  toPair$index, "]=", vsdStart[  toPair$index], "at time", format(  toPair$t), "\n")
+        ##     twoTimes <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1:2]+8]),  # year
+        ##                              bcdToInteger(buf[vsdStart[1:2]+9]), # month
+        ##                              bcdToInteger(buf[vsdStart[1:2]+6]), # day
+        ##                              bcdToInteger(buf[vsdStart[1:2]+7]), # hour
+        ##                              bcdToInteger(buf[vsdStart[1:2]+4]), # min
+        ##                              bcdToInteger(buf[vsdStart[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
+        ##                              tz=tz)
+        ##     vsd.dt <- as.numeric(twoTimes[2]) - as.numeric(twoTimes[1]) # FIXME: need # samplesPerBurst here
+        ##     ## Next two lines suggest that readBin() can be used instead of bcdToInteger ... I imagine it would be faster
+        ##     ##cat("month=", readBin(buf[vsdStart[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
+        ##     ##cat("month=", bcdToInteger(buf[vsdStart[1]+9]), "(as bcd)\n")
+        ##     oceDebug(debug, "nrecords=", readBin(buf[vsdStart[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
+        ##     oceDebug(debug, "vsd.dt=",vsd.dt,"(from twoTimes)\n")
+        ##     vvdStart <- vvdStart[vsdStart[fromIndex] < vvdStart & vvdStart < vsdStart[toIndex]]
+        ##     vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
+        ##     oceDebug(debug,
+        ##               'vvdDt=',vvdDt,'\n',
+        ##               'by=',by, "1/by=",1/by,"\n",
+        ##               "vvdStart after indexing:\n",
+        ##               str(vvdStart))
+        ##     ## find vvd region that lies inside the vsd [from, to] region.
+        ##     vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
+        ##     vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
+        ## } else {
+        oceDebug(debug, 'numeric values for args from=',from,'to=',to,'by=', by, '\n')
+        fromIndex <- from
+        toIndex <- to
+        if (toIndex < 1 + fromIndex)
+            stop("need more separation between from and to")
+        oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
+        oceDebug(debug, vectorShow(vvdStart, "before subset, vvdStart is"))
+        oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))
+        vvdStart <- vvdStart[fromIndex:toIndex]
+        oceDebug(debug, vectorShow(vvdStart, "after  subset, vvdStart is"))
+        ## ensure that vvdStart pointers are bracketed by vsdStart pointers
+        ## FIXME: but will this invalidate fromIndex and toIndex?
+        vsdStartFrom <- which(vvdStart[1] >= vsdStart)[1]
+        vsdStartTo <- which(vsdStart >= vvdStart[length(vvdStart)])[1]
+        oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(before NA check)\n")
+        if (is.na(vsdStartTo))
+            vsdStartTo <- length(vsdStart)
+        oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(after NA check)\n")
+        vsdStart <- vsdStart[seq(vsdStartFrom, vsdStartTo)]
+        oceDebug(debug, vectorShow(vsdStart, "after  subset, vsdStart is"))
+        ##}
     }
     oceDebug(debug, "about to trim vsdStart, based on vvdStart[1]=", vvdStart[1], " and vvdStart[length(vvdStart)]=", vvdStart[length(vvdStart)], "\n")
     oceDebug(debug, vectorShow(vsdStart, "before trimming, vsdStart:"))
