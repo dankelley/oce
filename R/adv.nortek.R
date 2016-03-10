@@ -150,9 +150,27 @@
     imuStart <- .Call("locate_vector_imu_sequences", buf)
     haveIMU <- length(imuStart) > 0
     if (haveIMU) {
-        b4 <- sort(c(imuStart+78, imuStart+79, imuStart+80, imuStart+81))
+        B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
         ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
-        IMUtime <- readBin(buf[b4],"integer",size=4,n=length(imuStart),endian="little")/62500
+        IMUaccelx <- readBin(buf[B4+6],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUaccely <- readBin(buf[B4+10],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUaccelz <- readBin(buf[B4+14],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUangrtx <- readBin(buf[B4+18],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUangrty <- readBin(buf[B4+22],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUangrtz <- readBin(buf[B4+26],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUmagrtx <- readBin(buf[B4+30],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUmagrty <- readBin(buf[B4+34],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUmagrtz <- readBin(buf[B4+38],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM11 <-    readBin(buf[B4+42],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM12 <-    readBin(buf[B4+46],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM13 <-    readBin(buf[B4+50],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM21 <-    readBin(buf[B4+54],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM22 <-    readBin(buf[B4+58],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM23 <-    readBin(buf[B4+62],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM31 <-    readBin(buf[B4+66],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM32 <-    readBin(buf[B4+70],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUM33 <-    readBin(buf[B4+74],"numeric",size=4,n=length(imuStart),endian="little")
+        IMUtime <-   readBin(buf[B4+78],"integer",size=4,n=length(imuStart),endian="little")/62500
     }
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
@@ -469,6 +487,34 @@
                      rollSlow=roll,
                      temperatureSlow=temperature)
     if (haveIMU) {
+        res@data$IMUaccelx <- IMUaccelx
+        res@metadata$units$IMUaccelx=list(unit=expression(m/s^2), scale="")
+        res@data$IMUaccely <- IMUaccely
+        res@metadata$units$IMUaccely=list(unit=expression(m/s^2), scale="")
+        res@data$IMUaccelz <- IMUaccelz
+        res@metadata$units$IMUaccelz=list(unit=expression(m/s^2), scale="")
+        res@data$IMUangrtx <- IMUangrtx
+        res@metadata$units$IMUangrtx=list(unit=expression(degree/s), scale="")
+        res@data$IMUangrty <- IMUangrty
+        res@metadata$units$IMUangrty=list(unit=expression(degree/s), scale="")
+        res@data$IMUangrtz <- IMUangrtz
+        res@metadata$units$IMUangrtz=list(unit=expression(degree/s), scale="")
+        res@data$IMUmagrtx <- IMUmagrtx
+        res@metadata$units$IMUmagrtx=list(unit=expression(gauss), scale="")
+        res@data$IMUmagrty <- IMUmagrty
+        res@metadata$units$IMUmagrty=list(unit=expression(gauss), scale="")
+        res@data$IMUmagrtz <- IMUmagrtz
+        res@metadata$units$IMUmagrtz=list(unit=expression(gauss), scale="")
+        res@data$IMUM11    <- IMUM11
+        res@data$IMUM12    <- IMUM12
+        res@data$IMUM13    <- IMUM13
+        res@data$IMUM21    <- IMUM21
+        res@data$IMUM22    <- IMUM22
+        res@data$IMUM23    <- IMUM23
+        res@data$IMUM31    <- IMUM31
+        res@data$IMUM32    <- IMUM32
+        res@data$IMUM33    <- IMUM33
+
         res@data$IMUtime <- IMUtime
         res@metadata$units$IMUtime=list(unit=expression(s), scale="")
     }
@@ -478,7 +524,7 @@
         res@data$analog2 <- analog2
     res@metadata$velocityResolution <- res@metadata$velocityScale
     res@metadata$velocityMaximum <- res@metadata$velocityScale * 2^15
-    res@metadata$units <- list(v="m/s")
+    res@metadata$units$v <- list(unit=expression(m/s), scale="")
     res@processingLog <- unclass(hitem)
     res@metadata$units$v=list(unit=expression(m/s), scale="")
     res@metadata$units$pressure=list(unit=expression(dbar), scale="")
