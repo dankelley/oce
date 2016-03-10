@@ -146,12 +146,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## "imu" stands for 'inertial motion unit' [p30 SIG2014]
     message("TEST: some early tests to try to detect IMU sequences")
-    imuStartA <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 86, c(0x00, 0x00), 0)
-    message("TEST: length(imuStartA)=", length(imuStartA), "\n")
-    imuStartB <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 50, c(0x00, 0x00), 0)
-    message("TEST: length(imuStartB)=", length(imuStartB), "\n")
-    imuStartC <- .Call("locate_byte_sequences", buf, c(0xa5, 0x71), 50, c(0x00, 0x00), 0)
-    message("TEST: length(imuStartC)=", length(imuStartC), "\n")
+    imuStart <- .Call("locate_vector_imu_sequences", buf)
+    message("TEST: length(imuStart)=", length(imuStart), "\n")
+    print(head(imuStart))
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
     vvdhRecords <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
