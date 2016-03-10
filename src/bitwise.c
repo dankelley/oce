@@ -392,19 +392,19 @@ SEXP locate_vector_imu_sequences(SEXP buf)
       // Check at offset=5, which must be 1 of 3 choices.
       if (bufp[i+5] == 0xcc) {
 	// length indication should be 0x2b=43=86/2 (SIG2, top of page 31)
-	if (bufp[i+2] == 0x2b) {
+	if (bufp[i+2] == 0x2b && bufp[i+3] == 0x00) {
 	  resp[resn++] = i + 1; // add 1 for R notation
 	  i++; //FIXME: skip to end, when we really trust identification
 	}
       } else if (bufp[i+5] == 0xd2) { 
 	// length indication should be 0x19=25=50/2 (SIG2, middle of page 31)
-	if (bufp[i+2] == 0x19) {
+	if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
 	  resp[resn++] = i + 1; // add 1 for R notation
 	  i++; //FIXME: skip to end, when we really trust identification
 	}
       } else if (bufp[i+5] ==0xd3) {
 	// length indication should be 0x19=25=50/2 (SIG2, page 32)
-	if (bufp[i+2] == 0x19) {
+	if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
 	  resp[resn++] = i + 1; // add 1 for R notation
 	  i++; //FIXME: skip to end, when we really trust identification
 	}

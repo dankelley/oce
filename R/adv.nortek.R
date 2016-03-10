@@ -1,4 +1,9 @@
-read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+## abbreviations:
+##   SIG     = System Integrator Guide
+##   SIG2014 = system-integrator-manual_Dec2014_jan.pdf
+##   IMU     = http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf
+
+ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
                             longitude=NA, latitude=NA,
                             type=c("vector", "aquadopp"),
@@ -7,9 +12,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"), monitor=FALSE, 
                             processingLog)
 {
-    ## abbreviations:
-    ##   SIG=System Integrator Guide
-    ##   SIG2014=system-integrator-manual_Dec2014_jan.pdf
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
@@ -145,10 +147,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
 
     ## "imu" stands for 'inertial motion unit' [p30 SIG2014]
-    message("TEST: some early tests to try to detect IMU sequences")
     imuStart <- .Call("locate_vector_imu_sequences", buf)
-    message("TEST: length(imuStart)=", length(imuStart), "\n")
-    print(head(imuStart))
+    haveIMU <- length(imuStart) > 0
+    if (haveIMU) {
+        b4 <- sort(c(imuStart+78, imuStart+79, imuStart+80, imuStart+81))
+        ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
+        IMUtime <- readBin(buf[b4],"integer",size=4,n=length(imuStart),endian="little")/62500
+    }
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
     vvdhRecords <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
@@ -463,6 +468,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      pitchSlow=pitch,
                      rollSlow=roll,
                      temperatureSlow=temperature)
+    if (haveIMU) {
+        res@data$IMUtime <- IMUtime
+        res@metadata$units$IMUtime=list(unit=expression(s), scale="")
+    }
     if (haveAnalog1)
         res@data$analog1 <- analog1
     if (haveAnalog2)
