@@ -154,6 +154,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         else if (buf[imuStart[1]+5] == 0xd2) IMUtype <- "B"
         else if (buf[imuStart[1]+5] == 0xd3) IMUtype <- "C"
         else stop("unknown IMU type")
+        message("TESTING: IMUtype=", IMUtype)
+        oceDebug(debug, "IMU type ", IMUtype)
         B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
         if (IMUtype == "A") {
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
