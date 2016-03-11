@@ -125,7 +125,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   \enumerate{
 
-    \item The use must choose the appropriate \code{read.adv} variant corresponding to the
+    \item The user must choose the appropriate \code{read.adv} variant corresponding to the
     instrument in question.  (This is necessary because \code{\link{oceMagic}}, which is used by the
     generic \code{\link{read.oce}} routine, cannot determine the type of instrument by examining a
     file that lacks a header.)
@@ -152,11 +152,13 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   
 }
 
-\section{Special considerations for NorTek files}{
+\section{NorTek files}{
 
-    The data format is inferred from the System Integrator Guide [1].  This document lacks clarity
-    in spots, and so \code{read.adv.nortek} contains some assumptions that are noted here, so that
-    users will be aware of possible problems.
+  \subsection{Sampling-rate and similar issues}{
+
+    The data format is inferred from the System Integrator Guide [1A] and System Integrator Manual
+    [1B].  These document lacks clarity in spots, and so \code{read.adv.nortek} contains some
+    assumptions that are noted here, so that users will be aware of possible problems.
 
     A prominent example is the specification of the sampling rate, stored in
     \code{metadata$sampingRate} in the return value.  Repeated examination of the System Integrator
@@ -186,7 +188,32 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     discussion board, the burst-mode times are offset by 2 seconds to allow for the instrument
     warm-up period.  }
 
-\section{Special considerations for Sontek files}{
+  \subsection{Handling IMU (inertial measurement unit) data}{Starting inMarch 2016,
+    \code{read.adv.nortek} has offered some support for handling IMU (inertial measurement unit)
+    data incorporated into Nortek binary files. There are three varieties, which will here be called
+    cases A, B, and C.
+
+    \itemize{
+      \item Case A (signalled by byte 5 of a sequence being \code{0xcc}) provides information on
+    acceleration, angular rotation rate, magnetic vector and orientation matrix. Each is a
+    timeseries. The accelerations are stored in the \code{data} slot as \code{IMUaccelx},
+    \code{IMUaccely}, \code{IMUaccelz}. The angular rotation components are \code{IMUngrtx},
+    \code{IMUngrty} and \code{IMUngrtz}. The magnetic data are in \code{IMUmagrtx}, \code{IMUmagrty}
+    and \code{IMUmagrtz}. Finally, the components of the 3x3 rotation matrix are stored in
+    \code{IMUM11} for the (1,1) element, \code{IMU12} for the (1,2) element, etc. In addition to all
+    of these, \code{IMUtime} stores time in seconds (with an origin whose definition is not
+    stated in [1B]).
+    
+    \item Case B (signalled by byte 5 being \code{0xd2}) provides information on gyro-stabilized
+    acceleration, angular rate and magnetometer vectors.  This data type is not handled yet.
+    
+    \item Case C (signalled by byte 5 being \code{0xd3}) provides information
+    on delta-angle, delta-velocity and magnetometer vectors.   This data type is not handled yet.
+    }
+  }
+}
+
+\section{Sontek files}{
 
   The binary format is inferred from Appendix 2.2.3 of the Sontek ADV operation Manual [3], with the
   following exceptions and notes.
@@ -273,8 +300,11 @@ plot(d, which=c(1:3,15))
 
 \references{
 
-1. Nortek AS.  System Integrator Guide (paradopp family of products). June 2008.  (Doc No:
+1A. Nortek AS.  System Integrator Guide (paradopp family of products). June 2008.  (Doc No:
 PSI00-0101-0608).  (Users may find it helpful to also examine newer versions of the guide.)
+
+1B. Nortek AS.  System Integrator Manual. Dec 2014.
+(\code{system-integrator-manual_Dec2014_jan.pdf})
 
 2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field) Technical Documentation (Sept 1,
 2001).
@@ -282,6 +312,10 @@ PSI00-0101-0608).  (Users may find it helpful to also examine newer versions of 
 3. Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0 (Oct 1997).
 
 4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center} 
+
+5. A document describing an IMU unit that seems to be close to the one named in [1B] as being
+an adjunct to Nortek Vector systems is at
+\code{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
 
 }
 
