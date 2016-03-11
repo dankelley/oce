@@ -150,14 +150,14 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     imuStart <- .Call("locate_vector_imu_sequences", buf)
     haveIMU <- length(imuStart) > 0
     if (haveIMU) {
-        if (buf[imuStart[1]+5] == 0xcc) IMUtype <- "A"
-        else if (buf[imuStart[1]+5] == 0xd2) IMUtype <- "B"
-        else if (buf[imuStart[1]+5] == 0xd3) IMUtype <- "C"
-        else stop("unknown IMU type")
-        message("TESTING: IMUtype=", IMUtype)
-        oceDebug(debug, "IMU type ", IMUtype)
+        IMUtype <- "unknown"
+        if (buf[imuStart[1]+5] == 0xc3) IMUtype <- "A"
+        else if (buf[imuStart[1]+5] == 0xcc) IMUtype <- "B"
+        else if (buf[imuStart[1]+5] == 0xd2) IMUtype <- "C"
+        else if (buf[imuStart[1]+5] == 0xd3) IMUtype <- "D"
+        else warning("unknown IMU type, with 5th byte 0x", buf[imuStart[1]+5], "; only 0xc3, 0xcc, 0xd2 and 0xd3 are recognized")
         B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
-        if (IMUtype == "A") {
+        if (IMUtype == "B") {
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
             IMUaccelx <- readBin(buf[B4+ 6],"numeric",size=4,n=length(imuStart),endian="little")
             IMUaccely <- readBin(buf[B4+10],"numeric",size=4,n=length(imuStart),endian="little")
@@ -178,7 +178,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             IMUM32    <- readBin(buf[B4+70],"numeric",size=4,n=length(imuStart),endian="little")
             IMUM33    <- readBin(buf[B4+74],"numeric",size=4,n=length(imuStart),endian="little")
             IMUtime   <- readBin(buf[B4+78],"integer",size=4,n=length(imuStart),endian="little")/62500
-        } else stop("can only handle IMU type 'A' at present")
+        } else {
+            warning("IMU type '", IMUtype, "' detected but can only handle type 'B' at present, so no data are being read")
+        }
     }
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
@@ -495,7 +497,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      rollSlow=roll,
                      temperatureSlow=temperature)
     if (haveIMU) {
-        if (IMUtype == "A") {
+        if (IMUtype == "B") {
             res@data$IMUaccelx <- IMUaccelx
             res@metadata$units$IMUaccelx=list(unit=expression(m/s^2), scale="")
             res@data$IMUaccely <- IMUaccely
@@ -525,7 +527,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@data$IMUM33 <- IMUM33
             res@data$IMUtime <- IMUtime
             res@metadata$units$IMUtime=list(unit=expression(s), scale="")
-        } else stop("can only handle IMU type 'A' at present")
+        } else {
+            warning("IMU type '", IMUtype, "' detected but can only handle type 'B' at present, so no data are being stored")
+        }
     }
     if (haveAnalog1)
         res@data$analog1 <- analog1

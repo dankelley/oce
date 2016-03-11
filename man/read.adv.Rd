@@ -191,24 +191,29 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \subsection{Handling IMU (inertial measurement unit) data}{Starting inMarch 2016,
     \code{read.adv.nortek} has offered some support for handling IMU (inertial measurement unit)
     data incorporated into Nortek binary files. There are three varieties, which will here be called
-    cases A, B, and C.
+    cases A, B, C and D.
 
     \itemize{
-      \item Case A (signalled by byte 5 of a sequence being \code{0xcc}) provides information on
-    acceleration, angular rotation rate, magnetic vector and orientation matrix. Each is a
-    timeseries. The accelerations are stored in the \code{data} slot as \code{IMUaccelx},
-    \code{IMUaccely}, \code{IMUaccelz}. The angular rotation components are \code{IMUngrtx},
-    \code{IMUngrty} and \code{IMUngrtz}. The magnetic data are in \code{IMUmagrtx}, \code{IMUmagrty}
-    and \code{IMUmagrtz}. Finally, the components of the 3x3 rotation matrix are stored in
-    \code{IMUM11} for the (1,1) element, \code{IMU12} for the (1,2) element, etc. In addition to all
-    of these, \code{IMUtime} stores time in seconds (with an origin whose definition is not
-    stated in [1B]).
+
+      \item Case A (signalled by byte 5 of a sequence being \code{0xc3} provides information on (FILL
+      IN). This data type is not handled yet.
+
+      \item Case B (signalled by byte 5 of a sequence being \code{0xcc}) provides information on
+      acceleration, angular rotation rate, magnetic vector and orientation matrix. Each is a
+      timeseries. The accelerations are stored in the \code{data} slot as \code{IMUaccelx},
+      \code{IMUaccely}, \code{IMUaccelz}. The angular rotation components are \code{IMUngrtx},
+      \code{IMUngrty} and \code{IMUngrtz}. The magnetic data are in \code{IMUmagrtx},
+      \code{IMUmagrty} and \code{IMUmagrtz}. Finally, the components of the 3x3 rotation matrix are
+      stored in \code{IMUM11} for the (1,1) element, \code{IMU12} for the (1,2) element, etc. In
+      addition to all of these, \code{IMUtime} stores time in seconds (with an origin whose
+      definition is not stated in [1B]).
     
-    \item Case B (signalled by byte 5 being \code{0xd2}) provides information on gyro-stabilized
-    acceleration, angular rate and magnetometer vectors.  This data type is not handled yet.
+      \item Case C (signalled by byte 5 being \code{0xd2}) provides information on gyro-stabilized
+      acceleration, angular rate and magnetometer vectors.  This data type is not handled yet.
     
-    \item Case C (signalled by byte 5 being \code{0xd3}) provides information
-    on delta-angle, delta-velocity and magnetometer vectors.   This data type is not handled yet.
+      \item Case D (signalled by byte 5 being \code{0xd3}) provides information on delta-angle,
+      delta-velocity and magnetometer vectors.   This data type is not handled yet.
+
     }
   }
 }
