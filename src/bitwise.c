@@ -383,12 +383,14 @@ SEXP locate_vector_imu_sequences(SEXP buf)
   PROTECT(res = NEW_INTEGER(bufn)); // definitely more than enough space
   int *resp = INTEGER_POINTER(res);
   int resn = 0;
+  int check=10; // check this many instance of 0xa5,0x71
   // We check 5 bytes, on the assumption that false positives will be
   // effectively zero then (1e-12, if independent random numbers
   // in range 0 to 255).
   // FIXME: test the checksum, but SIG2 does not state how.
   for (int i = 0; i < bufn-1; i++) {
     if (bufp[i] == 0xa5 && bufp[i+1] == 0x71) {
+      if (check-- > 0) Rprintf("IMU testing ... buf[%d]=0x%02x; buf[%d+5]=0x%02x\n", i, bufp[i], i, bufp[i+5]);
       // Check at offset=5, which must be 1 of 3 choices.
       if (bufp[i+5] == 0xcc) {
 	// length indication should be 0x2b=43=86/2 (SIG2, top of page 31)
