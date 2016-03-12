@@ -155,33 +155,92 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         else if (buf[imuStart[1]+5] == 0xcc) IMUtype <- "B"
         else if (buf[imuStart[1]+5] == 0xd2) IMUtype <- "C"
         else if (buf[imuStart[1]+5] == 0xd3) IMUtype <- "D"
-        else warning("unknown IMU type, with 5th byte 0x", buf[imuStart[1]+5], "; only 0xc3, 0xcc, 0xd2 and 0xd3 are recognized")
+        else warning("unknown IMU type, with 5th byte 0x", buf[imuStart[1]+5],
+                     "; only 0xc3, 0xcc, 0xd2 and 0xd3 are recognized")
         IMUlength <- length(imuStart)
         B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
-        if (IMUtype == "B") {
+        ## Note: a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
+        if (IMUtype == "A") {
+            warning("IMU type 'A' is not handled yet; requested Nortek documentation, March 10, 2016")
+        } else if (IMUtype == "B") {
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
-            IMUaccelx <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
-            IMUaccely <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
-            IMUaccelz <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
-            IMUangrtx <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
-            IMUangrty <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
-            IMUangrtz <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
-            IMUmagrtx <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
-            IMUmagrty <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
-            IMUmagrtz <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation <- array(NA, dim=c(3, 3, IMUlength))
-            IMUrotation[1,1,] <- readBin(buf[B4+42],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[1,2,] <- readBin(buf[B4+46],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[1,3,] <- readBin(buf[B4+50],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[2,1,] <- readBin(buf[B4+54],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[2,2,] <- readBin(buf[B4+58],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[2,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[3,1,] <- readBin(buf[B4+66],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[3,2,] <- readBin(buf[B4+70],"numeric",size=4,n=IMUlength,endian="little")
-            IMUrotation[3,3,] <- readBin(buf[B4+74],"numeric",size=4,n=IMUlength,endian="little")
-            IMUtime <- readBin(buf[B4+78],"integer",size=4,n=IMUlength,endian="little")/62500
-        } else {
-            warning("IMU type '", IMUtype, "' detected but can only handle type 'B' at present, so no data are being read")
+            res@data$IMUaccelX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtX <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtY <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtZ <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation <- array(NA, dim=c(3, 3, IMUlength))
+            res@data$IMUrotation[1,1,] <- readBin(buf[B4+42],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,2,] <- readBin(buf[B4+46],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,3,] <- readBin(buf[B4+50],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,1,] <- readBin(buf[B4+54],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,2,] <- readBin(buf[B4+58],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,1,] <- readBin(buf[B4+66],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,2,] <- readBin(buf[B4+70],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,3,] <- readBin(buf[B4+74],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+78],"integer",size=4,n=IMUlength,endian="little")/62500
+            res@metadata$units$IMUaccelX <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelY <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelZ <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUangrtX <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtY <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtZ <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUmagrtX <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtY <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
+            res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
+        } else if (IMUtype == "C") {
+            ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
+            res@data$IMUaccelX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtX <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtY <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtZ <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+42],"integer",size=4,n=IMUlength,endian="little")/62500
+            res@metadata$units$IMUaccelX <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelY <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelZ <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUangrtX <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtY <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtZ <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUmagrtX <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtY <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
+            res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
+        } else if (IMUtype == "D") {
+            res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaMagVectorX <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaMagVectorY <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaMagVectorZ <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+42],"integer",size=4,n=IMUlength,endian="little")/62500
+            res@metadata$units$IMUdeltaAngleX <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleY <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleZ <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaVelocityX <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityY <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityZ <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaMagVectorRateX <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUdeltaMagVectorRateY <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUdeltaMagVectorRateZ <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
+         } else {
+             warning("IMU type '", IMUtype, "' detected but can only handle type 'B' at present, so no data are being read")
         }
     }
 
@@ -485,47 +544,21 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$salinity <- salinity
 
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
-    res@data <- list(v=v, a=a, q=q,
-                     time=time,
-                     pressure=pressure,
+    res@data$v <- v
+    res@data$a <- a
+    res@data$q <- q
+    res@data$time <- time
+    res@data$pressure <- pressure
+    res@data$timeBurst <- vvdhTime
+    res@data$recordsBurst <- vvdhRecords
+    res@data$voltageSlow <- voltage
+    res@data$timeSlow <- vsdTime
+    res@data$headingSlow <- heading
+    res@data$pitchSlow <- pitch
+    res@data$rollSlow <- roll
+    res@data$temperatureSlow <- temperature
 
-                     timeBurst=vvdhTime,
-                     recordsBurst=vvdhRecords,
-                     voltageSlow=voltage,
-
-                     timeSlow=vsdTime,
-                     headingSlow=heading,
-                     pitchSlow=pitch,
-                     rollSlow=roll,
-                     temperatureSlow=temperature)
-    if (haveIMU) {
-        if (IMUtype == "B") {
-            res@data$IMUaccelx <- IMUaccelx
-            res@metadata$units$IMUaccelx <- list(unit=expression(m/s^2), scale="")
-            res@data$IMUaccely <- IMUaccely
-            res@metadata$units$IMUaccely <- list(unit=expression(m/s^2), scale="")
-            res@data$IMUaccelz <- IMUaccelz
-            res@metadata$units$IMUaccelz <- list(unit=expression(m/s^2), scale="")
-            res@data$IMUangrtx <- IMUangrtx
-            res@metadata$units$IMUangrtx <- list(unit=expression(degree/s), scale="")
-            res@data$IMUangrty <- IMUangrty
-            res@metadata$units$IMUangrty <- list(unit=expression(degree/s), scale="")
-            res@data$IMUangrtz <- IMUangrtz
-            res@metadata$units$IMUangrtz <- list(unit=expression(degree/s), scale="")
-            res@data$IMUmagrtx <- IMUmagrtx
-            res@metadata$units$IMUmagrtx <- list(unit=expression(gauss), scale="")
-            res@data$IMUmagrty <- IMUmagrty
-            res@metadata$units$IMUmagrty <- list(unit=expression(gauss), scale="")
-            res@data$IMUmagrtz <- IMUmagrtz
-            res@metadata$units$IMUmagrtz <- list(unit=expression(gauss), scale="")
-            res@data$IMUrotation <- IMUrotation
-            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
-            res@data$IMUtime <- IMUtime
-            res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
-        } else {
-            warning("IMU type '", IMUtype, "' detected but can only handle type 'B' at present, so no data are being stored")
-        }
-    }
+    
     if (haveAnalog1)
         res@data$analog1 <- analog1
     if (haveAnalog2)
