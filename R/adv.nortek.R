@@ -160,9 +160,38 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         IMUlength <- length(imuStart)
         B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
         ## Note: a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
-        if (IMUtype == "A") {
-            warning("IMU type 'A' is not handled yet; requested Nortek documentation, March 10, 2016")
-        } else if (IMUtype == "B") {
+        if (IMUtype == "A") {          # 0xc3
+            warning("IMU type 'A' is not handled properly yet; requested Nortek documentation, March 10, 2016")
+            res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            ## a *total* guess on next -- something related to mag, from dolfyn code
+            res@data$IMUrotation <- array(NA, dim=c(3, 3, IMUlength))
+            res@data$IMUrotation[1,1,] <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,2,] <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,3,] <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,1,] <- readBin(buf[B4+42],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,2,] <- readBin(buf[B4+46],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,3,] <- readBin(buf[B4+50],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,1,] <- readBin(buf[B4+54],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,2,] <- readBin(buf[B4+58],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+66],"integer",size=4,n=IMUlength,endian="little")/62500
+            ## FIXME: more units
+            ## FIXME: the time seems really whacky on Mariana's file (range of 0.3s)
+            ## FIXME: we *really* need a nortek doc on what is in this
+            res@metadata$units$IMUdeltaAngleX <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleY <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleZ <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaVelocityX <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityY <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityZ <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
+            res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
+        } else if (IMUtype == "B") {   # 0xcc
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
             res@data$IMUaccelX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUaccelY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
@@ -195,7 +224,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
             res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
             res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
-        } else if (IMUtype == "C") {
+        } else if (IMUtype == "C") {   # 0xd2
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
             res@data$IMUaccelX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUaccelY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
@@ -218,7 +247,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
             res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
             res@metadata$units$IMUtime<- list(unit=expression(s), scale="")
-        } else if (IMUtype == "D") {
+        } else if (IMUtype == "D") {   # 0xd3
             res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUdeltaAngleY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUdeltaAngleZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
