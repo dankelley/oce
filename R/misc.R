@@ -658,17 +658,20 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 
 threenum <- function(x)
 {
+    dim <- dim(x)
     if (is.character(x) || is.null(x)) {
         res <- rep(NA, 3)
     } else if (is.list(x)) {
         if (2 == sum(c("lsb", "msb") %in% names(x))) { # e.g. landsat data
             x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
+            dim(x) <- dim
             res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
         } else {
             res <- rep(NA, 3)
         }
     } else if (is.raw(x)) {
         x <- as.numeric(x)
+        dim(x) <- dim
         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
     } else if (is.factor(x)) {
         res <- rep(NA, 3)
@@ -677,8 +680,41 @@ threenum <- function(x)
     } else {
         res <- rep(NA, 3)
     }
+    ## 20160314: tack on dimensions, neccessitating conversion to character
+    res[1] <- format(res[1]) # do these independently
+    res[2] <- format(res[2])
+    res[3] <- format(res[3])
+    if (is.array(x)) {
+        res <- c(res, paste(dim(x), collapse="x"))
+    } else {
+        res <- c(res, format(length(x)))
+    }
     res
 }
+
+## threenum <- function(x)
+## {
+##     if (is.character(x) || is.null(x)) {
+##         res <- rep(NA, 3)
+##     } else if (is.list(x)) {
+##         if (2 == sum(c("lsb", "msb") %in% names(x))) { # e.g. landsat data
+##             x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
+##             res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+##         } else {
+##             res <- rep(NA, 3)
+##         }
+##     } else if (is.raw(x)) {
+##         x <- as.numeric(x)
+##         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+##     } else if (is.factor(x)) {
+##         res <- rep(NA, 3)
+##     } else if (sum(!is.na(x))) {
+##         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+##     } else {
+##         res <- rep(NA, 3)
+##     }
+##     res
+## }
 
 normalize <- function(x)
 {
