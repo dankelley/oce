@@ -656,7 +656,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
     res
 }
 
-threenumWithDim <- function(x)
+threenumWithDim <- function(x, digits=7)
 {
     if (is.character(x) || is.null(x)) {
         res <- rep(NA, 3)
@@ -678,7 +678,7 @@ threenumWithDim <- function(x)
         res <- rep(NA, 3)
     }
     ## 20160314: tack on dimensions, neccessitating conversion to character
-    res <- as.character(res)
+    res <- as.character(format(res, digits=digits))
     if (is.vector(x))
         res <- c(res, format(length(x)))
     else if (is.array(x)) {

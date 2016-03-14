@@ -93,7 +93,7 @@ setMethod(f="summary",
                       if (isTime[i])
                           next
                       ##if (is.list(object@data[[i]]) || is.raw(object@data[[i]][1]))# || any(is.finite(object@data[[i]])))
-                      threes[ii,] <- threenumWithDim(object@data[[i]])
+                      threes[ii,] <- threenumWithDim(object@data[[i]], digits=7)
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
@@ -148,8 +148,7 @@ setMethod(f="summary",
                       rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
-                      print(threes, indent='')
-                      dan<<-threes
+                      print(threes, digits=7, quote=FALSE, indent='')
                       cat("```\n")
                   }
               }
