@@ -204,10 +204,26 @@ here only the first is permitted.)
 \section{Note for RStudio/OSX users}{
 
 On OSX computers, some versions of RStudio produce a margin-size error when
-\code{imagep} is called. RStudio version 0.99.451 (released late in 2015) did
-not have this problem, but it appeared in version 0.99.878 (released early
-in 2016). The issue was reported to RStudio in January 2016. The workaround
-is simple: open a new (and separate) plotting window with \code{\link{dev.new}}.
+\code{imagep} is called. The problem is not isolated to \code{imagep};
+it occurs with other packages, and a web
+search reveals repeated bug reports submitted to RStudio. 
+The problem seems to come and go, as RStudio evolves. In the
+\code{imagep} case, things worked properly for
+RStudio version 0.99.451 (released late in 2015), but not
+for version 0.99.878 (released early
+in 2016). A bug report was sent to RStudio in
+January 2016, with a minimal example that boiled the issue
+down to a few lines of basic R code (not using \code{imagep}
+or even \code{oce}).
+Although communications with RStudio gave 
+reason for optimism, the problem persisted in version 0.99.892,
+released March 4. New versions of RStudio will be checked as they
+come out, with status updates here.
+Pending an RStudio solution, users can avoid the error
+simply by opening 
+a new (and separate) plotting window with \code{\link{dev.new}}.
+In doing so, they may find that this is preferable generally,
+given the limitations of one-window interfaces.
 }
 \examples{
 library(oce)

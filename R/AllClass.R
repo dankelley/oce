@@ -62,21 +62,23 @@ setMethod(f="summary",
               isTime <- grepl("^time", names, ignore.case=TRUE)
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
+                  ## Times are always in POSIXct, so the length() does something useful
                   if (inherits(time, "POSIXt") && length(time) > 0) {
                       from <- min(time, na.rm=TRUE)
                       to <- max(time, na.rm=TRUE)
+                      nt <- length(time)
                       deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
                       if (is.na(deltat)) {
                           cat("* Time:               ", format(from), "\n")
                       } else {
                           if (deltat < 60) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat, "s\n")
                           } else if (deltat < 3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/60, "min\n")
                           } else if (deltat < 24*3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/3600, "hours\n")
                           } else {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/3600/24, "days\n")
                           }
                       }
                   }
@@ -90,8 +92,8 @@ setMethod(f="summary",
                       ##message("i: ", i, ", name: ", names(object@data)[i])
                       if (isTime[i])
                           next
-                      if (is.list(object@data[[i]]) || any(is.finite(object@data[[i]])))
-                          threes[ii,] <- threenum(object@data[[i]])
+                      ##if (is.list(object@data[[i]]) || is.raw(object@data[[i]][1]))# || any(is.finite(object@data[[i]])))
+                      threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
