@@ -93,7 +93,7 @@ setMethod(f="summary",
                       if (isTime[i])
                           next
                       ##if (is.list(object@data[[i]]) || is.raw(object@data[[i]][1]))# || any(is.finite(object@data[[i]])))
-                      threes[ii,] <- threenumWithDim(object@data[[i]], digits=7)
+                      threes[ii,] <- threenumWithDim(object@data[[i]], digits=5)
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
