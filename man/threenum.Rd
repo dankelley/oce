@@ -12,9 +12,13 @@
   \item{x}{a vector or matrix of numerical values.}
 }
 
-\details{This is a faster cousin of the standard \code{\link{fivenum}} function.}
+\details{This is a faster cousin of the standard \code{\link{fivenum}}
+    function, because calculating a median rquires sorting, which is slow.
+    Another advantage of this is that it returns also the dimensionality of the
+    data.}
       
-\value{A vector of three values, the minimum, the mean, and the maximum.}
+\value{A character vector of four values: the minimum, the mean, the maximum,
+    and an indication of the number of data.}
 
 \examples{
 library(oce)

@@ -86,13 +86,11 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=sum(!isTime), ncol=3)
+                  threes <- matrix(nrow=sum(!isTime), ncol=4)
                   ii <- 1
                   for (i in 1:ndata) {
-                      ##message("i: ", i, ", name: ", names(object@data)[i])
                       if (isTime[i])
                           next
-                      ##if (is.list(object@data[[i]]) || is.raw(object@data[[i]][1]))# || any(is.finite(object@data[[i]])))
                       threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
@@ -146,9 +144,9 @@ setMethod(f="summary",
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
                       rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
-                      colnames(threes) <- c("Min.", "Mean", "Max.")
+                      colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
-                      print(threes, indent='')
+                      print(threes, quote=FALSE, indent='')
                       cat("```\n")
                   }
               }
