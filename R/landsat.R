@@ -647,8 +647,35 @@ setMethod(f="plot",
               datanames <- names(x@data)
               spacecraft <- if (is.null(x@metadata$spacecraft)) "LANDSAT_8" else x@metadata$spacecraft
               d <- NULL
+              kelley <- FALSE # FIXME:kelley
               if (which == 1) {
-                  if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
+                  if (!missing(band) && is.character(band) && !is.na(pmatch(band, "kelley"))) {
+                      kelley <- TRUE
+                      if (missing(drawPalette)) drawPalette <- FALSE
+                      if (!("red" %in% datanames && "green" %in% datanames && "blue" %in% datanames))
+                          stop("band=\"kelley\" requires landsat object to contain \"red\", \"green\" and \"blue\"")
+                      message("'kelley' band -- TEMPORARY test; set debug=3 for more")
+                      r <- x[["red", decimate]]
+                      g <- x[["green", decimate]]
+                      b <- x[["blue", decimate]]
+                      dim <- dim(r)
+                      if (spacecraft == "LANDSAT_8") {
+                          oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
+                          colors <- rgb(r, g, b, maxColorValue=2^16-1)
+                      } else {
+                          oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
+                          colors <- rgb(r, g, b, maxColorValue=2^8-1)
+                      }
+                      rm(list=c("r", "g", "b")) # clean up asap
+                      col <- unique(colors)
+                      d <- array(match(colors, col), dim=dim) # method of Clark Richards
+                      oceDebug(debug, "colour compaction: ",floor(prod(dim)/length(col)), '\n')
+                      oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
+                      col <- adjustcolor(col, alpha.f=alpha.f, red.f=red.f, green.f=green.f, blue.f=blue.f,
+                                         offset=offset, transform=transform)
+                      oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
+                      oceDebug(debug, "finished constucting image\n")
+                  } else if (!missing(band) && is.character(band) && !is.na(pmatch(band, "terralook"))) {
                       terralook <- TRUE
                       if (missing(drawPalette)) drawPalette <- FALSE
                       if (!("red" %in% datanames && "green" %in% datanames && "nir" %in% datanames))
@@ -663,7 +690,7 @@ setMethod(f="plot",
                       oceDebug(debug, "extracting nir data\n")
                       nir3 <- x[["nir", decimate]]/3
                       oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
-                      na <- r==0 && g23==0 && nir3==0
+                      ## na <- r==0 && g23==0 && nir3==0
                       ## http://terralook.cr.usgs.gov/what_is_terralook.php
                       g <- g23 + nir3
                       b <- g23 - nir3
@@ -681,18 +708,9 @@ setMethod(f="plot",
                       col <- unique(colors)
                       d <- array(match(colors, col), dim=dim) # method of Clark Richards
                       oceDebug(debug, "colour compaction: ",floor(prod(dim)/length(col)), '\n')
-                      ## Do not NA out because then image chopped excessively;
-                      ## Just leave black which is easier on the eye (although
-                      ## deceptive).
-                      if (FALSE) {
-                          oceDebug(debug, "NA-ing out\n")
-                          d[na] <- NA
-                      }
                       oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
-                      col <- adjustcolor(col, alpha.f=alpha.f,
-                                         red.f=red.f, green.f=green.f, blue.f=blue.f,
-                                         offset=offset,
-                                         transform=transform)
+                      col <- adjustcolor(col, alpha.f=alpha.f, red.f=red.f, green.f=green.f, blue.f=blue.f,
+                                         offset=offset, transform=transform)
                       oceDebug(debug, "adjusting colors: new=", paste(head(col), collapse=" "), "\n")
                       oceDebug(debug, "finished constucting image\n")
                       ## end of band="terralook"; plot below
@@ -736,20 +754,20 @@ setMethod(f="plot",
                   dim <- dim(d)
                   lon <- x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon)
                   lat <- x@metadata$lllat + seq(0, 1, length.out=dim[2]) * (x@metadata$urlat - x@metadata$lllat)
-                  oceDebug(debug, "old lon range: ", paste(range(lon), collapse=" to "))
-                  oceDebug(debug, "old lat range: ", paste(range(lat), collapse=" to "))
+                  oceDebug(debug, "old lon range: ", paste(range(lon), collapse=" to "), "\n")
+                  oceDebug(debug, "old lat range: ", paste(range(lat), collapse=" to "), "\n")
                   LON0 <- 0.5*(x@metadata$lllon + x@metadata$ullon)
                   LON1 <- 0.5*(x@metadata$lrlon + x@metadata$urlon)
                   LAT0 <- 0.5*(x@metadata$lllat + x@metadata$lrlat)
                   LAT1 <- 0.5*(x@metadata$ullat + x@metadata$urlat)
                   lon <- LON0 + seq(0, 1, length.out=dim[1]) * (LON1 - LON0)
                   lat <- LAT0 + seq(0, 1, length.out=dim[2]) * (LAT1 - LAT0)
-                  oceDebug(debug, "old lon range: ", paste(range(lon), collapse=" to "))
-                  oceDebug(debug, "old lat range: ", paste(range(lat), collapse=" to "))
-                  oceDebug(debug, "dim: ", paste(dim, collapse=" "))
+                  oceDebug(debug, "new lon range: ", paste(range(lon), collapse=" to "), "\n")
+                  oceDebug(debug, "new lat range: ", paste(range(lat), collapse=" to "), "\n")
+                  oceDebug(debug, "dim: ", paste(dim, collapse=" "), "\n")
 
                   asp <- 1 / cos(0.5 * (x@metadata$lllat + x@metadata$urlat) * pi / 180)
-                  if (missing(zlim) && !terralook)
+                  if (missing(zlim) && !terralook && !kelley) # FIXME:kelley
                       zlim <- quantile(d, c(0.01, 0.99), na.rm=TRUE)
                   if (utm) {
                       if (!("llUTM" %in% names(x@metadata))) {
@@ -769,7 +787,7 @@ setMethod(f="plot",
                                  drawPalette=drawPalette, debug=debug-1, ...)
                       }
                   }
-                  if (showBandName && !terralook)
+                  if (showBandName && !terralook && !kelley)
                       mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
                   if (missing(band)) {
