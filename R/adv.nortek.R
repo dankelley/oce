@@ -161,7 +161,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
         ## Note: a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
         if (IMUtype == "A") {          # 0xc3
-            warning("IMU type 'A' is not handled properly yet; requested Nortek documentation, March 10, 2016")
             res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUdeltaAngleY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUdeltaAngleZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
@@ -180,9 +179,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@data$IMUrotation[3,2,] <- readBin(buf[B4+58],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUrotation[3,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUtime <- readBin(buf[B4+66],"integer",size=4,n=IMUlength,endian="little")/62500
-            ## FIXME: more units
-            ## FIXME: the time seems really whacky on Mariana's file (range of 0.3s)
-            ## FIXME: we *really* need a nortek doc on what is in this
             res@metadata$units$IMUdeltaAngleX <- list(unit=expression(degree), scale="")
             res@metadata$units$IMUdeltaAngleY <- list(unit=expression(degree), scale="")
             res@metadata$units$IMUdeltaAngleZ <- list(unit=expression(degree), scale="")
@@ -352,10 +348,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "vsd.dt=",vsd.dt,"(from twoTimes)\n")
 
         vvdStart <- vvdStart[vsdStart[fromIndex] <= vvdStart & vvdStart <= vsdStart[toIndex]]
-        vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
-        ## find vvd region that lies inside the vsd [from, to] region.
-        vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
-        vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
+        ## vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
+        ### find vvd region that lies inside the vsd [from, to] region.
+        ## vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
+        ## vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
     } else {
         ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
         ## 2016-03-09: this code could never be executed ... I need a taller monitor or
