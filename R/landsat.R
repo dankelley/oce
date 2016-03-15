@@ -690,7 +690,7 @@ setMethod(f="plot",
                       oceDebug(debug, "extracting nir data\n")
                       nir3 <- x[["nir", decimate]]/3
                       oceDebug(debug, "range(nir/3): ", paste(range(nir3), collapse=" to "), "\n")
-                      na <- r==0 && g23==0 && nir3==0
+                      ## na <- r==0 && g23==0 && nir3==0
                       ## http://terralook.cr.usgs.gov/what_is_terralook.php
                       g <- g23 + nir3
                       b <- g23 - nir3

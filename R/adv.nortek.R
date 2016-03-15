@@ -222,10 +222,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "vsd.dt=",vsd.dt,"(from twoTimes)\n")
 
         vvdStart <- vvdStart[vsdStart[fromIndex] <= vvdStart & vvdStart <= vsdStart[toIndex]]
-        vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
-        ## find vvd region that lies inside the vsd [from, to] region.
-        vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
-        vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
+        ## vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
+        ### find vvd region that lies inside the vsd [from, to] region.
+        ## vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
+        ## vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
     } else {
         ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
         ## 2016-03-09: this code could never be executed ... I need a taller monitor or
