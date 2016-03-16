@@ -190,20 +190,34 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   \subsection{Handling IMU (inertial measurement unit) data}{Starting in March 2016,
     \code{read.adv.nortek} has offered some support for handling IMU (inertial measurement unit)
-    data incorporated into Nortek binary files. There are four varieties, which will here be called
-    cases A, B, C and D. \strong{Note} that this support is provisional, with little testing having
-    been done, and also with a significant likelihood that variable names will change through the
-    summer of 2016. Part of the challenge is that Nortek sometimes sells instrument packages prior
-    to producing documention on the binary format the instruments produce.
+    data incorporated into Nortek binary files. This is not described in the Nortek document named
+    ``System Integrator Guide'' (2008 [1A]) but it appeared in ``System Integrator Manual'' (2014
+    [1B]; 2016 [1C]). Confusingly, 1B described 3 varieties of data, whereas 1C does not describe
+    any of these, but describes instead a fourth variety. As of March 2016, \code{read.adv.nortek}
+    handles all 4 varieties, because files in the various schemes appear to exist. In \code{oce},
+    the varieties are named after the byte code that flags them.  (Variety \code{c3} is the one
+    described in [1C]; the others were described in [1B].) The variety is stored in the
+    \code{metadata} slot of the returned object as a string named \code{IMUtype}.
 
     \itemize{
 
-      \item Case A (signalled by byte 5 of a sequence being \code{0xc3} provides information on (FILL
-      IN). This data type is not handled yet.
+      \item Variety \code{c3} (signalled by byte 5 of a sequence being \code{0xc3}) provides
+      information on what Nortek calls DeltaAngle, DeltaVelocity and Orientation Matrix. (Apart from
+      the orientation matrix, Nortek provides no documentation on what these quantities mean.) In
+      the object returned by \code{read.adv.nortek}, these are stored in the \code{data} slot as
+      \code{IMUdeltaAngleX}, \code{IMUdeltaAngleY}, \code{IMUdeltaAngleZ}, \code{IMUdeltaVelocityX},
+      \code{IMUdeltaVelocityY}, \code{IMUdeltaVelocityZ}, and \code{IMUrotation}, all vectors except
+      the last, which is a 3D array. In adition to these, \code{IMUtimestamp} is a time-stamp, 
+      which is not defined in the Nortek documents but seems, from IMU documents [5], to be defined
+      based on a clock that ticks once per 16 microseconds. Caution may be required in dealing with
+      this timestamp, since it seemed sensible in one test case (variety \code{d3}) but kept
+      reseting to zero in another (variety \code{c3}). The lack of Nortek documentation on most
+      of these quantities is a roadblock to implementing \code{oce} functions dealing with
+      IMU-enabled datasets.
 
-      \item Case B (signalled by byte 5 of a sequence being \code{0xcc}) provides information on
-      acceleration, angular rotation rate, magnetic vector and orientation matrix. Each is a
-      timeseries. Acceleration is stored in the \code{data} slot as \code{IMUaccelX},
+      \item Variety \code{cc} (signalled by byte 5 of a sequence being \code{0xcc}) provides
+      information on acceleration, angular rotation rate, magnetic vector and orientation matrix.
+      Each is a timeseries. Acceleration is stored in the \code{data} slot as \code{IMUaccelX},
       \code{IMUaccelY}, \code{IMUaccelz}. The angular rotation components are \code{IMUngrtX},
       \code{IMUngrtY} and \code{IMUngrtz}. The magnetic data are in \code{IMUmagrtx},
       \code{IMUmagrty} and \code{IMUmagrtz}. Finally, \code{IMUmatrix} is a rotation matrix made up
@@ -211,14 +225,14 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
       all of these, \code{IMUtime} stores time in seconds (with an origin whose definition is not
       stated in [1B]).
 
-      \item Case C (signalled by byte 5 being \code{0xd2}) provides information on gyro-stabilized
-      acceleration, angular rate and magnetometer vectors.  The data stored \code{MUaccelX},
-      \code{IMUangrtX}, \code{IMUmagrtX}, with similar for \code{Y} and \code{Z}.  Again, time is in
-      \code{IMUtime}. This data type has not been tested as of mid-March 2016, because the
-      developers do not have a test file with which to test.
+      \item Variety \code{d2} (signalled by byte 5 being \code{0xd2}) provides information on
+      gyro-stabilized acceleration, angular rate and magnetometer vectors.  The data stored
+      \code{MUaccelX}, \code{IMUangrtX}, \code{IMUmagrtX}, with similar for \code{Y} and \code{Z}.
+      Again, time is in \code{IMUtime}. This data type has not been tested as of mid-March 2016,
+      because the developers do not have a test file with which to test.
 
-      \item Case D (signalled by byte 5 being \code{0xd3}) provides information on delta-angle,
-      delta-velocity and magnetometer vectors, stored in \code{IMUdeltaAngleX},
+      \item Variety \code{d3} (signalled by byte 5 being \code{0xd3}) provides information on
+      DeltaAngle, DeltaVelocity and magnetometer vectors, stored in \code{IMUdeltaAngleX},
       \code{IMUdeltaVelocityX}, and \code{IMUdeltaMagVectorX}, with similar for \code{Y} and
       \code{Z}. Again, time is in \code{IMUtime}. This data type has not been tested as of mid-March
       2016, because the developers do not have a test file with which to test.  } } }
@@ -316,6 +330,9 @@ plot(d, which=c(1:3,15))
   1B. Nortek AS.  System Integrator Manual. Dec 2014.
   (\code{system-integrator-manual_Dec2014_jan.pdf})
 
+  1C. Nortek AS.  System Integrator Manual. March 2016.
+  (\code{system-integrator-manual_Mar2016.pdf})
+
   2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field) Technical Documentation (Sept 1,
   2001).
 
@@ -323,7 +340,7 @@ plot(d, which=c(1:3,15))
 
   4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center} 
 
-  5. A document describing an IMU unit that seems to be close to the one named in [1B] as being
+  5. A document describing an IMU unit that seems to be close to the one named in [1B,C] as being
   an adjunct to Nortek Vector systems is at
   \code{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
 
