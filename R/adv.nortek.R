@@ -180,22 +180,22 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@data$IMUrotation[3,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUtime <- readBin(buf[B4+66],"integer",size=4,n=IMUlength,endian="little")/62500
             ## test to show nortek the byte codes {
-            for (ii in 1:2) {
-                message("IMU entry number: ", ii)
-                B <- imuStart[ii]
-                message("    starting byte (B, say) in file: ", B)
-                message("    byte[B+0  =", B+0, "]: 0x", buf[B+0], " ... check: should be 0xa5")
-                message("    byte[B+1  =", B+1, "]: 0x", buf[B+1], " ... check: should be 0x71")
-                message("    byte[B+5  =", B+5, "]: 0x", buf[B+5], " ... check: should be 0xc3")
-                message("    byte[B+66 =", B+66,"]: 0x", buf[B+66])
-                message("    byte[B+67 =", B+67,"]: 0x", buf[B+67])
-                message("    byte[B+68 =", B+68,"]: 0x", buf[B+68])
-                message("    byte[B+69 =", B+69,"]: 0x", buf[B+69])
-                lit <- readBin(buf[B+66:69], "integer", size=4, n=IMUlength, endian="little")/62500
-                big <- readBin(buf[B+66:69], "integer", size=4, n=IMUlength, endian="big")/62500
-                message("timestamp (in seconds) if little endian: ", lit)
-                message("timestamp (in seconds) if big endian:    ", big)
-            }
+            ##> for (ii in 1:2) {
+            ##>     message("IMU entry number: ", ii)
+            ##>     B <- imuStart[ii]
+            ##>     message("    starting byte (B, say) in file: ", B)
+            ##>     message("    byte[B+0  =", B+0, "]: 0x", buf[B+0], " ... check: should be 0xa5")
+            ##>     message("    byte[B+1  =", B+1, "]: 0x", buf[B+1], " ... check: should be 0x71")
+            ##>     message("    byte[B+5  =", B+5, "]: 0x", buf[B+5], " ... check: should be 0xc3")
+            ##>     message("    byte[B+66 =", B+66,"]: 0x", buf[B+66])
+            ##>     message("    byte[B+67 =", B+67,"]: 0x", buf[B+67])
+            ##>     message("    byte[B+68 =", B+68,"]: 0x", buf[B+68])
+            ##>     message("    byte[B+69 =", B+69,"]: 0x", buf[B+69])
+            ##>     lit <- readBin(buf[B+66:69], "integer", size=4, n=IMUlength, endian="little")/62500
+            ##>     big <- readBin(buf[B+66:69], "integer", size=4, n=IMUlength, endian="big")/62500
+            ##>     message("timestamp (in seconds) if little endian: ", lit)
+            ##>     message("timestamp (in seconds) if big endian:    ", big)
+            ##> }
             ## } test to show nortek the byte codes
             res@metadata$IMUtype <- IMUtype
             res@metadata$units$IMUdeltaAngleX <- list(unit=expression(degree), scale="")
