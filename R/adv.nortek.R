@@ -167,7 +167,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@data$IMUdeltaVelocityX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUdeltaVelocityY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUdeltaVelocityZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
-            ## a *total* guess on next -- something related to mag, from dolfyn code
             res@data$IMUrotation <- array(NA, dim=c(3, 3, IMUlength))
             res@data$IMUrotation[1,1,] <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
             res@data$IMUrotation[1,2,] <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
