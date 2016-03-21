@@ -152,7 +152,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
 }
 
-\section{NorTek files}{
+\section{Nortek files}{
 
   \subsection{Sampling-rate and similar issues}{
 
@@ -199,6 +199,19 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     described in [1C]; the others were described in [1B].) The variety is stored in the
     \code{metadata} slot of the returned object as a string named \code{IMUtype}.
 
+    For each variety, the reader is cautioned that strong tests have not been performed on the code.
+    One way to test the code is to compare with textual data files produced by the Nortek software.
+    In March 2016, an \code{oce} user shared a dataset of the \code{c3} variety, and this permitted
+    detailed comparison between the text file and the values inferred by \code{read.adv.nortek}. The
+    test suggested agreement (to within the resolution printed in the text file) for velocity
+    (\code{v} in the \code{data} slot), signal amplitude (\code{a}), correlation (\code{q}),
+    pressure (\code{p}), the three components of IMU delta angle (\code{IMUdeltaAngleX} etc), and
+    all components of the rotation matrix (\code{IMUrotation}).  However, the delta velocity signals
+    did not match, with \code{IMUdeltaVelocityX} disagreeing in the second decimal place,
+    \code{IMUdeltaVelocityY} component disagreeing in the first, and \code{IMUdeltaVelocityZ} being
+    out by a factor of about 10. This is github issue 893
+    (\url{https://github.com/dankelley/oce/issues/893}).
+
     \itemize{
 
       \item Variety \code{c3} (signalled by byte 5 of a sequence being \code{0xc3}) provides
@@ -213,7 +226,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
       this timestamp, since it seemed sensible in one test case (variety \code{d3}) but kept
       reseting to zero in another (variety \code{c3}). The lack of Nortek documentation on most
       of these quantities is a roadblock to implementing \code{oce} functions dealing with
-      IMU-enabled datasets.
+      IMU-enabled datasets
 
       \item Variety \code{cc} (signalled by byte 5 of a sequence being \code{0xcc}) provides
       information on acceleration, angular rotation rate, magnetic vector and orientation matrix.
