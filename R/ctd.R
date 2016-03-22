@@ -2150,10 +2150,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         varUnits <- strsplit(line, split=",")[[1]]
         lines <- readLines(file)
         nlines <- length(lines)
-        ## pressure <- vector("numeric", nlines)
-        ## temperature <- vector("numeric", nlines)
-        ## salinity <- vector("numeric", nlines)
-        ## oxygen <- vector("numeric", nlines)
+        pressure <- vector("numeric", nlines)
+        temperature <- vector("numeric", nlines)
+        salinity <- vector("numeric", nlines)
+        oxygen <- vector("numeric", nlines)
         b <- 0
         oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
         for (iline in 1:nlines) {
