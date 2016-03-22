@@ -261,58 +261,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
-###<<<<<<< HEAD
-###    isFlag <- grepl("^QQQQ", xnames)
-###    ## message("data--")
-###    ## print(xnames[!isFlag])
-###    ## message("isFlag--")
-###    ## print(xnames[isFlag])
-###    ## rval@data <- as.list(ODF$DATA)
-###    rval@data <- list()
-###
-###    ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
-###    ## FIXME: be sure to record unit as conductivityRatio.
-###    rvalNames <- ODFNames2oceNames(xnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
-###    #names(rval@data) <- rvalNames
-###    ## Obey missing values ... only for numerical things (which might be everything, for all I know)
-###    nd <- length(rvalNames)
-###    rval@metadata[["flags"]] <- list()
-###    for (i in 1:nd) {
-###        if (is.numeric(ODF$DATA[[i]])) {
-###            NAvalue <- as.numeric(ODF$PARAMETER_HEADER[[i]]$NULL_VALUE)
-###            ## message("NAvalue: ", NAvalue)
-###            #rval@data[[rvalNames[i]]] <- ODF$DATA[i]
-###            if (isFlag[i]) {
-###                ## message("i: ", i, " FLAG: ", xnames[i], " is a flag for: ", xnames[i-1])
-###                rval@metadata$flags[[rvalNames[i-1]]] <- ODF$DATA[[i]]
-###            } else {
-###                ## message("i: ", i, " DATA: ", xnames[i], "; ", rvalNames[i])
-###                rval@data[[rvalNames[i]]] <- ODF$DATA[[i]]
-###                bad <- rval@data[[rvalNames[i]]] == NAvalue
-###                rval@data[[rvalNames[i]]][bad] <- NA
-###            }
-###        }
-###    }
-###    ## Stage 3. rename QQQQ_* columns as flags on the previous column
-###    ## flagnames <- names(rval@metadata$flags)
-###    ## names(rval@metadata$flags) <- ODFNames2oceNames(flagnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
-###
-###    ## message("below is names(rval@data):")
-###    ## print(names(rval@data))
-###    ## message("below is flags:")
-###    ## print(flags)
-###
-###    ##> names <- names(rval@data)
-###    ##> for (i in seq_along(names)) {
-###    ##>     if (substr(names[i], 1, 4) == "QQQQ") {
-###    ##>         if (i > 1) {
-###    ##>             names[i] <- paste(names[i-1], "Flag", sep="")
-###    ##>         }
-###    ##>     }
-###    ##> }
-###    #names(rval@data) <- names
-###    rval
-###=======
     res@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
     ## FIXME: be sure to record unit as conductivityRatio.
@@ -341,7 +289,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
         names <- gsub("flag_archaic", "flag", names)
     names(res@data) <- names
     res
-### >>>>>>> develop
 }
 
 
