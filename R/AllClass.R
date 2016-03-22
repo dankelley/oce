@@ -173,7 +173,6 @@ setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
-
 #' Subset an oce Object
 #'
 #' This is a basic class for general oce objects.  It has specialised
@@ -326,8 +325,9 @@ setMethod(f="[[<-",
 setValidity("oce",
             function(object) {
                 slotNames <- slotNames(object)
-                if (length(slotNames) != 3) {
-                    cat("should be 3 slots, but there are", length(slotNames), "\n")
+                nslots <- length(slotNames)
+                if (nslots !=3) {
+                    cat("should be 3 slots, but there are", nslots, "\n")
                     return(FALSE)
                 }
                 for (name in c("metadata", "data", "processingLog")) {

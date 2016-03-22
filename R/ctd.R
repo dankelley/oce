@@ -1896,6 +1896,21 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
     res
 }
 
+woceNames2oceNames <- function(names)
+{
+    ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
+    ## FIXME: I've seen. But how are we to know, definitively? It would be great to find an official
+    ## FIXME: list, partly because the present function should be documented, and that documentation
+    ## FIXME: should list a source.
+    ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    names <- gsub("CTDOXY.*", "oxygen", names)
+    names <- gsub("CTDPRS.*", "pressure", names)
+    names <- gsub("CTDSAL.*", "salinity", names)
+    names <- gsub("CTDTMP.*", "temperature", names)
+    names <- gsub("OXYGEN.*", "oxygen", names)
+    names <- gsub("SALNTY.*", "temperature", names)
+    names
+}
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -1948,6 +1963,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     oceDebug(debug, paste("examining header line '",line,"'\n", sep=""))
     header <- line
     waterDepthWarning <- FALSE
+
     ## Handle a format used in a 2003 survey of the Canada Basin
     if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
         oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
@@ -1981,7 +1997,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             } else if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
                 station <- sub("[ ]*$", "", sub("CASTNO[ ]*=[ ]*", "", header[i]))
             } else if (length(grep("^[ ]*Pressure,", header[i]))) {
-                names <- strsplit(tolower(header[i]), ",")[[1]]
+                names <- strsplit(gsub(" *$", "", tolower(header[i])), ",")[[1]]
             } else if (length(grep("LATITUDE", header[i]))) {
                 latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
                 if (length(grep(".*S.*", header[i], ignore.case=TRUE)))
@@ -2096,6 +2112,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
         ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
         varNames <- strsplit(line, split=",")[[1]]
+        oceDebug(debug, "varNames: ", paste(varNames, sep=" "), "\n")
+        oceDebug(debug, "oce names: ", paste(woceNames2oceNames(varNames), sep=" "), "\n")
+
         varNames <- gsub("^ *", "", gsub(" *$", "", varNames)) # trim whitespace
         ## catch some typos that have occured in files processed by oce
         oceDebug(debug, paste("before trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
@@ -2115,6 +2134,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             if (is.na(Scol))
                 stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
         }
+        ## FIXME: use these flags ... they are ignored at present.
         Sflagcol <- pmatch("CTDSAL_FLAG_W", varNames)
         if (is.na(Sflagcol)) {
             Sflagcol <- pmatch("SALNTY_FLAG_W", varNames)
@@ -2425,7 +2445,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             ## Used to have oxygen.temperature and oxygen.current here (why??)
             if (0 < regexpr("oxygen", lline))
                 name <- "oxygen"
-            if (0 < regexpr("flag", lline)) name <- "flag"
+            if (0 < regexpr("flag", lline))
+                name <- "flag"
             if (0 < regexpr("sigma-theta", lline)) {
                 name <- "sigmaTheta"
                 ##foundSigmaTheta <- TRUE
