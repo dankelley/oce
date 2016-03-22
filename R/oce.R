@@ -76,13 +76,8 @@ NULL
 #' If \code{x} is a list created by \code{read_odf} from the (as
 #' yet unreleased) ODF package developed by the Bedford Institute of
 #' Oceanography, then \code{\link{ODF2oce}} is called (with
-<<<<<<< HEAD
-#' the \dots arguments passed) to calculate a return value.
-#" If the sub-class inference made by \code{\link{ODF2oce}} is 
-=======
 #' no arguments other than the first) to calculate a return value.
 #' If the sub-class inference made by \code{\link{ODF2oce}} is 
->>>>>>> develop
 #' incorrect, users should call that function directly, specifying
 #' a value for its \code{coerce} argument.
 #'
@@ -119,11 +114,7 @@ as.oce <- function(x, ...)
         stop("x must be a list, a data frame, or an oce object")
     names <- names(x)
     if ("EVENT_HEADER" %in% names) {
-<<<<<<< HEAD
-        rval <- ODF2oce(x, ...)
-=======
         res <- ODF2oce(x)
->>>>>>> develop
     } else {
         if ("temperature" %in% names && "pressure" %in% names) {
             ## Assume it's a CTD; if not, rely on users to understand their data
@@ -142,11 +133,7 @@ as.oce <- function(x, ...)
                 }
             }
         } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
-<<<<<<< HEAD
-            rval <- as.coastline(longitude=x$longitude, latitude=x$latitude, ...)
-=======
             res <- as.coastline(longitude=x$longitude, latitude=x$latitude)
->>>>>>> develop
         } else {
             stop("unknown data type; as of now, as.oce() only handles CTD data")
         }

@@ -34,12 +34,8 @@ the specified \dots value) to create a coastline object.
 If \code{x} is a list created by \code{read_odf} from the (as
 yet unreleased) ODF package developed by the Bedford Institute of
 Oceanography, then \code{\link{ODF2oce}} is called (with
-<<<<<<< HEAD
-the \dots arguments passed) to calculate a return value.
-=======
 no arguments other than the first) to calculate a return value.
 If the sub-class inference made by \code{\link{ODF2oce}} is 
->>>>>>> develop
 incorrect, users should call that function directly, specifying
 a value for its \code{coerce} argument.
 

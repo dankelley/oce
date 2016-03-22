@@ -173,10 +173,6 @@ setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
 
-<<<<<<< HEAD
-## FIXME(kelley): consider making subset, [[, etc use flags at this base level.
-=======
-
 #' Subset an oce Object
 #'
 #' This is a basic class for general oce objects.  It has specialised
@@ -200,7 +196,6 @@ setClass("windrose", contains="oce")
 #' par(mfrow=c(1, 2))
 #' plotProfile(ctd)
 #' plotProfile(top10)
->>>>>>> develop
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {
