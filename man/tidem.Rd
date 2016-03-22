@@ -64,7 +64,7 @@
       then the (optional) rest of the elements of \code{constituents} are
       examined, in order.  Each of these constituents is based on the name of a
       tidal constituent in the Foreman (1977) notation.  (To get the list,
-      execute \code{data(tideData)} and then execute \code{cat(tideData$name)}.)
+      execute \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)
       Each named constituent is added to the existing list, if it is not already
       there.  But, if the constituent is preceeded by a minus sign, then it is
       removed from the list (if it is already there).  Thus, for example,
@@ -134,7 +134,8 @@
 
 \seealso{\code{\link{summary.tidem}} summarizes a "\code{tide}" object,
   \code{\link{plot.tidem}} plots one, and \code{\link{predict.tidem}}
-  makes predictions from one.  As for the input, sealevel objects may be
+  makes predictions from one.  The tidal constituents are defined in
+  the \code{\link{tidedata}} dataset. As for the input, sealevel objects may be
   created with \code{\link{as.sealevel}} or \code{\link{read.sealevel}}.  See
   notes at \code{\link{sealevelTuktoyaktuk}}, which is test data set.
 }

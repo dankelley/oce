@@ -64,10 +64,14 @@ NULL
 #' In most circumstances, users should employ a function such
 #' as \code{\link{as.ctd}} to construct specialized oce sub-classes.
 #'
-#' \code{as.ctd} creates an oce object from data contained within its
+#' \code{as.oce} creates an oce object from data contained within its
 #' first argument, which may be a list, a data frame, or an object
 #' of \code{\link{oce-class}}.  (In the last case, \code{x} is 
 #' simply returned, without modification.)
+#'
+#' If \code{x} is a list containing items named \code{longitude} and
+#' \code{latitude}, then \code{\link{as.coastline}} is called (with
+#' the specified \dots value) to create a coastline object.
 #'
 #' If \code{x} is a list created by \code{read_odf} from the (as
 #' yet unreleased) ODF package developed by the Bedford Institute of
@@ -94,14 +98,15 @@ NULL
 #' }
 #'
 #' @param x an item containing data. This may be data frame, list, or an oce object.
+#' @param \dots optional extra arguments, passed to conversion functions \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
 #'
-#' @return an object inherting from \code{\link{oce-class}}.
+#' @return \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
 #'
 #' @examples
 #' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
 #' as.oce(list(longitude=1:3,latitude=11:13))
 
-as.oce <- function(x)
+as.oce <- function(x, ...)
 {
     if (inherits(x, "oce"))
         return(x)

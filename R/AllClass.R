@@ -59,7 +59,7 @@ setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
               names <- names(object@data)
-              isTime <- grepl("^time", names, ignore.case=TRUE)
+              isTime <- grepl("^time", names, ignore.case=TRUE) # pass timestampIMU
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
                   ## Times are always in POSIXct, so the length() does something useful
@@ -133,7 +133,7 @@ setMethod(f="summary",
                                              ##> message("4. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
                                              ##> message("5. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("\\^2", "\u00B3", res)
+                                             if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
                                              ##> message("6. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("\\^3", "\u00B3", res)
                                              ##> message("7. res: '", res, "'")
@@ -172,7 +172,6 @@ setClass("section", contains="oce")
 setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
-
 
 #' Subset an oce Object
 #'
@@ -326,8 +325,9 @@ setMethod(f="[[<-",
 setValidity("oce",
             function(object) {
                 slotNames <- slotNames(object)
-                if (length(slotNames) != 3) {
-                    cat("should be 3 slots, but there are", length(slotNames), "\n")
+                nslots <- length(slotNames)
+                if (nslots !=3) {
+                    cat("should be 3 slots, but there are", nslots, "\n")
                     return(FALSE)
                 }
                 for (name in c("metadata", "data", "processingLog")) {

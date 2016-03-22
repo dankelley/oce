@@ -1,3 +1,8 @@
+## abbreviations:
+##   SIG     = System Integrator Guide
+##   SIG2014 = system-integrator-manual_Dec2014_jan.pdf
+##   IMU     = http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf
+
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
                             longitude=NA, latitude=NA,
@@ -7,8 +12,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"), monitor=FALSE, 
                             processingLog)
 {
-    ## abbreviations:
-    ##   SIG=System Integrator Guide
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
@@ -142,6 +145,150 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vsdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
     ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
     vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+
+    ## "imu" stands for 'inertial motion unit' [p30 SIG2014]
+    imuStart <- .Call("locate_vector_imu_sequences", buf)
+    haveIMU <- length(imuStart) > 0
+    if (haveIMU) {
+        IMUtype <- "unknown"
+        if (buf[imuStart[1]+5] == 0xc3) IMUtype <- "c3"
+        else if (buf[imuStart[1]+5] == 0xcc) IMUtype <- "cc"
+        else if (buf[imuStart[1]+5] == 0xd2) IMUtype <- "d2"
+        else if (buf[imuStart[1]+5] == 0xd3) IMUtype <- "d3"
+        else warning("unknown IMU type, with 5th byte 0x", buf[imuStart[1]+5],
+                     "; only 0xc3, 0xcc, 0xd2 and 0xd3 are recognized")
+        IMUlength <- length(imuStart)
+        B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
+        ## Note: a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
+        if (IMUtype == "c3") {          # desribed in [1C] of the refernces of ?read.adv
+            res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation <- array(NA, dim=c(3, 3, IMUlength))
+            res@data$IMUrotation[1,1,] <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,2,] <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,3,] <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,1,] <- readBin(buf[B4+42],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,2,] <- readBin(buf[B4+46],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,3,] <- readBin(buf[B4+50],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,1,] <- readBin(buf[B4+54],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,2,] <- readBin(buf[B4+58],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+66],"integer",size=4,n=IMUlength,endian="little")/62500
+            ## test to show nortek the byte codes {
+            ##> for (ii in 1:2) {
+            ##>     message("IMU entry number: ", ii)
+            ##>     B <- imuStart[ii]
+            ##>     message("    starting byte (B, say) in file: ", B)
+            ##>     message("    byte[B+0  =", B+0, "]: 0x", buf[B+0], " ... check: should be 0xa5")
+            ##>     message("    byte[B+1  =", B+1, "]: 0x", buf[B+1], " ... check: should be 0x71")
+            ##>     message("    byte[B+5  =", B+5, "]: 0x", buf[B+5], " ... check: should be 0xc3")
+            ##>     message("    byte[B+66 =", B+66,"]: 0x", buf[B+66])
+            ##>     message("    byte[B+67 =", B+67,"]: 0x", buf[B+67])
+            ##>     message("    byte[B+68 =", B+68,"]: 0x", buf[B+68])
+            ##>     message("    byte[B+69 =", B+69,"]: 0x", buf[B+69])
+            ##>     lit <- readBin(buf[B+66:69], "integer", size=4, n=IMUlength, endian="little")/62500
+            ##>     big <- readBin(buf[B+66:69], "integer", size=4, n=IMUlength, endian="big")/62500
+            ##>     message("timestamp (in seconds) if little endian: ", lit)
+            ##>     message("timestamp (in seconds) if big endian:    ", big)
+            ##> }
+            ## } test to show nortek the byte codes
+            res@metadata$IMUtype <- IMUtype
+            res@metadata$units$IMUdeltaAngleX <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleY <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleZ <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaVelocityX <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityY <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityZ <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
+            res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
+        } else if (IMUtype == "cc") {   # described in [1B] of the references of ?read.adv
+            ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
+            res@data$IMUaccelX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtX <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtY <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtZ <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation <- array(NA, dim=c(3, 3, IMUlength))
+            res@data$IMUrotation[1,1,] <- readBin(buf[B4+42],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,2,] <- readBin(buf[B4+46],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[1,3,] <- readBin(buf[B4+50],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,1,] <- readBin(buf[B4+54],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,2,] <- readBin(buf[B4+58],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[2,3,] <- readBin(buf[B4+62],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,1,] <- readBin(buf[B4+66],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,2,] <- readBin(buf[B4+70],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUrotation[3,3,] <- readBin(buf[B4+74],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+78],"integer",size=4,n=IMUlength,endian="little")/62500
+            res@metadata$IMUtype <- IMUtype
+            res@metadata$units$IMUaccelX <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelY <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelZ <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUangrtX <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtY <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtZ <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUmagrtX <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtY <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
+            res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
+        } else if (IMUtype == "d2") {   # described in [1B] of the references of ?read.adv
+            ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
+            res@data$IMUaccelX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUaccelZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUangrtZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtX <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtY <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUmagrtZ <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+42],"integer",size=4,n=IMUlength,endian="little")/62500
+            res@metadata$IMUtype <- IMUtype
+            res@metadata$units$IMUaccelX <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelY <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUaccelZ <- list(unit=expression(m/s^2), scale="")
+            res@metadata$units$IMUangrtX <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtY <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUangrtZ <- list(unit=expression(degree/s), scale="")
+            res@metadata$units$IMUmagrtX <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtY <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
+            res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
+        } else if (IMUtype == "d3") {   # described in [1B] of the references of ?read.adv
+            res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleY <- readBin(buf[B4+10],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaAngleZ <- readBin(buf[B4+14],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityX <- readBin(buf[B4+18],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityY <- readBin(buf[B4+22],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaVelocityZ <- readBin(buf[B4+26],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaMagVectorX <- readBin(buf[B4+30],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaMagVectorY <- readBin(buf[B4+34],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUdeltaMagVectorZ <- readBin(buf[B4+38],"numeric",size=4,n=IMUlength,endian="little")
+            res@data$IMUtime <- readBin(buf[B4+42],"integer",size=4,n=IMUlength,endian="little")/62500
+            res@metadata$IMUtype <- IMUtype
+            res@metadata$units$IMUdeltaAngleX <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleY <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaAngleZ <- list(unit=expression(degree), scale="")
+            res@metadata$units$IMUdeltaVelocityX <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityY <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaVelocityZ <- list(unit=expression(m/s), scale="")
+            res@metadata$units$IMUdeltaMagVectorRateX <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUdeltaMagVectorRateY <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUdeltaMagVectorRateZ <- list(unit=expression(gauss), scale="")
+            res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
+         } else {
+             warning("unsupported IMU type '", IMUtype, "'; only c3, cc, d2 and d3 are allowed")
+        }
+    }
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
     vvdhRecords <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
@@ -443,26 +590,28 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$salinity <- salinity
 
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
-    res@data <- list(v=v, a=a, q=q,
-                     time=time,
-                     pressure=pressure,
+    res@data$v <- v
+    res@data$a <- a
+    res@data$q <- q
+    res@data$time <- time
+    res@data$pressure <- pressure
+    res@data$timeBurst <- vvdhTime
+    res@data$recordsBurst <- vvdhRecords
+    res@data$voltageSlow <- voltage
+    res@data$timeSlow <- vsdTime
+    res@data$headingSlow <- heading
+    res@data$pitchSlow <- pitch
+    res@data$rollSlow <- roll
+    res@data$temperatureSlow <- temperature
 
-                     timeBurst=vvdhTime,
-                     recordsBurst=vvdhRecords,
-                     voltageSlow=voltage,
-
-                     timeSlow=vsdTime,
-                     headingSlow=heading,
-                     pitchSlow=pitch,
-                     rollSlow=roll,
-                     temperatureSlow=temperature)
+    
     if (haveAnalog1)
         res@data$analog1 <- analog1
     if (haveAnalog2)
         res@data$analog2 <- analog2
     res@metadata$velocityResolution <- res@metadata$velocityScale
     res@metadata$velocityMaximum <- res@metadata$velocityScale * 2^15
-    res@metadata$units <- list(v="m/s")
+    res@metadata$units$v <- list(unit=expression(m/s), scale="")
     res@processingLog <- unclass(hitem)
     res@metadata$units$v=list(unit=expression(m/s), scale="")
     res@metadata$units$pressure=list(unit=expression(dbar), scale="")
