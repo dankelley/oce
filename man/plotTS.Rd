@@ -60,7 +60,7 @@
     \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
     \item{bg}{optional colour to be painted under plotting area, before plotting.
         (This is useful for cases in which \code{inset=TRUE}.)}
-    \item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
+    \item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
     \item{col}{colour for symbols.}
     \item{col.rho}{colour for isopycnal lines.}
     \item{cex.rho}{size of isopycnal labels.}

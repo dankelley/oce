@@ -33,12 +33,17 @@ SEXP trim_ts(SEXP x, SEXP xlim, SEXP extra)
   int nx= LENGTH(x);
   int nxlim = LENGTH(xlim);
   if (nxlim != 2)
-    error("length of xlim must be 2");
+    error("In trim_ts(), length of xlim must be 2");
   if (xlimp[1] < xlimp[0])
-    error("xlim must be ordered");
-  for (int i = 1; i < nx; i++)
-    if (xp[i] <= xp[i-1])
-      error("x must be ordered");
+    error("In trim_ts(), xlim must be ordered but it is (%g, %g)\n", xlimp[0], xlimp[1]);
+  for (int i = 1; i < nx; i++) {
+    if (xp[i] == xp[i-1]) {
+      ;
+      //error("In trim_ts(), x must be distinct but x[%d]=x[%d]=%.10g (sec after origin)\n", i-1, i, xp[i-1]);
+    } else if (xp[i] < xp[i-1]) {
+      error("In trim_ts(), x must be ordered but x[%d]=%.10g and x[%d]=%.10g (sec after origin)\n", i-1, xp[i-1], i, xp[i]);
+    }
+  }
   double epsilon = (xp[1] - xp[0]) / 1e9;
 
   SEXP from;

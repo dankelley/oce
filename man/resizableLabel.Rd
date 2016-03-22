@@ -9,7 +9,7 @@
   Temperature, and including units as appropriate.}
 
 \usage{
-resizableLabel(item, axis, sep)}
+resizableLabel(item, axis, sep, unit=NULL)}
 
 \arguments{
 
@@ -18,7 +18,10 @@ resizableLabel(item, axis, sep)}
     first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
     \code{"conductivity S/m"}, \code{"T"}, \code{"theta"}, \code{"sigmaTheta"},
     \code{"conservative temperature"}, \code{"absolute salinity"},
-    \code{"nitrate"}, \code{"nitrite"}, \code{"oxygen"}, \code{"phosphate"},
+    \code{"nitrate"}, \code{"nitrite"},
+    \code{"oxygen"}, \code{"oxygen saturation"}, \code{"oxygen mL/L"},
+    \code{"oxygen umol/L"}, \code{"oxygen umol/kg"},
+    \code{"phosphate"},
     \code{"silicate"}, \code{"tritium"}, \code{"spice"}, \code{"fluorescence"},
     \code{"p"}, \code{"z"}, \code{"distance"}, \code{"distance km"},
     \code{"along-track distance km"}, \code{"heading"}, \code{"pitch"},
@@ -34,6 +37,8 @@ resizableLabel(item, axis, sep)}
     parentheses or brackets that enclose it. If not provided, then
     \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
     used as the separator; if not, no separator is used.}
+
+  \item{unit}{optional unit to use, an expression (ignored at present)}
 
 }
 

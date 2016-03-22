@@ -72,7 +72,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     data are not equi-spaced in time.  If \code{by} is a string representing a time interval, in
     colon-separated format, then this interval is divided by the sampling interval, to get the
     stride length. \emph{BUG:} \code{by} only partially works; see the \dQuote{Bugs} section below.}
-    
+
   \item{header}{a boolean indicating whether the file contains a header at the start.  (This will
     not be the case for files that are created by data loggers that chop the raw data up into a
     series of sub-files, e.g. once per hour.)}
@@ -98,9 +98,9 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   \item{type}{character string indicating type of file, and used by \code{read.adv} to dispatch to
     one of the speciality functions.}
-  
+
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  
+
   \item{debug}{a flag that turns on debugging.  The value indicates the depth within the call stack
     to which debugging applies.  For example, \code{read.adv.nortek()} calls
     \code{read.header.nortek()}, so that \code{read.adv.nortek(...,debug=2)} provides information
@@ -125,7 +125,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   \enumerate{
 
-    \item The use must choose the appropriate \code{read.adv} variant corresponding to the
+    \item The user must choose the appropriate \code{read.adv} variant corresponding to the
     instrument in question.  (This is necessary because \code{\link{oceMagic}}, which is used by the
     generic \code{\link{read.oce}} routine, cannot determine the type of instrument by examining a
     file that lacks a header.)
@@ -149,14 +149,16 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   two facts control the maximum recordable velocity and the velocity
   resolution, values that may be retrieved for an ADV object name \code{d} with
   \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
-  
+
 }
 
-\section{Special considerations for NorTek files}{
+\section{Nortek files}{
 
-    The data format is inferred from the System Integrator Guide [1].  This document lacks clarity
-    in spots, and so \code{read.adv.nortek} contains some assumptions that are noted here, so that
-    users will be aware of possible problems.
+  \subsection{Sampling-rate and similar issues}{
+
+    The data format is inferred from the System Integrator Guide [1A] and System Integrator Manual
+    [1B].  These document lacks clarity in spots, and so \code{read.adv.nortek} contains some
+    assumptions that are noted here, so that users will be aware of possible problems.
 
     A prominent example is the specification of the sampling rate, stored in
     \code{metadata$sampingRate} in the return value.  Repeated examination of the System Integrator
@@ -186,7 +188,69 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     discussion board, the burst-mode times are offset by 2 seconds to allow for the instrument
     warm-up period.  }
 
-\section{Special considerations for Sontek files}{
+  \subsection{Handling IMU (inertial measurement unit) data}{Starting in March 2016,
+    \code{read.adv.nortek} has offered some support for handling IMU (inertial measurement unit)
+    data incorporated into Nortek binary files. This is not described in the Nortek document named
+    ``System Integrator Guide'' (2008 [1A]) but it appeared in ``System Integrator Manual'' (2014
+    [1B]; 2016 [1C]). Confusingly, 1B described 3 varieties of data, whereas 1C does not describe
+    any of these, but describes instead a fourth variety. As of March 2016, \code{read.adv.nortek}
+    handles all 4 varieties, because files in the various schemes appear to exist. In \code{oce},
+    the varieties are named after the byte code that flags them.  (Variety \code{c3} is the one
+    described in [1C]; the others were described in [1B].) The variety is stored in the
+    \code{metadata} slot of the returned object as a string named \code{IMUtype}.
+
+    For each variety, the reader is cautioned that strong tests have not been performed on the code.
+    One way to test the code is to compare with textual data files produced by the Nortek software.
+    In March 2016, an \code{oce} user shared a dataset of the \code{c3} variety, and this permitted
+    detailed comparison between the text file and the values inferred by \code{read.adv.nortek}. The
+    test suggested agreement (to within the resolution printed in the text file) for velocity
+    (\code{v} in the \code{data} slot), signal amplitude (\code{a}), correlation (\code{q}),
+    pressure (\code{p}), the three components of IMU delta angle (\code{IMUdeltaAngleX} etc), and
+    all components of the rotation matrix (\code{IMUrotation}).  However, the delta velocity signals
+    did not match, with \code{IMUdeltaVelocityX} disagreeing in the second decimal place,
+    \code{IMUdeltaVelocityY} component disagreeing in the first, and \code{IMUdeltaVelocityZ} being
+    out by a factor of about 10. This is github issue 893
+    (\url{https://github.com/dankelley/oce/issues/893}).
+
+    \itemize{
+
+      \item Variety \code{c3} (signalled by byte 5 of a sequence being \code{0xc3}) provides
+      information on what Nortek calls DeltaAngle, DeltaVelocity and Orientation Matrix. (Apart from
+      the orientation matrix, Nortek provides no documentation on what these quantities mean.) In
+      the object returned by \code{read.adv.nortek}, these are stored in the \code{data} slot as
+      \code{IMUdeltaAngleX}, \code{IMUdeltaAngleY}, \code{IMUdeltaAngleZ}, \code{IMUdeltaVelocityX},
+      \code{IMUdeltaVelocityY}, \code{IMUdeltaVelocityZ}, and \code{IMUrotation}, all vectors except
+      the last, which is a 3D array. In adition to these, \code{IMUtimestamp} is a time-stamp, 
+      which is not defined in the Nortek documents but seems, from IMU documents [5], to be defined
+      based on a clock that ticks once per 16 microseconds. Caution may be required in dealing with
+      this timestamp, since it seemed sensible in one test case (variety \code{d3}) but kept
+      reseting to zero in another (variety \code{c3}). The lack of Nortek documentation on most
+      of these quantities is a roadblock to implementing \code{oce} functions dealing with
+      IMU-enabled datasets
+
+      \item Variety \code{cc} (signalled by byte 5 of a sequence being \code{0xcc}) provides
+      information on acceleration, angular rotation rate, magnetic vector and orientation matrix.
+      Each is a timeseries. Acceleration is stored in the \code{data} slot as \code{IMUaccelX},
+      \code{IMUaccelY}, \code{IMUaccelz}. The angular rotation components are \code{IMUngrtX},
+      \code{IMUngrtY} and \code{IMUngrtz}. The magnetic data are in \code{IMUmagrtx},
+      \code{IMUmagrty} and \code{IMUmagrtz}. Finally, \code{IMUmatrix} is a rotation matrix made up
+      from elements named \code{M11}, \code{M12}, etc in the Nortek documentation.  In addition to
+      all of these, \code{IMUtime} stores time in seconds (with an origin whose definition is not
+      stated in [1B]).
+
+      \item Variety \code{d2} (signalled by byte 5 being \code{0xd2}) provides information on
+      gyro-stabilized acceleration, angular rate and magnetometer vectors.  The data stored
+      \code{MUaccelX}, \code{IMUangrtX}, \code{IMUmagrtX}, with similar for \code{Y} and \code{Z}.
+      Again, time is in \code{IMUtime}. This data type has not been tested as of mid-March 2016,
+      because the developers do not have a test file with which to test.
+
+      \item Variety \code{d3} (signalled by byte 5 being \code{0xd3}) provides information on
+      DeltaAngle, DeltaVelocity and magnetometer vectors, stored in \code{IMUdeltaAngleX},
+      \code{IMUdeltaVelocityX}, and \code{IMUdeltaMagVectorX}, with similar for \code{Y} and
+      \code{Z}. Again, time is in \code{IMUtime}. This data type has not been tested as of mid-March
+      2016, because the developers do not have a test file with which to test.  } } }
+
+\section{Sontek files}{
 
   The binary format is inferred from Appendix 2.2.3 of the Sontek ADV operation Manual [3], with the
   following exceptions and notes.
@@ -216,29 +280,29 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     }
 
     \strong{Bug:} only the second-last of these is handled in the present version of the package.
-    
-   } }
+
+    } }
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which contains measurements made with an
   ADV device.  This is a list containing lists named \code{metadata}, \code{data}, and
   \code{processingLog}.  
-  
+
   The \code{metadata} contains information as given in the following table.  The ``Nortek name'' is
   the name used in the Nortek System Integrator Guide [reference 1] and the ``Sontek name'' is the
   name used in the relevant Sontek documentation.  References are given in square brackets.
 
   \tabular{llll}{
-      \strong{\code{metadata} name}\tab \strong{Nortek name} \tab \strong{Sontek name}\tab\strong{Meaning}\cr
-      \code{manufacturer}\tab - \tab - \tab Either \code{"nortek"} or \code{"sontek"}\cr
-      \code{instrumentType}\tab - \tab - \tab Either \code{"vector"} or \code{"adv"}\cr
-      \code{filename}\tab - \tab - \tab Name of data file(s)\cr
-      \code{latitude}\tab - \tab - \tab Latitude of mooring (if applicable)\cr
-      \code{longitude}\tab - \tab - \tab Longitude of mooring (if applicable)\cr
-      \code{numberOfSamples}\tab - \tab - \tab Number of data samples in file\cr
-      \code{numberOfBeams}\tab NBeams [1 p18] \tab - \tab Number of beams (always 3)\cr
-      \code{numberOfBeamSequencesPerBurst}\tab NPings \tab - \tab number of beam sequences per burst\cr
-      \code{measurementInterval}\tab MeasInterval [1 p31] \tab - \tab \cr
-      \code{samplingRate}\tab 512/(AvgInterval) [1 p30; 4] \tab - \tab \cr
+    \strong{\code{metadata} name}\tab \strong{Nortek name} \tab \strong{Sontek name}\tab\strong{Meaning}\cr
+    \code{manufacturer}\tab - \tab - \tab Either \code{"nortek"} or \code{"sontek"}\cr
+    \code{instrumentType}\tab - \tab - \tab Either \code{"vector"} or \code{"adv"}\cr
+    \code{filename}\tab - \tab - \tab Name of data file(s)\cr
+    \code{latitude}\tab - \tab - \tab Latitude of mooring (if applicable)\cr
+    \code{longitude}\tab - \tab - \tab Longitude of mooring (if applicable)\cr
+    \code{numberOfSamples}\tab - \tab - \tab Number of data samples in file\cr
+    \code{numberOfBeams}\tab NBeams [1 p18] \tab - \tab Number of beams (always 3)\cr
+    \code{numberOfBeamSequencesPerBurst}\tab NPings \tab - \tab number of beam sequences per burst\cr
+    \code{measurementInterval}\tab MeasInterval [1 p31] \tab - \tab \cr
+    \code{samplingRate}\tab 512/(AvgInterval) [1 p30; 4] \tab - \tab \cr
   }
 
   The \code{data} list contains items with names corresponding to \code{adp} objects, with an
@@ -258,12 +322,12 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \code{by} from the argument list, and this may be done in a future version of \code{read.adv}.}
 
 \seealso{The documentation for \code{\link{adv-class}} explains the structure
-    of ADV objects, and also outlines the other functions dealing with them.}
+  of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{
 library(oce)
-# A nortek Vector file
+                                        # A nortek Vector file
 d <- read.oce("/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",
               from=as.POSIXct("2008-06-26 00:00:00", tz="UTC"),
               to=as.POSIXct("2008-06-26 00:00:10", tz="UTC"))
@@ -273,15 +337,25 @@ plot(d, which=c(1:3,15))
 
 \references{
 
-1. Nortek AS.  System Integrator Guide (paradopp family of products). June 2008.  (Doc No:
-PSI00-0101-0608).  (Users may find it helpful to also examine newer versions of the guide.)
+  1A. Nortek AS.  System Integrator Guide (paradopp family of products). June 2008.  (Doc No:
+  PSI00-0101-0608).  (Users may find it helpful to also examine newer versions of the guide.)
 
-2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field) Technical Documentation (Sept 1,
-2001).
+  1B. Nortek AS.  System Integrator Manual. Dec 2014.
+  (\code{system-integrator-manual_Dec2014_jan.pdf})
 
-3. Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0 (Oct 1997).
+  1C. Nortek AS.  System Integrator Manual. March 2016.
+  (\code{system-integrator-manual_Mar2016.pdf})
 
-4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center} 
+  2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field) Technical Documentation (Sept 1,
+  2001).
+
+  3. Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0 (Oct 1997).
+
+  4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center} 
+
+  5. A document describing an IMU unit that seems to be close to the one named in [1B,C] as being
+  an adjunct to Nortek Vector systems is at
+  \code{http://files.microstrain.com/3DM-GX3-35-Data-Communications-Protocol.pdf}
 
 }
 

@@ -1,24 +1,25 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+%salinityFlag, temperatureFlag, pressureFlag, conductivityFlag,
+%SAFlag, CTFlag, oxygenFlag, nitrateFlag, nitriteFlag, phosphateFlag, silicateFlag,
+
 \name{as.ctd}
 \alias{as.ctd}
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{as.ctd(salinity, temperature, pressure, conductivity, SA, CT, oxygen,
-       nitrate, nitrite, phosphate, silicate, scan, time, other,
-       salinityFlag, temperatureFlag, pressureFlag, conductivityFlag,
-       SAFlag, CTFlag, oxygenFlag, nitrateFlag, nitriteFlag, phosphateFlag,
-       silicateFlag,
-       temperatureUnit="ITS-90", conductivityUnit="ratio", pressureType="sea",
-       missingValue,
-       quality, 
-       filename, type, model, serialNumber,
-       ship, scientist, institute, address, cruise, station, 
-       date, startTime, recovery,
+\usage{as.ctd(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
+       SA=NULL, CT=NULL, oxygen=NULL,
+       nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
+       scan=NULL, time=NULL, other=NULL,
+       units=NULL, pressureType="sea",
+       missingValue=NA, quality=NULL, 
+       filename="", type="", model="", serialNumber="",
+       ship="", scientist="", institute="", address="", cruise="", station="", 
+       date="", startTime="", recovery="",
        longitude=NA, latitude=NA,
        deploymentType="unknown",
-       pressureAtmospheric, waterDepth,
-       sampleInterval, src,
+       pressureAtmospheric=0, waterDepth=NA,
+       sampleInterval=NA, src="",
        debug=getOption("oceDebug"))}
 
 \arguments{
@@ -40,7 +41,7 @@
 
   \item{conductivity}{electrical conductivity ratio through the water column
     (optional). To convert from raw conductivity in milliSeimens per centimeter
-    divide by 42.914 to get conductivity ratio.}
+    divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
   \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
     salinity is converted internally to UNESCO-defined practical salinity.}
@@ -57,21 +58,26 @@
     \code{1:length(salinity)}.}
   \item{time}{optional vector of times of observation}
   \item{other}{optional list of other data columns that are not in the standard list}
-  \item{salinityFlag}{a quality flag, defined and interpreted by the user}
-  \item{temperatureFlag}{a quality flag, defined and interpreted by the user}
-  \item{pressureFlag}{a quality flag, defined and interpreted by the user}
-  \item{conductivityFlag}{a quality flag, defined and interpreted by the user}
-  \item{SAFlag}{a quality flag, defined and interpreted by the user}
-  \item{CTFlag}{a quality flag, defined and interpreted by the user}
-  \item{oxygenFlag}{a quality flag, defined and interpreted by the user}
-  \item{nitrateFlag}{a quality flag, defined and interpreted by the user}
-  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
-  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
-  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
-  \item{temperatureUnit}{a character string indicating the unit for temperature;
-    may be \code{"ITS-90"} or \code{"IPTS-68"}}
-  \item{conductivityUnit}{a character string indicating the unit for
-    conductivity; may be \code{"ratio"}, \code{"S/m"} or \code{"mS/cm"}.}
+%  \item{salinityFlag}{a quality flag, defined and interpreted by the user}
+%  \item{temperatureFlag}{a quality flag, defined and interpreted by the user}
+%  \item{pressureFlag}{a quality flag, defined and interpreted by the user}
+%  \item{conductivityFlag}{a quality flag, defined and interpreted by the user}
+%  \item{SAFlag}{a quality flag, defined and interpreted by the user}
+%  \item{CTFlag}{a quality flag, defined and interpreted by the user}
+%  \item{oxygenFlag}{a quality flag, defined and interpreted by the user}
+%  \item{nitrateFlag}{a quality flag, defined and interpreted by the user}
+%  \item{nitriteFlag}{a quality flag, defined and interpreted by the user}
+%  \item{phosphateFlag}{a quality flag, defined and interpreted by the user}
+%  \item{silicateFlag}{a quality flag, defined and interpreted by the user}
+
+  \item{units}{an optional list containing units.  If not supplied, a default of
+    \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+      salinity=list(unit=expression(ratio), scale="",
+      pressure=list(unit=expression(dbar), scale="")} is used. This is quite
+    typical of archived datasets, but for some instrumental files it will make
+    sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
+    \code{salinity=list(unit=expression(S/m), scale="")}.}
+  
   \item{pressureType}{a character string indicating the type of pressure; may be
     \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
     and sea pressure, or \code{"sea"}.}
@@ -127,7 +133,7 @@
 }
 
 \details{If the first argument is an \code{\link{rsk-class}} object, the
-  pressure it contains may need to adjustment, because \code{rsk} objects may
+  pressure it contains may need to be adjusted, because \code{rsk} objects may
   contain either absolute pressure or sea pressure. This adjustment is handled
   automatically by \code{as.ctd}, by examination of the metadata item named
   \code{pressureType} (described in the documentation for
@@ -163,5 +169,11 @@ plot(ctd)
 }
 
 \author{Dan Kelley}
+
+\references{Culkin, F., and Norman D. Smith, 1980. Determination of the
+  concentration of potassium chloride solution having the same electrical
+  conductivity, at 15 C and infinite frequency, as standard seawater of salinity
+  35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
+    Engineering}, \bold{5}, pp 22-23.}
 
 \keyword{misc}

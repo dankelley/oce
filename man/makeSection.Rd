@@ -1,9 +1,11 @@
 \name{makeSection}
 \alias{makeSection}
 
-\title{Bind CTD profiles together into a cross section}
+\title{Bind CTD profiles together into a cross section [DEPRECATED]}
 
-\description{Combine a series of CTD profiles together to create a section.}
+\description{Combine a series of CTD profiles together to create a section.
+    This function is deprecated, meaning that \strong{it will be removed two
+        CRAN releases from now}. Please use \code{\link{as.section}} instead.}
 
 \usage{makeSection(item, \dots)}
 

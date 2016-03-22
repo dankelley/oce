@@ -2,7 +2,7 @@
 
 \alias{sunAngle}
 
-\title{Solar angle as function of space and time.}
+\title{Solar Angle as Function of Space and Time}
 
 \description{Solar angle as function of space and time.}
 

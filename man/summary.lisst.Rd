@@ -20,7 +20,7 @@
 \details{Pertinent summary information is presented, including the sampling
     times, data ranges, etc.}
 
-\value{\code{NULL}}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure
     of LISST objects, and also outlines the other functions dealing with them.}

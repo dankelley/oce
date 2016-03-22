@@ -91,7 +91,7 @@ stopifnot(all.equal(cm$zlim, c(-10, 10)))
 stopifnot(!any(is.na(cm$zcol)))
 stopifnot(!any(is.na(cm$zcol)))
 
-## 9. test some actual colors, based on issue 449b.R at
+## 9. test some actual colours, based on issue 449b.R at
 ##    https://github.com/dankelley/oce-issues/tree/master/449
 t <- seq(0, 1, length.out=100)
 plim <- c(38, 41)

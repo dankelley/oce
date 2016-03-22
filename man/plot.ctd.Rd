@@ -12,7 +12,8 @@
     indicating the station location.}
 
 \usage{\S4method{plot}{ctd}(x, which,
-     col=par("fg"), fill=FALSE,
+     col=par("fg"), fill,
+     borderCoastline=NA, colCoastline="lightgray",
      eos=getOption("oceEOS", default='gsw'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE,
@@ -57,10 +58,13 @@
       \item \code{which=3} or \code{which="TS"} gives a TS plot
       \item \code{which=4} or \code{which="text"} gives a textual
       summary of some aspects of the data
-      \item \code{which=5} or \code{which="map"} gives a map, with a dot for
+      \item \code{which=5} or \code{which="map"} gives a map plotted
+      with \code{\link{plot.coastline}}, with a dot for
       the station location.  Notes near the top boundary of the map give the
       station number, the sampling date, and the name of the chief scientist,
-      if these are known.
+      if these are known. Note that the longitude will be converted to a value
+      between -180 and 180 before plotting.  (See also notes
+      about \code{span}.)
       \item \code{which=5.1} as for \code{which=5}, except that the file name
       is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
@@ -83,9 +87,13 @@
     }
   }
   \item{col}{colour of lines or symbols}
-  \item{fill}{either a logical, indicating whether to fill the land with
-      light-gray, or a color name.  Owing to problems with some projections,
-      the default is not to fill.}
+  \item{fill}{a legacy parameter that will be permitted only temporarily;
+    see \dQuote{History}.}
+  \item{borderCoastline}{colour of coastlines and international borders, passed
+      to \code{\link{plot.coastline}} if a map is included in \code{which}.}
+  \item{colCoastline}{fill colour of coastlines and international borders, passed
+      to \code{\link{plot.coastline}} if a map is included in \code{which}. Set
+      to \code{NULL} to avoid filling.}
   \item{eos}{equation of state to be used, either \code{"unesco"} or
       \code{"gsw"}.}
   \item{ref.lat}{Latitude of reference point for distance calculation}
@@ -119,8 +127,9 @@
     map plotted) DEPRECATED 2014-01-07} 
   \item{clongitude}{center longitude}
   \item{clatitude}{center latitude}
-  \item{span}{optional span of map, in km.  If not given, the map scale is
-      chosen to include some points on the nearby coastline.}
+  \item{span}{optional span of map, in km.  If not given, this will be
+      determined as a small multiple of the distance to the nearest point of
+      land, in an attempt to show some coastline in the plot.}
   \item{showHemi}{logical indicating whether to show hemisphere in axis tick
       labels.}
   \item{lonlabel,latlabel,sides}{optional vectors of longitude and latitude to
@@ -195,6 +204,11 @@
 
 \seealso{The documentation for \code{\link{ctd-class}} explains the structure
     of CTD objects, and also outlines the other functions dealing with them.}
+
+\section{History}{Until February, 2016, \code{plot.cctd} relied on
+  a now-defunct argument \code{fill} to control colours; \code{colCoastline} is to be
+  used now, instead. Also, now it is possible to set the edge of coasts and 
+  international boundaries, with \code{borderCoastline}.}
 
 \examples{
 library(oce)

@@ -186,13 +186,13 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 %      bottom tracking).}
 %  \item{\code{ba}}{A \code{bc} but for bottom-track amplitude.}
 %  \item{\code{bg}}{A \code{bc} but for bottom-track goodness (in percent).}
-%  \item{\code{slatitude}}{latitude at start of an ensemble (only exists for RDI
+%  \item{\code{firstLatitude}}{latitude at start of an ensemble (only exists for RDI
 %          files that have had navigation data merged in).}
-%  \item{\code{slongitude}}{longitude at start of an ensemble (only exists for RDI
+%  \item{\code{firstLongitude}}{longitude at start of an ensemble (only exists for RDI
 %          files that have had navigation data merged in).}
-%  \item{\code{elatitude}}{latitude at end of an ensemble (only exists for RDI
+%  \item{\code{lastLatitude}}{latitude at end of an ensemble (only exists for RDI
 %          files that have had navigation data merged in).}
-%  \item{\code{elongitude}}{longitude at end of an ensemble (only exists for RDI
+%  \item{\code{lastLongitude}}{longitude at end of an ensemble (only exists for RDI
 %          files that have had navigation data merged in).}
 %  }
 

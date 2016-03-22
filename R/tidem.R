@@ -54,15 +54,13 @@ setMethod(f="summary",
 
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
-          definition=function(x, i, j, drop) {
+          definition=function(x, i, j, ...) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
               if (i == "coef") {
                   x@data$model$coef
               } else {
-                  ## I use 'as' because I could not figure out callNextMethod() etc
-                  ##as(x, "oce")[[i, j, drop]]
-                  as(x, "oce")[[i]]
+                  callNextMethod()
               }
           })
 
@@ -86,7 +84,7 @@ setMethod(f="plot",
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              drawConstituents <- function(type="standard", labelIf=NULL, col="blue")
+              drawConstituents <- function(amplitude, type="standard", labelIf=NULL, col="blue")
               {
                   if (type == "standard") {
                       drawConstituent("SA", 0.0001140741, side=3)
@@ -119,10 +117,10 @@ setMethod(f="plot",
                   if (which[w] == 2) {
                       plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
                       segments(frequency, 0, frequency, amplitude)
-                      drawConstituents()
+                      drawConstituents(amplitude)
                   } else if (which[w] == 1) {
                       plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-                      drawConstituents()
+                      drawConstituents(amplitude)
                   } else {
                       stop("unknown value of which ", which, "; should be 1 or 2")
                   }
@@ -173,8 +171,8 @@ tidemVuf <- function(t, j, lat=NULL)
         oceDebug(debug, "uu[1:3]=",uu[1:3], "\n")
 
         nsat <- length(tidedata$sat$iconst)
-        nfreq <- length(tidedata$const$numsat)
-                                        # loop, rather than make a big matrix
+        ##nfreq <- length(tidedata$const$numsat)
+        ## loop, rather than make a big matrix
         oceDebug(debug,
                   "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
                   "length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
@@ -577,27 +575,26 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     ##     ~/src/t_tide_v1.3beta/t_tide.m:468
     ##     ~/src/foreman/tide12_r2.f:422
 
-    data <- list(model=model,
-                 call=cl,
-                 tRef=tRef,
-                 const=c(1,   index),
-                 name=c("Z0", name),
-                 freq=c(0,    freq),
-                 amplitude=amplitude,
-                 phase=phase,
-                 p=p)
-    rval <- new('tidem')
-    rval@metadata <- list(rc=rc)
-    rval@data <- data
-    rval@processingLog <- processingLogAppend(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res <- new('tidem')
+    res@data <- list(model=model,
+                      call=cl,
+                      tRef=tRef,
+                      const=c(1,   index),
+                      name=c("Z0", name),
+                      freq=c(0,    freq),
+                      amplitude=amplitude,
+                      phase=phase,
+                      p=p)
+    res@metadata$rc <- rc
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 
 predict.tidem <- function(object, newdata, ...)
 {
     if (!missing(newdata) && !is.null(newdata)) {
-        newdata.class <- class(newdata)
+        ##newdata.class <- class(newdata)
         if (inherits(newdata, "POSIXt")) {
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
@@ -615,34 +612,64 @@ predict.tidem <- function(object, newdata, ...)
             name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
             dim(name2) <- c(2 * length(name), 1)
             colnames(x) <- name2
-            rval <- predict(object@data$model, newdata=list(x=x), ...)
+            res <- predict(object@data$model, newdata=list(x=x), ...)
         } else {
             stop("newdata must be of class POSIXt")
         }
     } else {
-        rval <- predict(object@data$model, ...)
+        res <- predict(object@data$model, ...)
     }
-    as.numeric(rval)
+    as.numeric(res)
 }
 
 webtide <- function(action=c("map", "predict"),
                     longitude, latitude, node, time,
                     basedir=getOption("webtide"),
                     region="nwatl",
-                    plot=TRUE, tformat, ...)
+                    plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
-    filename <- paste(subdir, "/", region, "_ll.nod", sep="")
-    triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
+
+    ## 2016-02-03: it seems that there are several possibilities for this filename.
+    triangles <- NULL
+    warn <- options("warn")$warn
+    options(warn=-1)
+    nodFile <- paste(subdir, "/", region, ".nod", sep="")
+    t <- try({ triangles <- read.table(nodFile,
+        col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+    if (inherits(t, "try-error")) {
+        nodFile <- paste(subdir, "/", region, "ll.nod", sep="")
+        t <- try({ triangles <- read.table(nodFile,
+            col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+        if (inherits(t, "try-error")) {
+            nodFile <- paste(subdir, "/", region, "_ll.nod", sep="")
+            t <- try({ triangles <- read.table(nodFile,
+                col.names=c("triangle","longitude","latitude")) }, silent=TRUE)
+            if (inherits(t, "try-error")) {
+                stop("cannot find WebTide nod file; last trial name was ", nodFile)
+            } else {
+                oceDebug(debug, "Found node information in ", nodFile, "\n")
+            }
+        } else {
+            oceDebug(debug, "Found node information in ", nodFile, "\n")
+        }
+    } else {
+        oceDebug(debug, "Found node information in ", nodFile, "\n")
+    }
+    if (is.null(triangles))
+        stop("Could not find the '.nod' file")
+    options(warn=warn)
+    rm(warn)
+
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
             par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
                  asp=asp, xlab="", ylab="", ...)
-            usr <- par('usr')
-            best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
+            ##usr <- par('usr')
+            ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
             warning("tidem: using default coastline for testing")
             data("coastlineWorld", package="oce", envir=environment())
             coastlineWorld <- get("coastlineWorld")
@@ -675,42 +702,57 @@ webtide <- function(action=c("map", "predict"),
             latitude <- triangles$latitude[node]
             longitude <- triangles$longitude[node]
         }
+        oceDebug(debug, latitude, "N ", longitude, "E -- use node ", node,
+                 " at ", triangles$latitude[node], "N ", triangles$longitude[node], "E\n", sep="")
         constituentse <- dir(path=subdir, pattern="*.s2c")
-        abbrev <- substr(constituentse, 1, 2)
         constituentsuv <- dir(path=subdir, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
         data("tidedata", package="oce", envir=environment())
         tidedata  <- get("tidedata")#,   pos=globalenv())
         for (i in 1:nconstituents) {
-            period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            twoLetter <- substr(constituentse[i], 1, 2)
+            C <- which(twoLetter == tidedata$const$name)
+            period[i] <- 1 / tidedata$const$freq[C]
             ## Elevation file contains one entry per node, starting with e.g.:
             ##tri
             ## period 23.934470 (hours) first harmonic 
             ##260.000000 (days) 
             ##1 0.191244 223.820954
             ##2 0.188446 223.141200
-            cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
+            coneFile <- paste(subdir, constituentse[i], sep="/")
+            cone <- read.table(coneFile, skip=3)[node,]
             ampe[i] <- cone[[2]]
             phasee[i] <- cone[[3]]
-            conuv <- read.table(paste(subdir,constituentsuv[i],sep="/"), skip=3)[node,]
+            conuvFile <- paste(subdir,constituentsuv[i],sep="/")
+            conuv <- read.table(conuvFile, skip=3)[node,]
             ampu[i] <- conuv[[2]]
             phaseu[i] <- conuv[[3]]
             ampv[i] <- conuv[[4]]
             phasev[i] <- conuv[[5]]
+            oceDebug(debug, coneFile, sprintf("%s ", twoLetter), 
+                     sprintf("%4.2fh", period[i]),
+                     sprintf(" (node %d) ", node),
+                     sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
         }
-        df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
         ## NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
-            vuf <- tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            twoLetter <- substr(constituentse[i], 1, 2)
+            C <- which(twoLetter == tidedata$const$name)
+            vuf <- tidemVuf(tRef, j=C, lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
+            ##> lines(time, elevation, col=i,lwd=3) ## Debug
             u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
             v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
+            oceDebug(debug, sprintf("%s ", twoLetter),  
+                     sprintf("%4.2fh ", period[i]),
+                     sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
+ 
         }
         if (plot) {
             par(mfrow=c(3,1))
@@ -729,4 +771,3 @@ webtide <- function(action=c("map", "predict"),
     invisible(list(time=time, elevation=elevation, u=u, v=v,
                    node=node, basedir=basedir, region=region))
 }
-

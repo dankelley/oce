@@ -14,7 +14,7 @@ setMethod(f="plot",
           signature=signature("bremen"),
           definition=function(x, type, ...) {
               names <- names(x@data)
-              n <- length(names)
+              ##n <- length(names)
               if (missing(type)) {
                   if ("salinity" %in% names) plot(as.ctd(x), ...)
                   else plot(as.ladp(x), ...)
@@ -44,29 +44,7 @@ setMethod(f="summary",
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
               showMetadataItem(object, "profile", "Profile:             ")
-              cat("* Location:           ",       latlonFormat(object@metadata$latitude,
-                                                               object@metadata$longitude,
-                                                               digits=5), "\n")
-              showMetadataItem(object, "waterDepth", "Water depth: ")
-              showMetadataItem(object, "levels", "Number of levels: ")
-              names <- names(object@data)
-              ndata <- length(names)
-              isTime <- names == "time"
-              if (any(isTime))
-                  cat("* Time ranges from", format(object@data$time[1]), "to", format(tail(object@data$time, 1)), "\n")
-              threes <- matrix(nrow=sum(!isTime), ncol=3)
-              ii <- 1
-              for (i in 1:ndata) {
-                  if (isTime[i])
-                      next
-                  threes[ii,] <- threenum(object@data[[i]])
-                  ii <- ii + 1
-              }
-              rownames(threes) <- paste("   ", names[!isTime])
-              colnames(threes) <- c("Min.", "Mean", "Max.")
-              cat("* Statistics of data::\n")
-              print(threes, indent='  ')
-              processingLogShow(object)
+              callNextMethod()
           })
 
 
@@ -90,36 +68,36 @@ read.bremen <- function(file)
         open(file, "r")
         on.exit(close(file))
     }
-    rval <- new("bremen")
+    res <- new("bremen")
     lines <- readLines(file)
     ## Discover header as lines starting with a letter
     headerLength <- max(grep("^[a-zA-Z]", lines))
     h <- lines[1:headerLength]
-    rval@metadata$filename <- filename
-    rval@metadata$header <- h
+    res@metadata$filename <- filename
+    res@metadata$header <- h
     lat <- strsplit(findInHeaderBremen("Latitude", h), " ")[[1]]
     latitude <- as.numeric(lat[1]) + as.numeric(lat[2]) / 60 # assume N hemi
     if (lat[3] == "S")
         latitude <- -latitude
-    rval@metadata$latitude <- latitude
+    res@metadata$latitude <- latitude
     lon <- strsplit(findInHeaderBremen("Longitude", h), " ")[[1]]
     longitude <- as.numeric(lon[1]) + as.numeric(lon[2]) / 60 # assume N hemi
     if (lon[3] == "W")
         longitude <- -longitude
-    rval@metadata$longitude <- longitude
+    res@metadata$longitude <- longitude
     date <- findInHeaderBremen("Date", h)
     time <- findInHeaderBremen("Time", h)
     datetime <- paste(date, " ", time, ":00", sep="")
-    rval@metadata$time <- as.POSIXct(datetime, tz="UTC")
-    rval@metadata$station <- findInHeaderBremen("Station", h)
-    rval@metadata$profile <- findInHeaderBremen("Profile", h)
-    rval@metadata$ship <- findInHeaderBremen("Shipname", h)
-    rval@metadata$cruise <- findInHeaderBremen("Cruise", h)
-    rval@metadata$scientist<- findInHeaderBremen("CruisePI", h)
-    rval@metadata$institute <- findInHeaderBremen("Affiliation", h)
-    rval@metadata$model <- findInHeaderBremen("CTD_Model", h)
-    rval@metadata$waterDepth <- as.numeric(findInHeaderBremen("WaterDepth", h))
-    rval@metadata$maxPress <- as.numeric(findInHeaderBremen("MaxPress", h))
+    res@metadata$time <- as.POSIXct(datetime, tz="UTC")
+    res@metadata$station <- findInHeaderBremen("Station", h)
+    res@metadata$profile <- findInHeaderBremen("Profile", h)
+    res@metadata$ship <- findInHeaderBremen("Shipname", h)
+    res@metadata$cruise <- findInHeaderBremen("Cruise", h)
+    res@metadata$scientist<- findInHeaderBremen("CruisePI", h)
+    res@metadata$institute <- findInHeaderBremen("Affiliation", h)
+    res@metadata$model <- findInHeaderBremen("CTD_Model", h)
+    res@metadata$waterDepth <- as.numeric(findInHeaderBremen("WaterDepth", h))
+    res@metadata$maxPress <- as.numeric(findInHeaderBremen("MaxPress", h))
     ## Columns have nicknames
     nicknames <- strsplit(gsub(" ", "", strsplit(h[grep("^(Columns)|(Fields)", h)], "=")[[1]][2]), ":")[[1]]
     names <- nicknames
@@ -135,15 +113,15 @@ read.bremen <- function(file)
     for (name in names(data)) {
         ## FIXME: I have no idea what "uz" is, so I cannot guess the unit
         if (name == "u" || name == "v" || name == "uz" || name == "vz") {
-            rval@data[name] <- data[name] / 100 # velocities in cm/s
+            res@data[name] <- data[name] / 100 # velocities in cm/s
         } else if (name == "salinity" || name == "temperature") {
-            #rval@data[name] <- ifelse(data[[name]] == -9, NA, data[[name]])
-            rval@data[name] <- as.data.frame(ifelse(data[[name]] == -9, NA, data[[name]]))
+            #res@data[name] <- ifelse(data[[name]] == -9, NA, data[[name]])
+            res@data[name] <- as.data.frame(ifelse(data[[name]] == -9, NA, data[[name]]))
            
         } else {
-            rval@data[name] <- data[name]
+            res@data[name] <- data[name]
         }
     }
-    rval 
+    res 
 }
 

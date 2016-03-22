@@ -2,7 +2,7 @@
 
 \alias{beamName}
 
-\title{Name an acoustic-doppler beam.}
+\title{Name an Acoustic-Doppler Beam}
 
 \description{Name a beam for an acoustic-doppler device, adjusting for
   beam number and for coordinate system.}

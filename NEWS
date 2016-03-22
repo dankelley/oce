@@ -1,4 +1,18 @@
-0.9-17
+0.9-19
+- subset(argo, "adjusted") drops non-adjusted data
+- read.argo() reads all documented data and metadata fields
+- trimString() added
+
+0.9-18
+- improve plot.coastline() and mapPlot()
+- add support for G1SST satellite
+- all objects now have metadata items for units and flags
+- ctdTrim() method renamed: old A and B are new A; old C is new B
+- support more channels and features of rsk files
+- as.adp() added
+- convert argo objects to sections
+- makeSection() deprecated; use as.section() instead
+- read.adp.rdi() handles Teledyne/RDI vsn 23.19 bottom-track data
 - geodXyInverse() added; geod functions now spell out longitude etc
 - read.odf() speeded up by a factor of about 30
 - add colour palettes from Kristen Thyng's cmocean Python package
@@ -18,6 +32,9 @@
 - coastlineCut() added
 - rgdal package used instead of local PROJ.4 source code
 - mapproj-style map projections eliminated
+
+0.9-17
+- remove an exit() call in a C function
 
 0.9-16
 - cite PROJ.4 contributors in DESCRIPTION

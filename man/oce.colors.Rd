@@ -85,7 +85,7 @@ oce.colorsVorticity(n)
 }
 
 \arguments{
-\item{n}{the number of colors (\eqn{\ge 1}{>=1}) to be in the palette.}
+\item{n}{the number of colours (\eqn{\ge 1}{>=1}) to be in the palette.}
 \item{which}{an identifier for the palette  (see \dQuote{Details}).}
 \item{region}{the region characteristic, for \code{oce.colorsGebco}.}
 \item{type}{the type of item drawn, for \code{oce.colorsGebco}.}
@@ -93,8 +93,8 @@ oce.colorsVorticity(n)
   scale.}
 \item{high}{the hue, in [0,1], for the high end of a \code{oce.colorsTwo}
   scale.}
-\item{smax}{the maximum saturation, in [0,1], for the colors of \code{oce.colorsTwo}.}
-\item{alpha}{the alpha value, in [0,1], for the colors of \code{oce.colorsTwo}.}
+\item{smax}{the maximum saturation, in [0,1], for the colours of \code{oce.colorsTwo}.}
+\item{alpha}{the alpha value, in [0,1], for the colours of \code{oce.colorsTwo}.}
 }
 
 \details{
@@ -103,7 +103,7 @@ oce.colorsVorticity(n)
   \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
   \code{which}=2 yields the ColorBrewer diverging RYB scheme [1].
 
-  A family of nine-color schemes is as follows: \code{which="jet"} (or
+  A family of nine-colour schemes is as follows: \code{which="jet"} (or
   \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
   or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
   somewhat desaturating the yellow and cyan.
@@ -120,10 +120,10 @@ oce.colorsVorticity(n)
   \code{oce.colorsTwo} provides a two-tone palette that fades to white
   at central values.
 
-  \code{oce.colorsViridis} provides a matplotlib (python) color scheme that
+  \code{oce.colorsViridis} provides a matplotlib (python) colour scheme that
   became the standard in 2015; see [2]. This is a blue-yellow transition that
   is designed to reproduce well in black-and-white, and also to be
-  interpretable by those with certain forms of colour blindness.
+  interpretable by those with certain forms of colour blindness [3,4,5].
 
   \code{oce.colorsCDOM}, \code{oce.colorsChlorophyll},
   \code{oce.colorsDensity}, \code{oce.colorsFreesurface},
@@ -131,7 +131,7 @@ oce.colorsVorticity(n)
   \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
   \code{oce.colorsTurbidity}, \code{oce.colorsVelocity} and
   \code{oce.colorsVorticity} are based on RGB values set up by Kristen M. Thyng
-  for her Python package named \code{cmcolor} [6].
+  for her Python package named \code{cmcolor} [7].
 
 }
 
@@ -180,7 +180,7 @@ imagep(volcano, col=oce.colorsViridis)
 [1] Color Brewer.
 \url{http://colorbrewer2.org/}
 
-[2] A blog item on the Viridis (and related) matplotlib colorscales is at
+[2] A blog item on the Viridis (and related) matplotlib colour scales is at
 \url{http://bids.github.io/colormap/}.
 
 [3] Light, A., and P. J. Bartlein, 2004.
@@ -195,9 +195,14 @@ Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
 Comment on ``Color schemes for improved data graphics,''
 by A. Light and P. J. Bartlein.
 \emph{Eos Trans. AGU}, 86(20).
-(See also \url{http://geography.uoregon.edu/datagraphics/color_scales.htm})
 
-[6] The \code{cmocean} Python package, written by Kristen M Thyng, is available
+[6] The Geography department at the University of Oregon has good resources on
+colour schemes; see e.g.
+\code{http://geography.uoregon.edu/datagraphics/color_scales.htm} (This URL
+worked prior to December 8, 2015, but was found to fail on that date; it is
+included here in case users want to search for themselves.)
+
+[7] The \code{cmocean} Python package, written by Kristen M Thyng, is available
 at \url{https://github.com/kthyng/cmocean}.
 
 }

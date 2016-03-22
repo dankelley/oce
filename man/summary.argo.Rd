@@ -18,8 +18,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{An object of class \code{"summary.argo"}, which contains
-  pertinent information about the CTD record and its processing.}
+\value{A matrix containing statistics of the elements of the \code{data} slot.}
 
 \seealso{The documentation for \code{\link{argo-class}} explains the
     structure of argo objects, and also outlines the other functions dealing
