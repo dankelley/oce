@@ -53,7 +53,7 @@ ctd <- handleFlags(ctd)
 this action to the salinity, temperature, and pressure data.
 ctd <- handleFlags(ctd, flags=list(salinity=4, temperature=4, pressure=4))
 
-# 3. Add 0.002degC to temperatures flagged as bad (NOT WORKING YET)
+# 3. Add 0.002degC to temperatures flagged as bad
 addT <- function(T) T + 0.002
 ctd <- handleFlags(ctd, flags=list(temperature=4), actions=list(temperature=addT))
 }
