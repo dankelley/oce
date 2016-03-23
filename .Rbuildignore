@@ -18,4 +18,5 @@ inst/doc/.gitignore
 ^\.Rproj\.user$
 src/*.o$
 autom4te.cache
+man-roxygen
 

@@ -1,11 +1,26 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' Handle flags in CTD objects.
+#' @details FIXME: Put ctd-specific details here.
+#' @param object An object inheriting from `ctd`.
+#' @param flags FIXME: explain how to set up flags, and also the default. Please put generalizable stuff into
+#' man-roxygen/handleFlagsTemplate.R in order to avoid a lot of editing work later, when
+#' we handle flags for over a dozen types.
+#' @template handleFlagsTemplate
+setMethod("NEWhandleFlags",
+          c(object="ctd", action="ANY", flags="ANY"),
+          function(object, action="NA", flags=list()) {
+              cat("in CTD function for NEWhandleFlags. FIXME: write code to do something here!!\n")
+              1.23
+          })
+
 ## To save storage, this new() function has arguments only for quantities that are present in almost all cases. For example, not
 ## all data files will have oxygen, so that's not present here. Similarly, not all files have data-quality columns, so they are
 ## not present either. Columnar data should be added after the object is created, using ctdAddColumn(), which updates metadata
 ## as needed. As for adding metadata, do that directly. Examples of these things are seen throughout this file.  Note that
 ## normal users should employ read.ctd() or as.ctd() to create ctd objects ... this function is intended for internal use, and
 ## may be changed at any moment.
+
 
 setMethod(f="initialize",
           signature="ctd",

@@ -405,36 +405,21 @@ setMethod(f="show",
               }
           })
 
-
-
-setGeneric("NEWhandleFlags", function(object, flags, action) {
+## 20160323 temporary note from DK to CR: I'm using a new name. I tried doing something
+## in R/ctd.R, mainly to test how the docs and generic system would work. It seems ok,
+## so I plan next to code in something for CTD.
+setGeneric("NEWhandleFlags", function(object, action, flags) {
+           cat("in base function for NEWhandleFlags\n")
            standardGeneric("NEWhandleFlags")
          })
 
-#' handle flags
-#'
-#' @param object FILL IN
-#' @param flags FILL IN
-#' @param action FILL IN
-#' @family functions that handle flags
+## I think the test below will catch numerics, lists, data frames, and character strings. It does not
+## catch objects that are non-oce, since I don't know how to code that, but the default message
+## from R should be enough to handle that case, albeit perhaps with a less informative 
+## error message.
 setMethod("NEWhandleFlags",
-          c(object="ctd", flags="ANY", action="ANY"),
-          function(object, flags=NULL, action="NA") {
-              cat("in NEWhandleFlags() generic for CTD objects\n")
-              1.23
+          c(object="vector", action="ANY", flags="ANY"),
+          function(object, action="NA", flags=list()) {
+              stop("NEWhandleFlags() can only be applied to objects inheriting from \"oce\"")
           })
-
-#' handle flags
-#'
-#' @param object FILL IN
-#' @param flags FILL IN
-#' @param action FILL IN
-#' @family functions that handle flags
-setMethod("NEWhandleFlags",
-          c(object="adp", flags="ANY", action="ANY"),
-          function(object, flags=NULL, action="NA") {
-              cat("in NEWhandleFlags() generic for ADP objects\n")
-              1.23
-          })
-
 
