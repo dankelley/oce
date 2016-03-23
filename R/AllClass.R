@@ -408,7 +408,7 @@ setMethod(f="show",
 ## 20160323 temporary note from DK to CR: I'm using a new name. I tried doing something
 ## in R/ctd.R, mainly to test how the docs and generic system would work. It seems ok,
 ## so I plan next to code in something for CTD.
-setGeneric("NEWhandleFlags", function(object, action, flags) {
+setGeneric("NEWhandleFlags", function(object, flags, actions) {
            cat("in base function for NEWhandleFlags\n")
            standardGeneric("NEWhandleFlags")
          })
@@ -418,8 +418,8 @@ setGeneric("NEWhandleFlags", function(object, action, flags) {
 ## from R should be enough to handle that case, albeit perhaps with a less informative 
 ## error message.
 setMethod("NEWhandleFlags",
-          c(object="vector", action="ANY", flags="ANY"),
-          function(object, action="NA", flags=list()) {
+          c(object="vector", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
               stop("NEWhandleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 

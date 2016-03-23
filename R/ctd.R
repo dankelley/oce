@@ -1,15 +1,32 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Handle flags in CTD objects.
-#' @details FIXME: Put ctd-specific details here.
-#' @param object An object inheriting from `ctd`.
-#' @param flags FIXME: explain how to set up flags, and also the default. Please put generalizable stuff into
-#' man-roxygen/handleFlagsTemplate.R in order to avoid a lot of editing work later, when
-#' we handle flags for over a dozen types.
+#' @title Handle flags in CTD objects
+#' @details If \code{flags} and \code{actions} are not provided, the
+#' default is to use WHP (World Hydrographic Program) flags, in which the
+#' value 2 indicates good data, and other values indicate either unchecked,
+#' suspicious, or bad data [1]; any data not flagged as good are set
+#' to \code{NA} in the returned value.
+#' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
+#' @references 
+#' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' @examples
+#'\dontrun{
+#' # 1. Default: anything not flagged as 2 is set to NA, thus focussing on
+#' # data flagged as 'good' in the World Hydrographic Program scheme.
+#' ctd <- handleFlags(ctd)
+#'
+#' # 2. A less restrictive case: only set to NA if flag=4, and only apply 
+#' this action to the salinity, temperature, and pressure data.
+#' ctd <- handleFlags(ctd, flags=list(salinity=4, temperature=4, pressure=4))
+#'
+#' # 3. Add 0.002degC to temperatures flagged as bad
+#' addT <- function(T) T + 0.002
+#' ctd <- handleFlags(ctd, flags=list(temperature=4), actions=list(temperature=addT))
+#'}
 setMethod("NEWhandleFlags",
-          c(object="ctd", action="ANY", flags="ANY"),
-          function(object, action="NA", flags=list()) {
+          c(object="ctd", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
               cat("in CTD function for NEWhandleFlags. FIXME: write code to do something here!!\n")
               1.23
           })
