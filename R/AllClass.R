@@ -43,6 +43,24 @@ setClass("oce",
                         data=list(),
                         processingLog=list()))
 
+
+### ##http://stackoverflow.com/questions/7356120/how-to-properly-document-s4-methods-using-roxygen2
+### #' Handle flags
+### #'
+### #' FILL IN
+### #'
+### #' @param object An object inheriting from oce
+### #' @param flags \code{\link{list}} of the form (FILL IN)
+### #' @param action Character string specifying what to do (FILL IN)
+### #' @export
+### #' @docType methods
+### #' @rdname handleFlags-methods
+### setGeneric("handleFlags",
+###            function(object, flags, action) {
+###                cat("in handleFlags\n")
+###                standardGeneric("handleFlags")
+###            })
+
 #' Summarize an oce Object
 #'
 #' Provide a summary of some pertinent aspects of the object, including
@@ -385,6 +403,38 @@ setMethod(f="show",
                       }
                   }
               }
+          })
+
+
+
+setGeneric("NEWhandleFlags", function(object, flags, action) {
+           standardGeneric("NEWhandleFlags")
+         })
+
+#' handle flags
+#'
+#' @param object FILL IN
+#' @param flags FILL IN
+#' @param action FILL IN
+#' @family functions that handle flags
+setMethod("NEWhandleFlags",
+          c(object="ctd", flags="ANY", action="ANY"),
+          function(object, flags=NULL, action="NA") {
+              cat("in NEWhandleFlags() generic for CTD objects\n")
+              1.23
+          })
+
+#' handle flags
+#'
+#' @param object FILL IN
+#' @param flags FILL IN
+#' @param action FILL IN
+#' @family functions that handle flags
+setMethod("NEWhandleFlags",
+          c(object="adp", flags="ANY", action="ANY"),
+          function(object, flags=NULL, action="NA") {
+              cat("in NEWhandleFlags() generic for ADP objects\n")
+              1.23
           })
 
 
