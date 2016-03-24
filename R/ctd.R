@@ -1,10 +1,11 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' @title Handle flags in CTD objects
-#' @details If \code{flags} and \code{actions} are not provided, the
-#' default is to use WHP (World Hydrographic Program) flags, in which the
+#' @section Details for CTD objects:
+#' If \code{flags} and \code{actions} are not provided, the
+#' default is to use WHP (World Hydrographic Program) flags [1], in which the
 #' value 2 indicates good data, and other values indicate either unchecked,
-#' suspicious, or bad data [1]; any data not flagged as good are set
+#' suspicious, or bad data. Any data not flagged as good are set
 #' to \code{NA} in the returned value.
 #' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
@@ -21,7 +22,7 @@
 #' ctd <- handleFlags(ctd, flags=list(salinity=4, temperature=4, pressure=4))
 #'
 #' # 3. Add 0.002degC to temperatures flagged as bad
-#' addT <- function(T) T + 0.002
+#' addT <- function(x) x[["temperature"]] + 0.002
 #' ctd <- handleFlags(ctd, flags=list(temperature=4), actions=list(temperature=addT))
 #'}
 setMethod("NEWhandleFlags",
