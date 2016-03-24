@@ -16,6 +16,6 @@
 #' The hope is to get trial code working for \code{ctd}
 #' and \code{argo} data types by the end of April. After that, there will likely
 #' be a month or more of testing with real-world
-#' work, with possible changes to the user interface. After that, other types will be added,
-#' needed.
+#' work, with possible changes to the user interface. Then other types will be added,
+#' as needed.
 
