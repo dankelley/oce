@@ -28,8 +28,17 @@
 setMethod("NEWhandleFlags",
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
-              cat("in CTD function for NEWhandleFlags. FIXME: write code to do something here!!\n")
-              1.23
+              ## defaults to WOCE, i.e. everything but flag=2 is considered bad
+              f <- (0:10)[-3] # woce
+              a <- rep("NA", length(f))
+              if (missing(flags))
+                  flags <- list(salinity=f, temperature=f, pressure=f)
+              if (missing(actions)) 
+                  actions <- list(salinity=f, temperature=f, pressure=f)
+              if (any(names(actions)!=names(flags))) {
+                  stop("names of flags and actions must match")
+              }
+              handleFlagsInternal(object, flags, actions)
           })
 
 ## To save storage, this new() function has arguments only for quantities that are present in almost all cases. For example, not

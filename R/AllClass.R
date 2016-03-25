@@ -409,7 +409,6 @@ setMethod(f="show",
 ## in R/ctd.R, mainly to test how the docs and generic system would work. It seems ok,
 ## so I plan next to code in something for CTD.
 setGeneric("NEWhandleFlags", function(object, flags, actions) {
-           cat("in base function for NEWhandleFlags\n")
            standardGeneric("NEWhandleFlags")
          })
 
@@ -423,3 +422,31 @@ setMethod("NEWhandleFlags",
               stop("NEWhandleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 
+handleFlagsInternal <- function(object, flags, actions) {
+    if (missing(flags)) {
+        warning("no flags supplied (internal error; report to developer)\n")
+        return(object)
+    }
+    if (missing(actions)) {
+        warning("no actions supplied (internal error; report to developer)\n")
+        return(object)
+    }
+    cat("in handleFlagsInternal, flags=\n")
+    str(flags)
+    cat("in handleFlagsInternal, actions=\n")
+    str(actions)
+    if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
+        flagNames <- names(object@metadata$flags)
+        for (name in names(object@data)) {
+            cat("examine data named ", name, '\n')
+            if (name %in% flagNames) {
+                print(object@metadata$flags[name])
+            } else {
+                warning("object has no flag named '", flag, "'")
+            }
+        }
+    } else {
+        warning("object has no flags")
+    }
+    object
+}

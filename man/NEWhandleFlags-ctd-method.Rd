@@ -11,19 +11,21 @@
 \item{object}{An object of \code{\link{ctd-class}}.}
 
 \item{flags}{An optional \code{\link{list}} containing items with names of
-entries in the \code{data} slot of \code{object}. Each element in the list
-must be defined as an integer or vector of integers.
+entries in the \code{data} slot of \code{object}, or a single
+item named \code{all} (which indicates that the operations are to take
+place on each element in the \code{data} slot of \code{object}).
 For example, the WOCE CTD scheme has flags ranging from 1 to 9, with 2
-indicating good data. Therefore, data not flagged as "good" could
-be set to \code{NA} by writing \code{flags=list(temperature=(1:9)[-2])}
-and leaving \code{actions} unspecified (which means to set flagged items
-to \code{NA}). \code{NEWhandleFlags} ignores flag values that are not
+indicating good data. Therefore, all the data that are not flagged
+as "good" are identified with \code{flags=list(all=(1:9)[-2])}.
+If only certain data types are of interest, they may be named in the list,
+e.g. \code{flags=list(temperature=(1:9)[-2])} focusses on the questional
+temperature values. \code{NEWhandleFlags} ignores flag values that are not
 used in the dataset, so the above could use \code{(1:100)[-2]}
 to be robust against the addition of codes in excess of 9.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
-is not supplied, the default will be to set all values specified by
+is not supplied, the default will be to set all values identified by
 \code{flags} to \code{NA}. This is also accomplished by e.g.
 \code{actions=list(temperature="NA")}. It is also possible to specify a
 function that will calculate a replacement value. This function is provided
