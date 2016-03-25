@@ -22,10 +22,10 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-tempera
 #' data(argo)
 #' par(mfcol=c(2, 2))
 #' plot(argo, which=2)
-#' plot(handleFlags(argo), which=2)
+#' plot(handleFlagsOLD(argo), which=2)
 #' plot(argo, which=3)
-#' plot(handleFlags(argo), which=3)
-handleFlags <- function(x, action="NA")
+#' plot(handleFlagsOLD(argo), which=3)
+handleFlagsOLD <- function(x, action="NA")
 {
     if (!inherits(x, "oce"))
         return(x)

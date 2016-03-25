@@ -1,4 +1,4 @@
-#' @description \code{NEWhandleFlags} is a generic function that has specialized variants
+#' @description \code{handleFlags} is a generic function that has specialized variants
 #' that are used for different types of \code{oce} object.  In each case, 
 #' the purpose is to help analysts
 #' deal with data-quality flags, by performing specified actions on data elements that 
@@ -33,7 +33,7 @@
 #' as "good" are identified with \code{flags=list(all=(1:9)[-2])}.
 #' If only certain data types are of interest, they may be named in the list,
 #' e.g. \code{flags=list(temperature=(1:9)[-2])} focusses on the questional
-#' temperature values. \code{NEWhandleFlags} ignores flag values that are not
+#' temperature values. \code{handleFlags} ignores flag values that are not
 #' used in the dataset, so the above could use \code{(1:100)[-2]}
 #' to be robust against the addition of codes in excess of 9.
 #' @param actions An optional \code{\link{list}} that contains items with
@@ -46,7 +46,7 @@
 #' replacement for the data item in question. Thus, for example, it might
 #' handle bad salinity data by filling in values from a known TS relationship,
 #' using good temperatures in \code{object}.
-#' @section Implementation status: \code{NEWhandleFlags} is a new function as of March 2016,
+#' @section Implementation status: \code{handleFlags} is a new function as of March 2016,
 #' and it will probably change through the Spring of 2016.
 #' Almost nothing works yet, and users should not be doing
 #' any more than looking at the documentation and telling the developers
@@ -56,4 +56,5 @@
 #' will likely  be a month or more of testing with real-world
 #' work, with possible changes to the user interface. Then other
 #' types will be added, as needed.
+#' @family functions that handle data-quality flags
 

@@ -405,21 +405,25 @@ setMethod(f="show",
               }
           })
 
-## 20160323 temporary note from DK to CR: I'm using a new name. I tried doing something
-## in R/ctd.R, mainly to test how the docs and generic system would work. It seems ok,
-## so I plan next to code in something for CTD.
-setGeneric("NEWhandleFlags", function(object, flags, actions) {
-           standardGeneric("NEWhandleFlags")
+#' @title Handle flags in oce objects
+#' @section A general note:
+#' Each specialized variant of this function has its own defaults
+#' for \code{flags} and \code{actions}; see the specialized 
+#' documentation.
+#' @param object An object of \code{\link{oce}}.
+#' @template handleFlagsTemplate
+setGeneric("handleFlags", function(object, flags, actions) {
+           standardGeneric("handleFlags")
          })
 
-## I think the test below will catch numerics, lists, data frames, and character strings. It does not
-## catch objects that are non-oce, since I don't know how to code that, but the default message
-## from R should be enough to handle that case, albeit perhaps with a less informative 
-## error message.
-setMethod("NEWhandleFlags",
+#' Signal erroneous application to non-oce objects
+#' @param object A vector, which cannot be the case for \code{oce} objects.
+#' @param flags Ignored.
+#' @param actions Ignored.
+setMethod("handleFlags",
           c(object="vector", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
-              stop("NEWhandleFlags() can only be applied to objects inheriting from \"oce\"")
+              stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 
 handleFlagsInternal <- function(object, flags, actions) {
@@ -431,18 +435,18 @@ handleFlagsInternal <- function(object, flags, actions) {
         warning("no actions supplied (internal error; report to developer)\n")
         return(object)
     }
-    cat("in handleFlagsInternal, flags=\n")
-    str(flags)
-    cat("in handleFlagsInternal, actions=\n")
-    str(actions)
+    ##> cat("in handleFlagsInternal, flags=\n")
+    ##> str(flags)
+    ##> cat("in handleFlagsInternal, actions=\n")
+    ##> str(actions)
     if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
+        all <- "all" %in% names(flags)
         flagNames <- names(object@metadata$flags)
         for (name in names(object@data)) {
-            cat("examine data named ", name, '\n')
-            if (name %in% flagNames) {
-                print(object@metadata$flags[name])
-            } else {
-                warning("object has no flag named '", flag, "'")
+            if (all || name %in% flagNames) {
+                ## Sieve on metadata$flags and act as indicated
+                ## FIXME: code here
+                cat("FIXME: write code to apply an action to '", name, "'\n", sep="")
             }
         }
     } else {
