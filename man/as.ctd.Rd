@@ -11,7 +11,8 @@
        SA=NULL, CT=NULL, oxygen=NULL,
        nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
        scan=NULL, time=NULL, other=NULL,
-       units=NULL, pressureType="sea",
+       units=NULL, flags=NULL,
+       pressureType="sea",
        missingValue=NA, quality=NULL, 
        filename="", type="", model="", serialNumber="",
        ship="", scientist="", institute="", address="", cruise="", station="", 
@@ -77,6 +78,10 @@
     typical of archived datasets, but for some instrumental files it will make
     sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
     \code{salinity=list(unit=expression(S/m), scale="")}.}
+  
+  \item{flags}{if supplied, this is a \code{\link{list}} containing data-quality
+    flags. The elements of this list must have names that match the data
+    provided to the object.}
   
   \item{pressureType}{a character string indicating the type of pressure; may be
     \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure

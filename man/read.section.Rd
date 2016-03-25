@@ -1,4 +1,4 @@
-% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+% vim:spell:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.section}
 \alias{read.section}
 
@@ -23,15 +23,7 @@
   \item{ship}{name of the ship carrying out the sampling}
   \item{scientist}{name of chief scientist aboard ship}
   \item{institute}{name of chief scientist's institute}
-  \item{flags}{optional list of salinity-quality flags that will be 
-    demanded of the salinity data.  If not given, an appropriate flag will be
-    chosen based on the data type.  For example, for WOCE data, any 
-    data with salinity flag not equal to 2 will be rejected.
-    \code{read.section} tries to use the salinity from the CTD (with WOCE
-    header name \code{CTDSAL}), but if its flag is unacceptable, the
-    function tries \code{SALNTY} (yes, that is the spelling!) instead.
-    But if neither has an acceptable flag, the datum will not be
-    read.}
+  \item{flags}{ignored, and deprecated (will be disallowed in a future version)}
   \item{missingValue}{numerical value used to indicate missing data}
   \item{debug}{logical. If \code{TRUE}, print some information that 
     might be helpful during debugging.}
@@ -46,6 +38,13 @@
   Examples). This may cause problems if the format is not universal. For
   example, the header must name the salinity column "\code{CTDSAL}"; if not,
   salinity values will not be read from the file.}
+
+\section{Disambiguating salinity}{WOCE datasets commonly have a column named
+  \code{CTDSAL} for salinity inferred from a CTD and \code{SALNTY} (not a typo)
+  for salinity derived from bottle data. If only one of these is present in the
+  data file, the data will be called \code{salinity} in the \code{data} slot of 
+  the return value. However, if both are present, then \code{CTDSAL} is stored
+  as \code{salinity} and \code{SALNTY} is stored as \code{salinity2}.}
 
 \value{An object of class \code{\link{section-class}}.}
 

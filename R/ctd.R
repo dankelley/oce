@@ -204,7 +204,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    scan=NULL, time=NULL, other=NULL,
                    ## salinityFlag, temperatureFlag, pressureFlag, conductivityFlag, SAFlag, CTFlag, oxygenFlag, nitrateFlag,
                    ## nitriteFlag, phosphateFlag, silicateFlag,
-                   units=NULL,
+                   units=NULL, flags=NULL,
                    pressureType="sea",
                    missingValue=NA, quality=NULL,
                    filename="", type="", model="", serialNumber="",
@@ -310,6 +310,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 units <- o@metadata$units
         }
         res@metadata$units <- units
+        if (!is.null(flags))
+            res@metadata$flags <- flags
         res@metadata$pressureType <- pressureType
         res@data$pressure <- pressure
         res@data$salinity <- salinity
@@ -527,6 +529,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     ## the 'units' argument takes precedence over guesses
     dataNames <- names(res@data)
     unitsNames <- names(units)
+    if (!is.null(flags))
+        res@metadata$flags <- flags
+
     if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))

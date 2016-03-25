@@ -1273,9 +1273,11 @@ read.section <- function(file, directory, sectionId="", flags,
 	open(file, "r")
 	on.exit(close(file))
     }
-    ## flag=2 for good data [WOCE]
-    if (missing(flags))
-	flags <- c(2)
+    if (!missing(flags))
+        warning("'flags' is ignored, and will be disallowed in an upcoming CRAN release")
+    ##>     ## flag=2 for good data [WOCE]
+    ##>     if (missing(flags))
+    ##> 	flags <- c(2)
     # Skip header
     lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6))
@@ -1306,6 +1308,7 @@ read.section <- function(file, directory, sectionId="", flags,
     col.start <- 3                     # FIXME: why is this value used?  It fails on some (Arctic) data.
     col.start <- 1
     data <- array(dim=c(nd, nv - col.start + 1))
+    flags <- list()
     stnSectionId <- vector("character", nd)
     stnId <- vector("character", nd)
     for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
@@ -1319,44 +1322,46 @@ read.section <- function(file, directory, sectionId="", flags,
     if (1 == length(w <- which(var.names=="CTDPRS"))) {
 	pressure <- as.numeric(data[, w - col.start + 1])
         pressureUnit <- as.unit(var.units[w], list(unit=expression(dbar), scale=""))
+        if (1 == length(wf <- which(var.names=="CTDPRS_FLAG_W")))
+            flags$pressure <- as.numeric(data[, wf - col.start + 1])
     } else stop("no column named \"CTDPRS\"")
     if (1==length(w <- which(var.names=="CTDTMP"))) {
 	temperature <- as.numeric(data[, w - col.start + 1])
         temperatureUnit <- as.unit(var.units[w], list(unit=expression(degree*C), scale="ITS-90"))
+        if (1 == length(wf <- which(var.names=="CTDTMP_FLAG_W")))
+            flags$temperature <- as.numeric(data[, wf - col.start + 1])
     } else stop("no column named \"CTDTMP\"")
-    ## Salinity is tricky.  There are two possibilities, in WOCE
-    ## files, and each has a flag.  Here, we prefer CTDSAL, but if it
-    ## has a bad flag value, we try SALNTY as a second option.  But
-    ## if both CTDSAL and SALNTY are flagged, we just give up on the
-    ## depth.
+
     oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
     haveSalinity <- FALSE
     salinityUnit <- NULL
+    
+    ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
+    ## both exist, store SALNTY as 'salinity2'.
+    haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
+    salinity2 <- NULL # so we can check later
     if (1 == length(w <- which(var.names=="CTDSAL"))) {
         haveSalinity <- TRUE
-	ctdsal <- as.numeric(data[, w - col.start + 1])
+        salinity <- as.numeric(data[, w - col.start + 1])
         salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+        if (1 == length(wf <- which(var.names=="CTDSAL_FLAG_W")))
+            flags$salinity <- as.numeric(data[, wf - col.start + 1])
     } 
-    if (1 == length(w <- which(var.names=="SALNTY"))) {
+    if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
         haveSalinity <- TRUE
-        salnty <- as.numeric(data[, w - col.start + 1]) # spelling not a typo
-        salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+        if (haveTwoSalinities) {
+            salinity2 <- as.numeric(data[, w - col.start + 1])
+            salinity2Unit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+            if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
+                flags$salinity2 <- as.numeric(data[, wf - col.start + 1])
+        } else {
+            salinity <- as.numeric(data[, w - col.start + 1])
+            salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+            if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
+                flags$salinity <- as.numeric(data[, wf - col.start + 1])
+        }
     }
-    if (!haveSalinity) {
-        stop("no column named \"CTDSAL\" or \"SALNTY\"; have:", paste(var.names, collapse=", "))
-    }
-    haveSalinityFlag <- FALSE
-    if (length(which(var.names=="CTDSAL_FLAG_W"))) {
-        haveSalinityFlag <- TRUE
-	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
-    } 
-    if (length(which(var.names=="SALNTY_FLAG_W"))) {
-        haveSalinityFlag <- TRUE
-        salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1]) # spelling not a typo
-    }
-    if (!haveSalinityFlag) {
-        stop("no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:", paste(var.names, collapse=", "))
-    }
+    if (!haveSalinity) stop("no column named \"CTDSAL\" or \"SALNTY\"")
     if (length(which(var.names=="DATE")))
 	stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
     else
@@ -1372,24 +1377,32 @@ read.section <- function(file, directory, sectionId="", flags,
         oxygen <- as.numeric(data[, w - col.start + 1])
         oxygen[oxygen == missingValue] <- NA
         oxygenUnit <- as.unit(var.units[w], list(unit=expression(mu*mol/kg), scale=""))
+        if (1 == length(wf <- which(var.names=="OXYGEN_FLAG_W")))
+            flags$oxygen <- as.numeric(data[, wf - col.start + 1])
     } else oxygen <- NULL
     silicateUnit <- NULL
     if (1 == length(w <- which(var.names=="SILCAT"))) {
         silicate <- as.numeric(data[, w - col.start + 1])
         silicate[silicate == missingValue] <- NA
         silicateUnit <- as.unit(var.units[w], list(unit=expression(mu*mol/kg), scale=""))
+        if (1 == length(wf <- which(var.names=="SILCAT_FLAG_W")))
+            flags$silicate <- as.numeric(data[, wf - col.start + 1])
     } else silicate <- NULL
     nitriteUnit <- NULL
     if (1 == length(w <- which(var.names=="NITRIT"))) {
         nitrite <- as.numeric(data[, w - col.start + 1])
         nitrite[nitrite == missingValue] <- NA
         nitriteUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
+        if (1 == length(wf <- which(var.names=="NITRIT_FLAG_W")))
+            flags$nitrite <- as.numeric(data[, wf - col.start + 1])
     } else nitrite <- NULL
     nitrateUnit <- NULL
     if (1 == length(w <- which(var.names=="NITRAT"))) {
         nitrate <- as.numeric(data[,which(var.names=="NITRAT") - col.start + 1])
         nitrate[nitrate == missingValue] <- NA
         nitrateUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
+        if (1 == length(wf <- which(var.names=="NITRAT_FLAG_W")))
+            flags$nitrate <- as.numeric(data[, wf - col.start + 1])
     } else nitrate <- NULL
     if (1 == length(w <- which(var.names=="NO2+NO3"))) {
         haveNO2plusNO3 <- TRUE
@@ -1407,6 +1420,8 @@ read.section <- function(file, directory, sectionId="", flags,
                 nitrite <- nitrate <- NULL
             }
         }
+        if (1 == length(wf <- which(var.names=="NO2+NO3_FLAG_W")))
+            flags$nitrate <- as.numeric(data[, wf - col.start + 1])
         ## http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
     }
     phosphateUnit <- NULL
@@ -1414,6 +1429,8 @@ read.section <- function(file, directory, sectionId="", flags,
         phosphate <- as.numeric(data[, w - col.start + 1])
         phosphate[phosphate == missingValue] <- NA
         phosphateUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
+        if (1 == length(wf <- which(var.names=="PHSPHT_FLAG_W")))
+            flags$phosphate  <- as.numeric(data[, wf - col.start + 1])
     } else phosphate <- NULL
     waterDepth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
@@ -1440,20 +1457,21 @@ read.section <- function(file, directory, sectionId="", flags,
 	stn[i] <- sub("^ *", "", stationId[select[1]])
 	lon[i] <- longitude[select[1]]
 	lat[i] <- latitude[select[1]]
-	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
-	goodSalinity <- ifelse(ctdsal.flag[select] %in% flags, ctdsal[select], 
-                               ifelse(salnty.flag[select] %in% flags, salnty[select], NA))
-	ok <- !is.na(goodSalinity)
-	ok <- ok & pressure[select] >= 0
-	thisStation <- as.ctd(salinity=goodSalinity[ok],
-			       temperature=temperature[select[ok]],
-			       pressure=pressure[select[ok]],
-                               oxygen=if(!is.null(oxygen))oxygen[select[ok]],
-                               nitrate=if(!is.null(nitrate))nitrate[select[ok]],
-                               nitrite=if(!is.null(nitrite))nitrite[select[ok]],
-                               phosphate=if(!is.null(phosphate))phosphate[select[ok]],
-                               silicate=if(!is.null(silicate))silicate[select[ok]],
-			       quality=ctdsal.flag[select[ok]],
+        ## FIXME: chop flags up
+        flagsSelected <- flags
+        for (name in names(flagsSelected)) {
+            flagsSelected[[name]] <- flags[[name]][select]
+        }
+        ##> message("flagsSelected:"); str(flagsSelected)
+	thisStation <- as.ctd(salinity=salinity[select],
+			       temperature=temperature[select],
+			       pressure=pressure[select],
+                               oxygen=if(!is.null(oxygen))oxygen[select],
+                               nitrate=if(!is.null(nitrate))nitrate[select],
+                               nitrite=if(!is.null(nitrite))nitrite[select],
+                               phosphate=if(!is.null(phosphate))phosphate[select],
+                               silicate=if(!is.null(silicate))silicate[select],
+                               flags=flagsSelected,
 			       ship=ship,
 			       date=time[i] + tref,
 			       scientist=scientist,
@@ -1463,6 +1481,9 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
+        if (length(salinity2))
+            thisStation@data$salinity2 <- salinity2[select]
+
         thisStation@metadata$units$temperature <- temperatureUnit
         thisStation@metadata$units$salinity <- salinityUnit
         thisStation@metadata$units$pressure <- pressureUnit
@@ -1488,9 +1509,7 @@ read.section <- function(file, directory, sectionId="", flags,
         if (!is.null(oxygenUnit)) thisStation@metadata$units$oxygen <- oxygenUnit
         if (!is.null(silicateUnit)) thisStation@metadata$units$silicate <- silicateUnit
         if (!is.null(phosphateUnit)) thisStation@metadata$units$phosphate <- phosphateUnit
-	if (debug) cat(length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
-        if (sum(ok) == 0)
-            warning("station ", i, " has no data\n")
+	if (debug) cat(length(select), "levels @ ", lat[i], "N ", lon[i], "W\n")
 	station[[i]] <- thisStation
     }
     res@metadata$header <- header
