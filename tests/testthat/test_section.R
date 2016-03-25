@@ -24,11 +24,6 @@ test_that("as.section() data-quality flags", {
           expect_equal(stn2@metadata$flags$nitrate, twos)
           expect_equal(stn2@metadata$flags$nitrite, twos)
           expect_equal(stn2@metadata$flags$phosphate, c(2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2))
-
-
-
-
-
 })
 
 test_that("section station extraction", {
