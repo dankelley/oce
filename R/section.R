@@ -1332,29 +1332,34 @@ read.section <- function(file, directory, sectionId="", flags,
             flags$temperature <- as.numeric(data[, wf - col.start + 1])
     } else stop("no column named \"CTDTMP\"")
 
-    ## Salinity is tricky.  There are two possibilities, in WOCE
-    ## files, and each has a flag.  Here, we prefer CTDSAL, but if it
-    ## has a bad flag value, we try SALNTY as a second option.  But
-    ## if both CTDSAL and SALNTY are flagged, we just give up on the
-    ## depth.
     oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
     haveSalinity <- FALSE
     salinityUnit <- NULL
+    
+    ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
+    ## both exist, store SALNTY as 'salinity2'.
+    haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
+    salinity2 <- NULL # so we can check later
     if (1 == length(w <- which(var.names=="CTDSAL"))) {
         haveSalinity <- TRUE
-	##> ctdsal <- as.numeric(data[, w - col.start + 1])
-	salinity <- as.numeric(data[, w - col.start + 1])
+        salinity <- as.numeric(data[, w - col.start + 1])
         salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
         if (1 == length(wf <- which(var.names=="CTDSAL_FLAG_W")))
             flags$salinity <- as.numeric(data[, wf - col.start + 1])
     } 
-    if (1 == length(w <- which(var.names=="SALNTY"))) {
+    if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
         haveSalinity <- TRUE
-        ##> salnty <- as.numeric(data[, w - col.start + 1]) # spelling not a typo
-        salinity <- as.numeric(data[, w - col.start + 1]) # spelling not a typo
-        salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
-        if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
-            flags$salinity <- as.numeric(data[, wf - col.start + 1])
+        if (haveTwoSalinities) {
+            salinity2 <- as.numeric(data[, w - col.start + 1])
+            salinity2Unit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+            if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
+                flags$salinity2 <- as.numeric(data[, wf - col.start + 1])
+        } else {
+            salinity <- as.numeric(data[, w - col.start + 1])
+            salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+            if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
+                flags$salinity <- as.numeric(data[, wf - col.start + 1])
+        }
     }
     if (!haveSalinity) stop("no column named \"CTDSAL\" or \"SALNTY\"")
     if (length(which(var.names=="DATE")))
@@ -1476,6 +1481,8 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
+        if (length(salinity2))
+            thisStation@data$salinity2 <- salinity2[select]
 
         thisStation@metadata$units$temperature <- temperatureUnit
         thisStation@metadata$units$salinity <- salinityUnit

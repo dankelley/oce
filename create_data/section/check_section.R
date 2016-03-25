@@ -7,8 +7,9 @@ load("section.rda")
 
 stn2 <- section[['station', 2]]
 twos <- rep(2, 16)
-expect_equal(stn2@metadata$flags$salinity, c(2,3,2,2,2,3,2,2,2,2,2,2,2,2,2,2))
 ## there are no flags on temperature or pressure
+expect_equal(stn2@metadata$flags$salinity, c(2,2,2,2,3,3,2,2,3,3,3,3,3,3,2,2))
+expect_equal(stn2@metadata$flags$salinity2, c(2,3,2,2,2,3,2,2,2,2,2,2,2,2,2,2))
 expect_equal(stn2@metadata$flags$oxygen, twos)
 expect_equal(stn2@metadata$flags$silicate, twos)
 expect_equal(stn2@metadata$flags$nitrate, twos)

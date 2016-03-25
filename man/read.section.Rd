@@ -1,4 +1,4 @@
-% vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+% vim:spell:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 \name{read.section}
 \alias{read.section}
 
@@ -38,6 +38,13 @@
   Examples). This may cause problems if the format is not universal. For
   example, the header must name the salinity column "\code{CTDSAL}"; if not,
   salinity values will not be read from the file.}
+
+\section{Disambiguating salinity}{WOCE datasets commonly have a column named
+  \code{CTDSAL} for salinity inferred from a CTD and \code{SALNTY} (not a typo)
+  for salinity derived from bottle data. If only one of these is present in the
+  data file, the data will be called \code{salinity} in the \code{data} slot of 
+  the return value. However, if both are present, then \code{CTDSAL} is stored
+  as \code{salinity} and \code{SALNTY} is stored as \code{salinity2}.}
 
 \value{An object of class \code{\link{section-class}}.}
 
