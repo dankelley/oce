@@ -1,12 +1,15 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' @title Handle flags in CTD objects
-#' @section Details for CTD objects:
+#' @details
 #' If \code{flags} and \code{actions} are not provided, the
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the
 #' value 2 indicates good data, and other values indicate either unchecked,
 #' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value.
+#' to \code{NA} in the returned value. Since WHP flag codes run
+#' from 1 to 9, this default is equivalent to
+#' setting \code{flags=list(all=c(1, 3:9))} along with
+#' \code{action=list(all="NA")}.
 #' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references 
@@ -29,19 +32,15 @@
 #' STN<-handleFlags(stn,flags=list(salinity=4),actions=list(salinity=dS))
 #'}
 setMethod("handleFlags",
-          ## Other data types should be patterned on this. The hope
-          ## is that they will need only alter the first three lines
-          ## of the function, although it will also be essential to
-          ## make the documentation apply to the object, of course.
+          ## DEVELOPERS: please pattern functions and documentation on this case, for uniformity.
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
-              ## defaults to WOCE, i.e. everything but flag=2 is considered bad
-              f <- (0:10)[-3] # woce
-              a <- rep("NA", length(f))
+              ## Default to the World Hydrographic Program system, with
+              ## flags from 1 to 9, with flag=2 for acceptable data.
               if (missing(flags))
-                  flags <- list(salinity=f, temperature=f, pressure=f)
+                  flags <- list(all=c(1, 3:9))
               if (missing(actions)) 
-                  actions <- list(salinity=f, temperature=f, pressure=f)
+                  actions <- list(all="NA")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }

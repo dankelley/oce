@@ -1,51 +1,42 @@
-#' @description \code{handleFlags} is a generic function that has specialized variants
-#' that are used for different types of \code{oce} object.  In each case, 
-#' the purpose is to help analysts
-#' deal with data-quality flags, by performing specified actions on data elements that 
-#' have been flagged (e.g. by data-provision agencies) in specified ways.  For example,
-#' the action could be to set the data to the R missing-value code, \code{NA},
-#' and the identification could be a particular value of a data-quality flag.
+#' @description Data-quality flags are stored in the \code{metadata}
+#' slot of \code{\link{oce-class}} objects in a 
+#' \code{\link{list}} named \code{flags}.
+#' The present function (a generic that has specialized versions
+#' for various data classes) provides a way to
+#' manipulate the core data based on
+#' the data-quality flags. For example, a common operation is to replace suspicious
+#' or erroneous data with \code{NA}.
 #'
-#' The flag identification is set with the \code{flags} argument, while the action
-#' is set with the \code{actions} argument.  Both of these can be omitted, in which
-#' case a reasonable default is used for the particular data type (i.e. for the 
-#' class of the \code{object} argument).  However, data-quality flags differ
-#' between archiving agencies, and it is common to tailor 
-#' \code{flags} and \code{actions} to match the peculiarities of the data
-#' under analysis. These flags also permit the modification of data, e.g.
-#' to fill gaps.
+#' If \code{metadata$flags} in the object supplied as the first argument
+#' is empty, then that object is returned, unaltered.
+#' Otherwise, \code{handleFlags} analyses the data-quality flags within
+#' the object, in relation to the \code{flags} argument, and interprets
+#' the \code{action} argument to select an action to be applied to mached
+#' data.
 #'
-#' It is important to note that \code{oce} stores flags as 
-#' non-negative integers. The flags are set up when the data are read.
-#' If the data hold numerical (integer) flags, then these are copied into
-#' the \code{oce} object. However, if the data source specifies flags with letters
-#' or other non-integer values, then the function used to read the data will 
-#' map the flags to integers, as described in the documentation for that
-#' function.
+#' Reasonable defaults are used if \code{flags} and \code{actions}
+#' are not supplied (see \sQuote{Details}),
+#' but different schemes are used in different
+#' data archives, so it is risky to rely on these defaults.
+#' It is usually necessary to tailor \code{flags} and \code{actions} 
+#' to the data and the analysis goals.
 #'
-#' @param flags An optional \code{\link{list}} containing items with names of
-#' entries in the \code{data} slot of \code{object}, or a single
-#' item named \code{all} (which indicates that the operations are to take
-#' place on each element in the \code{data} slot of \code{object}).
-#" Each element in the list must be set to an integer or vector of integers.
-#' For example, the WOCE CTD scheme has flags ranging from 1 to 9, with 2
-#' indicating good data. Therefore, all the data that are not flagged
-#' as "good" are identified with \code{flags=list(all=(1:9)[-2])}.
-#' If only certain data types are of interest, they may be named in the list,
-#' e.g. \code{flags=list(temperature=(1:9)[-2])} focusses on the questional
-#' temperature values. \code{handleFlags} ignores flag values that are not
-#' used in the dataset, so the above could use \code{(1:100)[-2]}
-#' to be robust against the addition of codes in excess of 9.
+#' @param flags An optional \code{\link{list}} containing (a)
+#' items with names of entries in the \code{data} slot of \code{object},
+#' or (b) a single item named \code{all} that indicates that the operations are to take
+#' place all the entries in \code{object}'s \code{data} slot.
+#' Each element in the list must be set to an integer or vector of integers,
+#' specifying conditions to be met before actions are to be taken.
+#'
 #' @param actions An optional \code{\link{list}} that contains items with
 #' names that match those in the \code{flags} argument.  If \code{actions}
 #' is not supplied, the default will be to set all values identified by
-#' \code{flags} to \code{NA}. This is also accomplished by e.g.
-#' \code{actions=list(temperature="NA")}. It is also possible to specify a
-#' function that will calculate a replacement value. This function is provided
-#' with \code{object} as its single argument, and it must return a
-#' replacement for the data item in question. Thus, for example, it might
-#' handle bad salinity data by filling in values from a known TS relationship,
-#' using good temperatures in \code{object}.
+#' \code{flags} to \code{NA}; this can also be specified by
+#' specifying \code{actions=list(all="NA")}. It is also possible to specify 
+#' functions that calculate replacement values. These are provided
+#' with \code{object} as the single argument, and must return a
+#' replacement for the data item in question.
+#'
 #' @section Implementation status: \code{handleFlags} is a new function as of March 2016,
 #' and it will probably change through the Spring of 2016.
 #' Almost nothing works yet, and users should not be doing
@@ -56,5 +47,6 @@
 #' will likely  be a month or more of testing with real-world
 #' work, with possible changes to the user interface. Then other
 #' types will be added, as needed.
+#'
 #' @family functions that handle data-quality flags
 

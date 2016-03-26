@@ -7,7 +7,9 @@
 #' @slot metadata A list containing information about the data. The 
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
-#' not make sense for a \code{\link{ctd-class}} object.
+#' not make sense for a \code{\link{ctd-class}} object. In addition,
+#' all classes have items named \code{units} and \code{flags}, used
+#' to store information on the units of the data, and the data quality.
 #' @slot data A list containing the data.
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
@@ -406,10 +408,9 @@ setMethod(f="show",
           })
 
 #' @title Handle flags in oce objects
-#' @section A general note:
+#' @details
 #' Each specialized variant of this function has its own defaults
-#' for \code{flags} and \code{actions}; see the specialized 
-#' documentation.
+#' for \code{flags} and \code{actions}.
 #' @param object An object of \code{\link{oce}}.
 #' @template handleFlagsTemplate
 setGeneric("handleFlags", function(object, flags, actions) {

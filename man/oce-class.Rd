@@ -15,7 +15,9 @@ object, if desired.
 \item{\code{metadata}}{A list containing information about the data. The 
 contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 object has information about beam patterns, which obviously would
-not make sense for a \code{\link{ctd-class}} object.}
+not make sense for a \code{\link{ctd-class}} object. In addition,
+all classes have items named \code{units} and \code{flags}, used
+to store information on the units of the data, and the data quality.}
 
 \item{\code{data}}{A list containing the data.}
 
