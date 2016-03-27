@@ -109,7 +109,10 @@ Dan Kelley
 \url{http://www.argo.ucsd.edu/}
 }
 \seealso{
-Other functions that deal with argo data: \code{\link{as.argo}},
-  \code{\link{read.argo}}, \code{\link{subset,argo-method}}
+Other functions that deal with argo data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
+  \code{\link{as.argo}}, \code{\link{read.argo}},
+  \code{\link{subset,argo-method}},
+  \code{\link{summary,argo-method}}
 }
 

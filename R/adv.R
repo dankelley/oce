@@ -94,6 +94,7 @@ setMethod(f="summary",
 #' data(adv)
 #' head(adv[["q"]])            # in raw form
 #' head(adv[["q", "numeric"]]) # in numeric form
+#' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -138,6 +139,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
+#' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

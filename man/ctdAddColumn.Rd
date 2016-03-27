@@ -39,13 +39,29 @@ slot as appropriate.
 }
 \examples{
 library(oce)
-data(ctd) 
-F <- 32 + (9/5)*ctd[["temperature"]] 
-ctdNew <- ctdAddColumn(ctd, F, "temperatureF", 
+data(ctd)
+F <- 32 + (9/5)*ctd[["temperature"]]
+ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
     unit=list(unit=expression(degree*F), scale="ITS-90"))
+
+}
+\author{
+Dan Kelley
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
+
+Other functions that handle CTD data: \code{\link{[[,ctd-method}},
+  \code{\link{as.ctd}}, \code{\link{ctd-class}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

@@ -35,7 +35,7 @@ handleFlagsOLD <- function(x, action="NA")
     }
     if ("NA" != action) stop("the only permitted action is \"NA\"")
     fnames <- names(x@metadata$flags)
-    fnamesPlain <- gsub("Qc$","",fnames)
+    fnamesPlain <- gsub("Qc$","",fnames) # for argo ... defunct but no harm
     dnames <- names(x@data)
     for (name in fnamesPlain) {
         if (name %in% dnames) {

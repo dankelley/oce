@@ -12,7 +12,7 @@ active development in the early months of 2016.
 An \code{argo} object may be read with \code{\link{read.argo}} or
 created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 pressures with \code{\link{argoGrid}}.  Plots can be made with
-\code{\link{plot.argo}}, while \code{\link{summary.argo}} produces statistical
+\code{\link{plot.argo}}, while \code{\link{summary,argo-method}} produces statistical
 summaries and \code{show} produces overviews. The usual oce generic
 functions are available, e.g. \code{\link{[[,argo-method}} may 
 be used to extract data, and \code{\link{[[<-,argo-method}} may

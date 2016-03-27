@@ -22,4 +22,11 @@
 In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
+\seealso{
+Other functions that alter oce data and metadata: \code{\link{[[<-,adv-method}},
+  \code{\link{[[<-,argo-method}},
+  \code{\link{[[<-,ctd-method}}
+
+Other functions that deal with adp data: \code{\link{[[,adp-method}}
+}
 

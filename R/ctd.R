@@ -1,5 +1,151 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' Class to store CTD (or general hydrographic) Data
+#'
+#' Class to store hydrographic data such as measured with a CTD (conductivity,
+#' temperature, depth) instrument.
+#'
+#' Temperature is stored in the ITS-90 scale within the object, but the IPTS-68
+#' value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
+#' be done in using various seawater functions, e.g. the density function
+#' \code{\link{swRho}}, if the UNESCO formulation is being requested.
+#'
+#' The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
+#' \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
+#' returned for the longer names.
+#'
+#' After the names listed above have been checked, the remaining names in the
+#' \code{data} slot are checked using \code{\link{pmatch}}, so that e.g.
+#' \code{ctd[["sal"]]} will recover practical \code{salinity}, \code{ctd[["sc"]]}
+#' will recover \code{scan} (if it exists), etc.
+#'
+#' @section Accessing data:
+#' Data may be extracted with \code{\link{[[,ctd-method}} and inserted
+#' with \code{\link{[[<-,ctd-method}}. Type \code{?"[[,ctd-method"}
+#' or \code{?"[[<-,ctd-method"} to learn more.
+#'
+#' Depth is accessed with e.g. \code{ctd[["depth"]]}, while its negative, the
+#' vertical coordinate, is accessed with e.g.  \code{ctd[["z"]]}; note that these
+#' are calculated using \code{\link{swDepth}} and \code{\link{swZ}}, and that any
+#' values that may have been read in a data file are ignored.
+#'
+#' Potential temperature defined according to UNESCO-1980 is calculated with
+#' \code{ctd[["theta"]]} or \code{ctd[["potential temperature"]]}.  Salinity is
+#' retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
+#'
+#' Conservative Temperature defined according to TEOS-2010 is calculated with
+#' \code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
+#' salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
+#' salinity"]]}. Note that the salinity calculation requires a latitude and
+#' longitude, and if the \code{ctd} object lacks those data, the values 300E and
+#' 30N will be used as a default.
+#'
+#' The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
+#' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
+#' \code{ctd[["spice"]]}.
+#'
+#' @section Assigning values:
+#' Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
+#'   <- rep(35,10)}.  For obvious reasons, this does not work with derived
+#' quantities such as conservative temperature, etc.
+#'
+#' @section Reading/creating data:
+#' A file containing CTD profile data may be read with
+#' \code{\link{read.ctd}}, and a CTD object can also be created with
+#' \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
+#' formats used in CTD files. Data can also be assembled into
+#' \code{ctd} objects with \code{\link{as.ctd}}.
+#'
+#'
+#' Statistical summaries are provided by \code{\link{summary.ctd}}, while
+#' \code{\link{show}} displays an overview.
+#'
+#' CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of its
+#' work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
+#' which can also be called by the user, to get fine control over the plots.
+#'
+#' A CTD profile can be isolated from a larger record with \code{\link{ctdTrim}},
+#' a task made easier when \code{\link{plotScan}} is used to examine the results.
+#' Towyow data can be split up into sets of profiles (ascending or descending)
+#' with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
+#' specified pressure levels with \code{\link{ctdDecimate}}.
+#'
+#' Low-level manipulation may be done with functions such as
+#' \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
+#' many of the contents of CTD objects may be altered with the \code{[[]]} scheme
+#' discussed above, and skilled users may also manipulate the contents directly.
+#'
+#' @family functions that handle CTD data
+#'
+#' @author Dan Kelley
+setClass("ctd", contains="oce")
+
+
+#' A CTD profile in Halifax Harbour.
+#' 
+#' This is a CTD profile measured in Halifax Harbour in 2003, based
+#' on \code{\link{ctdRaw}}, but trimmed to just the downcast with
+#' \code{\link{ctdTrim}}, using indices inferred by inspection of the
+#' results from \code{\link{plotScan}}.
+#'
+#' This station was sampled by students enrolled in the Dan Kelley's
+#' Physical Oceanography class at Dalhousie University.
+#' The data were acquired near the centre of the Bedford Basin of the
+#' Halifax Harbour, during an October 2003 field trip of Dalhousie University's
+#' Oceanography 4120/5120 class. The original \code{.cnv} data file had
+#' temperature in the IPTS-68 scale, but this was converted to the more modern
+#' scale using \code{\link{T90fromT68}}.
+#'
+#' @name ctd
+#' @docType data
+#'
+#' @usage data(ctd)
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(ctd)
+#' plot(ctd)
+#' }
+#' 
+#' @seealso The full profile (not trimmed to the downcast) is available as
+#' \link{ctdRaw}.
+#' 
+#' @family datasets provided with oce
+NULL
+
+
+#' Seawater CTD profile, without trimming of extraneous data.
+#' 
+#' 
+#' This is sample CTD profile provided for testing.  It includes not just the
+#' (useful) portion of the dataset during which the instrument was being lowered,
+#' but also data from the upcast and from time spent near the surface.  Spikes are
+#' also clearly evident in the pressure record.  With such real-world wrinkles,
+#' this dataset provides a good example of data that need trimming with
+#' \code{\link{ctdTrim}}.
+#' 
+#' This station was sampled by students enrolled in the Dan Kelley's
+#' Physical Oceanography class at Dalhousie University.
+#' The data were acquired near the centre of the Bedford Basin of the
+#' Halifax Harbour, during an October 2003 field trip of Dalhousie University's
+#' Oceanography 4120/5120 class. The original \code{.cnv} data file had
+#' temperature in the IPTS-68 scale, but this was converted to the more modern
+#' scale using \code{\link{T90fromT68}}.
+#'
+#' @name ctdRaw
+#' @docType data
+#'
+#' @usage data(ctdRaw)
+# 
+#' @seealso A similar dataset (trimmed to the downcast) is available as
+#' \code{\link{ctd}}.
+#' 
+#' @family datasets provided with oce
+NULL
+
+
+## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 #' @title Handle flags in CTD objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
@@ -9,38 +155,52 @@
 #' to \code{NA} in the returned value. Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
-#' \code{action=list(all="NA")}.
+#' \code{action=list(ALL="NA")}.
 #' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
-#' @references 
+#' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #' @examples
 #'\dontrun{
 #' library(oce)
 #' data(section)
-#' stn <- section[["station", 2]]
+#' stn <- section[["station", 100]]
 #' # 1. Default: anything not flagged as 2 is set to NA, to focus
-#' # on 'good' data, in the World Hydrographic Program scheme.
+#' # solely on 'good', in the World Hydrographic Program scheme.
 #' STN <- handleFlags(stn)
 #'
-#' # 2. A less restrictive case: only set to NA if flag=4, and only
-#' # apply this action to salinity.
-#' STN <- handleFlags(stn, flags=list(salinity=4))
+#' # 2. A less restrictive case: include also 'questionable' datao,
+#' and only apply this action to salinity.
+#' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 #'
-#' # 3. Add 0.001 to bad salinities
-#' dS <- function(x) x[["salinity"]] + 0.001
-#' STN<-handleFlags(stn,flags=list(salinity=4),actions=list(salinity=dS))
+#' # 3. Use smoothed TS relationship to nudge questionable data.
+#' # This is perhaps a silly idea, but at least it illustrates
+#' # how to write a nontrivial function for an action.
+#' f <- function(x) {
+#'     S <- x[["salinity"]]
+#'     T <- x[["temperature"]]
+#'     df <- 0.5 * length(S) # smooths a bit
+#'     sp <- smooth.spline(T, S, df=df)
+#'     0.5 * (S + predict(sp, T)$y)
+#' }
+#' par(mfrow=c(1,2))
+#' STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
+#' plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
+#' p <- stn[['pressure']]
+#' par(mar=c(3, 3, 3, 1))
+#' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 #'}
+#'
+#' @family functions that handle CTD data
 setMethod("handleFlags",
-          ## DEVELOPERS: please pattern functions and documentation on this case, for uniformity.
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
               if (missing(flags))
-                  flags <- list(all=c(1, 3:9))
-              if (missing(actions)) 
-                  actions <- list(all="NA")
+                  flags <- list(ALL=c(1, 3:9))
+              if (missing(actions))
+                  actions <- list(ALL="NA")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
@@ -57,7 +217,7 @@ setMethod("handleFlags",
 
 setMethod(f="initialize",
           signature="ctd",
-          definition=function(.Object, pressure, salinity, temperature, conductivity, 
+          definition=function(.Object, pressure, salinity, temperature, conductivity,
                               units,
                               pressureType, deploymentType) {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
@@ -90,6 +250,29 @@ setMethod(f="initialize",
           })
 
 
+#' Summarize a CTD object
+#' 
+#' Summarizes some of the data in a \code{ctd} object, presenting such information
+#' as the station name, sampling location, data ranges, etc.
+#'
+#' @aliases summary.ctd
+#' 
+#' @param object An object of class \code{"ctd"}, usually, a result of a call to
+#' \code{\link{read.ctd}}, \code{\link{read.oce}}, or \code{\link{as.ctd}}.
+#' 
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#' of CTD objects, and also outlines the other functions dealing with them.
+#' 
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' summary(ctd)
+#' 
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
@@ -127,6 +310,21 @@ setMethod(f="summary",
               callNextMethod()
           })
 
+#' Extract Something From a CTD Object
+#'
+#' @param x A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
+#' @examples
+#' data(ctd)
+#' head(ctd[["temperature"]])
+#'
+#' @family functions that handle CTD data
+#' @family functions that access oce data and metadata
+#'
+#' @author Dan Kelley
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -205,11 +403,214 @@ setMethod(f="[[",
               }
           })
 
+#' Change Something Within a ctdObject
+#'
+#' @param x A ctd object
+#' @param i The item to insert
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#' @param value The value to be inserted into \code{x}.
+#' @family functions that alter oce data and metadata
+setMethod(f="[[<-",
+          signature="ctd",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+              } else if (i %in% names(x@data)) {
+                 x@data[[i]] <- value
+              } else if (grep("Unit$", i)) {
+                  item <- gsub("Unit$", "", i)
+                  x@metadata$units[[item]] <- value
+              } else if (grep("Flag$", i)) {
+                  item <- gsub("Flag$", "", i)
+                  x@metadata$flags[[item]] <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
+              invisible(x)
+          })
+
+
+#' Coerce data into ctd dataset.
+#' 
+#' Assemble data into a \code{\link{ctd-class}} dataset.
+#' 
+#' If the first argument is an \code{\link{rsk-class}} object, the pressure it
+#' contains may need to be adjusted, because \code{rsk} objects may contain either
+#' absolute pressure or sea pressure. This adjustment is handled automatically by
+#' \code{as.ctd}, by examination of the metadata item named \code{pressureType}
+#' (described in the documentation for \code{\link{read.rsk}}).  Once the sea
+#' pressure is determined, adjustments may be made with the
+#' \code{pressureAtmospheric} argument, although in that case it is better
+#' considered a pressure adjustment than the atmospheric pressure.
+#' 
+#' \code{\link{rsk-class}} objects may store sea pressure or absolute pressure (the
+#' sum of sea pressure and atmospheric pressure), depending on how the object was
+#' created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
+#' \code{\link{ctd-class}} objects store sea pressure, which is needed for
+#' plotting, calculating density, etc. This poses no difficulities, however,
+#' because \code{as.ctd} automatically converts absolute pressure to sea pressure,
+#' if the metadata in the \code{\link{rsk-class}} object indicates that this is
+#' appropriate. Further alteration of the pressure can be accomplished with the
+#' \code{pressureAtmospheric} argument, as noted above.
+# 
+#' @param salinity There are two choices for \code{salinity}. First, it can be a
+#' vector indicating the practical salinity through the water column. In that case,
+#' \code{as.ctd} employs the other arguments listed below. The second choice is
+#' that \code{salinity} is something from which practical salinity, temperature,
+#' etc., can be inferred. In that case, the relevant information is extracted and
+#' the other arguments to \code{as.ctd} are ignored, except for
+#' \code{pressureAtmospheric}; see \dQuote{Details}.
+#' 
+#' @param temperature \emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
+#' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
+#' \code{\link{swRho}}.
+#' 
+#' @param pressure Vector of pressure values, one for each \code{salinity} and
+#' \code{temperature} pair, or just a single pressure, which is repeated to match
+#' the length of \code{salinity}.
+#' 
+#' @param conductivity electrical conductivity ratio through the water column
+#' (optional). To convert from raw conductivity in milliSeimens per centimeter
+#' divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).
+#' 
+#' @param SA absolute salinity (as in TEOS-10).  If given, the supplied absolute
+#' salinity is converted internally to UNESCO-defined practical salinity.
+#' 
+#' @param CT conservative temperature (as in TEOS-10).  If given, the supplied
+#' conservative temperature is converted internally to UNESCO-defined in-situ
+#' temperature.
+#' 
+#' @param oxygen optional oxygen concentration
+#' 
+#' @param nitrate optional nitrate concentration
+#' 
+#' @param nitrite optional nitrite concentration
+#' 
+#' @param phosphate optional phosphate concentration
+#' 
+#' @param silicate optional silicate concentration
+#' 
+#' @param scan optional scan number.  If not provided, this will be set to
+#' \code{1:length(salinity)}.
+#' 
+#' @param time optional vector of times of observation
+#' 
+#' @param other optional list of other data columns that are not in the standard
+#' list
+#' 
+#' @param units an optional list containing units.  If not supplied, a default of
+#' \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+#'   salinity=list(unit=expression(ratio), scale="",
+#'   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
+#' typical of archived datasets, but for some instrumental files it will make
+#' sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
+#' \code{salinity=list(unit=expression(S/m), scale="")}.
+#' 
+#' @param flags if supplied, this is a \code{\link{list}} containing data-quality
+#' flags. The elements of this list must have names that match the data
+#' provided to the object.
+#' 
+#' @param pressureType a character string indicating the type of pressure; may be
+#' \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
+#' and sea pressure, or \code{"sea"}.
+#' 
+#' @param missingValue optional missing value, indicating data that should be
+#' taken as \code{NA}.
+#' 
+#' @param quality optional quality flag, e.g. from the salinity quality flag in WOCE data.
+#' (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
+#' questionable data, and \code{quality=4} means bad data. (NOTE: this is deprecated
+#' as of March 2016 and will be removed soon.)
+#' 
+#' @param filename optional source filename to be stored in the object
+#' 
+#' @param type optional type of CTD, e.g. "SBE"
+#' 
+#' @param model optional model of instrument
+#' 
+#' @param serialNumber optional serial number of instrument
+#' 
+#' @param ship optional string containing the ship from which the observations were made.
+#' 
+#' @param scientist optional string containing the chief scientist on the cruise.
+#' 
+#' @param institute optional string containing the institute behind the work.
+#' 
+#' @param address optional string containing the address of the institute.
+#' 
+#' @param cruise optional string containing a cruise identifier.
+#' 
+#' @param station optional string containing a station identifier.
+#' 
+#' @param date optional string containing the date at which the profile was
+#' started.
+#' 
+#' @param startTime optional string containing the start time.
+#' 
+#' @param recovery optional string indicating the recovery time.
+#' 
+#' @param longitude optional numerical value containing longitude in decimal
+#' degrees, positive in the eastern hemisphere. If this is a single number,
+#' then it is stored in the \code{metadata} slot of the returned value; if it
+#' is a vector of numbers, they are stored in \code{data} and a mean value is
+#' stored in \code{metadata}.
+#' 
+#' @param latitude optional numerical value containing the latitude in decimal
+#' degrees, positive in the northern hemisphere. See the note on length, for
+#' the \code{longitude} argument.
+#' 
+#' @param deploymentType character string indicating the type of deployment. Use
+#' \code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+#' which the data were acquired during a downcast, while the device was lowered
+#' into the water column, perhaps also including an upcast; \code{"moored"} if
+#' the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
+#' \code{"tsg"}) if the device is mounted on a moving vessel, to record
+#' near-surface properties, or \code{"towyo"} if the device is repeatedly
+#' lowered and raised.
+#' 
+#' @param pressureAtmospheric if \code{NA} (the default), then pressure is copied
+#' from the \code{pressure} argument or from the contents of the first argument
+#' (as described above for \code{salinity}). Otherwise, if
+#' \code{pressureAtmospheric} is a numerical value (a constant or a vector),
+#' then it is subtracted from pressure before storing it in the return value.
+#' See \dQuote{Details} for special considerations if \code{salinity}
+#' is a \code{\link{rsk-class}} object.
+#' 
+#' @param waterDepth optional numerical value indicating the water depth in
+#' metres. This is different from the maximum recorded pressure, although
+#' the latter is used by some oce functions as a guess on water depth, the
+#' most important example being \code{\link{plot.section}}.
+#' 
+#' @param sampleInterval optional numerical value indicating the time between
+#' samples in the profile.
+#' 
+#' @param src optional string indicating data source.
+#' 
+#' @param debug a flag that can be set to \code{TRUE} to turn on debugging.
+#' 
+#' @return An object of \code{\link{ctd-class}}.
+#' 
+#' @examples
+#' library(oce)
+#' pressure <- 1:50
+#' temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
+#' salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
+#' ctd <- as.ctd(salinity, temperature, pressure)
+#' summary(ctd)
+#' plot(ctd)
+#' 
+#' @family functions that handle CTD data
+#' @author Dan Kelley
+#' 
+#' @references Culkin, F., and Norman D. Smith, 1980. Determination of the
+#' concentration of potassium chloride solution having the same electrical
+#' conductivity, at 15 C and infinite frequency, as standard seawater of salinity
+#' 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
+#' Engineering}, \bold{5}, pp 22-23.
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL, time=NULL, other=NULL,
-                   ## salinityFlag, temperatureFlag, pressureFlag, conductivityFlag, SAFlag, CTFlag, oxygenFlag, nitrateFlag,
-                   ## nitriteFlag, phosphateFlag, silicateFlag,
                    units=NULL, flags=NULL,
                    pressureType="sea",
                    missingValue=NA, quality=NULL,
@@ -219,7 +620,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    longitude=NA, latitude=NA,
                    deploymentType="unknown",
                    pressureAtmospheric=0, waterDepth=NA,
-                   sampleInterval=NA, 
+                   sampleInterval=NA,
                    src="",
                    debug=getOption("oceDebug"))
 {
@@ -297,7 +698,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
         if ("COND" %in% names(d))
             conductivity <- d$COND
-        else 
+        else
             conductivity <- d$conductivity
         if (inherits(o, "rsk")) {
             if (is.null(conductivity))
@@ -578,10 +979,14 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'
 #' @examples
 #' library(oce)
-#' data(ctd) 
-#' F <- 32 + (9/5)*ctd[["temperature"]] 
-#' ctdNew <- ctdAddColumn(ctd, F, "temperatureF", 
+#' data(ctd)
+#' F <- 32 + (9/5)*ctd[["temperature"]]
+#' ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
 #'     unit=list(unit=expression(degree*F), scale="ITS-90"))
+#'
+#' @family functions that handle CTD data
+#'
+#' @author Dan Kelley
 ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the units
@@ -626,8 +1031,84 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
     res
 }
 
-##method=c("boxcar", "approx", "lm", "rr", "unesco"),
-## SHOULD ADD: spline; supsmu; ...
+
+#' Decimate a CTD profile.
+#' 
+#' Interpolate a CTD profile to specified pressure values.
+#' 
+#' The \code{"approx"} method is best for bottle data, in which the usual task is
+#' to interpolate from a coarse sampling grid to a finer one. For CTD data, the
+#' \code{"boxcar"} method is the more common choice, because the task is normally
+#' to sub-sample, and some degree of smoothing is usually desired.  (The
+#' \code{"lm"} method is quite slow, and the results are similar to those of the
+#' boxcar method.)
+#' 
+#' Note that a sort of numerical cabeling effect can result from this procedure,
+#' but it can be avoided as follows
+#' 
+#' \preformatted{
+#' xd <- ctdDecimate(x)
+#' xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pressure"]])
+#' }
+#' 
+#' @param x a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' 
+#' @param p pressure increment, or vector of pressures.  In the first case,
+#' pressures from 0dbar to the rounded maximum pressure are used, incrementing by
+#' \code{p} dbars.  If a vector of pressures is given, interpolation is done to
+#' these pressures.
+#'   
+#' @param method the method to be used for calculating decimated values.  This may
+#' be a function or a string naming a built-in method.  The built-in methods are
+#' \code{"boxcar"} (based on a local average), \code{"approx"} (based on linear
+#' interpolation between neighboring points), \code{"lm"} (based on local
+#' regression, with \code{e} setting the size of the local region), \code{"rr"}
+#' (for the Reineger and Ross method, carried out with \code{\link{oce.approx}})
+#' and \code{"unesco"} (for the UNESCO method, carried out with.
+#' \code{\link{oce.approx}}.  If \code{method} is a function, then it must take
+#' three arguments, the first being pressure, the second being an arbitrary
+#' variable in another column of the data, and the third being a vector of target
+#' pressures at which the calculation is carried out, and the return value must be
+#' a vector.  See \dQuote{Examples}.
+#' 
+#' @param e is an expansion coefficient used to calculate the local neighbourhoods
+#' for the \code{"boxcar"} and \code{"lm"} methods.  If \code{e=1}, then the
+#' neighbourhood for the i-th pressure extends from the (\code{i-1})-th pressure to
+#' the (\code{i+1})-th pressure.  At the endpoints it is assumed that the outside
+#' bin is of the same pressure range as the first inside bin.  For other values of
+#' \code{e}, the neighbourhood is expanded linearly in each direction.  If the
+#' \code{"lm"} method produces warnings about "prediction from a rank-deficient
+#' fit", a larger value of \code{"e"} should be used.
+#' 
+#' @param debug a Boolean, set to \code{TRUE} to debug the reading process.
+#' 
+#' @return An object of \code{\link{ctd-class}}, with pressures that are as set by
+#' the \code{"p"} parameter and all other properties modified appropriately.
+#' 
+#' @seealso The documentation for \code{\link{ctd-class}} explains the structure of
+#' CTD objects, and also outlines the other functions dealing with them.
+#' 
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' plotProfile(ctd, "salinity", ylim=c(10, 0))
+#' p <- seq(0, 45, 1)
+#' ctd2 <- ctdDecimate(ctd, p=p)
+#' lines(ctd2[["salinity"]], ctd2[["pressure"]], col="blue")
+#' p <- seq(0, 45, 1)
+#' ctd3 <- ctdDecimate(ctd, p=p, method=function(x,y,xout)
+#'                     predict(smooth.spline(x, y, df=30), p)$y)
+#' lines(ctd3[["salinity"]], ctd3[["pressure"]], col="red")
+#' 
+#' 
+#' @references
+#' R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
+#' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+#' 185-193.
+#'
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -801,13 +1282,70 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     res
 }
 
-
+#' Find profiles within a towyow CTD record
+#' 
+#' Examine the pressure record looking for extended periods of either ascent or descent, and return
+#' either indices to these events or a vector of CTD records containing the events.
+#' 
+#' The method works by examining the pressure record.  First, this is smoothed using
+#' \code{\link{smooth.spline}}, which is provided with any extra arguments as supplied to the present
+#' function, e.g. \code{ctdFindProfiles(..., df=10)} uses a spline with 10 degrees of freedom.  The
+#' spline is then first differenced with \code{\link{diff}}.  Median values of the positive and
+#' negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
+#' for any given point to be in an ascending profile, a descending profile, or a non-profile.
+#' Contiguous regions are then found, and those that have fewer than \code{minLength} points are
+#' discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
+#' 
+#' It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
+#' artifacts such as an equilibration phase, etc.
+#' 
+#' @param x A \code{ctd} object, as read by \code{\link{read.ctd}} or created by \code{\link{as.ctd}}.
+#' 
+#' @param cutoff criterion on pressure difference; see \dQuote{Details}.
+#' 
+#' @param minLength lower limit on number of points in candidate profiles.
+#' 
+#' @param minHeight lower limit on height of candidate profiles.
+#' 
+#' @param direction String indicating the travel direction to be selected.
+#' 
+#' @param arr.ind Should array indices be returned, or a vector of ctd objects?
+#' 
+#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
+#' information, or to 2 to get more. 
+#' 
+#' @param ... Optional extra arguments that are passed to \code{\link{smooth.spline}}.
+#' 
+#' @return If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
+#' of the downcasts.  Otherwise, a vector of \code{ctd} objects.
+#' 
+#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#' of CTD objects, and also outlines the other functions dealing with them.
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' d <- read.csv("towyow.csv", header=TRUE)
+#' towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
+#' 
+#' casts <- ctdFindProfiles(towyow)
+#' par(mfrow=c(length(casts), 3))
+#' for (cast in casts) {
+#'   plotProfile(cast, "salinity")
+#'   plotProfile(cast, "temperature")
+#'   plotTS(cast, type='o')
+#' }
+#' }
+#' 
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                            direction=c("descending", "ascending"),
-                           arr.ind=FALSE, 
+                           arr.ind=FALSE,
                            debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff, 
+    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
              ", minLength=", minLength,
              ", minHeight=", minHeight,
              ", direction=\"", direction, "\"",
@@ -885,6 +1423,19 @@ ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range
     }
 }
 
+#' Read an ODF-type CTD file
+#' @template readCtdTemplate
+#' @details
+#' \code{read.ctd.odf()} reads files stored in Ocean Data Format, used in
+#' some Canadian hydrographic databases.
+#'
+#' @references
+#' The ODF format, used by the Canadian Department of Fisheries and Oceans, is
+#' described to some extent in the documentation for \code{\link{read.odf}}.  It
+#' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
+#' the more general function \code{\link{read.odf}}, because the format seems to
+#' be somewhat variable and some of the R code is designed mainly by examination
+#' of some particular files being used in the author's research.
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -901,6 +1452,106 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 }
 
 
+#' Trim start/end portions of a CTD cast
+#' 
+#' Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
+#' the air, in an equilibration phase in which the device is held below the water surface, and then the
+#' upcast phase that follows the downcast.  This is handled reasonably well by \code{ctdTrim} with
+#' \code{method="downcast"}, although it is almost always best to use \code{\link{plotScan}} to
+#' investigate the data, and then use the \code{method="index"} or \code{method="scan"} method based on
+#' visual inspection of the data.
+#' 
+#' \itemize{
+#'   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
+#'   which the CTD is descending.  This is done in stages, with variants based on \code{method[1]}, if
+#'   supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
+#'   This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
+#'   \code{parameters} are given, then any data with negative pressures are deleted.  If there is a
+#'   parameter named \code{pmin}, then that pressure (in decibars) is used instead as the lower limit.
+#'   This is a commonly-used setup, e.g.  \code{ctdTrim(ctd, parameters=list(pmin=1))} removes the top
+#'   decibar (roughly 1m) from the data.  Specifying \code{pmin} is a simple way to remove near-surface
+#'   data, such as a shallow equilibration phase, and if specified will cause \code{ctdTrim} to skip
+#'   step 4 below.  \emph{Step 3.} The maximum pressure is determined, and data acquired subsequent to
+#'   that point are deleted.  This removes the upcast and any subsequent data.  \emph{Step 4.} If the
+#'   \code{pmin} parameter is not specified, an attempt is made to remove an initial equilibrium phase
+#'   by a regression of pressure on scan number.  There are three variants to this, depending on the
+#'   value of the second \code{method} element. If it is \code{"A"} (or not given), the procedure is to
+#'   call \code{\link{nls}} to fit a piecewise linear model of pressure as a function of scan,
+#'   in which pressure is 
+#'   constant for scan less than a critical value, and then linearly varying for with scan. This is
+#'   meant to handle the common situation in which the CTD is held at roughly constant depth (typically 
+#'   a metre or so) to equilibrate, before it is lowered through the water column.
+#'   Case \code{"B"} is the same,
+#'   except that the pressure in the surface region is taken to be zero (this does not make
+#'   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
+#'   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
+#'   
+#'   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
+#'   value of \code{parameters}. If the latter is a logical vector of length matching data column
+#'   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
+#'   two elements, then the index or scan values that lie between \code{parameters[1]}
+#'   and \code{parameters[2]} (inclusive) are used for subsetting.  The
+#'   two-element method is probably the most useful, with the values being determined by visual
+#'   inspection of the results of \code{\link{plotScan}}. While this may take a minute or two, the
+#'   analyst should bear in mind that a deep-water CTD profile might take 6 hours, corresponding to
+#'   ship-time costs exceeding a week of salary.}
+#'   
+#'   \item{If \code{method="range"} then data are selected based on the value of the column named
+#'   \code{parameters$item}.  This may be by range or by critical value.  By range: select values
+#'   between \code{parameters$from} (the lower limit) and \code{parameters$to} (the upper limit) By
+#'   critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
+#'     ctdTrim(ctd, "range", parameters=list(item="scan", from=5))} starts at scan number 5 and
+#'   continues to the end, while
+#'   \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} also starts at scan 5,
+#'   but extends only to scan 100.}
+#' 
+#'   \item{If \code{method} is a function, then it must return a vector of \code{\link{logical}}
+#'   values, computed based on two arguments: \code{data} (a
+#'   \code{\link{list}}), and \code{parameters} as supplied to \code{ctdTrim}.  Both
+#'   \code{inferWaterDepth} and \code{removeInversions} are ignored in the function case. See
+#'   \dQuote{Examples}.}
+#' }
+#'
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' 
+#' @param method A string (or a vector of two strings) specifying the trimming method, or a function to
+#' be used to determine data indices to keep.  If \code{method} is not provided, \code{"downcast"} is
+#' assumed. See \dQuote{Details}.
+#' 
+#' @param removeDepthInversions Logical value indicating whether to remove any levels at which depth is
+#' less than, or equal to, a depth above.  (This is needed if the object is to be assembled into a
+#' section, unless \code{\link{ctdDecimate}} will be used, which will remove the inversions.
+#' 
+#' @param parameters A list whose elements depend on the method; see \dQuote{Details}.
+#' 
+#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
+#' information, or to 2 to get more.
+#' 
+#' @return An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(ctdRaw) 
+#' plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
+#' plot(ctdTrim(ctdRaw)) # looks like a real profile ...
+#' plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
+#' # Demonstrate use of a function. The scan limits were chosen
+#' # by using locator(2) on a graph made by plotScan(ctdRaw).
+#' trimByIndex <- function(data, parameters) {
+#'   parameters[1] < data$scan & data$scan < parameters[2]
+#' }
+#' trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
+#' plot(trimmed)
+#' }
+#' 
+#' @references
+#' The Seabird CTD instrument is described at
+#' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+#' 
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                    debug=getOption("oceDebug"))
 {
@@ -997,7 +1648,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             ## 2014-01-08 delta.p <- c(delta.p[1], delta.p) # to get right length
             ## 2014-01-08 ## previous to this time, we had
             ## 2014-01-08          keep <- keep & (delta.p > 0)
-            ## 2014-01-08 ## here.  However, this failed for some data with 24 Hz sampling, because in 
+            ## 2014-01-08 ## here.  However, this failed for some data with 24 Hz sampling, because in
             ## 2014-01-08 ## that case, what was clearly a descent phase had sign flips in delta.p;
             ## 2014-01-08 ## for this reason, the line of code was dropped today.
 
@@ -1035,7 +1686,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 submethodChoices <- c("A", "B")
                 sm <- pmatch(submethod, submethodChoices)
                 if (is.na(submethod))
-                    stop("unknown submethod '", submethod, "'") 
+                    stop("unknown submethod '", submethod, "'")
                 submethod <- submethodChoices[sm]
                 ## bilinearAold <- function(param) { # param=c(s0,p0,dpds); this uses ss and pp
                 ##     s0 <-  param[1]
@@ -1072,7 +1723,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 if (length(ss) > 2)
                     dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
                 else
-                    dpds0 <- 0 
+                    dpds0 <- 0
                 ## Handle submethods.
                 ## Note in December 2015: the old method B seemed useless. Even method
                 ## C seems a bit useless to DK, actually, and he may remove that too.
@@ -1086,7 +1737,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     ##> oceDebug(debug, "method[2]=\"A\", so using single-segment model\n")
                     ##> sGuess <- mean(ss, na.rm=TRUE)
                     ##> pGuess <- 0
-                    ##> dpdsGuess <- mean(diff(pp)/diff(ss), na.rm=TRUE) 
+                    ##> dpdsGuess <- mean(diff(pp)/diff(ss), na.rm=TRUE)
                     ##> t <- try(o <- optim(c(sGuess, pGuess, dpdsGuess), bilinearA), silent=!TRUE)
                     ##> if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
                     ##> scanStart <- o$par[1]
@@ -1168,6 +1819,32 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     res
 }
 
+
+#' Update a CTD header
+#' 
+#' Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
+#' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
+#' example.
+#' 
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' 
+#' @param debug Set to \code{TRUE} for debugging.
+#' 
+#' @return A new \code{\link{ctd-class}} object.
+#' 
+#' @examples
+#' library(oce)
+#' data(ctd) 
+#' ctd[["pressure"]] <- ctd[["pressure"]] + 3
+#' ctdNew <- ctdUpdateHeader(ctd)
+#' 
+#' @references
+#' The Seabird CTD instrument is described at
+#'   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+#' 
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 ctdUpdateHeader <- function (x, debug = FALSE)
 {
     if (length(x@metadata$header) < 1)
@@ -1200,6 +1877,34 @@ ctdUpdateHeader <- function (x, debug = FALSE)
     res
 }
 
+
+#' Write a CTD data object as a .csv file
+#' 
+#' Writes a comma-separated file containing the data frame stored in
+#' \code{object@data}.  The file is suitable for reading with a spreadsheet, or
+#' with \code{\link{read.csv}}.  Note that the output file will retain none of the
+#' meta-data stored in \code{object}.
+#' 
+#' @param object A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' 
+#' @param file Either a character string (the file name) or a connection.  This is
+#' a mandatory argument.
+#' 
+#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
+#' of CTD objects, and also outlines the other functions dealing with them.
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(ctd)
+#' write.ctd(ctd, "ctd.csv")
+#' d <- read.csv("ctd.csv")
+#' plot(as.ctd(d$salinity, d$temperature, d$pressure))
+#' } 
+#' 
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 write.ctd <- function(object, file=stop("'file' must be specified"))
 {
     if (!inherits(object, "ctd"))
@@ -1215,6 +1920,235 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
     close(con)
 }
 
+
+#' Plot seawater CTD data
+#' 
+#' Plot CTD data, by default in a four-panel display showing (a) profiles of
+#' salinity and temperature, (b) profiles of density and the square of buoyancy
+#' frequency, (c) a TS diagram and (d) a coastline diagram indicating the station
+#' location.
+#' 
+#' Creates a multi-panel summary plot of data measured in a CTD cast. The panels
+#' are controlled by the \code{which} argument.  Normally, 4 panels are specified
+#' with the \code{which}, but it can also be useful to specify less than 4 panels,
+#' and then to draw other panels after this call.
+#' 
+#' If only 2 panels are requested, they will be drawn side by side.
+#' 
+#' If more than one panel is drawn, then on exit from \code{plot.ctd}, the value
+#' of \code{par} will be reset to the value it had before the function call.
+#' However, if only one panel is drawn, the adjustments to \code{par} made within
+#' \code{plot.ctd} are left in place, so that further additions may be made to the
+#' plot.
+#' 
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
+#' list containing items named \code{salinity} and \code{temperature}.
+#' 
+#' @param which List of desired plot types, as given below. If \code{which} is not
+#' supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
+#' CTD is in profiling mode (i.e.  if \code{x@metadata$deploymentType=="profile"}
+#' or if that item is non extant). If the deployment type is \code{"moored"} or
+#' \code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
+#' is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
+#' 
+#' \itemize{
+#'     \item \code{which=1} or \code{which="salinity+temperature"} gives
+#'     a combined profile of temperature and salinity
+#'     \item \code{which=2} or \code{which="density+N2"} gives a combined
+#'     profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
+#'     \item \code{which=3} or \code{which="TS"} gives a TS plot
+#'     \item \code{which=4} or \code{which="text"} gives a textual
+#'     summary of some aspects of the data
+#'     \item \code{which=5} or \code{which="map"} gives a map plotted
+#'     with \code{\link{plot.coastline}}, with a dot for
+#'     the station location.  Notes near the top boundary of the map give the
+#'     station number, the sampling date, and the name of the chief scientist,
+#'     if these are known. Note that the longitude will be converted to a value
+#'     between -180 and 180 before plotting.  (See also notes
+#'     about \code{span}.)
+#'     \item \code{which=5.1} as for \code{which=5}, except that the file name
+#'     is drawn above the map
+#'     \item \code{which=6} or \code{which="density+dpdt"} gives a
+#'     profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
+#'     evaluating whether the instrument is dropping properly through the
+#'     water column
+#'     \item \code{which=7} or \code{which="density+time"} gives a
+#'     profile of density and time
+#'     \item \code{which=8} or \code{which="index"} gives a profile of
+#'     index number (especially useful for \code{\link{ctdTrim}})
+#'     \item \code{which=9} or \code{which="salinity"} gives a salinity profile
+#'     \item \code{which=10} or \code{which="temperature"} gives a temperature profile
+#'     \item \code{which=11} or \code{which="density"} gives a density profile
+#'     \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
+#'     \item \code{which=13} or \code{which="spice"} gives a spiciness profile
+#'     \item \code{which=14} or \code{which="tritium"} gives a tritium profile
+#'     \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
+#'     \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
+#'     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
+#' }
+#' 
+#' @param col Colour of lines or symbols.
+#' 
+#' @param fill A legacy parameter that will be permitted only temporarily; see
+#' \dQuote{History}.
+#' 
+#' @param borderCoastline Colour of coastlines and international borders, passed
+#' to \code{\link{plot.coastline}} if a map is included in \code{which}.
+#' 
+#' @param colCoastline Fill colour of coastlines and international borders, passed
+#' to \code{\link{plot.coastline}} if a map is included in \code{which}. Set to
+#' \code{NULL} to avoid filling.
+#' 
+#' @param eos String indicating the equation of state to be used, either
+#' \code{"unesco"} or \code{"gsw"}.
+#' 
+#' @param ref.lat Latitude of reference point for distance calculation.
+#' 
+#' @param ref.lon Longitude of reference point for distance calculation.
+#' 
+#' @param grid Set \code{TRUE} to get a grid on all plots.
+#' 
+#' @param coastline A specification of the coastline to be used for
+#' \code{which="map"}.  This may be a coastline object, whether built-in or
+#' supplied by the user, or a character string.  If the later, it may be the
+#' name of a built-in coastline (\code{"coastlineWorld"},
+#' \code{"coastlineWorldFine"}, or
+#' \code{"coastlineWorldCoarse"}), or \code{"best"}, to choose 
+#' a suitable coastline for the locale, or \code{"none"} to prevent
+#' the drawing of a coastline.  There is a speed penalty for providing
+#' \code{coastline} as a character string, because it forces
+#' \code{\link{plot.coastline}} to load it on every call.  So, if
+#' \code{plot.coastline} is to be called several times for a given
+#' coastline, it makes sense to load it in before the first call, and to
+#' supply the object as an argument, as opposed to the name of the object.
+#' 
+#' @param Slim Optional limits of salinity axes.
+#' 
+#' @param Clim Optional limits of conductivity axes.
+#' 
+#' @param Tlim Optional limits of temperature axes.
+#' 
+#' @param plim Optional limits of pressure axes.
+#' 
+#' @param densitylim Optional limits of density axis.
+#' 
+#' @param N2lim Optional limits of \eqn{N^2}{N^2} axis.
+#' 
+#' @param Rrholim Optional limits of \eqn{R_rho}{R_rho} axis.
+#' 
+#' @param dpdtlim Optional limits of dP/dt axis.
+#' 
+#' @param timelim Optional limits of delta-time axis.
+#' 
+#' @param lonlim Optional limits of longitude axis of map (ignored if no map
+#' plotted) DEPRECATED 2014-01-07. 
+#' 
+#' @param latlim Optional limits of latitude axis of map (ignored if no map
+#' plotted) DEPRECATED 2014-01-07. 
+#' 
+#' @param clongitude Center longitude.
+#' 
+#' @param clatitude Center latitude.
+#' 
+#' @param span Optional span of map, in km.  If not given, this will be determined
+#' as a small multiple of the distance to the nearest point of land, in an
+#' a@parampt to show some coastline in the plot.
+#' 
+#' @param showHemi Logical indicating whether to show hemisphere in axis tick
+#' labels.
+#' 
+#' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude to
+#' label on the indicated sides of plot, passed to \code{\link{plot.coastline}}.
+#' Using these arguments permits reasonably simple customization.  If they are are
+#' not provided, reasonable defaults will be used.
+#' 
+#' @param projection Projection for map, if desired.  If this is \code{NULL}, no
+#' projection will be used; the map will simply show longitude and latitude in a
+#' cartesian frame, scaled to retain shapes at the centre.  If this is the string
+#' \code{"automatic"}, then either a Mercator or Stereographic projection will be
+#' used, depending on whether the CTD station is within 70 degrees of the equator
+#' or at higher latitudes.  Finally, if this is a string in the format used by
+#' \code{\link{mapPlot}}, then it is is passed to that function.
+#' 
+#' @param parameters Parameters for map, as for \code{projection}.
+#' 
+#' @param orientation Orientation for map, as for \code{projection}.
+#' 
+#' @param latlon.pch Symbol code for sample location (ignored if no map plotted).
+#' 
+#' @param latlon.cex Symbol expansion factor for sample location (ignored if no
+#' map plotted).
+#' 
+#' @param latlon.col Colour of symbol for sample location (ignored if no map
+#' plotted).
+#' 
+#' @param cex Size to be used for plot symbols (see \code{\link{par}}).
+#' 
+#' @param cex.axis Size factor for axis labels (see \code{\link{par}}).
+#' 
+#' @param pch Code for plotting symbol (see \code{\link{par}}).
+#' 
+#' @param useSmoothScatter Boolean, set to \code{TRUE} to use
+#' \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw the plot.
+#' 
+#' @param df Optional argument that is ignored except for plotting buoyancy
+#' frequency; in that case, it is passed to \code{\link{swN2}} as the argument
+#' named \code{df}.
+#' 
+#' @param keepNA Flag indicating whether to keep \code{NA} values in linegraphs,
+#' which will yield breaks in the lines.
+#' 
+#' @param type The type of plot to draw, using the same scheme as
+#' \code{\link{plot}}.
+#' 
+#' @param adorn List of expressions to be executed for the panels in turn, e.g. to
+#' adorn the plots.  If the number matches the number of panels, then the strings
+#' are applied to the appropriate panels, as they are drawn from top-left to
+#' bottom-right.   If only a single expression is provided, it is used for all
+#' panels.  (See \dQuote{Examples}.)
+#' 
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
+#' \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' 
+#' @param mar Value to be used with \code{\link{par}("mar")}.
+#' 
+#' @param inset Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' effect is to prevent the present function from adjusting margins, which is
+#' necessary because margin adjustment is the basis for the method used by
+#' \code{\link{plotInset}}.
+#' 
+#' @param add Logical, indication of whether to add to an existing plot.  This
+#' only works if \code{length(which)=1}, and it will yield odd results if the
+#' value of \code{which} does not match that in the previous plots.
+#' 
+#' @param debug Set to a positive value to get debugging information during
+#' processing.
+#' 
+#' @param ... Optional arguments passed to plotting functions. A common example is
+#' to set \code{df}, for use in \link{swN2} calculations.
+#' 
+#' 
+#' @seealso
+#' The documentation for \code{\link{ctd-class}} explains the structure of CTD
+#' objects, and also outlines the other functions dealing with them.
+#' 
+#' @section History:
+#' Until February, 2016, \code{plot.ctd} relied on a now-defunct argument
+#' \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
+#' Also, now it is possible to set the edge of coasts and international
+#' boundaries, with \code{borderCoastline}.
+#' 
+#' @examples
+#' library(oce)
+#' data(ctd) 
+#' plot(ctd)
+#' 
+#' @aliases plot.ctd
+#' 
+#' @family functions that handle CTD data
+#' 
+#' @author Dan Kelley
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -1556,7 +2490,7 @@ setMethod(f="plot",
                              grid=grid, col.grid="lightgray", lty.grid="dotted",
                              eos=eos,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
-                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, 
+                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex,
                              inset=inset,
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
@@ -1632,7 +2566,7 @@ setMethod(f="plot",
                                                 mean(x[['longitude']], na.rm=TRUE),
                                                 mean(x[['latitude']], na.rm=TRUE))
                               }
-                              ## Previously, used nearest 20 points, but that requires sorting a 
+                              ## Previously, used nearest 20 points, but that requires sorting a
                               ## possibly very long vector. Note the check on the result
                               ## of bound125(), which is a new function
                               nearest <- min(d, na.rm=TRUE)
@@ -1693,7 +2627,7 @@ setMethod(f="plot",
                               clon <- mean(lonlim.c)
                               if (missing(latlim)) {
                                   mlat <- mean(x[["latitude"]], na.rm=TRUE)
-                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=", 
+                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=",
                                            if (is.null(projection)) "NULL" else projection, "\n")
                                   latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - mlat))
                                   latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
@@ -1789,6 +2723,7 @@ setMethod(f="plot",
               invisible()
           })
 
+
 #' Subset a CTD object
 #'
 #' This function is somewhat analogous to
@@ -1801,13 +2736,17 @@ setMethod(f="plot",
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
 #' @return A ctd object.
-#' 
+#'
 #' @aliases subset.ctd
 #' @examples
 #' library(oce)
 #' data(ctd)
 #' plot(ctd)
 #' plot(subset(ctd, pressure<10))
+#'
+#' @family functions that handle CTD data
+#'
+#' @author Dan Kelley
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -1824,7 +2763,7 @@ setMethod(f="subset",
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               res
           })
- 
+
 
 plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
@@ -1883,10 +2822,21 @@ plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
     ##      yaxs='r', type=type)
     ## grid()
 }
-##* Sea-Bird SBE 25 Data File:
-##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+#' Read a general CTD file
+#' @template readCtdTemplate
+#' @param type If \code{NULL}, then the first line is studied, in order to
+#' determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
+#' similar, CTD format is assumed. If \code{type="WOCE"} then a WOCE-exchange file
+#' is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
+#' assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
+#' ascii-ODV file is assumed.
+#'
+#' @details
+#' \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
+#' \code{\link{read.ctd.sbe}} for SBE data files.
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=-999,
+                     monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     ## Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$",file))) {
@@ -1931,15 +2881,20 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         }
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
-                   SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
+                   SBE19 = read.ctd.sbe(file, columns=columns, station=station,
+                                        missing.value=missing.value, monitor=monitor,
                                         debug=debug, processingLog=processingLog, ...),
-                   WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
+                   WOCE  = read.ctd.woce(file, columns=columns, station=station,
+                                         missing.value=missing.value, monitor=monitor,
                                          debug=debug, processingLog=processingLog, ...),
-                   ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
+                   ODF = read.ctd.odf(file, columns=columns, station=station,
+                                      missing.value=missing.value, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
-                   ODV = read.ctd.odv(file, columns=columns, station=station, monitor=monitor,
+                   ODV = read.ctd.odv(file, columns=columns, station=station,
+                                      missing.value=missing.value, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
-                   ITP = read.ctd.itp(file, columns=columns, station=station, monitor=monitor,
+                   ITP = read.ctd.itp(file, columns=columns, station=station,
+                                      missing.value=missing.value, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
     ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
     #if (!"waterDepth" %in% names(res@metadata)) # may be entirely missing
@@ -1964,11 +2919,27 @@ woceNames2oceNames <- function(names)
     names <- gsub("SALNTY.*", "temperature", names)
     names
 }
+
+#' Read a WOCE-type CTD file
+#' @template readCtdTemplate
+#'
+#' @details
+#' \code{read.ctd.woce()} reads files stored in the exchange format used
+#' by the World Ocean Circulation Experiment (WOCE), i.e. the first 4 characters
+#' of the first line being ``\code{CTD,}''), and also in a rarer format with
+#' the first 3 characters being ``\code{CTD}'' followed by a blank or the end of
+#' end of the line.
+#'
+#' @references
+#' The WOCE-exchange format is described at
+#' \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
+#' and a sample file is at
+#' \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file))) {
-        oceDebug(debug, "bread.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
+        oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
         nfiles <- length(files)
         if (monitor)
@@ -2020,16 +2991,16 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     ## Handle a format used in a 2003 survey of the Canada Basin
     if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
         oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
-        ##CTD 
-        ##CRUISE NAME = LSSL 2003-21 
-        ##AREA = Arctic Ocean, Canada Basin 
+        ##CTD
+        ##CRUISE NAME = LSSL 2003-21
+        ##AREA = Arctic Ocean, Canada Basin
         ##SHIP = CCGS Louis S St.Laurent
-        ##CASTNO = 1 
-        ##DATE = 11-Aug-2003 
-        ##LATITUDE (N)= 71.391 
-        ##LONGITUDE (W)= 134.001 
-        ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission 
-        ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %      
+        ##CASTNO = 1
+        ##DATE = 11-Aug-2003
+        ##LATITUDE (N)= 71.391
+        ##LONGITUDE (W)= 134.001
+        ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
+        ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
         ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
         lines <- readLines(file)
         oceDebug(debug, "file has", length(lines), "lines\n")
@@ -2160,7 +3131,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                     break
                 header <- c(header, line)
             }
-        } 
+        }
         ## 2 more header lines, one giving quantities, the next units, e.g.
         ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
         ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
@@ -2243,7 +3214,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         }
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-            waterDepthWarning <- TRUE 
+            waterDepthWarning <- TRUE
         }
         ## catch e.g. -999 sometimes used for water depth's missing value
         if (is.finite(waterDepth) && waterDepth <= 0)
@@ -2288,8 +3259,8 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=
                                 debug=getOption("oceDebug"), processingLog, ...)
 {
     ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
-    ##STNNBR    558 CASTNO   1 NO.RECORDS=   83       
-    ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ      
+    ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
+    ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ
     ##  CTDPRS  CTDTMP  CTDSAL  CTDOXY  NUMBER  QUALT1
     ##    DBAR  ITS-90  PSS-78 UMOL/KG    OBS.       *
     ## ******* ******* ******* *******               *
@@ -2358,6 +3329,18 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
 
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
+
+#' Read an SBE-type CTD file
+#' @template readCtdTemplate
+#'
+#' @details
+#' \code{read.ctd.sbe()} reads files stored in Seabird \code{.cnv} format.
+#'
+#' @references
+#' The Sea-Bird SBE 19plus profiler is described at
+#' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
+#' information is given in the Sea-Bird data-processing manaual
+#' \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!is.null(columns)) {
@@ -2428,7 +3411,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
         if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
             ## Sometimes SBE files have a header line after the *END* line.
-            iline <- iline + 1  
+            iline <- iline + 1
             if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
                 iline <- iline + 1
             break
@@ -2521,7 +3504,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             d <- sub("(.*)date:([ ])*", "", lline)
             date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
         }
-        ##* NMEA UTC (Time) = Jul 28 2011  04:17:53 
+        ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
         ##* system upload time = jan 26 2010 13:02:57
         if (length(grep("^\\* .*time.*=.*$", lline))) {
             if (0 == length(grep("real-time sample interval", lline))) {
@@ -2796,6 +3779,18 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res
 }
 
+#' Read an ODV-type CTD file
+#' @template readCtdTemplate
+#'
+#' @details
+#' \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.
+#'
+#' @references
+#' The \code{ODV} format is described in a file stored on the website of the British
+#' Oceanographic Data Center, \code{bodc.ac.uk}, in a directory named
+#' \code{data/codes_and_formats/odv_format}. (The URL is not provided here
+#' because it is unreliable, which causes problems with CRAN submission of the
+#' oce package.)
 read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -2831,14 +3826,14 @@ plotTS <- function (x,
 {
     oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
              "eos=\"", eos, "\", ",
-             "mgp=c(", paste(mgp, collapse=","), "), ", 
-             "mar=c(", paste(mar, collapse=","), "), ", 
+             "mgp=c(", paste(mgp, collapse=","), "), ",
+             "mar=c(", paste(mar, collapse=","), "), ",
              "...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     xat <- NULL
     yat <- NULL
     if (!inherits(x, "ctd")) {
-        if (inherits(x, "section")) { 
+        if (inherits(x, "section")) {
             x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
         } else {
             names <- names(x)
@@ -3091,7 +4086,7 @@ plotProfile <- function (x,
     dots <- list(...)
     ytype <- match.arg(ytype)
     if (!is.null(ylab) && ylab == "") {
-        yname <- "" 
+        yname <- ""
     } else {
         yname <- switch(ytype,
                         pressure=resizableLabel("p", "y"),
@@ -3198,7 +4193,7 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(x@data$sigmaTheta, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
-        plot(st[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch, 
+        plot(st[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type = type, col = col.rho, lty=lty, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         ## lines(st[look], y[look])
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -3246,7 +4241,7 @@ plotProfile <- function (x,
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look],
-             xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch, 
+             xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch,
              type = type, xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         if (getOption("oceUnitBracket") == '[') {
@@ -3265,7 +4260,7 @@ plotProfile <- function (x,
         if (missing(dpdtlim))
             dpdtlim <- range(dpdt.sm$y)
         plot(dpdt.sm$y, dpdt.sm$x,
-             xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch, 
+             xlim=dpdtlim, ylim=ylim, type=type, xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt, cex=cex, pch=pch,
              xaxs=xaxs, yaxs=yaxs, lty=lty, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
@@ -3320,7 +4315,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
-                     xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch, 
+                     xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     if (eos == "gsw") {
@@ -3387,7 +4382,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
             if (!add) {
                 plot(conductivity[look], y[look],
-                     xlim=Clim, ylim=ylim, lty=lty, cex=cex, pch=pch, 
+                     xlim=Clim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (is.null(xlab)) {
                     ## Look up conductivity unit (issue 731)
@@ -3469,11 +4464,11 @@ plotProfile <- function (x,
         if (!add) {
             if (ylimGiven) {
                 plot(Rrho, y[look], lty=lty,
-                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim, cex=cex, pch=pch, 
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=ylim, cex=cex, pch=pch,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             } else {
                 plot(Rrho, y[look], lty=lty,
-                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])), cex=cex, pch=pch, 
+                     xlim=if (!missing(Rrholim)) Rrholim, ylim=rev(range(y[look])), cex=cex, pch=pch,
                      type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             }
             mtext(expression(R[rho]), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -3513,7 +4508,7 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(x@data$temperature) & !is.na(y)
             if (!add) {
                 plot(temperature[look], y[look], lty=lty,
-                     xlim=Tlim, ylim=ylim, cex=cex, pch=pch, 
+                     xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
                      type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (eos == "gsw") {
                     mtext(resizableLabel("conservative temperature", "x"),
@@ -3642,12 +4637,12 @@ plotProfile <- function (x,
         axis(2)
         box()
         if (type == 'l') {
-            lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
+            lines(st, y, col = col.rho, lwd=lwd, lty=lty)
         } else if (type == 'p') {
             points(st, y, col = col.rho, pch=pch, cex=cex)
         } else {
             points(st, y, col = col.rho, pch=pch, cex=cex)
-            lines(st, y, col = col.rho, lwd=lwd, lty=lty) 
+            lines(st, y, col = col.rho, lwd=lwd, lty=lty)
         }
         par(new = TRUE)
         N2 <- swN2(x, df=df, eos=eos)
@@ -3665,12 +4660,12 @@ plotProfile <- function (x,
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
 
         if (type == 'l') {
-            lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
+            lines(N2, y, col = col.N2, lwd=lwd, lty=lty)
         } else if (type == 'p') {
             points(N2, y, col = col.N2, pch=pch, cex=cex)
         } else {
             points(N2, y, col = col.N2, pch=pch, cex=cex)
-            lines(N2, y, col = col.N2, lwd=lwd, lty=lty) 
+            lines(N2, y, col = col.N2, lwd=lwd, lty=lty)
         }
         if (getOption("oceUnitBracket") == '[') {
             mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
@@ -3688,7 +4683,7 @@ plotProfile <- function (x,
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         if (!add) {
-            plot(N2[look], y[look], lty=lty, 
+            plot(N2[look], y[look], lty=lty,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
@@ -3707,14 +4702,14 @@ plotProfile <- function (x,
             }
         }
         ## 2014-02-07: use col (not col.rho) here, since no second axis to worry about
-        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, lty=lty, 
+        plotJustProfile(x=N2, y=y, col=col, type=type, lwd=lwd, lty=lty,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
         look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
         if (!add) {
-            plot(spice[look], y[look], lty=lty, 
+            plot(spice[look], y[look], lty=lty,
                  ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             mtext(resizableLabel("spice", "x"), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
@@ -3728,8 +4723,8 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, lty=lty, 
-                        cex=cex, col=col, pch=pch, pt.bg=pt.bg, 
+        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, lty=lty,
+                        cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "salinity+temperature") {
         if (add)
@@ -3811,6 +4806,17 @@ plotProfile <- function (x,
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
 }
 
+#' Read an ITP-type CTD file
+#' @template readCtdTemplate
+#'
+#' @details
+#' \code{read.ctd.itp()} reads files stored in ice-tethered profile format.
+#'
+#' @references
+#' Information about ice-tethered profile data is provided at
+#' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
+#' downloading data.  Note that the present version only handles data in
+#' profiler-mode, not fixed-depth mode.
 read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -3873,5 +4879,4 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
     res
 }
-
 

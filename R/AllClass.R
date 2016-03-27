@@ -174,10 +174,17 @@ setMethod(f="summary",
               invisible(threes)
           })
 
+## FIXME: move each of these to the respective .R files, and update the
+## FIXME: docs to roxygen format. This takes about an hour per data type,
+## FIXME: which seems unproductive, but the advantage is that in roxygen
+## FIXME: we get (a) more uniform notation and (b) the @family tag. Both things
+## FIXME: help users a lot, and the second saves a lot of future development
+## FIXME: time that would otherwise be spent updating a lot of seealso lists
+## FIXME: when a new function is added.
+## To find a list of classes in oce, do 'grep setClass *.R'
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 setClass("cm", contains="oce")
 setClass("coastline", contains="oce")
-setClass("ctd", contains="oce")
 setClass("echosounder", contains="oce")
 setClass("gps", contains="oce")
 setClass("ladp", contains="oce")
@@ -428,6 +435,7 @@ setMethod("handleFlags",
           })
 
 handleFlagsInternal <- function(object, flags, actions) {
+    debug <- options('oceDebug')$oceDebug # avoid an arg for this
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)\n")
         return(object)
@@ -436,22 +444,48 @@ handleFlagsInternal <- function(object, flags, actions) {
         warning("no actions supplied (internal error; report to developer)\n")
         return(object)
     }
-    ##> cat("in handleFlagsInternal, flags=\n")
-    ##> str(flags)
-    ##> cat("in handleFlagsInternal, actions=\n")
-    ##> str(actions)
+    if (any(names(flags)!=names(actions)))
+        stop("names of flags must match those of actions")
+    if (debug > 1) {
+        cat("in handleFlagsInternal, flags=\n")
+        str(flags)
+        cat("in handleFlagsInternal, actions=\n")
+        str(actions)
+    }
     if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
-        all <- "all" %in% names(flags)
-        flagNames <- names(object@metadata$flags)
+        all <- "ALL" %in% names(flags)
+        if (all && length(flags) > 1)
+            stop("if \"ALL\" is given, nothing else may be specified")
+        objectFlagNames <- names(object@metadata$flags)
         for (name in names(object@data)) {
-            if (all || name %in% flagNames) {
-                ## Sieve on metadata$flags and act as indicated
-                ## FIXME: code here
-                cat("FIXME: write code to apply an action to '", name, "'\n", sep="")
+            if (debug > 0)
+                message("name: ", name)
+            flagsObject <- object@metadata$flags[[name]]
+            if (!is.null(flagsObject)) {
+                ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
+                flagsThis<- if (all) flags[["ALL"]] else flags[[name]]
+                actionsThis <- if (all) actions[["ALL"]] else actions[[name]]
+                ##> message("flagsThis:");print(flagsThis)
+                if (name %in% names(object@metadata$flags)) {
+                    actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
+                    if (debug > 0)
+                        print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
+                    if (any(actionNeeded)) {
+                        if (is.function(actionsThis)) {
+                            object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
+                        } else if (is.character(actionsThis)) {
+                            if (actionsThis == "NA") {
+                                object@data[[name]][actionNeeded] <- NA
+                            } else {
+                                stop("the only permitted character action is 'NA'")
+                            }
+                        } else {
+                            stop("action must be a character string or a function")
+                        }
+                    }
+                }
             }
         }
-    } else {
-        warning("object has no flags")
     }
     object
 }

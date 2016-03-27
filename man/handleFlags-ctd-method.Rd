@@ -12,7 +12,7 @@
 
 \item{flags}{An optional \code{\link{list}} containing (a)
 items with names of entries in the \code{data} slot of \code{object},
-or (b) a single item named \code{all} that indicates that the operations are to take
+or (b) a single item named \code{ALL} that indicates that the operations are to take
 place all the entries in \code{object}'s \code{data} slot.
 Each element in the list must be set to an integer or vector of integers,
 specifying conditions to be met before actions are to be taken.}
@@ -21,7 +21,7 @@ specifying conditions to be met before actions are to be taken.}
 names that match those in the \code{flags} argument.  If \code{actions}
 is not supplied, the default will be to set all values identified by
 \code{flags} to \code{NA}; this can also be specified by
-specifying \code{actions=list(all="NA")}. It is also possible to specify 
+specifying \code{actions=list(ALL="NA")}. It is also possible to specify 
 functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
 replacement for the data item in question.}
@@ -58,7 +58,7 @@ suspicious, or bad data. Any data not flagged as good are set
 to \code{NA} in the returned value. Since WHP flag codes run
 from 1 to 9, this default is equivalent to
 setting \code{flags=list(all=c(1, 3:9))} along with
-\code{action=list(all="na")}.
+\code{action=list(ALL="NA")}.
 }
 \section{Implementation status}{
  \code{handleFlags} is a new function as of March 2016,
@@ -76,24 +76,50 @@ types will be added, as needed.
 \dontrun{
 library(oce)
 data(section)
-stn <- section[["station", 2]]
+stn <- section[["station", 100]]
 # 1. Default: anything not flagged as 2 is set to NA, to focus
-# on 'good' data, in the World Hydrographic Program scheme.
+# solely on 'good', in the World Hydrographic Program scheme.
 STN <- handleFlags(stn)
 
-# 2. A less restrictive case: only set to NA if flag=4, and only
-# apply this action to salinity.
-STN <- handleFlags(stn, flags=list(salinity=4))
+# 2. A less restrictive case: include also 'questionable' datao,
+and only apply this action to salinity.
+STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 
-# 3. Add 0.001 to bad salinities
-dS <- function(x) x[["salinity"]] + 0.001
-STN<-handleFlags(stn,flags=list(salinity=4),actions=list(salinity=dS))
+# 3. Use smoothed TS relationship to nudge questionable data.
+# This is perhaps a silly idea, but at least it illustrates
+# how to write a nontrivial function for an action.
+f <- function(x) {
+    S <- x[["salinity"]]
+    T <- x[["temperature"]]
+    df <- 0.5 * length(S) # smooths a bit
+    sp <- smooth.spline(T, S, df=df)
+    0.5 * (S + predict(sp, T)$y)
 }
+par(mfrow=c(1,2))
+STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
+plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
+p <- stn[['pressure']]
+par(mar=c(3, 3, 3, 1))
+plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
+}
+
 }
 \references{
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 \seealso{
+Other functions that handle CTD data: \code{\link{[[,ctd-method}},
+  \code{\link{as.ctd}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+
 Other functions that handle data-quality flags: \code{\link{handleFlags}}
 }
 
