@@ -30,6 +30,8 @@ head(adv[["q", "numeric"]]) # in numeric form
 }
 \seealso{
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,argo-method}}, \code{\link{[[,ctd-method}}
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,ctd-method}},
+  \code{\link{[[,section-method}}
 }
 

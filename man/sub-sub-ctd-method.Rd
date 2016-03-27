@@ -29,7 +29,9 @@ Dan Kelley
 }
 \seealso{
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,adv-method}}, \code{\link{[[,argo-method}}
+  \code{\link{[[,adv-method}},
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,section-method}}
 
 Other functions that handle CTD data: \code{\link{as.ctd}},
   \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},

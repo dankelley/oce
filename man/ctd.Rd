@@ -34,7 +34,8 @@ plot(ctd)
 The full profile (not trimmed to the downcast) is available as
 \link{ctdRaw}.
 
-Other datasets provided with oce: \code{\link{argo}},
-  \code{\link{ctdRaw}}
+Other datasets provided with oce: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}},
+  \code{\link{ctdRaw}}, \code{\link{section}}
 }
 

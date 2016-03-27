@@ -195,6 +195,36 @@
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 setClass("adp", contains="oce")
 
+#' ADP (acoustic-doppler profiler) dataset
+#' 
+#' This is degraded subsample of measurements that were made with an
+#' upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
+#' Internal Wave Experiment (SLEIWEX).
+#' 
+#' @name adp
+#' 
+#' @docType data
+#' 
+#' @usage data(adp)
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(adp)
+#' 
+#' # Velocity components.  (Note: we should probably trim some bins at top.)
+#' plot(adp)
+#' 
+#' # Note that tides have moved the mooring.
+#' plot(adp, which=15:18)
+#' }
+#' 
+#' 
+#' @source This file came from the SLEIWEX-2008 experiment.
+#'
+#' @family datasets provided with oce
+NULL
+
 setMethod(f="initialize",
           signature="adp",
           definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {

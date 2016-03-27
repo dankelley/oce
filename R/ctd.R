@@ -403,7 +403,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within a ctdObject
+#' Change Something within a ctd object
 #'
 #' @param x A ctd object
 #' @param i The item to insert
@@ -2835,6 +2835,13 @@ plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
 #' @details
 #' \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
 #' \code{\link{read.ctd.sbe}} for SBE data files.
+#'
+#' @seealso Other functions that read CTD data:
+#' \code{\link{read.ctd.itp}} for ice-tethered-profiler format,
+#' \code{\link{read.ctd.odf}} for ODF format,
+#' \code{\link{read.ctd.odv}} for ODV format,
+#' \code{\link{read.ctd.sbe}} for SBE format, and
+#' \code{\link{read.ctd.woce}} for WOCE format.
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=-999,
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

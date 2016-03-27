@@ -69,6 +69,13 @@ data formats. See \dQuote{Details}.
 Dan Kelley
 }
 \seealso{
+Other functions that read CTD data:
+\code{\link{read.ctd.itp}} for ice-tethered-profiler format,
+\code{\link{read.ctd.odf}} for ODF format,
+\code{\link{read.ctd.odv}} for ODV format,
+\code{\link{read.ctd.sbe}} for SBE format, and
+\code{\link{read.ctd.woce}} for WOCE format.
+
 Other functions that handle CTD data: \code{\link{[[,ctd-method}},
   \code{\link{as.ctd}}, \code{\link{ctd-class}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},

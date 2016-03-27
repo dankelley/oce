@@ -24,7 +24,8 @@ plot(argo, which="trajectory", coastline=coastlineWorld)
 
 }
 \seealso{
-Other datasets provided with oce: \code{\link{ctdRaw}},
-  \code{\link{ctd}}
+Other datasets provided with oce: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{section}}
 }
 

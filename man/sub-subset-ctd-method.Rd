@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,ctd-method}
 \alias{[[<-,ctd-method}
-\title{Change Something Within a ctdObject}
+\title{Change Something within a ctd object}
 \usage{
 \S4method{[[}{ctd}(x, i, j) <- value
 }
@@ -19,7 +19,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Change Something Within a ctdObject
+Change Something within a ctd object
 }
 \seealso{
 Other functions that alter oce data and metadata: \code{\link{[[<-,adp-method}},

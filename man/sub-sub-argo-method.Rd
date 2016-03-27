@@ -21,7 +21,8 @@ Extract something from an argo object
 }
 \seealso{
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,adv-method}}, \code{\link{[[,ctd-method}}
+  \code{\link{[[,adv-method}}, \code{\link{[[,ctd-method}},
+  \code{\link{[[,section-method}}
 
 Other functions that deal with argo data: \code{\link{[[<-,argo-method}},
   \code{\link{argoGrid}}, \code{\link{as.argo}},
