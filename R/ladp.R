@@ -20,7 +20,7 @@
 #'     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
 #'     things. Use \code{names(ladp@data)} to find the names of the data.
 #' 
-#' @family functions that deal with \code{\link{ladp-class}} data
+#' @family functions that handle ladp data
 #'
 #' @author Dan Kelley
 
@@ -65,7 +65,7 @@ setMethod(f="initialize",
 #' 
 #' @return A matrix containing statistics of the elements of the \code{data} slot.
 #' 
-#' @family functions that deal with \code{\link{ladp-class}} data
+#' @family functions that handle ladp data
 #' 
 #' @author Dan Kelley
 setMethod(f="summary",

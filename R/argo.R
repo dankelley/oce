@@ -48,7 +48,7 @@ NULL
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 #' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
@@ -66,7 +66,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value recoverd from \code{x}.
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
@@ -173,7 +173,7 @@ argoDataNames <- function(names)
 #' plotTS(subset(argo, "adjusted"))
 #'
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -325,7 +325,7 @@ setMethod(f="subset",
 #' 
 #' @author Dan Kelley 
 
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -390,7 +390,7 @@ ncdfFixMatrix <- function(x)
 #' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #' 
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 #' @author Dan Kelley
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
@@ -605,7 +605,7 @@ argoDecodeFlags <- function(f) # local function
 #' Similar steps can be followed on other servers.
 #'
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -829,7 +829,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' objects, and also outlines the other functions dealing with them.
 #' 
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure, 
                        units=NULL,
@@ -960,7 +960,7 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @references \url{http://www.argo.ucsd.edu/}
 #' 
-#' @family functions that deal with argo data
+#' @family functions that handle argo data
 #' @family functions that plot oce data
 #' @aliases plot.argo
 #' @author Dan Kelley

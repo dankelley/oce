@@ -36,7 +36,7 @@ plot(subset(adp, time < mean(range(adp[['time']]))))
 Dan Kelley
 }
 \seealso{
-Other functions that deal with adp data: \code{\link{[[,adp-method}},
+Other functions that handle adp data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}
 }
 

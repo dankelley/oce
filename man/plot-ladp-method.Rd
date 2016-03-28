@@ -24,10 +24,14 @@ Dan Kelley
 }
 \seealso{
 Other functions that handle ladp data: \code{\link{[[,ladp-method}},
-  \code{\link{as.ladp}}
+  \code{\link{as.ladp}}, \code{\link{ladp-class}},
+  \code{\link{summary,ladp-method}}
 
-Other functions that plot oce data: \code{\link{plot,argo-method}},
+Other functions that plot oce data: \code{\link{plot,amsr-method}},
+  \code{\link{plot,argo-method}},
   \code{\link{plot,ctd-method}},
+  \code{\link{plot,landsat-method}},
+  \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}}
 }
 

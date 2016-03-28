@@ -366,7 +366,7 @@ setMethod(f="summary",
 #' @examples
 #' data(adp)
 #' head(adp[["v"]][,,1])
-#' @family functions that deal with adp data
+#' @family functions that handle adp data
 #' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
@@ -416,7 +416,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that deal with adp data
+#' @family functions that handle adp data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
@@ -492,7 +492,7 @@ setValidity("adp",
 #' # First part of time series
 #' plot(subset(adp, time < mean(range(adp[['time']]))))
 #' 
-#' @family functions that deal with adp data
+#' @family functions that handle adp data
 #' 
 #' @aliases subset.adp
 #' 

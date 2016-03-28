@@ -25,7 +25,8 @@ setClass("satellite", contains="oce")
 #'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle amsr data
+#' @family functions that handle satellite data
 #' @references
 #' 1. \url{http://www.remss.com/missions/amsre}
 #' @aliases amsr-class
@@ -64,7 +65,8 @@ setMethod(f="show",
 #' @author Dan Kelley
 #' @aliases summary.amsr
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle amsr data
+#' @family functions that handle satellite data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -114,7 +116,8 @@ setMethod(f="summary",
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle amsr data
+#' @family functions that handle satellite data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -208,7 +211,6 @@ setMethod(f="[[",
 #'
 #' @aliases plot.amsr
 #' @concept satellite
-#' @family functions dealing with satellite data
 #'
 #' @examples
 #' \dontrun{
@@ -220,6 +222,9 @@ setMethod(f="[[",
 #' }
 #'
 #' @author Dan Kelley
+#' @family functions that handle amsr data
+#' @family functions that handle satellite data
+#' @family functions that plot oce data
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -252,8 +257,9 @@ setMethod(f="plot",
 #' @param debug A debugging flag, integer.
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions dealing with satellite data
 #' @seealso \code{\link{plot.amsr}} for an example.
+#' @family functions that handle amsr data
+#' @family functions that handle satellite data
 #' @examples
 #' \dontrun{
 #' d <- read.amsr("f34_20160102v7.2.gz")

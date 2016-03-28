@@ -310,21 +310,36 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' Extract Something From a CTD Object
-#'
+#' @title Extract Something From a CTD Object
 #' @param x A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#'
+#' @family functions that handle CTD data
+#' @template sub_subTemplate
 #' @examples
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
-#' @family functions that handle CTD data
-#' @family functions that access oce data and metadata
+#' @section Details of the specialized ctd method:
+#' As noted above, this method is applied before the general method. The
+#' purpose is to permit calculation of secondary data that are not
+#' actually stored in the object.  For example, ctd data conventionally
+#' store in-situ temperature, which is retrieved by \code{x[["temperature"]]}
+#' which is a direct lookup of the data variable of that name. However,
+#' \code{x[["t"]]} can be used as a synonym for this, and \code{x[["temperature68"]]}
+#' can be used to convert to the IPTS-1968 temperature scale. Potential temperature
+#' in the UNESCO formulation may be retrived with \code{x[["theta"]]} or
+#' \code{x[["potential temperature"]]}, while the Gibbs Seawater (GSW) temperature
+#' parameter called Conservative Temperature can be retrieved with 
+#' \code{x[["CT"]]} or \code{x[["conservative temperature"]]}. Similarly,
+#' the GSW reference salinity and preformed salinity are retrieve with
+#' \code{x[["SR"]]} and \code{x[["Sstar"]]}.
 #'
-#' @author Dan Kelley
+#' The z coordinate is retrieved with \code{x[["z"]]} and the depth
+#' with \code{x[["depth"]]}. These are calculated with 
+#' with \code{\link{swZ}}) and \code{\link{swDepth}}, respectively.
+#'
+#' In addition, some specialized quantities are also provided, e.g. the
+#' density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}}),
+#' spice \code{x[["spice"]]} (computed with \code{\link{swSpice}}).
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -410,7 +425,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that data
+#' @family functions that handle ctd data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="ctd",

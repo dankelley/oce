@@ -135,7 +135,8 @@ NULL
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
 #' @references
 #' 1. See the USGS "glovis" web site.
 #' 
@@ -209,7 +210,8 @@ setMethod(f="initialize",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
 #' @aliases summary.landsat
 setMethod(f="summary",
           signature="landsat",
@@ -295,7 +297,8 @@ setMethod(f="summary",
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -623,7 +626,9 @@ setMethod(f="[[",
 #' @aliases plot.landsat
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
+#' @family functions that plot oce data
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
@@ -1018,7 +1023,8 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' 
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
 read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
@@ -1146,7 +1152,8 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
     if (!is.matrix(data))
@@ -1205,7 +1212,8 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' with them.
 #' @author Dan Kelley and Clark Richards
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family functions that handle landsat data
+#' @family functions that handle satellite data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))

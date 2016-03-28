@@ -259,8 +259,11 @@ Other functions that handle CTD data: \code{\link{[[,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 
-Other functions that plot oce data: \code{\link{plot,argo-method}},
+Other functions that plot oce data: \code{\link{plot,amsr-method}},
+  \code{\link{plot,argo-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
+  \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}}
 }
 

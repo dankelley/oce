@@ -161,14 +161,35 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' Extract Something From a section Object
+#' @title Extract Something From a section Object
+#' @param x A ctd object, i.e. one inheriting from \code{\link{section-class}}.
+#' @family functions that handle section data
+#' @template sub_subTemplate
+#' @examples
+#' data(section)
+#' length(section[["latitude"]])
+#' length(section[["latitude", "byStation"]])
 #'
-#' @param x A section object, i.e. one inheriting from \code{\link{section-class}}.
-#' @param i The item to extract. This may be the name of a variable stored in the station
-#' data, or the word \code{"station"}, which will return a \code{\link{list}} of 
-#' \code{\link{ctd-class}} objects holding the station data, if \code{j} is not specified,
-#' or the j-th station in the section, if \code{j} is given.
-#' @param j Optional additional information on the \code{i} item. If this is \code{"byStation"}
+#' @section Details of the specialized section method:
+#' If \code{i} is the string \code{"station"}, then the method 
+#' will return a \code{\link{list}} of 
+#' \code{\link{ctd-class}} objects holding the station data. If \code{j} 
+#' given and is an integer, then just the j-th station in the section is returned.
+#'
+#' If \code{i} is \code{"station ID"}, then the IDs of the stations in the 
+#' section are returned.
+#'
+#' If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
+#' height is returned (as calculated with \code{\link{swDynamicHeight}(x)}).
+#'
+#' If \code{i} is \code{distance}, then the distance along the section is
+#' returned, using \code{\link{geodDist}}.
+#'
+#' If \code{i} is \code{depth}, then the a vector containing the depths
+#' of the stations is returned.
+#'
+#' Otherwise, \code{i} is expected to be the name of something stored in the
+#' station data, or a special string@param j Optional additional information on the \code{i} item. If this is \code{"byStation"}
 #' and \code{i} is either \code{"latitude"} or \code{"longitude"}, then only one value
 #' is returned for each station.
 #' @param ... Optional additional information (ignored).
@@ -238,8 +259,10 @@ setMethod(f="[[",
                   res <- NULL
                   for (stn in seq_along(x@data$station))
                       res <- c(res, x@data$station[[stn]]@data$pressure) # FIXME not really depth
+              ##?20160328? } else {
+              ##?20160328?     res <- unlist(lapply(x@data$station, function(X) X[[i]]))
               } else {
-                  res <- unlist(lapply(x@data$station, function(X) X[[i]]))
+                  callNextMethod()
               }
               res
           })

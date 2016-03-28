@@ -31,10 +31,10 @@ Dan Kelley
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,argo-method}},
-  \code{\link{[[,ctd-method}},
   \code{\link{[[,section-method}}
 
 Other functions that handle ladp data: \code{\link{as.ladp}},
-  \code{\link{plot,ladp-method}}
+  \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
+  \code{\link{summary,ladp-method}}
 }
 

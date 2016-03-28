@@ -27,7 +27,7 @@ Other functions that alter oce data and metadata: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,adv-method}},
   \code{\link{[[<-,ctd-method}}
 
-Other functions that deal with argo data: \code{\link{[[,argo-method}},
+Other functions that handle argo data: \code{\link{[[,argo-method}},
   \code{\link{argoGrid}}, \code{\link{as.argo}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},

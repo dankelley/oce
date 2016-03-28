@@ -8,21 +8,72 @@
 \S4method{[[}{section}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A section object, i.e. one inheriting from \code{\link{section-class}}.}
+\item{x}{A ctd object, i.e. one inheriting from \code{\link{section-class}}.}
 
-\item{i}{The item to extract. This may be the name of a variable stored in the station
-data, or the word \code{"station"}, which will return a \code{\link{list}} of 
-\code{\link{ctd-class}} objects holding the station data, if \code{j} is not specified,
-or the j-th station in the section, if \code{j} is given.}
+\item{i}{Character string indicating the name of item to extract.}
 
-\item{j}{Optional additional information on the \code{i} item. If this is \code{"byStation"}
-and \code{i} is either \code{"latitude"} or \code{"longitude"}, then only one value
-is returned for each station.}
+\item{j}{Optional additional information on the \code{i} item.}
+
+\item{...}{Optional additional information (ignored).}
 
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Extract Something From a section Object
+The \code{[[} notation works for all \code{oce} objects. It looks up
+information in a two-step process. First, a class-specific function 
+is used to try to access the requested information (see
+\dQuote{Details of the specialized method}). Then, if no match is found, a
+general function is used (see \sQuote{Details of the general
+method}). If neither function is successful in locating
+the desired item, then \code{NULL} is returned.
+}
+\section{Details of the general method}{
+
+
+If the specialized method produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges
+first on the value of \code{i}.
+
+First, a check is made as to whether \code{i} names one of the standard
+\code{oce} slots, and returns the slot contents if so. Thus, 
+\code{x[["metadata"]]} will retrieve the \code{metadata} slot, 
+while \code{x[["data"]]} and \code{x[["processingLog"]]} return
+those slots.
+
+Then, a search is made of the items in the \code{metadata} slot. A direct
+match to the item named in \code{i} will retrieve the corresponding item.
+For example, a common use for \code{\link{ctd-class}} data is
+\code{x[["station"]]}, which looks up the station ID.
+
+Finally, a partial-match search is done of the \code{data} slot, using
+\code{\link{pmatch}}.
+
+If none of these three conditions holds, \code{NULL} is returned.
+}
+
+\section{Details of the specialized section method}{
+
+If \code{i} is the string \code{"station"}, then the method 
+will return a \code{\link{list}} of 
+\code{\link{ctd-class}} objects holding the station data. If \code{j} 
+given and is an integer, then just the j-th station in the section is returned.
+
+If \code{i} is \code{"station ID"}, then the IDs of the stations in the 
+section are returned.
+
+If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
+height is returned (as calculated with \code{\link{swDynamicHeight}(x)}).
+
+If \code{i} is \code{distance}, then the distance along the section is
+returned, using \code{\link{geodDist}}.
+
+If \code{i} is \code{depth}, then the a vector containing the depths
+of the stations is returned.
+
+Otherwise, \code{i} is expected to be the name of something stored in the
+station data, or a special string@param j Optional additional information on the \code{i} item. If this is \code{"byStation"}
+and \code{i} is either \code{"latitude"} or \code{"longitude"}, then only one value
+is returned for each station.
 }
 \examples{
 data(section)
@@ -32,12 +83,25 @@ length(section[["latitude", "byStation"]])
 }
 \author{
 Dan Kelley
+
+Dan Kelley
 }
 \seealso{
+Other functions that access data within oce objects: \code{\link{[[,ctd-method}}
+
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,argo-method}},
-  \code{\link{[[,ctd-method}}, \code{\link{[[,ladp-method}}
+  \code{\link{[[,ladp-method}}
+
+Other functions that handle section data: \code{\link{as.section}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 
 Other functions that handle section data: \code{\link{as.section}},
   \code{\link{plot,section-method}},

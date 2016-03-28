@@ -38,17 +38,27 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 Dan Kelley
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
+Other functions that handle amsr data: \code{\link{[[,amsr-method}},
+  \code{\link{amsr-class}}, \code{\link{read.amsr}},
+  \code{\link{summary,amsr-method}}
+
+Other functions that handle satellite data: \code{\link{[[,landsat-method}},
+  \code{\link{amsr-class}}, \code{\link{landsatAdd}},
+  \code{\link{landsatTrim}},
   \code{\link{plot,landsat-method}},
   \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
+  \code{\link{read.amsr}}, \code{\link{read.landsat}},
   \code{\link{satellite-class}},
   \code{\link{summary,amsr-method}},
   \code{\link{summary,landsat-method}},
   \code{\link{summary,satellite-method}}
+
+Other functions that plot oce data: \code{\link{plot,argo-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{plot,section-method}}
 }
 \concept{
 satellite

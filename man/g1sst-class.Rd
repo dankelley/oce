@@ -29,18 +29,7 @@ Dan Kelley
 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
+Other functions dealing with satellite data: \code{\link{read.g1sst}}
 }
 \concept{
 satellite
