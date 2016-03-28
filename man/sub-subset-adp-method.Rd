@@ -27,6 +27,7 @@ Other functions that alter oce data and metadata: \code{\link{[[<-,adv-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,ctd-method}}
 
-Other functions that deal with adp data: \code{\link{[[,adp-method}}
+Other functions that deal with adp data: \code{\link{[[,adp-method}},
+  \code{\link{subset,adp-method}}
 }
 

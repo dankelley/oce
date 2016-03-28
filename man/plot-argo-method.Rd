@@ -114,5 +114,9 @@ Other functions that deal with argo data: \code{\link{[[,argo-method}},
   \code{\link{as.argo}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
+
+Other functions that plot oce data: \code{\link{plot,ctd-method}},
+  \code{\link{plot,ladp-method}},
+  \code{\link{plot,section-method}}
 }
 

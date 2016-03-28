@@ -817,6 +817,7 @@ sectionAddCtd <- sectionAddStation
 #' 
 #' @aliases plot.section
 #' 
+#' @family functions that plot oce data
 #' @family functions that handle section data
 #' 
 #' @author Dan Kelley

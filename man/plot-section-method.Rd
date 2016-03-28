@@ -210,5 +210,9 @@ Other functions that handle section data: \code{\link{[[,section-method}},
   \code{\link{sectionSort}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
+
+Other functions that plot oce data: \code{\link{plot,argo-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{plot,ladp-method}}
 }
 

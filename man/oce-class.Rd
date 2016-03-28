@@ -37,6 +37,7 @@ at the following links:
 \code{\link{coastline-class}},
 \code{\link{ctd-class}},
 \code{\link{echosounder-class}},
+\code{\link{ladp-class}},
 \code{\link{lisst-class}},
 \code{\link{lobo-class}},
 \code{\link{met-class}},

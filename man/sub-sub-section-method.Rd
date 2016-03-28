@@ -36,7 +36,8 @@ Dan Kelley
 \seealso{
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}}, \code{\link{[[,ctd-method}}
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,ctd-method}}, \code{\link{[[,ladp-method}}
 
 Other functions that handle section data: \code{\link{as.section}},
   \code{\link{plot,section-method}},

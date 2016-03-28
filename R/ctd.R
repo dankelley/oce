@@ -410,6 +410,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
+#' @family functions that data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="ctd",
@@ -2146,6 +2147,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @aliases plot.ctd
 #' 
+#' @family functions that plot oce data
 #' @family functions that handle CTD data
 #' 
 #' @author Dan Kelley

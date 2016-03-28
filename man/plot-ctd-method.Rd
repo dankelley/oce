@@ -258,5 +258,9 @@ Other functions that handle CTD data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+
+Other functions that plot oce data: \code{\link{plot,argo-method}},
+  \code{\link{plot,ladp-method}},
+  \code{\link{plot,section-method}}
 }
 

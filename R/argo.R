@@ -960,9 +960,10 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @references \url{http://www.argo.ucsd.edu/}
 #' 
+#' @family functions that deal with argo data
+#' @family functions that plot oce data
 #' @aliases plot.argo
 #' @author Dan Kelley
-#' @family functions that deal with argo data
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,

@@ -470,6 +470,33 @@ setValidity("adp",
             })
 
 
+#' Subset an adp object
+#' 
+#' Subset an adp (acoustic Doppler profile) object, in a manner that is function
+#' is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
+#' \code{time} or \code{distance}, but these may not be combined; use a sequence
+#' of calls to subset by both.
+#' 
+#' @param x An \code{\link{adp-class}} object.
+#' 
+#' @param subset A condition to be applied to the \code{data} portion of
+#' \code{x}.  See \sQuote{Details}.
+#' 
+#' @param ... Ignored.
+#' 
+#' @return A new \code{\link{adp-class}} object.
+#' 
+#' @examples
+#' library(oce)
+#' data(adp)
+#' # First part of time series
+#' plot(subset(adp, time < mean(range(adp[['time']]))))
+#' 
+#' @family functions that deal with adp data
+#' 
+#' @aliases subset.adp
+#' 
+#' @author Dan Kelley
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {

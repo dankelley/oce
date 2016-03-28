@@ -24,6 +24,7 @@
 #' \code{\link{coastline-class}},
 #' \code{\link{ctd-class}},
 #' \code{\link{echosounder-class}},
+#' \code{\link{ladp-class}},
 #' \code{\link{lisst-class}},
 #' \code{\link{lobo-class}},
 #' \code{\link{met-class}},
@@ -187,7 +188,6 @@ setClass("cm", contains="oce")
 setClass("coastline", contains="oce")
 setClass("echosounder", contains="oce")
 setClass("gps", contains="oce")
-setClass("ladp", contains="oce")
 setClass("landsat", contains="oce")
 setClass("lisst", contains="oce")
 setClass("lobo", contains="oce")
