@@ -188,19 +188,12 @@ setMethod(f="summary",
 #' If \code{i} is \code{depth}, then the a vector containing the depths
 #' of the stations is returned.
 #'
-#' Otherwise, \code{i} is expected to be the name of something stored in the
-#' station data, or a special string@param j Optional additional information on the \code{i} item. If this is \code{"byStation"}
-#' and \code{i} is either \code{"latitude"} or \code{"longitude"}, then only one value
-#' is returned for each station.
-#' @param ... Optional additional information (ignored).
+#' FIXME: dek will write more here before the end of March, 2016.
 #'
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
 #' length(section[["latitude", "byStation"]])
-#'
-#' @family functions that handle section data
-#' @family functions that access oce data and metadata
 #'
 #' @author Dan Kelley
 setMethod(f="[[",

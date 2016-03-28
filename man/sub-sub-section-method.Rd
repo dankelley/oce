@@ -15,8 +15,6 @@
 \item{j}{Optional additional information on the \code{i} item.}
 
 \item{...}{Optional additional information (ignored).}
-
-\item{...}{Optional additional information (ignored).}
 }
 \description{
 The \code{[[} notation works for all \code{oce} objects. It looks up
@@ -70,10 +68,7 @@ returned, using \code{\link{geodDist}}.
 If \code{i} is \code{depth}, then the a vector containing the depths
 of the stations is returned.
 
-Otherwise, \code{i} is expected to be the name of something stored in the
-station data, or a special string@param j Optional additional information on the \code{i} item. If this is \code{"byStation"}
-and \code{i} is either \code{"latitude"} or \code{"longitude"}, then only one value
-is returned for each station.
+FIXME: dek will write more here before the end of March, 2016.
 }
 \examples{
 data(section)
@@ -88,20 +83,6 @@ Dan Kelley
 }
 \seealso{
 Other functions that access data within oce objects: \code{\link{[[,ctd-method}}
-
-Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}},
-  \code{\link{[[,ladp-method}}
-
-Other functions that handle section data: \code{\link{as.section}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
 
 Other functions that handle section data: \code{\link{as.section}},
   \code{\link{plot,section-method}},

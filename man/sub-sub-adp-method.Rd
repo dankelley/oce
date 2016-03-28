@@ -30,8 +30,7 @@ head(adp[["v"]][,,1])
 \seealso{
 Other functions that access oce data and metadata: \code{\link{[[,adv-method}},
   \code{\link{[[,argo-method}},
-  \code{\link{[[,ladp-method}},
-  \code{\link{[[,section-method}}
+  \code{\link{[[,ladp-method}}
 
 Other functions that handle adp data: \code{\link{[[<-,adp-method}},
   \code{\link{subset,adp-method}}

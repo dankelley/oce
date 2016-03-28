@@ -29,9 +29,7 @@ Dan Kelley
 }
 \seealso{
 Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}},
-  \code{\link{[[,section-method}}
+  \code{\link{[[,adv-method}}, \code{\link{[[,argo-method}}
 
 Other functions that handle ladp data: \code{\link{as.ladp}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
