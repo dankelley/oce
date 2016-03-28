@@ -195,6 +195,36 @@
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 setClass("adp", contains="oce")
 
+#' ADP (acoustic-doppler profiler) dataset
+#' 
+#' This is degraded subsample of measurements that were made with an
+#' upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
+#' Internal Wave Experiment (SLEIWEX).
+#' 
+#' @name adp
+#' 
+#' @docType data
+#' 
+#' @usage data(adp)
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(adp)
+#' 
+#' # Velocity components.  (Note: we should probably trim some bins at top.)
+#' plot(adp)
+#' 
+#' # Note that tides have moved the mooring.
+#' plot(adp, which=15:18)
+#' }
+#' 
+#' 
+#' @source This file came from the SLEIWEX-2008 experiment.
+#'
+#' @family datasets provided with oce
+NULL
+
 setMethod(f="initialize",
           signature="adp",
           definition=function(.Object, time, distance, v, a, q, oceCoordinate="enu", orientation="upward") {
@@ -336,6 +366,8 @@ setMethod(f="summary",
 #' @examples
 #' data(adp)
 #' head(adp[["v"]][,,1])
+#' @family functions that deal with adp data
+#' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -384,6 +416,8 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
+#' @family functions that deal with adp data
+#' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

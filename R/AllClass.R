@@ -7,7 +7,9 @@
 #' @slot metadata A list containing information about the data. The 
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
-#' not make sense for a \code{\link{ctd-class}} object.
+#' not make sense for a \code{\link{ctd-class}} object. In addition,
+#' all classes have items named \code{units} and \code{flags}, used
+#' to store information on the units of the data, and the data quality.
 #' @slot data A list containing the data.
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
@@ -42,6 +44,24 @@ setClass("oce",
          prototype=list(metadata=list(filename="", units=list(), flags=list()),
                         data=list(),
                         processingLog=list()))
+
+
+### ##http://stackoverflow.com/questions/7356120/how-to-properly-document-s4-methods-using-roxygen2
+### #' Handle flags
+### #'
+### #' FILL IN
+### #'
+### #' @param object An object inheriting from oce
+### #' @param flags \code{\link{list}} of the form (FILL IN)
+### #' @param action Character string specifying what to do (FILL IN)
+### #' @export
+### #' @docType methods
+### #' @rdname handleFlags-methods
+### setGeneric("handleFlags",
+###            function(object, flags, action) {
+###                cat("in handleFlags\n")
+###                standardGeneric("handleFlags")
+###            })
 
 #' Summarize an oce Object
 #'
@@ -154,10 +174,17 @@ setMethod(f="summary",
               invisible(threes)
           })
 
+## FIXME: move each of these to the respective .R files, and update the
+## FIXME: docs to roxygen format. This takes about an hour per data type,
+## FIXME: which seems unproductive, but the advantage is that in roxygen
+## FIXME: we get (a) more uniform notation and (b) the @family tag. Both things
+## FIXME: help users a lot, and the second saves a lot of future development
+## FIXME: time that would otherwise be spent updating a lot of seealso lists
+## FIXME: when a new function is added.
+## To find a list of classes in oce, do 'grep setClass *.R'
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
 setClass("cm", contains="oce")
 setClass("coastline", contains="oce")
-setClass("ctd", contains="oce")
 setClass("echosounder", contains="oce")
 setClass("gps", contains="oce")
 setClass("ladp", contains="oce")
@@ -168,7 +195,6 @@ setClass("met", contains="oce")
 setClass("odf", contains="oce")
 setClass("rsk", contains="oce")
 setClass("sealevel", contains="oce")
-setClass("section", contains="oce")
 setClass("tidem", contains="oce")
 setClass("topo", contains="oce")
 setClass("windrose", contains="oce")
@@ -387,4 +413,78 @@ setMethod(f="show",
               }
           })
 
+#' @title Handle flags in oce objects
+#' @details
+#' Each specialized variant of this function has its own defaults
+#' for \code{flags} and \code{actions}.
+#' @param object An object of \code{\link{oce}}.
+#' @template handleFlagsTemplate
+setGeneric("handleFlags", function(object, flags, actions) {
+           standardGeneric("handleFlags")
+         })
 
+#' Signal erroneous application to non-oce objects
+#' @param object A vector, which cannot be the case for \code{oce} objects.
+#' @param flags Ignored.
+#' @param actions Ignored.
+setMethod("handleFlags",
+          c(object="vector", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
+              stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
+          })
+
+handleFlagsInternal <- function(object, flags, actions) {
+    debug <- options('oceDebug')$oceDebug # avoid an arg for this
+    if (missing(flags)) {
+        warning("no flags supplied (internal error; report to developer)\n")
+        return(object)
+    }
+    if (missing(actions)) {
+        warning("no actions supplied (internal error; report to developer)\n")
+        return(object)
+    }
+    if (any(names(flags)!=names(actions)))
+        stop("names of flags must match those of actions")
+    if (debug > 1) {
+        cat("in handleFlagsInternal, flags=\n")
+        str(flags)
+        cat("in handleFlagsInternal, actions=\n")
+        str(actions)
+    }
+    if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
+        all <- "ALL" %in% names(flags)
+        if (all && length(flags) > 1)
+            stop("if \"ALL\" is given, nothing else may be specified")
+        objectFlagNames <- names(object@metadata$flags)
+        for (name in names(object@data)) {
+            if (debug > 0)
+                message("name: ", name)
+            flagsObject <- object@metadata$flags[[name]]
+            if (!is.null(flagsObject)) {
+                ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
+                flagsThis<- if (all) flags[["ALL"]] else flags[[name]]
+                actionsThis <- if (all) actions[["ALL"]] else actions[[name]]
+                ##> message("flagsThis:");print(flagsThis)
+                if (name %in% names(object@metadata$flags)) {
+                    actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
+                    if (debug > 0)
+                        print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
+                    if (any(actionNeeded)) {
+                        if (is.function(actionsThis)) {
+                            object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
+                        } else if (is.character(actionsThis)) {
+                            if (actionsThis == "NA") {
+                                object@data[[name]][actionNeeded] <- NA
+                            } else {
+                                stop("the only permitted character action is 'NA'")
+                            }
+                        } else {
+                            stop("action must be a character string or a function")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    object
+}

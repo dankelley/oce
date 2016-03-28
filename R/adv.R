@@ -49,6 +49,40 @@
 #' @aliases adv-class
 setClass("adv", contains="oce")
 
+#' ADV (acoustic-doppler velocimeter) dataset
+#' 
+#' This \code{\link{adv-class}} object is a sampling of measurements made with a
+#' Nortek Vector acoustic Doppler velocimeter deployed as part of the St Lawrence
+#' Internal Wave Experiment (SLEIWEX).  Various identifying features have been
+#' redacted.
+#' 
+#' @name adv
+#' 
+#' @docType data
+#' 
+#' @usage data(adv)
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(adv)
+#' 
+#' # Velocity time-series
+#' plot(adv)
+#' 
+#' # Spectrum of upward component of velocity, with ``turbulent'' reference line
+#' s <- spectrum(adv[["v"]][,3],plot=FALSE)
+#' plot(log10(s$freq), log10(s$spec), type='l')
+#' for (a in seq(-20, 20, by=1))
+#'     abline(a=a, b=-5/3, col='gray', lty='dotted')
+#' }
+#' 
+#' @source This file came from the SLEIWEX-2008 experiment.
+#' 
+#' @family datasets provided with oce
+NULL
+
+
 setMethod(f="initialize",
           signature="adv",
           definition=function(.Object,time,v,a,q,filename) {
@@ -94,6 +128,7 @@ setMethod(f="summary",
 #' data(adv)
 #' head(adv[["q"]])            # in raw form
 #' head(adv[["q", "numeric"]]) # in numeric form
+#' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -138,6 +173,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
+#' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

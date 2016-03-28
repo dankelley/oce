@@ -8,7 +8,7 @@
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 #' pressures with \code{\link{argoGrid}}.  Plots can be made with
-#' \code{\link{plot.argo}}, while \code{\link{summary.argo}} produces statistical
+#' \code{\link{plot.argo}}, while \code{\link{summary,argo-method}} produces statistical
 #' summaries and \code{show} produces overviews. The usual oce generic
 #' functions are available, e.g. \code{\link{[[,argo-method}} may 
 #' be used to extract data, and \code{\link{[[<-,argo-method}} may
@@ -18,12 +18,38 @@
 #' argo-related datasets that may be useful in a wider context.
 setClass("argo", contains="oce")
 
+#' ARGO drifter dataset
+#' 
+#' This is an ARGO drifter data object, for drifter 6900388, downloaded as
+#' \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
+#' @name argo
+#' @docType data
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(argo)
+#' summary(argo)
+#' data(coastlineWorld)
+#' plot(argo, which="trajectory", coastline=coastlineWorld)
+#' }
+#' 
+#' 
+#' @source This is the profile stored in the file \code{6900388_prof.nc}
+#' downloaded from the \code{usgodae.org} website in March 2012.
+#'     
+#' @family datasets provided with oce
+NULL
+
+
 #' Extract something from an argo object
 #'
 #' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
+#' @family functions that deal with argo data
+#' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -40,6 +66,8 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value recoverd from \code{x}.
+#' @family functions that deal with argo data
+#' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -272,7 +300,32 @@ setMethod(f="subset",
           })
 
 
+#' Summarize an Argo object
+#' 
+#' @description Summarizes some of the data in an \code{argo} object.
+#' 
+#' @details Pertinent summary information is presented.
+#' @aliases summary.argo
+#' 
+#' @param object}{an object of class \code{"argo"}, usually, a result of a
+#'     call to \code{\link{read.argo}}.
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' 
+#' @return A matrix containing statistics of the elements of the \code{data} slot.
+#' 
+#' 
+#' @examples
+#' library(oce)
+#' data(argo)
+#' summary(argo)
+#' 
+#' 
+#' @references \url{http://www.argo.ucsd.edu/}
+#' 
+#' @author Dan Kelley 
 
+#' @family functions that deal with argo data
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -296,6 +349,49 @@ ncdfFixMatrix <- function(x)
     x
 }
 
+#' Grid a Argo drifter path.
+#' 
+#' Grid a Argo drifter, by interpolating to fixed pressure levels.
+#' 
+#' @param argo A \code{argo} object to be gridded.
+#' 
+#' @param p Optional indication of the pressure levels to which interpolation
+#' should be done.  If this is not supplied, the pressure levels will be
+#' calculated based on the existing values, using medians. If \code{p="levitus"},
+#' then pressures will be set to be those of the Levitus atlas, given by
+#' \code{\link{standardDepths}}, trimmed to the maximum pressure in \code{argo}.
+#' If \code{p} is a single numerical value, it is taken as the number of
+#' subdivisions to use in a call to \code{\link{seq}} that has range from 0 to the
+#' maximum pressure in \code{argo}.  Finally, if a vector numerical values is
+#' provided, then it is used as is.
+#' 
+#' @param debug A flag that turns on debugging.  Higher values provide deeper
+#' debugging.
+#'   
+#' @param ... Optional arguments to \code{\link{approx}}, which is used to do the
+#' gridding.
+#' 
+#' 
+#' @details The gridding is done with \code{\link{approx}}.  If there is
+#' sufficient user demand, other methods may be added, by analogy to
+#' \code{\link{sectionGrid}}.
+#' 
+#' @return An object of \code{\link{argo-class}} that contains a pressure matrix
+#' with constant values along the first index.
+#' 
+#' @examples
+#' library(oce)
+#' data(argo)
+#' g <- argoGrid(argo, p=seq(0, 100, 1))
+#' par(mfrow=c(2,1))
+#' t <- g[["time"]]
+#' z <- -g[["pressure"]][,1]
+#' ## Set zlim because of spurious temperatures.
+#' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
+#' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
+#' 
+#' @family functions that deal with argo data
+#' @author Dan Kelley
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)

@@ -1,6 +1,7 @@
 % vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2:spell
 \name{oce-deprecated}
 \alias{oce-deprecated}
+\alias{oce-defunct}
 \title{Deprecated functions in package \sQuote{oce}}
 
 \description{Certain functions and function arguments are still provided for
@@ -18,16 +19,22 @@
 
   \tabular{lll}{
     \strong{Deprecated} \tab \strong{Replacement} \tab \strong{Notes}\cr
-    \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
     \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve name sensibility\cr
     \code{mapMeridians} \tab \code{\link{mapGrid}} \tab Improve name sensibility\cr
   }
 
   The next CRAN release of \sQuote{oce} will have these functions flagged as
-  "defunct", so trying to use them will generate an error.  Two CRAN releases
-  from now, the functions will be removed entirely.  Please contact the
-  developers if these plans will cause problems in your work.
+  "defunct", which will mean that trying to use them will generate an error and
+  a hint as to the replacement function.
 
+  The following are marked "defunct", which means that calling them in the
+  present version of oce will produce an error, and that they will be removed
+  altogether in the next oce release on CRAN.
+
+  \tabular{lll}{
+    \strong{Defunct} \tab \strong{Replacement} \tab \strong{Notes}\cr
+    \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
+  }
 
   Several \sQuote{oce} function arguments are also slated for removal but are
   being permitted in the present CRAN release. They are as follows.

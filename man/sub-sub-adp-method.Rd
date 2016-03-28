@@ -27,4 +27,12 @@ form; see examples.
 data(adp)
 head(adp[["v"]][,,1])
 }
+\seealso{
+Other functions that access oce data and metadata: \code{\link{[[,adv-method}},
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,ctd-method}},
+  \code{\link{[[,section-method}}
+
+Other functions that deal with adp data: \code{\link{[[<-,adp-method}}
+}
 
