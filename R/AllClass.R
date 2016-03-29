@@ -265,16 +265,18 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "metadata") {
                   return(x@metadata)
-              } else if (length(grep("Unit$", i))) { # returns a list
+              } else if (i == "data") {
+                  return(x@data)
+              } else if (i == "processingLog") {
+                  return(x@processingLog)
+               } else if (length(grep("Unit$", i))) { # returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
               } else if (length(grep(" unit$", i))) { # returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]][[1]] else "")
               } else if (length(grep(" scale$", i))) { # returns just the scale, a character string
                   return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$","",i)]][[2]]) else "")
-              } else if (i == "data") {
-                  return(x@data)
-              } else if (i == "processingLog") {
-                  return(x@processingLog)
+              } else if (length(grep("Flag$", i))) { # returns a list
+                  return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$","",i)]] else NULL)
               } else {
                   ## metadata must match exactly but data can be partially matched
                   if (i %in% names(x@metadata))

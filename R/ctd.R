@@ -312,34 +312,38 @@ setMethod(f="summary",
 
 #' @title Extract Something From a CTD Object
 #' @param x A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.
-#' @family functions that handle CTD data
-#' @template sub_subTemplate
 #' @examples
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
 #' @section Details of the specialized ctd method:
-#' As noted above, this method is applied before the general method. The
-#' purpose is to permit calculation of secondary data that are not
-#' actually stored in the object.  For example, ctd data conventionally
-#' store in-situ temperature, which is retrieved by \code{x[["temperature"]]}
-#' which is a direct lookup of the data variable of that name. However,
-#' \code{x[["t"]]} can be used as a synonym for this, and \code{x[["temperature68"]]}
-#' can be used to convert to the IPTS-1968 temperature scale. Potential temperature
-#' in the UNESCO formulation may be retrived with \code{x[["theta"]]} or
-#' \code{x[["potential temperature"]]}, while the Gibbs Seawater (GSW) temperature
-#' parameter called Conservative Temperature can be retrieved with 
-#' \code{x[["CT"]]} or \code{x[["conservative temperature"]]}. Similarly,
-#' the GSW reference salinity and preformed salinity are retrieve with
-#' \code{x[["SR"]]} and \code{x[["Sstar"]]}.
+#' The first step \code{[[,ctd-method} takes is to address requests
+#' for inferences about data stored in \code{\link{ctd-class}}
+#' objects. For example, these objects hold in-situ temperature,
+#' but users often need potential temperatures, and so this can
+#' be calculated and returned, even though the information may
+#' not be in the data object. Thus, \code{x[["temperature"]]}
+#' (or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
+#' \code{x[["theta"]]} (or \code{x[["potential temperature"]]})
+#' give potential temperature. Similarly, \code{x[["temperature68"]]}
+#' can be used to convert to the IPTS-1968 temperature scale. The
+#' "conservative temperature" of the Gibbs Seawater (GSW) formulation is
+#' available as \code{x[["conservative temperature"]]} (or 
+#' \code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
+#' and preformed salinity is \code{x[["Sstar"]]}.
 #'
-#' The z coordinate is retrieved with \code{x[["z"]]} and the depth
-#' with \code{x[["depth"]]}. These are calculated with 
-#' with \code{\link{swZ}}) and \code{\link{swDepth}}, respectively.
+#' Similarly, a ctd object normally contains pressure, but both
+#' vertical coordinate and depth can be obtained, with 
+#' \code{x[["z"]]} and \code{x[["depth"]]}, respectively.
 #'
-#' In addition, some specialized quantities are also provided, e.g. the
-#' density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}}),
-#' spice \code{x[["spice"]]} (computed with \code{\link{swSpice}}).
+#' In addition, some specialized quantities are also provided, e.g. 
+#' density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
+#' spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
+#' and the square of buoyancy frequency \code{x[["N2"]]} (calculated
+#' with \code{\link{swN2}(x)}).
+#'
+#' @template sub_subTemplate
+#' @family functions that handle CTD data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -413,6 +417,8 @@ setMethod(f="[[",
               } else if (i == "depth") {
                   ## FIXME-gsw: permit gsw version here
                   swDepth(x)
+              } else if (i == "N2") {
+                  swN2(x)
               } else {
                   callNextMethod()
               }

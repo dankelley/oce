@@ -41,15 +41,17 @@ setClass("argo", contains="oce")
 #' @family datasets provided with oce
 NULL
 
-
-#' Extract something from an argo object
+#' @title Extract Something From a argo Object
+#' @param x A argo object, i.e. one inheriting from \code{\link{argo-class}}.
+#' @examples
+#' data(argo)
+#' dim(argo[['temperature']])
 #'
-#' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @section Details of the specialized argo method:
+#' There are no special features for \code{\link{argo-class}} data;
+#' the general method is used directly.
+#' @template sub_subTemplate
 #' @family functions that handle argo data
-#' @family functions that access oce data and metadata
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {

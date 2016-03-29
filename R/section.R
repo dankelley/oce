@@ -162,9 +162,8 @@ setMethod(f="summary",
           })
 
 #' @title Extract Something From a section Object
-#' @param x A ctd object, i.e. one inheriting from \code{\link{section-class}}.
+#' @param x A section object, i.e. one inheriting from \code{\link{section-class}}.
 #' @family functions that handle section data
-#' @template sub_subTemplate
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
@@ -174,7 +173,7 @@ setMethod(f="summary",
 #' If \code{i} is the string \code{"station"}, then the method 
 #' will return a \code{\link{list}} of 
 #' \code{\link{ctd-class}} objects holding the station data. If \code{j} 
-#' given and is an integer, then just the j-th station in the section is returned.
+#' is also given and is an integer, then just the j-th station in the section is returned.
 #'
 #' If \code{i} is \code{"station ID"}, then the IDs of the stations in the 
 #' section are returned.
@@ -182,19 +181,21 @@ setMethod(f="summary",
 #' If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
 #' height is returned (as calculated with \code{\link{swDynamicHeight}(x)}).
 #'
-#' If \code{i} is \code{distance}, then the distance along the section is
+#' If \code{i} is \code{"distance"}, then the distance along the section is
 #' returned, using \code{\link{geodDist}}.
 #'
-#' If \code{i} is \code{depth}, then the a vector containing the depths
+#' If \code{i} is \code{"depth"}, then a vector containing the depths
 #' of the stations is returned.
 #'
-#' FIXME: dek will write more here before the end of March, 2016.
+#' If none of the conditions listed above holds, the general
+#' method is used (see \sQuote{Details of the general method}).
 #'
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
 #' length(section[["latitude", "byStation"]])
 #'
+#' @template sub_subTemplate
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),

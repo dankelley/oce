@@ -20,11 +20,39 @@
 The \code{[[} notation works for all \code{oce} objects. It looks up
 information in a two-step process. First, a class-specific function 
 is used to try to access the requested information (see
-\dQuote{Details of the specialized method}). Then, if no match is found, a
+\dQuote{Details of the specialized ... method}). Then, if no match is found, a
 general function is used (see \sQuote{Details of the general
-method}). If neither function is successful in locating
-the desired item, then \code{NULL} is returned.
+method}). If neither method can handle the requested item,
+then \code{NULL} is returned.
 }
+\section{Details of the specialized ctd method}{
+
+The first step \code{[[,ctd-method} takes is to address requests
+for inferences about data stored in \code{\link{ctd-class}}
+objects. For example, these objects hold in-situ temperature,
+but users often need potential temperatures, and so this can
+be calculated and returned, even though the information may
+not be in the data object. Thus, \code{x[["temperature"]]}
+(or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
+\code{x[["theta"]]} (or \code{x[["potential temperature"]]})
+give potential temperature. Similarly, \code{x[["temperature68"]]}
+can be used to convert to the IPTS-1968 temperature scale. The
+"conservative temperature" of the Gibbs Seawater (GSW) formulation is
+available as \code{x[["conservative temperature"]]} (or 
+\code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
+and preformed salinity is \code{x[["Sstar"]]}.
+
+Similarly, a ctd object normally contains pressure, but both
+vertical coordinate and depth can be obtained, with 
+\code{x[["z"]]} and \code{x[["depth"]]}, respectively.
+
+In addition, some specialized quantities are also provided, e.g. 
+density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
+spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
+and the square of buoyancy frequency \code{x[["N2"]]} (calculated
+with \code{\link{swN2}(x)}).
+}
+
 \section{Details of the general method}{
 
 
@@ -38,51 +66,40 @@ First, a check is made as to whether \code{i} names one of the standard
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
 
-Then, a search is made of the items in the \code{metadata} slot. A direct
-match to the item named in \code{i} will retrieve the corresponding item.
-For example, a common use for \code{\link{ctd-class}} data is
-\code{x[["station"]]}, which looks up the station ID.
+Next, if \code{i} is a string ending in the
+\code{"Unit"}, then the characters preceding that string
+are taken to be the name of an item in the data object, and a list
+containing the unit is returned. This list consists of an item
+named \code{unit}, which is an \code{\link{expression}}, and
+an item named \code{scale}, which is a string describing the
+measurement scale.  If the string ends in \code{" unit"}, e.g.
+\code{x[["temperature unit"]]}, then just the expression is returned, 
+and if it ends in \code{" scale"}, then just the scale is returned.
 
-Finally, a partial-match search is done of the \code{data} slot, using
-\code{\link{pmatch}}.
+Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+data-quality flag is returned (or \code{NULL} if there is no such flag). 
+For example, \code{x[["salinityFlag"]]} returns a vector of salinity
+flags if \code{x} is a ctd object.
 
-If none of these three conditions holds, \code{NULL} is returned.
-}
+If none of the preceding conditions are met, a check is done
+to see if the \code{metadata} slot contains an item with
+the provided name, and that is returned, if so. A direct match
+is required for this condition.
 
-\section{Details of the specialized ctd method}{
+Finally, the \code{data} slot is checked to see if it contains 
+an item with the name indicated by \code{i}. In this case, a partial
+match will work; this is accomplished by using \code{\link{pmatch}}.
 
-As noted above, this method is applied before the general method. The
-purpose is to permit calculation of secondary data that are not
-actually stored in the object.  For example, ctd data conventionally
-store in-situ temperature, which is retrieved by \code{x[["temperature"]]}
-which is a direct lookup of the data variable of that name. However,
-\code{x[["t"]]} can be used as a synonym for this, and \code{x[["temperature68"]]}
-can be used to convert to the IPTS-1968 temperature scale. Potential temperature
-in the UNESCO formulation may be retrived with \code{x[["theta"]]} or
-\code{x[["potential temperature"]]}, while the Gibbs Seawater (GSW) temperature
-parameter called Conservative Temperature can be retrieved with 
-\code{x[["CT"]]} or \code{x[["conservative temperature"]]}. Similarly,
-the GSW reference salinity and preformed salinity are retrieve with
-\code{x[["SR"]]} and \code{x[["Sstar"]]}.
-
-The z coordinate is retrieved with \code{x[["z"]]} and the depth
-with \code{x[["depth"]]}. These are calculated with 
-with \code{\link{swZ}}) and \code{\link{swDepth}}, respectively.
-
-In addition, some specialized quantities are also provided, e.g. the
-density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}}),
-spice \code{x[["spice"]]} (computed with \code{\link{swSpice}}).
+If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
-Other functions that access data within oce objects: \code{\link{[[,section-method}}
+Other functions that access data within oce objects: \code{\link{[[,argo-method}},
+  \code{\link{[[,section-method}}
 
 Other functions that handle CTD data: \code{\link{as.ctd}},
   \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
