@@ -3392,7 +3392,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res <- new("ctd", pressureType="sea")
     ## Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
-    found.pressure <- FALSE
     sampleInterval <- NA
     systemUploadTime <- NULL
     latitude <- longitude <- NA
