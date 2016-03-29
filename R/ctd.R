@@ -3418,6 +3418,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     header <- c()
     col.names.inferred <- NULL
     found.time <- FALSE
+    found.pressure <- FALSE
+    found.depth <- FALSE
     ##conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
@@ -3442,7 +3444,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         lline <- tolower(aline)
         ## BUG: discovery of column names is brittle to format changes
-        found.depth <- FALSE
         if (0 < (r <- regexpr("# name ", lline))) {
             oceDebug(debug, "lline: '",lline,"'\n",sep="")
             tokens <- strsplit(line, split=" ", useBytes=TRUE)
