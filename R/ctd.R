@@ -2923,7 +2923,7 @@ woceNames2oceNames <- function(names)
     names <- gsub("CTDSAL.*", "salinity", names)
     names <- gsub("CTDTMP.*", "temperature", names)
     names <- gsub("OXYGEN.*", "oxygen", names)
-    names <- gsub("SALNTY.*", "temperature", names)
+    names <- gsub("SALNTY.*", "salinityBottle", names)
     names
 }
 
