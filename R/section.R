@@ -1702,7 +1702,7 @@ setMethod(f="plot",
 #' If only one of these is present in the data file, the data will be called
 #' \code{salinity} in the \code{data} slot of the return value. However, if both
 #' are present, then \code{CTDSAL} is stored as \code{salinity} and \code{SALNTY}
-#' is stored as \code{salinity2}.
+#' is stored as \code{salinityBottle}.
 #' 
 #' @param file A file containing a set of CTD observations.  At present, only the
 #' \emph{exchange BOT} format is accepted (see Details).
@@ -1837,9 +1837,9 @@ read.section <- function(file, directory, sectionId="", flags,
     salinityUnit <- NULL
     
     ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
-    ## both exist, store SALNTY as 'salinity2'.
+    ## both exist, store SALNTY as 'salinityBottle'.
     haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
-    salinity2 <- NULL # so we can check later
+    salinityBottle <- NULL # so we can check later
     if (1 == length(w <- which(var.names=="CTDSAL"))) {
         haveSalinity <- TRUE
         salinity <- as.numeric(data[, w - col.start + 1])
@@ -1850,10 +1850,10 @@ read.section <- function(file, directory, sectionId="", flags,
     if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
         haveSalinity <- TRUE
         if (haveTwoSalinities) {
-            salinity2 <- as.numeric(data[, w - col.start + 1])
-            salinity2Unit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+            salinityBottle <- as.numeric(data[, w - col.start + 1])
+            salinityBottleUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
             if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
-                flags$salinity2 <- as.numeric(data[, wf - col.start + 1])
+                flags$salinityBottle <- as.numeric(data[, wf - col.start + 1])
         } else {
             salinity <- as.numeric(data[, w - col.start + 1])
             salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
@@ -1981,8 +1981,10 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
-        if (length(salinity2))
-            thisStation@data$salinity2 <- salinity2[select]
+        if (length(salinityBottle)) {
+            thisStation@metadata$units$salinityBottle <- salinityBottleUnit
+            thisStation@data$salinityBottle <- salinityBottle[select]
+        }
 
         thisStation@metadata$units$temperature <- temperatureUnit
         thisStation@metadata$units$salinity <- salinityUnit

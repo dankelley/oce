@@ -457,7 +457,6 @@ handleFlagsInternal <- function(object, flags, actions) {
         all <- "ALL" %in% names(flags)
         if (all && length(flags) > 1)
             stop("if \"ALL\" is given, nothing else may be specified")
-        objectFlagNames <- names(object@metadata$flags)
         for (name in names(object@data)) {
             if (debug > 0)
                 message("name: ", name)

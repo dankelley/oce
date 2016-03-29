@@ -57,7 +57,7 @@ from a CTD and \code{SALNTY} (not a typo) for salinity derived from bottle data.
 If only one of these is present in the data file, the data will be called
 \code{salinity} in the \code{data} slot of the return value. However, if both
 are present, then \code{CTDSAL} is stored as \code{salinity} and \code{SALNTY}
-is stored as \code{salinity2}.
+is stored as \code{salinityBottle}.
 }
 \author{
 Dan Kelley
