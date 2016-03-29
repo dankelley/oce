@@ -598,13 +598,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
-    res@manufacturer <- "nortek"
-    res@instrumentType <- type #"aquadopp-hr"
-    res@filename <- filename
-    res@manufacturer <- "nortek"
-    res@latitude <- latitude
-    res@longitude <- longitude
-    res@numberOfSamples <- dim(v)[1]
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$instrumentType <- type #"aquadopp-hr"
+    res@metadata$filename <- filename
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$numberOfSamples <- dim(v)[1]
     res@metadata$numberOfCells <- dim(v)[2]
     res@metadata$numberOfBeams <- dim(v)[3]
     res@metadata$numberOfBeamSequencesPerBurst <- header$user$numberOfBeamSequencesPerBurst
