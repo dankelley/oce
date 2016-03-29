@@ -503,13 +503,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
 
     if (haveAnalog1) { # FIXME: shouldn't this be auto-detected from 'USER' header?
-        analog1 <- readBin(buf[vvdStart + 8], "integer", n=vvdLen, size=1)
+        analog1 <- readBin(buf[sort(c(vvdStart + 8, vvdStart + 9))],
+                           "integer", n=vvdLen, size=2,endian="little", signed=FALSE)
     }
     if (haveAnalog2) { # FIXME: shouldn't this be auto-detected from 'USER' header?
-        start <- sort(c(vvdStart+2, vvdStart+5))
-        analog2 <- readBin(buf[start], "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
+        analog2 <- readBin(buf[sort(c(vvdStart+2, vvdStart+5))],
+                           "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
     }
-
     p.MSB <- as.numeric(buf[vvdStart + 4])
     p.LSW <- readBin(buf[vvdStart2 + 6], "integer", size=2, n=vvdLen, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
