@@ -158,7 +158,7 @@ image(x, col=oce.colorsPAR(200), main="oce.colorsPAR")
 image(x, col=oce.colorsPhase(200), main="oce.colorsPhase")
 image(x, col=oce.colorsSalinity(200), main="oce.colorsSalinity")
 image(x, col=oce.colorsTemperature(200), main="oce.colorsTemperature")
-image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbudity")
+image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbidity")
 image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
 image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
  
