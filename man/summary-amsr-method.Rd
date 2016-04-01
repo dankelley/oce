@@ -21,7 +21,7 @@ presents results in physical units.
 Dan Kelley
 }
 \seealso{
-Other functions that handle amsr data: \code{\link{[[,amsr-method}},
+Other functions that handle \code{amsr} data: \code{\link{[[,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
   \code{\link{read.amsr}}
 

@@ -46,7 +46,8 @@
 #' @examples
 #' data(adv)
 #' adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
-#' @aliases adv-class
+#'
+#' @family \code{oce} classes
 setClass("adv", contains="oce")
 
 #' ADV (acoustic-doppler velocimeter) dataset
@@ -111,24 +112,24 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' Extract Something From an adv Object
+#' @title Extract Parts of an \code{adv} Object
 #'
-#' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
-#' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form or numeric
-#' form; see examples.
-#' 
 #' @param x An adv object, i.e. one inheriting from \code{\link{adv-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
 #'
 #' @examples
 #' data(adv)
 #' head(adv[["q"]])            # in raw form
 #' head(adv[["q", "numeric"]]) # in numeric form
-#' @family functions that access oce data and metadata
+#'
+#' @section Details of the specialized \code{adv} method:
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrived in \code{\link{raw}} form or numeric
+#' form; see \dQuote{examples}.
+#' 
+#' @template sub_subTemplate
+#' @family functions that handle \code{adv} data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -163,7 +164,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within an adv Object
+#' Replace Parts of an \code{adv} Object
 #'
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
@@ -173,7 +174,8 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that alter oce data and metadata
+#' @family functions that replace parts of \code{oce} objects
+#' @family functions that handle \code{adv} data
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
@@ -291,6 +293,188 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("read.adv() cannot understand type = \"", type, "\"")
 }
 
+
+
+#' Plot ADV data
+#' 
+#' Plot ADV data, i.e. stored in an \code{\link{adv-class}} object.
+#' 
+#' @details
+#' Creates a multi-panel summary plot of data measured by an ADV.
+#' The panels are controlled by the \code{which} argument.  (Note the
+#' gaps in the sequence, e.g. 4 and 8 are not used.)
+#' 
+#' \itemize{ 
+#'     \item \code{which=1} to \code{3} (or \code{"u1"} to \code{"u3"})
+#' 
+#'     yield timeseries of the first, second, and third components of
+#'     velocity (in beam, xyz or enu coordinates).
+#' 
+#'     \item \code{which=4} is not permitted (since ADV are 3-beam devices)
+#' 
+#'     \item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
+#'     yield timeseries of the amplitudes of beams 1 to 3.  (Note that
+#'     the data are called \code{data$a[,1]}, \code{data$a[,2]} and
+#'     \code{data$a[,3]}, for these three timeseries.)
+#' 
+#'     \item \code{which=8} is not permitted (since ADV are 3-beam devices)
+#' 
+#'     \item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
+#'     yield timeseries of correlation for beams 1 to 3.  (Note that the
+#'     data are called \code{data$c[,1]}, \code{data$c[,2]} and
+#'     \code{data$c[,3]}, for these three timeseries.)
+#' 
+#'     \item \code{which=12} is not permitted (since ADVs are 3-beam devices)
+#' 
+#'     \item \code{which=13} is not permitted (since ADVs do not measure salinity)
+#' 
+#'     \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
+#' 
+#'     \item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
+#' 
+#'     \item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
+#' 
+#'     \item \code{which=17} or \code{which="pitch"}yields a timeseries of pitch.
+#' 
+#'     \item \code{which=18} or \code{which="roll"}yields a timeseries of roll.
+#' 
+#'     \item \code{which=19} to \code{21} yields plots of correlation versus
+#'     amplitude, for beams 1 through 3, using \code{\link{smoothScatter}}.
+#' 
+#'     \item \code{which=22} is not permitted (since ADVs are 3-beam devices)
+#' 
+#'     \item \code{which=23} or \code{"progressive vector"} yields a
+#'     progressive-vector diagram in the horizontal plane, plotted with
+#'     \code{asp=1}, and taking beam1 and beam2 as the eastward and
+#'     northward components of velocity, respectively.
+#' 
+#'     \item \code{which=28} or \code{"uv"} yields velocity plot in the
+#'     horizontal plane, i.e. u[2] versus u[1].  If the number of data
+#'     points is small, a scattergraph is used, but if it is large,
+#'     \code{\link{smoothScatter}} is used.
+#' 
+#'     \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
+#'     case, but with an added indication of the tidal ellipse,
+#'     calculated from the eigen vectors of the covariance matrix.
+#' 
+#'     \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
+#'     \code{"uv+ellipse"} case, but with an added arrow indicating the
+#'     mean current.
+#' 
+#'     \item \code{which=50} or \code{"analog1"} plots a time series of the
+#'     analog1 signal, if there is one.
+#' 
+#'     \item \code{which=51} or \code{"analog2"} plots a time series of the
+#'     analog2 signal, if there is one.
+#' 
+#'     \item \code{which=100} or \code{"voltage"} plots the voltage as a
+#'     timeseries, if voltage exists in the dataset.
+#' }
+#' In addition to the above, there are some groupings defined:
+#' \itemize{ 
+#'     \item \code{which="velocity"} equivalent to \code{which=1:3} (three velocity components)
+#'     \item \code{which="amplitude"} equivalent to \code{which=5:7} (three amplitude components)
+#'     \item \code{which="backscatter"} equivalent to \code{which=9:11} (three backscatter components)
+#'     \item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
+#'     \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
+#' }
+#' 
+#' 
+#' @param x An \code{adv} object, e.g. as read by \code{\link{read.adv}}.
+#' 
+#' @param which List of desired plot types.  These are graphed in panels running
+#' down from the top of the page.  See \dQuote{Details} for the meanings of
+#' various values of \code{which}.
+#' 
+#' @param col Optional indication of colour(s) to use.  If not provided, the
+#' default for images is \code{oce.colorsPalette(128,1)}, and for lines and points
+#' is black.
+#' 
+#' @param titles Optional vector of character strings to be used as labels for the
+#' plot panels.  For images, these strings will be placed in the right hand side
+#' of the top margin.  For timeseries, these strings are ignored.  If this is
+#' provided, its length must equal that of \code{which}.
+#' 
+#' @param lwd If the plot is of a time-series or scattergraph format with lines,
+#' this is used in the usual way; otherwise, e.g. for image formats, this is
+#' ignored.
+#' 
+#' @param type Type of plot, as for \code{\link{plot}}.
+#' 
+#' @param adorn Optional list of \code{\link{expression}}s to be performed
+#' immediately after drawing the panels. (See \code{\link{plot.adp}} for an
+#' example.)
+#' 
+#' @param drawTimeRange Boolean that applies to panels with time as the horizontal
+#' axis, indicating whether to draw the time range in the top-left margin of the
+#' plot.
+#' 
+#' @param drawZeroLine Logical value indicating whether to draw zero lines on
+#' velocities.
+#' 
+#' @param useSmoothScatter Logical value indicating whether to use
+#' \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.  If
+#' not provided a default is used, with \code{\link{smoothScatter}} being used if
+#' there are more than 2000 points to plot.
+#'
+#' @param mgp 3-element numerical
+#' vector to use for \code{par(mgp)}, and also for \code{par(mar)}, computed from
+#' this.  The default is tighter than the R default, in order to use more space
+#' for the data and less for the axes.
+#' 
+#' @param mar Value to be used with \code{\link{par}("mar")}.
+#' 
+#' @param tformat Optional argument passed to \code{\link{oce.plot.ts}}, for plot
+#' types that call that function.  (See \code{\link{strptime}} for the format
+#' used.)
+#' 
+#' @param marginsAsImage Logical value indicating whether to put a wide margin to
+#' the right of time-series plots, matching the space used up by a palette in an
+#' \code{\link{imagep}} plot.
+#' 
+#' @param cex Size of labels on axes; see \code{\link[graphics]{par}}("cex").
+#' 
+#' @param cex.axis See \code{\link[graphics]{par}}("cex.axis").
+#' 
+#' @param cex.main See \code{\link[graphics]{par}}("cex.main").
+#' 
+#' @param xlim Optional 2-element list for \code{xlim}, or 2-column matrix, in
+#' which case the rows are used, in order, for the panels of the graph.
+#' 
+#' @param ylim Optional 2-element list for \code{ylim}, or 2-column matrix, in
+#' which case the rows are used, in order, for the panels of the graph.
+#' 
+#' @param brushCorrelation Optional number between 0 and 100, indicating a
+#' per-beam correlation threshhold below which data are to be considered suspect.
+#' If the plot type is \code{p}, the suspect points (velocity, backscatter
+#' amplitude, or correlation) will be coloured red; otherwise, this argument is
+#' ignored.
+#' 
+#' @param colBrush Colour to use for brushed (bad) data, if
+#' \code{brushCorrelation} is active.
+#' 
+#' @param main Main title for plot, used just on the top panel, if there are
+#' several panels.
+#' 
+#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
+#' of debugging information, or to 2 to get more.
+#' 
+#' @param ... Optional arguments passed to plotting functions.
+#' 
+#' @seealso The documentation for \code{\link{adv-class}} explains the structure
+#' of ADV objects, and also outlines the other functions dealing with them.
+#' 
+#' @examples
+#' library(oce)
+#' data(adv)
+#' plot(adv)
+#' 
+#' @author Dan Kelley
+#'
+#' @aliases plot.adv
+#'
+#' @family functions that plot \code{oce} data
+#' @family functions that handle \code{adv} data
 setMethod(f="plot",
           signature=signature("adv"),
           definition=function(x, which=c(1:3,14,15),

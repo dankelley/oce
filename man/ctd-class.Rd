@@ -13,6 +13,8 @@ Temperature is stored in the ITS-90 scale within the object, but the IPTS-68
 value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
 be done in using various seawater functions, e.g. the density function
 \code{\link{swRho}}, if the UNESCO formulation is being requested.
+(See \code{\link{[[,ctd-method}} and \code{\link{[[<-,ctd-method}} for
+more on accessing and altering information within \code{ctd-class} objects.)
 
 The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
@@ -81,23 +83,14 @@ specified pressure levels with \code{\link{ctdDecimate}}.
 
 Low-level manipulation may be done with functions such as
 \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
-many of the contents of CTD objects may be altered with the \code{[[]]} scheme
+many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 discussed above, and skilled users may also manipulate the contents directly.
 }
 \author{
 Dan Kelley
 }
 \seealso{
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+Other \code{oce} classes: \code{\link{adp-class}},
+  \code{\link{adv-class}}
 }
 

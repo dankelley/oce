@@ -70,7 +70,7 @@ the so-called \emph{exchange BOT} data format can be processed by read.section()
 at this time.
 }
 \seealso{
-Other functions that handle section data: \code{\link{[[,section-method}},
+Other functions that handle \code{section} data: \code{\link{[[,section-method}},
   \code{\link{as.section}},
   \code{\link{plot,section-method}},
   \code{\link{sectionAddStation}},

@@ -48,5 +48,14 @@ a <- as.adp(time=t, distance=d, v=v)
 \dontrun{
 plot(a)
 }
+
+}
+\author{
+Dan Kelley
+}
+\seealso{
+Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{subset,adp-method}}
 }
 

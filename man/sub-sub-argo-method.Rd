@@ -76,10 +76,11 @@ dim(argo[['temperature']])
 
 }
 \seealso{
-Other functions that access data within oce objects: \code{\link{[[,ctd-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+  \code{\link{[[,ctd-method}},
   \code{\link{[[,section-method}}
 
-Other functions that handle argo data: \code{\link{[[<-,argo-method}},
+Other functions that handle \code{argo} data: \code{\link{[[<-,argo-method}},
   \code{\link{argoGrid}}, \code{\link{as.argo}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},

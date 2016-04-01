@@ -51,7 +51,7 @@ bands.
 Dan Kelley
 }
 \seealso{
-Other functions that handle amsr data: \code{\link{amsr-class}},
+Other functions that handle \code{amsr} data: \code{\link{amsr-class}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{summary,amsr-method}}
 }

@@ -145,7 +145,7 @@ line bisecting beam pairs.  The length of this vector equals
 
 The \code{processingLog} slot is in standard form and needs little comment.
 }
-\section{methods}{
+\section{Accessing and altering information within \code{adp-class} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated
 above, e.g.  or an adp object named \code{adv}, the data are provided by
@@ -202,5 +202,8 @@ Conversion from beam to xyz coordinates may be done with
 with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+
+Other \code{oce} classes: \code{\link{adv-class}},
+  \code{\link{ctd-class}}
 }
 

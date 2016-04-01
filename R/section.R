@@ -122,7 +122,7 @@ setMethod(f="initialize",
 #' 
 #' @aliases summary.section
 #' 
-#' @family functions that handle section data
+#' @family functions that handle \code{section} data
 #' 
 #' @author Dan Kelley
 setMethod(f="summary",
@@ -163,7 +163,7 @@ setMethod(f="summary",
 
 #' @title Extract Something From a section Object
 #' @param x A section object, i.e. one inheriting from \code{\link{section-class}}.
-#' @family functions that handle section data
+#' @family functions that handle \code{section} data
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
@@ -307,7 +307,7 @@ setMethod(f="show",
 #' 
 #' @aliases subset.section
 #'
-#' @family functions that handle section data
+#' @family functions that handle \code{section} data
 #' 
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -446,9 +446,9 @@ setMethod(f="subset",
 #' plot(ss)
 #' }
 #' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{section} data
 sectionSort <- function(section, by)
 {
     if (missing(by)) {
@@ -628,10 +628,10 @@ makeSection <- function(item, ...)
 #' sectionAddStation(section, ctd3)
 #' 
 #' @aliases sectionAddCtd
-#"
-#' @family functions that handle section data
 #' 
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{section} data
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -834,10 +834,10 @@ sectionAddCtd <- sectionAddStation
 #' 
 #' @aliases plot.section
 #' 
-#' @family functions that plot oce data
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that plot \code{oce} data
+#' @family functions that handle \code{section} data
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
@@ -1739,9 +1739,9 @@ setMethod(f="plot",
 #' the so-called \emph{exchange BOT} data format can be processed by read.section()
 #' at this time.
 #' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{section} data
 read.section <- function(file, directory, sectionId="", flags,
 			 ship="", scientist="", institute="",
                          missingValue=-999,
@@ -2077,10 +2077,9 @@ read.section <- function(file, directory, sectionId="", flags,
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
 #' 
-#' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{section} data
 sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
@@ -2176,9 +2175,9 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
 #' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{section} data
 sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
 {
     method <- match.arg(method)
@@ -2369,10 +2368,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' sec3 <- as.section(subset(argo, profile<5))
 #' summary(sec3)
 #' 
-#' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{section} data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
     if (missing(salinity))

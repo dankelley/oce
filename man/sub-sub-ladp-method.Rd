@@ -28,10 +28,9 @@ head(ctd[["temperature"]])
 Dan Kelley
 }
 \seealso{
-Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,adv-method}}
+Other functions that extract parts of oce objects: \code{\link{[[,adp-method}}
 
-Other functions that handle ladp data: \code{\link{as.ladp}},
+Other functions that handle \code{ladp} data: \code{\link{as.ladp}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }

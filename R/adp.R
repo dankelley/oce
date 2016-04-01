@@ -141,7 +141,7 @@
 #' 
 #' The \code{processingLog} slot is in standard form and needs little comment.
 #' 
-#' @section methods:
+#' @section Accessing and altering information within \code{adp-class} objects:
 #' \emph{Extracting values} Matrix data may be accessed as illustrated
 #' above, e.g.  or an adp object named \code{adv}, the data are provided by
 #' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
@@ -193,6 +193,8 @@
 #' with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 #' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+#'
+#' @family \code{oce} classes
 setClass("adp", contains="oce")
 
 #' ADP (acoustic-doppler profiler) dataset
@@ -350,7 +352,7 @@ setMethod(f="summary",
           })
 
 
-#' Extract Something From an adp Object
+#' Extract Parts of an \code{adp} Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
@@ -366,8 +368,8 @@ setMethod(f="summary",
 #' @examples
 #' data(adp)
 #' head(adp[["v"]][,,1])
-#' @family functions that handle adp data
-#' @family functions that access oce data and metadata
+#' @family functions that handle \code{adp} data
+#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -406,7 +408,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within an adp Object
+#' Replace Parts of an \code{adp} Object
 #'
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
@@ -416,7 +418,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that handle adp data
+#' @family functions that handle \code{adp} data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
@@ -492,7 +494,7 @@ setValidity("adp",
 #' # First part of time series
 #' plot(subset(adp, time < mean(range(adp[['time']]))))
 #' 
-#' @family functions that handle adp data
+#' @family functions that handle \code{adp} data
 #' 
 #' @aliases subset.adp
 #' 
@@ -632,6 +634,10 @@ setMethod(f="subset",
 #' \dontrun{
 #' plot(a)
 #' }
+#'
+#' @author Dan Kelley
+#'
+#' @family functions that handle \code{adp} data
 as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)

@@ -97,10 +97,10 @@ length(section[["latitude", "byStation"]])
 Dan Kelley
 }
 \seealso{
-Other functions that access data within oce objects: \code{\link{[[,argo-method}},
-  \code{\link{[[,ctd-method}}
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+  \code{\link{[[,argo-method}}, \code{\link{[[,ctd-method}}
 
-Other functions that handle section data: \code{\link{as.section}},
+Other functions that handle \code{section} data: \code{\link{as.section}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}},
   \code{\link{sectionAddStation}},

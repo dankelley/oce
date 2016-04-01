@@ -88,16 +88,13 @@ application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 The documentation for \code{\link{ctd-class}} explains the structure of
 CTD objects, and also outlines the other functions dealing with them.
 
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
+Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
   \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

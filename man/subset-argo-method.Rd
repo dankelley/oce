@@ -67,7 +67,7 @@ plotTS(subset(argo, "adjusted"))
 Dan Kelley
 }
 \seealso{
-Other functions that handle argo data: \code{\link{[[,argo-method}},
+Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
   \code{\link{as.argo}}, \code{\link{plot,argo-method}},
   \code{\link{read.argo}},

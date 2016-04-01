@@ -49,5 +49,5 @@
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #'
-#' @family functions that access data within oce objects
+#' @family functions that extract parts of \code{oce} objects
 

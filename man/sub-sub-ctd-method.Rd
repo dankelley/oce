@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,ctd-method}
 \alias{[[,ctd-method}
-\title{Extract Something From a CTD Object}
+\title{Extract Parts of a \code{ctd} Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...)
 }
@@ -25,7 +25,7 @@ general function is used (see \sQuote{Details of the general
 method}). If neither method can handle the requested item,
 then \code{NULL} is returned.
 }
-\section{Details of the specialized ctd method}{
+\section{Details of the specialized \code{ctd} method}{
 
 The first step \code{[[,ctd-method} takes is to address requests
 for inferences about data stored in \code{\link{ctd-class}}
@@ -98,18 +98,16 @@ head(ctd[["temperature"]])
 
 }
 \seealso{
-Other functions that access data within oce objects: \code{\link{[[,argo-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+  \code{\link{[[,argo-method}},
   \code{\link{[[,section-method}}
 
-Other functions that handle CTD data: \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+Other functions that handle \code{ctd} data: \code{\link{[[<-,ctd-method}},
+  \code{\link{as.ctd}}, \code{\link{ctdAddColumn}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,argo-method}
 \alias{[[<-,argo-method}
-\title{Change something within an argo object}
+\title{Replace Parts of an \code{argo} Object}
 \usage{
 \S4method{[[}{argo}(x, i, j) <- value
 }
@@ -23,14 +23,12 @@ In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
-Other functions that alter oce data and metadata: \code{\link{[[<-,adp-method}},
-  \code{\link{[[<-,adv-method}},
-  \code{\link{[[<-,ctd-method}}
-
-Other functions that handle argo data: \code{\link{[[,argo-method}},
+Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{argoGrid}}, \code{\link{as.argo}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
+
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adv-method}}
 }
 

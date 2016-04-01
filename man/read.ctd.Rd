@@ -76,17 +76,8 @@ Other functions that read CTD data:
 \code{\link{read.ctd.sbe}} for SBE format, and
 \code{\link{read.ctd.woce}} for WOCE format.
 
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+Other functions that handle ctd data: \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
+  \code{\link{read.ctd.sbe}}, \code{\link{read.ctd.woce}}
 }
 

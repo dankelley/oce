@@ -9,6 +9,8 @@
 #' value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
 #' be done in using various seawater functions, e.g. the density function
 #' \code{\link{swRho}}, if the UNESCO formulation is being requested.
+#' (See \code{\link{[[,ctd-method}} and \code{\link{[[<-,ctd-method}} for
+#' more on accessing and altering information within \code{ctd-class} objects.)
 #'
 #' The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 #' \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
@@ -72,12 +74,12 @@
 #'
 #' Low-level manipulation may be done with functions such as
 #' \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
-#' many of the contents of CTD objects may be altered with the \code{[[]]} scheme
+#' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
-#' @family functions that handle CTD data
-#'
 #' @author Dan Kelley
+#' 
+#' @family \code{oce} classes
 setClass("ctd", contains="oce")
 
 
@@ -191,7 +193,7 @@ NULL
 #' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 #'}
 #'
-#' @family functions that handle CTD data
+#' @family functions that handle \code{ctd} data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
@@ -270,9 +272,9 @@ setMethod(f="initialize",
 #' data(ctd)
 #' summary(ctd)
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{ctd} data
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
@@ -310,13 +312,14 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Something From a CTD Object
+#' @title Extract Parts of a \code{ctd} Object
 #' @param x A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.
+#'
 #' @examples
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
-#' @section Details of the specialized ctd method:
+#' @section Details of the specialized \code{ctd} method:
 #' The first step \code{[[,ctd-method} takes is to address requests
 #' for inferences about data stored in \code{\link{ctd-class}}
 #' objects. For example, these objects hold in-situ temperature,
@@ -343,7 +346,7 @@ setMethod(f="summary",
 #' with \code{\link{swN2}(x)}).
 #'
 #' @template sub_subTemplate
-#' @family functions that handle CTD data
+#' @family functions that handle \code{ctd} data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -424,14 +427,15 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something within a ctd object
+#' Replace Parts of a \code{ctd} Object
 #'
 #' @param x A ctd object
 #' @param i The item to insert
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that handle ctd data
+#'
+#' @family functions that handle \code{ctd} data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="ctd",
@@ -622,14 +626,15 @@ setMethod(f="[[<-",
 #' summary(ctd)
 #' plot(ctd)
 #' 
-#' @family functions that handle CTD data
-#' @author Dan Kelley
-#' 
 #' @references Culkin, F., and Norman D. Smith, 1980. Determination of the
 #' concentration of potassium chloride solution having the same electrical
 #' conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 #' 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
 #' Engineering}, \bold{5}, pp 22-23.
+#' 
+#' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL, time=NULL, other=NULL,
@@ -1006,9 +1011,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
 #'     unit=list(unit=expression(degree*F), scale="ITS-90"))
 #'
-#' @family functions that handle CTD data
-#'
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the units
@@ -1127,10 +1132,10 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
 #' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 #' 185-193.
-#'
-#' @family functions that handle CTD data
 #' 
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -1359,13 +1364,13 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' }
 #' }
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
-ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
-                           direction=c("descending", "ascending"),
-                           arr.ind=FALSE,
-                           debug=getOption("oceDebug"), ...)
+#' 
+#' @family functions that handle \code{ctd} data
+ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
+                            direction=c("descending", "ascending"),
+                            arr.ind=FALSE,
+                            debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
              ", minLength=", minLength,
@@ -1571,9 +1576,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' The Seabird CTD instrument is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                    debug=getOption("oceDebug"))
 {
@@ -1864,9 +1869,9 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' The Seabird CTD instrument is described at
 #'   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 ctdUpdateHeader <- function (x, debug = FALSE)
 {
     if (length(x@metadata$header) < 1)
@@ -1924,9 +1929,9 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 #' plot(as.ctd(d$salinity, d$temperature, d$pressure))
 #' } 
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 write.ctd <- function(object, file=stop("'file' must be specified"))
 {
     if (!inherits(object, "ctd"))
@@ -2168,10 +2173,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @aliases plot.ctd
 #' 
-#' @family functions that plot oce data
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that plot \code{oce} data
+#' @family functions that handle \code{ctd} data
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -2767,9 +2772,9 @@ setMethod(f="plot",
 #' plot(ctd)
 #' plot(subset(ctd, pressure<10))
 #'
-#' @family functions that handle CTD data
-#'
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ctd} data
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -3371,7 +3376,8 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 #' information is given in the Sea-Bird data-processing manaual
 #' \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
+                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!is.null(columns)) {
         columnsNames <- names(columns)

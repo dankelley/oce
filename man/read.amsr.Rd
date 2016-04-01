@@ -22,6 +22,7 @@ d <- read.amsr("f34_20160102v7.2.gz")
 summary(d)
 plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 }
+
 }
 \author{
 Dan Kelley and Chantelle Layton
@@ -29,7 +30,7 @@ Dan Kelley and Chantelle Layton
 \seealso{
 \code{\link{plot.amsr}} for an example.
 
-Other functions that handle amsr data: \code{\link{[[,amsr-method}},
+Other functions that handle \code{amsr} data: \code{\link{[[,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
   \code{\link{summary,amsr-method}}
 

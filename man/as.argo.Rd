@@ -49,7 +49,7 @@ Dan Kelley
 The documentation for \code{\link{argo-class}} explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other functions that handle argo data: \code{\link{[[,argo-method}},
+Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},

@@ -203,7 +203,7 @@ The documentation for \code{\link{section-class}} explains the
 structure of section objects, and also outlines the other functions dealing
 with them.
 
-Other functions that handle section data: \code{\link{[[,section-method}},
+Other functions that handle \code{section} data: \code{\link{[[,section-method}},
   \code{\link{as.section}}, \code{\link{read.section}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
@@ -211,11 +211,11 @@ Other functions that handle section data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 
-Other functions that plot oce data: \code{\link{plot,amsr-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+  \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
   \code{\link{plot,satellite-method}}
 }
 

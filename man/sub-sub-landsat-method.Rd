@@ -74,7 +74,7 @@ decimation.  An exception is the lat-lon box, which is altered by
 Dan Kelley
 }
 \seealso{
-Other functions that handle landsat data: \code{\link{landsatAdd}},
+Other functions that handle \code{landsat} data: \code{\link{landsatAdd}},
   \code{\link{landsatTrim}},
   \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}},

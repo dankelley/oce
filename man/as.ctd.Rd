@@ -199,15 +199,13 @@ conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 Engineering}, \bold{5}, pp 22-23.
 }
 \seealso{
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

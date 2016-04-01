@@ -38,7 +38,7 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 Dan Kelley
 }
 \seealso{
-Other functions that handle amsr data: \code{\link{[[,amsr-method}},
+Other functions that handle \code{amsr} data: \code{\link{[[,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{read.amsr}},
   \code{\link{summary,amsr-method}}
 
@@ -53,10 +53,10 @@ Other functions that handle satellite data: \code{\link{[[,landsat-method}},
   \code{\link{summary,landsat-method}},
   \code{\link{summary,satellite-method}}
 
-Other functions that plot oce data: \code{\link{plot,argo-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+  \code{\link{plot,argo-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
   \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}}
 }

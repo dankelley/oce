@@ -31,6 +31,7 @@ or \code{?"[[<-,adv-method"} to learn more.
 \examples{
 data(adv)
 adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
+
 }
 \seealso{
 A file containing ADV data is usually recognized by Oce, and so
@@ -52,5 +53,8 @@ A file containing ADV data is usually recognized by Oce, and so
     transfer either beam or xyz to enu.  Enu may be converted to other
     coordinates (e.g. aligned with a coastline) with
     \code{\link{enuToOtherAdv}}.
+
+Other \code{oce} classes: \code{\link{adp-class}},
+  \code{\link{ctd-class}}
 }
 

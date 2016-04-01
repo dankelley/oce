@@ -3,33 +3,88 @@
 \docType{methods}
 \name{[[,adv-method}
 \alias{[[,adv-method}
-\title{Extract Something From an adv Object}
+\title{Extract Parts of an \code{adv} Object}
 \usage{
 \S4method{[[}{adv}(x, i, j, ...)
 }
 \arguments{
 \item{x}{An adv object, i.e. one inheriting from \code{\link{adv-class}}.}
 
-\item{i}{The item to extract.}
+\item{i}{Character string indicating the name of item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}
 
 \item{...}{Optional additional information (ignored).}
 }
 \description{
+The \code{[[} notation works for all \code{oce} objects. It looks up
+information in a two-step process. First, a class-specific function 
+is used to try to access the requested information (see
+\dQuote{Details of the specialized ... method}). Then, if no match is found, a
+general function is used (see \sQuote{Details of the general
+method}). If neither method can handle the requested item,
+then \code{NULL} is returned.
+}
+\section{Details of the specialized \code{adv} method}{
+
 In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
 data can be retrived in \code{\link{raw}} form or numeric
-form; see examples.
+form; see \dQuote{examples}.
+}
+
+\section{Details of the general method}{
+
+
+If the specialized method produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges
+first on the value of \code{i}.
+
+First, a check is made as to whether \code{i} names one of the standard
+\code{oce} slots, and returns the slot contents if so. Thus, 
+\code{x[["metadata"]]} will retrieve the \code{metadata} slot, 
+while \code{x[["data"]]} and \code{x[["processingLog"]]} return
+those slots.
+
+Next, if \code{i} is a string ending in the
+\code{"Unit"}, then the characters preceding that string
+are taken to be the name of an item in the data object, and a list
+containing the unit is returned. This list consists of an item
+named \code{unit}, which is an \code{\link{expression}}, and
+an item named \code{scale}, which is a string describing the
+measurement scale.  If the string ends in \code{" unit"}, e.g.
+\code{x[["temperature unit"]]}, then just the expression is returned, 
+and if it ends in \code{" scale"}, then just the scale is returned.
+
+Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+data-quality flag is returned (or \code{NULL} if there is no such flag). 
+For example, \code{x[["salinityFlag"]]} returns a vector of salinity
+flags if \code{x} is a ctd object.
+
+If none of the preceding conditions are met, a check is done
+to see if the \code{metadata} slot contains an item with
+the provided name, and that is returned, if so. A direct match
+is required for this condition.
+
+Finally, the \code{data} slot is checked to see if it contains 
+an item with the name indicated by \code{i}. In this case, a partial
+match will work; this is accomplished by using \code{\link{pmatch}}.
+
+If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 \examples{
 data(adv)
 head(adv[["q"]])            # in raw form
 head(adv[["q", "numeric"]]) # in numeric form
+
 }
 \seealso{
-Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,ladp-method}}
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,argo-method}},
+  \code{\link{[[,ctd-method}},
+  \code{\link{[[,section-method}}
+
+Other functions that handle \code{adv} data: \code{\link{[[<-,adv-method}},
+  \code{\link{plot,adv-method}}
 }
 

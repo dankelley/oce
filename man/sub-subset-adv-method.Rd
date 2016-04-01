@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,adv-method}
 \alias{[[<-,adv-method}
-\title{Change Something Within an adv Object}
+\title{Replace Parts of an \code{adv} Object}
 \usage{
 \S4method{[[}{adv}(x, i, j) <- value
 }
@@ -23,8 +23,9 @@ In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
-Other functions that alter oce data and metadata: \code{\link{[[<-,adp-method}},
-  \code{\link{[[<-,argo-method}},
-  \code{\link{[[<-,ctd-method}}
+Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{plot,adv-method}}
+
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,argo-method}}
 }
 

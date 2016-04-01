@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,ctd-method}
 \alias{[[<-,ctd-method}
-\title{Change Something within a ctd object}
+\title{Replace Parts of a \code{ctd} Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j) <- value
 }
@@ -19,11 +19,18 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Change Something within a ctd object
+Replace Parts of a \code{ctd} Object
 }
 \seealso{
-Other functions that alter oce data and metadata: \code{\link{[[<-,adp-method}},
-  \code{\link{[[<-,adv-method}},
-  \code{\link{[[<-,argo-method}}
+Other functions that alter oce data and metadata: \code{\link{[[<-,adp-method}}
+
+Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{as.ctd}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

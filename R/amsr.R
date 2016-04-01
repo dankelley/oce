@@ -25,12 +25,13 @@ setClass("satellite", contains="oce")
 #'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions that handle amsr data
-#' @family functions that handle satellite data
 #' @references
 #' 1. \url{http://www.remss.com/missions/amsre}
 #' @aliases amsr-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
+#'
+#' @family functions that handle \code{amsr} data
+#' @family functions that handle satellite data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -65,7 +66,7 @@ setMethod(f="show",
 #' @author Dan Kelley
 #' @aliases summary.amsr
 #' @concept satellite
-#' @family functions that handle amsr data
+#' @family functions that handle \code{amsr} data
 #' @family functions that handle satellite data
 setMethod(f="summary",
           signature="amsr",
@@ -116,7 +117,7 @@ setMethod(f="summary",
 #' @param ... Optional additional information (ignored).
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle amsr data
+#' @family functions that handle \code{amsr} data
 #' @family functions that handle satellite data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
@@ -222,9 +223,10 @@ setMethod(f="[[",
 #' }
 #'
 #' @author Dan Kelley
-#' @family functions that handle amsr data
+#'
+#' @family functions that handle \code{amsr} data
 #' @family functions that handle satellite data
-#' @family functions that plot oce data
+#' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -255,17 +257,20 @@ setMethod(f="plot",
 #'
 #' @param file Sting indicating the name of a compressed file.
 #' @param debug A debugging flag, integer.
-#' @author Dan Kelley and Chantelle Layton
+#'
 #' @concept satellite
 #' @seealso \code{\link{plot.amsr}} for an example.
-#' @family functions that handle amsr data
-#' @family functions that handle satellite data
 #' @examples
 #' \dontrun{
 #' d <- read.amsr("f34_20160102v7.2.gz")
 #' summary(d)
 #' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
 #' }
+#'
+#' @author Dan Kelley and Chantelle Layton
+#'
+#' @family functions that handle \code{amsr} data
+#' @family functions that handle satellite data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",

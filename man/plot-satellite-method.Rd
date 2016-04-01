@@ -38,11 +38,11 @@ Other functions that handle satellite data: \code{\link{[[,landsat-method}},
   \code{\link{summary,landsat-method}},
   \code{\link{summary,satellite-method}}
 
-Other functions that plot oce data: \code{\link{plot,amsr-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+  \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
-  \code{\link{plot,landsat-method}},
   \code{\link{plot,section-method}}
 }
 \concept{

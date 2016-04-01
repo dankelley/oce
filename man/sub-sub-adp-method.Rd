@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,adp-method}
 \alias{[[,adp-method}
-\title{Extract Something From an adp Object}
+\title{Extract Parts of an \code{adp} Object}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)
 }
@@ -28,10 +28,9 @@ data(adp)
 head(adp[["v"]][,,1])
 }
 \seealso{
-Other functions that access oce data and metadata: \code{\link{[[,adv-method}},
-  \code{\link{[[,ladp-method}}
+Other functions that extract parts of oce objects: \code{\link{[[,ladp-method}}
 
-Other functions that handle adp data: \code{\link{[[<-,adp-method}},
-  \code{\link{subset,adp-method}}
+Other functions that handle \code{adp} data: \code{\link{[[<-,adp-method}},
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}}
 }
 

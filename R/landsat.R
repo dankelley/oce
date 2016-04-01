@@ -135,7 +135,7 @@ NULL
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle landsat data
+#' @family functions that handle \code{landsat} data
 #' @family functions that handle satellite data
 #' @references
 #' 1. See the USGS "glovis" web site.
@@ -208,11 +208,14 @@ setMethod(f="initialize",
 #' @param object An object of \code{\link{landsat-class}}, usually a result of a
 #' call to \code{\link{read.landsat}}.
 #' @param ... Ignored.
-#' @author Dan Kelley
+#'
 #' @concept satellite
-#' @family functions that handle landsat data
-#' @family functions that handle satellite data
 #' @aliases summary.landsat
+#'
+#' @author Dan Kelley
+#'
+#' @family functions that handle \code{landsat} data
+#' @family functions that handle satellite data
 setMethod(f="summary",
           signature="landsat",
           definition=function(object, ...) {
@@ -295,9 +298,11 @@ setMethod(f="summary",
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item (ignored).
 #' @param ... Optional additional information (ignored).
-#' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle landsat data
+#'
+#' @author Dan Kelley
+#'
+#' @family functions that handle \code{landsat} data
 #' @family functions that handle satellite data
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
@@ -624,11 +629,13 @@ setMethod(f="[[",
 #' @param ... optional arguments passed to plotting functions.
 #'
 #' @aliases plot.landsat
-#' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle landsat data
+#'
+#' @author Dan Kelley
+#'
+#' @family functions that handle \code{landsat} data
 #' @family functions that handle satellite data
-#' @family functions that plot oce data
+#' @family functions that plot \oce{oce} data
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
@@ -1023,7 +1030,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' 
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle landsat data
+#' @family functions that handle \code{landsat} data
 #' @family functions that handle satellite data
 read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
@@ -1152,7 +1159,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle landsat data
+#' @family functions that handle \code{landsat} data
 #' @family functions that handle satellite data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
@@ -1212,7 +1219,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' with them.
 #' @author Dan Kelley and Clark Richards
 #' @concept satellite
-#' @family functions that handle landsat data
+#' @family functions that handle \code{landsat} data
 #' @family functions that handle satellite data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {

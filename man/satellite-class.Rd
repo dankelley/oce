@@ -164,7 +164,7 @@ function \code{\link{decimate}}.  Images may be subsetted with
 
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 
-Other functions that handle landsat data: \code{\link{[[,landsat-method}},
+Other functions that handle \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
   \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}},

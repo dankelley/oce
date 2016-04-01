@@ -27,7 +27,7 @@ known as ADCP) device.
 Dan Kelley
 }
 \seealso{
-Other functions that handle ladp data: \code{\link{[[,ladp-method}},
+Other functions that handle \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,adp-method}
 \alias{[[<-,adp-method}
-\title{Change Something Within an adp Object}
+\title{Replace Parts of an \code{adp} Object}
 \usage{
 \S4method{[[}{adp}(x, i, j) <- value
 }
@@ -23,11 +23,9 @@ In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
-Other functions that alter oce data and metadata: \code{\link{[[<-,adv-method}},
-  \code{\link{[[<-,argo-method}},
-  \code{\link{[[<-,ctd-method}}
+Other functions that alter oce data and metadata: \code{\link{[[<-,ctd-method}}
 
-Other functions that handle adp data: \code{\link{[[,adp-method}},
-  \code{\link{subset,adp-method}}
+Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}}
 }
 

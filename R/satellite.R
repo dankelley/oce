@@ -62,11 +62,14 @@ setMethod(f="summary",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @author Dan Kelley
 #' @aliases plot.satellite
+#'
 #' @concept satellite
+#'
+#' @author Dan Kelley
+#'
 #' @family functions that handle satellite data
-#' @family functions that plot oce data
+#' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)

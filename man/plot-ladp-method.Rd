@@ -23,14 +23,14 @@ and northerly velocity components.
 Dan Kelley
 }
 \seealso{
-Other functions that handle ladp data: \code{\link{[[,ladp-method}},
+Other functions that handle \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{ladp-class}},
   \code{\link{summary,ladp-method}}
 
-Other functions that plot oce data: \code{\link{plot,amsr-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+  \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,ctd-method}},
-  \code{\link{plot,landsat-method}},
   \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}}
 }

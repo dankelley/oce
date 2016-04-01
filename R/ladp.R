@@ -20,7 +20,7 @@
 #'     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
 #'     things. Use \code{names(ladp@data)} to find the names of the data.
 #' 
-#' @family functions that handle ladp data
+#' @family functions that handle \code{ladp} data
 #'
 #' @author Dan Kelley
 
@@ -65,9 +65,9 @@ setMethod(f="initialize",
 #' 
 #' @return A matrix containing statistics of the elements of the \code{data} slot.
 #' 
-#' @family functions that handle ladp data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{ladp} data
 setMethod(f="summary",
           signature="ladp",
           definition=function(object, ...) {
@@ -87,10 +87,10 @@ setMethod(f="summary",
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
-#' @family functions that handle ladp data
-#' @family functions that access oce data and metadata
-#'
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ladp} data
+#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -125,9 +125,10 @@ setMethod(f="[[",
 #' @param ... Other arguments, passed to plotting functions.
 #' 
 #' @aliases plot.ladp
-#' @family functions that handle ladp data
-#' @family functions that plot oce data
 #' @author Dan Kelley
+#'
+#' @family functions that handle \code{ladp} data
+#' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("ladp"),
           definition=function(x, which=c("u", "v"), ...) {
@@ -164,10 +165,10 @@ fixColumn <- function(x) {
 #' @param \dots optional additional data columns.
 #' 
 #' @return An object of \code{\link{ladp-class}}.
-#' 
-#' @family functions that handle ladp data
-#' 
+#'
 #' @author Dan Kelley
+#' 
+#' @family functions that handle \code{ladp} data
 as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (inherits(longitude, "oce")) {
