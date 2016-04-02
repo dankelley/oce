@@ -1,6 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold argo data
+#' Class to hold Argo data
 #'
 #' This class stores data from argo floats. It will be in fairly
 #' active development in the early months of 2016.
@@ -16,6 +16,10 @@
 #'
 #' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 #' argo-related datasets that may be useful in a wider context.
+#'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @family classes provided by \code{oce}
 setClass("argo", contains="oce")
 
 #' ARGO drifter dataset
@@ -38,7 +42,7 @@ setClass("argo", contains="oce")
 #' @source This is the profile stored in the file \code{6900388_prof.nc}
 #' downloaded from the \code{usgodae.org} website in March 2012.
 #'     
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
 NULL
 
 #' @title Extract Something From a argo Object
@@ -58,19 +62,10 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' Replace Parts of an \code{argo} Object
-#'
-#' In addition to the usual insertion of elements by name, note
-#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
-#' 
-#' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value recoverd from \code{x}.
-#'
-#' @family functions that replace parts of \code{oce} objects
+#' @title Replace Parts of a \code{argo} Object
+#' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
 #' @family functions that handle \code{argo} data
+#' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {

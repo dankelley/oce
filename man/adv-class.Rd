@@ -54,7 +54,8 @@ A file containing ADV data is usually recognized by Oce, and so
     coordinates (e.g. aligned with a coastline) with
     \code{\link{enuToOtherAdv}}.
 
-Other \code{oce} classes: \code{\link{adp-class}},
-  \code{\link{ctd-class}}
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{argo-class}}, \code{\link{ctd-class}},
+  \code{\link{section-class}}
 }
 

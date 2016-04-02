@@ -90,7 +90,8 @@ discussed above, and skilled users may also manipulate the contents directly.
 Dan Kelley
 }
 \seealso{
-Other \code{oce} classes: \code{\link{adp-class}},
-  \code{\link{adv-class}}
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{argo-class}},
+  \code{\link{section-class}}
 }
 

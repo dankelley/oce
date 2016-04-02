@@ -47,6 +47,7 @@ Dan Kelley
 }
 \seealso{
 Other functions that handle \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}},

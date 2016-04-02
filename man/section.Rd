@@ -29,12 +29,8 @@ plot(GSg, map.xlim=c(-80,-60))
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}}
+Other datasets provided with \code{oce}: \code{\link{adv}},
+  \code{\link{argo}}, \code{\link{ctd}}
 }
 

@@ -191,7 +191,7 @@ general ADP function \code{\link{read.adp}} or specialized variants
 \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
 \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 
-ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
 generic function so it may be called simply as \code{plot}.
 
 Statistical summaries of ADP data are provided by the generic function
@@ -203,7 +203,8 @@ with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 
-Other \code{oce} classes: \code{\link{adv-class}},
-  \code{\link{ctd-class}}
+Other classes provided by \code{oce}: \code{\link{adv-class}},
+  \code{\link{argo-class}}, \code{\link{ctd-class}},
+  \code{\link{section-class}}
 }
 

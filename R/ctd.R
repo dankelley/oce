@@ -79,7 +79,7 @@
 #'
 #' @author Dan Kelley
 #' 
-#' @family \code{oce} classes
+#' @family classes provided by \code{oce}
 setClass("ctd", contains="oce")
 
 
@@ -113,7 +113,7 @@ setClass("ctd", contains="oce")
 #' @seealso The full profile (not trimmed to the downcast) is available as
 #' \link{ctdRaw}.
 #' 
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
 NULL
 
 
@@ -427,33 +427,23 @@ setMethod(f="[[",
               }
           })
 
-#' Replace Parts of a \code{ctd} Object
-#'
-#' @param x A ctd object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#'
+#' @title Replace Parts of a \code{ctd} Object
+#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
 #' @family functions that handle \code{ctd} data
-#' @family functions that alter oce data and metadata
+#' @template sub_subsetTemplate
+#'
+#' @examples
+#' data(ctd)
+#' summary(ctd)
+#' # Move the CTD profile a nautical mile north.
+#' ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # acts in metadata
+#' # Increase the salinity by 0.01.
+#' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
+#' summary(ctd)
 setMethod(f="[[<-",
-          signature="ctd",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) {
-                  x@metadata[[i]] <- value
-              } else if (i %in% names(x@data)) {
-                 x@data[[i]] <- value
-              } else if (grep("Unit$", i)) {
-                  item <- gsub("Unit$", "", i)
-                  x@metadata$units[[item]] <- value
-              } else if (grep("Flag$", i)) {
-                  item <- gsub("Flag$", "", i)
-                  x@metadata$flags[[item]] <- value
-              } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
-              }
-              invisible(x)
+          signature(x="ctd", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) { # FIXME: use j for e.g. times
+              callNextMethod(x=x, i=i, j=j, value=value)
           })
 
 

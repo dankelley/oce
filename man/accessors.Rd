@@ -119,7 +119,7 @@ print(heading(adp))
 }
 
 \seealso{Individual object classes handle accessing in specialized ways; see
-    e.g. \code{\link{ctd-class}} for how \code{[[} works for CTD objects.}
+    e.g. \code{\link{[[,ctd-method}} for how \code{[[} works for CTD objects.}
 
 \author{Dan Kelley}
 

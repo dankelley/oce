@@ -3,12 +3,12 @@
 \docType{methods}
 \name{[[,section-method}
 \alias{[[,section-method}
-\title{Extract Something From a section Object}
+\title{Extract Something From a Section Object}
 \usage{
 \S4method{[[}{section}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A section object, i.e. one inheriting from \code{\link{section-class}}.}
+\item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -17,13 +17,22 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-The \code{[[} notation works for all \code{oce} objects. It looks up
-information in a two-step process. First, a class-specific function 
+The \code{[[} method works for all \code{oce} objects, i.e.
+objects inheriting from \code{\link{oce-class}}.  The purpose,
+as with the related replacement method, \code{\link{[[<-}}, 
+is to insulate users from the internal details of \code{oce}
+objects, by looking for items within the various storage
+slots of the object. Items not actually stored can also be 
+extracted, including derived data, units of measurement,
+and data-quality flags.
+
+The method uses a two-step process to try to find the
+requested information. First, a class-specific function 
 is used to try to access the requested information (see
-\dQuote{Details of the specialized ... method}). Then, if no match is found, a
-general function is used (see \sQuote{Details of the general
-method}). If neither method can handle the requested item,
-then \code{NULL} is returned.
+\dQuote{Details of the specialized ... method}). 
+Second, if no match is found, a general function is used
+(see \sQuote{Details of the general method}). If neither
+method can locates the requested item, \code{NULL} is returned.
 }
 \section{Details of the specialized section method}{
 
@@ -100,7 +109,8 @@ Dan Kelley
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
   \code{\link{[[,argo-method}}, \code{\link{[[,ctd-method}}
 
-Other functions that handle \code{section} data: \code{\link{as.section}},
+Other functions that handle \code{section} data: \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}},
   \code{\link{sectionAddStation}},

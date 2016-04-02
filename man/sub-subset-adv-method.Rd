@@ -25,7 +25,5 @@ that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 \seealso{
 Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{plot,adv-method}}
-
-Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,argo-method}}
 }
 

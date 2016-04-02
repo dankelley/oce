@@ -1,3 +1,5 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
 #' Class to store hydrographic section data
 #' 
 #' Class to store hydrographic section data, with standard slots \code{metadata},
@@ -55,6 +57,8 @@
 #'     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
+#'
+#' @family classes provided by \code{oce}
 setClass("section", contains="oce")
 
 
@@ -85,9 +89,7 @@ setClass("section", contains="oce")
 #' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 #' from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #' 
-#' @family datasets provided with oce
-#' 
-#' @author Dan Kelley
+#' @family datasets provided with \code{oce}
 NULL
 
 setMethod(f="initialize",
@@ -101,7 +103,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a CTD section
+#' Summarize an oceanographic section
 #' 
 #' Pertinent summary information is presented, including station locations,
 #' distance along track, etc.
@@ -161,8 +163,8 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' @title Extract Something From a section Object
-#' @param x A section object, i.e. one inheriting from \code{\link{section-class}}.
+#' @title Extract Something From a Section Object
+#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
 #' @family functions that handle \code{section} data
 #' @examples
 #' data(section)
@@ -260,6 +262,24 @@ setMethod(f="[[",
               }
               res
           })
+
+#' @title Replace Parts of a \code{section} Object
+#' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
+#' @family functions that handle \code{section} data
+#' @template sub_subsetTemplate
+#' @examples
+#' # Change section ID from a03 to A03
+#' data(section)
+#' section[["sectionId"]]
+#' section[["sectionId"]] <- toupper(section[["sectionId"]])
+#' section[["sectionId"]]
+#' @author Dan Kelley
+setMethod(f="[[<-",
+          signature(x="section", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod()
+          })
+
 
 setMethod(f="show",
           signature="section",

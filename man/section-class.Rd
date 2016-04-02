@@ -63,5 +63,9 @@ Statistical summaries are provided by \code{\link{summary.section}}, while
 overviews are provided by \code{show.section}.  
     
 The sample dataset \code{\link{section}} contains data along WOCE line A03.
+
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{argo-class}},
+  \code{\link{ctd-class}}
 }
 

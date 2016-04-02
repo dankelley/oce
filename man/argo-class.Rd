@@ -3,7 +3,7 @@
 \docType{class}
 \name{argo-class}
 \alias{argo-class}
-\title{Class to hold argo data}
+\title{Class to hold Argo data}
 \description{
 This class stores data from argo floats. It will be in fairly
 active development in the early months of 2016.
@@ -20,5 +20,13 @@ be used to insert data.
 
 See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 argo-related datasets that may be useful in a wider context.
+}
+\author{
+Dan Kelley and Clark Richards
+}
+\seealso{
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{ctd-class}},
+  \code{\link{section-class}}
 }
 

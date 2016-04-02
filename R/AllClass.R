@@ -291,35 +291,10 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within an oce Object
-#'
-#' @description
-#' This is a base function that can be used to change items
-#' in the \code{metadata} or \code{data} slot of an
-#' object of the \code{\link{oce-class}}. See 
-#' \dQuote{Details} for the case in which both slots
-#' contain an item of the given name.
-#'
-#' The first step is to an item of the indicated name. First,
-#' it is sought in the \code{metadata} slot, and if it is found
-#' there, then that value is altered. If it is not found there,
-#' it is sought in the \code{data} slot and modified there.
-#'
-#'
-#' @param x An oce object.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#'
-#' @examples
-#' data(ctd)
-#' summary(ctd)
-#' # Move the CTD profile a nautical mile north,
-#' ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # in metadata
-#' # Increase the salinity by 0.01.
-#' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # in data
-#' summary(ctd)
+#' @title Replace Parts of an \code{oce} Object
+#' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
+#' @family functions that replace parts of an \code{oce} object
+#' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
@@ -327,23 +302,21 @@ setMethod(f="[[<-",
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
-                  index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1])) {
-                      x@data[[index]] <- value
-                  } else if (length(grep("Unit$", i))) {
-                      if ("units" %in% names(x@metadata))
-                          x@metadata$units[[gsub("Unit$", "", i)]] <- value
-                      else
-                          x@metadata[[i]] <- value
-                  } else if (i == "processingLog") {
-                      if (0 == length(x@processingLog)) {
-                          x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
-                      } else {
-                          x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
-                          x@processingLog$value <- c(x@processingLog$value, value)
-                      }
+                  if (length(grep("Unit$", i))) {
+                      if (!("units" %in% names(x@metadata)))
+                          x@metadata$flags <- list()
+                      x@metadata$units[[gsub("Unit$", "", i)]] <- value
+                  } else if (length(grep("Flag$", i))) {
+                      if (!("flags" %in% names(x@metadata)))
+                          x@metadata$units <- list()
+                      x@metadata$units[[gsub("Flag$", "", i)]] <- value
                   } else {
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      index <- pmatch(i, names(x@data))
+                      if (!is.na(index[1])) {
+                          x@data[[index]] <- value
+                      } else {
+                          warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      }
                   }
               }
               validObject(x)

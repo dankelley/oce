@@ -182,7 +182,7 @@
 #' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
 #' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 #' 
-#' ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+#' ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
 #' generic function so it may be called simply as \code{plot}.
 #' 
 #' Statistical summaries of ADP data are provided by the generic function
@@ -194,7 +194,7 @@
 #' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 #'
-#' @family \code{oce} classes
+#' @family classes provided by \code{oce}
 setClass("adp", contains="oce")
 
 #' ADP (acoustic-doppler profiler) dataset

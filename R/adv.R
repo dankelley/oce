@@ -47,7 +47,7 @@
 #' data(adv)
 #' adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
 #'
-#' @family \code{oce} classes
+#' @family classes provided by \code{oce}
 setClass("adv", contains="oce")
 
 #' ADV (acoustic-doppler velocimeter) dataset
@@ -80,7 +80,7 @@ setClass("adv", contains="oce")
 #' 
 #' @source This file came from the SLEIWEX-2008 experiment.
 #' 
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
 NULL
 
 

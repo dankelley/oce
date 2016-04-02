@@ -33,8 +33,7 @@ for (a in seq(-20, 20, by=1))
 
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{argo}}, \code{\link{ctdRaw}},
+Other datasets provided with \code{oce}: \code{\link{argo}},
   \code{\link{ctd}}, \code{\link{section}}
 }
 
