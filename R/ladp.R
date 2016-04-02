@@ -78,7 +78,7 @@ setMethod(f="summary",
 
 #' Extract Something From an ladp Object
 #'
-#' @param x A ctd object, i.e. one inheriting from \code{\link{ladp-class}}.
+#' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
