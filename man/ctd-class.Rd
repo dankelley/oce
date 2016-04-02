@@ -52,7 +52,7 @@ The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
 \code{ctd[["spice"]]}.
 }
 
-\section{Assigning values}{
+\section{Extracting values}{
 
 Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
   <- rep(35,10)}.  For obvious reasons, this does not work with derived
@@ -92,6 +92,6 @@ Dan Kelley
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{section-class}}
+  \code{\link{section-class}}, \code{\link{windrose-class}}
 }
 

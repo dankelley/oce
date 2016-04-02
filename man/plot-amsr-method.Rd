@@ -58,7 +58,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,satellite-method}},
-  \code{\link{plot,section-method}}
+  \code{\link{plot,section-method}},
+  \code{\link{plot,windrose-method}}
 }
 \concept{
 satellite

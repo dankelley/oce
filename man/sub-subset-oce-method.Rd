@@ -54,6 +54,7 @@ If none of these conditions is met, a warning is issued.
 \seealso{
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,ctd-method}},
-  \code{\link{[[<-,section-method}}
+  \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,windrose-method}}
 }
 

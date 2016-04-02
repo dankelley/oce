@@ -56,6 +56,6 @@ A file containing ADV data is usually recognized by Oce, and so
 
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{argo-class}}, \code{\link{ctd-class}},
-  \code{\link{section-class}}
+  \code{\link{section-class}}, \code{\link{windrose-class}}
 }
 

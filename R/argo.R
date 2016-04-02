@@ -45,7 +45,7 @@ setClass("argo", contains="oce")
 #' @family datasets provided with \code{oce}
 NULL
 
-#' @title Extract Something From a argo Object
+#' @title Extract Something From a \code{argo} Object
 #' @param x A argo object, i.e. one inheriting from \code{\link{argo-class}}.
 #' @examples
 #' data(argo)
@@ -69,7 +69,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
-              callNextMethod()
+              callNextMethod(x=x, i=i, j=j, value=value)
           })
 
 setMethod(f="initialize",

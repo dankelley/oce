@@ -277,7 +277,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
-              callNextMethod()
+              callNextMethod(x=x, i=i, j=j, value=value)
           })
 
 

@@ -107,7 +107,9 @@ Dan Kelley
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}}, \code{\link{[[,ctd-method}}
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,ctd-method}},
+  \code{\link{[[,windrose-method}}
 
 Other functions that handle \code{section} data: \code{\link{[[<-,section-method}},
   \code{\link{as.section}},

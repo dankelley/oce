@@ -74,6 +74,7 @@ Other functions that handle \code{section} data: \code{\link{[[,section-method}}
 
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,ctd-method}},
-  \code{\link{[[<-,oce-method}}
+  \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,windrose-method}}
 }
 

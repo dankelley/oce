@@ -60,6 +60,7 @@ Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
 
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,ctd-method}},
   \code{\link{[[<-,oce-method}},
-  \code{\link{[[<-,section-method}}
+  \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,windrose-method}}
 }
 

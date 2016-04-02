@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,argo-method}
 \alias{[[,argo-method}
-\title{Extract Something From a argo Object}
+\title{Extract Something From a \code{argo} Object}
 \usage{
 \S4method{[[}{argo}(x, i, j, ...)
 }
@@ -87,7 +87,8 @@ dim(argo[['temperature']])
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
   \code{\link{[[,ctd-method}},
-  \code{\link{[[,section-method}}
+  \code{\link{[[,section-method}},
+  \code{\link{[[,windrose-method}}
 
 Other functions that handle \code{argo} data: \code{\link{[[<-,argo-method}},
   \code{\link{argoGrid}}, \code{\link{as.argo}},

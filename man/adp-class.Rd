@@ -205,6 +205,6 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 
 Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{argo-class}}, \code{\link{ctd-class}},
-  \code{\link{section-class}}
+  \code{\link{section-class}}, \code{\link{windrose-class}}
 }
 

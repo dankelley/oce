@@ -46,7 +46,7 @@
 #' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
 #' \code{ctd[["spice"]]}.
 #'
-#' @section Assigning values:
+#' @section Extracting values:
 #' Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
 #'   <- rep(35,10)}.  For obvious reasons, this does not work with derived
 #' quantities such as conservative temperature, etc.
@@ -252,7 +252,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a CTD object
+#' Summarize a \code{ctd} Object
 #' 
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
