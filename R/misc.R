@@ -845,57 +845,6 @@ unabbreviateYear <- function(year)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
-rskToc <- function(dir, from, to, debug=getOption("oceDebug"))
-{
-    if (missing(dir))
-        stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")
-    tbl.files <- list.files(path=dir, pattern="*.TBL$")
-    if (length(tbl.files) < 1)
-        stop("could not locate a .TBL file in direcory ", dir)
-    tref <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
-    file.code <- NULL
-    startTime <- NULL
-    for (tbl.file in tbl.files) {
-        oceDebug(debug, tbl.file)
-        lines <- readLines(paste(dir, tbl.file, sep="/"))
-        if (length(lines) < 1)
-            stop("found no data in file ", paste(dir, tbl.file, sep="/"))
-        ## "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
-        for (line in lines) {
-            s <- strsplit(line, "[ \t]+")[[1]]
-            if (length(s) > 2) {
-                filename <- s[2]
-                month <- s[6]
-                day <- s[7]
-                hms <- s[8]
-                year <- s[9]
-                t <- as.POSIXct(strptime(paste(year, month, day, hms), "%Y %b %d %H:%M:%S", tz="UTC"))
-                len <- nchar(filename)
-                code <- substr(filename, len-6, len)
-                oceDebug(debug, s, "(", code, format(t), ")\n")
-                file.code <- c(file.code, code)
-                startTime <- c(startTime, as.numeric(t) - as.numeric(tref))
-            }
-        }
-    }
-    prefix <- list.files(dir, pattern=".*[0-9]$")[1]
-    lprefix <- nchar(prefix)
-    prefix <- substr(prefix, 1, lprefix-7)
-    filename <- paste(dir, paste(prefix, file.code, sep=""), sep="/")
-    startTime <- as.POSIXct(startTime + tref)
-    oceDebug(debug, "from=", format(from), "\n")
-    oceDebug(debug, "to=", format(to), "\n")
-    if (!missing(from) && !missing(to)) {
-        oceDebug(debug, "got", length(file.code), "candidate files")
-        ok <- from <= startTime & startTime <= to
-        oceDebug(debug, "ok=", ok, "\n")
-        filename <- filename[ok]
-        startTime <- startTime[ok]
-        oceDebug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
-    }
-    list(filename=filename, startTime=startTime)
-}
-
 angleRemap <- function(theta)
 {
     toRad <- atan2(1, 1) / 45
