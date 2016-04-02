@@ -34,12 +34,6 @@ Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
 }
-\section{Details of the specialized argo method}{
-
-There are no special features for \code{\link{argo-class}} data;
-the general method is used directly.
-}
-
 \section{Details of the general method}{
 
 
@@ -86,8 +80,10 @@ dim(argo[['temperature']])
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
-  \code{\link{[[,ctd-method}},
+  \code{\link{[[,cm-method}}, \code{\link{[[,ctd-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
 Other functions that handle \code{argo} data: \code{\link{[[<-,argo-method}},

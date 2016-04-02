@@ -58,9 +58,12 @@ Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,ctd-method}},
+Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,cm-method}},
+  \code{\link{[[<-,ctd-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,rsk-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 }
 

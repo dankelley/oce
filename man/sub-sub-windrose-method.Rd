@@ -81,9 +81,10 @@ If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}},
-  \code{\link{[[,ctd-method}},
-  \code{\link{[[,section-method}}
+  \code{\link{[[,argo-method}}, \code{\link{[[,cm-method}},
+  \code{\link{[[,ctd-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,section-method}},
+  \code{\link{[[,topo-method}}
 
 Other functions that handle \code{windrose} data: \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},

@@ -35,6 +35,7 @@ The full profile (not trimmed to the downcast) is available as
 \link{ctdRaw}.
 
 Other datasets provided with \code{oce}: \code{\link{adv}},
-  \code{\link{argo}}, \code{\link{section}}
+  \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{section}}, \code{\link{topoWorld}}
 }
 

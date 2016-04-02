@@ -221,7 +221,7 @@ and then to draw other panels after this call.
 
 If only 2 panels are requested, they will be drawn side by side.
 
-If more than one panel is drawn, then on exit from \code{plot.ctd}, the value
+If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
 of \code{par} will be reset to the value it had before the function call.
 However, if only one panel is drawn, the adjustments to \code{par} made within
 \code{plot.ctd} are left in place, so that further additions may be made to the
@@ -253,15 +253,22 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
   \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{subset,ctd-method}},
+  \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
+  \code{\link{read.ctd.sbe}}, \code{\link{read.ctd.woce}},
+  \code{\link{read.ctd}}, \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
+  \code{\link{plot,cm-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}},
-  \code{\link{plot,windrose-method}}
+  \code{\link{plot,topo-method}},
+  \code{\link{plot,windrose-method}},
+  \code{\link{plotScan}}
 }
 

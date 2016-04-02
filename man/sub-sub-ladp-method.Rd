@@ -8,7 +8,7 @@
 \S4method{[[}{ladp}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A ctd object, i.e. one inheriting from \code{\link{ladp-class}}.}
+\item{x}{A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.}
 
 \item{i}{The item to extract.}
 

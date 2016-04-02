@@ -66,13 +66,19 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,argo-method}},
+  \code{\link{[[<-,cm-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,rsk-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 }
 

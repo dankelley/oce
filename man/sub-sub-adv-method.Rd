@@ -90,11 +90,15 @@ head(adv[["q", "numeric"]]) # in numeric form
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,argo-method}},
-  \code{\link{[[,ctd-method}},
+  \code{\link{[[,cm-method}}, \code{\link{[[,ctd-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
 Other functions that handle \code{adv} data: \code{\link{[[<-,adv-method}},
-  \code{\link{plot,adv-method}}
+  \code{\link{plot,adv-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}
 }
 

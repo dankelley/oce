@@ -184,7 +184,6 @@ setMethod(f="summary",
 ## FIXME: when a new function is added.
 ## To find a list of classes in oce, do 'grep setClass *.R'
 setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
-setClass("cm", contains="oce")
 setClass("coastline", contains="oce")
 setClass("echosounder", contains="oce")
 setClass("gps", contains="oce")
@@ -193,7 +192,6 @@ setClass("lisst", contains="oce")
 setClass("lobo", contains="oce")
 setClass("met", contains="oce")
 setClass("odf", contains="oce")
-setClass("rsk", contains="oce")
 setClass("sealevel", contains="oce")
 setClass("tidem", contains="oce")
 

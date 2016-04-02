@@ -88,12 +88,12 @@ STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 # 3. Use smoothed TS relationship to nudge questionable data.
 # This is perhaps a silly idea, but at least it illustrates
 # how to write a nontrivial function for an action.
-f <- function(x) {
-    S <- x[["salinity"]]
-    T <- x[["temperature"]]
-    df <- 0.5 * length(S) # smooths a bit
-    sp <- smooth.spline(T, S, df=df)
-    0.5 * (S + predict(sp, T)$y)
+f<-function(x) {
+  S <- x[["salinity"]]
+  T <- x[["temperature"]]
+  df <- 0.5 * length(S) # smooths a bit
+  sp <- smooth.spline(T, S, df=df)
+  0.5 * (S + predict(sp, T)$y)
 }
 par(mfrow=c(1,2))
 STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
@@ -113,7 +113,10 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{plot,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 

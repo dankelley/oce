@@ -26,7 +26,9 @@ Dan Kelley and Clark Richards
 }
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{ctd-class}},
-  \code{\link{section-class}}, \code{\link{windrose-class}}
+  \code{\link{adv-class}}, \code{\link{cm-class}},
+  \code{\link{ctd-class}}, \code{\link{rsk-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 }
 

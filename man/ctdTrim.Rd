@@ -95,7 +95,7 @@ plot(ctdTrim(ctdRaw)) # looks like a real profile ...
 plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
 # Demonstrate use of a function. The scan limits were chosen
 # by using locator(2) on a graph made by plotScan(ctdRaw).
-trimByIndex <- function(data, parameters) {
+trimByIndex<-function(data, parameters) {
   parameters[1] < data$scan & data$scan < parameters[2]
 }
 trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
@@ -117,7 +117,10 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}},
   \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

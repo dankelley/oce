@@ -73,8 +73,11 @@ Other functions that handle \code{section} data: \code{\link{[[,section-method}}
   \code{\link{summary,section-method}}
 
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,argo-method}},
+  \code{\link{[[<-,cm-method}},
   \code{\link{[[<-,ctd-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 }
 

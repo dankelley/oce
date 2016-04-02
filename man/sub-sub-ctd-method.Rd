@@ -108,8 +108,10 @@ head(ctd[["temperature"]])
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}},
+  \code{\link{[[,argo-method}}, \code{\link{[[,cm-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
 Other functions that handle \code{ctd} data: \code{\link{[[<-,ctd-method}},
@@ -117,7 +119,10 @@ Other functions that handle \code{ctd} data: \code{\link{[[<-,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

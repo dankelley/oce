@@ -34,7 +34,7 @@
 #'     \code{x} is an object inheriting from \code{\link{adv-class}}.
 #' 
 #'     Statistical summaries of ADV data are provided by the generic function
-#'     \code{\link{summary.adv}}.
+#'     \code{\link{summary,adv-method}}.
 #' 
 #'     Conversion from beam to xyz coordinates may be done with
 #'     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
@@ -97,6 +97,25 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+
+#' Summarize an ADV object
+#' 
+#' Summarize data in an \code{adv} object.
+#' 
+#' @param object an object of class \code{"adv"}, usually, a result of a call to
+#' \code{\link{read.adv}}.
+#' 
+#' @param ... further arguments passed to or from other methods.
+#' 
+#' @examples
+#' library(oce)
+#' data(adv)
+#' summary(adv)
+#' 
+#' @author Dan Kelley
+#' 
+#' @family functions that handle \code{adv} data
 setMethod(f="summary",
           signature="adv",
           definition=function(object, ...) {
@@ -198,6 +217,31 @@ setMethod(f="[[<-",
           })
 
 
+
+#' Subset an adv object
+#' 
+#' Subset an adv (acoustic Doppler profile) object.  This function is somewhat
+#' analogous to \code{\link{subset.data.frame}}, except that subsets can only be
+#' specified in terms of \code{time}.
+#' 
+#' @param x a \code{adv} object.
+#' 
+#' @param subset a condition to be applied to the \code{data} portion of \code{x}.
+#' See \sQuote{Details}.
+#' 
+#' @param \dots ignored.
+#' 
+#' @return
+#' A new \code{\link{adv-class}} object.
+#' 
+#' @examples
+#' library(oce)
+#' data(adv)
+#' plot(adv)
+#' plot(subset(adv, time < mean(range(adv[['time']]))))
+#' 
+#' @author Dan Kelley
+#' @family functions that handle \code{adv} data
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {

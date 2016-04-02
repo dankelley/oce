@@ -194,14 +194,20 @@ The documentation for \code{\link{adv-class}} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
 
 Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}}
+  \code{\link{[[<-,adv-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}
 
 Other functions that plot \code{oce} data: \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
+  \code{\link{plot,cm-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}},
-  \code{\link{plot,windrose-method}}
+  \code{\link{plot,topo-method}},
+  \code{\link{plot,windrose-method}},
+  \code{\link{plotScan}}
 }
 

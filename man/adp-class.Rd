@@ -204,7 +204,9 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 
 Other classes provided by \code{oce}: \code{\link{adv-class}},
-  \code{\link{argo-class}}, \code{\link{ctd-class}},
-  \code{\link{section-class}}, \code{\link{windrose-class}}
+  \code{\link{argo-class}}, \code{\link{cm-class}},
+  \code{\link{ctd-class}}, \code{\link{rsk-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 }
 

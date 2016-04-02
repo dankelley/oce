@@ -31,6 +31,7 @@ plot(GSg, map.xlim=c(-80,-60))
 }
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adv}},
-  \code{\link{argo}}, \code{\link{ctd}}
+  \code{\link{argo}}, \code{\link{cm}}, \code{\link{ctd}},
+  \code{\link{topoWorld}}
 }
 

@@ -45,7 +45,7 @@ A file containing ADV data is usually recognized by Oce, and so
     \code{x} is an object inheriting from \code{\link{adv-class}}.
 
     Statistical summaries of ADV data are provided by the generic function
-    \code{\link{summary.adv}}.
+    \code{\link{summary,adv-method}}.
 
     Conversion from beam to xyz coordinates may be done with
     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
@@ -55,7 +55,9 @@ A file containing ADV data is usually recognized by Oce, and so
     \code{\link{enuToOtherAdv}}.
 
 Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{argo-class}}, \code{\link{ctd-class}},
-  \code{\link{section-class}}, \code{\link{windrose-class}}
+  \code{\link{argo-class}}, \code{\link{cm-class}},
+  \code{\link{ctd-class}}, \code{\link{rsk-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 }
 
