@@ -95,8 +95,8 @@ setMethod(f="summary",
 #' @title Extract Something From a \code{topo} Object
 #' @param x A topo object, i.e. one inheriting from \code{\link{topo-class}}.
 #' @examples
-#' data(topo)
-#' dim(topo[['z']])
+#' data(topoWorld)
+#' dim(topoWorld[['z']])
 #'
 #' @section Details of the specialized topo method:
 #' There are no special features for \code{\link{topo-class}} data;
