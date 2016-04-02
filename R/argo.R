@@ -50,9 +50,6 @@ NULL
 #' data(argo)
 #' dim(argo[['temperature']])
 #'
-#' @section Details of the specialized argo method:
-#' There are no special features for \code{\link{argo-class}} data;
-#' the general method is used directly.
 #' @template sub_subTemplate
 #' @family functions that handle \code{argo} data
 setMethod(f="[[",
