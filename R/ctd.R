@@ -1952,7 +1952,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' If only 2 panels are requested, they will be drawn side by side.
 #' 
-#' If more than one panel is drawn, then on exit from \code{plot.ctd}, the value
+#' If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
 #' of \code{par} will be reset to the value it had before the function call.
 #' However, if only one panel is drawn, the adjustments to \code{par} made within
 #' \code{plot.ctd} are left in place, so that further additions may be made to the
@@ -2165,6 +2165,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @author Dan Kelley
 #' 
+#' @aliases plot.ctd
 #' @family functions that plot \code{oce} data
 #' @family functions that handle \code{ctd} data
 setMethod(f="plot",
