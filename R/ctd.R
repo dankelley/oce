@@ -178,12 +178,12 @@ NULL
 #' # 3. Use smoothed TS relationship to nudge questionable data.
 #' # This is perhaps a silly idea, but at least it illustrates
 #' # how to write a nontrivial function for an action.
-#' f <- function(x) {
-#'     S <- x[["salinity"]]
-#'     T <- x[["temperature"]]
-#'     df <- 0.5 * length(S) # smooths a bit
-#'     sp <- smooth.spline(T, S, df=df)
-#'     0.5 * (S + predict(sp, T)$y)
+#' f<-function(x) {
+#'   S <- x[["salinity"]]
+#'   T <- x[["temperature"]]
+#'   df <- 0.5 * length(S) # smooths a bit
+#'   sp <- smooth.spline(T, S, df=df)
+#'   0.5 * (S + predict(sp, T)$y)
 #' }
 #' par(mfrow=c(1,2))
 #' STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
@@ -1555,7 +1555,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
 #' # Demonstrate use of a function. The scan limits were chosen
 #' # by using locator(2) on a graph made by plotScan(ctdRaw).
-#' trimByIndex <- function(data, parameters) {
+#' trimByIndex<-function(data, parameters) {
 #'   parameters[1] < data$scan & data$scan < parameters[2]
 #' }
 #' trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
@@ -1705,7 +1705,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 if (is.na(submethod))
                     stop("unknown submethod '", submethod, "'")
                 submethod <- submethodChoices[sm]
-                ## bilinearAold <- function(param) { # param=c(s0,p0,dpds); this uses ss and pp
+                ## bilinearAold<-function(param) { # param=c(s0,p0,dpds); this uses ss and pp
                 ##     s0 <-  param[1]
                 ##     p0 <- abs(param[2])
                 ##     dpds <- param[3]
@@ -1716,11 +1716,11 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 ##     oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "; misfit=", misfit, "\n")
                 ##     misfit
                 ## }
-                bilinearA <- function(s, s0, p0, dpds) { # same model as B but results treated differently
+                bilinearA<-function(s, s0, p0, dpds) { # same model as B but results treated differently
                     oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
                     ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
-                bilinearB <- function(s, s0, dpds) {
+                bilinearB<-function(s, s0, dpds) {
                     oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
@@ -1868,7 +1868,7 @@ ctdUpdateHeader <- function (x, debug = FALSE)
         stop("there is no header in this CTD object")
     if (length(x@data) < 1)
         stop("there are no data in this CTD object")
-    replaceHeaderElement <- function(h, match, new)
+    replaceHeaderElement<-function(h, match, new)
     {
         for (i in 1:length(h)) {
             if (length(grep(match, h[i], perl=TRUE, useBytes=TRUE))) {
@@ -2264,7 +2264,7 @@ setMethod(f="plot",
                   pch <- rep(pch, lw) # FIXME: recycle more sensibly
               if (length(cex) < lw)
                   cex <- rep(cex, lw) # FIXME: recycle more sensibly
-              ##dec_deg <- function(x, code = "lat")
+              ##dec_deg<-function(x, code = "lat")
               ##{
               ##    if (code == "lat") {
               ##        if (x < 0) {
@@ -2513,7 +2513,7 @@ setMethod(f="plot",
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4) {
-                      textItem <- function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
+                      textItem<-function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
                           if (!is.null(item) && !is.na(item))
                               text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex)
                           yloc - d.yloc
@@ -2783,6 +2783,38 @@ setMethod(f="subset",
           })
 
 
+#' Plot seawater data in a low-level fashion
+#' 
+#' Plot CTD data as time-series against scan number, to help with trimming
+#' extraneous data from a CTD cast.
+#' 
+#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.
+#' 
+#' @param which Numerical vector numerical codes specifying the panels to draw: 1
+#' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
+#' scan, and 4 for salinity vs scan.
+#' 
+#' @param type Line type.
+#' 
+#' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' 
+#' @param mar Four-element vector be used with \code{\link{par}("mar")}.  If set
+#' to \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
+#' with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.
+#' 
+#' @param ... Optional arguments passed to plotting functions.
+#' 
+#' @examples
+#' library(oce)
+#' data(ctdRaw) 
+#' plotScan(ctdRaw)
+#' abline(v=c(130, 350), col='red') # useful for ctdTrim()
+#' 
+#' @author Dan Kelley
+#' @family functions that plot \code{oce} data
+#' @family functions that handle \code{ctd} data
 plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {
@@ -2929,6 +2961,16 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
     res
 }
 
+#' Translate WOCE data names to \code{oce} data names
+#'
+#' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
+#' to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
+#' to mean \code{oxygen}.
+#'
+#' @param names vector of strings holding WOCE-style names.
+#'
+#' @return vector of strings holding \code{oce}-style names.
+#' @author Dan Kelley
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that

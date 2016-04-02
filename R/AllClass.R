@@ -196,7 +196,6 @@ setClass("odf", contains="oce")
 setClass("rsk", contains="oce")
 setClass("sealevel", contains="oce")
 setClass("tidem", contains="oce")
-setClass("topo", contains="oce")
 
 #' Subset an oce Object
 #'

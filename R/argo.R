@@ -38,7 +38,6 @@ setClass("argo", contains="oce")
 #' plot(argo, which="trajectory", coastline=coastlineWorld)
 #' }
 #' 
-#' 
 #' @source This is the profile stored in the file \code{6900388_prof.nc}
 #' downloaded from the \code{usgodae.org} website in March 2012.
 #'     
