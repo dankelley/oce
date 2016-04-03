@@ -2,6 +2,7 @@
 
 setClass("satellite", contains="oce")
 
+
 #' Class to Hold amsr Data
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
@@ -31,7 +32,6 @@ setClass("satellite", contains="oce")
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
 #' @family functions that handle \code{amsr} data
-#' @family functions that handle satellite data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -67,7 +67,6 @@ setMethod(f="show",
 #' @aliases summary.amsr
 #' @concept satellite
 #' @family functions that handle \code{amsr} data
-#' @family functions that handle satellite data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -111,14 +110,10 @@ setMethod(f="summary",
 #' indicate sea ice (coded to \code{0xfc}),
 #' are are faulty owing to high rain (coded to \code{0xfb}).
 #'
-#' @param x An amsr object, i.e. one inheriting from \code{\link{amsr-class}}.
-#' @param i The item to extract; see \dQuote{Details}
-#' @param j Optional additional information on the \code{i} item (ignored).
-#' @param ... Optional additional information (ignored).
+#' @param x An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
 #' @author Dan Kelley
-#' @concept satellite
+#' @template sub_subTemplate
 #' @family functions that handle \code{amsr} data
-#' @family functions that handle satellite data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -138,7 +133,7 @@ setMethod(f="[[",
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
               #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
-              getBand <- function(b) {
+              getBand<-function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
                   b == as.raw(0xfd)| # bad observations
@@ -200,6 +195,16 @@ setMethod(f="[[",
               res
           })
 
+#' @title Replace Parts of a \code{amsr} Object
+#' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
+#' @family functions that handle \code{amsr} data
+#' @template sub_subsetTemplate
+setMethod(f="[[<-",
+          signature(x="amsr", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
 #' Plot an amsr Object
 #'
 #' @param x An object inherting from \code{\link{amsr-class}}.
@@ -224,9 +229,8 @@ setMethod(f="[[",
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{amsr} data
-#' @family functions that handle satellite data
 #' @family functions that plot \code{oce} data
+#' @family functions that handle \code{amsr} data
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -270,7 +274,6 @@ setMethod(f="plot",
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family functions that handle \code{amsr} data
-#' @family functions that handle satellite data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",
