@@ -658,6 +658,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         cruise <- m$cruise
         station <- m$station
         scientist <- m$station
+        startTime <- m$startTime
         if (is.na(latitude) && "latitude" %in% names(m))
             latitude <- m$latitude
         if (is.na(longitude) && "longitude" %in% names(m))
@@ -735,6 +736,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (!is.null(flags))
             res@metadata$flags <- flags
         res@metadata$pressureType <- pressureType
+        res@metadata$startTime <- startTime
         res@data$pressure <- pressure
         res@data$salinity <- salinity
         res@data$temperature <- temperature
