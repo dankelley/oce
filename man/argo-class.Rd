@@ -12,7 +12,7 @@ active development in the early months of 2016.
 An \code{argo} object may be read with \code{\link{read.argo}} or
 created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 pressures with \code{\link{argoGrid}}.  Plots can be made with
-\code{\link{plot.argo}}, while \code{\link{summary,argo-method}} produces statistical
+\code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
 summaries and \code{show} produces overviews. The usual oce generic
 functions are available, e.g. \code{\link{[[,argo-method}} may 
 be used to extract data, and \code{\link{[[<-,argo-method}} may
@@ -28,9 +28,9 @@ Dan Kelley and Clark Richards
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{lisst-class}},
-  \code{\link{lobo-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{rsk-class}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
 }
 

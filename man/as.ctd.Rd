@@ -143,7 +143,7 @@ is a \code{\link{rsk-class}} object.}
 \item{waterDepth}{optional numerical value indicating the water depth in
 metres. This is different from the maximum recorded pressure, although
 the latter is used by some oce functions as a guess on water depth, the
-most important example being \code{\link{plot.section}}.}
+most important example being \code{\link{plot,section-method}}.}
 
 \item{sampleInterval}{optional numerical value indicating the time between
 samples in the profile.}
@@ -203,7 +203,7 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},

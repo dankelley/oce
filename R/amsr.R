@@ -1,8 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-setClass("satellite", contains="oce")
-
-
 #' Class to Hold amsr Data
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
@@ -21,14 +18,13 @@ setClass("satellite", contains="oce")
 #' @details
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 #' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-#' form or in physical units; \code{\link{plot.amsr}}, and
-#' \code{\link{summary.amsr}} work with physical units.
+#' form or in physical units; \code{\link{plot,amsr-method}}, and
+#' \code{\link{summary,amsr-method}} work with physical units.
 #'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
 #' @references
 #' 1. \url{http://www.remss.com/missions/amsre}
-#' @aliases amsr-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
 #' @family functions that handle \code{amsr} data
@@ -64,7 +60,6 @@ setMethod(f="show",
 #' @param object The object to be summarized.
 #' @param ... Ignored.
 #' @author Dan Kelley
-#' @aliases summary.amsr
 #' @concept satellite
 #' @family functions that handle \code{amsr} data
 setMethod(f="summary",
@@ -215,7 +210,6 @@ setMethod(f="[[<-",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @aliases plot.amsr
 #' @concept satellite
 #'
 #' @examples
@@ -263,14 +257,7 @@ setMethod(f="plot",
 #' @param debug A debugging flag, integer.
 #'
 #' @concept satellite
-#' @seealso \code{\link{plot.amsr}} for an example.
-#' @examples
-#' \dontrun{
-#' d <- read.amsr("f34_20160102v7.2.gz")
-#' summary(d)
-#' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
-#' }
-#'
+#' @seealso \code{\link{plot,amsr-method}} for an example.
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family functions that handle \code{amsr} data

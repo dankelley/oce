@@ -3,8 +3,6 @@
 \docType{methods}
 \name{summary,satellite-method}
 \alias{summary,satellite-method}
-\alias{summary.g1sst}
-\alias{summary.satellite}
 \title{Summarize a satellite object}
 \usage{
 \S4method{summary}{satellite}(object, ...)

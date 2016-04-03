@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,satellite-method}
 \alias{plot,satellite-method}
-\alias{plot.satellite}
 \title{Plot a satellite object}
 \usage{
 \S4method{plot}{satellite}(x, y, asp, debug = getOption("oceDebug"), ...)
@@ -37,6 +36,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,cm-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
+  \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},

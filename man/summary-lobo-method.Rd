@@ -2,9 +2,7 @@
 % Please edit documentation in R/lobo.R
 \docType{methods}
 \name{summary,lobo-method}
-\alias{summary,lobo,missing-method}
 \alias{summary,lobo-method}
-\alias{summary.lobo}
 \title{Summarize a lobo data object}
 \usage{
 \S4method{summary}{lobo}(object, ...)

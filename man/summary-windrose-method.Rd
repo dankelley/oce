@@ -3,7 +3,6 @@
 \docType{methods}
 \name{summary,windrose-method}
 \alias{summary,windrose-method}
-\alias{summary.windrose}
 \title{Summarize a \code{windrose} object}
 \usage{
 \S4method{summary}{windrose}(object, ...)

@@ -37,7 +37,8 @@ The full profile (not trimmed to the downcast) is available as
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{section}}, \code{\link{topoWorld}}
+  \code{\link{echosounder}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{section}},
+  \code{\link{topoWorld}}
 }
 

@@ -35,11 +35,11 @@
 #' \code{\link{sectionAddStation}}.
 #' 
 #' Sections may be sorted with \code{\link{sectionSort}}, subsetted with
-#' \code{\link{subset.section}}, smoothed with \code{\link{sectionSmooth}}, and
+#' \code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
 #' gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-#' \code{\link{plot.section}}.  
+#' \code{\link{plot,section-method}}.  
 #'     
-#' Statistical summaries are provided by \code{\link{summary.section}}, while
+#' Statistical summaries are provided by \code{\link{summary,section-method}}, while
 #' overviews are provided by \code{show.section}.  
 #'     
 #' The sample dataset \code{\link{section}} contains data along WOCE line A03.
@@ -121,8 +121,6 @@ setMethod(f="initialize",
 #' library(oce)
 #' data(section)
 #' summary(section)
-#' 
-#' @aliases summary.section
 #' 
 #' @family functions that handle \code{section} data
 #' 
@@ -325,8 +323,6 @@ setMethod(f="show",
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' 
-#' @aliases subset.section
-#'
 #' @family functions that handle \code{section} data
 #' 
 #' @author Dan Kelley
@@ -367,7 +363,7 @@ setMethod(f="subset",
                   res@metadata$latitude <- lat
                   res@data <- data
                   res@processingLog <- x@processingLog
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
               } else if (length(grep("stationId", subsetString))) {
                   keep <- eval(substitute(subset),
                                envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
@@ -376,7 +372,7 @@ setMethod(f="subset",
                   res@metadata$latitude <- x@metadata$latitude[keep]
                   res@metadata$date <- x@metadata$date[keep]
                   res@data$station <- x@data$station[keep]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               } else {                        # subset within the stations
                   if ("indices" %in% dotsNames)
                       stop("2. cannot give both 'subset' and 'indices'")
@@ -426,7 +422,7 @@ setMethod(f="subset",
                           res@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
                       }
                   }
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               }
               res
           })
@@ -631,7 +627,7 @@ makeSection <- function(item, ...)
 #' 
 #' @param station A ctd object holding data for the station to be added.
 #' 
-#' 
+#' @aliases sectionAddCtd
 #' @return An object of \code{\link[base]{class}} \code{section}.
 #' 
 #' @examples
@@ -646,8 +642,6 @@ makeSection <- function(item, ...)
 #' ctd3[["latitude"]] <- ctd[["latitude"]] + 0.1
 #' ctd3[["station"]] <- "Stn 3"
 #' sectionAddStation(section, ctd3)
-#' 
-#' @aliases sectionAddCtd
 #' 
 #' @author Dan Kelley
 #'
@@ -851,8 +845,6 @@ sectionAddCtd <- sectionAddStation
 #' col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
-#' 
-#' @aliases plot.section
 #' 
 #' @author Dan Kelley
 #' 

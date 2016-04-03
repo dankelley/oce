@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,amsr-method}
 \alias{plot,amsr-method}
-\alias{plot.amsr}
 \title{Plot an amsr Object}
 \usage{
 \S4method{plot}{amsr}(x, y, asp, debug = getOption("oceDebug"), ...)
@@ -48,6 +47,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,cm-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
+  \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},

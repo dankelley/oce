@@ -26,8 +26,6 @@ setMethod(f="initialize",
 #' 
 #' Summarizes some of the data in a \code{windrose} object.
 #'
-#' @aliases summary.windrose
-#' 
 #' @param object An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}.
 #' 
 #' @param ... Further arguments passed to or from other methods.

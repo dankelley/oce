@@ -85,6 +85,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,cm-method}},
   \code{\link{[[,coastline-method}},
   \code{\link{[[,ctd-method}},
+  \code{\link{[[,echosounder-method}},
+  \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
   \code{\link{[[,rsk-method}},

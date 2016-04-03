@@ -27,14 +27,11 @@ summary(ctd)
 Dan Kelley
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure
-of CTD objects, and also outlines the other functions dealing with them.
-
 Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},

@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,argo-method}
 \alias{plot,argo-method}
-\alias{plot.argo}
 \title{Plot argo data}
 \usage{
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",
@@ -121,6 +120,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,cm-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
+  \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},

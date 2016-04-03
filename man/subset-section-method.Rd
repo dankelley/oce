@@ -3,7 +3,6 @@
 \docType{methods}
 \name{subset,section-method}
 \alias{subset,section-method}
-\alias{subset.section}
 \title{Subset a section object}
 \usage{
 \S4method{subset}{section}(x, subset, ...)

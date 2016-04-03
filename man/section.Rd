@@ -33,7 +33,8 @@ plot(GSg, map.xlim=c(-80,-60))
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{topoWorld}}
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{topoWorld}}
 }
 

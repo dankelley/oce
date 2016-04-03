@@ -21,8 +21,8 @@ See [1] for additional information on the instrument.
 \details{
 The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-form or in physical units; \code{\link{plot.amsr}}, and
-\code{\link{summary.amsr}} work with physical units.
+form or in physical units; \code{\link{plot,amsr-method}}, and
+\code{\link{summary,amsr-method}} work with physical units.
 }
 \author{
 Dan Kelley and Chantelle Layton

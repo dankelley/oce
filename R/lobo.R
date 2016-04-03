@@ -103,7 +103,6 @@ setMethod(f="[[<-",
 #' Pertinent summary information is presented, including the sampling interval,
 #' data ranges, etc.
 #' 
-#' @aliases summary.lobo summary,lobo,missing-method summary,lobo-method
 #' @param object an object of class \code{"lobo"}, usually, a result of a call
 #' to \code{\link{read.lobo}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.

@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,section-method}
 \alias{plot,section-method}
-\alias{plot.section}
 \title{Plot a CTD section}
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99),
@@ -219,6 +218,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,cm-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
+  \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},

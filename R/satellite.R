@@ -25,7 +25,6 @@ setMethod(f="initialize",
 #' @param object The object to be summarized.
 #' @param ... Ignored.
 #' @author Dan Kelley
-#' @aliases summary.satellite summary.g1sst
 #' @concept satellite
 #' @family functions that handle satellite data
 setMethod(f="summary",
@@ -62,12 +61,8 @@ setMethod(f="summary",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @aliases plot.satellite
-#'
 #' @concept satellite
-#'
 #' @author Dan Kelley
-#'
 #' @family functions that handle satellite data
 #' @family functions that plot \code{oce} data
 setMethod(f="plot",

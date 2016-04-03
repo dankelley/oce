@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,landsat-method}
 \alias{plot,landsat-method}
-\alias{plot.landsat}
 \title{Plot a landsat Object}
 \usage{
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,
@@ -138,9 +137,8 @@ Dan Kelley
 }
 \seealso{
 Other functions that handle \code{landsat} data: \code{\link{[[,landsat-method}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
+  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
+  \code{\link{landsatTrim}}, \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
 \concept{

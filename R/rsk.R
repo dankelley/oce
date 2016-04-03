@@ -66,8 +66,6 @@ setMethod(f="initialize",
 #' Summarizes some of the data in a \code{rsk} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @aliases summary.rsk
-#' 
 #' @param object An object of class \code{"rsk"}, usually, a result of a call to
 #' \code{\link{read.rsk}}, \code{\link{read.oce}}, or \code{\link{as.rsk}}.
 #' 

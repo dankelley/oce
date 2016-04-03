@@ -3,7 +3,6 @@
 \docType{methods}
 \name{summary,section-method}
 \alias{summary,section-method}
-\alias{summary.section}
 \title{Summarize an oceanographic section}
 \usage{
 \S4method{summary}{section}(object, ...)

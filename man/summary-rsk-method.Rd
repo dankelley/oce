@@ -3,7 +3,6 @@
 \docType{methods}
 \name{summary,rsk-method}
 \alias{summary,rsk-method}
-\alias{summary.rsk}
 \title{Summarize a \code{rsk} Object}
 \usage{
 \S4method{summary}{rsk}(object, ...)

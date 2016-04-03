@@ -130,7 +130,7 @@ plotted) DEPRECATED 2014-01-07.}
 
 \item{span}{Optional span of map, in km.  If not given, this will be determined
 as a small multiple of the distance to the nearest point of land, in an
-a@parampt to show some coastline in the plot.}
+attempt to show some coastline in the plot.}
 
 \item{showHemi}{Logical indicating whether to show hemisphere in axis tick
 labels.}
@@ -250,7 +250,7 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
@@ -264,6 +264,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,bremen-method}},
   \code{\link{plot,cm-method}},
   \code{\link{plot,coastline-method}},
+  \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},

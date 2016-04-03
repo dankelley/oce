@@ -8,7 +8,7 @@
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 #' pressures with \code{\link{argoGrid}}.  Plots can be made with
-#' \code{\link{plot.argo}}, while \code{\link{summary,argo-method}} produces statistical
+#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
 #' summaries and \code{show} produces overviews. The usual oce generic
 #' functions are available, e.g. \code{\link{[[,argo-method}} may 
 #' be used to extract data, and \code{\link{[[<-,argo-method}} may
@@ -144,8 +144,6 @@ argoDataNames <- function(names)
 #' @param ... Ignored.
 #' @return An argo object.
 #' 
-#' @aliases subset.argo
-#'
 #' @examples
 #' library(oce)
 #' data(argo)
@@ -300,8 +298,6 @@ setMethod(f="subset",
 #' @description Summarizes some of the data in an \code{argo} object.
 #' 
 #' @details Pertinent summary information is presented.
-#' @aliases summary.argo
-#' 
 #' @param object}{an object of class \code{"argo"}, usually, a result of a
 #'     call to \code{\link{read.argo}}.
 #' @param ... Further arguments passed to or from other methods.
@@ -948,7 +944,6 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @references \url{http://www.argo.ucsd.edu/}
 #' 
-#' @aliases plot.argo
 #' @author Dan Kelley
 #'
 #' @family functions that handle \code{argo} data

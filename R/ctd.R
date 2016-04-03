@@ -262,9 +262,6 @@ setMethod(f="initialize",
 #' 
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
-#' of CTD objects, and also outlines the other functions dealing with them.
-#' 
 #' @examples
 #' library(oce)
 #' data(ctd)
@@ -594,7 +591,7 @@ setMethod(f="[[<-",
 #' @param waterDepth optional numerical value indicating the water depth in
 #' metres. This is different from the maximum recorded pressure, although
 #' the latter is used by some oce functions as a guess on water depth, the
-#' most important example being \code{\link{plot.section}}.
+#' most important example being \code{\link{plot,section-method}}.
 #' 
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
@@ -2069,7 +2066,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @param span Optional span of map, in km.  If not given, this will be determined
 #' as a small multiple of the distance to the nearest point of land, in an
-#' a@parampt to show some coastline in the plot.
+#' attempt to show some coastline in the plot.
 #' 
 #' @param showHemi Logical indicating whether to show hemisphere in axis tick
 #' labels.
