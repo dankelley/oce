@@ -23,7 +23,6 @@
 #' @family functions that handle \code{ladp} data
 #'
 #' @author Dan Kelley
-
 setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
