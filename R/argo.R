@@ -60,8 +60,8 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a \code{argo} Object
 #' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
-#' @family functions that handle \code{argo} data
 #' @template sub_subsetTemplate
+#' @family functions that handle \code{argo} data
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -306,20 +306,13 @@ setMethod(f="subset",
 #'     call to \code{\link{read.argo}}.
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' 
 #' @return A matrix containing statistics of the elements of the \code{data} slot.
-#' 
-#' 
 #' @examples
 #' library(oce)
 #' data(argo)
 #' summary(argo)
 #' 
-#' 
-#' @references \url{http://www.argo.ucsd.edu/}
-#' 
 #' @author Dan Kelley 
-
 #' @family functions that handle \code{argo} data
 setMethod(f="summary",
           signature="argo",
