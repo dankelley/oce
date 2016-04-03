@@ -101,7 +101,7 @@
     plot.}
 
 \seealso{
-    \code{\link{summary.ctd}} summarizes the information, while
+    \code{\link{summary,ctd-method}} summarizes the information, while
     \code{\link{read.ctd}} scans it from a file.
 }
 

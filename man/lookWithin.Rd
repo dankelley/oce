@@ -21,7 +21,7 @@ call like \code{\link{swRho}(ctd)}, in which the first argument, which is
 normally \code{salinity} may be an object that contains salinity plus
 the other items that \code{\link{swRho}} expects to see as arguments. This
 shorthand is very helpful in calls to the suite of \code{sw} functions.  If
-this first argument is an object of this sort, then the other arguments 
+this first argument is an object of this sort, then the other arguments
 are ignored \emph{except} for one named \code{eos}, which is copied if
 it is present.
 }

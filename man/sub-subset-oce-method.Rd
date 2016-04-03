@@ -52,9 +52,14 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,argo-method}},
+Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+  \code{\link{[[<-,argo-method}},
+  \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
+  \code{\link{[[<-,coastline-method}},
   \code{\link{[[<-,ctd-method}},
+  \code{\link{[[<-,lisst-method}},
+  \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,rsk-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{[[<-,topo-method}},

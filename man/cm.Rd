@@ -22,8 +22,11 @@ plot(cm)
 }
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adv}},
-  \code{\link{argo}}, \code{\link{ctd}},
-  \code{\link{section}}, \code{\link{topoWorld}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{section}},
+  \code{\link{topoWorld}}
 }
 

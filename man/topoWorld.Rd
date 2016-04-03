@@ -37,8 +37,10 @@ imagep(topoWorld)
 
 }
 \seealso{
-Other datasets provided with \code{oce}: \code{\link{adv}},
-  \code{\link{argo}}, \code{\link{cm}}, \code{\link{ctd}},
-  \code{\link{section}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{section}}
 }
 

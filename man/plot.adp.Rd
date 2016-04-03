@@ -123,7 +123,7 @@
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
   \item{coastline}{a \code{coastline} object, or a character string naming one.
       This is used only for \code{which="map"}.  See notes at
-      \code{\link{plot.ctd}} for more information on built-in coastlines.}
+      \code{\link{plot,ctd-method}} for more information on built-in coastlines.}
   \item{span}{approximate span of map in km}
   \item{main}{main title for plot, used just on the top panel, if there are several panels.}
   \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This

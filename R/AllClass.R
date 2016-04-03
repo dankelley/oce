@@ -19,12 +19,14 @@
 #' at the following links:
 #' \code{\link{adp-class}},
 #' \code{\link{adv-class}},
+#' \code{\link{amsr-class}},
 #' \code{\link{argo-class}},
 #' \code{\link{cm-class}},
 #' \code{\link{coastline-class}},
 #' \code{\link{ctd-class}},
 #' \code{\link{echosounder-class}},
 #' \code{\link{ladp-class}},
+#' \code{\link{landsat-class}},
 #' \code{\link{lisst-class}},
 #' \code{\link{lobo-class}},
 #' \code{\link{met-class}},
@@ -37,7 +39,6 @@
 #'
 #' @examples
 #' str(new("oce"))
-#' @keywords classes oce
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -45,24 +46,6 @@ setClass("oce",
          prototype=list(metadata=list(filename="", units=list(), flags=list()),
                         data=list(),
                         processingLog=list()))
-
-
-### ##http://stackoverflow.com/questions/7356120/how-to-properly-document-s4-methods-using-roxygen2
-### #' Handle flags
-### #'
-### #' FILL IN
-### #'
-### #' @param object An object inheriting from oce
-### #' @param flags \code{\link{list}} of the form (FILL IN)
-### #' @param action Character string specifying what to do (FILL IN)
-### #' @export
-### #' @docType methods
-### #' @rdname handleFlags-methods
-### setGeneric("handleFlags",
-###            function(object, flags, action) {
-###                cat("in handleFlags\n")
-###                standardGeneric("handleFlags")
-###            })
 
 #' Summarize an oce Object
 #'
@@ -175,21 +158,8 @@ setMethod(f="summary",
               invisible(threes)
           })
 
-## FIXME: move each of these to the respective .R files, and update the
-## FIXME: docs to roxygen format. This takes about an hour per data type,
-## FIXME: which seems unproductive, but the advantage is that in roxygen
-## FIXME: we get (a) more uniform notation and (b) the @family tag. Both things
-## FIXME: help users a lot, and the second saves a lot of future development
-## FIXME: time that would otherwise be spent updating a lot of seealso lists
-## FIXME: when a new function is added.
-## To find a list of classes in oce, do 'grep setClass *.R'
-setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
-setClass("coastline", contains="oce")
-setClass("echosounder", contains="oce")
+## FIXME: move each of these to the respective .R files
 setClass("gps", contains="oce")
-setClass("landsat", contains="oce")
-setClass("lisst", contains="oce")
-setClass("lobo", contains="oce")
 setClass("met", contains="oce")
 setClass("odf", contains="oce")
 setClass("sealevel", contains="oce")
@@ -198,16 +168,11 @@ setClass("tidem", contains="oce")
 #' Subset an oce Object
 #'
 #' This is a basic class for general oce objects.  It has specialised
-#' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
-#' be used if \code{subset} is called for an object that inherits from
-#' \code{ctd}; type \code{showMethods('subset')} to see a list of objects
-#' that have specialized methods, and then e.g. type \code{?subset.ctd}
-#' to get help on the method for objects inheriting from the
-#' \code{\link{ctd-class}}.
+#' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
+#' for \code{ctd} objects.
 #'
-#' @aliases subset.oce
 #' @param x An oce object.
-#' @param subset A logical expression indicating how to take the subset (depends on the sub-class).
+#' @param subset A logical expression indicating how to take the subset; the form depends on the sub-class.
 #' @param ... Ignored.
 #' @return An oce object.
 #' @examples

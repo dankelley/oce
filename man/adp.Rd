@@ -30,6 +30,11 @@ plot(adp, which=15:18)
 
 }
 \seealso{
-Other datasets provided with oce: \code{\link{ctdRaw}}
+Other datasets provided with \code{oce}: \code{\link{adv}},
+  \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{section}},
+  \code{\link{topoWorld}}
 }
 

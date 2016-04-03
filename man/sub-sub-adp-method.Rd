@@ -31,6 +31,7 @@ head(adp[["v"]][,,1])
 Other functions that extract parts of oce objects: \code{\link{[[,ladp-method}}
 
 Other functions that handle \code{adp} data: \code{\link{[[<-,adp-method}},
-  \code{\link{as.adp}}, \code{\link{subset,adp-method}}
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}},
+  \code{\link{xyzToEnuAdp}}
 }
 

@@ -21,20 +21,9 @@ presents results in physical units.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{amsr} data: \code{\link{[[,amsr-method}},
+Other functions that handle \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
   \code{\link{read.amsr}}
-
-Other functions that handle satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
 }
 \concept{
 satellite

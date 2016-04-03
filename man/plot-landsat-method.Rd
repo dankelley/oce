@@ -142,17 +142,6 @@ Other functions that handle \code{landsat} data: \code{\link{[[,landsat-method}}
   \code{\link{read.landsat}},
   \code{\link{satellite-class}},
   \code{\link{summary,landsat-method}}
-
-Other functions that handle satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
 }
 \concept{
 satellite

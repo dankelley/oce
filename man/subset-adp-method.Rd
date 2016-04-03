@@ -37,6 +37,7 @@ Dan Kelley
 }
 \seealso{
 Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{as.adp}}
+  \code{\link{[[<-,adp-method}}, \code{\link{as.adp}},
+  \code{\link{xyzToEnuAdp}}
 }
 

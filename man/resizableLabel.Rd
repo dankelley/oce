@@ -49,7 +49,7 @@ resizableLabel(item, axis, sep, unit=NULL)}
   Whether spaces are used between the unit and these deliminators is set by
   \code{psep} or \code{\link{getOption}("oceUnitSep")}.}
 
-\details{Used by e.g. \code{\link{plot.ctd}}.}
+\details{Used by e.g. \code{\link{plot,ctd-method}}.}
 
 \author{Dan Kelley}
 

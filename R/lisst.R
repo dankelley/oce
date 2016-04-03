@@ -41,7 +41,7 @@ setMethod(f="[[<-",
 #' LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 #' artificially.
 #' 
-#' @name ctd
+#' @name lisst
 #' @docType data
 #' 
 #' @usage data(lisst)

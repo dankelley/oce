@@ -8,7 +8,7 @@
 \S4method{[[}{ctd}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -108,7 +108,13 @@ head(ctd[["temperature"]])
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
-  \code{\link{[[,argo-method}}, \code{\link{[[,cm-method}},
+  \code{\link{[[,amsr-method}},
+  \code{\link{[[,argo-method}},
+  \code{\link{[[,bremen-method}},
+  \code{\link{[[,cm-method}},
+  \code{\link{[[,coastline-method}},
+  \code{\link{[[,lisst-method}},
+  \code{\link{[[,lobo-method}},
   \code{\link{[[,rsk-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,topo-method}},

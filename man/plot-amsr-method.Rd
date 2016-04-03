@@ -38,26 +38,19 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{amsr} data: \code{\link{[[,amsr-method}},
+Other functions that handle \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{read.amsr}},
   \code{\link{summary,amsr-method}}
 
-Other functions that handle satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,argo-method}},
+  \code{\link{plot,bremen-method}},
   \code{\link{plot,cm-method}},
+  \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,lisst-method}},
+  \code{\link{plot,lobo-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}},

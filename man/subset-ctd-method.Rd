@@ -3,7 +3,6 @@
 \docType{methods}
 \name{subset,ctd-method}
 \alias{subset,ctd-method}
-\alias{subset.ctd}
 \title{Subset a CTD object}
 \usage{
 \S4method{subset}{ctd}(x, subset, ...)
@@ -16,7 +15,7 @@
 \item{...}{Ignored.}
 }
 \value{
-A ctd object.
+A \code{ctd} object.
 }
 \description{
 This function is somewhat analogous to

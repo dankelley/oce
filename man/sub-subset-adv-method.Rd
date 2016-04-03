@@ -26,6 +26,7 @@ that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}
+  \code{\link{summary,adv-method}},
+  \code{\link{xyzToEnuAdv}}
 }
 

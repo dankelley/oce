@@ -28,13 +28,9 @@ library(oce)
 data(argo)
 summary(argo)
 
-
 }
 \author{
 Dan Kelley
-}
-\references{
-\url{http://www.argo.ucsd.edu/}
 }
 \seealso{
 Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},

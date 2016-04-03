@@ -16,9 +16,4 @@ other sites can also be used to uncover it by name.  The code below shows how
 the dataset was created.  The decimation by 100 reduces file size from about 1GB
 to under 100Kb.
 }
-\concept{
-satellite
-}
-\keyword{data}
-\keyword{satellite}
 

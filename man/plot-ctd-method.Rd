@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
-\alias{plot.ctd}
 \title{Plot seawater CTD data}
 \usage{
 \S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
@@ -39,7 +38,7 @@ is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
     \item \code{which=4} or \code{which="text"} gives a textual
     summary of some aspects of the data
     \item \code{which=5} or \code{which="map"} gives a map plotted
-    with \code{\link{plot.coastline}}, with a dot for
+    with \code{\link{plot,coastline-method}}, with a dot for
     the station location.  Notes near the top boundary of the map give the
     station number, the sampling date, and the name of the chief scientist,
     if these are known. Note that the longitude will be converted to a value
@@ -72,10 +71,10 @@ is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
 \dQuote{History}.}
 
 \item{borderCoastline}{Colour of coastlines and international borders, passed
-to \code{\link{plot.coastline}} if a map is included in \code{which}.}
+to \code{\link{plot,coastline-method}} if a map is included in \code{which}.}
 
 \item{colCoastline}{Fill colour of coastlines and international borders, passed
-to \code{\link{plot.coastline}} if a map is included in \code{which}. Set to
+to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 \code{NULL} to avoid filling.}
 
 \item{eos}{String indicating the equation of state to be used, either
@@ -96,8 +95,8 @@ name of a built-in coastline (\code{"coastlineWorld"},
 a suitable coastline for the locale, or \code{"none"} to prevent
 the drawing of a coastline.  There is a speed penalty for providing
 \code{coastline} as a character string, because it forces
-\code{\link{plot.coastline}} to load it on every call.  So, if
-\code{plot.coastline} is to be called several times for a given
+\code{\link{plot,coastline-method}} to load it on every call.  So, if
+\code{\link{plot,coastline-method}} is to be called several times for a given
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.}
 
@@ -137,7 +136,7 @@ a@parampt to show some coastline in the plot.}
 labels.}
 
 \item{lonlabel, latlabel, sides}{Optional vectors of longitude and latitude to
-label on the indicated sides of plot, passed to \code{\link{plot.coastline}}.
+label on the indicated sides of plot, passed to \code{\link{plot,coastline-method}}.
 Using these arguments permits reasonably simple customization.  If they are are
 not provided, reasonable defaults will be used.}
 
@@ -224,12 +223,12 @@ If only 2 panels are requested, they will be drawn side by side.
 If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
 of \code{par} will be reset to the value it had before the function call.
 However, if only one panel is drawn, the adjustments to \code{par} made within
-\code{plot.ctd} are left in place, so that further additions may be made to the
+\code{plot,ctd-method} are left in place, so that further additions may be made to the
 plot.
 }
 \section{History}{
 
-Until February, 2016, \code{plot.ctd} relied on a now-defunct argument
+Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
 Also, now it is possible to set the edge of coasts and international
 boundaries, with \code{borderCoastline}.
@@ -262,8 +261,12 @@ Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
+  \code{\link{plot,bremen-method}},
   \code{\link{plot,cm-method}},
+  \code{\link{plot,coastline-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,lisst-method}},
+  \code{\link{plot,lobo-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
   \code{\link{plot,section-method}},

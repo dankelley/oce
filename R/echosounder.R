@@ -3,6 +3,99 @@
 ## REFERENCES:
 ##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
 
+
+#' Class to store echosounder data
+#' 
+#' Class to store echosounder data.
+#'
+#' The \code{data} slot is a list containing
+#' 
+#' \itemize{
+#' 
+#' \item An infrequently updated record of the intrument position, in
+#' \code{timeSlow}, \code{longitudeSlow} and \code{latitudeSlow}.  These are
+#' used in plotting maps with \code{\link{plot.echosounder}}.
+#' 
+#' \item An interpolated record of the instrument position, in \code{time},
+#' \code{longitude}, and \code{latitude}.  Linear interpolation is used to
+#' infer the longitude and latitude from the variables listed above.
+#' 
+#' \item \code{depth}, vector of depths of echo samples (measured positive
+#' downwards in the water column).  This is calculated from the inter-sample
+#' time interval and the sound speed provided as the \code{soundSpeed} argument
+#' to \code{\link{read.echosounder}}, so altering the value of the latter will
+#' alter the echosounder plots provided by \code{\link{plot.echosounder}}.
+#' 
+#' \item The echosounder signal amplitude \code{a}, a matrix whose number of
+#' rows matches the length of \code{time}, etc., and number of columns equal to
+#' the length of \code{depth}.  Thus, for example, \code{a[100,]} represents
+#' the depth-dependent amplitude at the time of the 100th ping.
+#' 
+#' \item A matrix named \code{b} exists for dual-beam and split-beam cases.
+#' For dual-beam data, this is the wide-beam data, whereas \code{a} is the
+#' narrow-beam data.  For split-beam data, this is the x-angle data.
+#' 
+#' \item A matrix named \code{c} exists for split-beam data, containing the
+#' y-angle data.
+#' 
+#' \item In addition to these matrices, ad-hoc calculated matrices named
+#' \code{Sv} and \code{TS} may be accessed as explained in the next section.
+#' 
+#' }
+#' 
+#' 
+#' @name echosounder-class
+#' @docType class
+#'
+#' @section Methods:
+#' 
+#' \emph{Accessing values.} Data may be accessed as e.g.
+#' \code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
+#' \code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specifield
+#' by full name, but those in \code{data} may be abbreviated, so long as the
+#' abbreviation is unique. In addition to the actual data, some derived fields
+#' are also available: \code{echosounder[["distance"]]} calls
+#' \code{\link{geodDist}} to compute calculate distance along the ship track,
+#' \code{echosounder[["Sv"]]} returns a matrix of backscatter strength in DB,
+#' and \code{echosounder[["TS"]]} returns a matrix of target strength in dB.
+#' 
+#' \emph{Assigning values.} Everything that may be accessed may also be
+#' assigned, e.g.  \code{echosounder[["time"]] <- 3600 + echosounder[["time"]]}
+#' adds an hour to time.
+#' 
+#' @author Dan Kelley
+#' 
+#' Statistical summaries are provided by \code{\link{summary.echosounder}},
+#' while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
+#' function infers the ocean bottom from tracing the strongest reflector from
+#' ping to ping.
+#' 
+#' Echosounder objects may be plotted with \code{\link{plot,echosounder-method}}.
+#' 
+#' The contents of \code{echosounder} objects may be altered with
+#' \code{\link{subset,echosounder-method}}, or with the \code{[[]]} scheme
+#' discussed in the previous section; skilled users may also manipulate the
+#' contents directly, but this is not recommended because it is brittle to
+#' changes in the data structure.
+#' @family classes provided by \code{oce}
+setClass("echosounder", contains="oce")
+
+
+#' echosounder dataset
+#' 
+#' This is degraded subsample of measurements that were made with a Biosonics
+#' scientific echousounder, as part of the St Lawrence Internal Wave Experiment
+#' (SLEIWEX).
+#' 
+#' @name echosounder
+#' @docType data
+#'
+#' @author Dan Kelley
+#' @source This file came from the SLEIWEX-2008 experiment, and was decimated
+#' using \code{\link{decimate}} with \code{by=c()}.
+#' @family datasets provided with \code{oce}
+NULL
+
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
@@ -13,6 +106,18 @@ setMethod(f="initialize",
           })
 
 
+
+
+#' Summarize an echosounder object
+#' 
+#' Summarizes some of the data in an \code{echosounder} object.
+#' 
+#' @param object an object of class \code{"echosounder"}, usually, a result of
+#' a call to \code{\link{read.echosounder}}, \code{\link{read.oce}}, or
+#' \code{\link{as.echosounder}}.
+#' @param \dots further arguments passed to or from other methods.
+#' @author Dan Kelley
+#' @family functions that handle \code{echosounder} data
 setMethod(f="summary",
           signature="echosounder",
           definition=function(object, ...) {
@@ -38,7 +143,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-
+#' @family functions that handle \code{echosounder} data
 setMethod(f="[[",
           signature(x="echosounder", i="ANY", j="ANY"),
           definition=function(x, i, j, drop) {
@@ -73,6 +178,7 @@ setMethod(f="[[",
           })
 
 
+#' @family functions that handle \code{echosounder} data
 setMethod(f="[[<-",
           signature="echosounder",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

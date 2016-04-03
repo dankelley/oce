@@ -59,10 +59,10 @@
 #' \code{ctd} objects with \code{\link{as.ctd}}.
 #'
 #'
-#' Statistical summaries are provided by \code{\link{summary.ctd}}, while
+#' Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 #' \code{\link{show}} displays an overview.
 #'
-#' CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of its
+#' CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
 #' work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
 #' which can also be called by the user, to get fine control over the plots.
 #'
@@ -1953,7 +1953,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
 #' of \code{par} will be reset to the value it had before the function call.
 #' However, if only one panel is drawn, the adjustments to \code{par} made within
-#' \code{plot.ctd} are left in place, so that further additions may be made to the
+#' \code{plot,ctd-method} are left in place, so that further additions may be made to the
 #' plot.
 #' 
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
@@ -2149,7 +2149,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' objects, and also outlines the other functions dealing with them.
 #' 
 #' @section History:
-#' Until February, 2016, \code{plot.ctd} relied on a now-defunct argument
+#' Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 #' \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
 #' Also, now it is possible to set the edge of coasts and international
 #' boundaries, with \code{borderCoastline}.
@@ -2159,11 +2159,8 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' data(ctd) 
 #' plot(ctd)
 #' 
-#' @aliases plot.ctd
-#' 
 #' @author Dan Kelley
 #' 
-#' @aliases plot.ctd
 #' @family functions that plot \code{oce} data
 #' @family functions that handle \code{ctd} data
 setMethod(f="plot",
@@ -2207,10 +2204,10 @@ setMethod(f="plot",
                           colCoastline <- NULL
                       }
                   }
-                  warning("In plot.ctd() : 'fill' being accepted for backwards compatibility; please use 'colCoastline' instead", call.=FALSE)
+                  warning("In plot,ctd-method() : 'fill' being accepted for backwards compatibility; please use 'colCoastline' instead", call.=FALSE)
               }
               if (missing(which)) {
-                  oceDebug(debug, "plot.ctd(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+                  oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
                   dt <- x@metadata$deploymentType
                   if (is.null(dt)) {
                       which <- c(1, 2, 3, 5)
@@ -2238,7 +2235,7 @@ setMethod(f="plot",
                       }
                   }
                } else {
-                  oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                  oceDebug(debug, "plot,ctd-method(..., which=c(", paste(which, collapse=",", sep=""),
                            "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
               }
               lw <- length(which)
@@ -2248,9 +2245,9 @@ setMethod(f="plot",
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
+                  stop("in plot,ctd-method() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
               if ("ylim" %in% dotsNames)
-                  stop("in plot.ctd() : 'ylim' argument not allowed; use plim for a profile, Tlim for a TS plot, etc", call.=FALSE)
+                  stop("in plot,ctd-method() : 'ylim' argument not allowed; use plim for a profile, Tlim for a TS plot, etc", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               if (add && lw > 1) {
                   warning("ignoring add=TRUE because length(which) > 1")
@@ -2353,7 +2350,7 @@ setMethod(f="plot",
                                       debug=debug-1,
                                       ...)
                       } else {
-                          warning("plot.ctd(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
+                          warning("plot,ctd-method(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
                       }
                       next
                   }
@@ -2736,7 +2733,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "} # plot.ctd()\n", unindent=1)
+              oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
               invisible()
           })
 

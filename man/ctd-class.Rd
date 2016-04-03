@@ -68,10 +68,10 @@ formats used in CTD files. Data can also be assembled into
 \code{ctd} objects with \code{\link{as.ctd}}.
 
 
-Statistical summaries are provided by \code{\link{summary.ctd}}, while
+Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 \code{\link{show}} displays an overview.
 
-CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of its
+CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
 work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
 which can also be called by the user, to get fine control over the plots.
 
@@ -92,7 +92,9 @@ Dan Kelley
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{cm-class}}, \code{\link{rsk-class}},
+  \code{\link{bremen-class}}, \code{\link{cm-class}},
+  \code{\link{coastline-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{rsk-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 }

@@ -54,7 +54,7 @@ setMethod(f="[[<-",
 #'
 #' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
 #'
-#' If \code{x} seems to be a CTD dataset, uses \code{\link{plot.ctd}};
+#' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 #' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
 #' plot is created with \code{\link{plot.ladp}} to show velocity varation with
 #' pressure.

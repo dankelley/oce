@@ -24,6 +24,7 @@ that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
 Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{as.adp}}, \code{\link{subset,adp-method}}
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}},
+  \code{\link{xyzToEnuAdp}}
 }
 

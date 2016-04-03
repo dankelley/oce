@@ -75,8 +75,14 @@ If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+  \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
-  \code{\link{[[,ctd-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,bremen-method}},
+  \code{\link{[[,coastline-method}},
+  \code{\link{[[,ctd-method}},
+  \code{\link{[[,lisst-method}},
+  \code{\link{[[,lobo-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}

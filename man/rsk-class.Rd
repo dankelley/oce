@@ -27,7 +27,9 @@ Dan Kelley and Clark Richards
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{cm-class}}, \code{\link{ctd-class}},
+  \code{\link{bremen-class}}, \code{\link{cm-class}},
+  \code{\link{coastline-class}}, \code{\link{ctd-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 }

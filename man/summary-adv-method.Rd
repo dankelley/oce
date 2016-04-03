@@ -29,6 +29,7 @@ Dan Kelley
 Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}},
   \code{\link{plot,adv-method}},
-  \code{\link{subset,adv-method}}
+  \code{\link{subset,adv-method}},
+  \code{\link{xyzToEnuAdv}}
 }
 
