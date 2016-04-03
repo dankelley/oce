@@ -143,7 +143,7 @@ NULL
 #' @seealso A similar dataset (trimmed to the downcast) is available as
 #' \code{\link{ctd}}.
 #' 
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
 NULL
 
 
@@ -257,8 +257,6 @@ setMethod(f="initialize",
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @aliases summary.ctd
-#' 
 #' @param object An object of class \code{"ctd"}, usually, a result of a call to
 #' \code{\link{read.ctd}}, \code{\link{read.oce}}, or \code{\link{as.ctd}}.
 #' 
@@ -313,7 +311,7 @@ setMethod(f="summary",
           })
 
 #' @title Extract Parts of a \code{ctd} Object
-#' @param x A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #'
 #' @examples
 #' data(ctd)
@@ -1977,7 +1975,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #'     \item \code{which=4} or \code{which="text"} gives a textual
 #'     summary of some aspects of the data
 #'     \item \code{which=5} or \code{which="map"} gives a map plotted
-#'     with \code{\link{plot.coastline}}, with a dot for
+#'     with \code{\link{plot,coastline-method}}, with a dot for
 #'     the station location.  Notes near the top boundary of the map give the
 #'     station number, the sampling date, and the name of the chief scientist,
 #'     if these are known. Note that the longitude will be converted to a value
@@ -2010,10 +2008,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' \dQuote{History}.
 #' 
 #' @param borderCoastline Colour of coastlines and international borders, passed
-#' to \code{\link{plot.coastline}} if a map is included in \code{which}.
+#' to \code{\link{plot,coastline-method}} if a map is included in \code{which}.
 #' 
 #' @param colCoastline Fill colour of coastlines and international borders, passed
-#' to \code{\link{plot.coastline}} if a map is included in \code{which}. Set to
+#' to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 #' \code{NULL} to avoid filling.
 #' 
 #' @param eos String indicating the equation of state to be used, either
@@ -2034,8 +2032,8 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' a suitable coastline for the locale, or \code{"none"} to prevent
 #' the drawing of a coastline.  There is a speed penalty for providing
 #' \code{coastline} as a character string, because it forces
-#' \code{\link{plot.coastline}} to load it on every call.  So, if
-#' \code{plot.coastline} is to be called several times for a given
+#' \code{\link{plot,coastline-method}} to load it on every call.  So, if
+#' \code{\link{plot,coastline-method}} is to be called several times for a given
 #' coastline, it makes sense to load it in before the first call, and to
 #' supply the object as an argument, as opposed to the name of the object.
 #' 
@@ -2075,7 +2073,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' labels.
 #' 
 #' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude to
-#' label on the indicated sides of plot, passed to \code{\link{plot.coastline}}.
+#' label on the indicated sides of plot, passed to \code{\link{plot,coastline-method}}.
 #' Using these arguments permits reasonably simple customization.  If they are are
 #' not provided, reasonable defaults will be used.
 #' 
@@ -2754,9 +2752,7 @@ setMethod(f="plot",
 #' @param x An object inheriting from \code{\link{ctd-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
-#' @return A ctd object.
-#'
-#' @aliases subset.ctd
+#' @return A \code{ctd} object.
 #' @examples
 #' library(oce)
 #' data(ctd)
