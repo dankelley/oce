@@ -1,3 +1,56 @@
+#' Class to store LISST data
+#' 
+#' Class to store LISST (Laser in-situ scattering and transmissometry) data.
+#' 
+#' One may read \code{lisst} objects with \code{\link{read.lisst}},
+#' generate them with \code{\link{as.lisst}}, plot them
+#' with \code{\link{plot,lisst-method}}, and summarize them with
+#' \code{\link{summary,lisst-method}}. Elements may be extracted
+#' with \code{\link{[[,lisst-method}} or replaced with
+#' \code{\link{[[<-,lisst-method}}.
+#'
+#' @author Dan Kelley
+#' @references A users's manual for the LISST-100 instrument is available at
+#' the manufacturer's website \url{http://www.sequoiasci.com}.
+#' @family classes provided by \code{oce}
+setClass("lisst", contains="oce")
+
+#' @title Extract Something From a \code{lisst} Object
+#' @param x A lisst object, i.e. one inheriting from \code{\link{lisst-class}}.
+#' @template sub_subTemplate
+#' @family functions that handle \code{lisst} data
+setMethod(f="[[",
+          signature(x="lisst", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
+          })
+
+#' @title Replace Parts of a \code{lisst} Object
+#' @param x An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}
+#' @template sub_subsetTemplate
+#' @family functions that handle \code{lisst} data
+setMethod(f="[[<-",
+          signature(x="lisst", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
+
+#' LISST dataset
+#' 
+#' LISST (Laser in-situ scattering and transmissometry) dataset, constructed
+#' artificially.
+#' 
+#' @name ctd
+#' @docType data
+#' 
+#' @usage data(lisst)
+#' @author Dan Kelley
+#' @source This was constructed artifically using \code{\link{as.lisst}},
+#" to approximately match values that might be measured in the field.
+#' @family datasets provided with \code{oce}
+NULL
+
 setMethod(f="initialize",
           signature="lisst",
           definition=function(.Object, filename="", longitude=NA, latitude=NA) {
@@ -13,7 +66,24 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-
+#' Summarize a \code{lisst} Object
+#' 
+#' Summarizes some of the data in a \code{lisst} object, presenting such information
+#' as the station name, sampling location, data ranges, etc.
+#'
+#' @param object An object of class \code{lisst}, usually, a result of a call to
+#' \code{\link{read.lisst}} or \code{\link{as.lisst}}.
+#' 
+#' @param ... Ignored.
+#' 
+#' @examples
+#' library(oce)
+#' data(lisst)
+#' summary(lisst)
+#' 
+#' @author Dan Kelley
+#' 
+#' @family functions that handle \code{lisst} data
 setMethod(f="summary",
           signature="lisst",
           definition=function(object, ...) {
@@ -23,6 +93,64 @@ setMethod(f="summary",
           })
 
 
+
+#' Plot LISST data
+#' 
+#' Plot \code{LISST} data
+#' 
+#' Creates a multi-panel summary plot of data measured by LISST instrument.
+#' The panels are controlled by the \code{which} argument, as follows.
+#' \itemize{
+#' 
+#' \item \code{which=1} to \code{32}, or \code{which="C1"} to \code{"C32"} for
+#' a time-series graph of the named column (a size class).
+#' 
+#' \item \code{which=33} or \code{which="lts"} for a time-series plot of laser
+#' transmission sensor.
+#' 
+#' \item \code{which=34} or \code{which="voltage"} for a time-series plot of
+#' instrument voltage.
+#' 
+#' \item \code{which=35} or \code{which="aux"} for a time-series plot of the
+#' external auxiliary input.
+#' 
+#' \item \code{which=36} or \code{which="lrs"} for a time-series plot of the
+#' laser reference sensor.
+#' 
+#' \item \code{which=37} or \code{which="pressure"} for a time-series plot of
+#' pressure.
+#' 
+#' \item \code{which=38} or \code{which="temperature"} for a time-series plot
+#' of temperature.
+#' 
+#' \item \code{which=41} or \code{which="transmission"} for a time-series plot
+#' of transmission, in percent.
+#' 
+#' \item \code{which=42} or \code{which="beam"} for a time-series plot of
+#' beam-C, in 1/metre.  }
+#' 
+#' @param x a \code{lisst} object, e.g. as read by \code{\link{read.lisst}}.
+#' @param which list of desired plot types.  These are graphed in panels
+#' running down from the top of the page.  See \dQuote{Details} for the
+#' meanings of various values of \code{which}.
+#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
+#' plot types that call that function.  (See \code{\link{strptime}} for the
+#' format used.)
+#' @param debug a flag that turns on debugging.  The value indicates the depth
+#' within the call stack to which debugging applies.
+#' @param \dots optional arguments passed to plotting functions.
+#' @author Dan Kelley
+#' @seealso The documentation for \code{\link{lisst-class}} explains the
+#' structure of lisst objects, and also outlines the other functions dealing
+#' with them.
+#' @examples
+#' 
+#' library(oce)
+#' data(lisst)
+#' plot(lisst)
+#' 
+#' @family functions that plot \code{oce} data
+#' @family functions that handle \code{lisst} data
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
@@ -75,6 +203,28 @@ setMethod(f="plot",
 
 
 
+#' Coerce data into a lisst object
+#' 
+#' Coerce data into a lisst object
+#' 
+#' If \code{data} contains fewer than 42 columns, an error is reported.  If it
+#' contains more than 42 columns, only the first 42 are used.  This is used by
+#' \code{\link{read.lisst}}, the documentation on which explains the meanings
+#' of the columns.
+#' 
+#' @param data A table (or matrix) containing 42 columns, as in a LISST data
+#' file.
+#' @param filename Name of file containing the data.
+#' @param year Year in which the first observation was made.  This is necessary
+#' because LISST timestamps do not indicate the year of observation.  The
+#' default value is odd enough to remind users to include this argument.
+#' @param tz Timezone of observations.  This is necessary because LISST
+#' timestamps do not indicate the timezone.
+#' @param longitude Longitude of observation.
+#' @param latitude Latitude of observation.
+#' @return An object of \code{\link{lisst-class}}.
+#' @author Dan Kelley
+#' @family functions that handle \code{lisst} data
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
@@ -114,6 +264,29 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     res
 }
 
+
+#' Read a LISST data file
+#' 
+#' Read a LISST data file, producing a \code{lisst} object, i.e. one
+#' inheriting from \code{\link{lisst-class}}.
+#' 
+#' The file should contain 42 columns, with no header.  If there are fewer than
+#' 42 columns, an error results.  If there are more, only the first 42 are
+#' used.  Note that \code{\link{read.oce}} can recognize LISST files by their
+#' having a name ending in \code{".asc"} and by having 42 elements on the first
+#' line.  Even so, it is preferred to use the present function, because it
+#' gives the opportunity to specify the year and timezone, so that times can be
+#' calculated properly.
+#' 
+#' @param file a connection or a character string giving the name of the file
+#' to load.
+#' @param year year in which the measurement of the series was made.
+#' @param tz time zone.
+#' @param longitude longitude of observation (stored in metadata)
+#' @param latitude latitude of observation (stored in metadata)
+#' @return An object of \code{\link{lisst-class}}.
+#' @author Dan Kelley
+#' @family functions that handle \code{lisst} data
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     filename <- NULL
