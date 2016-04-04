@@ -920,24 +920,23 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## FIXME: should sampleInterval be a default?
         res@metadata$names <- names
         res@metadata$labels <- labels
-        if (nchar(filename)) res@metadata$filename <- filename
-        if (nchar(ship)) res@metadata$ship <- ship
-        if (nchar(scientist)) res@metadata$scientist <- scientist
-        if (nchar(institute)) res@metadata$institute <- institute
-        if (nchar(address)) res@metadata$address <- address
-        if (nchar(cruise)) res@metadata$cruise <- cruise
-        if (nchar(station)) res@metadata$station <- station
-        if (!is.null(date)) res@metadata$date <- date
-        if (!is.null(startTime)) res@metadata$startTime <- startTime
-        if (!is.null(recovery)) res@metadata$recovery <- recovery
-        if (nchar(type)) res@metadata$type <- type
-        if (nchar(model)) res@metadata$model <- model
-        if (nchar(serialNumber)) res@metadata$serialNumber <- serialNumber
-        ## if (!missing(systemUploadTime)) metadata$systemUploadTime <- systemUploadTime
-        if (!missing(src)) res@metadata$src <- src
+        res@metadata$filename <- filename
+        res@metadata$ship <- ship
+        res@metadata$scientist <- scientist
+        res@metadata$institute <- institute
+        res@metadata$address <- address
+        res@metadata$cruise <- cruise
+        res@metadata$station <- station
+        res@metadata$date <- date
+        res@metadata$startTime <- startTime
+        res@metadata$recovery <- recovery
+        res@metadata$type <- type
+        res@metadata$model <- model
+        res@metadata$serialNumber <- serialNumber
+        res@metadata$src <- src
         ## If lon and lat are vectors, place in data, with averages in metadata.
         if (length(latitude) == 1) {
-            res@metadata$longitude <- longitude
+            res@metadata$longitude <- longitude[1]
             res@metadata$latitude <- latitude
         } else {
             if (length(latitude) != length(temperature))
