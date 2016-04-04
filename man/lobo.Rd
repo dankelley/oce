@@ -29,7 +29,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{lisst}}, \code{\link{section}},
-  \code{\link{topoWorld}}
+  \code{\link{lisst}}, \code{\link{met}},
+  \code{\link{section}}, \code{\link{topoWorld}}
 }
 

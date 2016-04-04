@@ -35,6 +35,6 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
   \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{topoWorld}}
+  \code{\link{met}}, \code{\link{topoWorld}}
 }
 
