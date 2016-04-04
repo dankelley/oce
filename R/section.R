@@ -1450,7 +1450,7 @@ setMethod(f="plot",
                       } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$latitude
                       } else if (which.xtype == 5) {
-                          xx[ix] <- x@data$station[[j]]@metadata$startTime
+                          xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
                       } else {
                           stop('unknown xtype; it must be one of: "distance", "track", "longitude", "latitude", or "time"')
                       }
@@ -2404,7 +2404,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             look <- station==stationLevels[i]
             ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
                                 longitude=longitude[look][1], latitude=latitude[look][1],
-                                startTime=time[i], station=paste("profile", stationLevels[i]))
+                                startTime=as.POSIXct(time[i]), station=paste("profile", stationLevels[i]))
             for (Ni in seq_along(N)) {
                 ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
                                           unit=tmp[['units']][[N[Ni]]])

@@ -543,12 +543,23 @@ setMethod(f="[[<-",
 #' 
 #' @param station optional string containing a station identifier.
 #' 
-#' @param date optional string containing the date at which the profile was
-#' started.
+#' @param date optional string indicating
+#' the date at which the profile was started. This is copied verbatim into
+#' the result's \code{metadata} slot, and is not used in any processing. Since
+#' it serves no purpose, this argument is deprecated as of April 2016,
+#' and will be marked 'defunct' in an upcoming CRAN release;
+#' see \link{oce-deprecated}.
 #' 
-#' @param startTime optional string containing the start time.
+#' @param startTime optional indication of the start time for the profile, 
+#' which is used in some several plotting functions.  This is best given as a 
+#' \code{\link{POSIXt}} time, but it may also be a character string
+#' that can be converted to a time with \code{\link{as.POSIXct}},
+#' using \code{UTC} as the timezone.
 #' 
-#' @param recovery optional string indicating the recovery time.
+#' @param recovery optional indication of the recovery time, in the format
+#' described for \code{startTime}.  This is not presently used by \code{oce},
+#' and is stored in the result's \code{metadata} slot just in case the user
+#' requires it.
 #' 
 #' @param longitude optional numerical value containing longitude in decimal
 #' degrees, positive in the eastern hemisphere. If this is a single number,
@@ -627,6 +638,10 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     unitsGiven <- !is.null(units)
+    if (!is.null(startTime) && is.character(startTime))
+        startTime <- as.POSIXct(startTime, tz="UTC")
+    if (!is.null(recovery) && is.character(recovery))
+        recovery <- as.POSIXct(recovery, tz="UTC")
     if (missing(salinity)) {
         stop("must provide salinity")
         ##if (inherits(salinity, "ctd"))
@@ -643,7 +658,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         cruise <- m$cruise
         station <- m$station
         scientist <- m$station
-        startTime <- m$startTime
+        if (is.character(m$startTime))
+            startTime <- as.POSIXct(m$startTime, tz="UTC")
         if (is.na(latitude) && "latitude" %in% names(m))
             latitude <- m$latitude
         if (is.na(longitude) && "longitude" %in% names(m))
@@ -904,19 +920,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## FIXME: should sampleInterval be a default?
         res@metadata$names <- names
         res@metadata$labels <- labels
-        if (!missing(filename)) res@metadata$filename <- filename
-        if (!missing(ship)) res@metadata$ship <- ship
-        if (!missing(scientist)) res@metadata$scientist <- scientist
-        if (!missing(institute)) res@metadata$institute <- institute
-        if (!missing(address)) res@metadata$address <- address
-        if (!missing(cruise)) res@metadata$cruise <- cruise
-        if (!missing(station)) res@metadata$station <- station
-        if (!missing(date)) res@metadata$date <- date
-        if (!missing(startTime)) res@metadata$startTime <- startTime
-        if (!missing(recovery)) res@metadata$recovery <- recovery
-        if (!missing(type)) res@metadata$type <- type
-        if (!missing(model)) res@metadata$model <- model
-        if (!missing(serialNumber)) res@metadata$serialNumber <- serialNumber
+        if (nchar(filename)) res@metadata$filename <- filename
+        if (nchar(ship)) res@metadata$ship <- ship
+        if (nchar(scientist)) res@metadata$scientist <- scientist
+        if (nchar(institute)) res@metadata$institute <- institute
+        if (nchar(address)) res@metadata$address <- address
+        if (nchar(cruise)) res@metadata$cruise <- cruise
+        if (nchar(station)) res@metadata$station <- station
+        if (!is.null(date)) res@metadata$date <- date
+        if (!is.null(startTime)) res@metadata$startTime <- startTime
+        if (!is.null(recovery)) res@metadata$recovery <- recovery
+        if (nchar(type)) res@metadata$type <- type
+        if (nchar(model)) res@metadata$model <- model
+        if (nchar(serialNumber)) res@metadata$serialNumber <- serialNumber
         ## if (!missing(systemUploadTime)) metadata$systemUploadTime <- systemUploadTime
         if (!missing(src)) res@metadata$src <- src
         ## If lon and lat are vectors, place in data, with averages in metadata.
