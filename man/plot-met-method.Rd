@@ -2,9 +2,7 @@
 % Please edit documentation in R/met.R
 \docType{methods}
 \name{plot,met-method}
-\alias{plot,met,missing-method}
 \alias{plot,met-method}
-\alias{plot.met}
 \title{Plot meteorological data}
 \usage{
 \S4method{plot}{met}(x, which = 1:4, mgp = getOption("oceMgp"),
@@ -65,11 +63,6 @@ plot(met, which=3:4)
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{met} data: \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}},
-  \code{\link{summary,met-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -81,11 +74,19 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{met} data: \code{\link{as.met}},
+  \code{\link{met-class}}, \code{\link{met}},
+  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{summary,met-method}}
 }
 

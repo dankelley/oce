@@ -13,6 +13,7 @@
 #' @author Dan Kelley
 #' 
 #' @family classes provided by \code{oce}
+#' @family things related to \code{topo} data
 setClass("topo", contains="oce")
 
 #' Global topographic dataset at half-degree resolution
@@ -49,6 +50,7 @@ setClass("topo", contains="oce")
 #' }
 #'
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{topo} data
 NULL
 
 setMethod(f="initialize",
@@ -83,7 +85,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
@@ -102,7 +104,7 @@ setMethod(f="summary",
 #' There are no special features for \code{\link{topo-class}} data;
 #' the general method is used directly.
 #' @template sub_subTemplate
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -111,7 +113,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a \code{topo} Object
 #' @param x An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
@@ -143,7 +145,7 @@ setMethod(f="[[<-",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -201,7 +203,7 @@ setMethod(f="subset",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 topoInterpolate <- function(longitude, latitude, topo)
 {
     if (missing(longitude)) stop("must supply longitude")
@@ -299,7 +301,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' @author Dan Kelley
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 setMethod(f="plot",
           signature=signature("topo"),
           definition=function(x,
@@ -599,7 +601,7 @@ setMethod(f="plot",
 #'   Grid} menu item selected.
 #' 
 #' @author Dan Kelley
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
@@ -678,7 +680,7 @@ read.topo <- function(file, ...)
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{topo} data
+#' @family things related to \code{topo} data
 as.topo <- function(longitude, latitude, z, filename="")
 {
     if (inherits(longitude, "bathy")) {

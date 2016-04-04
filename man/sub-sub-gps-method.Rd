@@ -84,13 +84,16 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{gps} data: \code{\link{[[<-,gps-method}},
-  \code{\link{as.gps}}, \code{\link{plot,gps-method}},
-  \code{\link{read.gps}}, \code{\link{summary,gps-method}}
+Other things related to \code{gps} data: \code{\link{[[<-,gps-method}},
+  \code{\link{as.gps}}, \code{\link{gps-class}},
+  \code{\link{plot,gps-method}}, \code{\link{read.gps}},
+  \code{\link{summary,gps-method}}
 }
 

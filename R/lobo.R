@@ -9,6 +9,7 @@
 #' 
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
+#' @family things related to \code{lobo} data
 setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
@@ -74,12 +75,13 @@ setMethod(f="initialize",
 #' }
 #' 
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{lobo} data
 NULL
 
 #' @title Extract Something From a \code{lobo} Object
 #' @param x A lobo object, i.e. one inheriting from \code{\link{lobo-class}}.
 #' @template sub_subTemplate
-#' @family functions that handle \code{lobo} data
+#' @family things related to \code{lobo} data
 setMethod(f="[[",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -89,7 +91,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a \code{lobo} Object
 #' @param x An \code{lobo} object, i.e. inheriting from \code{\link{lobo-class}}
 #' @template sub_subsetTemplate
-#' @family functions that handle \code{lobo} data
+#' @family things related to \code{lobo} data
 setMethod(f="[[<-",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -119,7 +121,7 @@ setMethod(f="[[<-",
 #' library(oce)
 #' data(lobo)
 #' summary(lobo)
-#' @family functions that handle \code{lobo} data
+#' @family things related to \code{lobo} data
 setMethod(f="summary",
           signature="lobo",
           definition=function(object, ...) {
@@ -141,7 +143,7 @@ setMethod(f="summary",
 #' @param \dots ignored.
 #' @return A new \code{lobo} object.
 #' @author Dan Kelley
-#' @family functions that handle \code{lobo} data
+#' @family things related to \code{lobo} data
 setMethod(f="subset",
           signature="lobo",
           definition=function(x, subset, ...) {
@@ -264,7 +266,7 @@ plot.lobo.TS <- function(lobo, ...)
 #' @author Dan Kelley
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{lobo} data
+#' @family things related to \code{lobo} data
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
@@ -447,7 +449,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param filename source filename
 #' @return An object of \code{\link{lobo-class}}.
 #' @author Dan Kelley
-#' @family functions that handle \code{lobo} data
+#' @family things related to \code{lobo} data
 as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluorescence, filename="")
 {
     if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))

@@ -47,12 +47,14 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{rsk-class}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{odf-class}}, \code{\link{rsk-class}},
+  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 
-Other functions that handle \code{met} data: \code{\link{as.met}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}},
+Other things related to \code{met} data: \code{\link{as.met}},
+  \code{\link{met}}, \code{\link{plot,met-method}},
+  \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
 

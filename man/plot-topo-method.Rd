@@ -99,13 +99,6 @@ plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{topo} data: \code{\link{[[,topo-method}},
-  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
-  \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topoInterpolate}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -118,10 +111,21 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
+  \code{\link{read.topo}},
+  \code{\link{subset,topo-method}},
+  \code{\link{summary,topo-method}},
+  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
+  \code{\link{topoWorld}}
 }
 

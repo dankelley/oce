@@ -22,9 +22,10 @@ Dan Kelley
 The documentation for \code{\link{windrose-class}} explains the structure
 of \code{windrose} objects, and also outlines the other functions dealing with them.
 
-Other functions that handle \code{windrose} data: \code{\link{[[,windrose-method}},
+Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},
-  \code{\link{plot,windrose-method}}
+  \code{\link{plot,windrose-method}},
+  \code{\link{windrose-class}}
 }
 

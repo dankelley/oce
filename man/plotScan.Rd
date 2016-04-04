@@ -41,19 +41,6 @@ abline(v=c(130, 350), col='red') # useful for ctdTrim()
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -66,10 +53,26 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
-  \code{\link{plot,windrose-method}}
+  \code{\link{plot,windrose-method}},
+  \code{\link{tidem-class}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

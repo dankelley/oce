@@ -200,8 +200,11 @@ necessary because margin adjustment is the basis for the method used by
 only works if \code{length(which)=1}, and it will yield odd results if the
 value of \code{which} does not match that in the previous plots.}
 
-\item{debug}{Set to a positive value to get debugging information during
-processing.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 
 \item{...}{Optional arguments passed to plotting functions. A common example is
 to set \code{df}, for use in \link{swN2} calculations.}
@@ -246,18 +249,6 @@ Dan Kelley
 The documentation for \code{\link{ctd-class}} explains the structure of CTD
 objects, and also outlines the other functions dealing with them.
 
-Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
-  \code{\link{read.ctd.sbe}}, \code{\link{read.ctd.woce}},
-  \code{\link{read.ctd}}, \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -269,11 +260,26 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

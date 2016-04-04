@@ -66,16 +66,8 @@ information is given in the Sea-Bird data-processing manaual
 \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.woce}},
-  \code{\link{read.ctd}}, \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+Other functions that handle \code{ctd} data: \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
 }
 

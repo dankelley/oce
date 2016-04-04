@@ -84,13 +84,16 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,gps-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{lisst} data: \code{\link{[[<-,lisst-method}},
-  \code{\link{as.lisst}}, \code{\link{plot,lisst-method}},
+Other things related to \code{lisst} data: \code{\link{[[<-,lisst-method}},
+  \code{\link{as.lisst}}, \code{\link{lisst-class}},
+  \code{\link{plot,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }

@@ -52,10 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{gps} data: \code{\link{[[,gps-method}},
-  \code{\link{as.gps}}, \code{\link{plot,gps-method}},
-  \code{\link{read.gps}}, \code{\link{summary,gps-method}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -66,9 +62,17 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{gps} data: \code{\link{[[,gps-method}},
+  \code{\link{as.gps}}, \code{\link{gps-class}},
+  \code{\link{plot,gps-method}}, \code{\link{read.gps}},
+  \code{\link{summary,gps-method}}
 }
 

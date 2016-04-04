@@ -12,6 +12,7 @@
 #' \code{\link{summary,windrose-method}}.
 #'
 #' @family classes provided by \code{oce}
+#' @family things related to \code{windrose} data
 setClass("windrose", contains="oce")
 
 setMethod(f="initialize",
@@ -35,7 +36,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{windrose} data
+#' @family things related to \code{windrose} data
 setMethod(f="summary",
           signature="windrose",
           definition=function(object, ...) {
@@ -53,7 +54,7 @@ setMethod(f="summary",
 #' There are no special features for \code{\link{windrose-class}} data;
 #' the general method is used directly.
 #' @template sub_subTemplate
-#' @family functions that handle \code{windrose} data
+#' @family things related to \code{windrose} data
 setMethod(f="[[",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -63,7 +64,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a \code{windrose} Object
 #' @param x An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}
 #' @template sub_subsetTemplate
-#' @family functions that handle \code{windrose} data
+#' @family things related to \code{windrose} data
 setMethod(f="[[<-",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -115,7 +116,7 @@ setMethod(f="[[<-",
 #' 
 #' @author Dan Kelley, with considerable help from Alex Deckmyn.
 #' 
-#' @family functions that handle \code{windrose} data
+#' @family things related to \code{windrose} data
 as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="", unindent=1)
@@ -214,7 +215,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #' @author Dan Kelley
 #'
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{windrose} data
+#' @family things related to \code{windrose} data
 setMethod(f="plot",
           signature=signature("windrose"),
           definition=function(x,

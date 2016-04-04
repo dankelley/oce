@@ -22,7 +22,7 @@ Dan Kelley and Chantelle Layton
 \seealso{
 \code{\link{plot,amsr-method}} for an example.
 
-Other functions that handle \code{amsr} data: \code{\link{[[<-,amsr-method}},
+Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
   \code{\link{summary,amsr-method}}
 }

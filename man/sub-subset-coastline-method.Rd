@@ -52,15 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{coastline} data: \code{\link{[[,coastline-method}},
-  \code{\link{as.coastline}}, \code{\link{coastlineBest}},
-  \code{\link{coastlineCut}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -71,9 +62,23 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+  \code{\link{as.coastline}},
+  \code{\link{coastline-class}},
+  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
+  \code{\link{coastlineWorld}},
+  \code{\link{plot,coastline-method}},
+  \code{\link{read.coastline.openstreetmap}},
+  \code{\link{read.coastline.shapefile}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{summary,coastline-method}}
 }
 

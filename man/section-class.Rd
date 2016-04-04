@@ -70,7 +70,20 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 }
 

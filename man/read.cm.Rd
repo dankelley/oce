@@ -126,9 +126,9 @@ infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
 }
 \seealso{
-Other functions that handle \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}},
-  \code{\link{plot,cm-method}},
+Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+  \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
+  \code{\link{cm}}, \code{\link{plot,cm-method}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }

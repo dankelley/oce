@@ -6,7 +6,7 @@
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions that handle satellite data
+#' @family things related to satellite data
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
@@ -26,7 +26,7 @@ setMethod(f="initialize",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle satellite data
+#' @family things related to satellite data
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
@@ -63,7 +63,7 @@ setMethod(f="summary",
 #'
 #' @concept satellite
 #' @author Dan Kelley
-#' @family functions that handle satellite data
+#' @family things related to satellite data
 #' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("satellite"),

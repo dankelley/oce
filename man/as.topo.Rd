@@ -27,11 +27,12 @@ Coerce data into topo dataset
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{topo} data: \code{\link{[[,topo-method}},
+Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{plot,topo-method}}, \code{\link{read.topo}},
   \code{\link{subset,topo-method}},
   \code{\link{summary,topo-method}},
-  \code{\link{topoInterpolate}}
+  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
+  \code{\link{topoWorld}}
 }
 

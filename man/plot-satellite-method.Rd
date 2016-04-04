@@ -26,9 +26,6 @@ For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
 Dan Kelley
 }
 \seealso{
-Other functions that handle satellite data: \code{\link{satellite-class}},
-  \code{\link{summary,satellite-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -41,11 +38,18 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
+  \code{\link{summary,satellite-method}}
 }
 \concept{
 satellite

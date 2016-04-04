@@ -40,7 +40,7 @@ A file containing ADV data is usually recognized by Oce, and so
     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
     \code{\link{read.adv.sontek.text}}.
 
-    ADV data may be plotted with \code{\link{plot.adv}} function, which is a
+    ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
     generic function so it may be called simply as \code{plot(x)}, where
     \code{x} is an object inheriting from \code{\link{adv-class}}.
 
@@ -59,8 +59,16 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv}},
+  \code{\link{plot,adv-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}},
+  \code{\link{xyzToEnuAdv}}
 }
 

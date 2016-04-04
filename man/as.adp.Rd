@@ -54,9 +54,9 @@ plot(a)
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}},
-  \code{\link{subset,adp-method}},
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{adp}}, \code{\link{subset,adp-method}},
   \code{\link{xyzToEnuAdp}}
 }
 

@@ -29,7 +29,15 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
   \code{\link{echosounder-class}},
   \code{\link{lobo-class}}, \code{\link{met-class}},
-  \code{\link{rsk-class}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{odf-class}}, \code{\link{rsk-class}},
+  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+
+Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+  \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
+  \code{\link{plot,lisst-method}},
+  \code{\link{read.lisst}},
+  \code{\link{summary,lisst-method}}
 }
 

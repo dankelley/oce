@@ -22,6 +22,16 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{lisst}},
   \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{section}}, \code{\link{topoWorld}}
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}
+
+Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+  \code{\link{[[<-,echosounder-method}},
+  \code{\link{as.echosounder}},
+  \code{\link{echosounder-class}},
+  \code{\link{plot,echosounder-method}},
+  \code{\link{read.echosounder}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{summary,echosounder-method}}
 }
 

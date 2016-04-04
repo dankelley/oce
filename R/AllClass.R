@@ -160,9 +160,6 @@ setMethod(f="summary",
 
 ## FIXME: move each of these to the respective .R files
 setClass("satellite", contains="oce") # both amsr and landsat stem from this
-setClass("odf", contains="oce")
-setClass("sealevel", contains="oce")
-setClass("tidem", contains="oce")
 
 #' Subset an oce Object
 #'

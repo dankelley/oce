@@ -37,10 +37,6 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}}, \code{\link{read.amsr}},
-  \code{\link{summary,amsr-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -52,12 +48,19 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+  \code{\link{amsr-class}}, \code{\link{read.amsr}},
+  \code{\link{summary,amsr-method}}
 }
 \concept{
 satellite

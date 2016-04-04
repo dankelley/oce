@@ -33,9 +33,9 @@ other words, information on separate tracks, or waypoints, etc., is lost.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{gps} data: \code{\link{[[,gps-method}},
+Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
-  \code{\link{plot,gps-method}},
+  \code{\link{gps-class}}, \code{\link{plot,gps-method}},
   \code{\link{summary,gps-method}}
 }
 

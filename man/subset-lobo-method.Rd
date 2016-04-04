@@ -26,8 +26,9 @@ analogous to \code{\link{subset.data.frame}}.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{lobo} data: \code{\link{[[,lobo-method}},
+Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
+  \code{\link{lobo-class}}, \code{\link{lobo}},
   \code{\link{plot,lobo-method}},
   \code{\link{summary,lobo-method}}
 }

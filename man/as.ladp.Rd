@@ -45,7 +45,7 @@ shears, salinity, temperature, etc.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{ladp} data: \code{\link{[[,ladp-method}},
+Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }

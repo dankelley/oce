@@ -52,12 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{rsk} data: \code{\link{[[,rsk-method}},
-  \code{\link{as.rsk}}, \code{\link{plot,rsk-method}},
-  \code{\link{read.rsk}}, \code{\link{rskPatm}},
-  \code{\link{rskToc}}, \code{\link{subset,rsk-method}},
-  \code{\link{summary,rsk-method}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -69,8 +63,18 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+  \code{\link{as.rsk}}, \code{\link{plot,rsk-method}},
+  \code{\link{read.rsk}}, \code{\link{rsk-class}},
+  \code{\link{rskPatm}}, \code{\link{rskToc}},
+  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
+  \code{\link{summary,rsk-method}}
 }
 

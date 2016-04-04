@@ -52,13 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{topo} data: \code{\link{[[,topo-method}},
-  \code{\link{as.topo}}, \code{\link{plot,topo-method}},
-  \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topoInterpolate}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -70,8 +63,19 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+  \code{\link{as.topo}}, \code{\link{plot,topo-method}},
+  \code{\link{read.topo}},
+  \code{\link{subset,topo-method}},
+  \code{\link{summary,topo-method}},
+  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
+  \code{\link{topoWorld}}
 }
 

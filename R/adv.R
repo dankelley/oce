@@ -29,7 +29,7 @@
 #'     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
 #'     \code{\link{read.adv.sontek.text}}.
 #' 
-#'     ADV data may be plotted with \code{\link{plot.adv}} function, which is a
+#'     ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
 #'     generic function so it may be called simply as \code{plot(x)}, where
 #'     \code{x} is an object inheriting from \code{\link{adv-class}}.
 #' 
@@ -48,6 +48,7 @@
 #' adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
 #'
 #' @family classes provided by \code{oce}
+#' @family things related to \code{adv} data
 setClass("adv", contains="oce")
 
 #' ADV (acoustic-doppler velocimeter) dataset
@@ -81,6 +82,7 @@ setClass("adv", contains="oce")
 #' @source This file came from the SLEIWEX-2008 experiment.
 #' 
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{adv} data
 NULL
 
 
@@ -115,7 +117,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{adv} data
+#' @family things related to \code{adv} data
 setMethod(f="summary",
           signature="adv",
           definition=function(object, ...) {
@@ -148,7 +150,7 @@ setMethod(f="summary",
 #' form; see \dQuote{examples}.
 #' 
 #' @template sub_subTemplate
-#' @family functions that handle \code{adv} data
+#' @family things related to \code{adv} data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -194,7 +196,7 @@ setMethod(f="[[",
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
 #' @family functions that replace parts of \code{oce} objects
-#' @family functions that handle \code{adv} data
+#' @family things related to \code{adv} data
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
@@ -241,7 +243,7 @@ setMethod(f="[[<-",
 #' plot(subset(adv, time < mean(range(adv[['time']]))))
 #' 
 #' @author Dan Kelley
-#' @family functions that handle \code{adv} data
+#' @family things related to \code{adv} data
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
@@ -515,10 +517,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' 
 #' @author Dan Kelley
 #'
-#' @aliases plot.adv
-#'
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{adv} data
+#' @family things related to \code{adv} data
 setMethod(f="plot",
           signature=signature("adv"),
           definition=function(x, which=c(1:3,14,15),
@@ -1257,7 +1257,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' Oceanography.
 #'
 #' 3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php})
-#' @family functions that handle \code{adv} data
+#' @family things related to \code{adv} data
 xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))

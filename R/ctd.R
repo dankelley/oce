@@ -79,6 +79,7 @@
 #'
 #' @author Dan Kelley
 #' 
+#' @family things related to \code{ctd} data
 #' @family classes provided by \code{oce}
 setClass("ctd", contains="oce")
 
@@ -114,8 +115,8 @@ setClass("ctd", contains="oce")
 #' \link{ctdRaw}.
 #' 
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{ctd} data
 NULL
-
 
 #' Seawater CTD profile, without trimming of extraneous data.
 #' 
@@ -193,7 +194,7 @@ NULL
 #' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 #'}
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
@@ -269,7 +270,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
@@ -341,7 +342,7 @@ setMethod(f="summary",
 #' with \code{\link{swN2}(x)}).
 #'
 #' @template sub_subTemplate
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -424,7 +425,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a \code{ctd} Object
 #' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 #' @template sub_subsetTemplate
 #'
 #' @examples
@@ -609,7 +610,7 @@ setMethod(f="[[<-",
 #' 
 #' @param src optional string indicating data source.
 #' 
-#' @param debug a flag that can be set to \code{TRUE} to turn on debugging.
+#' @template debugTemplate
 #' 
 #' @return An object of \code{\link{ctd-class}}.
 #' 
@@ -630,7 +631,7 @@ setMethod(f="[[<-",
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL, time=NULL, other=NULL,
@@ -1000,8 +1001,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
-#' @param debug A debugging flag; set this to a positive value to get debugging
-#'     information during processing.
+#' @template debugTemplate
 #' @return A ctd object.
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
 #'    of CTD objects, and also outlines the other functions dealing with them.
@@ -1015,7 +1015,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the units
@@ -1109,8 +1109,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' \code{"lm"} method produces warnings about "prediction from a rank-deficient
 #' fit", a larger value of \code{"e"} should be used.
 #' 
-#' @param debug a Boolean, set to \code{TRUE} to debug the reading process.
-#' 
+#' @template debugTemplate
+#'
 #' @return An object of \code{\link{ctd-class}}, with pressures that are as set by
 #' the \code{"p"} parameter and all other properties modified appropriately.
 #' 
@@ -1137,7 +1137,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -1340,8 +1340,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @param arr.ind Should array indices be returned, or a vector of ctd objects?
 #' 
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
-#' information, or to 2 to get more. 
+#' @template debugTemplate
 #' 
 #' @param ... Optional extra arguments that are passed to \code{\link{smooth.spline}}.
 #' 
@@ -1368,7 +1367,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                             direction=c("descending", "ascending"),
                             arr.ind=FALSE,
@@ -1553,8 +1552,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' 
 #' @param parameters A list whose elements depend on the method; see \dQuote{Details}.
 #' 
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
-#' information, or to 2 to get more.
+#' @template debugTemplate
 #' 
 #' @return An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
 #' 
@@ -1580,7 +1578,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                    debug=getOption("oceDebug"))
 {
@@ -1857,7 +1855,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' 
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' 
-#' @param debug Set to \code{TRUE} for debugging.
+#' @template debugTemplate
 #' 
 #' @return A new \code{\link{ctd-class}} object.
 #' 
@@ -1873,7 +1871,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 ctdUpdateHeader <- function (x, debug = FALSE)
 {
     if (length(x@metadata$header) < 1)
@@ -1933,7 +1931,7 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 write.ctd <- function(object, file=stop("'file' must be specified"))
 {
     if (!inherits(object, "ctd"))
@@ -2151,8 +2149,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' only works if \code{length(which)=1}, and it will yield odd results if the
 #' value of \code{which} does not match that in the previous plots.
 #' 
-#' @param debug Set to a positive value to get debugging information during
-#' processing.
+#' @template debugTemplate
 #' 
 #' @param ... Optional arguments passed to plotting functions. A common example is
 #' to set \code{df}, for use in \link{swN2} calculations.
@@ -2176,7 +2173,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' @author Dan Kelley
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -2772,7 +2769,7 @@ setMethod(f="plot",
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -2822,7 +2819,7 @@ setMethod(f="subset",
 #' 
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{ctd} data
+#' @family things related to \code{ctd} data
 plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {

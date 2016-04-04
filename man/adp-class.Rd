@@ -208,8 +208,14 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}},
+  \code{\link{xyzToEnuAdp}}
 }
 

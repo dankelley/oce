@@ -40,8 +40,9 @@ of the columns.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{lisst} data: \code{\link{[[,lisst-method}},
+Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}},
+  \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}

@@ -19,8 +19,9 @@ Summarize a satellite object
 Dan Kelley
 }
 \seealso{
-Other functions that handle satellite data: \code{\link{plot,satellite-method}},
-  \code{\link{satellite-class}}
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{read.g1sst}}, \code{\link{satellite-class}}
 }
 \concept{
 satellite

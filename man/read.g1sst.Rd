@@ -55,6 +55,9 @@ Dan Kelley
 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{g1sst-class}}
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{satellite-class}},
+  \code{\link{summary,satellite-method}}
 }
 

@@ -35,9 +35,11 @@ plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
+  \code{\link{echosounder-class}},
+  \code{\link{echosounder}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{summary,echosounder-method}}

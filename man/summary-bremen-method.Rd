@@ -24,8 +24,9 @@ sampling location, data ranges, etc.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{bremen} data: \code{\link{[[,bremen-method}},
+Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
+  \code{\link{bremen-class}},
   \code{\link{plot,bremen-method}},
   \code{\link{read.bremen}}
 }

@@ -12,6 +12,7 @@
 #' @author Dan Kelley
 #' 
 #' @family classes provided by \code{oce}
+#' @family things related to \code{cm} data
 setClass("cm", contains="oce")
 
 #' A cm record
@@ -32,12 +33,13 @@ setClass("cm", contains="oce")
 #' plot(cm)
 #' }
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{cm} data
 NULL
 
 #' @title Extract Something From a \code{cm} Object
 #' @param x A cm object, i.e. one inheriting from \code{\link{cm-class}}.
 #' @template sub_subTemplate
-#' @family functions that handle \code{cm} data
+#' @family things related to \code{cm} data
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -47,7 +49,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a \code{cm} Object
 #' @param x An \code{cm} object, i.e. inheriting from \code{\link{cm-class}}
 #' @template sub_subsetTemplate
-#' @family functions that handle \code{cm} data
+#' @family things related to \code{cm} data
 setMethod(f="[[<-",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -90,7 +92,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{cm} data
+#' @family things related to \code{cm} data
 setMethod(f="summary",
           signature="cm",
           definition=function(object, ...) {
@@ -123,7 +125,7 @@ setMethod(f="summary",
 #' plot(subset(cm, time < mean(range(cm[['time']]))))
 #' 
 #' @author Dan Kelley
-#' @family functions that handle \code{cm} data
+#' @family things related to \code{cm} data
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
@@ -276,7 +278,7 @@ setMethod(f="subset",
 #' potassium chloride solution having the same electrical conductivity, at 15 C and
 #' infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 #' 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
-#' @family functions that handle \code{cm} data
+#' @family things related to \code{cm} data
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     longitude=NA, latitude=NA,
@@ -547,7 +549,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{cm} data
+#' @family things related to \code{cm} data
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,

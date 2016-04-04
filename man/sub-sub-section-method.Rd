@@ -117,17 +117,19 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{section} data: \code{\link{[[<-,section-method}},
+Other things related to \code{section} data: \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{plot,section-method}},
-  \code{\link{read.section}},
+  \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}},
+  \code{\link{sectionSort}}, \code{\link{section}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }

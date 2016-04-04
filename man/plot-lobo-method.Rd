@@ -46,11 +46,6 @@ Plot a summary diagram for lobo data.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{lobo} data: \code{\link{[[,lobo-method}},
-  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
-  \code{\link{subset,lobo-method}},
-  \code{\link{summary,lobo-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -62,11 +57,20 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
+  \code{\link{lobo-class}}, \code{\link{lobo}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{summary,lobo-method}}
 }
 

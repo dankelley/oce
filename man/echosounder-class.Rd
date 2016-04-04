@@ -82,8 +82,17 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+  \code{\link{[[<-,echosounder-method}},
+  \code{\link{as.echosounder}}, \code{\link{echosounder}},
+  \code{\link{plot,echosounder-method}},
+  \code{\link{read.echosounder}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{summary,echosounder-method}}
 }
 

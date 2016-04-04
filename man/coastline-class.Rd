@@ -21,8 +21,19 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{ctd-class}}, \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+  \code{\link{[[<-,coastline-method}},
+  \code{\link{as.coastline}}, \code{\link{coastlineBest}},
+  \code{\link{coastlineCut}}, \code{\link{coastlineWorld}},
+  \code{\link{plot,coastline-method}},
+  \code{\link{read.coastline.openstreetmap}},
+  \code{\link{read.coastline.shapefile}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{summary,coastline-method}}
 }
 

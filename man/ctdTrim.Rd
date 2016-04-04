@@ -20,8 +20,11 @@ section, unless \code{\link{ctdDecimate}} will be used, which will remove the in
 
 \item{parameters}{A list whose elements depend on the method; see \dQuote{Details}.}
 
-\item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
-information, or to 2 to get more.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
@@ -111,16 +114,15 @@ The Seabird CTD instrument is described at
 \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

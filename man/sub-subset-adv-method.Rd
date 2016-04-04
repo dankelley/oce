@@ -23,7 +23,8 @@ In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
 \seealso{
-Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{adv-class}}, \code{\link{adv}},
   \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}},

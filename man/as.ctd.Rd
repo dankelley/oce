@@ -161,7 +161,11 @@ samples in the profile.}
 
 \item{src}{optional string indicating data source.}
 
-\item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 An object of \code{\link{ctd-class}}.
@@ -210,16 +214,15 @@ conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 Engineering}, \bold{5}, pp 22-23.
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{ctd-class}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{gps-class}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

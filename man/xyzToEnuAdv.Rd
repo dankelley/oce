@@ -110,9 +110,9 @@ Oceanography.
 See \code{\link{read.adv}} for notes on functions relating to
 \code{adv} objects.
 
-Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}},
-  \code{\link{plot,adv-method}},
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
+  \code{\link{adv}}, \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}
 }

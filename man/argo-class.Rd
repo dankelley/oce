@@ -30,8 +30,16 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
   \code{\link{ctd-class}}, \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
+  \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
+  \code{\link{subset,argo-method}},
+  \code{\link{summary,argo-method}}
 }
 

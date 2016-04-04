@@ -83,12 +83,15 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{bremen} data: \code{\link{[[<-,bremen-method}},
+Other things related to \code{bremen} data: \code{\link{[[<-,bremen-method}},
+  \code{\link{bremen-class}},
   \code{\link{plot,bremen-method}},
   \code{\link{read.bremen}},
   \code{\link{summary,bremen-method}}

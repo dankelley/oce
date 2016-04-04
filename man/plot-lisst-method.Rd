@@ -74,11 +74,6 @@ The documentation for \code{\link{lisst-class}} explains the
 structure of lisst objects, and also outlines the other functions dealing
 with them.
 
-Other functions that handle \code{lisst} data: \code{\link{[[,lisst-method}},
-  \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
-  \code{\link{read.lisst}},
-  \code{\link{summary,lisst-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -90,11 +85,19 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
+  \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
+  \code{\link{lisst-class}}, \code{\link{read.lisst}},
+  \code{\link{summary,lisst-method}}
 }
 

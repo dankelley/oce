@@ -24,6 +24,12 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
   \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{section}}, \code{\link{topoWorld}}
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}
+
+Other things related to \code{met} data: \code{\link{as.met}},
+  \code{\link{met-class}}, \code{\link{plot,met-method}},
+  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{summary,met-method}}
 }
 

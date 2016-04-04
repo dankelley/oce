@@ -21,9 +21,9 @@ Provides a summary of a some information about an object of
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
+  \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}}
 }

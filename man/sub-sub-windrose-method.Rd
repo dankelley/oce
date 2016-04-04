@@ -91,13 +91,16 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}}
 
-Other functions that handle \code{windrose} data: \code{\link{[[<-,windrose-method}},
+Other things related to \code{windrose} data: \code{\link{[[<-,windrose-method}},
   \code{\link{as.windrose}},
   \code{\link{plot,windrose-method}},
-  \code{\link{summary,windrose-method}}
+  \code{\link{summary,windrose-method}},
+  \code{\link{windrose-class}}
 }
 

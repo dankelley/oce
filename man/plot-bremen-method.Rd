@@ -2,9 +2,7 @@
 % Please edit documentation in R/bremen.R
 \docType{methods}
 \name{plot,bremen-method}
-\alias{plot,bremen,missing-method}
 \alias{plot,bremen-method}
-\alias{plot.bremen}
 \title{Plot a bremen object}
 \usage{
 \S4method{plot}{bremen}(x, type, ...)
@@ -23,18 +21,13 @@ Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}
 \details{
 If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-plot is created with \code{\link{plot.ladp}} to show velocity varation with
+plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
 pressure.
 }
 \author{
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{bremen} data: \code{\link{[[,bremen-method}},
-  \code{\link{[[<-,bremen-method}},
-  \code{\link{read.bremen}},
-  \code{\link{summary,bremen-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -46,11 +39,19 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
+  \code{\link{[[<-,bremen-method}},
+  \code{\link{bremen-class}}, \code{\link{read.bremen}},
+  \code{\link{summary,bremen-method}}
 }
 

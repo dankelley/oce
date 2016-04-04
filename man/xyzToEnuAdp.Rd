@@ -88,8 +88,9 @@ Oceanography.
 3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
 }
 \seealso{
-Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{as.adp}},
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{adp}}, \code{\link{as.adp}},
   \code{\link{subset,adp-method}}
 }
 

@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,adv-method}
 \alias{plot,adv-method}
-\alias{plot.adv}
 \title{Plot ADV data}
 \usage{
 \S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles, type = "l",
@@ -193,12 +192,6 @@ Dan Kelley
 The documentation for \code{\link{adv-class}} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
 
-Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}},
-  \code{\link{xyzToEnuAdv}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
@@ -210,11 +203,20 @@ Other functions that plot \code{oce} data: \code{\link{plot,amsr-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
+  \code{\link{adv}}, \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}},
+  \code{\link{xyzToEnuAdv}}
 }
 

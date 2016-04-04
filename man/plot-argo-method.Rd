@@ -108,12 +108,6 @@ Dan Kelley
 \url{http://www.argo.ucsd.edu/}
 }
 \seealso{
-Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
-  \code{\link{as.argo}}, \code{\link{read.argo}},
-  \code{\link{subset,argo-method}},
-  \code{\link{summary,argo-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,bremen-method}},
@@ -125,11 +119,21 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argo}},
+  \code{\link{as.argo}}, \code{\link{read.argo}},
+  \code{\link{subset,argo-method}},
+  \code{\link{summary,argo-method}}
 }
 

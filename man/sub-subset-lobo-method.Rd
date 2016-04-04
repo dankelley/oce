@@ -52,11 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{lobo} data: \code{\link{[[,lobo-method}},
-  \code{\link{as.lobo}}, \code{\link{plot,lobo-method}},
-  \code{\link{subset,lobo-method}},
-  \code{\link{summary,lobo-method}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -67,9 +62,18 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+  \code{\link{as.lobo}}, \code{\link{lobo-class}},
+  \code{\link{lobo}}, \code{\link{plot,lobo-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{summary,lobo-method}}
 }
 

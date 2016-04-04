@@ -24,7 +24,7 @@ sampling location, data ranges, etc.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{ladp} data: \code{\link{[[,ladp-method}},
+Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{ladp-class}},
   \code{\link{plot,ladp-method}}
 }

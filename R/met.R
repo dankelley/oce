@@ -1,6 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-
 #' Class to store meteorological data
 #' 
 #' Class to store meteorological data, with standard slots \code{metadata},
@@ -36,7 +35,7 @@
 #' 
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
-#' @family functions that handle \code{met} data
+#' @family things related to \code{met} data
 setClass("met", contains="oce")
 
 
@@ -57,6 +56,7 @@ setClass("met", contains="oce")
 #' (Note the conversion from local standard time to UTC.)
 #'
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{met} data
 NULL
 
 setMethod(f="initialize",
@@ -84,7 +84,7 @@ setMethod(f="initialize",
 #' @param object A \code{met} object, i.e. one inheriting from \code{\link{met-class}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family functions that handle \code{met} data
+#' @family things related to \code{met} data
 setMethod(f="summary",
           signature="met",
           definition=function(object, ...) {
@@ -115,7 +115,7 @@ setMethod(f="summary",
 #' # Few days surrounding Hurricane Juan
 #' plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 #' 
-#' @family functions that handle \code{met} data
+#' @family things related to \code{met} data
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
@@ -151,7 +151,7 @@ setMethod(f="subset",
 #' @param filename optional string indicating data source
 #' @return An object of \code{\link{met-class}}.
 #' @author Dan Kelley
-#' @family functions that handle \code{met} data
+#' @family things related to \code{met} data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
     if (missing(time)) stop("must provide time")
@@ -214,7 +214,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' plot(met, which=3:4)
 #' }
 #' 
-#' @family functions that handle \code{met} data
+#' @family things related to \code{met} data
 read.met <- function(file, type=NULL, skip, 
                      tz=getOption("oceTz"),
                      debug=getOption("oceDebug"), processingLog, ...)
@@ -340,7 +340,6 @@ read.met <- function(file, type=NULL, skip,
 #' made within \code{plot.met} are left in place, so that further additions may
 #' be made to the plot.
 #' 
-#' @aliases plot.met plot,met,missing-method plot,met-method
 #' @param x A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
 #' list containing items named \code{salinity} and \code{temperature}.
 #' @param which list of desired plot types.  \itemize{ \item \code{which=1}
@@ -362,7 +361,7 @@ read.met <- function(file, type=NULL, skip,
 #' plot(met, which=3:4)
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{met} data
+#' @family things related to \code{met} data
 setMethod(f="plot",
            signature=signature("met"),
            definition=function(x, which = 1:4,

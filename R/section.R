@@ -59,6 +59,7 @@
 #' @author Dan Kelley
 #'
 #' @family classes provided by \code{oce}
+#' @family things related to \code{section} data
 setClass("section", contains="oce")
 
 
@@ -90,6 +91,7 @@ setClass("section", contains="oce")
 #' from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #' 
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{section} data
 NULL
 
 setMethod(f="initialize",
@@ -122,7 +124,7 @@ setMethod(f="initialize",
 #' data(section)
 #' summary(section)
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 #' 
 #' @author Dan Kelley
 setMethod(f="summary",
@@ -163,7 +165,7 @@ setMethod(f="summary",
 
 #' @title Extract Something From a Section Object
 #' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
@@ -263,7 +265,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a \code{section} Object
 #' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 #' @template sub_subsetTemplate
 #' @examples
 #' # Change section ID from a03 to A03
@@ -323,7 +325,7 @@ setMethod(f="show",
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 #' 
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -464,7 +466,7 @@ setMethod(f="subset",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 sectionSort <- function(section, by)
 {
     if (missing(by)) {
@@ -645,7 +647,7 @@ makeSection <- function(item, ...)
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -849,7 +851,7 @@ sectionAddCtd <- sectionAddStation
 #' @author Dan Kelley
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
@@ -1753,7 +1755,7 @@ setMethod(f="plot",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 read.section <- function(file, directory, sectionId="", flags,
 			 ship="", scientist="", institute="",
                          missingValue=-999,
@@ -2091,7 +2093,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
@@ -2189,7 +2191,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
 {
     method <- match.arg(method)
@@ -2382,7 +2384,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{section} data
+#' @family things related to \code{section} data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
     if (missing(salinity))

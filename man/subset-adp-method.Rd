@@ -3,7 +3,6 @@
 \docType{methods}
 \name{subset,adp-method}
 \alias{subset,adp-method}
-\alias{subset.adp}
 \title{Subset an adp object}
 \usage{
 \S4method{subset}{adp}(x, subset, ...)
@@ -36,8 +35,9 @@ plot(subset(adp, time < mean(range(adp[['time']]))))
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{as.adp}},
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{adp}}, \code{\link{as.adp}},
   \code{\link{xyzToEnuAdp}}
 }
 

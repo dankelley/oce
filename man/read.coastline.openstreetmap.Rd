@@ -34,10 +34,12 @@ Read coastline data stored in the openstreetmap format [1].
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}}, \code{\link{coastlineBest}},
-  \code{\link{coastlineCut}},
+  \code{\link{as.coastline}},
+  \code{\link{coastline-class}},
+  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
+  \code{\link{coastlineWorld}},
   \code{\link{plot,coastline-method}},
   \code{\link{read.coastline.shapefile}},
   \code{\link{subset,coastline-method}},

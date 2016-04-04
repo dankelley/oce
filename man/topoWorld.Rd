@@ -42,6 +42,14 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
   \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{section}}
+  \code{\link{met}}, \code{\link{sealevel}},
+  \code{\link{section}}
+
+Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+  \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
+  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
+  \code{\link{subset,topo-method}},
+  \code{\link{summary,topo-method}},
+  \code{\link{topo-class}}, \code{\link{topoInterpolate}}
 }
 

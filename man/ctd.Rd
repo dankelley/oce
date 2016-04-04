@@ -39,6 +39,19 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{echosounder}}, \code{\link{lisst}},
   \code{\link{lobo}}, \code{\link{met}},
-  \code{\link{section}}, \code{\link{topoWorld}}
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

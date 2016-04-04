@@ -30,6 +30,13 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
   \code{\link{lisst}}, \code{\link{met}},
-  \code{\link{section}}, \code{\link{topoWorld}}
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}
+
+Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
+  \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
+  \code{\link{lobo-class}}, \code{\link{plot,lobo-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{summary,lobo-method}}
 }
 

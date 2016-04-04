@@ -13,12 +13,13 @@
 #' @references A users's manual for the LISST-100 instrument is available at
 #' the manufacturer's website \url{http://www.sequoiasci.com}.
 #' @family classes provided by \code{oce}
+#' @family things related to \code{lisst} data
 setClass("lisst", contains="oce")
 
 #' @title Extract Something From a \code{lisst} Object
 #' @param x A lisst object, i.e. one inheriting from \code{\link{lisst-class}}.
 #' @template sub_subTemplate
-#' @family functions that handle \code{lisst} data
+#' @family things related to \code{lisst} data
 setMethod(f="[[",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -28,7 +29,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a \code{lisst} Object
 #' @param x An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}
 #' @template sub_subsetTemplate
-#' @family functions that handle \code{lisst} data
+#' @family things related to \code{lisst} data
 setMethod(f="[[<-",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -83,7 +84,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{lisst} data
+#' @family things related to \code{lisst} data
 setMethod(f="summary",
           signature="lisst",
           definition=function(object, ...) {
@@ -150,7 +151,7 @@ setMethod(f="summary",
 #' plot(lisst)
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{lisst} data
+#' @family things related to \code{lisst} data
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {
@@ -224,7 +225,7 @@ setMethod(f="plot",
 #' @param latitude Latitude of observation.
 #' @return An object of \code{\link{lisst-class}}.
 #' @author Dan Kelley
-#' @family functions that handle \code{lisst} data
+#' @family things related to \code{lisst} data
 as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     res <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
@@ -286,7 +287,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 #' @param latitude latitude of observation (stored in metadata)
 #' @return An object of \code{\link{lisst-class}}.
 #' @author Dan Kelley
-#' @family functions that handle \code{lisst} data
+#' @family things related to \code{lisst} data
 read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
 {
     filename <- NULL

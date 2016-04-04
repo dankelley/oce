@@ -105,11 +105,6 @@ The panels are controlled by the \code{which} argument, as follows.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{read.cm}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -121,11 +116,20 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+  \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
+  \code{\link{cm}}, \code{\link{read.cm}},
+  \code{\link{subset,cm-method}},
+  \code{\link{summary,cm-method}}
 }
 

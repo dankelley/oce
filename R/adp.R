@@ -195,6 +195,7 @@
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
 #'
 #' @family classes provided by \code{oce}
+#' @family things related to \code{adp} data
 setClass("adp", contains="oce")
 
 #' ADP (acoustic-doppler profiler) dataset
@@ -225,6 +226,7 @@ setClass("adp", contains="oce")
 #' @source This file came from the SLEIWEX-2008 experiment.
 #'
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{adp} data
 NULL
 
 setMethod(f="initialize",
@@ -368,7 +370,7 @@ setMethod(f="summary",
 #' @examples
 #' data(adp)
 #' head(adp[["v"]][,,1])
-#' @family functions that handle \code{adp} data
+#' @family things related to \code{adp} data
 #' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
@@ -418,7 +420,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that handle \code{adp} data
+#' @family things related to \code{adp} data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
@@ -494,9 +496,7 @@ setValidity("adp",
 #' # First part of time series
 #' plot(subset(adp, time < mean(range(adp[['time']]))))
 #' 
-#' @family functions that handle \code{adp} data
-#' 
-#' @aliases subset.adp
+#' @family things related to \code{adp} data
 #' 
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -637,7 +637,7 @@ setMethod(f="subset",
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{adp} data
+#' @family things related to \code{adp} data
 as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
@@ -2072,7 +2072,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #'
 #' 3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
 #'
-#' @family functions that handle \code{adp} data
+#' @family things related to \code{adp} data
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")

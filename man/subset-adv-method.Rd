@@ -34,9 +34,9 @@ plot(subset(adv, time < mean(range(adv[['time']]))))
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{adv} data: \code{\link{[[,adv-method}},
-  \code{\link{[[<-,adv-method}},
-  \code{\link{plot,adv-method}},
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
+  \code{\link{adv}}, \code{\link{plot,adv-method}},
   \code{\link{summary,adv-method}},
   \code{\link{xyzToEnuAdv}}
 }

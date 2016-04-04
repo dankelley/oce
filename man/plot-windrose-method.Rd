@@ -58,11 +58,6 @@ par(opar)
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{windrose} data: \code{\link{[[,windrose-method}},
-  \code{\link{[[<-,windrose-method}},
-  \code{\link{as.windrose}},
-  \code{\link{summary,windrose-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -75,9 +70,19 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
-  \code{\link{plot,topo-method}}, \code{\link{plotScan}}
+  \code{\link{plot,tidem-method}},
+  \code{\link{plot,topo-method}}, \code{\link{plotScan}},
+  \code{\link{tidem-class}}
+
+Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,windrose-method}},
+  \code{\link{as.windrose}},
+  \code{\link{summary,windrose-method}},
+  \code{\link{windrose-class}}
 }
 

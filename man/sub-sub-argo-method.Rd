@@ -89,13 +89,16 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{argo} data: \code{\link{[[<-,argo-method}},
-  \code{\link{argoGrid}}, \code{\link{as.argo}},
+Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
+  \code{\link{argo-class}}, \code{\link{argoGrid}},
+  \code{\link{argo}}, \code{\link{as.argo}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

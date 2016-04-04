@@ -132,9 +132,11 @@ plot(echosounder, which=c(1,2), drawBottom=TRUE)
 Dan Kelley, with extensive help from Clark Richards
 }
 \seealso{
-Other functions that handle \code{echosounder} data: \code{\link{[[,echosounder-method}},
+Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
+  \code{\link{echosounder-class}},
+  \code{\link{echosounder}},
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}

@@ -12,7 +12,9 @@ This class holds satellite data of various types, including
 Dan Kelley and Chantelle Layton
 }
 \seealso{
-Other functions that handle satellite data: \code{\link{plot,satellite-method}},
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{read.g1sst}},
   \code{\link{summary,satellite-method}}
 }
 \concept{

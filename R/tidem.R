@@ -1,3 +1,14 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' Class to store tidal-constituent models
+#' 
+#' Class to store tidal-constituent models.
+#' 
+#' @author Dan Kelley
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{tidem} data
+setClass("tidem", contains="oce")
+
 setMethod(f="initialize",
           signature="tidem",
           definition=function(.Object) {
@@ -7,6 +18,34 @@ setMethod(f="initialize",
           })
 
 
+#' Summarize a tide-model object
+#' 
+#' \code{summary} method for class \code{"tidem"}.
+#' 
+#' By default, all fitted constituents are plotted, but it is quite useful to
+#' set e.g. p=0.05 To see just those constituents that are significant at the 5
+#' percent level.
+#' 
+#' Note that the p values are estimated as the average of the p values for the
+#' sine and cosine components at a given frequency.
+#' 
+#' @param object an object of class \code{"tidem"}, usually, a result of a call
+#' to \code{tidem}.
+#' @param p optional value of the maximum p value for the display of an
+#' individual coefficient.  If not given, all coefficients are shown.
+#' @param constituent optional name of constituent on which to focus.
+#' @param \dots further arguments passed to or from other methods.
+#' @return \code{NULL}
+#' @author Dan Kelley
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(sealevel)
+#' tide <- tidem(sealevel)
+#' summary(tide)
+#' }
+#' 
+#' @family things related to \code{tidem} data
 setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
@@ -51,19 +90,56 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-
+#' @title Extract Something From a \code{tidem} Object
+#' @param x A tidem object, i.e. one inheriting from \code{\link{tidem-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{tidem} data
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              if (i == "coef") {
-                  x@data$model$coef
-              } else {
-                  callNextMethod()
-              }
+              callNextMethod()
           })
 
+#' @title Replace Parts of a \code{tidem} Object
+#' @param x An \code{tidem} object, i.e. inheriting from \code{\link{tidem-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{tidem} data
+setMethod(f="[[<-",
+          signature(x="tidem", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
+
+
+#' Plot a tidal fit
+#' 
+#' Plot a summary diagram for a tidal fit.
+#' 
+#' @param x A \code{tidem} object, i.e. one inheriting from
+#' \code{\link{tidem-class}}.
+#' @param which integer flag indicating plot type, 1 for stair-case spectral, 2
+#' for spike spectral.
+#' @param labelIf if NULL, the function will indicate some particular tidal
+#' constituents; if a value is provided, labels will be given for any
+#' constituent with amplitude exceeding the value provided.
+#' @param log if set to "\code{x}", the frequency axis will be logarithmic.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param \dots optional arguments passed to plotting functions.
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(sealevel)
+#' tide <- tidem(sealevel)
+#' plot(tide)
+#' }
+#' @author Dan Kelley
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{tidem} data
 setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,
@@ -74,7 +150,7 @@ setMethod(f="plot",
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
                               ...)
           {
-              drawConstituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
+              drawConstituent<-function(name="M2",frequency,col="blue",side=1, adj=NULL)
               {
                   abline(v=frequency, col=col, lty="dotted")
                   if (frequency <= par('usr')[2]) {
@@ -84,7 +160,7 @@ setMethod(f="plot",
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              drawConstituents <- function(amplitude, type="standard", labelIf=NULL, col="blue")
+              drawConstituents<-function(amplitude, type="standard", labelIf=NULL, col="blue")
               {
                   if (type == "standard") {
                       drawConstituent("SA", 0.0001140741, side=3)
@@ -130,6 +206,27 @@ setMethod(f="plot",
           })
 
 
+#' Do ephemeris calculations for tidem
+#' 
+#' Do ephemeris calculations for tidem.
+#' 
+#' Based directly on \code{t_vuf}, from the \code{T_TIDE} package.
+#' 
+#' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
+#' use \code{tz="GMT"} in constructing \code{t}.)
+#' @param j indices of tidal constituents to use
+#' @param lat latitude (if missing, something is done for that)
+#' @return A \code{\link[base]{data.frame}} containing
+#' \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
+#' @author Dan Kelley, based directly on \code{t_vuf} from the \code{T_TIDE}
+#' package.
+#' @seealso \code{\link{tidem}}, which uses this.
+#' @keywords misc
+#' @examples
+#' 
+#' tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
+#' 
+#' @family things related to \code{tidem} data
 tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
@@ -335,6 +432,24 @@ tidemVuf <- function(t, j, lat=NULL)
                                         #end;
 
 
+
+#' Do ephemeris calculations for tidem
+#' 
+#' Do ephemeris calculations for tidem.
+#' 
+#' Based directly on \code{t_astron}, from the \code{T_TIDE} package.
+#' 
+#' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
+#' use \code{tz="GMT"} in constructing \code{t}.)
+#' @return A \code{\link[base]{data.frame}} containing
+#' \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
+#' @author Dan Kelley, based directly on \code{t_astron} from the \code{T_TIDE}
+#' package.
+#' @seealso \code{\link{tidem}}, which uses this.
+#' @keywords misc
+#' @examples
+#' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
+#' @family things related to \code{tidem} data
 tidemAstron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
@@ -369,6 +484,142 @@ tidemAstron <- function(t)
     data.frame(astro=astro, ader=ader)
 }
 
+
+#' Fit a tidal model to a timeseries
+#' 
+#' The fit is done in terms of sine and cosine components at the indicated
+#' tidal frequencies, with the amplitude and phase being calculated from the
+#' resultant coefficients on the sine and cosine terms.
+#' 
+#' The tidal constituents to be used in the analysis are specified as follows.
+#' 
+#' \enumerate{
+#' 
+#' \item Case 1. If \code{constituents} is not provided, then the constituent
+#' list will be made up of the 69 constituents regarded by Foreman as standard.
+#' These include astronomical frequencies and some shallow-water frequencies,
+#' and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
+#' "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1",
+#' "PI1", "P1", "S1", "K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1",
+#' "OQ2", "EPS2", "2N2", "MU2", "N2", "NU2", "GAM2", "H1", "M2", "H2", "MKS2",
+#' "LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2", "ETA2", "MO3", "M3", "SO3",
+#' "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
+#' "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
+#' 
+#' \item Case 2. If the first item in \code{constituents} is the string
+#' \code{"standard"}, then a provisional list is set up as in Case 1, and then
+#' the (optional) rest of the elements of \code{constituents} are examined, in
+#' order.  Each of these constituents is based on the name of a tidal
+#' constituent in the Foreman (1977) notation.  (To get the list, execute
+#' \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)  Each
+#' named constituent is added to the existing list, if it is not already there.
+#' But, if the constituent is preceeded by a minus sign, then it is removed
+#' from the list (if it is already there).  Thus, for example,
+#' \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
+#' constituent and add the ST32 constituent.
+#' 
+#' \item Case 3. If the first item is not \code{"standard"}, then the list of
+#' constituents is processed as in Case 2, but without starting with the
+#' standard list. As an example, \code{constituents=c("K1", "M2")} would fit
+#' for just the K1 and M2 components. (It would be strange to use a minus sign
+#' to remove items from the list, but the function allows that.)
+#' 
+#' In each of the above cases, the list is reordered in frequency prior to the
+#' analysis, so that the results of \code{\link{summary,tidem-method}} will be in a
+#' familiar form.
+#' 
+#' Once the constituent list is determined, \code{tidem} prunes the elements of
+#' the list by using the Rayleigh criterion, according to which two
+#' constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
+#' resolved unless the time series spans a time interval of at least
+#' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields nominal
+#' resolution.
+#' 
+#' A list of constituent names is created by the following: \preformatted{
+#' data(tidedata) print(tidedata$const$name) }
+#' 
+#' \strong{The text should include discussion of the (not yet performed) nodal
+#' correction treatement.}
+#' }
+#' 
+#' @param t Either a \code{sealevel} object (e.g. produced by
+#' \code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
+#' times. In the former case, time is part of the object, so \code{t} may not
+#' be given here.  In the latter case, \code{tidem} needs a way to determine
+#' time, so \code{t} must be given.
+#' @param x an optional numerical vector holding something that varies with
+#' time.  This is ignored if \code{t} is a \code{\link{sealevel-class}} object,
+#' in which case it is inferred as \code{t[["elevation"]]}.
+#' @param constituents an optional list of tidal constituents to which the fit
+#' is done (see \dQuote{Details}.)
+#' @param latitude if provided, the latitude of the observations.  If not
+#' provided, \code{tidem} will try to infer this from \code{sl}.
+#' @param rc the value of the coefficient in the Rayleigh criterion.
+#' @param regress function to be used for regression, by default
+#' \code{\link{lm}}, but could be for example \code{rlm} from the
+#' \code{MASS} package.
+#' @template debugTemplate
+#' @return An object of \code{\link{tidem-class}}, consisting of
+#' \item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
+#' etc.} \item{model}{the regression model} \item{name}{a vector of constituent
+#' names, in non-subscript format, e.g. "\code{M2}".} \item{frequency}{a vector
+#' of constituent frequencies, in inverse hours.} \item{amplitude}{a vector of
+#' fitted constituent amplitudes, in metres.} \item{phase}{a vector of fitted
+#' constituent phase.  NOTE: The definition of phase is likely to change as
+#' this function evolves.  For now, it is phase with respect to the first data
+#' sample.} \item{p}{a vector containing a sort of p value for each
+#' constituent.  This is calculated as the average of the p values for the
+#' sine() and cosine() portions used in fitting; whether it makes any sense is
+#' an open question.}
+#' @section Bugs:
+#' 
+#' \enumerate{
+#' \item 1.This function is not fully developed yet, and both the
+#' form of the call and the results of the calculation may change.
+#' 
+#' \item 2.Nodal correction is not done.
+#' 
+#' \item 3.The reported \code{p} value may make no sense at all, and it might be
+#' removed in a future version of this function. Perhaps a significance level
+#' should be presented, as in the software developed by both Foreman and
+#' Pawlowicz.
+#' 
+#' }
+#' @author Dan Kelley
+#' @references
+#' 1. Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+#' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
+#' Sciences, Patricia Bay, Sidney, BC, 58pp.
+#' 
+#' 2. Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
+#' time series.  International Hydrographic Review, 68 (1), 95-108.
+#' 
+#' 3. Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
+#' Robust (hybrid) solutions.  Continental Shelf Research, 29(1):78-88.
+#' 
+#' 4. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Computers and Geosciences, 28, 929-937.
+#' 
+#' @examples
+#' library(oce)
+#' # The demonstration time series from Foreman (1977),
+#' # also used in T_TIDE (Pawlowicz, 2002).
+#' data(sealevelTuktoyaktuk)
+#' tide <- tidem(sealevelTuktoyaktuk)
+#' summary(tide)
+#' 
+#' # AIC analysis
+#' extractAIC(tide[["model"]])
+#' 
+#' # Fake data at M2
+#' t <- seq(0, 10*86400, 3600)
+#' eta <- sin(0.080511401 * t * 2 * pi / 3600)
+#' sl <- as.sealevel(eta)
+#' m <- tidem(sl)
+#' summary(m)
+#' 
+#' @family things related to \code{tidem} data
 tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
@@ -591,6 +842,49 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 }
 
 
+#' Predict a time series from a tidal model
+#' 
+#' Predict a time series from a tidal model.
+#' 
+#' This is a wrapper around the predict method for \code{object$model}.
+#' 
+#' @param object A \code{tidem} object, i.e. one inheriting from
+#' \code{\link{tidem-class}}.
+#' @param newdata optional vector of POSIXt times at which to make the
+#' prediction.  If not present, \code{predict.tidem} uses the times that were
+#' provided in the original call to \code{\link{tidem}}.
+#' @param \dots optional arguments passed on to children.
+#' @return A vector of predictions.
+#' @examples
+#' 
+#' \dontrun{
+#' library(oce)
+#' # 1. tidal anomaly
+#' data(sealevelTuktoyaktuk)
+#' time <- sealevelTuktoyaktuk[["time"]]
+#' elevation <- sealevelTuktoyaktuk[["elevation"]]
+#' oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
+#' tide <- tidem(sealevelTuktoyaktuk)
+#' lines(time, elevation - predict(tide), col="red")
+#' abline(h=0, col="red")
+#' 
+#' # 2. prediction at specified times
+#' data(sealevel)
+#' m <- tidem(sealevel)
+#' ## Check fit over 2 days (interpolating to finer timescale)
+#' look <- 1:48
+#' time <- sealevel[["time"]]
+#' elevation <- sealevel[["elevation"]]
+#' oce.plot.ts(time[look], elevation[look])
+#' # 360s = 10 minute timescale
+#' t <- seq(from=time[1], to=time[max(look)], by=360)
+#' lines(t, predict(m,newdata=t), col='red')
+#' legend("topright", col=c("black","red"),
+#' legend=c("data","model"),lwd=1)
+#' }
+#' 
+#' @author Dan Kelley
+#' @family things related to \code{tidem} data
 predict.tidem <- function(object, newdata, ...)
 {
     if (!missing(newdata) && !is.null(newdata)) {
@@ -622,6 +916,82 @@ predict.tidem <- function(object, newdata, ...)
     as.numeric(res)
 }
 
+
+
+#' Get a tidal prediction from a WebTide database
+#' 
+#' Get a tidal prediction from a WebTide database
+#' 
+#' If \code{action="map"} then a map is drawn, with a dot for the lower-left
+#' corner of each triangle used in the finite-element tidal simulation upon
+#' which WebTide predictions are based.  If \code{node} is missing, then
+#' \code{\link{locator}} is called, so that the user can indicate a spot of
+#' interest on the map, and this point is indicated on the map (and in the
+#' return value).  If \code{node} is provided, however, the point is indicated
+#' but \code{\link{locator}} is not called.  (This second style is of use in
+#' documenting interactive work after the fact.)
+#' 
+#' If \code{action="predict"} then either a node number or the longitude and
+#' latitude must be specified.  If \code{plot=TRUE} (the default) then a plot
+#' is drawn, but no plot is produced otherwise.  In either case, the (silent)
+#' return value is a list as described in the next section.  The times used for
+#' prediction are specified with the \code{time} argument, and if this is not
+#' specified then a week following the present time is used.
+#' 
+#' Naturally, \code{webtide} will not work unless WebTide has been installed on
+#' the computer.
+#' 
+#' @param action An indication of the action, either \code{action="map"} to
+#' draw a map or \code{action="predict"} to get a prediction; see
+#' \sQuote{Details}.
+#' @param longitude longitude at which prediction is required (ignored if
+#' \code{node} is given).
+#' @param latitude latitude at which prediction is required (ignored if
+#' \code{node} is given).
+#' @param node node to look up; only needed if \code{longitude} and
+#' \code{latitude} are not given.
+#' @param time times at which prediction is to be made.  If not supplied, this
+#' will be the week starting at the present time, incrementing by 15 minutes.
+#' @param basedir directory containing the \code{WebTide} application.
+#' @param region database region, given as a directory name in the WebTide
+#' directory.  For example, \code{h3o} is for Halifax Harbour, \code{nwatl} is
+#' for the northwest Atlantic, and \code{sshelf} is for the Scotian Shelf and
+#' Gulf of Maine.
+#' @param plot boolean indicating whether to plot.
+#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
+#' plot types that call that function.  (See \code{\link{strptime}} for the
+#' format used.)
+#' @template debugTemplate
+#' @param \dots optional arguments passed to plotting functions. A common
+#' example is to set \code{xlim} and \code{ylim}, to focus a map region.
+#' @return If \code{action="map"} and \code{plot=TRUE}, the return value is a
+#' list containing the index of the nearest node, along with the
+#' \code{latitude} and \code{longitude} of that node.  If \code{action="map"}
+#' and \code{plot=FALSE}, the return value is a list of all nodes, longitude,
+#' and latitudes.
+#' 
+#' If \code{action="predict"}, the return value is a list containing a vector
+#' of times (\code{time}), as well as vectors of the predicted \code{elevation}
+#' in metres and the predicted horizontal components of velocity, \code{u} and
+#' \code{v}, along with the \code{node} number, and the \code{basedir} and
+#' \code{region} as supplied to this function.
+#' @references The WebTide software may be downloaded for free at the
+#' Department of Fisheries and Oceans (Canada) website, which in February 2016
+#' was
+#' \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
+#' although this site seems not to be particularly static.
+#' Note that WebTide is not an open-source application, as it consists mainly
+#' of compiled Java code, which precludes examination of the source. The
+#' present function relies on a certain structure of the WebTide data files,
+#' and since the WebTide source is closed, this was done partly by guessing.
+#' This means that the present function is brittle to changes in WebTide; users
+#' should be on the lookout for odd results.
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
+#' }
+#' @author Dan Kelley
 webtide <- function(action=c("map", "predict"),
                     longitude, latitude, node, time,
                     basedir=getOption("webtide"),

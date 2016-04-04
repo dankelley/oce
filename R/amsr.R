@@ -27,7 +27,8 @@
 #' 1. \url{http://www.remss.com/missions/amsre}
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
-#' @family functions that handle \code{amsr} data
+#' @family things related to \code{amsr} data
+#' @family things related to \code{amsr} data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -61,7 +62,7 @@ setMethod(f="show",
 #' @param ... Ignored.
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions that handle \code{amsr} data
+#' @family things related to \code{amsr} data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -108,7 +109,7 @@ setMethod(f="summary",
 #' @param x An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
 #' @author Dan Kelley
 #' @template sub_subTemplate
-#' @family functions that handle \code{amsr} data
+#' @family things related to \code{amsr} data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -192,7 +193,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a \code{amsr} Object
 #' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
-#' @family functions that handle \code{amsr} data
+#' @family things related to \code{amsr} data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
@@ -224,7 +225,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{amsr} data
+#' @family things related to \code{amsr} data
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -260,7 +261,7 @@ setMethod(f="plot",
 #' @seealso \code{\link{plot,amsr-method}} for an example.
 #' @author Dan Kelley and Chantelle Layton
 #'
-#' @family functions that handle \code{amsr} data
+#' @family things related to \code{amsr} data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",

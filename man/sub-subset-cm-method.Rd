@@ -52,11 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{plot,cm-method}}, \code{\link{read.cm}},
-  \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -67,9 +62,18 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+  \code{\link{cm-class}}, \code{\link{cm}},
+  \code{\link{plot,cm-method}}, \code{\link{read.cm}},
+  \code{\link{subset,cm-method}},
+  \code{\link{summary,cm-method}}
 }
 

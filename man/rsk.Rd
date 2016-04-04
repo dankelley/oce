@@ -23,4 +23,12 @@ plot(subset(as.ctd(rsk),pressure<10))
 \references{
 \url{https://rbr-global.com/}
 }
+\seealso{
+Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
+  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
+  \code{\link{rsk-class}}, \code{\link{rskPatm}},
+  \code{\link{rskToc}}, \code{\link{subset,rsk-method}},
+  \code{\link{summary,rsk-method}}
+}
 

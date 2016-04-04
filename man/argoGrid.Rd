@@ -53,8 +53,9 @@ imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{argo} data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{as.argo}},
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argo}}, \code{\link{as.argo}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

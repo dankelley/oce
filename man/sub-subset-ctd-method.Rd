@@ -61,19 +61,6 @@ ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
 summary(ctd)
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -84,9 +71,24 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{as.ctd}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

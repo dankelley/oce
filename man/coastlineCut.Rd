@@ -39,9 +39,12 @@ mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", 
 
 }
 \seealso{
-Other functions that handle \code{coastline} data: \code{\link{[[,coastline-method}},
+Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}}, \code{\link{coastlineBest}},
+  \code{\link{as.coastline}},
+  \code{\link{coastline-class}},
+  \code{\link{coastlineBest}},
+  \code{\link{coastlineWorld}},
   \code{\link{plot,coastline-method}},
   \code{\link{read.coastline.openstreetmap}},
   \code{\link{read.coastline.shapefile}},

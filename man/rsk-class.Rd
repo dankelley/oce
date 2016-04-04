@@ -31,7 +31,16 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+
+Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
+  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
+  \code{\link{rskPatm}}, \code{\link{rskToc}},
+  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
+  \code{\link{summary,rsk-method}}
 }
 

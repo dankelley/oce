@@ -30,7 +30,7 @@ Dan Kelley
 \seealso{
 Other functions that extract parts of oce objects: \code{\link{[[,adp-method}}
 
-Other functions that handle \code{ladp} data: \code{\link{as.ladp}},
+Other things related to \code{ladp} data: \code{\link{as.ladp}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }

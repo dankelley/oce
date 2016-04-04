@@ -84,13 +84,16 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{lobo} data: \code{\link{[[<-,lobo-method}},
-  \code{\link{as.lobo}}, \code{\link{plot,lobo-method}},
+Other things related to \code{lobo} data: \code{\link{[[<-,lobo-method}},
+  \code{\link{as.lobo}}, \code{\link{lobo-class}},
+  \code{\link{lobo}}, \code{\link{plot,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }

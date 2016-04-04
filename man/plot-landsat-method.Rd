@@ -136,9 +136,10 @@ data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{landsat} data: \code{\link{[[,landsat-method}},
+Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}}, \code{\link{read.landsat}},
+  \code{\link{landsatTrim}}, \code{\link{landsat}},
+  \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
 \concept{

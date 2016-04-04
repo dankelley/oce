@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,ladp-method}
 \alias{plot,ladp-method}
-\alias{plot.ladp}
 \title{Plot an ladp object}
 \usage{
 \S4method{plot}{ladp}(x, which = c("u", "v"), ...)
@@ -23,10 +22,6 @@ and northerly velocity components.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{as.ladp}}, \code{\link{ladp-class}},
-  \code{\link{summary,ladp-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -38,11 +33,18 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
+  \code{\link{as.ladp}}, \code{\link{ladp-class}},
+  \code{\link{summary,ladp-method}}
 }
 

@@ -99,12 +99,15 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,amsr-me
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,rsk-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}}
 
-Other functions that handle \code{adv} data: \code{\link{[[<-,adv-method}},
+Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
+  \code{\link{adv-class}}, \code{\link{adv}},
   \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}},

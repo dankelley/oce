@@ -67,8 +67,9 @@ plot(met, which=3:4)
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{met} data: \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{plot,met-method}},
+Other things related to \code{met} data: \code{\link{as.met}},
+  \code{\link{met-class}}, \code{\link{met}},
+  \code{\link{plot,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }

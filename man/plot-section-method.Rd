@@ -202,15 +202,6 @@ The documentation for \code{\link{section-class}} explains the
 structure of section objects, and also outlines the other functions dealing
 with them.
 
-Other functions that handle \code{section} data: \code{\link{[[,section-method}},
-  \code{\link{[[<-,section-method}},
-  \code{\link{as.section}}, \code{\link{read.section}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -223,10 +214,23 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
+  \code{\link{as.section}}, \code{\link{read.section}},
+  \code{\link{section-class}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 }
 

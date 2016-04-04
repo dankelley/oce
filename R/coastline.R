@@ -8,6 +8,7 @@
 #' or replaced with \code{\link{[[<-,coastline-method}}.
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
+#' @family things related to \code{coastline} data
 setClass("coastline", contains="oce")
 
 
@@ -36,6 +37,7 @@ setClass("coastline", contains="oce")
 #' also in October 2015, so it is likely to be reasonably stable, but be aware
 #' that webpages do tend to change.
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{coastline} data
 NULL
 
 setMethod(f="initialize",
@@ -53,7 +55,7 @@ setMethod(f="initialize",
 #' @title Extract Something From a \code{coastline} Object
 #' @param x A coastline object, i.e. one inheriting from \code{\link{coastline-class}}.
 #' @template sub_subTemplate
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -62,7 +64,7 @@ setMethod(f="[[",
 
 #' @title Replace Parts of a \code{coastline} Object
 #' @param x An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="coastline", i="ANY", j="ANY"),
@@ -78,7 +80,7 @@ setMethod(f="[[<-",
 #' @param ... Ignored.
 #' @return A \code{coastline} object.
 #' @author Dan Kelley
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 setMethod(f="subset",
           signature="coastline",
           definition=function(x, subset, ...) {
@@ -106,7 +108,7 @@ setMethod(f="subset",
 #' call to \code{\link{read.coastline}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
@@ -135,7 +137,7 @@ setMethod(f="summary",
 #' @return An object of \code{\link[base]{class}} \code{"coastline"} (for
 #' details, see \code{\link{read.coastline}}).
 #' @author Dan Kelley
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
@@ -278,7 +280,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' }
 #' 
 #' @family functions that plot \code{oce} data
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
@@ -690,7 +692,7 @@ read.coastline <- function(file,
 #' 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
 #' Technical Description}, March 1998, available at
 #' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -862,7 +864,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
 #' @inheritParams read.coastline.shapefile
 #' @return An object of \code{\link{coastline-class}}
 #' @author Dan Kelley
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
@@ -939,7 +941,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
 #' processing.
 #' @return The name of a coastline that can be loaded with \code{data()}.
 #' @author Dan Kelley
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "coastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
@@ -1003,7 +1005,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' }
 #'
 #' @return a new coastline object
-#' @family functions that handle \code{coastline} data
+#' @family things related to \code{coastline} data
 coastlineCut <- function(coastline, lon_0=0)
 {
     if (lon_0 == 0)

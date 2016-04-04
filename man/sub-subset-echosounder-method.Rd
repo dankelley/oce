@@ -52,13 +52,6 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that handle \code{echosounder} data: \code{\link{[[,echosounder-method}},
-  \code{\link{as.echosounder}},
-  \code{\link{plot,echosounder-method}},
-  \code{\link{read.echosounder}},
-  \code{\link{subset,echosounder-method}},
-  \code{\link{summary,echosounder-method}}
-
 Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
@@ -69,9 +62,21 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,oce-method}},
+  \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
+  \code{\link{[[<-,sealevel-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
+
+Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
+  \code{\link{as.echosounder}},
+  \code{\link{echosounder-class}},
+  \code{\link{echosounder}},
+  \code{\link{plot,echosounder-method}},
+  \code{\link{read.echosounder}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{summary,echosounder-method}}
 }
 

@@ -23,8 +23,9 @@ data ranges, etc.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{met} data: \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}}
+Other things related to \code{met} data: \code{\link{as.met}},
+  \code{\link{met-class}}, \code{\link{met}},
+  \code{\link{plot,met-method}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}}
 }
 

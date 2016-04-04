@@ -38,7 +38,14 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
   \code{\link{ctd}}, \code{\link{echosounder}},
   \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{section}},
-  \code{\link{topoWorld}}
+  \code{\link{met}}, \code{\link{sealevel}},
+  \code{\link{section}}, \code{\link{topoWorld}}
+
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
+  \code{\link{plot,adv-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}},
+  \code{\link{xyzToEnuAdv}}
 }
 

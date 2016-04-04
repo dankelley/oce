@@ -31,8 +31,8 @@ data have been manipulated.
 Dan Kelley
 }
 \seealso{
-Other functions that handle \code{gps} data: \code{\link{[[,gps-method}},
-  \code{\link{[[<-,gps-method}},
+Other things related to \code{gps} data: \code{\link{[[,gps-method}},
+  \code{\link{[[<-,gps-method}}, \code{\link{gps-class}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
 }

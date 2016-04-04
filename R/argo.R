@@ -20,6 +20,7 @@
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family classes provided by \code{oce}
+#' @family things related to \code{argo} data
 setClass("argo", contains="oce")
 
 #' ARGO drifter dataset
@@ -42,6 +43,7 @@ setClass("argo", contains="oce")
 #' downloaded from the \code{usgodae.org} website in March 2012.
 #'     
 #' @family datasets provided with \code{oce}
+#' @family things related to \code{argo} data
 NULL
 
 #' @title Extract Something From a \code{argo} Object
@@ -51,7 +53,7 @@ NULL
 #' dim(argo[['temperature']])
 #'
 #' @template sub_subTemplate
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -61,7 +63,7 @@ setMethod(f="[[",
 #' @title Replace Parts of a \code{argo} Object
 #' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
 #' @template sub_subsetTemplate
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
@@ -166,7 +168,7 @@ argoDataNames <- function(names)
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -309,7 +311,7 @@ setMethod(f="subset",
 #' summary(argo)
 #' 
 #' @author Dan Kelley 
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -374,7 +376,7 @@ ncdfFixMatrix <- function(x)
 #' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #' 
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 #' @author Dan Kelley
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
@@ -589,7 +591,7 @@ argoDecodeFlags <- function(f) # local function
 #' Similar steps can be followed on other servers.
 #'
 #' @author Dan Kelley
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -813,7 +815,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' objects, and also outlines the other functions dealing with them.
 #' 
 #' @author Dan Kelley
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure, 
                        units=NULL,
@@ -946,7 +948,7 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{argo} data
+#' @family things related to \code{argo} data
 #' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("argo"),

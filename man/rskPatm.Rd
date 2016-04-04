@@ -39,10 +39,11 @@ Dan Kelley
 The documentation for \code{\link{rsk-class}} explains the structure of
 \code{rsk} objects, and also outlines the other functions dealing with them.
 
-Other functions that handle \code{rsk} data: \code{\link{[[,rsk-method}},
+Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
   \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
-  \code{\link{rskToc}}, \code{\link{subset,rsk-method}},
+  \code{\link{rsk-class}}, \code{\link{rskToc}},
+  \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
 

@@ -172,15 +172,6 @@ The documentation for \code{\link{coastline-class}} explains the
 structure of coastline objects, and also outlines the other functions
 dealing with them.
 
-Other functions that handle \code{coastline} data: \code{\link{[[,coastline-method}},
-  \code{\link{[[<-,coastline-method}},
-  \code{\link{as.coastline}}, \code{\link{coastlineBest}},
-  \code{\link{coastlineCut}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
-
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
@@ -192,11 +183,25 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
   \code{\link{plot,rsk-method}},
   \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+  \code{\link{[[<-,coastline-method}},
+  \code{\link{as.coastline}},
+  \code{\link{coastline-class}},
+  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
+  \code{\link{coastlineWorld}},
+  \code{\link{read.coastline.openstreetmap}},
+  \code{\link{read.coastline.shapefile}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{summary,coastline-method}}
 }
 

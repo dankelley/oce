@@ -20,9 +20,9 @@
 #'     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
 #'     things. Use \code{names(ladp@data)} to find the names of the data.
 #' 
-#' @family functions that handle \code{ladp} data
-#'
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{ladp} data
 setClass("ladp", contains="oce")
 
 setMethod(f="initialize",
@@ -66,7 +66,7 @@ setMethod(f="initialize",
 #' 
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{ladp} data
+#' @family things related to \code{ladp} data
 setMethod(f="summary",
           signature="ladp",
           definition=function(object, ...) {
@@ -88,7 +88,7 @@ setMethod(f="summary",
 #'
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ladp} data
+#' @family things related to \code{ladp} data
 #' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
@@ -123,10 +123,9 @@ setMethod(f="[[",
 #' @param which Vector of names of items to be plotted.
 #' @param ... Other arguments, passed to plotting functions.
 #' 
-#' @aliases plot.ladp
 #' @author Dan Kelley
 #'
-#' @family functions that handle \code{ladp} data
+#' @family things related to \code{ladp} data
 #' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("ladp"),
@@ -167,7 +166,7 @@ fixColumn <- function(x) {
 #'
 #' @author Dan Kelley
 #' 
-#' @family functions that handle \code{ladp} data
+#' @family things related to \code{ladp} data
 as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (inherits(longitude, "oce")) {
