@@ -41,6 +41,8 @@
 
   \tabular{lll}{
     \strong{Deprecated} \tab \strong{Replacement} \tab \strong{Notes}\cr
+    \code{date} argument to \code{\link{as.ctd}} \tab - \tab Was never used,
+    and could be confused with \code{startTime}\cr
     \code{fill} argument to \code{\link{mapPlot}} etc. \tab \code{col} \tab Rationalize with \code{\link{polygon}}\cr
   }
 }

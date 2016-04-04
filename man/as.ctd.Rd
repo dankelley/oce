@@ -106,12 +106,23 @@ as of March 2016 and will be removed soon.)}
 
 \item{station}{optional string containing a station identifier.}
 
-\item{date}{optional string containing the date at which the profile was
-started.}
+\item{date}{optional string indicating
+the date at which the profile was started. This is copied verbatim into
+the result's \code{metadata} slot, and is not used in any processing. Since
+it serves no purpose, this argument is deprecated as of April 2016,
+and will be marked 'defunct' in an upcoming CRAN release;
+see \link{oce-deprecated}.}
 
-\item{startTime}{optional string containing the start time.}
+\item{startTime}{optional indication of the start time for the profile, 
+which is used in some several plotting functions.  This is best given as a 
+\code{\link{POSIXt}} time, but it may also be a character string
+that can be converted to a time with \code{\link{as.POSIXct}},
+using \code{UTC} as the timezone.}
 
-\item{recovery}{optional string indicating the recovery time.}
+\item{recovery}{optional indication of the recovery time, in the format
+described for \code{startTime}.  This is not presently used by \code{oce},
+and is stored in the result's \code{metadata} slot just in case the user
+requires it.}
 
 \item{longitude}{optional numerical value containing longitude in decimal
 degrees, positive in the eastern hemisphere. If this is a single number,
