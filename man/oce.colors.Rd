@@ -162,7 +162,7 @@ image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbidity")
 image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
 image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
  
-# 3. Acoustic-Doppler profiler data; note that plot.adp() puts makes
+# 3. Acoustic-Doppler profiler data; note that plot,adp-method() puts makes
 # zlim be symmetric about zero velocity.
 par(mfrow=c(1,1))
 data(adp)
