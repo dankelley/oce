@@ -253,6 +253,23 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+#' Summarize an ADP object
+#' 
+#' Summarize data in an \code{adp} object.
+#' 
+#' Pertinent summary information is presented.
+#' 
+#' @aliases summary.adp summary,adp,missing-method summary,adp-method
+#' @param object an object of class \code{"adp"}, usually, a result of a call
+#' to \code{\link{read.oce}}, \code{\link{read.adp.rdi}}, or
+#' \code{\link{read.adp.nortek}}.
+#' @param \dots further arguments passed to or from other methods.
+#' @return A matrix containing statistics of the elements of the \code{data}
+#' slot.
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{adp} data
 setMethod(f="summary",
           signature="adp",
           definition=function(object, ...) {

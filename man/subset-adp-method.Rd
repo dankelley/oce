@@ -45,6 +45,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}}, \code{\link{xyzToEnuAdp}}
+  \code{\link{read.aquadopp}},
+  \code{\link{summary,adp-method}},
+  \code{\link{xyzToEnuAdp}}
 }
 

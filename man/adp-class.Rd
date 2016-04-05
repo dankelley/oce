@@ -224,6 +224,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
+  \code{\link{summary,adp-method}},
   \code{\link{xyzToEnuAdp}}
 }
 
