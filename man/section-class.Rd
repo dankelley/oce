@@ -55,13 +55,35 @@ Sections can be read with \code{\link{read.section}} or created with
 \code{\link{sectionAddStation}}.
 
 Sections may be sorted with \code{\link{sectionSort}}, subsetted with
-\code{\link{subset.section}}, smoothed with \code{\link{sectionSmooth}}, and
+\code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
 gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-\code{\link{plot.section}}.  
+\code{\link{plot,section-method}}.  
     
-Statistical summaries are provided by \code{\link{summary.section}}, while
+Statistical summaries are provided by \code{\link{summary,section-method}}, while
 overviews are provided by \code{show.section}.  
     
 The sample dataset \code{\link{section}} contains data along WOCE line A03.
+
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{argo-class}},
+  \code{\link{bremen-class}}, \code{\link{cm-class}},
+  \code{\link{coastline-class}}, \code{\link{ctd-class}},
+  \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 }
 

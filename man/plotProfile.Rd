@@ -147,7 +147,7 @@
 \value{None.}
 
 \seealso{\code{\link{read.ctd}} scans ctd information from a file,
-  \code{\link{plot.ctd}} is a general plotting function for \code{ctd} objects,
+  \code{\link{plot,ctd-method}} is a general plotting function for \code{ctd} objects,
   and \code{\link{plotTS}} plots a temperature-salinity diagrams. }
 
 \examples{

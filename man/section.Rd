@@ -29,12 +29,24 @@ plot(GSg, map.xlim=c(-80,-60))
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{met}}, \code{\link{sealevel}},
+  \code{\link{topoWorld}}
+
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}}, \code{\link{section-class}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 }
 

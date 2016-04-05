@@ -20,11 +20,11 @@ setClass("satellite", contains="oce")
 #' [1] for a given time, clicking and then unclicking the radio button
 #' that turns off the model-based filling of cloud gaps.
 #'
-#' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
 #' @references
 #' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+#' @author Dan Kelley
+#' @family things related to satellite data
 setClass("g1sst", contains="satellite")
  
 #' Read G1SST satellite data
@@ -64,11 +64,11 @@ setClass("g1sst", contains="satellite")
 #' lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
 #' }
 #'
+#' @author Dan Kelley
 #' @references
 #' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
 #' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
-#' @family functions dealing with satellite data
-#' @author Dan Kelley
+#' @family things related to satellite data
 read.g1sst <- function(filename)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))

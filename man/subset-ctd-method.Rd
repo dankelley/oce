@@ -3,7 +3,6 @@
 \docType{methods}
 \name{subset,ctd-method}
 \alias{subset,ctd-method}
-\alias{subset.ctd}
 \title{Subset a CTD object}
 \usage{
 \S4method{subset}{ctd}(x, subset, ...)
@@ -16,7 +15,7 @@
 \item{...}{Ignored.}
 }
 \value{
-A ctd object.
+A \code{ctd} object.
 }
 \description{
 This function is somewhat analogous to
@@ -36,17 +35,15 @@ plot(subset(ctd, pressure<10))
 Dan Kelley
 }
 \seealso{
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,argo-method}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

@@ -3,8 +3,7 @@
 \docType{methods}
 \name{summary,ctd-method}
 \alias{summary,ctd-method}
-\alias{summary.ctd}
-\title{Summarize a CTD object}
+\title{Summarize a \code{ctd} Object}
 \usage{
 \S4method{summary}{ctd}(object, ...)
 }
@@ -28,20 +27,15 @@ summary(ctd)
 Dan Kelley
 }
 \seealso{
-The documentation for \code{\link{ctd-class}} explains the structure
-of CTD objects, and also outlines the other functions dealing with them.
-
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,argo-method}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}}, \code{\link{write.ctd}}
 }
 

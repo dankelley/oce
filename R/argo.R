@@ -1,6 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold argo data
+#' Class to hold Argo data
 #'
 #' This class stores data from argo floats. It will be in fairly
 #' active development in the early months of 2016.
@@ -8,7 +8,7 @@
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 #' pressures with \code{\link{argoGrid}}.  Plots can be made with
-#' \code{\link{plot.argo}}, while \code{\link{summary,argo-method}} produces statistical
+#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
 #' summaries and \code{show} produces overviews. The usual oce generic
 #' functions are available, e.g. \code{\link{[[,argo-method}} may 
 #' be used to extract data, and \code{\link{[[<-,argo-method}} may
@@ -16,6 +16,11 @@
 #'
 #' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 #' argo-related datasets that may be useful in a wider context.
+#'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @family classes provided by \code{oce}
+#' @family things related to \code{argo} data
 setClass("argo", contains="oce")
 
 #' ARGO drifter dataset
@@ -34,44 +39,35 @@ setClass("argo", contains="oce")
 #' plot(argo, which="trajectory", coastline=coastlineWorld)
 #' }
 #' 
-#' 
 #' @source This is the profile stored in the file \code{6900388_prof.nc}
 #' downloaded from the \code{usgodae.org} website in March 2012.
 #'     
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{argo} data
 NULL
 
-
-#' Extract something from an argo object
+#' @title Extract Something From a \code{argo} Object
+#' @param x A argo object, i.e. one inheriting from \code{\link{argo-class}}.
+#' @examples
+#' data(argo)
+#' dim(argo[['temperature']])
 #'
-#' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @family functions that deal with argo data
-#' @family functions that access oce data and metadata
+#' @template sub_subTemplate
+#' @family things related to \code{argo} data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               callNextMethod()
           })
 
-#' Change something within an argo object
-#'
-#' In addition to the usual insertion of elements by name, note
-#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
-#' 
-#' @param x An argo object, i.e. one inheriting from \code{\link{argo-class}}.
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value recoverd from \code{x}.
-#' @family functions that deal with argo data
-#' @family functions that alter oce data and metadata
+#' @title Replace Parts of a \code{argo} Object
+#' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{argo} data
 setMethod(f="[[<-",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, value) {
-              callNextMethod()
+              callNextMethod(x=x, i=i, j=j, value=value)
           })
 
 setMethod(f="initialize",
@@ -150,8 +146,6 @@ argoDataNames <- function(names)
 #' @param ... Ignored.
 #' @return An argo object.
 #' 
-#' @aliases subset.argo
-#'
 #' @examples
 #' library(oce)
 #' data(argo)
@@ -173,7 +167,8 @@ argoDataNames <- function(names)
 #' plotTS(subset(argo, "adjusted"))
 #'
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#'
+#' @family things related to \code{argo} data
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -305,27 +300,18 @@ setMethod(f="subset",
 #' @description Summarizes some of the data in an \code{argo} object.
 #' 
 #' @details Pertinent summary information is presented.
-#' @aliases summary.argo
-#' 
 #' @param object}{an object of class \code{"argo"}, usually, a result of a
 #'     call to \code{\link{read.argo}}.
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' 
 #' @return A matrix containing statistics of the elements of the \code{data} slot.
-#' 
-#' 
 #' @examples
 #' library(oce)
 #' data(argo)
 #' summary(argo)
 #' 
-#' 
-#' @references \url{http://www.argo.ucsd.edu/}
-#' 
 #' @author Dan Kelley 
-
-#' @family functions that deal with argo data
+#' @family things related to \code{argo} data
 setMethod(f="summary",
           signature="argo",
           definition=function(object, ...) {
@@ -390,7 +376,7 @@ ncdfFixMatrix <- function(x)
 #' imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #' 
-#' @family functions that deal with argo data
+#' @family things related to \code{argo} data
 #' @author Dan Kelley
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
@@ -606,7 +592,7 @@ argoDecodeFlags <- function(f) # local function
 #' Similar steps can be followed on other servers.
 #'
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#' @family things related to \code{argo} data
 read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
@@ -830,7 +816,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' objects, and also outlines the other functions dealing with them.
 #' 
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#' @family things related to \code{argo} data
 as.argo <- function(time, longitude, latitude,
                        salinity, temperature, pressure, 
                        units=NULL,
@@ -961,9 +947,10 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @references \url{http://www.argo.ucsd.edu/}
 #' 
-#' @aliases plot.argo
 #' @author Dan Kelley
-#' @family functions that deal with argo data
+#'
+#' @family things related to \code{argo} data
+#' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,
@@ -1187,7 +1174,7 @@ setMethod(f="plot",
 #'
 #' # 2. A less restrictive case: include also 'questionable' data,
 #' # and only apply this action to salinity.
-#' argoNew <- handleFlags(argo, flags=list(salinity=c(3:4)))
+#' argoNew <- handleFlags(argo, flags=list(salinity=4))
 #'}
 #'
 #' @family functions that handle CTD data

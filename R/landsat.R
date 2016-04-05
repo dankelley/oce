@@ -1,24 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Sample landsat Dataset
-#'
-#' This is a subset of the Landsat-8 image designated LC80080292014065LGN00, an
-#' image from March 2014 that covers Nova Scotia and portions of the Bay of
-#' Fundy and the Scotian Shelf. The image is decimated to reduce the memory
-#' requirements of this package, yielding a spatial resolution of about 2km.
-#'
-#' @details
-#' The original data were downloaded from the USGS earthexplorer website, although
-#' other sites can also be used to uncover it by name.  The code below shows how
-#' the dataset was created.  The decimation by 100 reduces file size from about 1GB
-#' to under 100Kb.
-#'
-#' @name landsat
-#' @docType data
-#' @keywords satellite data
-#' @concept satellite
-NULL
-
 
 #' Class to Hold landsat Data
 #'
@@ -128,14 +109,11 @@ NULL
 #' \code{\link{read.oce}}, and one such file is provided by the \CRANpkg{ocedata}
 #' package as a dataset named \code{landsat}.
 #' 
-#' Plots may be made with \code{\link{plot.landsat}}.  Since plotting can be quite
+#' Plots may be made with \code{\link{plot,landsat-method}}.  Since plotting can be quite
 #' slow, decimation is available both in the plotting function and as the separate
 #' function \code{\link{decimate}}.  Images may be subsetted with
 #' \code{\link{landsatTrim}}.
 #'
-#' @author Dan Kelley
-#' @concept satellite
-#' @family functions dealing with satellite data
 #' @references
 #' 1. See the USGS "glovis" web site.
 #' 
@@ -167,11 +145,32 @@ NULL
 #' Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
 #' \url{http://www.terrapub.co.jp/journals/JO/pdf/5001/50010017.pdf}
 #'
+#' @concept satellite
 #' @author Dan Kelley and Clark Richards
-#' @aliases landsat-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
-setClass("satellite", contains="oce")
+#' @family things related to \code{landsat} data
+#' @family things related to \code{landsat} data
 setClass("landsat", contains="satellite")
+
+
+#' Sample landsat Dataset
+#'
+#' This is a subset of the Landsat-8 image designated LC80080292014065LGN00, an
+#' image from March 2014 that covers Nova Scotia and portions of the Bay of
+#' Fundy and the Scotian Shelf. The image is decimated to reduce the memory
+#' requirements of this package, yielding a spatial resolution of about 2km.
+#'
+#' @details
+#' The original data were downloaded from the USGS earthexplorer website, although
+#' other sites can also be used to uncover it by name.  The code below shows how
+#' the dataset was created.  The decimation by 100 reduces file size from about 1GB
+#' to under 100Kb.
+#'
+#' @name landsat
+#' @docType data
+#' @family things related to \code{landsat} data
+NULL
+
 
 setMethod(f="show",
           signature="landsat",
@@ -207,10 +206,12 @@ setMethod(f="initialize",
 #' @param object An object of \code{\link{landsat-class}}, usually a result of a
 #' call to \code{\link{read.landsat}}.
 #' @param ... Ignored.
-#' @author Dan Kelley
+#'
 #' @concept satellite
-#' @family functions dealing with satellite data
-#' @aliases summary.landsat
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{landsat} data
 setMethod(f="summary",
           signature="landsat",
           definition=function(object, ...) {
@@ -255,7 +256,7 @@ setMethod(f="summary",
 #' 1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
 #' good idea in almost all processing steps.  It also makes sense for
 #' plotting, and in fact is done through the \code{decimate} argument of
-#' \code{\link{plot.landsat}}.
+#' \code{\link{plot,landsat-method}}.
 #'
 #' \emph{Accessing derived data.}  One may retrieve several derived quantities
 #' that are calculated from data stored in the object:
@@ -293,9 +294,11 @@ setMethod(f="summary",
 #' @param i The item to extract.
 #' @param j Optional additional information on the \code{i} item (ignored).
 #' @param ... Optional additional information (ignored).
-#' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{landsat} data
 setMethod(f="[[",
           signature(x="landsat", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -620,10 +623,12 @@ setMethod(f="[[",
 #'
 #' @param ... optional arguments passed to plotting functions.
 #'
-#' @aliases plot.landsat
-#' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{landsat} data
+#' @family functions that plot \oce{oce} data
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
@@ -635,12 +640,12 @@ setMethod(f="plot",
                               transform=diag(c(red.f, green.f, blue.f, alpha.f)),
                               debug=getOption("oceDebug"), ...)
           {
-              oceDebug(debug, "plot.landsat(..., which=c(", paste(which, collapse=","),
+              oceDebug(debug, "plot,landsat-method(..., which=c(", paste(which, collapse=","),
                        "), decimate=", decimate,
                        ", zlim=", if(missing(zlim)) "(missing)" else zlim,
                        ", ...) {\n", sep="", unindent=1)
               if (!length(x@data)) {
-                  warning("In plot.landsat(): object contains no band data\n", call.=FALSE)
+                  warning("In plot,landsat-method(): object contains no band data\n", call.=FALSE)
                   return(invisible())
               }
               terralook <- FALSE
@@ -815,7 +820,7 @@ setMethod(f="plot",
               } else {
                   stop("unknown value of 'which'")
               }
-              oceDebug(debug, "} # plot.landsat()\n", unindent=1)
+              oceDebug(debug, "} # plot,landsat-method()\n", unindent=1)
           })
 
 
@@ -1018,7 +1023,7 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' 
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to \code{landsat} data
 read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.landsat(file=\"", file, "\",",
@@ -1146,7 +1151,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
 #'
 #' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to \code{landsat} data
 landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 {
     if (!is.matrix(data))
@@ -1205,7 +1210,7 @@ landsatAdd <- function(x, data, name, debug=getOption("oceDebug"))
 #' with them.
 #' @author Dan Kelley and Clark Richards
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to \code{landsat} data
 landsatTrim <- function(x, ll, ur, box, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "landsat"))

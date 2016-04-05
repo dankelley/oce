@@ -6,7 +6,7 @@
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to satellite data
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
@@ -25,9 +25,8 @@ setMethod(f="initialize",
 #' @param object The object to be summarized.
 #' @param ... Ignored.
 #' @author Dan Kelley
-#' @aliases summary.satellite summary.g1sst
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to satellite data
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
@@ -62,10 +61,10 @@ setMethod(f="summary",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @author Dan Kelley
-#' @aliases plot.satellite
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @author Dan Kelley
+#' @family things related to satellite data
+#' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)

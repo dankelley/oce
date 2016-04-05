@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,landsat-method}
 \alias{plot,landsat-method}
-\alias{plot.landsat}
 \title{Plot a landsat Object}
 \usage{
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,
@@ -137,17 +136,11 @@ data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
 Dan Kelley
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
+Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
+  \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
+  \code{\link{summary,landsat-method}}
 }
 \concept{
 satellite

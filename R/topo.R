@@ -1,3 +1,58 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+
+#' Class to store topographic data
+#' 
+#' Topographic data may be read with \code{\link{read.topo}} or assembled with
+#' \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
+#' and summaries with \code{\link{summary,topo-method}}. Data retrieval may be
+#' done with \code{\link{[[,topo-method}} and replacement with
+#' \code{\link{[[<-,topo-method}}.  The key data, stored within the data slot,
+#' are: \code{longititude}, \code{latitude}, and \code{z}.
+#' 
+#' @author Dan Kelley
+#' 
+#' @family classes provided by \code{oce}
+#' @family things related to \code{topo} data
+setClass("topo", contains="oce")
+
+#' Global topographic dataset at half-degree resolution
+#' 
+#' Global topographic dataset at half-degree resolution, created by decimating the
+#' ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
+#' ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
+#' 
+#' The coarse resolution can be a problem in plotting depth contours along with
+#' coastlines in regions of steep topography. For example, near the southeast
+#' corner of Newfoundland, a 200m contour will overlap a coastline drawn with
+#' \code{\link[ocedata]{coastlineWorldFine}}. The solution in such cases is to
+#' download a higher-resolution topography file and create a \code{topo} object
+#' with \code{\link{read.topo}} or \code{\link{as.topo}}.
+#' 
+#' @name topoWorld
+#' @docType data
+#'
+#' @usage data(topoWorld)
+#' 
+#' @source
+#' The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
+#' \url{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/}, decoded,
+#' decimated from 1/12th degree resolution to 1/2 degree resolution, and shifted so
+#' that longitude runs from negative to positive instead of from 0 to 360.
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(topoWorld) 
+#' par(mfrow=c(2,1))
+#' plot(topoWorld, location=NULL)
+#' imagep(topoWorld)
+#' }
+#'
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{topo} data
+NULL
+
 setMethod(f="initialize",
           signature="topo",
           definition=function(.Object,longitude,latitude,z,filename="", units) {
@@ -12,6 +67,25 @@ setMethod(f="initialize",
           })
 
 
+#' Summarize a topography data object
+#' 
+#' Pertinent summary information is presented, including the longitude and
+#' latitude range, and the range of elevation.
+#' 
+#' @param object A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.
+#' 
+#' @param \dots Further arguments passed to or from other methods.
+#' 
+#' @return A matrix containing statistics of the elements of the \code{data} slot.
+#' 
+#' @examples
+#' library(oce)
+#' data(topoWorld)
+#' summary(topoWorld)
+#' 
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{topo} data
 setMethod(f="summary",
           signature="topo",
           definition=function(object, ...) {
@@ -20,20 +94,58 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-
+#' @title Extract Something From a \code{topo} Object
+#' @param x A topo object, i.e. one inheriting from \code{\link{topo-class}}.
+#' @examples
+#' data(topoWorld)
+#' dim(topoWorld[['z']])
+#'
+#' @section Details of the specialized topo method:
+#' There are no special features for \code{\link{topo-class}} data;
+#' the general method is used directly.
+#' @template sub_subTemplate
+#' @family things related to \code{topo} data
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("longitude","latitude","z", "filename"))
-              if (i == "longitude") return(x@data$longitude)
-              else if (i == "latitude") return(x@data$latitude)
-              else if (i == "z") return(x@data$z)
-              else callNextMethod()
+              callNextMethod()
           })
 
+#' @title Replace Parts of a \code{topo} Object
+#' @param x An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}
+#' @family things related to \code{topo} data
+#' @template sub_subsetTemplate
+setMethod(f="[[<-",
+          signature(x="topo", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
 
+#' Subset a topo object
+#' 
+#' @details
+#' This function is somewhat analogous to \code{\link{subset.data.frame}}.
+#' Subsetting can be by \code{time} or \code{distance}, but these may not be
+#' combined; use a sequence of calls to subset by both.
+#' 
+#' @param x A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.
+#' 
+#' @param subset A condition to be applied to the \code{data} portion of \code{x}.
+#' See \sQuote{Details}.
+#' 
+#' @param ... Ignored.
+#' 
+#' @return A new \code{\link{topo-class}} object.
+#' 
+#' @examples
+#' ## northern hemisphere
+#' library(oce)
+#' data(topoWorld)
+#' plot(subset(topoWorld, latitude > 0))
+#' 
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{topo} data
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -64,9 +176,34 @@ setMethod(f="subset",
               res
           })
 
-
-
-
+#' Interpolate within a topography dataset
+#' 
+#' Bilinear interpolation is used so that values will vary smoothly within a
+#' longitude-latitude grid cell. Note that the sign convention for
+#' \code{longitude} and \code{latitude} must match that in \code{topo}.
+#' 
+#' @param longitude Vector of longitudes (in the same sign convention as used in
+#' \code{topo}).
+#'   
+#' @param latitude Vector of latitudes (in the same sign convention as used in
+#' \code{topo}).
+#'   
+#' @param topo A \code{topo} object, i.e. inheriting from
+#' \code{\link{topo-class}}.
+#' 
+#' 
+#' @return Vector of heights giving the elevation of the earth above means sea
+#' level at the indicated location on the earth.
+#' 
+#' @examples
+#' library(oce)
+#' data(topoWorld)
+#' # "The Gully", approx. 400m deep, connects Gulf of St Lawrence with North Atlantic
+#' topoInterpolate(45, -57, topoWorld)
+#' 
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{topo} data
 topoInterpolate <- function(longitude, latitude, topo)
 {
     if (missing(longitude)) stop("must supply longitude")
@@ -77,6 +214,94 @@ topoInterpolate <- function(longitude, latitude, topo)
 }
 
 
+#' Plot topography data
+#' 
+#' This plots contours of topographic elevation.  The plot aspect ratio is set
+#' based on the middle latitude in the plot.  The line properties, such as
+#' \code{land.lwd}, may either be a single item, or a vector; in the latter case,
+#' the length must match the length of the corresponding properties, e.g.
+#' \code{land.z}.
+#' 
+#' @param x A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.
+#' 
+#' @param xlab,ylab Character strings giving a label for the x and y axes.
+#' 
+#' @param asp Aspect ratio for plot.  The default is for \code{plot.coastline} to
+#' set the aspect ratio to give natural latitude-longitude scaling somewhere near
+#' the centre latitude on the plot. Often, it makes sense to set \code{asp}
+#' yourself, e.g. to get correct shapes at 45N, use \code{asp=1/cos(45*pi/180)}.
+#' Note that the land mass is not symmetric about the equator, so to get good
+#' world views you should set \code{asp=1} or set \code{ylim} to be symmetric
+#' about zero.  Any given value of \code{asp} is ignored, if \code{clongitude} and
+#' \code{clatitude} are given.
+#' 
+#' @param clatitude Optional center latitude of map, in degrees north.  If this
+#' and \code{clongitude} are provided, then any provided value of \code{asp} is
+#' ignored, and instead the plot aspect ratio is computed based on the center
+#' latitude.  Also, if \code{clongitude} and \code{clatitude} are provided, then
+#' \code{span} must be, also.
+#' 
+#' @param clongitude Optional center longitude of map, in degrees east; see
+#' \code{clatitude}.
+#' 
+#' @param span Optional suggested span of plot, in kilometers (must be supplied,
+#' if \code{clongitude} and \code{clatitude} are supplied).
+#' 
+#' @param expand Numerical factor for the expansion of plot limits, showing area
+#' outside the plot, e.g. if showing a ship track as a coastline, and then an
+#' actual coastline to show the ocean boundary.  The value of \code{expand} is
+#' ignored if either \code{xlim} or \code{ylim} is given.
+#' 
+#' @param water.z Depths at which to plot water contours.  If not provided, these
+#' are inferred from the data.
+#' 
+#' @param col.water Colours corresponding to \code{water.z} values.  If not
+#' provided, these will be \code{"fill"} colours from
+#' \code{\link{oce.colorsGebco}}.
+#' 
+#' @param lty.water Line type(s) for water contours.
+#' 
+#' @param lwd.water Line width(s) for water contours.
+#' 
+#' @param land.z Depths at which to plot land contours.  If not provided, these
+#' are inferred from the data.  If set to \code{NULL}, no land contours will be
+#' plotted.
+#' 
+#' @param col.land Colours corresponding to \code{land.z} values.  If not
+#' provided, these will be \code{"fill"} colours from
+#' \code{\link{oce.colorsGebco}}.
+#' 
+#' @param lty.land Line type(s) for land contours.
+#' 
+#' @param lwd.land Line width(s) for land contours.
+#' 
+#' @param geographical Logical, indicating whether to plot latitudes and
+#' longitudes without minus signs.
+#' 
+#' @param location Location for a legend (or \code{"none"}, for no legend).
+#' 
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
+#' \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' 
+#' @param mar Four-element numericl vector to be used with
+#' \code{\link{par}("mar")}.
+#' 
+#' @param debug Numerical value, with positive values indicating higher levels of
+#' debugging.
+#' 
+#' @param ... Additional arguments passed on to plotting functions.
+#' 
+#' 
+#' @examples
+#' library(oce)
+#' data(topoWorld)
+#' plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
+#' 
+#' @author Dan Kelley
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{topo} data
 setMethod(f="plot",
           signature=signature("topo"),
           definition=function(x,
@@ -344,6 +569,39 @@ setMethod(f="plot",
               invisible()
           })
 
+
+#' Read an topography file
+#' 
+#' Read a file that contains topographic data in the ETOPO dataset, as provided by
+#' the NOAA website [1].
+#' 
+#' @param file Name of a file containing an ETOPO-format dataset.
+#' 
+#' @param \dots Additional arguments, passed to called routines.
+#' 
+#' 
+#' @return
+#' An object of type \code{\link{topo-class}} that which has the following slots.
+#' \item{\code{data}}{: a data frame containing \code{lat}, \code{lon}, and
+#'   \code{z}}
+#' \item{\code{metadata}}{: a list containing the source filename}
+#' \item{\code{processingLog}}{: a log, in the standard \code{oce} format.}
+#' 
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' topoMaritimes <- read.topo("topoMaritimes.asc")
+#' plot(topographyMaritimes)
+#' }
+#' 
+#' @references
+#' 1. NOAA website that provides datasets:
+#' \url{http://maps.ngdc.noaa.gov/viewers/wcs-client} with the \code{ArcGIS ASCII
+#'   Grid} menu item selected.
+#' 
+#' @author Dan Kelley
+#' @family things related to \code{topo} data
 read.topo <- function(file, ...)
 {
     ## handle GEBCO netcdf files or an ascii format
@@ -405,15 +663,31 @@ read.topo <- function(file, ...)
     res
 }
 
-as.topo <- function(longitude, latitude, z, units=NULL, filename="")
+
+#' Coerce data into topo dataset
+#' 
+#' @param longitude Either a vector of longitudes (in degrees east, and bounded by
+#' -180 and 180), or a \code{bathy} object created by \code{getNOAA.bathy()} from
+#' the \code{marmap} package; in the second case, all other arguments are ignored.
+#' 
+#' @param latitude A vector of latitudes.
+#' 
+#' @param z A matrix of heights (positive over land).
+#' 
+#' @param filename Name of data (used when called by \code{\link{read.topo}}.
+#' 
+#' @return An object of \code{\link{topo-class}}.
+#' 
+#' @author Dan Kelley
+#'
+#' @family things related to \code{topo} data
+as.topo <- function(longitude, latitude, z, filename="")
 {
     if (inherits(longitude, "bathy")) {
         bathy <- longitude
         longitude <- as.numeric(rownames(bathy))
         latitude <- as.numeric(colnames(bathy))
         z <- as.matrix(bathy)
-        ##> if ("units" %in% names(bathy@metadata))
-        ##>     units <- bathy@metadata$units
     }
     ncols <- length(longitude)
     nrows <- length(latitude)
@@ -424,10 +698,9 @@ as.topo <- function(longitude, latitude, z, units=NULL, filename="")
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
-    if (missing(units))
-        units <- list(latitude=list(unit=expression(degree*E), scale=""),
-                      longitude=list(unit=expression(degree*N), scale=""),
-                      z=list(unit=expression(m), scale=""))
+    units <- list(latitude=list(unit=expression(degree*E), scale=""),
+                  longitude=list(unit=expression(degree*N), scale=""),
+                  z=list(unit=expression(m), scale=""))
     res <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename, units=units)
     res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))

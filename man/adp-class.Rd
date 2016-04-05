@@ -145,7 +145,7 @@ line bisecting beam pairs.  The length of this vector equals
 
 The \code{processingLog} slot is in standard form and needs little comment.
 }
-\section{methods}{
+\section{Accessing and altering information within \code{adp-class} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated
 above, e.g.  or an adp object named \code{adv}, the data are provided by
@@ -191,7 +191,7 @@ general ADP function \code{\link{read.adp}} or specialized variants
 \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
 \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 
-ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
 generic function so it may be called simply as \code{plot}.
 
 Statistical summaries of ADP data are provided by the generic function
@@ -202,5 +202,20 @@ Conversion from beam to xyz coordinates may be done with
 with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+
+Other classes provided by \code{oce}: \code{\link{adv-class}},
+  \code{\link{argo-class}}, \code{\link{bremen-class}},
+  \code{\link{cm-class}}, \code{\link{coastline-class}},
+  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}},
+  \code{\link{xyzToEnuAdp}}
 }
 

@@ -3,7 +3,6 @@
 \docType{methods}
 \name{summary,landsat-method}
 \alias{summary,landsat-method}
-\alias{summary.landsat}
 \title{Summarize a landsat Object}
 \usage{
 \S4method{summary}{landsat}(object, ...)
@@ -22,17 +21,11 @@ Provides a summary of a some information about an object of
 Dan Kelley
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
+Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
+  \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,satellite-method}}
+  \code{\link{read.landsat}}
 }
 \concept{
 satellite

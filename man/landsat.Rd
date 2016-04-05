@@ -16,9 +16,12 @@ other sites can also be used to uncover it by name.  The code below shows how
 the dataset was created.  The decimation by 100 reduces file size from about 1GB
 to under 100Kb.
 }
-\concept{
-satellite
+\seealso{
+Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
+  \code{\link{landsatTrim}},
+  \code{\link{plot,landsat-method}},
+  \code{\link{read.landsat}},
+  \code{\link{summary,landsat-method}}
 }
-\keyword{data}
-\keyword{satellite}
 

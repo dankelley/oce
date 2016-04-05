@@ -1,3 +1,5 @@
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
 #' Class to store hydrographic section data
 #' 
 #' Class to store hydrographic section data, with standard slots \code{metadata},
@@ -33,11 +35,11 @@
 #' \code{\link{sectionAddStation}}.
 #' 
 #' Sections may be sorted with \code{\link{sectionSort}}, subsetted with
-#' \code{\link{subset.section}}, smoothed with \code{\link{sectionSmooth}}, and
+#' \code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
 #' gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-#' \code{\link{plot.section}}.  
+#' \code{\link{plot,section-method}}.  
 #'     
-#' Statistical summaries are provided by \code{\link{summary.section}}, while
+#' Statistical summaries are provided by \code{\link{summary,section-method}}, while
 #' overviews are provided by \code{show.section}.  
 #'     
 #' The sample dataset \code{\link{section}} contains data along WOCE line A03.
@@ -55,6 +57,9 @@
 #'     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
+#'
+#' @family classes provided by \code{oce}
+#' @family things related to \code{section} data
 setClass("section", contains="oce")
 
 
@@ -85,9 +90,8 @@ setClass("section", contains="oce")
 #' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 #' from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #' 
-#' @family datasets provided with oce
-#' 
-#' @author Dan Kelley
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{section} data
 NULL
 
 setMethod(f="initialize",
@@ -101,7 +105,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a CTD section
+#' Summarize an oceanographic section
 #' 
 #' Pertinent summary information is presented, including station locations,
 #' distance along track, etc.
@@ -120,9 +124,7 @@ setMethod(f="initialize",
 #' data(section)
 #' summary(section)
 #' 
-#' @aliases summary.section
-#' 
-#' @family functions that handle section data
+#' @family things related to \code{section} data
 #' 
 #' @author Dan Kelley
 setMethod(f="summary",
@@ -161,26 +163,41 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' Extract Something From a section Object
+#' @title Extract Something From a Section Object
+#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
+#' @family things related to \code{section} data
+#' @examples
+#' data(section)
+#' length(section[["latitude"]])
+#' length(section[["latitude", "byStation"]])
 #'
-#' @param x A section object, i.e. one inheriting from \code{\link{section-class}}.
-#' @param i The item to extract. This may be the name of a variable stored in the station
-#' data, or the word \code{"station"}, which will return a \code{\link{list}} of 
-#' \code{\link{ctd-class}} objects holding the station data, if \code{j} is not specified,
-#' or the j-th station in the section, if \code{j} is given.
-#' @param j Optional additional information on the \code{i} item. If this is \code{"byStation"}
-#' and \code{i} is either \code{"latitude"} or \code{"longitude"}, then only one value
-#' is returned for each station.
-#' @param ... Optional additional information (ignored).
+#' @section Details of the specialized section method:
+#' If \code{i} is the string \code{"station"}, then the method 
+#' will return a \code{\link{list}} of 
+#' \code{\link{ctd-class}} objects holding the station data. If \code{j} 
+#' is also given and is an integer, then just the j-th station in the section is returned.
+#'
+#' If \code{i} is \code{"station ID"}, then the IDs of the stations in the 
+#' section are returned.
+#'
+#' If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
+#' height is returned (as calculated with \code{\link{swDynamicHeight}(x)}).
+#'
+#' If \code{i} is \code{"distance"}, then the distance along the section is
+#' returned, using \code{\link{geodDist}}.
+#'
+#' If \code{i} is \code{"depth"}, then a vector containing the depths
+#' of the stations is returned.
+#'
+#' If none of the conditions listed above holds, the general
+#' method is used (see \sQuote{Details of the general method}).
 #'
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
 #' length(section[["latitude", "byStation"]])
 #'
-#' @family functions that handle section data
-#' @family functions that access oce data and metadata
-#'
+#' @template sub_subTemplate
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
@@ -238,11 +255,31 @@ setMethod(f="[[",
                   res <- NULL
                   for (stn in seq_along(x@data$station))
                       res <- c(res, x@data$station[[stn]]@data$pressure) # FIXME not really depth
+              ##?20160328? } else {
+              ##?20160328?     res <- unlist(lapply(x@data$station, function(X) X[[i]]))
               } else {
-                  res <- unlist(lapply(x@data$station, function(X) X[[i]]))
+                  callNextMethod()
               }
               res
           })
+
+#' @title Replace Parts of a \code{section} Object
+#' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
+#' @family things related to \code{section} data
+#' @template sub_subsetTemplate
+#' @examples
+#' # Change section ID from a03 to A03
+#' data(section)
+#' section[["sectionId"]]
+#' section[["sectionId"]] <- toupper(section[["sectionId"]])
+#' section[["sectionId"]]
+#' @author Dan Kelley
+setMethod(f="[[<-",
+          signature(x="section", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
 
 setMethod(f="show",
           signature="section",
@@ -288,9 +325,7 @@ setMethod(f="show",
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' 
-#' @aliases subset.section
-#'
-#' @family functions that handle section data
+#' @family things related to \code{section} data
 #' 
 #' @author Dan Kelley
 setMethod(f="subset",
@@ -330,7 +365,7 @@ setMethod(f="subset",
                   res@metadata$latitude <- lat
                   res@data <- data
                   res@processingLog <- x@processingLog
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.section(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
               } else if (length(grep("stationId", subsetString))) {
                   keep <- eval(substitute(subset),
                                envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
@@ -339,7 +374,7 @@ setMethod(f="subset",
                   res@metadata$latitude <- x@metadata$latitude[keep]
                   res@metadata$date <- x@metadata$date[keep]
                   res@data$station <- x@data$station[keep]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               } else {                        # subset within the stations
                   if ("indices" %in% dotsNames)
                       stop("2. cannot give both 'subset' and 'indices'")
@@ -389,7 +424,7 @@ setMethod(f="subset",
                           res@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
                       }
                   }
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.section(x, subset=", subsetString, ")", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               }
               res
           })
@@ -429,9 +464,9 @@ setMethod(f="subset",
 #' plot(ss)
 #' }
 #' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{section} data
 sectionSort <- function(section, by)
 {
     if (missing(by)) {
@@ -594,7 +629,7 @@ makeSection <- function(item, ...)
 #' 
 #' @param station A ctd object holding data for the station to be added.
 #' 
-#' 
+#' @aliases sectionAddCtd
 #' @return An object of \code{\link[base]{class}} \code{section}.
 #' 
 #' @examples
@@ -610,11 +645,9 @@ makeSection <- function(item, ...)
 #' ctd3[["station"]] <- "Stn 3"
 #' sectionAddStation(section, ctd3)
 #' 
-#' @aliases sectionAddCtd
-#"
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#'
+#' @family things related to \code{section} data
 sectionAddStation <- function(section, station)
 {
     if (missing(section)) stop("must provide a section to which the ctd is to be added")
@@ -815,11 +848,10 @@ sectionAddCtd <- sectionAddStation
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 #' 
-#' @aliases plot.section
-#' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{section} data
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
@@ -1684,7 +1716,7 @@ setMethod(f="plot",
 #' If only one of these is present in the data file, the data will be called
 #' \code{salinity} in the \code{data} slot of the return value. However, if both
 #' are present, then \code{CTDSAL} is stored as \code{salinity} and \code{SALNTY}
-#' is stored as \code{salinity2}.
+#' is stored as \code{salinityBottle}.
 #' 
 #' @param file A file containing a set of CTD observations.  At present, only the
 #' \emph{exchange BOT} format is accepted (see Details).
@@ -1721,9 +1753,9 @@ setMethod(f="plot",
 #' the so-called \emph{exchange BOT} data format can be processed by read.section()
 #' at this time.
 #' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{section} data
 read.section <- function(file, directory, sectionId="", flags,
 			 ship="", scientist="", institute="",
                          missingValue=-999,
@@ -1819,9 +1851,9 @@ read.section <- function(file, directory, sectionId="", flags,
     salinityUnit <- NULL
     
     ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
-    ## both exist, store SALNTY as 'salinity2'.
+    ## both exist, store SALNTY as 'salinityBottle'.
     haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
-    salinity2 <- NULL # so we can check later
+    salinityBottle <- NULL # so we can check later
     if (1 == length(w <- which(var.names=="CTDSAL"))) {
         haveSalinity <- TRUE
         salinity <- as.numeric(data[, w - col.start + 1])
@@ -1832,10 +1864,10 @@ read.section <- function(file, directory, sectionId="", flags,
     if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
         haveSalinity <- TRUE
         if (haveTwoSalinities) {
-            salinity2 <- as.numeric(data[, w - col.start + 1])
-            salinity2Unit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+            salinityBottle <- as.numeric(data[, w - col.start + 1])
+            salinityBottleUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
             if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
-                flags$salinity2 <- as.numeric(data[, wf - col.start + 1])
+                flags$salinityBottle <- as.numeric(data[, wf - col.start + 1])
         } else {
             salinity <- as.numeric(data[, w - col.start + 1])
             salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
@@ -1963,8 +1995,10 @@ read.section <- function(file, directory, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
-        if (length(salinity2))
-            thisStation@data$salinity2 <- salinity2[select]
+        if (length(salinityBottle)) {
+            thisStation@metadata$units$salinityBottle <- salinityBottleUnit
+            thisStation@data$salinityBottle <- salinityBottle[select]
+        }
 
         thisStation@metadata$units$temperature <- temperatureUnit
         thisStation@metadata$units$salinity <- salinityUnit
@@ -2057,10 +2091,9 @@ read.section <- function(file, directory, sectionId="", flags,
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
 #' 
-#' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{section} data
 sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
@@ -2156,9 +2189,9 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
 #' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{section} data
 sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
 {
     method <- match.arg(method)
@@ -2349,10 +2382,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' sec3 <- as.section(subset(argo, profile<5))
 #' summary(sec3)
 #' 
-#' 
-#' @family functions that handle section data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{section} data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
     if (missing(salinity))

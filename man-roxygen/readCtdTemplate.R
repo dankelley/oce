@@ -39,7 +39,7 @@
 #' 
 #' @param ... additional arguments, passed to called routines.
 #' 
-#' @family functions that handle CTD data
+#' @family functions that handle \code{ctd} data
 #' 
 #' @author Dan Kelley
 #' 

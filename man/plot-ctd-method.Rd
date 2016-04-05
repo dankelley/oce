@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
-\alias{plot.ctd}
 \title{Plot seawater CTD data}
 \usage{
 \S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
@@ -39,7 +38,7 @@ is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
     \item \code{which=4} or \code{which="text"} gives a textual
     summary of some aspects of the data
     \item \code{which=5} or \code{which="map"} gives a map plotted
-    with \code{\link{plot.coastline}}, with a dot for
+    with \code{\link{plot,coastline-method}}, with a dot for
     the station location.  Notes near the top boundary of the map give the
     station number, the sampling date, and the name of the chief scientist,
     if these are known. Note that the longitude will be converted to a value
@@ -72,10 +71,10 @@ is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
 \dQuote{History}.}
 
 \item{borderCoastline}{Colour of coastlines and international borders, passed
-to \code{\link{plot.coastline}} if a map is included in \code{which}.}
+to \code{\link{plot,coastline-method}} if a map is included in \code{which}.}
 
 \item{colCoastline}{Fill colour of coastlines and international borders, passed
-to \code{\link{plot.coastline}} if a map is included in \code{which}. Set to
+to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 \code{NULL} to avoid filling.}
 
 \item{eos}{String indicating the equation of state to be used, either
@@ -96,8 +95,8 @@ name of a built-in coastline (\code{"coastlineWorld"},
 a suitable coastline for the locale, or \code{"none"} to prevent
 the drawing of a coastline.  There is a speed penalty for providing
 \code{coastline} as a character string, because it forces
-\code{\link{plot.coastline}} to load it on every call.  So, if
-\code{plot.coastline} is to be called several times for a given
+\code{\link{plot,coastline-method}} to load it on every call.  So, if
+\code{\link{plot,coastline-method}} is to be called several times for a given
 coastline, it makes sense to load it in before the first call, and to
 supply the object as an argument, as opposed to the name of the object.}
 
@@ -131,13 +130,13 @@ plotted) DEPRECATED 2014-01-07.}
 
 \item{span}{Optional span of map, in km.  If not given, this will be determined
 as a small multiple of the distance to the nearest point of land, in an
-a@parampt to show some coastline in the plot.}
+attempt to show some coastline in the plot.}
 
 \item{showHemi}{Logical indicating whether to show hemisphere in axis tick
 labels.}
 
 \item{lonlabel, latlabel, sides}{Optional vectors of longitude and latitude to
-label on the indicated sides of plot, passed to \code{\link{plot.coastline}}.
+label on the indicated sides of plot, passed to \code{\link{plot,coastline-method}}.
 Using these arguments permits reasonably simple customization.  If they are are
 not provided, reasonable defaults will be used.}
 
@@ -201,8 +200,11 @@ necessary because margin adjustment is the basis for the method used by
 only works if \code{length(which)=1}, and it will yield odd results if the
 value of \code{which} does not match that in the previous plots.}
 
-\item{debug}{Set to a positive value to get debugging information during
-processing.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 
 \item{...}{Optional arguments passed to plotting functions. A common example is
 to set \code{df}, for use in \link{swN2} calculations.}
@@ -221,15 +223,15 @@ and then to draw other panels after this call.
 
 If only 2 panels are requested, they will be drawn side by side.
 
-If more than one panel is drawn, then on exit from \code{plot.ctd}, the value
+If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
 of \code{par} will be reset to the value it had before the function call.
 However, if only one panel is drawn, the adjustments to \code{par} made within
-\code{plot.ctd} are left in place, so that further additions may be made to the
+\code{plot,ctd-method} are left in place, so that further additions may be made to the
 plot.
 }
 \section{History}{
 
-Until February, 2016, \code{plot.ctd} relied on a now-defunct argument
+Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
 Also, now it is possible to set the edge of coasts and international
 boundaries, with \code{borderCoastline}.
@@ -247,16 +249,36 @@ Dan Kelley
 The documentation for \code{\link{ctd-class}} explains the structure of CTD
 objects, and also outlines the other functions dealing with them.
 
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,argo-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+  \code{\link{plot,amsr-method}},
+  \code{\link{plot,argo-method}},
+  \code{\link{plot,bremen-method}},
+  \code{\link{plot,cm-method}},
+  \code{\link{plot,coastline-method}},
+  \code{\link{plot,gps-method}},
+  \code{\link{plot,ladp-method}},
+  \code{\link{plot,lisst-method}},
+  \code{\link{plot,lobo-method}},
+  \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
+  \code{\link{plot,rsk-method}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
+  \code{\link{plot,topo-method}},
+  \code{\link{plot,windrose-method}},
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

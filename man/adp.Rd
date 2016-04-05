@@ -30,8 +30,17 @@ plot(adp, which=15:18)
 
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adv}},
-  \code{\link{argo}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{section}}
+Other datasets provided with \code{oce}: \code{\link{adv}},
+  \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{met}}, \code{\link{sealevel}},
+  \code{\link{section}}, \code{\link{topoWorld}}
+
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{as.adp}}, \code{\link{subset,adp-method}},
+  \code{\link{xyzToEnuAdp}}
 }
 

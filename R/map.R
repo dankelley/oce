@@ -609,7 +609,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude
 #' to label on the indicated sides of plot, passed to
-#' \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+#' \code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
 #' simple customization.  If they are are not provided, reasonable defaults
 #' will be used.
 #'
@@ -2104,7 +2104,8 @@ map2lonlat <- function(x, y, init=c(0,0))
     if (requireNamespace("rgdal", quietly=TRUE)) {
         owarn <- options()$warn
         options(warn=-1)
-        XY <- rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)
+        ## April 2016: rgdal::project will soon return named quantities
+        XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE))
         ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
         ## up on the idea of using rawTransform().
         ##> n <- length(x)

@@ -26,8 +26,11 @@ items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 
-\item{debug}{A debugging flag; set this to a positive value to get debugging
-information during processing.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 A ctd object.
@@ -52,16 +55,15 @@ Dan Kelley
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
 
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,argo-method}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

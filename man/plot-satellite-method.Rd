@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,satellite-method}
 \alias{plot,satellite-method}
-\alias{plot.satellite}
 \title{Plot a satellite object}
 \usage{
 \S4method{plot}{satellite}(x, y, asp, debug = getOption("oceDebug"), ...)
@@ -27,16 +26,29 @@ For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
 Dan Kelley
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
+Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
+  \code{\link{plot,argo-method}},
+  \code{\link{plot,bremen-method}},
+  \code{\link{plot,cm-method}},
+  \code{\link{plot,coastline-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{plot,gps-method}},
+  \code{\link{plot,ladp-method}},
+  \code{\link{plot,lisst-method}},
+  \code{\link{plot,lobo-method}},
+  \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
+  \code{\link{plot,rsk-method}},
+  \code{\link{plot,sealevel-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
+  \code{\link{plot,topo-method}},
+  \code{\link{plot,windrose-method}},
+  \code{\link{plotScan}}, \code{\link{tidem-class}}
+
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
   \code{\link{summary,satellite-method}}
 }
 \concept{

@@ -60,12 +60,14 @@ plot(gss2)
 Dan Kelley
 }
 \seealso{
-Other functions that handle section data: \code{\link{[[,section-method}},
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{plot,section-method}},
-  \code{\link{read.section}},
+  \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionGrid}}, \code{\link{sectionSort}},
+  \code{\link{section}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }

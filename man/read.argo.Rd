@@ -81,8 +81,8 @@ object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
 \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
 and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
 stored in the \code{data} slot. Meanwhile, the quality-control flags
-\code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressureQc}
-and \code{pressureAdjustedQc} in the \code{metadata} slot.
+\code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
+and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 }
 \section{Data sources}{
 
@@ -166,8 +166,9 @@ is the main document describing argo data.
 The documentation for \code{\link{argo-class}} explains the structure of argo
 objects, and also outlines the other functions dealing with them.
 
-Other functions that deal with argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argo}},
   \code{\link{as.argo}}, \code{\link{plot,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

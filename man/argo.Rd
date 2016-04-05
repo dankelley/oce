@@ -21,11 +21,21 @@ data(coastlineWorld)
 plot(argo, which="trajectory", coastline=coastlineWorld)
 }
 
-
 }
 \seealso{
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{section}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{met}}, \code{\link{sealevel}},
+  \code{\link{section}}, \code{\link{topoWorld}}
+
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{as.argo}},
+  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
+  \code{\link{subset,argo-method}},
+  \code{\link{summary,argo-method}}
 }
 

@@ -37,7 +37,11 @@ bin is of the same pressure range as the first inside bin.  For other values of
 \code{"lm"} method produces warnings about "prediction from a rank-deficient
 fit", a larger value of \code{"e"} should be used.}
 
-\item{debug}{a Boolean, set to \code{TRUE} to debug the reading process.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 An object of \code{\link{ctd-class}}, with pressures that are as set by
@@ -88,17 +92,15 @@ application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 The documentation for \code{\link{ctd-class}} explains the structure of
 CTD objects, and also outlines the other functions dealing with them.
 
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}},
-  \code{\link{handleFlags,argo-method}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

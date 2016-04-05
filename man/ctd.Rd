@@ -34,8 +34,24 @@ plot(ctd)
 The full profile (not trimmed to the downcast) is available as
 \link{ctdRaw}.
 
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}},
-  \code{\link{ctdRaw}}, \code{\link{section}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{echosounder}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

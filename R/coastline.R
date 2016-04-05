@@ -1,3 +1,45 @@
+#' Class to store coastline data
+#' 
+#' Class to store coastline data, which may be read with
+#' \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
+#' plotted with \code{\link{plot,coastline-method}} or summarized with
+#' \code{\link{summary,coastline-method}}. Data within \code{coastline}
+#' objects may be retrieved with \code{\link{[[,coastline-method}}
+#' or replaced with \code{\link{[[<-,coastline-method}}.
+#' @author Dan Kelley
+#' @family classes provided by \code{oce}
+#' @family things related to \code{coastline} data
+setClass("coastline", contains="oce")
+
+
+#' World coastline
+#' 
+#' This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
+#' suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
+#' Finer resolution coastline files are provided in the
+#' \code{ocedata} package.
+#'
+#' @name coastlineWorld
+#' @docType data
+#'
+#' @section Installing your own datasets: Follow the procedure along the lines
+#' described in \dQuote{Details}, where of course your source file will differ.
+#' Also, you should change the name of the coastline object from
+#' \code{coastlineWorld}, to avoid conflicts with the built-in dataset. Save
+#' the \code{.rda} file to some directory of your choosing, e.g. perhaps
+#' \code{/data/coastlines} or \code{~/data/coastlines} on a unix-type machine.
+#' Then, whenever you need the file, use \code{\link{load}} to load it.  Most
+#' users find it convenient to do the loading in an \code{\link{Rprofile}}
+#' startup file.
+#' @author Dan Kelley
+#' @source Downloaded from \url{http://www.naturalearthdata.com}, in
+#' \code{ne_110m_admin_0_countries.shp}. This procedure worked in July 2015 and
+#' also in October 2015, so it is likely to be reasonably stable, but be aware
+#' that webpages do tend to change.
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{coastline} data
+NULL
+
 setMethod(f="initialize",
           signature="coastline",
           definition=function(.Object, longitude=NULL, latitude=NULL, filename="", fillable=FALSE) {
@@ -10,9 +52,37 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+#' @title Extract Something From a \code{coastline} Object
+#' @param x A coastline object, i.e. one inheriting from \code{\link{coastline-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{coastline} data
+setMethod(f="[[",
+          signature(x="coastline", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
+          })
 
+#' @title Replace Parts of a \code{coastline} Object
+#' @param x An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}
+#' @family things related to \code{coastline} data
+#' @template sub_subsetTemplate
+setMethod(f="[[<-",
+          signature(x="coastline", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
+#' Summarize a coastline data object
+#' 
+#' Summarizes coastline length, bounding box, etc.
+#' @param x A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.
+#' @param subset An expression indicating how to subset \code{x}.
+#' @param ... Ignored.
+#' @return A \code{coastline} object.
+#' @author Dan Kelley
+#' @family things related to \code{coastline} data
 setMethod(f="subset",
-          signature="oce",
+          signature="coastline",
           definition=function(x, subset, ...) {
               if (missing(subset))
                   stop("must give 'subset'")
@@ -28,6 +98,17 @@ setMethod(f="subset",
               res
           })
 
+
+                                        
+#' Summarize a coastline data object
+#' 
+#' Summarizes coastline length, bounding box, etc.
+#' 
+#' @param object an object of class \code{"coastline"}, usually, a result of a
+#' call to \code{\link{read.coastline}} or \code{\link{read.oce}}.
+#' @param \dots further arguments passed to or from other methods.
+#' @author Dan Kelley
+#' @family things related to \code{coastline} data
 setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
@@ -38,6 +119,25 @@ setMethod(f="summary",
           })
 
  
+#' Coerce data into coastline dataset
+#' 
+#' Coerces a sequence of longitudes and latitudes into a coastline dataset.
+#' 
+#' This may be used when \code{\link{read.coastline}} cannot read a file, or
+#' when the data have been manipulated.
+#' 
+#' @param longitude the longitude in decimal degrees, positive east of
+#' Greenwich, or a data frame with columns named \code{latitude} and
+#' \code{longitude}, in which case these values are extracted from the data
+#' frame and the second argument is ignored.
+#' @param latitude the latitude in decimal degrees, positive north of the
+#' Equator.
+#' @param fillable boolean indicating whether the coastline can be drawn as a
+#' filled polygon.
+#' @return An object of \code{\link[base]{class}} \code{"coastline"} (for
+#' details, see \code{\link{read.coastline}}).
+#' @author Dan Kelley
+#' @family things related to \code{coastline} data
 as.coastline <- function(longitude, latitude, fillable=FALSE)
 {
     if (missing(longitude)) stop("must provide longitude")
@@ -55,10 +155,132 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
     res
 }
 
-## old default: fill with 'lightgray'; border colour black (no way to control)
-## to retain old default: border=NULL
-##                        col='lightgray' (*not* the polygon() default)
-## If "fill" %in% names(list(...)) and it is a colour, set col=that colour
+
+#' Plot a coastline
+#' 
+#' Plot a coastline
+#' 
+#' This function plots a coastline.  An attempt is made to fill the space of
+#' the plot, and this is done by limiting either the longitude range or the
+#' latitude range, as appropriate, by modifying the eastern or northern limit,
+#' as appropriate.
+#' 
+#' To get an inset map inside another map, draw the first map, do
+#' \code{par(new=TRUE)}, and then call \code{plot,coastline-method} with a value of
+#' \code{mar} that moves the inset plot to a desired location on the existing
+#' plot, and with \code{bg="white"}.
+#' 
+#' @param x A \code{coastline} object, as read by \code{\link{read.coastline}}
+#' or created by \code{\link{as.coastline}}, or a list containing items named
+#' \code{longitude} and \code{latitude}.
+#' @param xlab label for x axis
+#' @param ylab label for y axis
+#' @param showHemi logical indicating whether to show the hemisphere in axis
+#' tick labels.
+#' @param asp Aspect ratio for plot.  The default is for \code{plot,coastline-method}
+#' to set the aspect ratio to give natural latitude-longitude scaling somewhere
+#' near the centre latitude on the plot. Often, it makes sense to set
+#' \code{asp} yourself, e.g. to get correct shapes at 45N, use
+#' \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric about
+#' the equator, so to get good world views you should set \code{asp=1} or set
+#' \code{ylim} to be symmetric about zero. Any given value of \code{asp} is
+#' ignored, if \code{clongitude} and \code{clatitude} are given.
+#' @param clongitude,clatitude optional center latitude of map, in decimal
+#' degrees.  If both \code{clongitude} and \code{clatitude} are provided, then
+#' any provided value of \code{asp} is ignored, and instead the plot aspect
+#' ratio is computed based on the center latitude.  If \code{clongitude} and
+#' \code{clatitude} are provided, then \code{span} must also be provided, and
+#' in this case, it is not permitted to also specify \code{longitudelim} and
+#' \code{latitudelim}.
+#' @param span optional suggested diagonal span of the plot, in kilometers.
+#' The plotted span is usually close to the suggestion, although the details
+#' depend on the plot aspect ratio and other factors, so some adjustment may be
+#' required to fine-tune a plot.  A value for \code{span} must be supplied, if
+#' \code{clongitude} and \code{clatitude} are supplied.
+#' @param lonlabel,latlabel,sides optional vectors of longitude and latitude to
+#' label on the indicated sides of plot, passed to
+#' \code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
+#' simple customization.  If they are are not provided, reasonable defaults
+#' will be used.
+#' @param projection optional map projection to use (see
+#' \code{\link{mapPlot}}).  If set to \code{FALSE} then no projection is used,
+#' and the data are plotted in a cartesion frame, with aspect ratio set to
+#' reduce distortion near the middle of the plot.  This option is useful if the
+#' coastline produces spurious horizontal lines owing to islands crossing the
+#' plot edges (a problem that plagues map projections).  If \code{projection}
+#' is not set, a Mercator projection is used for latitudes below about 70
+#' degrees, as if \code{projection="+proj=merc"} had been supplied, or a
+#' Stereopoloar one is used as if \code{projection="+proj=stere"}.  Otherwise,
+#' \code{projection} must be a character string identifying a projection
+#' accepted by \code{\link{mapPlot}}.
+#' @param expand numerical factor for the expansion of plot limits, showing
+#' area outside the plot, e.g. if showing a ship track as a coastline, and then
+#' an actual coastline to show the ocean boundary.  The value of \code{expand}
+#' is ignored if either \code{xlim} or \code{ylim} is given.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param bg optional colour to be used for the background of the map.  This
+#' comes in handy for drawing insets (see \dQuote{details}).
+#' @param fill a legacy parameter that will be permitted only temporarily; see
+#' \dQuote{History}.
+#' @param border colour of coastlines and international borders (passed to
+#' \code{\link{polygon}}, which does the drawing).
+#' @param col the colour with which to fill (passed to \code{\link{polygon}},
+#' which does the drawing.) This is ignored unless the coastline object is
+#' fillable.
+#' @param axes boolean, set to \code{TRUE} to plot axes.
+#' @param cex.axis value for axis font size factor.
+#' @param add boolean, set to \code{TRUE} to draw the coastline on an existing
+#' plot.  Note that this retains the aspect ratio of that existing plot, so it
+#' is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi /
+#' 180)}, where \code{clat} is the central latitude of the plot.
+#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' effect is to prevent the present function from adjusting margins, which is
+#' necessary because margin adjustment is the basis for the method used by
+#' \code{\link{plotInset}}.
+#' @param geographical flag indicating the style of axes.  If
+#' \code{geographical=0}, the axes are conventional, with decimal degrees as
+#' the unit, and negative signs indicating the southern and western
+#' hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
+#' values being in decreasing order within the southern and western
+#' hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
+#' are labelled with degrees, minutes and seconds, as appropriate.
+#' @param longitudelim this and \code{latitudelim} provide a second way to
+#' suggest plot ranges. Note that these may not be supplied if
+#' \code{clongitude}, \code{clatitude} and \code{span} are given.
+#' @param latitudelim see \code{longitudelim}.
+#' @param debug set to \code{TRUE} to get debugging information during
+#' processing.
+#' @param \dots optional arguments passed to plotting functions.  For example,
+#' set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.
+#' @return None.
+#' @section History: Until February, 2016, \code{plot,coastline-method} relied on a
+#' now-defunct argument \code{fill} to control colours; \code{col} is to be
+#' used now, instead. Also, in February, 2016, the arguments named
+#' \code{parameters} and \code{orientation} were both removed, as they had
+#' become nonfunctional about a year previously, in the transition to using
+#' the \code{rgdal} package to carry out map projections.
+#' @author Dan Kelley
+#' @seealso The documentation for \code{\link{coastline-class}} explains the
+#' structure of coastline objects, and also outlines the other functions
+#' dealing with them.
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' par(mar=c(2, 2, 1, 1))
+#' data(coastlineWorld)
+#' plot(coastlineWorld)
+#' plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
+#' 
+#' ## Canada in Lambert projection
+#' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
+#'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
+#' }
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{coastline} data
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
@@ -79,7 +301,7 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
-              oceDebug(debug, "plot.coastline(...",
+              oceDebug(debug, "plot(...",
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
@@ -271,14 +493,14 @@ setMethod(f="plot",
                   usrTrimmed <- par('usr')
                   ## Construct axes "manually" because axis() does not know the physical range
                   if (axes) {
-                      prettyLat <- function(yr, ...)
+                      prettyLat<-function(yr, ...)
                       {
                           res <- pretty(yr, ...)
                           if (diff(yr) > 100)
                               res <- seq(-90, 90, 45)
                           res
                       }
-                      prettyLon <- function(xr, ...)
+                      prettyLon<-function(xr, ...)
                       {
                           res <- pretty(xr, ...)
                           if (diff(xr) > 100)
@@ -351,11 +573,33 @@ setMethod(f="plot",
               invisible()
           })
 
+
+#' Scan a coastline data file
+#' 
+#' Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
+#' format.
+#' 
+#' The S and R formats are identical, and consist of two columns, lon and lat,
+#' with land-jump segments separated by lines with two NAs.
+#' 
+#' The MapGen format is of the form \preformatted{ # -b -16.179081 28.553943
+#' -16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
+#' understood.
+#' 
+#' @param file name of file containing coastline data.
+#' @param type type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"},
+#' \code{"shapefile"} or \code{"openstreetmap"}.
+#' @param debug set to TRUE to print information about the header, etc.
+#' @param monitor print a dot for every coastline segment read (ignored except
+#' for reading "shapefile" type)
+#' @param processingLog if provided, the action item to be stored in the log.
+#' (Typically only provided for internal calls; the default that it provides is
+#' better for normal calls by a user.)
+#' @return An object of \code{\link{coastline-class}}.
+#' @author Dan Kelley
 read.coastline <- function(file,
                            type=c("R","S","mapgen","shapefile","openstreetmap"),
-                           debug=getOption("oceDebug"),
-                           monitor=FALSE,
-                           processingLog)
+                           debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     type <- match.arg(type)
     oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1)
@@ -424,18 +668,34 @@ read.coastline <- function(file,
     res
 }
 
+#' Scan a coastline data file in shapefile format
+#' 
+#' Read coastline data stored in the shapefile format [1].
+#' 
+#' @param file name of file containing coastline data.
+#' @param latlim range of (signed) latitudes, used only for shapefiles.
+#' Regions that do not intersect this range are skipped.
+#' @param lonlim as \code{latlim}, but a signed longitude.
+#' @param debug set to TRUE to print information about the header, etc.
+#' @param monitor Logical indicating whether to print an indication of progress through
+#' the file.
+#' @param processingLog if provided, the action item to be stored in the log.
+#' (Typically only provided for internal calls; the default that it provides is
+#' better for normal calls by a user.)
+#' @return An object of \code{\link{coastline-class}}
+#' @section A hack for depth contours: The following demonstrates that this
+#' code is getting close to working with depth contours.  This should be
+#' handled more internally, and a new object for depth contours should be
+#' constructed, of which coastlines could be a subset.
+#' @author Dan Kelley
+#' @references
+#' 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
+#' Technical Description}, March 1998, available at
+#' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+#' @family things related to \code{coastline} data
 read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
-                                     debug=getOption("oceDebug"),
-                                     monitor=FALSE,
-                                     processingLog)
+                                     debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
-    ## References:
-    ## [1] ESRI Shapefile Technical Description. March 1998.
-    ##     http://dl.maptools.org/dl/shapelib/shapefile.pdf
-    ## [2] Wikipedia page on shapefile format
-    ##     http://en.wikipedia.org/wiki/Shapefile#Shapefile_shape_format_.28.shp.29
-    ## Shapefile for Canada:
-    ## http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm
     oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     shapeTypeList <- c("nullshape",    # 0
                        "point",        # 1
@@ -597,10 +857,16 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     res
 }
 
+#' Scan a coastline data file in openstreetmap format
+#' 
+#' Read coastline data stored in the openstreetmap format [1].
+#'
+#' @inheritParams read.coastline.shapefile
+#' @return An object of \code{\link{coastline-class}}
+#' @author Dan Kelley
+#' @family things related to \code{coastline} data
 read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
-                                     debug=getOption("oceDebug"),
-                                     monitor=FALSE,
-                                     processingLog)
+                                     debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1)
     ## FIXME: ignoring lonlim and latlim
@@ -658,6 +924,24 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
     res
 }
 
+
+#' Find the name of the best coastline file
+#' 
+#' Find the name of the most appropriate coastline for a given locale
+#' 
+#' Checks \code{coastlineWorld}, \code{coastlineWorldFine} and
+#' \code{coastlineWorldCoarse}, in that order, to find the one most appropriate
+#' for the locale.
+#' 
+#' @param lonRange range of longitude for locale
+#' @param latRange range of latitude for locale
+#' @param span span of domain in km (if provided, previous two arguments are
+#' ignored).
+#' @param debug set to a positive value to get debugging information during
+#' processing.
+#' @return The name of a coastline that can be loaded with \code{data()}.
+#' @author Dan Kelley
+#' @family things related to \code{coastline} data
 coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "coastlineBest(lonRange=c(", paste(round(lonRange, 2), collapse=","),
@@ -721,11 +1005,12 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' }
 #'
 #' @return a new coastline object
+#' @family things related to \code{coastline} data
 coastlineCut <- function(coastline, lon_0=0)
 {
     if (lon_0 == 0)
         return(coastline)
-    cleanAngle <- function(a)
+    cleanAngle<-function(a)
         ifelse(a<(-180), a+360, ifelse(a>180, a-360, a))
     loncut <- cleanAngle(lon_0+180)
     lon <- coastline[["longitude"]]
