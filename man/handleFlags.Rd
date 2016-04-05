@@ -67,6 +67,7 @@ work, with possible changes to the user interface. Then other
 types will be added, as needed.
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}}
+Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
+  \code{\link{handleFlags,ctd-method}}
 }
 

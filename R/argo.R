@@ -110,7 +110,7 @@ argoDataNames <- function(names)
     names <- gsub("PSAL", "salinity", names)
     names <- gsub("TEMP", "temperature", names)
     names <- gsub("_ADJUSTED", "Adjusted", names)
-    names <- gsub("_QC", "Qc", names)
+    names <- gsub("_QC", "", names)
     names <- gsub("_ERROR", "Error", names)
     names
 }
@@ -195,14 +195,14 @@ setMethod(f="subset",
                       res@data[[adjustedError]] <- NULL
                   }
                   flagNames <- names(x@metadata$flags)
-                  adjustedIndices <- grep(".*AdjustedQc$", flagNames)
+                  adjustedIndices <- grep(".*Adjusted$", flagNames)
                   ##> message("FLAGS")
                   ##> message("flagNames...");print(flagNames)
                   ##> message("adjustedIndices");print(adjustedIndices)
                   for (i in adjustedIndices) {
                       adjusted <- flagNames[i]
-                      base <- gsub("AdjustedQc$", "Qc", adjusted)
-                      adjustedError <- paste(adjusted, "ErrorQc", sep="")
+                      base <- gsub("Adjusted$", "", adjusted)
+                      adjustedError <- paste(adjusted, "Error", sep="")
                       ##> message("    base:          ", base)
                       ##> message("    adjusted:      ", adjusted)
                       ##> message("    adjustedError: ", adjustedError)
@@ -429,6 +429,7 @@ argoDecodeFlags <- function(f) # local function
 {
     res <- unlist(lapply(seq_along(f), function(i) strsplit(f[i], split="")))
     dim(res) <- c(length(res)/length(f), length(f))
+    mode(res) <- "numeric"
     res
 }
 
@@ -496,8 +497,8 @@ argoDecodeFlags <- function(f) # local function
 #' \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
 #' and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
 #' stored in the \code{data} slot. Meanwhile, the quality-control flags
-#' \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressureQc}
-#' and \code{pressureAdjustedQc} in the \code{metadata} slot.
+#' \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
+#' and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 #' 
 #' @param file a character string giving the name of the file to load.
 #' 
@@ -1149,3 +1150,45 @@ setMethod(f="plot",
               invisible()
           })
 
+#' @title Handle flags in ARGO objects
+#' @details
+#' If \code{flags} and \code{actions} are not provided, the
+#' default is to use ARGO flags [1], in which the
+#' value 1 indicates good data, and other values indicate either unchecked,
+#' suspicious, or bad data. Any data not flagged as good are set
+#' to \code{NA} in the returned value. Since Argo flag codes run
+#' from 0 to 4, this default is equivalent to
+#' setting \code{flags=list(c(0, 2:4))} along with
+#' \code{actions=list("NA")}.
+#' @param object An object of \code{\link{argo-class}}.
+#' @template handleFlagsTemplate
+#' @references
+#' 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
+#' @examples
+#'\dontrun{
+#' library(oce)
+#' data(argo)
+#' # 1. Default: anything not flagged as 1 is set to NA, to focus
+#' # solely on 'good', in the Argo scheme.
+#' argoNew <- handleFlags(argo)
+#'
+#' # 2. A less restrictive case: include also 'questionable' data,
+#' # and only apply this action to salinity.
+#' argoNew <- handleFlags(argo, flags=list(salinity=4))
+#'}
+#'
+#' @family functions that handle CTD data
+setMethod("handleFlags",
+          c(object="argo", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
+              ## Default to the Argo QC system, with
+              ## flags from 0 to 4, with flag=1 for acceptable data.
+              if (missing(flags))
+                  flags <- list(c(0, 2:4))
+              if (missing(actions))
+                  actions <- list("NA")
+              if (any(names(actions)!=names(flags))) {
+                  stop("names of flags and actions must match")
+              }
+              handleFlagsInternal(object, flags, actions)
+          })
