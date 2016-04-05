@@ -12,8 +12,9 @@
 
 \item{flags}{An optional \code{\link{list}} containing (a)
 items with names of entries in the \code{data} slot of \code{object},
-or (b) a single item named \code{ALL} that indicates that the operations are to take
-place all the entries in \code{object}'s \code{data} slot.
+or (b) a single unnamed item. In the first case, the attention is
+focussed on the named items, while in the second case the 
+all the data in the \code{object}'s \code{data} slot are examined.
 Each element in the list must be set to an integer or vector of integers,
 specifying conditions to be met before actions are to be taken.}
 
@@ -21,7 +22,7 @@ specifying conditions to be met before actions are to be taken.}
 names that match those in the \code{flags} argument.  If \code{actions}
 is not supplied, the default will be to set all values identified by
 \code{flags} to \code{NA}; this can also be specified by
-specifying \code{actions=list(ALL="NA")}. It is also possible to specify 
+specifying \code{actions=list("NA")}. It is also possible to specify 
 functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
 replacement for the data item in question.}
@@ -57,8 +58,8 @@ value 2 indicates good data, and other values indicate either unchecked,
 suspicious, or bad data. Any data not flagged as good are set
 to \code{NA} in the returned value. Since WHP flag codes run
 from 1 to 9, this default is equivalent to
-setting \code{flags=list(ALL=c(1, 3:9))} along with
-\code{action=list(ALL="NA")}.
+setting \code{flags=list(all=c(1, 3:9))} along with
+\code{action=list("NA")}.
 }
 \section{Implementation status}{
  \code{handleFlags} is a new function as of March 2016,
@@ -73,16 +74,16 @@ work, with possible changes to the user interface. Then other
 types will be added, as needed.
 }
 \examples{
-\dontrun{
 library(oce)
 data(section)
 stn <- section[["station", 100]]
 # 1. Default: anything not flagged as 2 is set to NA, to focus
 # solely on 'good', in the World Hydrographic Program scheme.
 STN <- handleFlags(stn)
+data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity']])
 
 # 2. A less restrictive case: include also 'questionable' data,
-and only apply this action to salinity.
+# and only apply this action to salinity.
 STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 
 # 3. Use smoothed TS relationship to nudge questionable data.
@@ -96,12 +97,11 @@ f<-function(x) {
   0.5 * (S + predict(sp, T)$y)
 }
 par(mfrow=c(1,2))
-STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
+STN <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
 plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
 p <- stn[['pressure']]
 par(mar=c(3, 3, 3, 1))
 plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
-}
 
 }
 \references{
