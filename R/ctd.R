@@ -158,13 +158,12 @@ NULL
 #' to \code{NA} in the returned value. Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
-#' \code{action=list(ALL="NA")}.
+#' \code{action=list("NA")}.
 #' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' data(section)
 #' stn <- section[["station", 100]]
@@ -172,8 +171,8 @@ NULL
 #' # solely on 'good', in the World Hydrographic Program scheme.
 #' STN <- handleFlags(stn)
 #'
-#' # 2. A less restrictive case: include also 'questionable' datao,
-#' and only apply this action to salinity.
+#' # 2. A less restrictive case: include also 'questionable' data,
+#' # and only apply this action to salinity.
 #' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 #'
 #' # 3. Use smoothed TS relationship to nudge questionable data.
@@ -187,12 +186,11 @@ NULL
 #'   0.5 * (S + predict(sp, T)$y)
 #' }
 #' par(mfrow=c(1,2))
-#' STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
+#' STN <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
 #' plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
 #' p <- stn[['pressure']]
 #' par(mar=c(3, 3, 3, 1))
 #' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
-#'}
 #'
 #' @family things related to \code{ctd} data
 setMethod("handleFlags",
@@ -201,9 +199,9 @@ setMethod("handleFlags",
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
               if (missing(flags))
-                  flags <- list(ALL=c(1, 3:9))
+                  flags <- list(c(1, 3:9))
               if (missing(actions))
-                  actions <- list(ALL="NA")
+                  actions <- list("NA")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }

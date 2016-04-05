@@ -384,17 +384,19 @@ handleFlagsInternal <- function(object, flags, actions) {
         str(actions)
     }
     if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
-        all <- "ALL" %in% names(flags)
+        all <- is.null(names(flags)) # "ALL" %in% names(flags)
         if (all && length(flags) > 1)
-            stop("if \"ALL\" is given, nothing else may be specified")
+            stop("if first flag is unnamed, no other flags can be specified")
+        if (all && (length(actions) > 1 || !is.null(names(actions))))
+            stop("if flags is a list of a single unnamed item, actions must be similar")
         for (name in names(object@data)) {
             if (debug > 0)
                 message("name: ", name)
             flagsObject <- object@metadata$flags[[name]]
             if (!is.null(flagsObject)) {
                 ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
-                flagsThis<- if (all) flags[["ALL"]] else flags[[name]]
-                actionsThis <- if (all) actions[["ALL"]] else actions[[name]]
+                flagsThis<- if (all) flags[[1]] else flags[[name]]
+                actionsThis <- if (all) actions[[1]] else actions[[name]]
                 ##> message("flagsThis:");print(flagsThis)
                 if (name %in% names(object@metadata$flags)) {
                     actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
