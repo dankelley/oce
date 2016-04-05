@@ -3,8 +3,7 @@
 \docType{methods}
 \name{summary,section-method}
 \alias{summary,section-method}
-\alias{summary.section}
-\title{Summarize a CTD section}
+\title{Summarize an oceanographic section}
 \usage{
 \S4method{summary}{section}(object, ...)
 }
@@ -32,13 +31,14 @@ summary(section)
 Dan Kelley
 }
 \seealso{
-Other functions that handle section data: \code{\link{[[,section-method}},
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{plot,section-method}},
-  \code{\link{read.section}},
+  \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}},
+  \code{\link{sectionSort}}, \code{\link{section}},
   \code{\link{subset,section-method}}
 }
 

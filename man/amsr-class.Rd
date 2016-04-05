@@ -21,8 +21,8 @@ See [1] for additional information on the instrument.
 \details{
 The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-form or in physical units; \code{\link{plot.amsr}}, and
-\code{\link{summary.amsr}} work with physical units.
+form or in physical units; \code{\link{plot,amsr-method}}, and
+\code{\link{summary,amsr-method}} work with physical units.
 }
 \author{
 Dan Kelley and Chantelle Layton
@@ -33,18 +33,13 @@ Dan Kelley and Chantelle Layton
 \seealso{
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{g1sst-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
+Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
+  \code{\link{summary,amsr-method}}
+
+Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
+  \code{\link{summary,amsr-method}}
 }
 \concept{
 satellite

@@ -3,7 +3,6 @@
 \docType{methods}
 \name{summary,amsr-method}
 \alias{summary,amsr-method}
-\alias{summary.amsr}
 \title{Summarize an amsr Object}
 \usage{
 \S4method{summary}{amsr}(object, ...)
@@ -21,17 +20,9 @@ presents results in physical units.
 Dan Kelley
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
+Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+  \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
+  \code{\link{read.amsr}}
 }
 \concept{
 satellite

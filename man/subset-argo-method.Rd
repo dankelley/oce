@@ -3,7 +3,6 @@
 \docType{methods}
 \name{subset,argo-method}
 \alias{subset,argo-method}
-\alias{subset.argo}
 \title{Subset an argo object}
 \usage{
 \S4method{subset}{argo}(x, subset, ...)
@@ -67,8 +66,9 @@ plotTS(subset(argo, "adjusted"))
 Dan Kelley
 }
 \seealso{
-Other functions that deal with argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argo}},
   \code{\link{as.argo}}, \code{\link{plot,argo-method}},
   \code{\link{read.argo}},
   \code{\link{summary,argo-method}}

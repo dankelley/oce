@@ -1,5 +1,30 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+
+#' Class to store lowered-adp data
+#' 
+#' Class to store data measured with a lowered ADP (also
+#' known as ADCP) device.
+#' 
+#' @section Accessing data:
+#' 
+#'     Consider an object named \code{ladp}.
+#' 
+#'     Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
+#'     or set by name, \code{ladp[["longitude"]] <- ladp[["longitude"]] + 1}
+#'     corrects a one-degree error.  Use \code{names(ladp@metadata)} to find the
+#'     names of the metadata.
+#' 
+#'     Column data may be accessed by name, e.g. \code{ladp[["u"]]},
+#'     \code{ladp[["v"]]}, \code{ladp[["pressure"]]}, etc.  There may also be
+#'     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
+#'     things. Use \code{names(ladp@data)} to find the names of the data.
+#' 
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{ladp} data
+setClass("ladp", contains="oce")
+
 setMethod(f="initialize",
           signature="ladp",
           definition=function(.Object,longitude,latitude,station,waterDepth,time,
@@ -27,6 +52,21 @@ setMethod(f="initialize",
           })
 
 
+#' Summarize an ladp object
+#' 
+#' Pertinent summary information is presented, including the station name,
+#' sampling location, data ranges, etc.
+#' 
+#' @param object An object of class \code{"ladp"}, usually, a result of a call to
+#' \code{\link{as.ladp}}.
+#' 
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @return A matrix containing statistics of the elements of the \code{data} slot.
+#' 
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{ladp} data
 setMethod(f="summary",
           signature="ladp",
           definition=function(object, ...) {
@@ -35,6 +75,21 @@ setMethod(f="summary",
               callNextMethod()
           })
 
+#' Extract Something From an ladp Object
+#'
+#' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
+#' @param i The item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
+#' @examples
+#' data(ctd)
+#' head(ctd[["temperature"]])
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{ladp} data
+#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -58,6 +113,20 @@ setMethod(f="[[",
               }
           })
 
+
+#' Plot an ladp object
+#' 
+#' Uses \code{\link{plotProfile}} to create panels of depth variation of easterly
+#' and northerly velocity components.
+#' 
+#' @param x A \code{ladp} object, e.g. as read by \code{\link{as.ladp}}.
+#' @param which Vector of names of items to be plotted.
+#' @param ... Other arguments, passed to plotting functions.
+#' 
+#' @author Dan Kelley
+#'
+#' @family things related to \code{ladp} data
+#' @family functions that plot \code{oce} data
 setMethod(f="plot",
           signature=signature("ladp"),
           definition=function(x, which=c("u", "v"), ...) {
@@ -71,6 +140,33 @@ fixColumn <- function(x) {
     as.vector(x)
 }
 
+
+
+#' Coerce data into an ladp object
+#' 
+#' This function assembles vectors of pressure and velocity, possibly also with
+#' shears, salinity, temperature, etc.
+#' 
+#' @param longitude longitude in degrees east, or an \code{oce} object that
+#' contains the data otherwise given by \code{longitude} and the
+#' other arguments.
+#' @param latitude latitude in degrees east (use negative in southern hemisphere).
+#' @param station number or string indicating station ID.
+#' @param time time at the start of the profile, constructed by e.g. \code{\link{as.POSIXct}}.
+#' @param pressure pressure in decibars, through the water column.
+#' @param u eastward velocity (m/s).
+#' @param v northward velocity (m/s).
+#' @param uz vertical derivative of eastward velocity (1/s).
+#' @param vz vertical derivative of northward velocity (1/s).
+#' @param salinity salinity through the water column, in practical salinity units.
+#' @param temperature temperature through the water column.
+#' @param \dots optional additional data columns.
+#' 
+#' @return An object of \code{\link{ladp-class}}.
+#'
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{ladp} data
 as.ladp <- function(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity, temperature, ...)
 {
     if (inherits(longitude, "oce")) {

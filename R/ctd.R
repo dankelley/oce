@@ -9,6 +9,8 @@
 #' value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
 #' be done in using various seawater functions, e.g. the density function
 #' \code{\link{swRho}}, if the UNESCO formulation is being requested.
+#' (See \code{\link{[[,ctd-method}} and \code{\link{[[<-,ctd-method}} for
+#' more on accessing and altering information within \code{ctd-class} objects.)
 #'
 #' The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 #' \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
@@ -44,7 +46,7 @@
 #' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
 #' \code{ctd[["spice"]]}.
 #'
-#' @section Assigning values:
+#' @section Extracting values:
 #' Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
 #'   <- rep(35,10)}.  For obvious reasons, this does not work with derived
 #' quantities such as conservative temperature, etc.
@@ -57,10 +59,10 @@
 #' \code{ctd} objects with \code{\link{as.ctd}}.
 #'
 #'
-#' Statistical summaries are provided by \code{\link{summary.ctd}}, while
+#' Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 #' \code{\link{show}} displays an overview.
 #'
-#' CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of its
+#' CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
 #' work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
 #' which can also be called by the user, to get fine control over the plots.
 #'
@@ -72,12 +74,13 @@
 #'
 #' Low-level manipulation may be done with functions such as
 #' \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
-#' many of the contents of CTD objects may be altered with the \code{[[]]} scheme
+#' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
-#' @family functions that handle CTD data
-#'
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{ctd} data
+#' @family classes provided by \code{oce}
 setClass("ctd", contains="oce")
 
 
@@ -111,9 +114,9 @@ setClass("ctd", contains="oce")
 #' @seealso The full profile (not trimmed to the downcast) is available as
 #' \link{ctdRaw}.
 #' 
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{ctd} data
 NULL
-
 
 #' Seawater CTD profile, without trimming of extraneous data.
 #' 
@@ -141,7 +144,7 @@ NULL
 #' @seealso A similar dataset (trimmed to the downcast) is available as
 #' \code{\link{ctd}}.
 #' 
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
 NULL
 
 
@@ -176,12 +179,12 @@ NULL
 #' # 3. Use smoothed TS relationship to nudge questionable data.
 #' # This is perhaps a silly idea, but at least it illustrates
 #' # how to write a nontrivial function for an action.
-#' f <- function(x) {
-#'     S <- x[["salinity"]]
-#'     T <- x[["temperature"]]
-#'     df <- 0.5 * length(S) # smooths a bit
-#'     sp <- smooth.spline(T, S, df=df)
-#'     0.5 * (S + predict(sp, T)$y)
+#' f<-function(x) {
+#'   S <- x[["salinity"]]
+#'   T <- x[["temperature"]]
+#'   df <- 0.5 * length(S) # smooths a bit
+#'   sp <- smooth.spline(T, S, df=df)
+#'   0.5 * (S + predict(sp, T)$y)
 #' }
 #' par(mfrow=c(1,2))
 #' STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
@@ -191,7 +194,7 @@ NULL
 #' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 #'}
 #'
-#' @family functions that handle CTD data
+#' @family things related to \code{ctd} data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
@@ -250,29 +253,24 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a CTD object
+#' Summarize a \code{ctd} Object
 #' 
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @aliases summary.ctd
-#' 
 #' @param object An object of class \code{"ctd"}, usually, a result of a call to
 #' \code{\link{read.ctd}}, \code{\link{read.oce}}, or \code{\link{as.ctd}}.
 #' 
 #' @param ... Further arguments passed to or from other methods.
-#' 
-#' @seealso The documentation for \code{\link{ctd-class}} explains the structure
-#' of CTD objects, and also outlines the other functions dealing with them.
 #' 
 #' @examples
 #' library(oce)
 #' data(ctd)
 #' summary(ctd)
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{ctd} data
 setMethod(f="summary",
           signature="ctd",
           definition=function(object, ...) {
@@ -310,21 +308,41 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' Extract Something From a CTD Object
-#'
-#' @param x A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @title Extract Parts of a \code{ctd} Object
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #'
 #' @examples
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
-#' @family functions that handle CTD data
-#' @family functions that access oce data and metadata
+#' @section Details of the specialized \code{ctd} method:
+#' The first step \code{[[,ctd-method} takes is to address requests
+#' for inferences about data stored in \code{\link{ctd-class}}
+#' objects. For example, these objects hold in-situ temperature,
+#' but users often need potential temperatures, and so this can
+#' be calculated and returned, even though the information may
+#' not be in the data object. Thus, \code{x[["temperature"]]}
+#' (or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
+#' \code{x[["theta"]]} (or \code{x[["potential temperature"]]})
+#' give potential temperature. Similarly, \code{x[["temperature68"]]}
+#' can be used to convert to the IPTS-1968 temperature scale. The
+#' "conservative temperature" of the Gibbs Seawater (GSW) formulation is
+#' available as \code{x[["conservative temperature"]]} (or 
+#' \code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
+#' and preformed salinity is \code{x[["Sstar"]]}.
 #'
-#' @author Dan Kelley
+#' Similarly, a ctd object normally contains pressure, but both
+#' vertical coordinate and depth can be obtained, with 
+#' \code{x[["z"]]} and \code{x[["depth"]]}, respectively.
+#'
+#' In addition, some specialized quantities are also provided, e.g. 
+#' density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
+#' spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
+#' and the square of buoyancy frequency \code{x[["N2"]]} (calculated
+#' with \code{\link{swN2}(x)}).
+#'
+#' @template sub_subTemplate
+#' @family things related to \code{ctd} data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
@@ -398,36 +416,30 @@ setMethod(f="[[",
               } else if (i == "depth") {
                   ## FIXME-gsw: permit gsw version here
                   swDepth(x)
+              } else if (i == "N2") {
+                  swN2(x)
               } else {
                   callNextMethod()
               }
           })
 
-#' Change Something within a ctd object
+#' @title Replace Parts of a \code{ctd} Object
+#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
+#' @family things related to \code{ctd} data
+#' @template sub_subsetTemplate
 #'
-#' @param x A ctd object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#' @family functions that alter oce data and metadata
+#' @examples
+#' data(ctd)
+#' summary(ctd)
+#' # Move the CTD profile a nautical mile north.
+#' ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # acts in metadata
+#' # Increase the salinity by 0.01.
+#' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
+#' summary(ctd)
 setMethod(f="[[<-",
-          signature="ctd",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) {
-                  x@metadata[[i]] <- value
-              } else if (i %in% names(x@data)) {
-                 x@data[[i]] <- value
-              } else if (grep("Unit$", i)) {
-                  item <- gsub("Unit$", "", i)
-                  x@metadata$units[[item]] <- value
-              } else if (grep("Flag$", i)) {
-                  item <- gsub("Flag$", "", i)
-                  x@metadata$flags[[item]] <- value
-              } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
-              }
-              invisible(x)
+          signature(x="ctd", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) { # FIXME: use j for e.g. times
+              callNextMethod(x=x, i=i, j=j, value=value)
           })
 
 
@@ -591,14 +603,14 @@ setMethod(f="[[<-",
 #' @param waterDepth optional numerical value indicating the water depth in
 #' metres. This is different from the maximum recorded pressure, although
 #' the latter is used by some oce functions as a guess on water depth, the
-#' most important example being \code{\link{plot.section}}.
+#' most important example being \code{\link{plot,section-method}}.
 #' 
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
 #' 
 #' @param src optional string indicating data source.
 #' 
-#' @param debug a flag that can be set to \code{TRUE} to turn on debugging.
+#' @template debugTemplate
 #' 
 #' @return An object of \code{\link{ctd-class}}.
 #' 
@@ -611,14 +623,15 @@ setMethod(f="[[<-",
 #' summary(ctd)
 #' plot(ctd)
 #' 
-#' @family functions that handle CTD data
-#' @author Dan Kelley
-#' 
 #' @references Culkin, F., and Norman D. Smith, 1980. Determination of the
 #' concentration of potassium chloride solution having the same electrical
 #' conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 #' 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
 #' Engineering}, \bold{5}, pp 22-23.
+#' 
+#' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
                    scan=NULL, time=NULL, other=NULL,
@@ -988,8 +1001,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
-#' @param debug A debugging flag; set this to a positive value to get debugging
-#'     information during processing.
+#' @template debugTemplate
 #' @return A ctd object.
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
 #'    of CTD objects, and also outlines the other functions dealing with them.
@@ -1001,9 +1013,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
 #'     unit=list(unit=expression(degree*F), scale="ITS-90"))
 #'
-#' @family functions that handle CTD data
-#'
 #' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
 {
     ## FIXME: not using the units
@@ -1097,8 +1109,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' \code{"lm"} method produces warnings about "prediction from a rank-deficient
 #' fit", a larger value of \code{"e"} should be used.
 #' 
-#' @param debug a Boolean, set to \code{TRUE} to debug the reading process.
-#' 
+#' @template debugTemplate
+#'
 #' @return An object of \code{\link{ctd-class}}, with pressures that are as set by
 #' the \code{"p"} parameter and all other properties modified appropriately.
 #' 
@@ -1122,10 +1134,10 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
 #' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
 #' 185-193.
-#'
-#' @family functions that handle CTD data
 #' 
 #' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebug"))
 {
     methodFunction <- is.function(method)
@@ -1328,8 +1340,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @param arr.ind Should array indices be returned, or a vector of ctd objects?
 #' 
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
-#' information, or to 2 to get more. 
+#' @template debugTemplate
 #' 
 #' @param ... Optional extra arguments that are passed to \code{\link{smooth.spline}}.
 #' 
@@ -1354,13 +1365,13 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' }
 #' }
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
-ctdFindProfiles<- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
-                           direction=c("descending", "ascending"),
-                           arr.ind=FALSE,
-                           debug=getOption("oceDebug"), ...)
+#' 
+#' @family things related to \code{ctd} data
+ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
+                            direction=c("descending", "ascending"),
+                            arr.ind=FALSE,
+                            debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
              ", minLength=", minLength,
@@ -1541,8 +1552,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' 
 #' @param parameters A list whose elements depend on the method; see \dQuote{Details}.
 #' 
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
-#' information, or to 2 to get more.
+#' @template debugTemplate
 #' 
 #' @return An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
 #' 
@@ -1555,7 +1565,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
 #' # Demonstrate use of a function. The scan limits were chosen
 #' # by using locator(2) on a graph made by plotScan(ctdRaw).
-#' trimByIndex <- function(data, parameters) {
+#' trimByIndex<-function(data, parameters) {
 #'   parameters[1] < data$scan & data$scan < parameters[2]
 #' }
 #' trimmed <- ctdTrim(ctdRaw, trimByIndex, parameters=c(130, 380))
@@ -1566,9 +1576,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' The Seabird CTD instrument is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                    debug=getOption("oceDebug"))
 {
@@ -1705,7 +1715,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 if (is.na(submethod))
                     stop("unknown submethod '", submethod, "'")
                 submethod <- submethodChoices[sm]
-                ## bilinearAold <- function(param) { # param=c(s0,p0,dpds); this uses ss and pp
+                ## bilinearAold<-function(param) { # param=c(s0,p0,dpds); this uses ss and pp
                 ##     s0 <-  param[1]
                 ##     p0 <- abs(param[2])
                 ##     dpds <- param[3]
@@ -1716,11 +1726,11 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 ##     oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "; misfit=", misfit, "\n")
                 ##     misfit
                 ## }
-                bilinearA <- function(s, s0, p0, dpds) { # same model as B but results treated differently
+                bilinearA<-function(s, s0, p0, dpds) { # same model as B but results treated differently
                     oceDebug(debug-1, "bilinearA s0=", s0, "p0=", p0, "dpds=", dpds, "\n")
                     ifelse(s < s0, p0, p0+dpds*(s-s0))
                 }
-                bilinearB <- function(s, s0, dpds) {
+                bilinearB<-function(s, s0, dpds) {
                     oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
@@ -1845,7 +1855,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' 
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' 
-#' @param debug Set to \code{TRUE} for debugging.
+#' @template debugTemplate
 #' 
 #' @return A new \code{\link{ctd-class}} object.
 #' 
@@ -1859,16 +1869,16 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' The Seabird CTD instrument is described at
 #'   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 ctdUpdateHeader <- function (x, debug = FALSE)
 {
     if (length(x@metadata$header) < 1)
         stop("there is no header in this CTD object")
     if (length(x@data) < 1)
         stop("there are no data in this CTD object")
-    replaceHeaderElement <- function(h, match, new)
+    replaceHeaderElement<-function(h, match, new)
     {
         for (i in 1:length(h)) {
             if (length(grep(match, h[i], perl=TRUE, useBytes=TRUE))) {
@@ -1919,9 +1929,9 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 #' plot(as.ctd(d$salinity, d$temperature, d$pressure))
 #' } 
 #' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 write.ctd <- function(object, file=stop("'file' must be specified"))
 {
     if (!inherits(object, "ctd"))
@@ -1952,10 +1962,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' If only 2 panels are requested, they will be drawn side by side.
 #' 
-#' If more than one panel is drawn, then on exit from \code{plot.ctd}, the value
+#' If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
 #' of \code{par} will be reset to the value it had before the function call.
 #' However, if only one panel is drawn, the adjustments to \code{par} made within
-#' \code{plot.ctd} are left in place, so that further additions may be made to the
+#' \code{plot,ctd-method} are left in place, so that further additions may be made to the
 #' plot.
 #' 
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
@@ -1977,7 +1987,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #'     \item \code{which=4} or \code{which="text"} gives a textual
 #'     summary of some aspects of the data
 #'     \item \code{which=5} or \code{which="map"} gives a map plotted
-#'     with \code{\link{plot.coastline}}, with a dot for
+#'     with \code{\link{plot,coastline-method}}, with a dot for
 #'     the station location.  Notes near the top boundary of the map give the
 #'     station number, the sampling date, and the name of the chief scientist,
 #'     if these are known. Note that the longitude will be converted to a value
@@ -2010,10 +2020,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' \dQuote{History}.
 #' 
 #' @param borderCoastline Colour of coastlines and international borders, passed
-#' to \code{\link{plot.coastline}} if a map is included in \code{which}.
+#' to \code{\link{plot,coastline-method}} if a map is included in \code{which}.
 #' 
 #' @param colCoastline Fill colour of coastlines and international borders, passed
-#' to \code{\link{plot.coastline}} if a map is included in \code{which}. Set to
+#' to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 #' \code{NULL} to avoid filling.
 #' 
 #' @param eos String indicating the equation of state to be used, either
@@ -2034,8 +2044,8 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' a suitable coastline for the locale, or \code{"none"} to prevent
 #' the drawing of a coastline.  There is a speed penalty for providing
 #' \code{coastline} as a character string, because it forces
-#' \code{\link{plot.coastline}} to load it on every call.  So, if
-#' \code{plot.coastline} is to be called several times for a given
+#' \code{\link{plot,coastline-method}} to load it on every call.  So, if
+#' \code{\link{plot,coastline-method}} is to be called several times for a given
 #' coastline, it makes sense to load it in before the first call, and to
 #' supply the object as an argument, as opposed to the name of the object.
 #' 
@@ -2069,13 +2079,13 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @param span Optional span of map, in km.  If not given, this will be determined
 #' as a small multiple of the distance to the nearest point of land, in an
-#' a@parampt to show some coastline in the plot.
+#' attempt to show some coastline in the plot.
 #' 
 #' @param showHemi Logical indicating whether to show hemisphere in axis tick
 #' labels.
 #' 
 #' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude to
-#' label on the indicated sides of plot, passed to \code{\link{plot.coastline}}.
+#' label on the indicated sides of plot, passed to \code{\link{plot,coastline-method}}.
 #' Using these arguments permits reasonably simple customization.  If they are are
 #' not provided, reasonable defaults will be used.
 #' 
@@ -2139,8 +2149,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' only works if \code{length(which)=1}, and it will yield odd results if the
 #' value of \code{which} does not match that in the previous plots.
 #' 
-#' @param debug Set to a positive value to get debugging information during
-#' processing.
+#' @template debugTemplate
 #' 
 #' @param ... Optional arguments passed to plotting functions. A common example is
 #' to set \code{df}, for use in \link{swN2} calculations.
@@ -2151,7 +2160,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' objects, and also outlines the other functions dealing with them.
 #' 
 #' @section History:
-#' Until February, 2016, \code{plot.ctd} relied on a now-defunct argument
+#' Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 #' \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
 #' Also, now it is possible to set the edge of coasts and international
 #' boundaries, with \code{borderCoastline}.
@@ -2161,11 +2170,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' data(ctd) 
 #' plot(ctd)
 #' 
-#' @aliases plot.ctd
-#' 
-#' @family functions that handle CTD data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{ctd} data
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -2207,10 +2215,10 @@ setMethod(f="plot",
                           colCoastline <- NULL
                       }
                   }
-                  warning("In plot.ctd() : 'fill' being accepted for backwards compatibility; please use 'colCoastline' instead", call.=FALSE)
+                  warning("In plot,ctd-method() : 'fill' being accepted for backwards compatibility; please use 'colCoastline' instead", call.=FALSE)
               }
               if (missing(which)) {
-                  oceDebug(debug, "plot.ctd(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
+                  oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
                   dt <- x@metadata$deploymentType
                   if (is.null(dt)) {
                       which <- c(1, 2, 3, 5)
@@ -2238,7 +2246,7 @@ setMethod(f="plot",
                       }
                   }
                } else {
-                  oceDebug(debug, "plot.ctd(..., which=c(", paste(which, collapse=",", sep=""),
+                  oceDebug(debug, "plot,ctd-method(..., which=c(", paste(which, collapse=",", sep=""),
                            "), eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep="", unindent=1)
               }
               lw <- length(which)
@@ -2248,9 +2256,9 @@ setMethod(f="plot",
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
+                  stop("in plot,ctd-method() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
               if ("ylim" %in% dotsNames)
-                  stop("in plot.ctd() : 'ylim' argument not allowed; use plim for a profile, Tlim for a TS plot, etc", call.=FALSE)
+                  stop("in plot,ctd-method() : 'ylim' argument not allowed; use plim for a profile, Tlim for a TS plot, etc", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               if (add && lw > 1) {
                   warning("ignoring add=TRUE because length(which) > 1")
@@ -2263,7 +2271,7 @@ setMethod(f="plot",
                   pch <- rep(pch, lw) # FIXME: recycle more sensibly
               if (length(cex) < lw)
                   cex <- rep(cex, lw) # FIXME: recycle more sensibly
-              ##dec_deg <- function(x, code = "lat")
+              ##dec_deg<-function(x, code = "lat")
               ##{
               ##    if (code == "lat") {
               ##        if (x < 0) {
@@ -2353,7 +2361,7 @@ setMethod(f="plot",
                                       debug=debug-1,
                                       ...)
                       } else {
-                          warning("plot.ctd(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
+                          warning("plot,ctd-method(): unknown plot type \"", whichOrig[w], "\" requested\n", call.=FALSE)
                       }
                       next
                   }
@@ -2512,7 +2520,7 @@ setMethod(f="plot",
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4) {
-                      textItem <- function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
+                      textItem<-function(xloc, yloc, item, label, cex=0.8, d.yloc=0.8) {
                           if (!is.null(item) && !is.na(item))
                               text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex)
                           yloc - d.yloc
@@ -2736,7 +2744,7 @@ setMethod(f="plot",
                           warning("cannot evaluate adorn[", w, "]\n")
                   }
               }
-              oceDebug(debug, "} # plot.ctd()\n", unindent=1)
+              oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
               invisible()
           })
 
@@ -2752,18 +2760,16 @@ setMethod(f="plot",
 #' @param x An object inheriting from \code{\link{ctd-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
-#' @return A ctd object.
-#'
-#' @aliases subset.ctd
+#' @return A \code{ctd} object.
 #' @examples
 #' library(oce)
 #' data(ctd)
 #' plot(ctd)
 #' plot(subset(ctd, pressure<10))
 #'
-#' @family functions that handle CTD data
-#'
 #' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
@@ -2782,6 +2788,38 @@ setMethod(f="subset",
           })
 
 
+#' Plot seawater data in a low-level fashion
+#' 
+#' Plot CTD data as time-series against scan number, to help with trimming
+#' extraneous data from a CTD cast.
+#' 
+#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.
+#' 
+#' @param which Numerical vector numerical codes specifying the panels to draw: 1
+#' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
+#' scan, and 4 for salinity vs scan.
+#' 
+#' @param type Line type.
+#' 
+#' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' 
+#' @param mar Four-element vector be used with \code{\link{par}("mar")}.  If set
+#' to \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
+#' with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.
+#' 
+#' @param ... Optional arguments passed to plotting functions.
+#' 
+#' @examples
+#' library(oce)
+#' data(ctdRaw) 
+#' plotScan(ctdRaw)
+#' abline(v=c(130, 350), col='red') # useful for ctdTrim()
+#' 
+#' @author Dan Kelley
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{ctd} data
 plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {
@@ -2928,6 +2966,16 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
     res
 }
 
+#' Translate WOCE data names to \code{oce} data names
+#'
+#' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
+#' to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
+#' to mean \code{oxygen}.
+#'
+#' @param names vector of strings holding WOCE-style names.
+#'
+#' @return vector of strings holding \code{oce}-style names.
+#' @author Dan Kelley
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
@@ -3365,7 +3413,8 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 #' information is given in the Sea-Bird data-processing manaual
 #' \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
+                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!is.null(columns)) {
         columnsNames <- names(columns)

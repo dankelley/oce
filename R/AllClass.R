@@ -19,11 +19,14 @@
 #' at the following links:
 #' \code{\link{adp-class}},
 #' \code{\link{adv-class}},
+#' \code{\link{amsr-class}},
 #' \code{\link{argo-class}},
 #' \code{\link{cm-class}},
 #' \code{\link{coastline-class}},
 #' \code{\link{ctd-class}},
 #' \code{\link{echosounder-class}},
+#' \code{\link{ladp-class}},
+#' \code{\link{landsat-class}},
 #' \code{\link{lisst-class}},
 #' \code{\link{lobo-class}},
 #' \code{\link{met-class}},
@@ -36,7 +39,6 @@
 #'
 #' @examples
 #' str(new("oce"))
-#' @keywords classes oce
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -44,24 +46,6 @@ setClass("oce",
          prototype=list(metadata=list(filename="", units=list(), flags=list()),
                         data=list(),
                         processingLog=list()))
-
-
-### ##http://stackoverflow.com/questions/7356120/how-to-properly-document-s4-methods-using-roxygen2
-### #' Handle flags
-### #'
-### #' FILL IN
-### #'
-### #' @param object An object inheriting from oce
-### #' @param flags \code{\link{list}} of the form (FILL IN)
-### #' @param action Character string specifying what to do (FILL IN)
-### #' @export
-### #' @docType methods
-### #' @rdname handleFlags-methods
-### setGeneric("handleFlags",
-###            function(object, flags, action) {
-###                cat("in handleFlags\n")
-###                standardGeneric("handleFlags")
-###            })
 
 #' Summarize an oce Object
 #'
@@ -174,44 +158,17 @@ setMethod(f="summary",
               invisible(threes)
           })
 
-## FIXME: move each of these to the respective .R files, and update the
-## FIXME: docs to roxygen format. This takes about an hour per data type,
-## FIXME: which seems unproductive, but the advantage is that in roxygen
-## FIXME: we get (a) more uniform notation and (b) the @family tag. Both things
-## FIXME: help users a lot, and the second saves a lot of future development
-## FIXME: time that would otherwise be spent updating a lot of seealso lists
-## FIXME: when a new function is added.
-## To find a list of classes in oce, do 'grep setClass *.R'
-setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
-setClass("cm", contains="oce")
-setClass("coastline", contains="oce")
-setClass("echosounder", contains="oce")
-setClass("gps", contains="oce")
-setClass("ladp", contains="oce")
-setClass("landsat", contains="oce")
-setClass("lisst", contains="oce")
-setClass("lobo", contains="oce")
-setClass("met", contains="oce")
-setClass("odf", contains="oce")
-setClass("rsk", contains="oce")
-setClass("sealevel", contains="oce")
-setClass("tidem", contains="oce")
-setClass("topo", contains="oce")
-setClass("windrose", contains="oce")
+## FIXME: move each of these to the respective .R files
+setClass("satellite", contains="oce") # both amsr and landsat stem from this
 
 #' Subset an oce Object
 #'
 #' This is a basic class for general oce objects.  It has specialised
-#' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
-#' be used if \code{subset} is called for an object that inherits from
-#' \code{ctd}; type \code{showMethods('subset')} to see a list of objects
-#' that have specialized methods, and then e.g. type \code{?subset.ctd}
-#' to get help on the method for objects inheriting from the
-#' \code{\link{ctd-class}}.
+#' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
+#' for \code{ctd} objects.
 #'
-#' @aliases subset.oce
 #' @param x An oce object.
-#' @param subset A logical expression indicating how to take the subset (depends on the sub-class).
+#' @param subset A logical expression indicating how to take the subset; the form depends on the sub-class.
 #' @param ... Ignored.
 #' @return An oce object.
 #' @examples
@@ -265,16 +222,18 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "metadata") {
                   return(x@metadata)
-              } else if (length(grep("Unit$", i))) { # returns a list
+              } else if (i == "data") {
+                  return(x@data)
+              } else if (i == "processingLog") {
+                  return(x@processingLog)
+               } else if (length(grep("Unit$", i))) { # returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
               } else if (length(grep(" unit$", i))) { # returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]][[1]] else "")
               } else if (length(grep(" scale$", i))) { # returns just the scale, a character string
                   return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$","",i)]][[2]]) else "")
-              } else if (i == "data") {
-                  return(x@data)
-              } else if (i == "processingLog") {
-                  return(x@processingLog)
+              } else if (length(grep("Flag$", i))) { # returns a list
+                  return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$","",i)]] else NULL)
               } else {
                   ## metadata must match exactly but data can be partially matched
                   if (i %in% names(x@metadata))
@@ -289,35 +248,10 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within an oce Object
-#'
-#' @description
-#' This is a base function that can be used to change items
-#' in the \code{metadata} or \code{data} slot of an
-#' object of the \code{\link{oce-class}}. See 
-#' \dQuote{Details} for the case in which both slots
-#' contain an item of the given name.
-#'
-#' The first step is to an item of the indicated name. First,
-#' it is sought in the \code{metadata} slot, and if it is found
-#' there, then that value is altered. If it is not found there,
-#' it is sought in the \code{data} slot and modified there.
-#'
-#'
-#' @param x An oce object.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#'
-#' @examples
-#' data(ctd)
-#' summary(ctd)
-#' # Move the CTD profile a nautical mile north,
-#' ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # in metadata
-#' # Increase the salinity by 0.01.
-#' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # in data
-#' summary(ctd)
+#' @title Replace Parts of an \code{oce} Object
+#' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
+#' @family functions that replace parts of an \code{oce} object
+#' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
@@ -325,23 +259,21 @@ setMethod(f="[[<-",
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
-                  index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1])) {
-                      x@data[[index]] <- value
-                  } else if (length(grep("Unit$", i))) {
-                      if ("units" %in% names(x@metadata))
-                          x@metadata$units[[gsub("Unit$", "", i)]] <- value
-                      else
-                          x@metadata[[i]] <- value
-                  } else if (i == "processingLog") {
-                      if (0 == length(x@processingLog)) {
-                          x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
-                      } else {
-                          x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
-                          x@processingLog$value <- c(x@processingLog$value, value)
-                      }
+                  if (length(grep("Unit$", i))) {
+                      if (!("units" %in% names(x@metadata)))
+                          x@metadata$flags <- list()
+                      x@metadata$units[[gsub("Unit$", "", i)]] <- value
+                  } else if (length(grep("Flag$", i))) {
+                      if (!("flags" %in% names(x@metadata)))
+                          x@metadata$units <- list()
+                      x@metadata$units[[gsub("Flag$", "", i)]] <- value
                   } else {
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      index <- pmatch(i, names(x@data))
+                      if (!is.na(index[1])) {
+                          x@data[[index]] <- value
+                      } else {
+                          warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      }
                   }
               }
               validObject(x)
@@ -455,7 +387,6 @@ handleFlagsInternal <- function(object, flags, actions) {
         all <- "ALL" %in% names(flags)
         if (all && length(flags) > 1)
             stop("if \"ALL\" is given, nothing else may be specified")
-        objectFlagNames <- names(object@metadata$flags)
         for (name in names(object@data)) {
             if (debug > 0)
                 message("name: ", name)

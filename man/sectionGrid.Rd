@@ -52,18 +52,19 @@ GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 plot(GSg, map.xlim=c(-80,-60))
 
-
 }
 \author{
 Dan Kelley
 }
 \seealso{
-Other functions that handle section data: \code{\link{[[,section-method}},
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{plot,section-method}},
-  \code{\link{read.section}},
+  \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionSmooth}}, \code{\link{sectionSort}},
+  \code{\link{section}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }

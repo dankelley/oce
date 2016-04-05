@@ -28,8 +28,12 @@ scale using \code{\link{T90fromT68}}.
 A similar dataset (trimmed to the downcast) is available as
 \code{\link{ctd}}.
 
-Other datasets provided with oce: \code{\link{adp}},
-  \code{\link{adv}}, \code{\link{argo}}, \code{\link{ctd}},
-  \code{\link{section}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{ctd}},
+  \code{\link{echosounder}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}
 }
 

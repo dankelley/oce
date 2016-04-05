@@ -557,8 +557,8 @@ drawPalette <- function(zlim, zlab="",
 #'     values that can be used by \code{\link{oce.grid}} to add a grid to the
 #'     plot.
 #' 
-#' @seealso This uses \code{\link{drawPalette}}, and is used by \code{\link{plot.adp}},
-#' \code{\link{plot.landsat}}, and other image-generating functions.
+#' @seealso This uses \code{\link{drawPalette}}, and is used by \code{\link{plot,adp-method}},
+#' \code{\link{plot,landsat-method}}, and other image-generating functions.
 #' 
 #' @section Note for RStudio/OSX users:
 #' On OSX computers, some versions of RStudio produce a margin-size error when

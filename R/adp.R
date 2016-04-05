@@ -141,7 +141,7 @@
 #' 
 #' The \code{processingLog} slot is in standard form and needs little comment.
 #' 
-#' @section methods:
+#' @section Accessing and altering information within \code{adp-class} objects:
 #' \emph{Extracting values} Matrix data may be accessed as illustrated
 #' above, e.g.  or an adp object named \code{adv}, the data are provided by
 #' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
@@ -182,7 +182,7 @@
 #' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
 #' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 #' 
-#' ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+#' ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
 #' generic function so it may be called simply as \code{plot}.
 #' 
 #' Statistical summaries of ADP data are provided by the generic function
@@ -193,6 +193,9 @@
 #' with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 #' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+#'
+#' @family classes provided by \code{oce}
+#' @family things related to \code{adp} data
 setClass("adp", contains="oce")
 
 #' ADP (acoustic-doppler profiler) dataset
@@ -222,7 +225,8 @@ setClass("adp", contains="oce")
 #' 
 #' @source This file came from the SLEIWEX-2008 experiment.
 #'
-#' @family datasets provided with oce
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{adp} data
 NULL
 
 setMethod(f="initialize",
@@ -350,7 +354,7 @@ setMethod(f="summary",
           })
 
 
-#' Extract Something From an adp Object
+#' Extract Parts of an \code{adp} Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
@@ -366,8 +370,8 @@ setMethod(f="summary",
 #' @examples
 #' data(adp)
 #' head(adp[["v"]][,,1])
-#' @family functions that deal with adp data
-#' @family functions that access oce data and metadata
+#' @family things related to \code{adp} data
+#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -406,7 +410,7 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within an adp Object
+#' Replace Parts of an \code{adp} Object
 #'
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
@@ -416,7 +420,7 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that deal with adp data
+#' @family things related to \code{adp} data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
@@ -470,6 +474,31 @@ setValidity("adp",
             })
 
 
+#' Subset an adp object
+#' 
+#' Subset an adp (acoustic Doppler profile) object, in a manner that is function
+#' is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
+#' \code{time} or \code{distance}, but these may not be combined; use a sequence
+#' of calls to subset by both.
+#' 
+#' @param x An \code{\link{adp-class}} object.
+#' 
+#' @param subset A condition to be applied to the \code{data} portion of
+#' \code{x}.  See \sQuote{Details}.
+#' 
+#' @param ... Ignored.
+#' 
+#' @return A new \code{\link{adp-class}} object.
+#' 
+#' @examples
+#' library(oce)
+#' data(adp)
+#' # First part of time series
+#' plot(subset(adp, time < mean(range(adp[['time']]))))
+#' 
+#' @family things related to \code{adp} data
+#' 
+#' @author Dan Kelley
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
@@ -605,6 +634,10 @@ setMethod(f="subset",
 #' \dontrun{
 #' plot(a)
 #' }
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
@@ -1965,6 +1998,81 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Convert XYZ to ENU coordinates
+#'
+#' Convert ADP velocity components from a xyz-based coordinate system to
+#' an enu-based coordinate system, by using the instrument's recording of
+#' heading, pitch, and roll.
+#'
+#' The first step is to convert the (x,y,z) velocity components (stored in the
+#' three columns of \code{x[["v"]][,,1:3]}) into what RDI [1, pages 11 and 12]
+#' calls "ship" (or "righted") components.  For example, the z coordinate,
+#' which may point upwards or downwards depending on instrument orientation, is
+#' mapped onto a "mast" coordinate that points more nearly upwards than
+#' downward.  The other ship coordinates are called "starboard" and "forward",
+#' the meanings of which will be clear to mariners.  Once the (x,y,z)
+#' velocities are converted to ship velocities, the orientation of the
+#' instrument is extracted from heading, pitch, and roll vectors stored in the
+#' object.  These angles are defined differently for RDI and Sontek profilers.
+#'
+#' The code handles every case individually, based on the table given below.
+#' The table comes from Clark Richards, a former PhD student at Dalhousie
+#' University [2], who developed it based on instrument documentation,
+#' discussion on user groups, and analysis of measurements acquired with RDI
+#' and Sontek acoustic current profilers in the SLEIWEX experiment [3].  In the
+#' table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
+#' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
+#'
+#' \tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
+#' \strong{Instr.} \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab
+#' \strong{R} \tab \strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab RDI
+#' \tab ADCP \tab up \tab H \tab arctan(tan(P)*cos(R)) \tab R \tab -X \tab Y
+#' \tab -Z\cr 2 \tab RDI \tab ADCP \tab down \tab H \tab arctan(tan(P)*cos(R))
+#' \tab -R \tab X \tab Y \tab Z\cr 3 \tab Nortek \tab ADP \tab up \tab H-90
+#' \tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab ADP \tab down \tab
+#' H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 5 \tab Sontek \tab ADP \tab up
+#' \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 6 \tab Sontek \tab ADP
+#' \tab down \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 7 \tab Sontek
+#' \tab PCADP \tab up \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 8 \tab
+#' Sontek \tab PCADP \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+#' }
+#'
+#' Finally, a standardized rotation matrix is used to convert from ship
+#' coordinates to earth coordinates.  As described in the RDI coordinate
+#' transformation manual [1, pages 13 and 14], this matrix is based on sines
+#' and cosines of heading, pitch, and roll If \code{CH} and \code{SH} denote
+#' cosine and sine of heading (after adjusting for declination), with similar
+#' terms for pitch and roll using second letters \code{P} and \code{R}, the
+#' rotation matrix is
+#'
+#' \preformatted{ rbind(c( CH*CR + SH*SP*SR, SH*CP, CH*SR - SH*SP*CR), c(-SH*CR
+#' + CH*SP*SR, CH*CP, -SH*SR - CH*SP*CR), c( -CP*SR, SP, CP*CR)) }
+#'
+#' This matrix is left-multiplied by a matrix with three rows, the top a vector
+#' of "starboard" values, the middle a vector of "forward" values, and the
+#' bottom a vector of "mast" values.  Finally, the columns of
+#' \code{data$v[,,1:3]} are filled in with the result of the matrix
+#' multiplication.
+#'
+#' @param x an object of class \code{"adp"}.
+#' @param declination magnetic declination to be added to the heading after
+#' "righting" (see below), to get ENU with N as "true" north.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return An object with \code{data$v[,,1:3]} altered appropriately, and
+#' \code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
+#' @author Dan Kelley
+#' @references
+#' 1. RD Instruments, 1998.  \emph{ADCP Coordinate
+#' Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
+#'
+#' 2. Clark Richards, 2012, PhD Dalhousie University Department of
+#' Oceanography.
+#'
+#' 3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
+#'
+#' @family things related to \code{adp} data
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")

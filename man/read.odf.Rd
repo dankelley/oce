@@ -9,7 +9,11 @@ read.odf(file, debug = getOption("oceDebug"))
 \arguments{
 \item{file}{the file containing the data.}
 
-\item{debug}{a debugging flag, 0 for none, 1 for some debugging}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 an object of class \code{oce}. It is up to a calling function to determine what to do with this object.

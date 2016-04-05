@@ -13,6 +13,8 @@ Temperature is stored in the ITS-90 scale within the object, but the IPTS-68
 value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
 be done in using various seawater functions, e.g. the density function
 \code{\link{swRho}}, if the UNESCO formulation is being requested.
+(See \code{\link{[[,ctd-method}} and \code{\link{[[<-,ctd-method}} for
+more on accessing and altering information within \code{ctd-class} objects.)
 
 The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
@@ -50,7 +52,7 @@ The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
 \code{ctd[["spice"]]}.
 }
 
-\section{Assigning values}{
+\section{Extracting values}{
 
 Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
   <- rep(35,10)}.  For obvious reasons, this does not work with derived
@@ -66,10 +68,10 @@ formats used in CTD files. Data can also be assembled into
 \code{ctd} objects with \code{\link{as.ctd}}.
 
 
-Statistical summaries are provided by \code{\link{summary.ctd}}, while
+Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 \code{\link{show}} displays an overview.
 
-CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of its
+CTD objects may be plotted with \code{\link{plot,ctd-method}}, which does much of its
 work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both of
 which can also be called by the user, to get fine control over the plots.
 
@@ -81,22 +83,33 @@ specified pressure levels with \code{\link{ctdDecimate}}.
 
 Low-level manipulation may be done with functions such as
 \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
-many of the contents of CTD objects may be altered with the \code{[[]]} scheme
+many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 discussed above, and skilled users may also manipulate the contents directly.
 }
 \author{
 Dan Kelley
 }
 \seealso{
-Other functions that handle CTD data: \code{\link{[[,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{argo-class}},
+  \code{\link{bremen-class}}, \code{\link{cm-class}},
+  \code{\link{coastline-class}},
+  \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{sealevel}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

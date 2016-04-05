@@ -609,7 +609,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param lonlabel,latlabel,sides Optional vectors of longitude and latitude
 #' to label on the indicated sides of plot, passed to
-#' \code{\link{plot.coastline}}.  Using these arguments permits reasonably
+#' \code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
 #' simple customization.  If they are are not provided, reasonable defaults
 #' will be used.
 #'

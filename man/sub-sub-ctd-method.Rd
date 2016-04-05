@@ -3,45 +3,136 @@
 \docType{methods}
 \name{[[,ctd-method}
 \alias{[[,ctd-method}
-\title{Extract Something From a CTD Object}
+\title{Extract Parts of a \code{ctd} Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A ctd object, i.e. one inheriting from \code{\link{ctd-class}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
-\item{i}{The item to extract.}
+\item{i}{Character string indicating the name of item to extract.}
 
 \item{j}{Optional additional information on the \code{i} item.}
 
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Extract Something From a CTD Object
+The \code{[[} method works for all \code{oce} objects, i.e.
+objects inheriting from \code{\link{oce-class}}.  The purpose,
+as with the related replacement method, \code{\link{[[<-}}, 
+is to insulate users from the internal details of \code{oce}
+objects, by looking for items within the various storage
+slots of the object. Items not actually stored can also be 
+extracted, including derived data, units of measurement,
+and data-quality flags.
+
+The method uses a two-step process to try to find the
+requested information. First, a class-specific function 
+is used to try to access the requested information (see
+\dQuote{Details of the specialized ... method}). 
+Second, if no match is found, a general function is used
+(see \sQuote{Details of the general method}). If neither
+method can locates the requested item, \code{NULL} is returned.
+}
+\section{Details of the specialized \code{ctd} method}{
+
+The first step \code{[[,ctd-method} takes is to address requests
+for inferences about data stored in \code{\link{ctd-class}}
+objects. For example, these objects hold in-situ temperature,
+but users often need potential temperatures, and so this can
+be calculated and returned, even though the information may
+not be in the data object. Thus, \code{x[["temperature"]]}
+(or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
+\code{x[["theta"]]} (or \code{x[["potential temperature"]]})
+give potential temperature. Similarly, \code{x[["temperature68"]]}
+can be used to convert to the IPTS-1968 temperature scale. The
+"conservative temperature" of the Gibbs Seawater (GSW) formulation is
+available as \code{x[["conservative temperature"]]} (or 
+\code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
+and preformed salinity is \code{x[["Sstar"]]}.
+
+Similarly, a ctd object normally contains pressure, but both
+vertical coordinate and depth can be obtained, with 
+\code{x[["z"]]} and \code{x[["depth"]]}, respectively.
+
+In addition, some specialized quantities are also provided, e.g. 
+density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
+spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
+and the square of buoyancy frequency \code{x[["N2"]]} (calculated
+with \code{\link{swN2}(x)}).
+}
+
+\section{Details of the general method}{
+
+
+If the specialized method produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges
+first on the value of \code{i}.
+
+First, a check is made as to whether \code{i} names one of the standard
+\code{oce} slots, and returns the slot contents if so. Thus, 
+\code{x[["metadata"]]} will retrieve the \code{metadata} slot, 
+while \code{x[["data"]]} and \code{x[["processingLog"]]} return
+those slots.
+
+Next, if \code{i} is a string ending in the
+\code{"Unit"}, then the characters preceding that string
+are taken to be the name of an item in the data object, and a list
+containing the unit is returned. This list consists of an item
+named \code{unit}, which is an \code{\link{expression}}, and
+an item named \code{scale}, which is a string describing the
+measurement scale.  If the string ends in \code{" unit"}, e.g.
+\code{x[["temperature unit"]]}, then just the expression is returned, 
+and if it ends in \code{" scale"}, then just the scale is returned.
+
+Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+data-quality flag is returned (or \code{NULL} if there is no such flag). 
+For example, \code{x[["salinityFlag"]]} returns a vector of salinity
+flags if \code{x} is a ctd object.
+
+If none of the preceding conditions are met, a check is done
+to see if the \code{metadata} slot contains an item with
+the provided name, and that is returned, if so. A direct match
+is required for this condition.
+
+Finally, the \code{data} slot is checked to see if it contains 
+an item with the name indicated by \code{i}. In this case, a partial
+match will work; this is accomplished by using \code{\link{pmatch}}.
+
+If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
-Other functions that access oce data and metadata: \code{\link{[[,adp-method}},
-  \code{\link{[[,adv-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+  \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
-  \code{\link{[[,section-method}}
+  \code{\link{[[,bremen-method}},
+  \code{\link{[[,cm-method}},
+  \code{\link{[[,coastline-method}},
+  \code{\link{[[,echosounder-method}},
+  \code{\link{[[,gps-method}},
+  \code{\link{[[,lisst-method}},
+  \code{\link{[[,lobo-method}},
+  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,sealevel-method}},
+  \code{\link{[[,section-method}},
+  \code{\link{[[,tidem-method}},
+  \code{\link{[[,topo-method}},
+  \code{\link{[[,windrose-method}}
 
-Other functions that handle CTD data: \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
+  \code{\link{as.ctd}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

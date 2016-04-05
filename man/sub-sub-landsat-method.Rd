@@ -36,7 +36,7 @@ reducing the grid width and height from 16000 to about 800.  Similarly,
 1600.  On machines with limited RAM (e.g. under about 6GB), decimation is a
 good idea in almost all processing steps.  It also makes sense for
 plotting, and in fact is done through the \code{decimate} argument of
-\code{\link{plot.landsat}}.
+\code{\link{plot,landsat-method}}.
 
 \emph{Accessing derived data.}  One may retrieve several derived quantities
 that are calculated from data stored in the object:
@@ -74,18 +74,11 @@ decimation.  An exception is the lat-lon box, which is altered by
 Dan Kelley
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{amsr-class}},
-  \code{\link{g1sst-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
+Other things related to \code{landsat} data: \code{\link{landsat-class}},
+  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
+  \code{\link{landsat}}, \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
+  \code{\link{summary,landsat-method}}
 }
 \concept{
 satellite

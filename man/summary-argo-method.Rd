@@ -3,7 +3,6 @@
 \docType{methods}
 \name{summary,argo-method}
 \alias{summary,argo-method}
-\alias{summary.argo}
 \title{Summarize an Argo object}
 \usage{
 \S4method{summary}{argo}(object, ...)
@@ -28,17 +27,14 @@ library(oce)
 data(argo)
 summary(argo)
 
-
 }
 \author{
 Dan Kelley
 }
-\references{
-\url{http://www.argo.ucsd.edu/}
-}
 \seealso{
-Other functions that deal with argo data: \code{\link{[[,argo-method}},
-  \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argo}},
   \code{\link{as.argo}}, \code{\link{plot,argo-method}},
   \code{\link{read.argo}}, \code{\link{subset,argo-method}}
 }
