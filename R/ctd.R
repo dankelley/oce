@@ -154,7 +154,7 @@ NULL
 #' suspicious, or bad data. Any data not flagged as good are set
 #' to \code{NA} in the returned value. Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
-#' setting \code{flags=list(all=c(1, 3:9))} along with
+#' setting \code{flags=list(ALL=c(1, 3:9))} along with
 #' \code{action=list(ALL="NA")}.
 #' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
@@ -169,7 +169,7 @@ NULL
 #' # solely on 'good', in the World Hydrographic Program scheme.
 #' STN <- handleFlags(stn)
 #'
-#' # 2. A less restrictive case: include also 'questionable' datao,
+#' # 2. A less restrictive case: include also 'questionable' data,
 #' and only apply this action to salinity.
 #' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 #'
