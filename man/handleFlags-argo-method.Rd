@@ -58,8 +58,8 @@ value 1 indicates good data, and other values indicate either unchecked,
 suspicious, or bad data. Any data not flagged as good are set
 to \code{NA} in the returned value. Since Argo flag codes run
 from 0 to 4, this default is equivalent to
-setting \code{flags=list(ALL=c(0, 2:4))} along with
-\code{action=list(ALL="NA")}.
+setting \code{flags=list(c(0, 2:4))} along with
+\code{actions=list("NA")}.
 }
 \section{Implementation status}{
  \code{handleFlags} is a new function as of March 2016,
