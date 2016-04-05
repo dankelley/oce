@@ -32,7 +32,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
 \item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of
     times in the top-left margin.}
 \item{adorn}{optional \code{\link{expression}} to be performed immediately
-    after drawing the panel. (See \code{\link{plot.adp}} for an example.)}
+    after drawing the panel. (See \code{\link{plot,adp-method}} for an example.)}
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it does
     incorrectly if there are missing values in \code{y}).}
 \item{xlab}{name for x axis; defaults to \code{""}.}

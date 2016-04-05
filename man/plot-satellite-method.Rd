@@ -26,7 +26,8 @@ For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
 Dan Kelley
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+  \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},

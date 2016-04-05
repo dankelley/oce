@@ -33,10 +33,10 @@ that span months of differing lengths.
 
 As of early February 2015, \code{oce.grid} handles \code{xat} produced as the
 return value from the following functions: \code{\link{imagep}} and
-\code{\link{oce.plot.ts}}, \code{\link{plot.adp}}, \code{\link{plot,echosounder-method}},
-and \code{\link{plotTS}}.
+\code{\link{oce.plot.ts}}, \code{\link{plot,adp-method}},
+\code{\link{plot,echosounder-method}}, and \code{\link{plotTS}}.
 It makes no sense to try to use \code{oce.grid} for multiplanel oce plots,
-e.g. the default plot from \code{\link{plot.adp}}.
+e.g. the default plot from \code{\link{plot,adp-method}}.
 }
 \examples{
 library(oce)

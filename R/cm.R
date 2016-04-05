@@ -507,8 +507,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param type type of plot, as for \code{\link{plot}}.
 #' 
 #' @param adorn optional list of \code{\link{expression}}s to be performed
-#' immediately after drawing the panels. (See \code{\link{plot.adp}} for an
-#' example.)
+#' immediately after drawing the panels. (See \code{\link{plot,adp-method}}
+#' for an example.)
 #' 
 #' @param drawTimeRange boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
@@ -585,7 +585,7 @@ setMethod(f="plot",
               ##gave.ylim <- "ylim" %in% names(dots)
               ##ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
-              oceDebug(debug, "later on in plot.adp:\n")
+              oceDebug(debug, "later on in plot,adp-method:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "which:", which, "\n")

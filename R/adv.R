@@ -448,8 +448,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param type Type of plot, as for \code{\link{plot}}.
 #' 
 #' @param adorn Optional list of \code{\link{expression}}s to be performed
-#' immediately after drawing the panels. (See \code{\link{plot.adp}} for an
-#' example.)
+#' immediately after drawing the panels. (See \code{\link{plot,adp-method}}
+#' for an example.)
 #' 
 #' @param drawTimeRange Boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the

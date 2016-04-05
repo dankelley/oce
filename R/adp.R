@@ -370,6 +370,9 @@ setMethod(f="summary",
 #' @examples
 #' data(adp)
 #' head(adp[["v"]][,,1])
+#'
+#' @author Dan Kelley
+#'
 #' @family things related to \code{adp} data
 #' @family functions that extract parts of oce objects
 setMethod(f="[[",
@@ -420,6 +423,9 @@ setMethod(f="[[",
 #' @param j Optional additional information on the \code{i} item.
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be inserted into \code{x}.
+#'
+#' @author Dan Kelley
+#'
 #' @family things related to \code{adp} data
 #' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
@@ -496,9 +502,9 @@ setValidity("adp",
 #' # First part of time series
 #' plot(subset(adp, time < mean(range(adp[['time']]))))
 #' 
-#' @family things related to \code{adp} data
-#' 
 #' @author Dan Kelley
+#' 
+#' @family things related to \code{adp} data
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
@@ -613,8 +619,6 @@ setMethod(f="subset",
 #' slot of which is then inserted.  However, in some testing situations it
 #' can be useful to set up artificial \code{adp} objects, so the other
 #' arguments may be useful.
-#'
-#' A few defaults are set for some 
 #'
 #' @param time of observations in POSIXct format
 #' @param distance to centre of bins
@@ -758,6 +762,29 @@ beamName <- function(x, which)
     }
 }
 
+
+#' Read an ADP data file
+#' 
+#' Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
+#' from \code{\link{adp-class}}.
+#' 
+#' Several file types can be handled.  Some of
+#' these functions are wrappers that map to device names, e.g.
+#' \code{read.aquadoppProfiler} does its work by calling
+#' \code{read.adp.nortek}; in this context, it is worth noting that the
+#' ``aquadopp'' instrument is a one-cell profiler that might just as well have
+#' been documented under the heading \code{\link{read.adv}}.
+#'
+#' @param manufacturer a character string indicating the manufacturer, used by
+#' the general function \code{read.adp} to select a subsidiary function to use,
+#' such as \code{read.adp.nortek}.
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @template adpTemplate
+#'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @family things related to \code{adp} data
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      longitude=NA, latitude=NA, 
                      manufacturer=c("rdi", "nortek", "sontek"),
@@ -929,7 +956,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' \code{which=15:18} (pressure being included to signal the tide, and tidal
 #' currents may dislodge a mooring or cause it to settle).
 #' 
-#' By default, \code{plot.adp} uses a \code{zlim} value for the
+#' By default, \code{plot,adp-method} uses a \code{zlim} value for the
 #' \code{\link{image}} that is constructed to contain all the data, but to be
 #' symmetric about zero.  This is done on a per-panel basis, and the scale is
 #' plotted at the top-right corner, along with the name of the variable being
@@ -1108,7 +1135,7 @@ setMethod(f="plot",
                       mode <- 'normal'
                   }
               }
-              oceDebug(debug, "plot.adp(x, which=\"", paste(which, collapse=","),
+              oceDebug(debug, "plot,adp-method(x, which=\"", paste(which, collapse=","),
                        "\", breaks=", if (missing(breaks)) "(missing)" else 
                            paste("c(", paste(breaks, collapse=", "), ")", sep=""),
                        ", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
@@ -1211,7 +1238,7 @@ setMethod(f="plot",
                   main <- rep('', length.out=nw)
               else
                   main <- rep(main, length.out=nw)
-              oceDebug(debug, "later on in plot.adp:\n")
+              oceDebug(debug, "later on in plot,adp-method:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
@@ -2115,7 +2142,7 @@ setMethod(f="plot",
                   }
               }
               par(cex=opar$cex)
-              oceDebug(debug, "} # plot.adp()\n", unindent=1)
+              oceDebug(debug, "} # plot,adp-method()\n", unindent=1)
               if (exists("ats")) {
                   res$xat <- ats$xat
                   res$yat <- ats$yat

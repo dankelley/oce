@@ -36,8 +36,6 @@ is to set up a nearly-blank \code{\link{adp-class}} object, the \code{data}
 slot of which is then inserted.  However, in some testing situations it
 can be useful to set up artificial \code{adp} objects, so the other
 arguments may be useful.
-
-A few defaults are set for some
 }
 \examples{
 data(adp)
@@ -56,7 +54,15 @@ Dan Kelley
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{subset,adp-method}},
+  \code{\link{adp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{subset,adp-method}},
   \code{\link{xyzToEnuAdp}}
 }
 
