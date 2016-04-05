@@ -170,6 +170,7 @@ NULL
 #' # 1. Default: anything not flagged as 2 is set to NA, to focus
 #' # solely on 'good', in the World Hydrographic Program scheme.
 #' STN <- handleFlags(stn)
+#' data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity']])
 #'
 #' # 2. A less restrictive case: include also 'questionable' data,
 #' # and only apply this action to salinity.
