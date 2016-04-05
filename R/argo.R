@@ -114,7 +114,7 @@ argoDataNames <- function(names)
     names <- gsub("PSAL", "salinity", names)
     names <- gsub("TEMP", "temperature", names)
     names <- gsub("_ADJUSTED", "Adjusted", names)
-    names <- gsub("_QC", "Qc", names)
+    names <- gsub("_QC", "", names)
     names <- gsub("_ERROR", "Error", names)
     names
 }
@@ -200,14 +200,14 @@ setMethod(f="subset",
                       res@data[[adjustedError]] <- NULL
                   }
                   flagNames <- names(x@metadata$flags)
-                  adjustedIndices <- grep(".*AdjustedQc$", flagNames)
+                  adjustedIndices <- grep(".*Adjusted$", flagNames)
                   ##> message("FLAGS")
                   ##> message("flagNames...");print(flagNames)
                   ##> message("adjustedIndices");print(adjustedIndices)
                   for (i in adjustedIndices) {
                       adjusted <- flagNames[i]
-                      base <- gsub("AdjustedQc$", "Qc", adjusted)
-                      adjustedError <- paste(adjusted, "ErrorQc", sep="")
+                      base <- gsub("Adjusted$", "", adjusted)
+                      adjustedError <- paste(adjusted, "Error", sep="")
                       ##> message("    base:          ", base)
                       ##> message("    adjusted:      ", adjusted)
                       ##> message("    adjustedError: ", adjustedError)
@@ -443,6 +443,7 @@ argoDecodeFlags <- function(f) # local function
 {
     res <- unlist(lapply(seq_along(f), function(i) strsplit(f[i], split="")))
     dim(res) <- c(length(res)/length(f), length(f))
+    mode(res) <- "numeric"
     res
 }
 
@@ -510,8 +511,8 @@ argoDecodeFlags <- function(f) # local function
 #' \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
 #' and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
 #' stored in the \code{data} slot. Meanwhile, the quality-control flags
-#' \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressureQc}
-#' and \code{pressureAdjustedQc} in the \code{metadata} slot.
+#' \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
+#' and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 #' 
 #' @param file a character string giving the name of the file to load.
 #' 
