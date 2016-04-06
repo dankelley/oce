@@ -660,6 +660,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##    return(salinity) # a convenience that lets us coerce without altering
         ## 1. coerce an oce object (with special tweaks for rsk)
     } else if (inherits(salinity, "oce")) {
+        if (inherits(salinity, "ctd"))
+            return(salinity)
         oceDebug(debug, "'salinity' is an oce object, so ignoring other arguments\n")
         o <- salinity
         d <- o@data

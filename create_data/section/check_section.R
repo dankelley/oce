@@ -16,3 +16,8 @@ testthat::expect_equal(stn2@metadata$flags$nitrate, twos)
 testthat::expect_equal(stn2@metadata$flags$nitrite, twos)
 testthat::expect_equal(stn2@metadata$flags$phosphate, c(2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2))
 
+plot(section, xtype="time")
+plot(section, xtype="latitude")
+plot(section, xtype="latitude")
+plot(section, xtype="track")
+
