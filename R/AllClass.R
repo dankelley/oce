@@ -383,15 +383,23 @@ handleFlagsInternal <- function(object, flags, actions) {
         cat("in handleFlagsInternal, actions=\n")
         str(actions)
     }
+    if (debug > 1) {
+        cat("flags follows...\n")
+        print(flags)
+        cat("actions follows...\n")
+        print(actions)
+    }
     if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
         all <- is.null(names(flags)) # "ALL" %in% names(flags)
         if (all && length(flags) > 1)
             stop("if first flag is unnamed, no other flags can be specified")
         if (all && (length(actions) > 1 || !is.null(names(actions))))
             stop("if flags is a list of a single unnamed item, actions must be similar")
+        if (debug > 1)
+            message("all: ", all)
         for (name in names(object@data)) {
-            if (debug > 0)
-                message("name: ", name)
+            if (debug > 1)
+                cat(" ", name)
             flagsObject <- object@metadata$flags[[name]]
             if (!is.null(flagsObject)) {
                 ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
@@ -403,6 +411,10 @@ handleFlagsInternal <- function(object, flags, actions) {
                     if (debug > 0)
                         print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
                     if (any(actionNeeded)) {
+                        if (debug > 1) {
+                            message("\nactionsThis follows...")
+                            print(actionsThis)
+                        }
                         if (is.function(actionsThis)) {
                             object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
                         } else if (is.character(actionsThis)) {
@@ -414,6 +426,9 @@ handleFlagsInternal <- function(object, flags, actions) {
                         } else {
                             stop("action must be a character string or a function")
                         }
+                    } else {
+                        if (debug > 0)
+                            message("\nno action needed")
                     }
                 }
             }

@@ -1150,6 +1150,9 @@ setMethod(f="plot",
               invisible()
           })
 
+##' DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
+##' DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
+##' DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle flags in ARGO objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
@@ -1181,12 +1184,15 @@ setMethod(f="plot",
 setMethod("handleFlags",
           c(object="argo", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
+              ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the Argo QC system, with
               ## flags from 0 to 4, with flag=1 for acceptable data.
               if (missing(flags))
-                  flags <- list(c(0, 2:4))
-              if (missing(actions))
-                  actions <- list("NA")
+                  flags <- list(c(0, 2:4)) # DEVELOPER 2: alter this line to suit a newdata class
+              if (missing(actions)) {
+                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
+                  names(actions) <- names(flags)
+              }
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }

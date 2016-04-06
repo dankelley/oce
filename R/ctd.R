@@ -148,7 +148,9 @@ NULL
 NULL
 
 
-## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+##' DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+##' DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
+##' DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle flags in CTD objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
@@ -197,12 +199,15 @@ NULL
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
+              ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
               if (missing(flags))
-                  flags <- list(c(1, 3:9))
-              if (missing(actions))
-                  actions <- list("NA")
+                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a newdata class
+              if (missing(actions)) {
+                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
+                  names(actions) <- names(flags)
+              }
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
