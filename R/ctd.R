@@ -3482,228 +3482,215 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     temperatureUnit = list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
     pressureType = "sea"               # guess; other option is "absolute"
 
-    ## In pass 1, try to find header in a fraction of the file; if this fails,
-    ## read the whole file, in pass 2. This should speed things up for large
-    ## files, since readLines() takes of order 3s to read a 30MB file (even
-    ## with SSD; DK benchmark 2016-04-07).
-    gotWholeHeader <- FALSE
-    for (pass in 1:2) {
-        if (gotWholeHeader)
-            break
-        cat("pass:", pass, "\n")
-        lines <- if (pass==1) readLines(file, n=1000) else readLines(file)
-        for (iline in seq_along(lines)) {
-            line <- lines[iline]
-            ##line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-            oceDebug(debug, "examining header line '",line,"'\n", sep="")
-            header <- c(header, line)
-            ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
-            aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-            if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
-                ## Sometimes SBE files have a header line after the *END* line.
+    lines <- readLines(file)
+    for (iline in seq_along(lines)) {
+        line <- lines[iline]
+        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+        oceDebug(debug, "examining header line '",line,"'\n", sep="")
+        header <- c(header, line)
+        ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
+        aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
+        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+            ## Sometimes SBE files have a header line after the *END* line.
+            iline <- iline + 1
+            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
                 iline <- iline + 1
-                if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
-                    iline <- iline + 1
-                cat("iline:", iline, "\n")
-                cat(aline)
-                gotWholeHeader <- TRUE
-                break
+            break
+        }
+        lline <- tolower(aline)
+        ## BUG: discovery of column names is brittle to format changes
+        if (0 < (r <- regexpr("# name ", lline))) {
+            oceDebug(debug, "lline: '",lline,"'\n",sep="")
+            tokens <- strsplit(line, split=" ", useBytes=TRUE)
+            oceDebug(debug, "   successfully tokenized\n")
+            name <- tokens[[1]][6]
+            oceDebug(debug, "  name: '",name,"'\n",sep="")
+            if (0 < regexpr("scan", lline)) {
+                name <- "scan"
+                found.scan <- TRUE
             }
-            lline <- tolower(aline)
-            ## BUG: discovery of column names is brittle to format changes
-            if (0 < (r <- regexpr("# name ", lline))) {
-                oceDebug(debug, "lline: '",lline,"'\n",sep="")
-                tokens <- strsplit(line, split=" ", useBytes=TRUE)
-                oceDebug(debug, "   successfully tokenized\n")
-                name <- tokens[[1]][6]
-                oceDebug(debug, "  name: '",name,"'\n",sep="")
-                if (0 < regexpr("scan", lline)) {
-                    name <- "scan"
-                    found.scan <- TRUE
-                }
-                if (0 < regexpr("pressure", lline)) {
-                    if (0 > regexpr("deg c", lline)) {
-                        ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-                        name <- "pressure"
-                        found.pressure <- TRUE
-                    }
-                }
-                if (0 < regexpr("time", lline)) {
-                    name <- "time"
-                    found.time <- TRUE
-                }
-                if (0 < regexpr("salinity", lline)) {
-                    name <- "salinity"
-                    found.salinity <- TRUE
-                }
-                if (0 < regexpr("temperature", lline)) {
+            if (0 < regexpr("pressure", lline)) {
+                if (0 > regexpr("deg c", lline)) {
                     ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-                    if (0 > regexpr("pressure", lline) && 0 > regexpr("potential", lline)) {
-                        name <- "temperature"
-                        found.temperature <- TRUE
-                        unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
-                        if (length(grep("68", unit)))
-                            temperatureUnit <- list(unit=expression(degree*C), scale="IPTS-68")
-                        else if (length(grep("90", unit)))
-                            temperatureUnit <- list(unit=expression(degree*C), scale="ITS-90")
-                        oceDebug(debug, "temperatureUnit: ", temperatureUnit$unit, "(inferred from '", unit, "'\n", sep="")
-                    }
+                    name <- "pressure"
+                    found.pressure <- TRUE
                 }
-                if (0 < regexpr("conductivity", lline)) {
-                    if (0 < regexpr("ratio", lline)) {
-                        found.conductivity.ratio <- TRUE;
-                        name <- "conductivityratio"
-                        conductivityUnit = list(unit=expression(ratio), scale="")
-                    } else {
-                        found.conductivity <- TRUE;
-                        name <- "conductivity"
-                        unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
-                        if (length(grep("S/m", unit)))
-                            conductivityUnit <- list(unit="S/m", scale="")
-                        else if (length(grep("mS/cm", unit)))
-                            conductivityUnit <- list(unit="mS/cm", scale="")
-                    }
+            }
+            if (0 < regexpr("time", lline)) {
+                name <- "time"
+                found.time <- TRUE
+            }
+            if (0 < regexpr("salinity", lline)) {
+                name <- "salinity"
+                found.salinity <- TRUE
+            }
+            if (0 < regexpr("temperature", lline)) {
+                ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
+                if (0 > regexpr("pressure", lline) && 0 > regexpr("potential", lline)) {
+                    name <- "temperature"
+                    found.temperature <- TRUE
+                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
+                    if (length(grep("68", unit)))
+                        temperatureUnit <- list(unit=expression(degree*C), scale="IPTS-68")
+                    else if (length(grep("90", unit)))
+                        temperatureUnit <- list(unit=expression(degree*C), scale="ITS-90")
+                    oceDebug(debug, "temperatureUnit: ", temperatureUnit$unit, "(inferred from '", unit, "'\n", sep="")
                 }
-                if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
-                    name <- "depth"
-                    found.depth <- TRUE
-                }
-                if (0 < regexpr("fluorometer", lline))
-                    name <- "fluorometer"
-                ## Used to have oxygen.temperature and oxygen.current here (why??)
-                if (0 < regexpr("oxygen", lline))
-                    name <- "oxygen"
-                if (0 < regexpr("flag", lline))
-                    name <- "flag"
-                if (0 < regexpr("sigma-theta", lline)) {
-                    name <- "sigmaTheta"
-                    ##foundSigmaTheta <- TRUE
+            }
+            if (0 < regexpr("conductivity", lline)) {
+                if (0 < regexpr("ratio", lline)) {
+                    found.conductivity.ratio <- TRUE;
+                    name <- "conductivityratio"
+                    conductivityUnit = list(unit=expression(ratio), scale="")
                 } else {
-                    if (0 < regexpr("sigma-t", lline)) {
-                        name <- "sigmat"
-                        ##foundSigmaT <- TRUE
-                    }
-                }
-                col.names.inferred <- c(col.names.inferred, name)
-            }
-            if (0 < regexpr(".*seacat profiler.*", lline))
-                serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
-            if (length(grep("^\\* temperature sn", lline)))
-                serialNumberTemperature <- gsub("^.*=\\s", "", lline)
-            if (length(grep("^\\* conductivity sn", lline)))
-                serialNumberConductivity <- gsub("^.*=\\s", "", lline)
-            if (0 < (r<-regexpr("date:", lline))) {
-                d <- sub("(.*)date:([ ])*", "", lline)
-                date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
-            }
-            ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
-            ##* system upload time = jan 26 2010 13:02:57
-            if (length(grep("^\\* .*time.*=.*$", lline))) {
-                if (0 == length(grep("real-time sample interval", lline))) {
-                    d <- sub(".*=", "", lline)
-                    d <- sub("^ *", "", d)
-                    d <- sub(" *$", "", d)
-                    date <- decodeTime(d)
+                    found.conductivity <- TRUE;
+                    name <- "conductivity"
+                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
+                    if (length(grep("S/m", unit)))
+                        conductivityUnit <- list(unit="S/m", scale="")
+                    else if (length(grep("mS/cm", unit)))
+                        conductivityUnit <- list(unit="mS/cm", scale="")
                 }
             }
-            if (0 < (r<-regexpr("filename", lline)))
-                hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
-            if (0 < (r<-regexpr("system upload time", lline))) {
-                d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
-                systemUploadTime <- decodeTime(d)
-                oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep="")
+            if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
+                name <- "depth"
+                found.depth <- TRUE
             }
-            ## Styles:
-            ## * NMEA Latitude = 47 54.760 N
-            ## ** Latitude:      47 53.27 N
-            if (!found.header.latitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
-                latitude <- parseLatLon(lline, debug=debug-1)
-                found.header.latitude <- TRUE
-            }
-            if (!found.header.longitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
-                longitude <- parseLatLon(lline, debug=debug-1)
-                found.header.longitude <- TRUE
-            }
-            if (0 < (r<-regexpr("start_time =", lline))) {
-                d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
-                startTime <- decodeTime(d)
-                oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep="")
-            }
-            if (0 < (r<-regexpr("ship:", lline))) {
-                ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line) # note: using full string
-                ship <- sub("[ \t]*$", "", ship)
-            }
-            if (0 < (r<-regexpr("scientist:", lline)))
-                scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line) # full string
-            if (0 < (r<-regexpr("chef", lline)))
-                scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line) # full string
-            if (0 < (r<-regexpr("institute:", lline)))
-                institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
-            if (0 < (r<-regexpr("address:", lline)))
-                address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
-            if (0 < (r<-regexpr("cruise:", lline))) {
-                cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
-                cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
-            }
-            if (is.null(station)) {
-                if (0 < (r<-regexpr("station:", lline)))
-                    station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line)) # full string
-            }
-            if (0 < (r<-regexpr("recovery:", lline)))
-                recovery <- sub("(.*)recovery:([ ])*", "", lline)
-            if (0 < (r<-regexpr("depth", lline))) { # "** Depth (m): 3447 "
-                look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
-                look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
-                look <- gsub("[ ]*", "", look, ignore.case=TRUE)
-                oceDebug(debug, " trying to get water depth from '", lline, "', reduced to '", look, "'\n", sep="")
-                if (!length(grep('[a-zA-Z]', look))) {
-                    waterDepth<- as.numeric(look)
-                    oceDebug(debug, "got waterDepth: ", waterDepth, "\n")
+            if (0 < regexpr("fluorometer", lline))
+                name <- "fluorometer"
+            ## Used to have oxygen.temperature and oxygen.current here (why??)
+            if (0 < regexpr("oxygen", lline))
+                name <- "oxygen"
+            if (0 < regexpr("flag", lline))
+                name <- "flag"
+            if (0 < regexpr("sigma-theta", lline)) {
+                name <- "sigmaTheta"
+                ##foundSigmaTheta <- TRUE
+            } else {
+                if (0 < regexpr("sigma-t", lline)) {
+                    name <- "sigmat"
+                    ##foundSigmaT <- TRUE
                 }
             }
-            if (0 < (r<-regexpr("water depth:", lline))
-                || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
-                ## Examples from files in use by author:
-                ##** Profondeur: 76
-                ##** Water Depth:   40 m
-                look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
-                linesplit <- strsplit(look," ")[[1]]
-                nitems <- length(linesplit)
-                if (nitems == 1) {
+            col.names.inferred <- c(col.names.inferred, name)
+        }
+        if (0 < regexpr(".*seacat profiler.*", lline))
+            serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
+        if (length(grep("^\\* temperature sn", lline)))
+            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
+        if (length(grep("^\\* conductivity sn", lline)))
+            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
+        if (0 < (r<-regexpr("date:", lline))) {
+            d <- sub("(.*)date:([ ])*", "", lline)
+            date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
+        }
+        ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
+        ##* system upload time = jan 26 2010 13:02:57
+        if (length(grep("^\\* .*time.*=.*$", lline))) {
+            if (0 == length(grep("real-time sample interval", lline))) {
+                d <- sub(".*=", "", lline)
+                d <- sub("^ *", "", d)
+                d <- sub(" *$", "", d)
+                date <- decodeTime(d)
+            }
+        }
+        if (0 < (r<-regexpr("filename", lline)))
+            hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
+        if (0 < (r<-regexpr("system upload time", lline))) {
+            d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
+            systemUploadTime <- decodeTime(d)
+            oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep="")
+        }
+        ## Styles:
+        ## * NMEA Latitude = 47 54.760 N
+        ## ** Latitude:      47 53.27 N
+        if (!found.header.latitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
+            latitude <- parseLatLon(lline, debug=debug-1)
+            found.header.latitude <- TRUE
+        }
+        if (!found.header.longitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
+            longitude <- parseLatLon(lline, debug=debug-1)
+            found.header.longitude <- TRUE
+        }
+        if (0 < (r<-regexpr("start_time =", lline))) {
+            d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
+            startTime <- decodeTime(d)
+            oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep="")
+        }
+        if (0 < (r<-regexpr("ship:", lline))) {
+            ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line) # note: using full string
+            ship <- sub("[ \t]*$", "", ship)
+        }
+        if (0 < (r<-regexpr("scientist:", lline)))
+            scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line) # full string
+        if (0 < (r<-regexpr("chef", lline)))
+            scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line) # full string
+        if (0 < (r<-regexpr("institute:", lline)))
+            institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
+        if (0 < (r<-regexpr("address:", lline)))
+            address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
+        if (0 < (r<-regexpr("cruise:", lline))) {
+            cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
+            cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
+        }
+        if (is.null(station)) {
+            if (0 < (r<-regexpr("station:", lline)))
+                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line)) # full string
+        }
+        if (0 < (r<-regexpr("recovery:", lline)))
+            recovery <- sub("(.*)recovery:([ ])*", "", lline)
+        if (0 < (r<-regexpr("depth", lline))) { # "** Depth (m): 3447 "
+            look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
+            look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
+            look <- gsub("[ ]*", "", look, ignore.case=TRUE)
+            oceDebug(debug, " trying to get water depth from '", lline, "', reduced to '", look, "'\n", sep="")
+            if (!length(grep('[a-zA-Z]', look))) {
+                waterDepth<- as.numeric(look)
+                oceDebug(debug, "got waterDepth: ", waterDepth, "\n")
+            }
+        }
+        if (0 < (r<-regexpr("water depth:", lline))
+            || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
+            ## Examples from files in use by author:
+            ##** Profondeur: 76
+            ##** Water Depth:   40 m
+            look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
+            linesplit <- strsplit(look," ")[[1]]
+            nitems <- length(linesplit)
+            if (nitems == 1) {
+                waterDepth <- as.numeric(linesplit[1])
+            } else if (nitems == 2) {
+                unit <- linesplit[2]
+                if (unit == "m") {
                     waterDepth <- as.numeric(linesplit[1])
-                } else if (nitems == 2) {
-                    unit <- linesplit[2]
-                    if (unit == "m") {
-                        waterDepth <- as.numeric(linesplit[1])
-                    } else if (unit == "km") {
-                        waterDepth <- 1000 * as.numeric(linesplit[1])
-                    } else {
-                        warning("ignoring unit on water depth '", look, "'")
-                    }
+                } else if (unit == "km") {
+                    waterDepth <- 1000 * as.numeric(linesplit[1])
                 } else {
-                    stop("cannot interpret water depth from '", lline, "'")
+                    warning("ignoring unit on water depth '", look, "'")
                 }
+            } else {
+                stop("cannot interpret water depth from '", lline, "'")
             }
-            if (0 < (r<-regexpr("^. sample rate =", lline))) {
-                ## * sample rate = 1 scan every 5.0 seconds
-                rtmp <- lline;
-                rtmp <- sub("(.*) sample rate = ", "", rtmp)
-                rtmp <- sub("scan every ", "", rtmp)
-                rtmp <- strsplit(rtmp, " ")
-                ##      if (length(rtmp[[1]]) != 3)
-                ##        warning("cannot parse sample-rate string in `",line,"'")
-                sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
-                if (rtmp[[1]][3] == "seconds") {
-                    ;
+        }
+        if (0 < (r<-regexpr("^. sample rate =", lline))) {
+            ## * sample rate = 1 scan every 5.0 seconds
+            rtmp <- lline;
+            rtmp <- sub("(.*) sample rate = ", "", rtmp)
+            rtmp <- sub("scan every ", "", rtmp)
+            rtmp <- strsplit(rtmp, " ")
+            ##      if (length(rtmp[[1]]) != 3)
+            ##        warning("cannot parse sample-rate string in `",line,"'")
+            sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
+            if (rtmp[[1]][3] == "seconds") {
+                ;
+            } else {
+                if (rtmp[[1]][3] == "minutes") {
+                    sampleInterval <- sampleInterval / 60;
                 } else {
-                    if (rtmp[[1]][3] == "minutes") {
-                        sampleInterval <- sampleInterval / 60;
+                    if (rtmp[[1]][3] == "hours") {
+                        sampleInterval <- sampleInterval / 3600;
                     } else {
-                        if (rtmp[[1]][3] == "hours") {
-                            sampleInterval <- sampleInterval / 3600;
-                        } else {
-                            warning("cannot understand `",rtmp[[1]][2],"' as a unit of time for sampleInterval")
-                        }
+                        warning("cannot understand `",rtmp[[1]][2],"' as a unit of time for sampleInterval")
                     }
                 }
             }
