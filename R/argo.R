@@ -386,8 +386,6 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
-    salinity <- argo[["salinity"]]
-    temperature <- argo[["temperature"]]
     pressure <- argo[["pressure"]]
     if (missing(p)) {
         pt <- apply(pressure, 1, median, na.rm=TRUE)
@@ -407,19 +405,19 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     }
     ##message("pt=c(", paste(round(pt), collapse=","), ")")
     npt <- length(pt)
-    res@data$salinity <- matrix(0.0, ncol=nprofile, nrow=npt)
-    res@data$temperature <- matrix(0.0, ncol=nprofile, nrow=npt)
-    res@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
-    for (profile in 1:nprofile) {
-        ndata <- sum(!is.na(salinity[,profile]))
-        if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
-            res@data$salinity[,profile] <- approx(pressure[,profile], salinity[,profile], pt, ...)$y
-            res@data$temperature[,profile] <- approx(pressure[,profile], temperature[,profile], pt, ...)$y
-            res@data$pressure[,profile] <- pt
-        } else {
-            res@data$salinity[,profile] <- rep(NA, npt)
-            res@data$temperature[,profile] <- rep(NA, npt)
-            res@data$pressure[,profile] <- pt
+    res@data$pressure <- matrix(NA, ncol=nprofile, nrow=npt)
+    for (field in names(res@data)) {
+        if (!(field %in% c('time', 'longitude', 'latitude'))) {
+            res@data[[field]] <- matrix(NA, ncol=nprofile, nrow=npt)
+            for (profile in 1:nprofile) {
+                ndata <- sum(!is.na(argo@data[[field]][,profile]))
+                if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
+                    res@data[[field]][,profile] <- approx(pressure[,profile], argo@data[[field]][,profile], pt, ...)$y
+                } else {
+                    res@data[[field]][,profile] <- rep(NA, npt)
+                }
+                res@data$pressure[,profile] <- pt
+            }
         }
     }
     res
