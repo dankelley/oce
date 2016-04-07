@@ -146,8 +146,8 @@ setMethod(f="summary",
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form or numeric
-#' form; see \dQuote{examples}.
+#' data can be retrived in \code{\link{raw}} form 
+#' or numeric form; see \dQuote{Examples}.
 #' 
 #' @template sub_subTemplate
 #' @family things related to \code{adv} data
