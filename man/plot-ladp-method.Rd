@@ -22,7 +22,8 @@ and northerly velocity components.
 Dan Kelley
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+  \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},

@@ -59,6 +59,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,coastline-method}},
   \code{\link{[[<-,ctd-method}},
   \code{\link{[[<-,echosounder-method}},
+  \code{\link{[[<-,g1sst-method}},
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,oce-method}},

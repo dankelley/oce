@@ -1429,7 +1429,7 @@ setMethod(f="plot",
               which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude", "time"), nomatch=0)
               if (0 == which.xtype)
                   stop('xtype must be one of: "distance", "track", "longitude", "latitude" or "time"')
-              xtype <- c("distance", "track", "longitude", "latitude")[which.xtype]
+              xtype <- c("distance", "track", "longitude", "latitude", "time")[which.xtype]
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -1482,7 +1482,15 @@ setMethod(f="plot",
                       } else if (which.xtype == 4) {
                           xx[ix] <- x@data$station[[j]]@metadata$latitude
                       } else if (which.xtype == 5) {
-                          xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
+                          ## use ix as a desparate last measure, if there are no times.
+                          if (is.null(x@data$station[[j]]@metadata$startTime)) {
+                              xx[ix] <- ix
+                              if (ix == 1)
+                                  warning("In plot,section-method() :\n  section stations do not contain startTime; using integers for time axis",
+                                          call.=FALSE)
+                          } else {
+                              xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
+                          }
                       } else {
                           stop('unknown xtype; it must be one of: "distance", "track", "longitude", "latitude", or "time"')
                       }
@@ -1958,16 +1966,15 @@ read.section <- function(file, directory, sectionId="", flags,
     stn <- vector("character", numStations)
     lon <- vector("numeric", numStations)
     lat <- vector("numeric", numStations)
-    time <- vector("numeric", numStations)
-    tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
-    trefn <- as.numeric(tref)
+    time <- vector("numeric", numStations) # has to be numeric
+    ## tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
+    ## trefn <- as.numeric(tref)
     for (i in 1:numStations) {
 	oceDebug(debug, "reading station", i, "... ")
 	select <- which(stationId == stationList[i])
 	# "199309232222"
 	# "1993-09-23 22:22:00"
-	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""),
-				       "%Y%m%d%H%M", tz="UTC")) - trefn
+	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
 	stn[i] <- sub("^ *", "", stationId[select[1]])
 	lon[i] <- longitude[select[1]]
 	lat[i] <- latitude[select[1]]
@@ -1987,7 +1994,7 @@ read.section <- function(file, directory, sectionId="", flags,
                                silicate=if(!is.null(silicate))silicate[select],
                                flags=flagsSelected,
 			       ship=ship,
-			       date=time[i] + tref,
+			       startTime=numberAsPOSIXct(time[i]),
 			       scientist=scientist,
 			       institute=institute,
 			       longitude=lon[i], latitude=lat[i],
@@ -2033,7 +2040,7 @@ read.section <- function(file, directory, sectionId="", flags,
     res@metadata$stationId <- stn
     res@metadata$longitude <- lon
     res@metadata$latitude <- lat
-    res@metadata$date <- time+tref
+    res@metadata$date <- numberAsPOSIXct(time)
     res@metadata$filename <- filename
     res@data <- list(station=station)
     if (missing(processingLog))

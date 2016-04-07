@@ -20,8 +20,8 @@ values of \code{which}.}
 \item{type}{type of plot, as for \code{\link{plot}}.}
 
 \item{adorn}{optional list of \code{\link{expression}}s to be performed
-immediately after drawing the panels. (See \code{\link{plot.adp}} for an
-example.)}
+immediately after drawing the panels. (See \code{\link{plot,adp-method}}
+for an example.)}
 
 \item{drawTimeRange}{boolean that applies to panels with time as the horizontal
 axis, indicating whether to draw the time range in the top-left margin of the
@@ -105,7 +105,8 @@ The panels are controlled by the \code{which} argument, as follows.
 Dan Kelley
 }
 \seealso{
-Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+  \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},

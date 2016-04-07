@@ -11,8 +11,9 @@ handleFlags(object, flags, actions)
 
 \item{flags}{An optional \code{\link{list}} containing (a)
 items with names of entries in the \code{data} slot of \code{object},
-or (b) a single item named \code{ALL} that indicates that the operations are to take
-place all the entries in \code{object}'s \code{data} slot.
+or (b) a single unnamed item. In the first case, the attention is
+focussed on the named items, while in the second case the 
+all the data in the \code{object}'s \code{data} slot are examined.
 Each element in the list must be set to an integer or vector of integers,
 specifying conditions to be met before actions are to be taken.}
 
@@ -20,7 +21,7 @@ specifying conditions to be met before actions are to be taken.}
 names that match those in the \code{flags} argument.  If \code{actions}
 is not supplied, the default will be to set all values identified by
 \code{flags} to \code{NA}; this can also be specified by
-specifying \code{actions=list(ALL="NA")}. It is also possible to specify 
+specifying \code{actions=list("NA")}. It is also possible to specify 
 functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
 replacement for the data item in question.}
@@ -66,6 +67,7 @@ work, with possible changes to the user interface. Then other
 types will be added, as needed.
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}}
+Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
+  \code{\link{handleFlags,ctd-method}}
 }
 

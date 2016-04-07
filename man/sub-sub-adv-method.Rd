@@ -39,8 +39,8 @@ method can locates the requested item, \code{NULL} is returned.
 In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
-data can be retrived in \code{\link{raw}} form or numeric
-form; see \dQuote{examples}.
+data can be retrived in \code{\link{raw}} form 
+or numeric form; see \dQuote{Examples}.
 }
 
 \section{Details of the general method}{
@@ -96,6 +96,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,amsr-me
   \code{\link{[[,coastline-method}},
   \code{\link{[[,ctd-method}},
   \code{\link{[[,echosounder-method}},
+  \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},

@@ -26,7 +26,31 @@ setClass("satellite", contains="oce")
 #' @author Dan Kelley
 #' @family things related to satellite data
 setClass("g1sst", contains="satellite")
- 
+
+                                        
+#' @title Extract Something From a \code{g1sst} Object
+#' @param x A g1sst object, i.e. one inheriting from \code{\link{g1sst-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{g1sst} data
+setMethod(f="[[",
+          signature(x="g1sst", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
+          })
+
+#' @title Replace Parts of a \code{g1sst} Object
+#' @param x An \code{g1sst} object, i.e. inheriting from \code{\link{g1sst-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{g1sst} data
+setMethod(f="[[<-",
+          signature(x="g1sst", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
+
+
+
 #' Read G1SST satellite data
 #'
 #' This works with netcdf files as provided by the ERDAPP server [1].

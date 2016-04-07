@@ -37,8 +37,8 @@ this is used in the usual way; otherwise, e.g. for image formats, this is
 ignored.}
 
 \item{adorn}{Optional list of \code{\link{expression}}s to be performed
-immediately after drawing the panels. (See \code{\link{plot.adp}} for an
-example.)}
+immediately after drawing the panels. (See \code{\link{plot,adp-method}}
+for an example.)}
 
 \item{drawTimeRange}{Boolean that applies to panels with time as the horizontal
 axis, indicating whether to draw the time range in the top-left margin of the
@@ -192,7 +192,8 @@ Dan Kelley
 The documentation for \code{\link{adv-class}} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
 
-Other functions that plot \code{oce} data: \code{\link{plot,amsr-method}},
+Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+  \code{\link{plot,amsr-method}},
   \code{\link{plot,argo-method}},
   \code{\link{plot,bremen-method}},
   \code{\link{plot,cm-method}},

@@ -148,7 +148,9 @@ NULL
 NULL
 
 
-## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+##' DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+##' DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
+##' DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle flags in CTD objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
@@ -158,22 +160,22 @@ NULL
 #' to \code{NA} in the returned value. Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
-#' \code{action=list(ALL="NA")}.
+#' \code{action=list("NA")}.
 #' @param object An object of \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' data(section)
 #' stn <- section[["station", 100]]
 #' # 1. Default: anything not flagged as 2 is set to NA, to focus
 #' # solely on 'good', in the World Hydrographic Program scheme.
 #' STN <- handleFlags(stn)
+#' data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity']])
 #'
-#' # 2. A less restrictive case: include also 'questionable' datao,
-#' and only apply this action to salinity.
+#' # 2. A less restrictive case: include also 'questionable' data,
+#' # and only apply this action to salinity.
 #' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 #'
 #' # 3. Use smoothed TS relationship to nudge questionable data.
@@ -187,23 +189,25 @@ NULL
 #'   0.5 * (S + predict(sp, T)$y)
 #' }
 #' par(mfrow=c(1,2))
-#' STN <- handleFlags(stn, flags=list(ALL=c(1,3:9)), action=list(ALL=f))
+#' STN <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
 #' plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
 #' p <- stn[['pressure']]
 #' par(mar=c(3, 3, 3, 1))
 #' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
-#'}
 #'
 #' @family things related to \code{ctd} data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
+              ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
               if (missing(flags))
-                  flags <- list(ALL=c(1, 3:9))
-              if (missing(actions))
-                  actions <- list(ALL="NA")
+                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a newdata class
+              if (missing(actions)) {
+                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
+                  names(actions) <- names(flags)
+              }
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
@@ -661,6 +665,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##    return(salinity) # a convenience that lets us coerce without altering
         ## 1. coerce an oce object (with special tweaks for rsk)
     } else if (inherits(salinity, "oce")) {
+        if (inherits(salinity, "ctd"))
+            return(salinity)
         oceDebug(debug, "'salinity' is an oce object, so ignoring other arguments\n")
         o <- salinity
         d <- o@data
@@ -3750,10 +3756,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
         }
     }
+    pushBack(lines, file)
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
-                                   header=FALSE, col.names=col.names.inferred))
+        data <- as.list(read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred))
+        ## data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
+        ##                            header=FALSE, col.names=col.names.inferred))
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
@@ -3768,8 +3776,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
-        dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
-                              header=FALSE, col.names=col.names.inferred)
+        dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred)
+        ## dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
+        ##                       header=FALSE, col.names=col.names.inferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
             names(data) <- names(columns)

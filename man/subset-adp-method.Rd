@@ -38,6 +38,15 @@ Dan Kelley
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
+  \code{\link{plot,adp-method}},
+  \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{summary,adp-method}},
   \code{\link{xyzToEnuAdp}}
 }
 

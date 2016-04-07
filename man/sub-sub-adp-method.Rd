@@ -25,14 +25,31 @@ form; see examples.
 }
 \examples{
 data(adp)
-head(adp[["v"]][,,1])
+# Tests for beam 1, distance bin 1, first 5 observation times
+adp[["v"]][1:5,1,1]
+adp[["a"]][1:5,1,1]
+adp[["a", "numeric"]][1:5,1,1]
+as.numeric(adp[["a"]][1:5,1,1]) # same as above
+
+}
+\author{
+Dan Kelley
 }
 \seealso{
 Other functions that extract parts of oce objects: \code{\link{[[,ladp-method}}
 
 Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
   \code{\link{adp-class}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{subset,adp-method}},
+  \code{\link{as.adp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{subset,adp-method}},
+  \code{\link{summary,adp-method}},
   \code{\link{xyzToEnuAdp}}
 }
 

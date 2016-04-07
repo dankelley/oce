@@ -12,6 +12,18 @@ clipmin <- function(x, min=0)
     ifelse(x < min, min, x)
 }
 
+
+#' Abbreviate a vector of times by removing commonalities
+#' 
+#' Abbreviate a vector of times by removing commonalities (e.g. year)
+#' 
+#' @param t vector of times.
+#' @param \dots optional arguments passed to the \code{\link{format}}, e.g.
+#' \code{format}.
+#' @return None.
+#' @author Dan Kelley, with help from Clark Richards
+#' @seealso This is used by various functions that draw time labels on axes,
+#' e.g.  \code{\link{plot,adp-method}}.
 abbreviateTimeLabels <- function(t, ...)
 {
     if (!inherits(t, "POSIXt"))
@@ -656,7 +668,7 @@ imagep <- function(x, y, z,
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
-    zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot.adp
+    zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")

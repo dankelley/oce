@@ -146,8 +146,8 @@ setMethod(f="summary",
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form or numeric
-#' form; see \dQuote{examples}.
+#' data can be retrived in \code{\link{raw}} form 
+#' or numeric form; see \dQuote{Examples}.
 #' 
 #' @template sub_subTemplate
 #' @family things related to \code{adv} data
@@ -448,8 +448,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param type Type of plot, as for \code{\link{plot}}.
 #' 
 #' @param adorn Optional list of \code{\link{expression}}s to be performed
-#' immediately after drawing the panels. (See \code{\link{plot.adp}} for an
-#' example.)
+#' immediately after drawing the panels. (See \code{\link{plot,adp-method}}
+#' for an example.)
 #' 
 #' @param drawTimeRange Boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
