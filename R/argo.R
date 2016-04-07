@@ -386,8 +386,6 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
-    salinity <- argo[["salinity"]]
-    temperature <- argo[["temperature"]]
     pressure <- argo[["pressure"]]
     if (missing(p)) {
         pt <- apply(pressure, 1, median, na.rm=TRUE)
@@ -407,10 +405,10 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     }
     ##message("pt=c(", paste(round(pt), collapse=","), ")")
     npt <- length(pt)
-    res@data$pressure <- matrix(0.0, ncol=nprofile, nrow=npt)
+    res@data$pressure <- matrix(NA, ncol=nprofile, nrow=npt)
     for (field in names(res@data)) {
         if (!(field %in% c('time', 'longitude', 'latitude'))) {
-            res@data[[field]] <- matrix(0.0, ncol=nprofile, nrow=npt)
+            res@data[[field]] <- matrix(NA, ncol=nprofile, nrow=npt)
             for (profile in 1:nprofile) {
                 ndata <- sum(!is.na(argo@data[[field]][,profile]))
                 if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
