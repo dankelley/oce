@@ -3756,10 +3756,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
         }
     }
+    pushBack(lines, file)
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
-                                   header=FALSE, col.names=col.names.inferred))
+        data <- as.list(read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred))
+        ## data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
+        ##                            header=FALSE, col.names=col.names.inferred))
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
@@ -3774,8 +3776,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
-        dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
-                              header=FALSE, col.names=col.names.inferred)
+        dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred)
+        ## dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
+        ##                       header=FALSE, col.names=col.names.inferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
             names(data) <- names(columns)
