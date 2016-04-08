@@ -358,9 +358,16 @@ ncdfFixMatrix <- function(x)
 #' gridding.
 #' 
 #' 
-#' @details The gridding is done with \code{\link{approx}}.  If there is
+#' @details
+#' The gridding is done with \code{\link{approx}}.  If there is
 #' sufficient user demand, other methods may be added, by analogy to
 #' \code{\link{sectionGrid}}.
+#'
+#' A note about flags: because \code{argoGrid} interpolates existing
+#' data to create new data, any data quality flags that exist in the
+#' object are discarded along with a warning. Thus, any data exclusion
+#' based on flags should be completed prior to calling
+#' \code{argoGrid}, using e.g. \code{handleFlags}.
 #' 
 #' @return An object of \code{\link{argo-class}} that contains a pressure matrix
 #' with constant values along the first index.
@@ -386,6 +393,8 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
+    res[['flags']] <- NULL
+    warning("Data flags are omitted from the gridded object. Use handleFlags() first to remove bad data.")
     pressure <- argo[["pressure"]]
     if (missing(p)) {
         pt <- apply(pressure, 1, median, na.rm=TRUE)
@@ -420,6 +429,7 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
             }
         }
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste("Grid to regular pressures with: ", deparse(match.call()), sep="", collapse=""))
     res
 }
 
