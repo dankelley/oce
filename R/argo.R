@@ -365,9 +365,11 @@ ncdfFixMatrix <- function(x)
 #'
 #' A note about flags: because \code{argoGrid} interpolates existing
 #' data to create new data, any data quality flags that exist in the
-#' object are discarded along with a warning. Thus, any data exclusion
-#' based on flags should be completed prior to calling
-#' \code{argoGrid}, using e.g. \code{handleFlags}.
+#' object are discarded during the processing, and a warning is
+#' issues. Thus, any data exclusion
+#' based on flags (e.g. done with \code{\link{handleFlags}})
+#' should be completed \strong{prior} to calling
+#' \code{argoGrid}.
 #' 
 #' @return An object of \code{\link{argo-class}} that contains a pressure matrix
 #' with constant values along the first index.
@@ -1188,7 +1190,7 @@ setMethod(f="plot",
 #' argoNew <- handleFlags(argo, flags=list(salinity=4))
 #'}
 #'
-#' @family functions that handle CTD data
+#' @family things related to \code{argo} data
 setMethod("handleFlags",
           c(object="argo", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {

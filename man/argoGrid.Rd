@@ -39,9 +39,11 @@ sufficient user demand, other methods may be added, by analogy to
 
 A note about flags: because \code{argoGrid} interpolates existing
 data to create new data, any data quality flags that exist in the
-object are discarded along with a warning. Thus, any data exclusion
-based on flags should be completed prior to calling
-\code{argoGrid}, using e.g. \code{handleFlags}.
+object are discarded during the processing, and a warning is
+issues. Thus, any data exclusion
+based on flags (e.g. done with \code{\link{handleFlags}})
+should be completed \strong{prior} to calling
+\code{argoGrid}.
 }
 \examples{
 library(oce)
@@ -62,6 +64,7 @@ Dan Kelley
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

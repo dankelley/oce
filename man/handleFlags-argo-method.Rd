@@ -97,5 +97,13 @@ argoNew <- handleFlags(argo, flags=list(salinity=4))
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags}}
+
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argo}},
+  \code{\link{as.argo}}, \code{\link{plot,argo-method}},
+  \code{\link{read.argo}},
+  \code{\link{subset,argo-method}},
+  \code{\link{summary,argo-method}}
 }
 
