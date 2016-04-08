@@ -1178,7 +1178,7 @@ setMethod(f="plot",
 #' argoNew <- handleFlags(argo, flags=list(salinity=4))
 #'}
 #'
-#' @family functions that handle CTD data
+#' @family things related to \code{argo} data
 setMethod("handleFlags",
           c(object="argo", flags="ANY", actions="ANY"),
           function(object, flags=list(), actions=list()) {
