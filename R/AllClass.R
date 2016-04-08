@@ -434,5 +434,11 @@ handleFlagsInternal <- function(object, flags, actions) {
             }
         }
     }
+    object@processingLog <- processingLogAppend(object@processingLog,
+                                                paste("handleFlags(flags=",
+                                                      substitute(flags, parent.frame()),
+                                                      ", actions=",
+                                                      substitute(actions, parent.frame()),
+                                                      ")", collapse=" ", sep=""))
     object
 }

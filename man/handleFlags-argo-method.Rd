@@ -28,10 +28,6 @@ with \code{object} as the single argument, and must return a
 replacement for the data item in question.}
 }
 \description{
-DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
-DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
-DEVELOPERS: marked '# DEVELOPER 1:', etc.
-
 Data-quality flags are stored in the \code{metadata}
 slot of \code{\link{oce-class}} objects in a 
 \code{\link{list}} named \code{flags}.

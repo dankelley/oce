@@ -1,4 +1,5 @@
 0.9-19
+- handleFlags() added, generic and specifics for ctd and argo
 - use S4 documentation, e.g. ?'plot,ctd-method' instead of ?plot.ctd
 - subset(argo, "adjusted") drops non-adjusted data
 - read.argo() reads all documented data and metadata fields

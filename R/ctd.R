@@ -148,9 +148,9 @@ NULL
 NULL
 
 
-##' DEVELOPERS: please pattern functions and documentation on this, for uniformity.
-##' DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
-##' DEVELOPERS: marked '# DEVELOPER 1:', etc.
+## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle flags in CTD objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
