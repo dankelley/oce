@@ -338,7 +338,12 @@ ncdfFixMatrix <- function(x)
 #' Grid a Argo drifter path.
 #' 
 #' Grid a Argo drifter, by interpolating to fixed pressure levels.
-#' 
+#' The gridding is done with \code{\link{approx}}.  If there is
+#' sufficient user demand, other methods may be added, by analogy to
+#' \code{\link{sectionGrid}}.
+#'
+#' @template flagDeletionTemplate
+#'  
 #' @param argo A \code{argo} object to be gridded.
 #' 
 #' @param p Optional indication of the pressure levels to which interpolation
@@ -357,14 +362,6 @@ ncdfFixMatrix <- function(x)
 #' @param ... Optional arguments to \code{\link{approx}}, which is used to do the
 #' gridding.
 #' 
-#' 
-#' @details
-#' The gridding is done with \code{\link{approx}}.  If there is
-#' sufficient user demand, other methods may be added, by analogy to
-#' \code{\link{sectionGrid}}.
-#'
-#' @template flagDeletionTemplate
-#' 
 #' @return An object of \code{\link{argo-class}} that contains a pressure matrix
 #' with constant values along the first index.
 #' 
@@ -380,7 +377,7 @@ ncdfFixMatrix <- function(x)
 #' imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 #' 
 #' @family things related to \code{argo} data
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)

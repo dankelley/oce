@@ -31,15 +31,13 @@ with constant values along the first index.
 }
 \description{
 Grid a Argo drifter, by interpolating to fixed pressure levels.
-}
-\details{
 The gridding is done with \code{\link{approx}}.  If there is
 sufficient user demand, other methods may be added, by analogy to
 \code{\link{sectionGrid}}.
 }
 \section{A note about flags}{
 
-Any data-quality flags contained within the original object are ignored by this
+Data-quality flags contained within the original object are ignored by this
 function, and the returned value contains no such flags.  This is because such
 flags represent an assessment of the original data, not of quantities derived
 from those data.  This function produces a warning to this effect. The
@@ -59,7 +57,7 @@ imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
 \seealso{
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
